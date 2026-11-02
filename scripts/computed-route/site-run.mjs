@@ -21,12 +21,10 @@
 //        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
-import { framedTreeFile, framesIn } from './lib/site-build-modal-frame.mjs';
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
-import { routeCacheDir } from './lib/cache-dir.mjs';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
@@ -34,27 +32,15 @@ import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
-import { assertInventoryCurrent, handoffOf, sourcesOf } from './lib/freshness.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
-import { primeCandidatesPhp, pickPrimeProduct, livePrimeFor, checkoutRole } from './lib/live-prime.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
-import { buildThenMarkPost, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
+import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
-import { liveProductsPhp, pickLiveProduct, draftHeading, liveAddressFailure } from './lib/live-product.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
-import { walkVerdict } from './lib/site-run-walk.mjs';
-import { reviewedVerdict, reviewedRowsFor } from './lib/site-run-reviewed.mjs';
-import { calibrationVerdict } from './lib/site-run-blocks.mjs';
-import { certsPath } from './lib/site-run-certs.mjs';
-import { hashesFor } from './stage0.mjs';
-import { intakeGateFor } from './lib/site-run-intake-gate.mjs';
-import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
-const CACHE = routeCacheDir( REPO );
-const calibrationFixtures = () => readJson( path.join( REPO, 'scripts', 'computed-route', 'calibration-fixtures.json' ) );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
 
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
@@ -96,16 +82,12 @@ function liveBase( envFile, envKey ) {
 // its `draftRoute`; any other surface at the page row its key names. `routing` (intake.json `routing`) names the adapter: a
 // state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs); a page-file draft is reached
 // by the file the surface's `draftIndex` names, so it takes no hash.
-// The row kinds a surface keyed by slug or route can name: a page, the WooCommerce shop page (`shop`) and the single-product
-// template (`product`, every product uses it).
-const PAGE_LIKE = [ 'page', 'shop', 'product' ];
-
 export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
 	// A template copy Filled on its own is read at the row playing it (`copy.row`, a row key).
 	const byRow = 'fill' === entry.copy?.from ? rows.find( ( r ) => rowKey( r ) === entry.copy.row ) : null;
-	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => PAGE_LIKE.includes( r.postType ) && ( r.slug === key || r.route === key ) ) );
+	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	// A surface the manifest marks `noDraft` (one of WooCommerce's own pages the draft has no page for) has nothing to read.
@@ -120,26 +102,10 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 // results for any query, the not-found page for an address nothing holds, the order confirmation at the run's test order,
 // `shown`: template slug -> address), or null when the run has none.
 export function liveAddress( row, rows, shown = {} ) {
-	// The single-product template is read at one real product (`shown.product`, chosen from the live site), or nowhere.
-	if ( 'product' === row?.postType ) {
-		return shown.product ?? null;
-	}
 	if ( 'template' !== row?.postType ) {
 		return row ? permalinkOf( row, rows ) : '/';
 	}
 	return { search: '/?s=sgs', 404: '/sgs-no-such-page/', ...shown }[ row.template ] ?? null;
-}
-
-// The row a modal or choice-flow surface is read at live: it has no page of its own, so it is read at a page that opens
-// it (the page map's `opens`, Spec 48 FR-48-30), a page before a product (a product is read at one live product); null
-// for any other surface, or one nothing opens.
-export function openerRow( entry, rows ) {
-	const own = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
-	if ( ! own || ! [ 'sgs_modal', 'sgs_choice_flow' ].includes( own.postType ) ) {
-		return null;
-	}
-	const openers = rows.filter( ( r ) => ( r.opens || [] ).some( ( o ) => o.slug === own.slug ) );
-	return openers.find( ( r ) => 'product' !== r.postType ) ?? openers[ 0 ] ?? null;
 }
 
 // Whether the run reads the order confirmation, which shows only at an order's received page.
@@ -208,10 +174,6 @@ export async function main( argv ) {
 	const surfaces = readJson( path.join( build, 'surfaces.json' ) );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
-	const gate = intakeGateFor( REPO, client, intake );
-	if ( gate.length ) {
-		throw new Error( `site run refused for ${ client }:\n${ gate.map( ( g ) => `  - ${ g }` ).join( '\n' ) }` );
-	}
 	const keys = runKeys( surfaces, only );
 	const dir = path.join( build, 'qa', 'site-run', stamp() );
 	fs.mkdirSync( dir, { recursive: true } );
@@ -230,7 +192,7 @@ export async function main( argv ) {
 		servers.has( id ) || servers.set( id, serveDraft( assertDraftPage( path.join( REPO, entry.draftDir ), entry.draftIndex ), { index: entry.draftIndex } ) );
 		return servers.get( id );
 	};
-	const certs = certsPath();
+	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
 
 	// The stage runner of one surface: a stage not asked for counts as passed; a WooCommerce page's own Fill and build are
 	// skipped and its walk then stops (a failed stage stops the surface).
@@ -239,9 +201,8 @@ export async function main( argv ) {
 			return true;
 		}
 		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
-		// pages itself, so neither applies to the page's content; its layout is its template copy's surface, which makes
-		// and checks its own proposal, so the page's proposal (and its built-equals-reviewed check) is skipped too.
-		if ( wooPage && [ 'propose', 'fill', 'build', 'walk' ].includes( stage ) ) {
+		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
+		if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
 			note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
 			return 'walk' !== stage;
 		}
@@ -282,23 +243,8 @@ export async function main( argv ) {
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
-		// A modal or flow is read at a page that opens it; a product surface at one real product of the live site
-		// (lib/live-product.mjs), chosen once per run.
-		const liveRow = openerRow( entry, rows ) ?? row;
-		const pick = 'product' === liveRow?.postType ? liveProduct( draftHeading( build, entry.intakeSurface ) ) : null;
-		pick?.address && ( shown.product = pick.address );
-		const address = liveAddress( liveRow, rows, shown );
-		// A shop or product surface never falls back to the home page: no address stops it, naming why.
-		const noAddress = liveAddressFailure( { entry, row: liveRow, address, pick } );
-		if ( noAddress ) {
-			return note( key, 'inventory', false, 0, noAddress );
-		}
+		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
-		// A checkout surface's live walk starts with a product in the basket (lib/live-prime.mjs); no product means it walks unprimed.
-		const role = checkoutRole( entry, row );
-		const prime = 'checkout' === role ? primeProduct() : null;
-		prime && ! prime.id && note( key, 'prime', true, 0, `live walk unprimed: ${ prime.why }` );
-		const livePrime = livePrimeFor( { role, base, productId: prime?.id, variation: prime?.variation } );
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
@@ -317,15 +263,12 @@ export async function main( argv ) {
 			if ( fromSaved ) {
 				const entryDraft = ( intake.inventory?.animations?.drafts || [] ).find( ( d ) => d.file === path.basename( entry.draftIndex ) ) || intake.inventory?.animations?.drafts?.[ 0 ];
 				const inv = stateOnly ? servedInventoryOf( readJson( saved ), entryDraft?.dc ?? null ) : savedInventoryOf( { repo: REPO, client, surface: key, surfaces, intake } );
-				// Intake's saved inventory is copied only while it describes the export; it keeps the sources it was read from.
-				assertInventoryCurrent( inv, handoffOf( REPO, client ), `intake's saved inventory for ${ key }` );
 				fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 				fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );
 				return `${ inv.elements.length } elements (intake's inventory${ stateOnly ? ' with the state open' : '' }, in the served key space)`;
 			}
-			const sources = sourcesOf( handoffOf( REPO, client ) );
-			const inv = { ...await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } ), sources };
+			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } );
 			fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 			fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );
@@ -333,24 +276,12 @@ export async function main( argv ) {
 		} ) ) {
 			return;
 		}
-		// WooCommerce's own page keeps WooCommerce's content: nothing after the inventory applies to it (its layout is the
-		// template copy's surface), so each later stage is noted as skipped and the surface ends here.
-		if ( wooPage ) {
-			for ( const s of [ 'propose', 'fill', 'build', 'walk' ] ) {
-				await step( s, async () => null );
-			}
-			return;
-		}
 		if ( ! await step( 'propose', async () => {
 			const r = proposeSurface( { client, surface: key } );
 			if ( r.problems.length ) {
 				throw new Error( r.problems.join( '; ' ).slice( 0, 500 ) );
 			}
-			// Built equals reviewed: the new proposal against the rows intake saved for Bean's review.
-			const reviewed = reviewedVerdict( { surface: key, reviewed: reviewedRowsFor( intake.skeletons, entry.intakeSurface ), proposed: r.proposal.rows, rootComponent: skel.inventory?.checks?.rootName ?? null } );
-			// Every block it places has a current slot map before Fill.
-			const calibrated = calibrationVerdict( { surface: key, rows: r.proposal.rows, client, site, cacheDir: CACHE, hashesOf: blockHashes, fixtures: calibrationFixtures() } );
-			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low; ${ reviewed }; ${ calibrated }`;
+			return `${ r.proposal.counts.skeletonNodes } nodes, ${ r.proposal.counts.low } low`;
 		} ) ) {
 			return;
 		}
@@ -358,7 +289,7 @@ export async function main( argv ) {
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', livePrime[ 0 ] ] : [] ), '--allow-external', '--out', path.relative( REPO, out ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -370,7 +301,6 @@ export async function main( argv ) {
 		} ) ) {
 			return;
 		}
-		pruneRunsReport( { parent: path.dirname( out ), keep: out } );
 		const parity = path.join( build, 'qa', 'parity' );
 		fs.mkdirSync( parity, { recursive: true } );
 		for ( const f of [ entry.walker, entry.walkerFull ] ) {
@@ -411,13 +341,10 @@ export async function main( argv ) {
 		} else {
 			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
 		}
-		// A page's modal frames take the look the modal surface's Fill kept (lib/site-build-modal-frame.mjs).
-		const framed = framedTreeFile( { treeFile: path.join( REPO, tree ), frames: framesIn( path.join( build, 'qa', 'fill' ) ), outDir: ctx.out } );
-		framed && ( tree = path.relative( REPO, framed.file ), console.log( `${ key } modal frames take their look: ${ framed.merged.join( ', ' ) }` ) );
 		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
-			const said = await buildThenMarkPost( { build: () => exec( 'build', 'node', builder ), postId: slug ? null : entry.target.postId, runPhp } ); // lib/site-build-apply.mjs: the post gets the site build's content marker
+			const said = await exec( 'build', 'node', builder );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
 			// A built header, footer or drawer becomes the site's active one (lib/site-run-layout.mjs).
@@ -431,18 +358,14 @@ export async function main( argv ) {
 			return note( key, 'walk', true, 0, 'pages' === entry.copy?.from ? `skipped: walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'skipped: no draft surface plays it' : `skipped: the ${ slug } template shows only at a WooCommerce endpoint` );
 		}
 		const parity = path.join( build, 'qa', 'parity' );
-		await step( 'walk', async () => {
-			const said = await exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-				'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, ...( certs ? { NODE_EXTRA_CA_CERTS: certs } : {} ) } ).catch( ( e ) => {
-				// The walker exits 1 for open differences; the report is what counts.
-				if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
-					return `report written (${ String( e.message ).slice( 0, 200 ) })`;
-				}
-				throw e;
-			} );
-			// A report whose live page lacks the surface's root is a failed walk, whatever the walker's exit status.
-			return walkVerdict( said, path.join( parity, 'out', key, 'report.json' ) );
-		} );
+		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
+			'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+			// The walker exits 1 for open differences; the report is what counts.
+			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
+				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
+			}
+			throw e;
+		} ) );
 	}
 
 	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,
@@ -450,30 +373,7 @@ export async function main( argv ) {
 	const targetsFile = path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' );
 	const target = ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {};
 	const runPhp = wpEvalRunner( target, site, REPO );
-	// Each block's deployed and local build hashes, read once per run (stage0.mjs::hashesFor).
-	const hashMemo = new Map();
-	const blockHashes = ( block ) => hashMemo.get( block ) ?? ( hashMemo.set( block, hashesFor( site, target, block ) ), hashMemo.get( block ) );
 	const wp = wpCommand( target, site, REPO );
-	// The product that primes a checkout walk's basket, chosen once per run from the live site (read-only query).
-	let primeMemo = null;
-	const primeProduct = () => primeMemo ??= ( () => {
-		try {
-			const line = String( runPhp( primeCandidatesPhp() ) ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.trim().startsWith( '[' ) );
-			return pickPrimeProduct( line ? JSON.parse( line ) : [] );
-		} catch ( e ) {
-			return { id: null, why: `the product query failed: ${ String( e.message || e ).slice( 0, 200 ) }` };
-		}
-	} )();
-	// The product a product surface is read at, chosen from the live site's published products (read-only query).
-	let productsMemo = null;
-	const liveProduct = ( heading ) => {
-		try {
-			productsMemo ??= ( ( line ) => ( line ? JSON.parse( line ) : [] ) )( String( runPhp( liveProductsPhp() ) ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.trim().startsWith( '[' ) ) );
-		} catch ( e ) {
-			return { id: null, address: null, why: `the product query failed: ${ String( e.message || e ).slice( 0, 200 ) }` };
-		}
-		return pickLiveProduct( productsMemo, heading );
-	};
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
 
 	const pool = async ( list, fn ) => {
@@ -524,7 +424,6 @@ export async function main( argv ) {
 	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
-	pruneRunsReport( { parent: path.dirname( dir ), keep: dir } );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {

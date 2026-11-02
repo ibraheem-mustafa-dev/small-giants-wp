@@ -45,8 +45,6 @@ export const renderRefutes = ( sampled ) => {
 	return seen.length > 0 && seen.every( ( m ) => null === m );
 };
 
-const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
-
 // One entrance record as a finished `entrance.base`: render-checked, token-snapped, preset-named. { layer, notes } or
 // { unmapped }. `named` makes it a state or open entrance (lib/motion-states.mjs::stateTrigger); a state entrance and an
 // SVG <set> are not played by the load-time render sample, so they are not render-checked. A state transition (a
@@ -153,10 +151,8 @@ function pickEntrance( own, measured, runtime, others = [] ) {
 	}
 	const m = runtime.length ? matchByPose( runtime, measured ) : null;
 	if ( m?.record ) {
-		notes.push( `${ m.record.id }: the code picks this element at run time, and the render's from-pose matched it${ m.record.mergedFrom?.length > 1 ? ` (the writes ${ m.record.mergedFrom.join( ', ' ) } of one tween)` : '' }` );
-		const same = ( m.identical || [] ).filter( ( id ) => id !== m.record.id );
-		same.length && notes.push( `${ m.record.id }: ${ same.join( ', ' ) } play the same animation (one entrance the code reaches by several callers), so they are this entrance` );
-		return { record: m.record, notes, unmapped, also: same };
+		notes.push( `${ m.record.id }: the code picks this element at run time, and the render's from-pose matched it` );
+		return { record: m.record, notes, unmapped };
 	}
 	const oneShot = others.filter( ( r ) => /^(waapi|css-animation)$/.test( r.mechanism ) );
 	if ( m?.ambiguous ) {
@@ -183,7 +179,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 		if ( s ) {
 			named.set( r.id, s );
 		}
-		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css, records: ctx.records } ) };
+		return { r, c: s ? { kind: 'entrance' } : classify( r, { css: ctx.css } ) };
 	} );
 	const unmapped = kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => ( { record: x.r.id, reason: x.c.reason } ) );
 	const pick = pickEntrance( kinds.filter( ( x ) => 'entrance' === x.c.kind ).map( ( x ) => x.r ), sampled?.[ 1440 ] || null, runtime, kinds.filter( ( x ) => 'skip' === x.c.kind ).map( ( x ) => x.r ) );
@@ -196,7 +192,7 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 			unmapped.push( { record: pick.record.id, reason: e.unmapped } );
 		} else {
 			element.entrance = { base: e.layer };
-			used.push( pick.record.id, ...( pick.also || [] ) );
+			used.push( pick.record.id );
 			notes.push( ...e.notes.map( ( n ) => `${ pick.record.id }: ${ n }` ) );
 		}
 	}
@@ -218,21 +214,9 @@ export function elementMotion( records, { mdb, ctx, sampled, runtime = [], offer
 // `loops` is the element's sampleMotion() loops by width. Returns { effects: [{ record, effect, values, devices,
 // trigger, notes }], css: [{ record, name, css }], unmapped: [{ record, reason }], notes }. An endless keyframe animation
 // no effect draws becomes `css` (the block's Additional CSS box, lib/motion-loop-css.mjs) when its values are literal.
-//
-// `decided` is the client's own decision for this element (sites/<client>/build/skeleton/decisions.json `motion`):
-// { <effect>: { <field>: <value> } }. A field the effect's own range setting holds (the marquee's belowBreakpoint) takes
-// the decided choice in place of the one the draft's measured widths give; a decision naming any other field or a choice
-// the setting does not offer is refused in `unmapped`, never written.
-export function elementEffects( records, { mdb, loops = null, runtimeLoops = [], cls = {}, decided = null } ) {
+export function elementEffects( records, { mdb, loops = null, runtimeLoops = [], cls = {} } ) {
 	const out = { effects: [], css: [], unmapped: [], notes: [] };
-	// A loop is judged at the widest width the render shows motion on this element at: a loop the draft runs below a breakpoint
-	// only (a mobile ticker) is not running at 1440, and a loop is not refused for not running where the draft never runs it.
-	const shows = ( m ) => Boolean( m?.loops?.length || m?.marquee || m?.smil?.length );
-	const base = [ 1440, 768, 375 ].find( ( w ) => shows( loops?.[ w ] ) ) ?? 1440;
-	const wide = loops?.[ base ] || null;
-	const ranAt = [ 1440, 768, 375 ].filter( ( w ) => shows( loops?.[ w ] ) ).map( ( w ) => TIER[ w ] );
-	const below = ranAt.length && ! ranAt.includes( 'desktop' );
-	const only = below ? `the render shows this endless animation at ${ ranAt.join( ' and ' ) } only, so it is judged there` : null;
+	const wide = loops?.[ 1440 ] || null;
 	let own = records.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	if ( ! own.length && wide?.loops?.length ) {
 		own = wide.loops.flatMap( ( l ) => runtimeLoopsFor( runtimeLoops, { ...wide, loops: [ l ] } ).slice( 0, 1 ) );
@@ -245,7 +229,7 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 			keep( r.id, { unmapped: `the draft's code starts this loop on ${ t }, and the render showed it not running on an untouched page, so nothing is written` } );
 			continue;
 		}
-		const e = loopEffect( r, loops, { mdb, base } );
+		const e = loopEffect( r, loops, { mdb } );
 		const boxed = e.unmapped && isLoopRecord( r ) ? loopKeyframesCss( r, loopName( r ) ) : null;
 		if ( boxed?.css ) {
 			out.css.push( { record: r, css: boxed.css } );
@@ -263,41 +247,16 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 		const loop = smilLoop( a, wide.box );
 		if ( loop ) {
 			const at = ( w ) => ( loops?.[ w ]?.smil?.[ i ] ? smilLoop( loops[ w ].smil[ i ], loops[ w ].box ) : null );
-			keep( `<${ a.tag } ${ a.attributeName || a.type || '' }>`, chooseEffect( loop, { tablet: 1440 === base ? at( 768 ) : null, mobile: base > 375 ? at( 375 ) : null }, { mdb } ) );
+			keep( `<${ a.tag } ${ a.attributeName || a.type || '' }>`, chooseEffect( loop, { tablet: at( 768 ), mobile: at( 375 ) }, { mdb } ) );
 		}
 	} );
-	// A loop the draft runs below a width only is written to run there through the effect's own range field (the marquee's
-	// belowBreakpoint: `mobile` when only the narrowest width ran it, `tablet` when the middle one did too); an effect with no
-	// such field runs at every width, and the note says so.
-	if ( below ) {
-		for ( const fx of out.effects ) {
-			const range = mdb.rangeField?.( 'effects', fx.effect, Object.values( TIER ) );
-			const value = ranAt.includes( 'tablet' ) ? 'tablet' : 'mobile';
-			if ( range && range.choices.includes( value ) && ranAt.includes( 'mobile' ) ) {
-				fx.values = { ...fx.values, [ range.path.replace( /^values\./, '' ) ]: value };
-				out.notes.push( `${ only }, and written to run at ${ value } width and below (${ range.path })` );
-			} else {
-				out.notes.push( `${ only }; the effect runs at every width (no per-width switch holds it)` );
-			}
-		}
-	}
-	for ( const fx of out.effects ) {
-		for ( const [ field, value ] of Object.entries( decided?.[ fx.effect ] || {} ) ) {
-			const range = mdb.rangeField?.( 'effects', fx.effect, Object.values( TIER ) );
-			if ( range && range.path === `values.${ field }` && range.choices.includes( value ) ) {
-				fx.values = { ...fx.values, [ field ]: value };
-				out.notes.push( `${ fx.effect } ${ field } is ${ value }: the client's own decision, whatever the draft's widths show` );
-			} else {
-				out.unmapped.push( { record: fx.record, reason: `the client's decision ${ fx.effect } ${ field } = ${ value } names no choice of the effect's range setting${ range ? ` (${ range.path }: ${ range.choices.join( ', ' ) })` : '' }` } );
-			}
-		}
-	}
 	if ( wide?.loops?.length && ! own.length ) {
 		out.notes.push( `the render shows an endless animation on this element that no code record explains, so nothing is written (R-47-4)` );
 	}
 	return out;
 }
 
+const TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
 
 // The motion hover layer's paint timing from lib/fill-timing.mjs::paintTimings' result: { values: { paintDuration,
 // paintEasing, shadowDuration, shadowEasing }, devices: { tablet|mobile: { paintDuration, shadowDuration } }, notes,

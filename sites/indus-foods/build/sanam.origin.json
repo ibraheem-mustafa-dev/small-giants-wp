@@ -9,10 +9,6 @@
       "textHash": "1505",
       "line": 269
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/316#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/344#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-1": {
@@ -26,12 +22,6 @@
       ],
       "textHash": "1505",
       "line": 435
-    },
-    "slots": {
-      ".sgs-hero__content": "Root/330#0",
-      ".sgs-hero__video-bg": "Root/318#0",
-      ".sgs-hero__media > .sgs-hero__split-media": "Root/341#0",
-      ".sgs-hero__media": "Root/340#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -64,9 +54,6 @@
       "textHash": "1505",
       "line": 445
     },
-    "slots": {
-      ".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": "Root/326#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-4": {
@@ -83,9 +70,6 @@
       ],
       "textHash": "a07c5b4d",
       "line": 446
-    },
-    "slots": {
-      ".sgs-button__label": "Root/326#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -176,10 +160,6 @@
       "textHash": "1505",
       "line": 454
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/338#0",
-      ".sgs-button:nth-of-type(2)": "Root/338#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-10": {
@@ -198,9 +178,6 @@
       ],
       "textHash": "fc9d1737",
       "line": 456
-    },
-    "slots": {
-      ".sgs-button__label": "Root/338#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -221,9 +198,6 @@
       "textHash": "546025ec",
       "line": 456
     },
-    "slots": {
-      ".sgs-button__label": "Root/338#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-12": {
@@ -237,9 +211,6 @@
       ],
       "textHash": "1505",
       "line": 474
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -255,9 +226,6 @@
       ],
       "textHash": "1505",
       "line": 476
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/379#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -275,10 +243,6 @@
       "textHash": "1505",
       "line": 529
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/380#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/394#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-15": {
@@ -295,10 +259,6 @@
       ],
       "textHash": "1505",
       "line": 530
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/382#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/384#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -375,6 +335,24 @@
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-sanam-20": {
+    "tpl": "Root/388#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "37ecd678",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 539
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-sanam-21": {
     "tpl": "Root/390#0",
     "fingerprint": {
       "tag": "div",
@@ -391,23 +369,66 @@
       "textHash": "5c297023",
       "line": 541
     },
-    "slots": {
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": "Root/391#0",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": "Root/390#0",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": "Root/390#0",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": "Root/390#1",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": "Root/390#2",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text": "Root/390#3",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": "Root/390#1",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": "Root/390#2",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": "Root/390#3",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": "Root/391#1",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": "Root/391#2",
-      ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon": "Root/391#3"
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-sanam-22": {
+    "tpl": "Root/390#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9176fee1",
+      "line": 541
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-21": {
+  "cr-ref-sanam-23": {
+    "tpl": "Root/390#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c62b6a1a",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-sanam-24": {
+    "tpl": "Root/390#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c709fb94",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-sanam-25": {
     "tpl": "Root/394#0",
     "fingerprint": {
       "tag": "div",
@@ -422,12 +443,9 @@
       "textHash": "1505",
       "line": 549
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/395#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-22": {
+  "cr-ref-sanam-26": {
     "tpl": "Root/395#0",
     "fingerprint": {
       "tag": "div",
@@ -443,12 +461,9 @@
       "textHash": "1505",
       "line": 550
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/396#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-23": {
+  "cr-ref-sanam-27": {
     "tpl": "Root/396#0",
     "fingerprint": {
       "tag": "image-slot",
@@ -465,12 +480,9 @@
       "textHash": "1505",
       "line": 551
     },
-    "slots": {
-      ".sgs-media__img": "Root/396#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-24": {
+  "cr-ref-sanam-28": {
     "tpl": "Root/344#1",
     "fingerprint": {
       "tag": "section",
@@ -482,12 +494,9 @@
       "textHash": "1505",
       "line": 474
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-25": {
+  "cr-ref-sanam-29": {
     "tpl": "Root/345#1",
     "fingerprint": {
       "tag": "div",
@@ -500,13 +509,9 @@
       "textHash": "1505",
       "line": 476
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/347#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/479#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-26": {
+  "cr-ref-sanam-30": {
     "tpl": "Root/347#0",
     "fingerprint": {
       "tag": "div",
@@ -520,12 +525,9 @@
       "textHash": "1505",
       "line": 479
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/348#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-27": {
+  "cr-ref-sanam-31": {
     "tpl": "Root/348#0",
     "fingerprint": {
       "tag": "div",
@@ -540,13 +542,9 @@
       "textHash": "1505",
       "line": 480
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/350#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/352#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-28": {
+  "cr-ref-sanam-32": {
     "tpl": "Root/350#0",
     "fingerprint": {
       "tag": "div",
@@ -564,7 +562,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-29": {
+  "cr-ref-sanam-33": {
     "tpl": "Root/352#0",
     "fingerprint": {
       "tag": "h2",
@@ -582,7 +580,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-30": {
+  "cr-ref-sanam-34": {
     "tpl": "Root/479#0",
     "fingerprint": {
       "tag": "div",
@@ -596,13 +594,9 @@
       "textHash": "1505",
       "line": 682
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/481#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/481#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-31": {
+  "cr-ref-sanam-35": {
     "tpl": "Root/481#0",
     "fingerprint": {
       "tag": "a",
@@ -617,13 +611,9 @@
       "textHash": "1505",
       "line": 684
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/485#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/495#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-32": {
+  "cr-ref-sanam-36": {
     "tpl": "Root/485#0",
     "fingerprint": {
       "tag": "div",
@@ -639,13 +629,9 @@
       "textHash": "1505",
       "line": 690
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/486#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/490#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-33": {
+  "cr-ref-sanam-37": {
     "tpl": "Root/486#0",
     "fingerprint": {
       "tag": "div",
@@ -662,12 +648,9 @@
       "textHash": "1505",
       "line": 691
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/487#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-34": {
+  "cr-ref-sanam-38": {
     "tpl": "Root/487#0",
     "fingerprint": {
       "tag": "span",
@@ -687,7 +670,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-35": {
+  "cr-ref-sanam-39": {
     "tpl": "Root/490#0",
     "fingerprint": {
       "tag": "div",
@@ -706,7 +689,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-36": {
+  "cr-ref-sanam-40": {
     "tpl": "Root/491#0",
     "fingerprint": {
       "tag": "div",
@@ -725,7 +708,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-37": {
+  "cr-ref-sanam-41": {
     "tpl": "Root/495#0",
     "fingerprint": {
       "tag": "span",
@@ -741,12 +724,9 @@
       "textHash": "1505",
       "line": 702
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/496#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-38": {
+  "cr-ref-sanam-42": {
     "tpl": "Root/496#0",
     "fingerprint": {
       "tag": "image-slot",
@@ -763,12 +743,9 @@
       "textHash": "1505",
       "line": 703
     },
-    "slots": {
-      ".sgs-media__img": "Root/496#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-39": {
+  "cr-ref-sanam-43": {
     "tpl": "Root/481#1",
     "fingerprint": {
       "tag": "a",
@@ -783,13 +760,9 @@
       "textHash": "1505",
       "line": 684
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/485#1",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/495#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-40": {
+  "cr-ref-sanam-44": {
     "tpl": "Root/485#1",
     "fingerprint": {
       "tag": "div",
@@ -805,13 +778,9 @@
       "textHash": "1505",
       "line": 690
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/486#1",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/490#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-41": {
+  "cr-ref-sanam-45": {
     "tpl": "Root/486#1",
     "fingerprint": {
       "tag": "div",
@@ -828,12 +797,9 @@
       "textHash": "1505",
       "line": 691
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/487#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-42": {
+  "cr-ref-sanam-46": {
     "tpl": "Root/487#1",
     "fingerprint": {
       "tag": "span",
@@ -853,7 +819,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-43": {
+  "cr-ref-sanam-47": {
     "tpl": "Root/490#1",
     "fingerprint": {
       "tag": "div",
@@ -872,7 +838,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-44": {
+  "cr-ref-sanam-48": {
     "tpl": "Root/491#1",
     "fingerprint": {
       "tag": "div",
@@ -891,7 +857,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-45": {
+  "cr-ref-sanam-49": {
     "tpl": "Root/495#1",
     "fingerprint": {
       "tag": "span",
@@ -907,12 +873,9 @@
       "textHash": "1505",
       "line": 702
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/496#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-46": {
+  "cr-ref-sanam-50": {
     "tpl": "Root/496#1",
     "fingerprint": {
       "tag": "image-slot",
@@ -929,12 +892,9 @@
       "textHash": "1505",
       "line": 703
     },
-    "slots": {
-      ".sgs-media__img": "Root/496#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-47": {
+  "cr-ref-sanam-51": {
     "tpl": "Root/481#2",
     "fingerprint": {
       "tag": "a",
@@ -949,13 +909,9 @@
       "textHash": "1505",
       "line": 684
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/485#2",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/495#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-48": {
+  "cr-ref-sanam-52": {
     "tpl": "Root/485#2",
     "fingerprint": {
       "tag": "div",
@@ -971,13 +927,9 @@
       "textHash": "1505",
       "line": 690
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/486#2",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/490#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-49": {
+  "cr-ref-sanam-53": {
     "tpl": "Root/486#2",
     "fingerprint": {
       "tag": "div",
@@ -994,12 +946,9 @@
       "textHash": "1505",
       "line": 691
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/487#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-50": {
+  "cr-ref-sanam-54": {
     "tpl": "Root/487#2",
     "fingerprint": {
       "tag": "span",
@@ -1019,7 +968,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-51": {
+  "cr-ref-sanam-55": {
     "tpl": "Root/490#2",
     "fingerprint": {
       "tag": "div",
@@ -1038,7 +987,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-52": {
+  "cr-ref-sanam-56": {
     "tpl": "Root/491#2",
     "fingerprint": {
       "tag": "div",
@@ -1057,7 +1006,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-53": {
+  "cr-ref-sanam-57": {
     "tpl": "Root/495#2",
     "fingerprint": {
       "tag": "span",
@@ -1073,12 +1022,9 @@
       "textHash": "1505",
       "line": 702
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/496#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-54": {
+  "cr-ref-sanam-58": {
     "tpl": "Root/496#2",
     "fingerprint": {
       "tag": "image-slot",
@@ -1095,12 +1041,9 @@
       "textHash": "1505",
       "line": 703
     },
-    "slots": {
-      ".sgs-media__img": "Root/496#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-55": {
+  "cr-ref-sanam-59": {
     "tpl": "Root/481#3",
     "fingerprint": {
       "tag": "a",
@@ -1115,13 +1058,9 @@
       "textHash": "1505",
       "line": 684
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/485#3",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/495#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-56": {
+  "cr-ref-sanam-60": {
     "tpl": "Root/485#3",
     "fingerprint": {
       "tag": "div",
@@ -1137,13 +1076,9 @@
       "textHash": "1505",
       "line": 690
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/486#3",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/490#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-57": {
+  "cr-ref-sanam-61": {
     "tpl": "Root/486#3",
     "fingerprint": {
       "tag": "div",
@@ -1160,12 +1095,9 @@
       "textHash": "1505",
       "line": 691
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/487#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-58": {
+  "cr-ref-sanam-62": {
     "tpl": "Root/487#3",
     "fingerprint": {
       "tag": "span",
@@ -1185,7 +1117,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-59": {
+  "cr-ref-sanam-63": {
     "tpl": "Root/490#3",
     "fingerprint": {
       "tag": "div",
@@ -1204,7 +1136,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-60": {
+  "cr-ref-sanam-64": {
     "tpl": "Root/491#3",
     "fingerprint": {
       "tag": "div",
@@ -1223,7 +1155,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-61": {
+  "cr-ref-sanam-65": {
     "tpl": "Root/495#3",
     "fingerprint": {
       "tag": "span",
@@ -1239,12 +1171,9 @@
       "textHash": "1505",
       "line": 702
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/496#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-62": {
+  "cr-ref-sanam-66": {
     "tpl": "Root/496#3",
     "fingerprint": {
       "tag": "image-slot",
@@ -1261,12 +1190,9 @@
       "textHash": "1505",
       "line": 703
     },
-    "slots": {
-      ".sgs-media__img": "Root/496#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-63": {
+  "cr-ref-sanam-67": {
     "tpl": "Root/481#4",
     "fingerprint": {
       "tag": "a",
@@ -1281,13 +1207,9 @@
       "textHash": "1505",
       "line": 684
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/485#4",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/495#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-64": {
+  "cr-ref-sanam-68": {
     "tpl": "Root/485#4",
     "fingerprint": {
       "tag": "div",
@@ -1303,13 +1225,9 @@
       "textHash": "1505",
       "line": 690
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/486#4",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/490#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-65": {
+  "cr-ref-sanam-69": {
     "tpl": "Root/486#4",
     "fingerprint": {
       "tag": "div",
@@ -1326,12 +1244,9 @@
       "textHash": "1505",
       "line": 691
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/487#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-66": {
+  "cr-ref-sanam-70": {
     "tpl": "Root/487#4",
     "fingerprint": {
       "tag": "span",
@@ -1351,7 +1266,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-67": {
+  "cr-ref-sanam-71": {
     "tpl": "Root/490#4",
     "fingerprint": {
       "tag": "div",
@@ -1370,7 +1285,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-68": {
+  "cr-ref-sanam-72": {
     "tpl": "Root/491#4",
     "fingerprint": {
       "tag": "div",
@@ -1389,7 +1304,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-69": {
+  "cr-ref-sanam-73": {
     "tpl": "Root/495#4",
     "fingerprint": {
       "tag": "span",
@@ -1405,12 +1320,9 @@
       "textHash": "1505",
       "line": 702
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/496#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-70": {
+  "cr-ref-sanam-74": {
     "tpl": "Root/496#4",
     "fingerprint": {
       "tag": "image-slot",
@@ -1427,12 +1339,9 @@
       "textHash": "1505",
       "line": 703
     },
-    "slots": {
-      ".sgs-media__img": "Root/496#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-71": {
+  "cr-ref-sanam-75": {
     "tpl": "Root/344#2",
     "fingerprint": {
       "tag": "section",
@@ -1444,12 +1353,9 @@
       "textHash": "1505",
       "line": 474
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-72": {
+  "cr-ref-sanam-76": {
     "tpl": "Root/345#2",
     "fingerprint": {
       "tag": "div",
@@ -1462,12 +1368,9 @@
       "textHash": "1505",
       "line": 476
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/515#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-73": {
+  "cr-ref-sanam-77": {
     "tpl": "Root/515#0",
     "fingerprint": {
       "tag": "div",
@@ -1481,13 +1384,9 @@
       "textHash": "1505",
       "line": 741
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/516#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/517#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-74": {
+  "cr-ref-sanam-78": {
     "tpl": "Root/516#0",
     "fingerprint": {
       "tag": "span",
@@ -1504,7 +1403,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-75": {
+  "cr-ref-sanam-79": {
     "tpl": "Root/517#0",
     "fingerprint": {
       "tag": "span",
@@ -1521,7 +1420,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-76": {
+  "cr-ref-sanam-80": {
     "tpl": "Root/519#0",
     "fingerprint": {
       "tag": "div",
@@ -1536,13 +1435,9 @@
       "textHash": "1505",
       "line": 745
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/520#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/522#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-77": {
+  "cr-ref-sanam-81": {
     "tpl": "Root/520#0",
     "fingerprint": {
       "tag": "div",
@@ -1560,7 +1455,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-78": {
+  "cr-ref-sanam-82": {
     "tpl": "Root/522#0",
     "fingerprint": {
       "tag": "h2",
@@ -1578,7 +1473,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-79": {
+  "cr-ref-sanam-83": {
     "tpl": "Root/523#0",
     "fingerprint": {
       "tag": "p",
@@ -1596,7 +1491,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-80": {
+  "cr-ref-sanam-84": {
     "tpl": "Root/524#0",
     "fingerprint": {
       "tag": "div",
@@ -1611,13 +1506,9 @@
       "textHash": "1505",
       "line": 750
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/525#0",
-      ".sgs-button:nth-of-type(2)": "Root/526#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-81": {
+  "cr-ref-sanam-85": {
     "tpl": "Root/525#0",
     "fingerprint": {
       "tag": "a",
@@ -1633,12 +1524,9 @@
       "textHash": "fc5594e5",
       "line": 751
     },
-    "slots": {
-      ".sgs-button__label": "Root/525#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-sanam-82": {
+  "cr-ref-sanam-86": {
     "tpl": "Root/526#0",
     "fingerprint": {
       "tag": "a",
@@ -1653,9 +1541,6 @@
       ],
       "textHash": "d9580830",
       "line": 752
-    },
-    "slots": {
-      ".sgs-button__label": "Root/526#0"
     },
     "draft": "0fe5aee1c396a997"
   }

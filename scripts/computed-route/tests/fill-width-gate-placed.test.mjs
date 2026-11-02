@@ -21,7 +21,7 @@ function skeleton( specs ) {
 }
 const run = ( specs, facts ) => {
 	const { flat, nodes } = skeleton( specs );
-	return { flat, nodes, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-23' } ) };
+	return { flat, nodes, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], date: '2026-10-23' } ) };
 };
 // The wrapper (56) sits under the compact-only sc-if (55); its own button (57) under a tablet-only one (58) inside it; the
 // navigation (45) is elsewhere in the draft, under no sc-if.

@@ -64,8 +64,8 @@ export const MARKS = {
 	'not-a-defect': [ { value: 'not-a-defect' }, { value: 'defect' } ],
 	'missing-feature': [ { shape: 'map:<block>', re: /^map:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' }, { value: 'build' },
 		{ shape: 'gap:<wave>', re: /^gap:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the wave is empty' ) } ],
-	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `custom-css` writes the effect's CSS equivalent into the Custom CSS of the block that draws the element (Bean 2026-11-01, lib/effect-css-equivalent.mjs; proposed for an effect no SGS effect expresses when a CSS equivalent exists), `difference` records the effect as a deliberate difference and writes nothing.
-	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'custom-css' }, { value: 'difference' } ],
+	// A script-driven effect the recogniser (lib/motion-behaviours.mjs, FR-48-77) maps to an SGS effect: `accept` writes it where the skeleton put the element, `block:<slug>` writes it on that block instead, `difference` records the effect as a deliberate difference and writes nothing.
+	effect: [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'difference' } ],
 	'skeleton-block': [ { value: 'accept' }, { shape: 'block:<slug>', re: /^block:(.+)$/, check: ( m ) => ( BLOCK.test( m[ 1 ] ) ? null : `"${ m[ 1 ] }" is not a block name` ) }, { value: 'remove' } ],
 	'inventory-diff': [ { value: 'ours' }, { value: 'theirs' } ],
 	notice: [ { value: 'noted' } ],
@@ -100,7 +100,7 @@ export const HASH_FIELDS = {
 	// What a diff row states, never its `text` or row ID (both name record IDs, which renumber across a re-export).
 	'inventory-diff': [ 'draftId', 'field', 'ours', 'theirs' ],
 	effect: [ 'record', 'effect', 'kind', 'unmapped' ],
-	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action', 'ruleWouldLabel' ], // action only when it removes or absorbs
+	'skeleton-block': [ 'surface', 'key', 'tag', 'words', 'block', 'action' ], // action only when it removes or absorbs
 	notice: [ 'kind', 'file', 'text', 'host', 'reasons' ],
 };
 export const VOLATILE = [ 'rowId', 'confidence', 'score', 'scores', 'why', 'reason', 'location', 'source', 'sources', 'screenshots', 'snippet', 'candidates', 'low', 'ms' ];
@@ -133,19 +133,20 @@ const unique = ( list ) => {
 };
 
 // Why a skeleton or missing-feature row needs Bean's judgement rather than a glance (null: a confident proposal Accept
-// all covers). Skeleton: the clone agent picked it, no block fits, or its confidence is low. Missing feature: it is
+// all covers). Skeleton: the finaliser agent picked it, no block fits, or its confidence is low. Missing feature: it is
 // on the main flow, or it proposes no block (Accept all cannot mark it).
-export const NEEDS_ORDER = [ 'rule-changed', 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
-// The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the standing rule
-// (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
+export const NEEDS_ORDER = [ 'agent-pick', 'unresolved', 'low', 'main-flow', 'no-block' ];
+// The cause that settled a skeleton row, for grouping the review by cause (Spec 48 FR-48-6): the client's built post or
+// the standing rule (lib/skeleton-rules.mjs), with its reason; {} for a row the scoring proposed.
 const causeOf = ( r ) => {
+	if ( r.builtPost ) {
+		return { cause: `built post ${ r.builtPost.postType } ${ r.builtPost.postId }`, causeReason: `the client already built this surface (${ r.builtPost.title || r.builtPost.postType } on ${ r.builtPost.site })` };
+	}
 	return r.rule && 'agent' !== r.finalisedBy ? { cause: `rule ${ r.rule }`, causeReason: r.reason || '' } : {};
 };
-const skeletonNeeds = ( r ) => ( r.ruleWould ? 'rule-changed' : 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
+const skeletonNeeds = ( r ) => ( 'agent' === r.finalisedBy ? 'agent-pick' : 'unresolved' === r.action ? 'unresolved' : r.low ? 'low' : null );
 const proposalText = ( r ) => ( r.block ? `block:${ r.block }` : r.action && 'unresolved' !== r.action ? r.action : 'no block' );
-// A saved client decision the rules now disagree with: what Bean chose, when, and what the rules propose and why.
-export const ruleChangedNote = ( r ) => `you chose ${ r.ruleWould.decision.label } on ${ /on (\d{4}-\d{2}-\d{2})/.exec( r.ruleWould.decision.reason )?.[ 1 ] ?? 'an earlier review' }; the rules now propose ${ r.ruleWould.label } because ${ String( r.ruleWould.reason || 'of a rule change' ).replace( /\|/g, '/' ) }`;
-const skeletonNote = ( r ) => ( r.ruleWould ? ruleChangedNote( r ) : 'agent' === r.finalisedBy
+const skeletonNote = ( r ) => ( 'agent' === r.finalisedBy
 	? `agent pick ${ r.confidence ?? '?' }: ${ r.reason ?? '' }; was ${ proposalText( r.original || {} ) } ${ r.original?.confidence ?? '' }`.trim()
 	: [ r.confidence, r.reason ].filter( ( x ) => null != x && '' !== x ).join( ': ' ) );
 
@@ -201,11 +202,6 @@ export function reviewRows( intake ) {
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
 		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
 		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
-	// A row of the written page map holding a WordPress id that the proposal no longer has (`pageMapLeaving`): listed so
-	// Bean can mark it `drop`, which removes it from the map; Accept all never covers it (a post is never dropped unread).
-	unique( ( intake.pageMapLeaving || [] ).map( ( r ) => ( { ...r, rowId: `page:${ r.postType }:${ r.slug }` } ) ) ).forEach( ( r ) => add( 'page-map', r, r.route ?? r.slug,
-		`(leaves the map) ${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, WordPress id ${ r.id })`, 'drop',
-		'the written page map holds this row, but the draft no longer proposes it: mark drop to remove it from the map', null ) );
 	// FR-48-92: one row per draft catalogue product and one per catalogue gap.
 	( intake.catalogue?.products || [] ).forEach( ( r ) => add( 'catalogue', { ...r, rowId: `catalogue:${ r.draftId }` }, r.draftId, `${ r.name } (${ r.type }, from £${ r.price }${ r.variations ? `, ${ r.variations } variations` : '' }${ r.image ? '' : ', no image' })`, r.address ) );
 	( intake.catalogue?.gaps || [] ).forEach( ( g, i ) => add( 'catalogue', { ...g, rowId: `catalogue-gap:${ g.draftId }:${ g.kind }:${ i + 1 }` }, g.draftId, `gap (${ g.kind }) ${ g.draftId }`, 'recorded, not built', g.detail ) );
@@ -232,10 +228,10 @@ export function reviewRows( intake ) {
 		add( 'missing-feature', r, r.draftId, describe( r ), tracked ?? ( block ? `map:${ block }` : 'no block proposed' ), text( r.why ?? r.reason ), acceptAll, r.mainFlow ? 'main-flow' : acceptAll ? null : 'no-block' );
 	} );
 	// FR-48-77: one row per script-driven effect the recogniser maps to an SGS effect, and one per script effect no SGS effect expresses.
-	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped + ( r.cssEquivalent ? '; its CSS equivalent is written to the Custom CSS of the block that draws it' : '' ) : '', r.unmapped ? ( r.cssEquivalent ? 'custom-css' : 'difference' ) : 'accept' ) );
+	effectRows( intake.inventory?.animations?.records ).forEach( ( r ) => add( 'effect', r, r.draftId, r.text, r.unmapped ? 'difference' : 'accept', r.unmapped ? 'a Spec 38 gap: ' + r.unmapped : '', r.unmapped ? 'difference' : 'accept' ) );
 	const sk = intake.skeletons || {};
 	( Array.isArray( sk ) ? sk : Object.entries( sk ).map( ( [ surface, s ] ) => ( { surface, ...s } ) ) ).forEach( ( s ) => ( s.rows || [] ).forEach( ( r ) => add( 'skeleton-block',
-		{ surface: s.surface, ...r, ruleWouldLabel: r.ruleWould?.label, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
+		{ surface: s.surface, ...r, action: r.action && 'unresolved' !== r.action ? r.action : undefined, rowId: r.rowId || `skeleton:${ s.surface }:${ r.key }` }, r.key,
 		`${ s.surface } ${ r.key } <${ r.tag ?? '?' }>${ r.words ? ` "${ text( r.words ) }"` : '' }`, proposalText( r ), skeletonNote( r ), MARKS[ 'skeleton-block' ][ 0 ].value, skeletonNeeds( r ), causeOf( r ) ) ) );
 	( intake.inventory?.diff || [] ).forEach( ( r ) => add( 'inventory-diff', { ...r, rowId: r.rowId || `inventory:${ r.draftId }` }, r.draftId, describe( r ), 'ours', text( r.why ?? r.reason ) ) );
 	( intake.notices?.prose || [] ).forEach( ( r ) => add( 'notice', { kind: 'prose', file: r.file, text: r.text, rowId: `notice:${ r.rowId }` }, `${ r.file }:${ r.line }`, `${ r.file }:${ r.line } ${ r.text }`, 'noted', r.why || '' ) );
@@ -264,7 +260,7 @@ const splitByNeed = ( rows, changed ) => [
 const SPLIT = new Set( [ 'skeleton-block', 'missing-feature' ] );
 
 // The skeleton rows grouped by cause, never by page: [ [ heading, rows ] ]. First the rows changed since the last export
-// (`changed`, a Set of row IDs: they lost their mark), then the rows still needing Bean's judgement, by what they need (NEEDS_ORDER) and the block proposed; then each standing rule with its
+// (`changed`, a Set of row IDs: they lost their mark), then the rows still needing Bean's judgement, by what they need (NEEDS_ORDER) and the block proposed; then each standing rule and built post with its
 // reason, so one rule's rows are approved together; then the confident scored proposals.
 export function byCause( rows, changed = new Set() ) {
 	const groups = new Map();
@@ -309,7 +305,7 @@ const manifestHash = ( m ) => sha( canonical( m?.files || {} ) ).slice( 0, 16 );
 // The Markdown of review.md. `changed` is the rowIds changed since the previous export (by default the review rows
 // carryOver set `changed: true` on); they are listed first in their section (and surface) with a **changed** marker.
 // The skeleton section is grouped by cause (byCause: the rows needing judgement by need and proposed block, then each
-// standing rule with its reason, then the confident proposals); in the missing-feature section the rows
+// standing rule or built post with its reason, then the confident proposals); in the missing-feature section the rows
 // needing judgement come next (NEEDS_ORDER), then the confident rows under a `### Confident proposals (Accept all
 // covers these)` sub-heading; the header states how
 // many rows need reading. Marks already in intake.review (carried or applied before) show in the Mark cell.

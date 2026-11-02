@@ -17,10 +17,12 @@ import { loadAjv, schemaProblems } from './handoff.mjs';
 import { pageMapProblems } from './intake-pagemap.mjs';
 import { renderReview, applyReview, carryOver, reviewRows, isoDay, ROW_TYPES } from './intake-review.mjs';
 import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from './intake-review-carry.mjs';
-import { carryIds, lostIds, leavingRows } from './intake-pagemap-regen.mjs';
+import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
-import { sourcesOf, assertCurrent } from './freshness.mjs';
+import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
+import { openDb } from './db.mjs';
+import { sourcesOf } from './freshness.mjs';
 import { writeCatalogue } from './intake-catalogue-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -158,8 +160,7 @@ export function buildRecord( { client, takenOn, manifest, result, sources = null
 		draftDefects: p[ 'draft defects' ]?.draftDefects ?? [],
 		notDefects: p[ 'draft defects' ]?.notDefects ?? [],
 		missingFeatures: p[ 'missing features' ]?.missingFeatures ?? [],
-		skeletons: p.proposals?.skeletons ?? p.skeletons?.skeletons ?? {},
-		renderParts: p.skeletons?.renderParts ?? {},
+		skeletons: p.skeletons?.skeletons ?? {},
 		notices: { prose: p.notices?.prose ?? [], blockedHosts: mergeBlocked( result.blocked ?? Object.values( p ).flatMap( ( x ) => x?.blocked ?? [] ) ) },
 		gaps,
 		review: [],
@@ -173,31 +174,6 @@ export const sectionCounts = ( intake ) => Object.fromEntries( ROW_TYPES.map( ( 
 // Every problem that stops the record being written: the intake schema and the page-map rows.
 export function recordProblems( record, ajv = loadAjv() ) {
 	return [ ...schemaProblems( ajv, INTAKE_SCHEMA, record ).map( ( p ) => `intake.json ${ p }` ), ...pageMapProblems( record.pageMap, ajv ).map( ( p ) => `page map ${ p }` ) ];
-}
-
-// The surfaces a `--surfaces` run does not read again: the saved intake.json's skeleton entries (and render parts) other than
-// the named ones, so the run's record still holds every surface. With no saved intake.json (a first run) there is nothing to keep. Throws, naming the cause, when a kept surface's saved inventory is missing or no longer describes the export (a full run is
-// needed then: a run that dropped those surfaces would lose their rows and marks). `hashed` is sourcesOf( the export ).
-export function keptSurfaces( at, want, hashed ) {
-	if ( ! fs.existsSync( at.intake ) ) {
-		return { skeletons: {}, renderParts: {} };
-	}
-	const saved = readJson( at.intake );
-	const named = ( slug, x ) => want.includes( slug ) || want.includes( x?.id );
-	const skeletons = Object.fromEntries( Object.entries( saved.skeletons || {} ).filter( ( [ slug, x ] ) => ! named( slug, x ) ) );
-	const stale = [];
-	for ( const slug of Object.keys( skeletons ).filter( ( k ) => ! skeletons[ k ].gap && null != skeletons[ k ].inventory ) ) {
-		const file = path.join( at.inventories, `${ slug }.json` );
-		try {
-			assertCurrent( JSON.parse( fs.readFileSync( file, 'utf8' ) ), at.folder, { label: `inventory ${ slug }`, requireSources: true, current: hashed } );
-		} catch ( e ) {
-			stale.push( `${ slug } (${ e.code === 'ENOENT' ? 'no saved inventory' : e.message })` );
-		}
-	}
-	if ( stale.length ) {
-		throw new Error( `the saved skeletons of ${ stale.length } other surface(s) are missing or stale, so only a full run (without --surfaces) keeps them: ${ stale.slice( 0, 5 ).join( '; ' ) }${ stale.length > 5 ? '; …' : '' }` );
-	}
-	return { skeletons, renderParts: saved.renderParts || {} };
 }
 
 // Stage 1. Returns the exit code; every line goes to `log`.
@@ -222,18 +198,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	// The inputs are hashed before the worker reads any of them, so a draft edited during the run leaves a stale record.
 	const hashed = sourcesOf( at.folder );
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-intake-' ) );
-	let kept = { skeletons: {}, renderParts: {} };
-	if ( o.surfaces ) {
-		try {
-			kept = keptSurfaces( at, o.surfaces, hashed );
-		} catch ( e ) {
-			say( `--surfaces refused: ${ e.message }` );
-			fs.rmSync( work, { recursive: true, force: true } );
-			return 1;
-		}
-		say( `--surfaces ${ o.surfaces.join( ',' ) }: those surfaces are read again; the other ${ Object.keys( kept.skeletons ).length } keep their saved skeletons` );
-	}
-	const job = { repo: o.repo, client: o.client, folder: at.folder, sources: hashed, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, keptSkeletons: kept.skeletons, keptRenderParts: kept.renderParts, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
+	const job = { repo: o.repo, client: o.client, folder: at.folder, sources: hashed, entry: m.entry_drafts?.[ 0 ], harPath, record: o.record, widths: o.widths, surfaces: o.surfaces, inventoriesDir: at.inventories, factsFile: at.facts, runtimeSha: m.runtime_sha256 ?? 'none', progressFile: path.join( work, 'progress.log' ), outFile: path.join( work, 'result.json' ) };
 	fs.mkdirSync( at.inventories, { recursive: true } );
 	fs.writeFileSync( path.join( work, 'job.json' ), JSON.stringify( job ) );
 	fs.writeFileSync( job.progressFile, '' );
@@ -252,7 +217,20 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	stop();
 	fs.rmSync( work, { recursive: true, force: true } );
 	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result, sources: hashed } );
-	const { attempts, record } = built;
+	const { attempts } = built;
+	let { record } = built;
+	// The skeleton rows proposed once more from the inventories this run saved, now the motion inventory is known (a
+	// marquee is recognised by its recorded loop): the rows `--rerun-skeletons` gives, so both paths agree.
+	const fw = openDb();
+	try {
+		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo } ).intake;
+	} catch ( e ) {
+		const error = `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept, so motion-dependent rules (a marquee) did not apply`;
+		say( error );
+		record = { ...record, gaps: [ ...( record.gaps || [] ), { construct: 'skeleton-refresh', draftId: o.client, error, stage: 'skeletons' } ] };
+	} finally {
+		fw.close();
+	}
 	let previous = null;
 	if ( fs.existsSync( at.intake ) ) {
 		try {
@@ -280,10 +258,6 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 		return 1;
 	}
 	record.catalogue = cat.summary;
-	// The written map's rows holding a WordPress id this proposal no longer has: listed in the review for a `drop` mark.
-	const written = fs.existsSync( at.pageMap ) ? readJson( at.pageMap ) : [];
-	const leaving = Array.isArray( written ) ? leavingRows( written, carryIds( record.pageMap, written ) ) : [];
-	leaving.length && ( record.pageMapLeaving = leaving );
 	const carried = carryOver( previous, record );
 	record.review = carried.review;
 	carried.realigned.length && say( `review: ${ carried.realigned.length } mark(s) followed their element to a renumbered row: ${ carried.realigned.slice( 0, 5 ).join( '; ' ) }${ carried.realigned.length > 5 ? '; ...' : '' }` );
@@ -301,8 +275,8 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	mapKept && say( `${ path.relative( o.repo, at.pageMap ) } is confirmed, so this run leaves it as it is (the new proposal is in intake.json; --apply-review replaces it)` );
 	const counts = sectionCounts( record );
 	const p = result.parts;
-	const sk = p.proposals?.collapse?.skeletons ?? [ 0, 0 ];
-	say( `collapsed: skeleton rows ${ sk[ 0 ] } -> ${ p.proposals?.collapse?.skeletonsWithinSurfaces ?? 0 } within surfaces -> ${ sk[ 1 ] } across surfaces, flag rows ${ ( p.flags?.collapse?.flags ?? [ 0, 0 ] ).join( ' -> ' ) }, missing-feature rows ${ ( p[ 'missing features' ]?.collapse?.missing ?? [ 0, 0 ] ).join( ' -> ' ) }` );
+	const sk = p.skeletons?.collapse?.skeletons ?? [ 0, 0 ];
+	say( `collapsed: skeleton rows ${ sk[ 0 ] } -> ${ p.skeletons?.collapse?.skeletonsWithinSurfaces ?? 0 } within surfaces -> ${ sk[ 1 ] } across surfaces, flag rows ${ ( p.flags?.collapse?.flags ?? [ 0, 0 ] ).join( ' -> ' ) }, missing-feature rows ${ ( p[ 'missing features' ]?.collapse?.missing ?? [ 0, 0 ] ).join( ' -> ' ) }` );
 	say( `review rows: ${ Object.entries( counts ).map( ( [ t, n ] ) => `${ t } ${ n }` ).join( ', ' ) }; carried marks ${ carried.review.filter( ( r ) => r.mark ).length }, changed ${ carried.changed.length }` );
 	say( `${ o.client }: wrote ${ path.relative( o.repo, at.intake ) }, review.md (${ Object.values( counts ).reduce( ( a, b ) => a + b, 0 ) } rows) and ${ path.relative( o.repo, at.pageMap ) } in ${ secs( Date.now() - t0 ) }; census ${ p.census?.census?.pass ? 'pass' : 'FAIL' }; ${ record.gaps.length } gap rows; ${ record.notices.blockedHosts.length } blocked requests; proxy attempts ${ attempts }` );
 	return 0;
@@ -330,20 +304,6 @@ export function confirmedPageMap( intake ) {
 // --apply-review. Returns the exit code. Bean's confirmed skeleton choices (intake-run-finalise.mjs::reviewDecisions)
 // go into sites/<client>/build/skeleton/decisions.json; `knownBlock` (default: the framework DB, read-only) must know
 // every block they name, or nothing is written.
-// The words of an element as the surface's saved inventory recorded them (build/intake/inventories/<surface>.json), read
-// once per surface; undefined when the inventory or the element is missing.
-export function inventoryWords( dir ) {
-	const bySurface = new Map();
-	return ( surface, key ) => {
-		if ( ! bySurface.has( surface ) ) {
-			const file = path.join( dir, 'inventories', `${ surface }.json` );
-			const els = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).elements || [] : [];
-			bySurface.set( surface, new Map( els.map( ( e ) => [ e.key, e.words ?? '' ] ) ) );
-		}
-		return bySurface.get( surface ).get( key );
-	};
-}
-
 export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${ l }\n` ), today = isoDay(), knownBlock = null } = {} ) {
 	const at = pathsFor( o.repo, o.client );
 	const say = ( l ) => log( `[intake --apply-review] ${ l }` );
@@ -389,14 +349,12 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const ajv = loadAjv();
 	const problems = [ ...recordProblems( res.intake, ajv ), ...pageMapProblems( pageMap, ajv ).map( ( p ) => `confirmed page map ${ p }` ),
 		...lostIds( Array.isArray( current ) ? current : [], pageMap, marks ).map( ( g ) => `confirmed page map loses the WordPress id of ${ g }; mark that row drop to remove it` ) ];
-	const decisions = reviewDecisions( res.intake, today, inventoryWords( at.dir ) );
-	// A block Bean typed is checked against the framework database; an accepted proposal is the writer's own block, which may be
-	// one the rules place outside it (WooCommerce's product collection and filters, Spec 48 FR-48-83).
+	const decisions = reviewDecisions( res.intake, today );
 	if ( decisions.length ) {
 		const db = knownBlock ? null : dbKnownBlock();
 		try {
 			const known = knownBlock || db.known;
-			decisions.filter( ( d ) => d.typed && d.choice.block && ! known( d.choice.block ) ).forEach( ( d ) => problems.push( `skeleton ${ d.surface } ${ d.element.key }: ${ d.choice.block } is not a block in the framework database` ) );
+			decisions.filter( ( d ) => d.choice.block && ! known( d.choice.block ) ).forEach( ( d ) => problems.push( `skeleton ${ d.surface } ${ d.element.key }: ${ d.choice.block } is not a block in the framework database` ) );
 		} finally {
 			db?.close();
 		}
@@ -410,6 +368,6 @@ export function applyIntakeReview( o, { log = ( l ) => process.stderr.write( `${
 	const saved = recordReviewDecisions( decisions, file );
 	writeConfirmedPageMap( at, `${ JSON.stringify( pageMap, null, 2 ) }\n`, today );
 	const dropped = res.intake.pageMap.length - pageMap.length;
-	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks, removals and accepted proposals)` );
+	say( `${ o.client }: ${ res.intake.review.length } rows marked (dated ${ today }); page-map.json confirmed with ${ pageMap.length } rows${ dropped ? ` (${ dropped } dropped)` : '' }; ${ saved } skeleton choices saved to ${ path.relative( o.repo, file ) } (block:<slug> marks and accepted finaliser picks)` );
 	return 0;
 }

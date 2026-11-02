@@ -24,7 +24,6 @@ import path from 'node:path';
 import { SaxesParser } from 'saxes';
 import { REPO } from './capabilities.mjs';
 import { brandBySlug, brandOwnsAddress } from './brand-registry.mjs';
-import { draftPath } from './fill-media.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -218,33 +217,6 @@ function iconPosition( { svg, schema, attributes, out } ) {
 	}
 }
 
-// The icon a link or button draws as an <img> beside its words (an `<img src="assets/mark.svg">`, no inline <svg>): the control
-// holds its icon as a Lucide name or inline SVG, so a draft SVG file is read from the draft folder and written as the inline
-// mark (the same decisions as an inline <svg>: lib/fill-icon.mjs::iconDecisions); a raster image or a file the folder lacks is
-// a named UNMAPPED row. img: the element's image read ({ tag, src }); words: the control's own words (an <img> alone is a
-// picture, not a label icon); folder: the draft folder; origin: the draft's served origin. Returns iconDecisions' shape.
-export function imageIconDecisions( { img, words = '', schema, attributes = {}, folder = null, origin = '', href = '' } ) {
-	const out = { writes: [], unmapped: [], notes: [] };
-	if ( ! img || ! String( words ).trim() || ! iconSettings( schema ).length || [ 'img', 'background' ].includes( img.tag ) ) {
-		return out;
-	}
-	const gap = ( reason ) => {
-		out.unmapped.push( { property: 'icon image', value: img.src, slot: '', reason } );
-		return out;
-	};
-	const rel = draftPath( img.src, origin );
-	if ( ! rel || ! /\.svg$/i.test( rel ) ) {
-		return gap( `the control draws its icon as the image "${ img.src }", and the block holds an icon as a Lucide name or an inline SVG: only an SVG file of the draft can be written` );
-	}
-	const file = folder ? path.resolve( folder, rel ) : null;
-	if ( ! file || ! file.startsWith( path.resolve( folder ) + path.sep ) || ! fs.existsSync( file ) ) {
-		return gap( `the icon image "${ rel }" is no file of the draft folder, so its drawing cannot be written` );
-	}
-	const done = iconDecisions( { svg: { markup: fs.readFileSync( file, 'utf8' ).replace( /^﻿/, '' ).replace( /<\?xml[^>]*\?>/, '' ).trim() }, schema, attributes, href } );
-	done.notes.push( `the icon is the draft file ${ rel }, read from the draft folder` );
-	return done;
-}
-
 // The brand a skeleton-made Site Info row stands for (its brandName), or null for any other node.
 const boundBrand = ( attributes ) => ( attributes.brandName && Object.values( attributes.metadata?.bindings || {} ).some( ( b ) => 'sgs/site-info' === b?.source ) ? String( attributes.brandName ) : null );
 
@@ -274,12 +246,10 @@ export const ICON_SETTINGS = [ 'iconSource', 'brandName', 'iconName', 'iconSvg',
 export const iconSettings = ( schema ) => ( schema && 'iconSvg' in schema ? ICON_SETTINGS.filter( ( a ) => a in schema ) : [] );
 
 // svg: the element's read ({ markup, position }) or null. schema: the block's settings. attributes: what the node already holds.
-// href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand. requireSvg
-// false reads a mark for settings that hold no `iconSvg` (a list item's iconSource and iconName, lib/fill-list-marker.mjs):
-// a mark that is neither a brand nor a Lucide icon is then a named row.
-export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '', requireSvg = true } ) {
+// href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand.
+export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '' } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
-	if ( ! svg?.markup || ! ( requireSvg ? iconSettings( schema ).length : ICON_SETTINGS.some( ( a ) => a in ( schema || {} ) ) ) ) {
+	if ( ! svg?.markup || ! iconSettings( schema ).length ) {
 		return out;
 	}
 	const tree = parseTree( svg.markup );
@@ -325,9 +295,6 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null, h
 	} else if ( lucide ) {
 		put( 'iconSource', 'lucide' );
 		put( 'iconName', lucide );
-	} else if ( ! ( 'iconSvg' in schema ) ) {
-		// Settings with no place for the client's own markup (a list item's iconSource and iconName) take no custom source.
-		out.unmapped.push( { property: 'svg', value: '<svg>', slot: '', reason: 'the draft mark is neither a registry brand nor a Lucide icon, and the settings hold no iconSvg for the client markup' } );
 	} else {
 		put( 'iconSource', 'custom' );
 		put( 'iconSvg', render( kept ) );

@@ -6,7 +6,7 @@ import path from 'path';
 import { DEFAULT_PROPS, PSEUDO_PROPS, resolveFinder, collectPair } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
-import { openDevtools, settleAnimations, triggerArmed, declaredValues } from '../../parity/lib/devtools.mjs';
+import { openDevtools, settleAnimations, declaredValues } from '../../parity/lib/devtools.mjs';
 import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { SCOPE_ATTR, scopeFinder, scopeSelector, finderKind } from './fill-skeleton.mjs';
 import { contentType } from './draft.mjs';
@@ -15,11 +15,8 @@ import { readExtras, missingExtras, unreadDeclared } from './fill-declared.mjs';
 import { readStates } from './fill-state-read.mjs';
 import { readLogicStates } from './fill-logic-state.mjs';
 import { readCurrentItems } from './fill-current-item.mjs';
-import { currentAttrJobs, readCurrentAttr } from './fill-current-attr.mjs';
 import { collectMany } from './fill-read-collect.mjs';
 import { openState } from './fill-open.mjs';
-import { PAINT_GROUPS, PAINT_ATTR, paintHoldersInPage, applyPaintHolders } from './fill-paint-holder.mjs';
-import { scrolledProbe, SCROLL_TO } from './fill-read-scrolled.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -85,16 +82,13 @@ export function emptyReadError( width, count, aborted ) {
 // exact draft element page-wide (parity/lib/collect.mjs resolves it, `within` only filters), so it is never scoped: a part
 // the block draws from outside its root's element (an absorbed drawer opener, the nav's burger) or a root the draft does
 // not draw at that width would otherwise never be found.
-export function jobsFor( nodes, { surface = false } = {} ) {
+export function jobsFor( nodes ) {
 	return nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( {
 		id: t.id,
 		finder: t.scoped && 'tpl' !== finderKind( t.finder ) ? scopeFinder( t.finder, scopeSelector( n.index ) ) : t.finder,
 		mark: t.scoped ? null : n.index,
 		owner: n.index,
 		root: '' === ( t.slot ?? '' ),
-		// The root of a surface that exists only while a draft state holds: its panel's paint may sit on a wrapper around it
-		// (lib/fill-paint-holder.mjs).
-		surfaceRoot: surface && null === n.parent && '' === ( t.slot ?? '' ),
 		// A node with child nodes reads its own text styles at every target, its root and its slots alike (a row's content
 		// band): a text descendant there is another node's element, never this one's look.
 		own: n.children.length > 0,
@@ -152,7 +146,7 @@ export function applyFlexItems( widths, jobs, items ) {
 
 // Opens one page on the draft at a width (a phone at 375, as the walker reads it), runs the draft's open step (a click
 // on the text of a navigation link in a single-page draft), applies the surface's state opener when it has one
-// (lib/fill-open.mjs::openState: `opened` is its verdict, null without one) waits for its animations to finish and plays every armed scroll entrance (`triggerArmed`).
+// (lib/fill-open.mjs::openState: `opened` is its verdict, null without one) and waits for its animations to finish.
 async function openPage( browser, devices, { url, open, opener = null, width, origin, external, mirror, aborted } ) {
 	const phone = width < 500 ? devices[ 'iPhone 13' ] : {};
 	const ctx = await browser.newContext( { ...phone, viewport: { width, height: width < 500 ? 812 : 900 } } );
@@ -167,30 +161,7 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
 	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );
-	// A scroll entrance sits at its start pose until its element nears the viewport, which the settle above never waits
-	// for: the page is swept top to bottom first (a reveal the draft's own script drives, an IntersectionObserver writing
-	// opacity and transform inline, is no animation the browser lists), then each armed animation is scrolled into view
-	// (the scroll is put back), so every read is the element AT REST, never the before-reveal state a motion owns
-	// (Spec 48 R-47-4).
-	await playEntrances( page );
 	return { ctx, page, h, opened };
-}
-
-// Scrolls the page through its full height a viewport-step at a time so every scroll-triggered reveal fires, whatever
-// drives it, puts the scroll back, lets the transitions finish, then plays any entrance still armed (`triggerArmed`).
-export async function playEntrances( page, { stepMs = 120 } = {} ) {
-	const y = await page.evaluate( async ( wait ) => {
-		const start = window.scrollY;
-		const step = Math.max( 200, Math.round( window.innerHeight * 0.6 ) );
-		for ( let at = 0; at < document.documentElement.scrollHeight; at += step ) {
-			window.scrollTo( { top: at, behavior: 'instant' } );
-			await new Promise( ( done ) => setTimeout( done, wait ) );
-		}
-		return start;
-	}, stepMs );
-	await page.evaluate( ( t ) => window.scrollTo( { top: t, behavior: 'instant' } ), y );
-	await settleAnimations( page, { floor: 900 } );
-	return triggerArmed( page );
 }
 
 // What every read of the draft returns:
@@ -200,7 +171,6 @@ export async function playEntrances( page, { stepMs = 120 } = {} ) {
 //                         holds no value for (lib/fill-declared.mjs::unreadDeclared) are read rendered into
 //                         widths[w][targetId].styles too.
 //   sweep[targetId][prop] [{ width, value }] every 16px from 320 to 1920 (lengths and keywords as read).
-//   scrolled[w]           the `scrolledIds` targets after the window has scrolled, at READ_WIDTHS (lib/fill-read-scrolled.mjs::scrolledProbe)
 //   states[w]             each target's state looks at READ_WIDTHS (lib/fill-state-read.mjs::readStates), when `states`
 //                         (the state vocabulary, lib/db.mjs::statesVocabulary) is given; with `logicRows` (the state map's
 //                         `scIf` rows) it also holds the looks behind each set-state sc-if (lib/fill-logic-state.mjs::readLogicStates)
@@ -213,17 +183,15 @@ export async function playEntrances( page, { stepMs = 120 } = {} ) {
 //                         so nothing about that target's declared values there is judged (lib/fill-report.mjs::readFailureRows).
 // nodes: lib/fill-skeleton.mjs::skeletonNodes. open: the regex source of the text to click first. external: allow the
 // draft to load anything beyond its own origin (off by default, so a read is the same offline).
-export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], currentAttr = { keys: [], pages: [], rootComponent: null }, opener = null, scrolledIds = [], log = () => {} } ) {
+export async function readDraft( { url, nodes, open = null, headless = true, sweep = true, external = false, mirror = {}, states = [], logicRows = [], currentGroups = [], opener = null, log = () => {} } ) {
 	const { chromium, devices } = await loadChromium();
 	const origin = new URL( url ).origin;
-	const jobs = jobsFor( nodes, { surface: !! opener?.state } );
+	const jobs = jobsFor( nodes );
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
-	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, scrolled: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
+	const result = { origin, widths: {}, declared: {}, sweep: {}, states: {}, failures: [], ...( opener ? { opener: { widths: {} } } : {} ) };
 	const aborted = new Set();
 	const emptyWidths = [];
 	const flexItems = {};
-	const paintHolders = {};
-	const paintDeclared = {};
 	try {
 		for ( const width of [ ...new Set( [ ...READ_WIDTHS, ...FLUID_WIDTHS ] ) ] ) {
 			const full = READ_WIDTHS.includes( width );
@@ -253,7 +221,6 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 			}
 			if ( full ) {
 				flexItems[ width ] = await page.evaluate( flexItemsInPage, [ jobs, RESOLVE ] );
-				paintHolders[ width ] = await page.evaluate( paintHoldersInPage, [ jobs, RESOLVE, PAINT_GROUPS, PAINT_ATTR ] );
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
 				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
@@ -271,14 +238,6 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 						result.failures.push( { id: j.id, owner: j.owner, width, read: 'declared', reason } );
 					}
 					result.declared[ width ][ j.id ] = own;
-				}
-				// The painting wrapper of a surface's root: the declared values it states, read beside the root's own.
-				paintDeclared[ width ] = {};
-				for ( const [ id, h ] of Object.entries( paintHolders[ width ] ) ) {
-					paintDeclared[ width ][ id ] = {};
-					for ( const [ group, selector ] of Object.entries( h.stamps ) ) {
-						paintDeclared[ width ][ id ][ group ] = await declaredValues( cdp, selector, RESOLVE, null ).catch( () => null );
-					}
 				}
 				// A wrapper that only holds an svg or img the draft sizes takes that size as its declared size.
 				for ( const j of found ) {
@@ -313,25 +272,8 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 						}
 						result.states[ width ].logicGaps = [ ...( result.states[ width ].logicGaps || [] ), ...current.gaps ];
 					}
-					// A list item whose current value the draft binds as an attribute (lib/fill-current-attr.mjs), read on the draft's other pages.
-					const attrJobs = currentAttr.keys.length ? currentAttrJobs( currentAttr.keys, jobs.filter( ( j ) => ! result.widths[ width ][ j.id ]?.missing ), currentAttr.rootComponent ) : [];
-					if ( attrJobs.length ) {
-						const attr = await readCurrentAttr( {
-							jobs: attrJobs, pages: currentAttr.pages.map( ( r ) => new URL( r, url ).href ).filter( ( u ) => u !== url ), resolveSrc: RESOLVE, log,
-							openSibling: async ( u ) => {
-								const s = await openPage( browser, devices, { url: u, open: null, opener, width, origin, external, mirror, aborted } );
-								return { page: s.page, cdp: await openDevtools( s.page ), close: () => s.ctx.close() };
-							},
-						} );
-						for ( const [ id, looks ] of Object.entries( attr.looks ) ) {
-							( result.states[ width ].looks[ id ] ??= [] ).push( ...looks );
-						}
-						result.states[ width ].logicGaps = [ ...( result.states[ width ].logicGaps || [] ), ...attr.gaps ];
-					}
 				}
 			}
-			// The header roots after the window has scrolled (lib/fill-read-scrolled.mjs), last so the scroll disturbs no other read.
-			full && scrolledIds.length && ( result.scrolled[ width ] = await page.evaluate( scrolledProbe, [ jobs.filter( ( j ) => scrolledIds.includes( j.id ) && ! result.widths[ width ][ j.id ]?.missing ), RESOLVE, SCROLL_TO ] ) );
 			log( `read ${ width }px: ${ Object.values( result.widths[ width ] ).filter( ( s ) => ! s.missing ).length } of ${ jobs.length } targets` );
 			await ctx.close();
 		}
@@ -356,7 +298,6 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 		// Last, so no later read of the element's own value replaces the flex item's.
 		for ( const width of READ_WIDTHS ) {
 			applyFlexItems( result.widths[ width ], jobs, flexItems[ width ] );
-			applyPaintHolders( result.widths[ width ], result.declared[ width ], paintHolders[ width ], paintDeclared[ width ] );
 		}
 		if ( sweep && ! ( opener && ! opener.state ) ) {
 			const { ctx, page } = await openPage( browser, devices, { url, open, opener, width: 1440, origin, external, mirror } );

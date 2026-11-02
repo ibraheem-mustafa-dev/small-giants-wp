@@ -21,7 +21,7 @@
 		},
 		"innerBlocks": [
 			{
-				"name": "sgs/label",
+				"name": "sgs/text",
 				"attributes": {
 					"text": "your cookie, your way"
 				},
@@ -46,8 +46,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Build your Zookie",
-					"level": "h2"
+					"content": "Build your Zookie"
 				},
 				"draftRef": {
 					"tpl": "Root/68#0"
@@ -90,15 +89,7 @@
 				},
 				"innerBlocks": []
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/67#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/68#0"
-			}
-		}
+		]
 	},
 	{
 		"name": "sgs/choice-flow",
@@ -130,12 +121,10 @@
 						"name": "sgs/choice-flow-question",
 						"attributes": {
 							"question": "Base",
-							"productAttribute": "pa_base",
 							"options": [
 								{
 									"label": "Classic oat",
-									"value": "classic-oat",
-									"isDefault": true
+									"value": "classic-oat"
 								},
 								{
 									"label": "Vegan oat",
@@ -177,12 +166,10 @@
 						"name": "sgs/choice-flow-question",
 						"attributes": {
 							"question": "Chips",
-							"productAttribute": "pa_chip",
 							"options": [
 								{
 									"label": "Milk choc",
-									"value": "milk-choc",
-									"isDefault": true
+									"value": "milk-choc"
 								},
 								{
 									"label": "White choc",
@@ -233,53 +220,7 @@
 						"attributes": {
 							"question": "Flavours",
 							"intro": "Pick up to 3 and we’ll split your box between them",
-							"productAttribute": "pa_flav",
-							"options": [
-								{
-									"label": "Vanilla",
-									"value": "vanilla"
-								},
-								{
-									"label": "Chocolate",
-									"value": "chocolate"
-								},
-								{
-									"label": "Strawberry",
-									"value": "strawberry"
-								},
-								{
-									"label": "Mango",
-									"value": "mango"
-								},
-								{
-									"label": "Banana",
-									"value": "banana"
-								},
-								{
-									"label": "Coffee",
-									"value": "coffee"
-								},
-								{
-									"label": "Mint",
-									"value": "mint"
-								},
-								{
-									"label": "Caramel",
-									"value": "caramel"
-								},
-								{
-									"label": "Coconut",
-									"value": "coconut"
-								},
-								{
-									"label": "Pistachio",
-									"value": "pistachio"
-								},
-								{
-									"label": "Honey",
-									"value": "honey"
-								}
-							]
+							"options": []
 						},
 						"innerBlocks": [],
 						"draftRef": {
@@ -303,18 +244,6 @@
 							},
 							".sgs-choice-flow-question__intro": {
 								"tpl": "Root/84#0"
-							},
-							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
-								"tpl": "Root/88#0"
-							},
-							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(2) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
-								"tpl": "Root/88#1"
-							},
-							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(3) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
-								"tpl": "Root/88#2"
-							},
-							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(4) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
-								"tpl": "Root/88#3"
 							}
 						}
 					}
@@ -330,7 +259,6 @@
 						"name": "sgs/choice-flow-question",
 						"attributes": {
 							"question": "How many",
-							"productAttribute": "pa_pack-size",
 							"options": [
 								{
 									"label": "8",
@@ -338,14 +266,11 @@
 								},
 								{
 									"label": "20",
-									"value": "20",
-									"badge": "Most popular",
-									"isDefault": true
+									"value": "20"
 								},
 								{
 									"label": "40",
-									"value": "40",
-									"badge": "Best value"
+									"value": "40"
 								}
 							]
 						},
@@ -485,12 +410,14 @@
 		"draftSlots": {
 			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
 				"tpl": "Root/123#0"
-			},
-			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note > .sgs-choice-flow__summary-note-text": {
-				"tpl": "Root/123#0"
 			}
 		},
 		"handover": [
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "question 4 \"How many\": the option prices (£9.50, £21.50, £38.00) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
+			},
 			{
 				"owner": "product-data",
 				"kind": "text",

@@ -9,12 +9,10 @@ import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
-import { iconDecisions, imageIconDecisions } from './fill-icon.mjs';
-import { listMarkerDecisions } from './fill-list-marker.mjs';
+import { iconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
-import { fillBand, bandSetting } from './fill-band.mjs';
-import { fillVisibleCount } from './fill-visible-count.mjs';
+import { fillBand } from './fill-band.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs';
@@ -69,10 +67,6 @@ function fillContent( st, rec, ref, cal ) {
 		st.out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		st.out.images.push( ...( r.checks || [] ).map( ( c ) => ( { node: ref, index: rec.index, block: rec.name, slot: '', draftId: null, ...c } ) ) );
 		local.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
-		// What a text setting cannot hold of the draft's inline markup (lib/inline-text.mjs) is the handover row it names.
-		for ( const h of r.textHandover || [] ) {
-			st.out.handover.push( handoverEntry( { owner: h.owner, kind: h.kind, node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.words, width: at }, reason: h.detail } ) );
-		}
 		// A link setting bound to Site Info: the draft address stays in the setting as the fallback, and Site Info is handed it.
 		for ( const h of r.handover || [] ) {
 			st.out.handover.push( handoverEntry( { owner: 'site-info', kind: 'link', node: ref, block: rec.name, slot: h.slot, evidence: { key: h.attr, draft: h.address, width: at, siteInfoKey: h.siteInfoKey }, reason: `${ h.attr } is bound to Site Info "${ h.siteInfoKey }"; the draft links to ${ h.address }, kept as the fallback. Fill Site Info "${ h.siteInfoKey }" from it` } ) );
@@ -84,29 +78,15 @@ function fillContent( st, rec, ref, cal ) {
 		st.out.notes.push( `${ rec.name }: calibration has no ${ absent.join( ', ' ) } key, so those were not judged for this block (recalibrate it to read them)` );
 	}
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
-	// The draft element of a slot written as the markup its setting holds (st.inline: lib/inline-writer.mjs::inlineByKey).
-	const richAt = ( p, attr ) => {
-		const tpl = rec.targets.find( ( t ) => LOOSE( t.slot ) === LOOSE( p ) )?.finder?.tpl;
-		return tpl && st.inline ? st.inline( tpl, rec.name, attr ) : null;
-	};
-	const glyphs = new Set( st.db ? st.db.prepare( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = 'glyph'" ).all( rec.name ).map( ( r ) => r.attr_name ) : [] );
-	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length, rich: richAt, glyph: ( a ) => glyphs.has( a ) } ) );
+	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
 	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
-	// The picture the node's own element paints as its background, when it holds no <img> (snap.bgImg).
-	const image = nestedImage( atDesktop ) ?? atDesktop[ '' ]?.bgImg ?? null;
+	const image = nestedImage( atDesktop );
 	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
 	const media = mediaDecisions( { slots: imageSlots( st.db, rec.name, blockSchema( rec.name ) ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
 	take( media );
-	// A background photo the block's picture setting now holds: the element's `background-image` row is settled by it.
-	if ( 'background' === image?.tag && media.checks.length ) {
-		( st.pictures ??= new WeakMap() ).set( node, media.checks[ 0 ] );
-	}
-	take( imageIconDecisions( { img: atDesktop[ '' ]?.svg ? null : image, words: atDesktop[ '' ]?.words, schema: blockSchema( rec.name ), attributes: node.attributes || {}, folder: st.draftFolder ?? null, origin: st.origin, href: hrefs[ '' ] ?? '' } ) );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
-	// Each list item's own marker, read at the item's paired marker part, and the list's marker type (lib/fill-list-marker.mjs).
-	st.db && take( listMarkerDecisions( { db: st.db, block: rec.name, cal, attributes: node.attributes || {}, reads: atDesktop } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
 		take( mapDecisions( { schema: blockSchema( rec.name ), attributes: node.attributes || {}, embeds } ) );
@@ -203,14 +183,12 @@ export function fillTree( opts ) {
 		if ( hasRow( st.nodes[ rec.index ].node ) ) {
 			liftRow( st, rec, ref, cal, { fillElement, snapsOf } );
 		}
-		// A track's visible-item count (a slider's cards side by side), read from the draft's render (lib/fill-visible-count.mjs).
-		fillVisibleCount( st, rec, ref, cal );
 		// The content band no finder reads: its width from the draft's render (lib/fill-band.mjs).
 		const band = fillBand( st, rec, ref, cal );
 		// What this node's calibration knows and nothing read or judged, so no setting is skipped silently.
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
 		const judged = new Set( [ ...st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ), ...( band ? [ band.attr ] : [] ) ] );
-		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: judged, band: bandSetting( st.db, rec.name, cal ) } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
+		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: judged } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
 	// A host block's setting that paints the same part on every instance of a child block is written once (FR-48-14b).
 	partWideWrites( st, opts.partWide );

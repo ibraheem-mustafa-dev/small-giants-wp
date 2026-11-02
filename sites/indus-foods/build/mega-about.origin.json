@@ -9,10 +9,6 @@
       "textHash": "1505",
       "line": 85
     },
-    "slots": {
-      ".sgs-mega-panel__content > .sgs-mega-group": "Root/68#0",
-      ".sgs-mega-panel__content > .sgs-mega-aside": "Root/76#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-1": {
@@ -41,10 +37,6 @@
       ],
       "textHash": "1505",
       "line": 88
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -77,10 +69,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -131,10 +119,6 @@
       "textHash": "1505",
       "line": 88
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#1",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-8": {
@@ -166,10 +150,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#1",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -220,10 +200,6 @@
       "textHash": "1505",
       "line": 88
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#2",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#2"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-13": {
@@ -255,10 +231,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#2",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#2"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -309,10 +281,6 @@
       "textHash": "1505",
       "line": 88
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#3",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#3"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-18": {
@@ -344,10 +312,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#3",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#3"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -398,10 +362,6 @@
       "textHash": "1505",
       "line": 88
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#4",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-23": {
@@ -433,10 +393,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#4",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#4"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -487,10 +443,6 @@
       "textHash": "1505",
       "line": 88
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/71#5",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/72#5"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-28": {
@@ -522,10 +474,6 @@
       ],
       "textHash": "1505",
       "line": 90
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/73#5",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/74#5"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -590,9 +538,6 @@
       "textHash": "1505",
       "line": 99
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/78#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-34": {
@@ -609,9 +554,6 @@
       "textHash": "1505",
       "line": 100
     },
-    "slots": {
-      ".sgs-media__img": "Root/78#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-mega-about-35": {
@@ -626,10 +568,6 @@
       ],
       "textHash": "1505",
       "line": 102
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/80#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/81#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -694,9 +632,6 @@
       ],
       "textHash": "647f8ebc",
       "line": 106
-    },
-    "slots": {
-      ".sgs-button__label": "Root/83#0"
     },
     "draft": "0fe5aee1c396a997"
   }

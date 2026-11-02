@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-31T01:39:57.463Z",
-  "source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
+  "generated": "2026-10-27T13:51:47.280Z",
+  "source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
   "root": "[data-sgs-skeleton-root=\"sectors-mega-menu\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -172,78 +172,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"padding:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:linear-gradient(120deg,#EBDD78 0%,#E7D768 24%,#D8CA50 46%,#2EADE2 76%,#0A7EA8 100%);\" data-dc-tpl=\"85\"> <sc-for list=\"{{ activePanel.cards }}\" as=\"card\" hint-placeholder-count=\"4\" data-dc-tpl=\"86\"> <a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-s",
-      "flow": [
-        "  ",
-        {
-          "key": "Indus Foods Website v2/87#0"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/87#1"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/87#2"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/87#3"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "1078px",
-          "height": "357.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "28px",
-          "padding-right": "28px",
-          "padding-bottom": "28px",
-          "padding-left": "28px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "1078px",
-          "height": "357.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "28px",
-          "padding-right": "28px",
-          "padding-bottom": "28px",
-          "padding-left": "28px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "1078px",
-          "height": "357.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "28px",
-          "padding-right": "28px",
-          "padding-bottom": "28px",
-          "padding-left": "28px"
-        }
-      },
       "box": {
         "375": {
           "x": 181,
@@ -276,11 +204,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -320,70 +243,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/88#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/90#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        }
-      },
       "box": {
         "375": {
           "x": 209,
@@ -416,11 +275,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -458,59 +312,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -543,11 +344,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -558,10 +354,7 @@
       "tag": "image-slot",
       "template": "Root",
       "tpl": 89,
-      "attrs": {
-        "id": "sector-foodservice",
-        "placeholder": "food service"
-      },
+      "attrs": {},
       "words": "",
       "allText": "",
       "srcLine": 118,
@@ -586,59 +379,6 @@
       "srcTag": "image-slot",
       "srcOwnText": "",
       "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -671,11 +411,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -713,74 +448,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/91#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/92#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/93#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -813,11 +480,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -855,63 +517,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.label }}",
       "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
-      "flow": [
-        "Food Service"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -944,11 +549,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -986,63 +586,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.desc }}",
       "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
-      "flow": [
-        "Quality ingredients for venues, caterers & events across the UK."
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -1075,11 +618,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1117,63 +655,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
       "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
-      "flow": [
-        "Explore Food Service "
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 229,
@@ -1206,11 +687,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1250,70 +726,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/88#1"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/90#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        }
-      },
       "box": {
         "375": {
           "x": 468,
@@ -1346,11 +758,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1388,59 +795,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -1473,11 +827,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1488,10 +837,7 @@
       "tag": "image-slot",
       "template": "Root",
       "tpl": 89,
-      "attrs": {
-        "id": "sector-manufacturing",
-        "placeholder": "manufacturing"
-      },
+      "attrs": {},
       "words": "",
       "allText": "",
       "srcLine": 118,
@@ -1516,59 +862,6 @@
       "srcTag": "image-slot",
       "srcOwnText": "",
       "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -1601,11 +894,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1643,74 +931,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/91#1"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/92#1"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/93#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -1743,11 +963,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1785,63 +1000,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.label }}",
       "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
-      "flow": [
-        "Manufacturing"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -1874,11 +1032,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1916,63 +1069,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.desc }}",
       "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
-      "flow": [
-        "High-quality, healthy & delicious food products at scale."
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -2005,11 +1101,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2047,63 +1138,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
       "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
-      "flow": [
-        "Explore Manufacturing "
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 488,
@@ -2136,11 +1170,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2180,70 +1209,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/88#2"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/90#2"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        }
-      },
       "box": {
         "375": {
           "x": 727,
@@ -2276,11 +1241,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2318,59 +1278,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -2403,11 +1310,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2418,10 +1320,7 @@
       "tag": "image-slot",
       "template": "Root",
       "tpl": 89,
-      "attrs": {
-        "id": "sector-retail",
-        "placeholder": "retail"
-      },
+      "attrs": {},
       "words": "",
       "allText": "",
       "srcLine": 118,
@@ -2446,59 +1345,6 @@
       "srcTag": "image-slot",
       "srcOwnText": "",
       "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -2531,11 +1377,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2573,74 +1414,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/91#2"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/92#2"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/93#2"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -2673,11 +1446,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2715,63 +1483,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.label }}",
       "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
-      "flow": [
-        "Retail"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -2804,11 +1515,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2846,63 +1552,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.desc }}",
       "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
-      "flow": [
-        "Retail-ready packaging for independent & national retailers."
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -2935,11 +1584,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2977,63 +1621,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
       "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
-      "flow": [
-        "Explore Retail "
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 747,
@@ -3066,11 +1653,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3110,70 +1692,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/88#3"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/90#3"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "245px",
-          "height": "301.688px",
-          "border-top-left-radius": "18px",
-          "border-top-right-radius": "18px",
-          "border-bottom-right-radius": "18px",
-          "border-bottom-left-radius": "18px",
-          "padding-top": "18px",
-          "padding-right": "18px",
-          "padding-bottom": "18px",
-          "padding-left": "18px"
-        }
-      },
       "box": {
         "375": {
           "x": 986,
@@ -3206,11 +1724,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3248,59 +1761,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "12px",
-          "border-top-right-radius": "12px",
-          "border-bottom-right-radius": "12px",
-          "border-bottom-left-radius": "12px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3333,11 +1793,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3348,10 +1803,7 @@
       "tag": "image-slot",
       "template": "Root",
       "tpl": 89,
-      "attrs": {
-        "id": "sector-wholesale",
-        "placeholder": "wholesale"
-      },
+      "attrs": {},
       "words": "",
       "allText": "",
       "srcLine": 118,
@@ -3376,59 +1828,6 @@
       "srcTag": "image-slot",
       "srcOwnText": "",
       "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "205px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3461,11 +1860,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3503,74 +1897,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/91#3"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/92#3"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/93#3"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "135.688px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3603,11 +1929,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3645,63 +1966,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.label }}",
       "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
-      "flow": [
-        "Wholesale"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "700",
-          "letter-spacing": "-0.19px",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "205px",
-          "height": "29.4375px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3734,11 +1998,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3776,63 +2035,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.desc }}",
       "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
-      "flow": [
-        "Reliable stock levels & fast delivery across the whole of the UK."
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "205px",
-          "height": "63px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3865,11 +2067,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3907,63 +2104,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
       "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
-      "flow": [
-        "Explore Wholesale "
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "23.25px",
-          "width": "205px",
-          "height": "23.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 1006,
@@ -3996,11 +2136,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     }
@@ -4029,7 +2164,7 @@
       "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
     },
     "route": {
-      "commit": "483583e65e051f50edc343c67aad9aa20056c69b"
+      "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
     }
   }
 }

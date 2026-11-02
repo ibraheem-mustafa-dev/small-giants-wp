@@ -46,7 +46,7 @@ function world( { block = 'sgs/box', attrs = {}, kids = [ [ 375, 768, 1440 ] ], 
 	return { flat, nodes, reads: { widths, sweep: sweep ? { [ slot ? `0:${ slot }` : '0:' ]: { 'justify-content': sweep } } : {} }, refOf: ( n ) => n.ref };
 }
 const rowOf = ( o ) => ( { node: 'n0', block: 'sgs/box', slot: '', ...o } );
-const run = ( w, rows, o = {} ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => null, keyScope: 'acme|surface', scope: 'header', resolver, date: '2026-10-23', ...o } );
+const run = ( w, rows, o = {} ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => null, scope: 'header', resolver, date: '2026-10-23', ...o } );
 const attrs = ( w ) => w.flat[ 0 ].attributes;
 
 test( 'effects: normal is the start value in a flex container, space-between with one child is too, around and evenly centre one child', () => {

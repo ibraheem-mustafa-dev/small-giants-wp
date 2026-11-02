@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'scrolledOffset', value: at },",
-		"replace": "{ attr: 'scrolledOffset', value: 50 },",
+		"find": "{ attr: 'scrolledOffset', value: number( at[ 1 ] ) }",
+		"replace": "{ attr: 'scrolledOffset', value: 50 }",
 		"why": "the scroll threshold is not the code's"
 	},
 	{
@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() );",
-		"replace": "return true;",
+		"find": "return /^(?:sticky|fixed)$/.test( String( staticStyle( t?.element, 'position' ) ?? '' ).trim() ) ||",
+		"replace": "return true ||",
 		"why": "every header is read as pinned"
 	},
 	{
@@ -25,9 +25,9 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "|| ! statusDotOf( r, ctx ) ) {",
-		"replace": ") {",
-		"why": "any endless ring is the dot pulse, wherever it sits"
+		"find": "! /\\bdot\\b|status|open/i.test( words( r.element?.description, r.name ) )",
+		"replace": "false",
+		"why": "any endless ring is the dot pulse"
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'autoplaySpeed', value: ms }",
-		"replace": "{ attr: 'autoplaySpeed', value: ms / 1000 }",
+		"find": "{ attr: 'autoplaySpeed', value: Math.round( secs * 1000 ) }",
+		"replace": "{ attr: 'autoplaySpeed', value: secs }",
 		"why": "the interval is stored in seconds"
 	},
 	{
@@ -61,8 +61,14 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "[ 'panelEdgeOpacity', o?.edge ]",
-		"replace": "[ 'panelEdgeOpacity', o?.focus ]",
+		"find": "...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] )",
+		"replace": "...[]",
+		"why": "the touch strip is not the carousel"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "[ 'panelEdgeOpacity', opacity.from ]",
+		"replace": "[ 'panelEdgeOpacity', opacity.to ]",
 		"why": "the edge opacity is the focus one"
 	},
 	{
@@ -79,15 +85,15 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "if ( ! pinnedSectionOf( r, ctx ) ) {",
-		"replace": "if ( ! scrollWrite( r ) ) {",
+		"find": "'scroll-position' !== triggerOf( r ) || ! PINNED.test( blob( r ) ) ) {",
+		"replace": "'scroll-position' !== triggerOf( r ) ) {",
 		"why": "any scroll write is the pinned timeline"
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "const pin = !! pinnedSectionOf( r, ctx );",
-		"replace": "const pin = true;",
-		"why": "any scale write on scroll is a pin progress bar"
+		"find": "&& PINNED.test( blob( r ) ) ) ) );",
+		"replace": "&& true ) ) );",
+		"why": "any scaleX(p) write is a pin progress bar"
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
@@ -97,9 +103,9 @@
 	},
 	{
 		"file": "lib/motion-behaviours.mjs",
-		"find": "|| Object.entries( pose.to ).every( ( [ k, v ] ) => restValue( k, v ) ) ) {",
+		"find": "|| ! namesClose( r ) ) {",
 		"replace": ") {",
-		"why": "an animation that moves to rest is an exit"
+		"why": "any held animation is an exit"
 	},
 	{
 		"file": "lib/fill-behaviour.mjs",
@@ -196,11 +202,5 @@
 		"find": "\t\tif ( null != p.to || 'string' !== typeof p.formula ) {",
 		"replace": "\t\tif ( 'string' !== typeof p.formula ) {",
 		"why": "a stated to and from would be overwritten by the formula's literals"
-	},
-	{
-		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "if ( hit ) {\n\t\t\treturn hit.right.value;\n\t\t}\n\t}\n\treturn null;\n}\n\n// A script that scrolls a page element",
-		"replace": "if ( hit ) {\n\t\t\treturn 0;\n\t\t}\n\t}\n\treturn null;\n}\n\n// A script that scrolls a page element",
-		"why": "the scroll gap is not the code's"
 	}
 ]

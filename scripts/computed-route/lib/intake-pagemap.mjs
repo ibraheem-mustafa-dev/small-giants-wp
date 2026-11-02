@@ -17,7 +17,7 @@ import { crossCheck } from './intake-pagemap-hints.mjs';
 import { wooSlugs, shopTitle, orderConfirmations, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
 import { commerceFacts, commerceKinds, declaredKind } from './intake-pagemap-commerce.mjs';
 import { frontRoute, routerFallbacks, surfaceTemplates, genericTemplates } from './intake-pagemap-templates.mjs';
-import { pageOpeners } from './intake-pagemap-flow-openers.mjs';
+import { flowOpeners } from './intake-pagemap-flow-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -257,16 +257,11 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	surfaceTemplates( rows, { facts, links: route.links, pageOfTag: code.pageOfTag, fallbacks: routerFallbacks( exp, routeKeys, home ), home, gaps } );
 	const used = new Set();
 	const routeSlug = new Map();
-	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row, which records the route
-	// it folds in (`folds`), so the folded view's surface is read as that row's (its commerce role, its parts).
-	const fold = ( row, route ) => {
-		route && route !== row.route && ! ( row.folds || [] ).includes( route ) && ( row.folds = [ ...( row.folds || [] ), route ] );
-	};
+	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row.
 	for ( const r of [ ...rows ] ) {
 		const twin = r.explicit && rows.find( ( x ) => x !== r && x.explicit && x.slug === r.slug && routeSlug.has( x.route ) );
 		if ( twin ) {
 			routeSlug.set( r.route, twin.slug );
-			fold( twin, r.route );
 			rows.splice( rows.indexOf( r ), 1 );
 			continue;
 		}
@@ -278,7 +273,6 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		const twin = rows.find( ( row ) => row.slug === kebab( r.key ) );
 		if ( twin ) {
 			routeSlug.set( r.key, twin.slug );
-			fold( twin, r.key );
 		}
 	}
 	orderConfirmations( rows, route, code.pageOfTag, home, routeSlug, used, facts );
@@ -307,9 +301,8 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			gaps.push( gap( 'page-map', part.draftId, `the ${ part.kind } "${ part.label }" belongs to the site chrome, and the map has no header row to hold it` ) );
 		}
 	} );
-	// A page whose control opens a modal or a choice flow names it (`opens`): the modal's opener link the skeleton writes, and the
-	// product's flow link (Spec 43 FR-43-25).
-	gaps.push( ...pageOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );
+	// A product page whose control opens a choice flow names it (`opensFlow`), for the product's flow link (Spec 43 FR-43-25).
+	gaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );
 	const bySlug = new Map( rows.map( ( r ) => [ r.slug, r ] ) );
 	const rowOf = ( href, file ) => {
 		const k = routeOfHref( href, file, routeSlug, home );
@@ -339,12 +332,10 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		} );
 		walk( m.items );
 	}
-	// Parents: a menu item with a page is the parent of its children's pages, then the manifest's parent, then the route
-	// hierarchy (a/b under a). An item that only links to its first child (Sectors -> Food service) names that child the section's
-	// landing page: the landing page stays at the top and the section's other pages sit under it, the nesting the draft's own
-	// breadcrumb shows (Home / section / page, the section linking to its landing page).
+	// Parents: a menu item with its own page is the parent of its children's pages, unless it only links to its
+	// first child; then the manifest's parent; then the route hierarchy (a/b under a).
 	for ( const { target, children } of groups.values() ) {
-		if ( target && children.length ) {
+		if ( target && children.length && children[ 0 ] !== target ) {
 			children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType ).forEach( ( c ) => { c.parent = target.slug; } );
 		}
 	}

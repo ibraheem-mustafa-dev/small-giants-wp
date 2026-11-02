@@ -22,14 +22,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
-import { prefillParams } from './skeleton-form-prefill.mjs';
 import { formSchemaOf, schemaFieldOf, schemaFieldByName, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
 import { parseTplKey } from './fill-skeleton.mjs';
 import { detectReferences, referenceOf } from './references.mjs';
 import { walk } from './tree.mjs';
 import { stepButtonLabels, stepButtonWrites, stepRules } from './fill-form-buttons.mjs';
-import { successMessageOf, componentScript, formKeyOf } from './fill-form-success.mjs';
-import { stateCondition } from './fill-form-conditions.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-role:checkbox',
@@ -64,8 +61,8 @@ export const COVERAGE_WRITES = [
 // (formFieldWrites), the form its button words and saved-progress flag, a step its label, the review its intro and edit
 // label, and a submit button its flag. lib/content-coverage.mjs asks formSettings which settings a re-clone writes.
 export const isFormFieldBlock = ( slug ) => /^sgs\/form-field-/.test( slug );
-export const FORM_FIELD_SETTINGS = [ 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxLength', 'showCounter', 'options', 'defaultValue', 'defaultChecked', 'allowedTypes', 'tiles', 'multiSelect', 'floatingLabel', 'floatingLabelPosition', 'msgInvalid', 'msgRequired', 'msgTooLong', 'required', 'valueFromParam', 'conditionalField', 'conditionalOperator', 'conditionalValue' ];
-export const FORM_BLOCK_SETTINGS = { 'sgs/button': [ 'isSubmit' ], 'sgs/form': [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel', 'successMessage' ], 'sgs/form-step': [ 'label' ], 'sgs/form-review': [ 'intro', 'editLabel' ] };
+export const FORM_FIELD_SETTINGS = [ 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxLength', 'showCounter', 'options', 'defaultValue', 'defaultChecked', 'allowedTypes', 'tiles', 'multiSelect', 'floatingLabel', 'floatingLabelPosition', 'msgInvalid', 'msgRequired', 'msgTooLong', 'valueFromParam', 'conditionalField', 'conditionalOperator', 'conditionalValue' ];
+export const FORM_BLOCK_SETTINGS = { 'sgs/button': [ 'isSubmit' ], 'sgs/form': [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel' ], 'sgs/form-step': [ 'label' ], 'sgs/form-review': [ 'intro', 'editLabel' ] };
 export const formSettings = ( block ) => ( isFormFieldBlock( block ) ? FORM_FIELD_SETTINGS : FORM_BLOCK_SETTINGS[ block ] || [] );
 
 // The attribute definition of a block by framework-DB query: { default } or null when the block holds no such attribute.
@@ -168,9 +165,6 @@ export function formFieldWrites( { db, block, attributes = {}, el, field = null,
 	if ( set( f.rxMsg ) ) {
 		put( 'msgInvalid', f.rxMsg, 'validation message' );
 	}
-	// A field the draft's own validation refuses when empty is required: the message shows only on a required field, and a draft
-	// that checks in script (no native `required` attribute) would otherwise submit blank.
-	set( copy.required ) && attrDef( db, block, 'required' ) && put( 'required', true, 'required' );
 	set( copy.required ) && put( 'msgRequired', copy.required, 'required message' );
 	set( copy.tooLong ) && put( 'msgTooLong', copy.tooLong, 'too-long message' );
 	const names = [ el.name, el.id, ...( field ? [ f.name ] : [] ) ].filter( Boolean );
@@ -224,22 +218,6 @@ export function schemaControl( db, block, f ) {
 	return el;
 }
 
-// The control a recorded form control stands for when the render never showed it (a skeleton field node's `hiddenControl`, lib/
-// skeleton-hidden-fields.mjs), in the shape of the draft read's `snap.form`: its tag, type and the literal attributes the
-// template gives it (a bound attribute is not a fact), or null when the record holds no such control.
-export function hiddenControlOf( facts, key ) {
-	const t = facts?.elements?.[ key ]?.template;
-	if ( ! t ) {
-		return null;
-	}
-	const a = Object.fromEntries( Object.entries( t.attrs || {} ).filter( ( [ , v ] ) => ! /\{\{/.test( String( v ) ) ) );
-	const el = { tag: t.realTag, type: String( a.type || ( 'input' === t.realTag ? 'text' : t.realTag ) ).toLowerCase() };
-	for ( const k of [ 'name', 'id', 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxlength', 'accept', 'value' ] ) {
-		set( a[ k ] ) && ( el[ k ] = String( a[ k ] ) );
-	}
-	return el;
-}
-
 // A single node's write: the attribute onto the tree node and a content write record for the report.
 function apply( out, node, ref, rec, w ) {
 	if ( same( w.value, node.attributes?.[ w.attr ] ) ) {
@@ -264,7 +242,7 @@ export function componentOf( target, candidates ) {
 // idxFor( component ): the parsed logic of a draft component (lib/fill-list-content.mjs::logicReader); buttonRules: rules.formSteps.
 // Returns { writes, unmapped, notes, settled }: `settled` is one row (reason `row-held`) for each node on or inside a linked
 // reference block that the draft read, naming the linked form that holds its settings, so no read there ends silent.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null, draftFolder = null } ) {
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], settled: [] };
 	// The nodes of every linked reference block and the blocks inside it, each with the form its reference names.
 	const linked = new Map();
@@ -274,16 +252,13 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			walk( [ node ], ( n ) => linked.set( n, ref.value ) );
 		}
 	} );
-	// `params`: the query names a link of the draft hands to a form, and the fields a control that scrolls to the form sets (lib/skeleton-form-prefill.mjs).
 	const schema = formSchemaOf( facts, component );
-	const params = new Set( [ ...linkParams( facts ), ...( draftFolder ? prefillParams( { folder: draftFolder, record: facts } ) : [] ) ] );
+	const params = linkParams( facts );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
 	const steps = schema ? schema.steps.filter( ( s ) => s.fields.length ) : [];
 	const review = schema ? schema.steps.find( ( s ) => ! s.fields.length ) : null;
 	let stepNo = 0;
-	// The choice fields of the form (groups of pills) and the choices each draws: the field a state-keyed `sc-if` waits on.
-	const choices = nodes.filter( ( r ) => 'sgs/form-field-tiles' === r.name ).map( ( r ) => ( { rec: r, node: flat[ r.index ], chips: reads.widths?.[ 1440 ]?.[ r.targets.find( ( t ) => '' === t.slot )?.id ]?.form?.chips || [] } ) ).filter( ( c ) => c.chips.length );
 	for ( const rec of nodes ) {
 		const node = flat[ rec.index ];
 		if ( linked.has( node ) ) {
@@ -299,36 +274,14 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			out.unmapped.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 			out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		};
-		// The words the form shows once sent (its result surface, else its own sent state) are its `successMessage`.
-		if ( 'sgs/form' === rec.name && attrDef( db, rec.name, 'successMessage' ) ) {
-			const sent = successMessageOf( { facts, formKey: formKeyOf( target, component ), scriptOf: ( c ) => componentScript( draftFolder, c ) } );
-			if ( sent ) {
-				apply( out, node, ref, rec, { attr: 'successMessage', value: sent.message, merge: 'replace' } );
-				out.notes.push( `${ ref } ${ rec.name }: successMessage is the words of ${ sent.source }`, ...sent.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
-			}
-		}
 		// A field the page never rendered (a later step's, built from the schema by lib/skeleton-form-steps.mjs) is the schema
 		// field its `fieldName` names, and the control it stands for is read from that field (schemaControl).
-		// A field the render never showed (a control in a closed `sc-if`, lib/skeleton-hidden-fields.mjs) is the recorded control its
-		// `hiddenControl` names; its look is the form block's own field settings, read from the form's rendered fields.
-		const hidden = isFormFieldBlock( rec.name ) && ! el ? hiddenControlOf( facts, rec.node?.hiddenControl ) : null;
-		const built = isFormFieldBlock( rec.name ) && ! el && ! hidden ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
-		const control = el || hidden || ( built ? schemaControl( db, rec.name, built.field ) : null );
+		const built = isFormFieldBlock( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
+		const control = el || ( built ? schemaControl( db, rec.name, built.field ) : null );
 		if ( isFormFieldBlock( rec.name ) && control ) {
-			const hit = built || ( hidden ? null : el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
+			const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
 			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
-			// A field the draft shows only while a choice has a value (a state-keyed `sc-if`, lib/fill-form-conditions.mjs) waits on that
-			// choice field, which is named by the draft's own state key.
-			let condition = hit ? conditions[ hit.field.name ] || null : null;
-			const formKey = hidden ? rec.node?.hiddenControl : formKeyOf( target, component );
-			const shown = condition || ! formKey ? null : stateCondition( facts?.elements?.[ formKey ]?.template?.membership?.scIf, componentScript( draftFolder, formKey.split( '/' )[ 0 ] ) );
-			const owner = shown && choices.find( ( c ) => c.rec !== rec && c.chips.some( ( k ) => k.label === shown.label ) );
-			if ( owner && attrDef( db, owner.rec.name, 'fieldName' ) ) {
-				const fieldName = owner.node.attributes?.fieldName || shown.key;
-				owner.node.attributes?.fieldName || apply( out, owner.node, refOf( owner.node ), owner.rec, { attr: 'fieldName', value: fieldName, merge: 'replace' } );
-				condition = { field: fieldName, op: shown.op, value: shown.label };
-			}
-			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition, copy } );
+			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
 			take( made );
 			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.
 			out.unmapped.push( ...readback( { writes: made.writes, el: control, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );

@@ -3,7 +3,7 @@
 import base from './flow-choice-flow-build-your-zookie.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-flow-choice-flow-build-your-zookie-0", text: false, structure: false, draft: {"tpl":"Root/66#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-0", liveAt: {"padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-flow-choice-flow-build-your-zookie-0", text: false, structure: false, draft: {"tpl":"Root/66#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-0" },
 	{ name: "gen-flow-choice-flow-build-your-zookie-1", text: false, structure: false, draft: {"tpl":"Root/67#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-1" },
 	{ name: "gen-flow-choice-flow-build-your-zookie-2", text: false, structure: false, draft: {"tpl":"Root/68#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-2" },
 	{ name: "gen-flow-choice-flow-build-your-zookie-3", text: false, structure: false, draft: {"tpl":"Root/69#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-3" },

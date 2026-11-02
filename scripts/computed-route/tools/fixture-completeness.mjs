@@ -20,10 +20,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { routeCacheDir } from '../lib/cache-dir.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
-export const DEFAULT_CACHE = routeCacheDir();
+export const DEFAULT_CACHE = 'C:/Users/Bean/Projects/small-giants-wp/scripts/computed-route/cache';
 export const DEFAULT_SRC = path.resolve( ROUTE, '..', '..', 'plugins', 'sgs-blocks', 'src', 'blocks' );
 
 const slugOf = ( block ) => String( block ).replace( /^sgs\//, '' );

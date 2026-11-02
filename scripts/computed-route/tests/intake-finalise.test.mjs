@@ -1,5 +1,5 @@
 // Spec 48 §3.4 steps 3 and 4 and FR-48-17 in the intake command (lib/intake-run-finalise.mjs, lib/intake-review.mjs):
-// `--finalise` asks the agent running the clone about exactly the low-confidence and unresolved skeleton rows; `--apply-picks`
+// `--finalise` asks the finaliser agent about exactly the low-confidence and unresolved skeleton rows; `--apply-picks`
 // refuses an invalid pick and writes nothing, else the pick becomes the proposal with the writer's original kept and
 // every other mark carried; review.md lists the rows needing judgement before the confident ones and still reads every
 // Mark cell; `--apply-review` saves only block:<slug> marks and accepted picks to the client decisions file; blocked
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { renderReview, parseReview, reviewRows, carryOver, CONFIDENT_HEADING } from '../lib/intake-review.mjs';
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { mergeBlocked } from '../lib/intake-run-collapse.mjs';
-import { intakeFinaliseRequest, reviewDecisions, recordReviewDecisions } from '../lib/intake-run-finalise.mjs';
+import { intakeFinaliseRequest, reviewDecisions } from '../lib/intake-run-finalise.mjs';
 import { contextOf, SIBLING_CAP } from '../lib/intake-skeletons.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -90,7 +90,7 @@ test( 'MUST FAIL: --finalise asks about exactly the low-confidence and unresolve
 	const r = run( '--finalise', CLIENT );
 	assert.equal( r.code, 0, r.out );
 	assert.match( r.out, /3 low-confidence or unresolved skeleton rows on 2 surfaces/ );
-	assert.match( r.out, /follow scripts\/computed-route\/prompts\/skeleton-finaliser\.md to write .*finalise-picks\.json/ );
+	assert.match( r.out, /dispatch an agent with scripts\/computed-route\/prompts\/skeleton-finaliser\.md to write .*finalise-picks\.json/ );
 	const req = JSON.parse( read( 'finalise-request.json' ) );
 	assert.deepEqual( Object.fromEntries( Object.entries( req.surfaces ).map( ( [ s, x ] ) => [ s, x.rows.map( ( y ) => y.key ) ] ) ), { header: [ 'Site/5#0', 'Site/9#0' ], footer: [ 'Site/18' ] } );
 	const phone = req.surfaces.header.rows[ 0 ];
@@ -203,7 +203,7 @@ test( 'MUST FAIL: review.md lists rows needing judgement first, the confident on
 	assert.deepEqual( Object.keys( parsed.rowMarks ).sort(), [ ...ids ].sort(), 'every row\'s Mark cell is read, confident rows included' );
 } );
 
-test( 'MUST FAIL: --apply-review saves block:<slug> marks, removals and every accepted block choice, to the client decisions file', () => {
+test( 'MUST FAIL: --apply-review saves block:<slug> marks and accepted finaliser picks only, to the client decisions file', () => {
 	write( fixture() );
 	assert.equal( run( '--finalise', CLIENT ).code, 0 );
 	pick( PICKS );
@@ -216,11 +216,9 @@ test( 'MUST FAIL: --apply-review saves block:<slug> marks, removals and every ac
 	fs.writeFileSync( file( 'review.md' ), md );
 	const r = run( '--apply-review', CLIENT );
 	assert.equal( r.code, 0, r.out );
-	assert.match( r.out, /7 skeleton choices saved to .*decisions\.json/ );
+	assert.match( r.out, /6 skeleton choices saved to .*decisions\.json/ );
 	const dec = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ) );
-	assert.deepEqual( Object.keys( dec.surfaces.header ).sort(), [ 'Site/2#0', 'Site/5#0', 'Site/9#0' ], 'the accepted confident proposal Site/2#0 is saved too' );
-	assert.match( dec.surfaces.header[ 'Site/2#0' ].reason, /^Bean accepted \S+ in the intake review on \d{4}-\d{2}-\d{2}$/ );
-	assert.ok( dec.surfaces.header[ 'Site/2#0' ].proposed, 'a decision records what the rules proposed when it was saved' );
+	assert.deepEqual( Object.keys( dec.surfaces.header ).sort(), [ 'Site/5#0', 'Site/9#0' ], 'the accepted confident proposal Site/2#0 is not saved' );
 	assert.equal( dec.surfaces.header[ 'Site/5#0' ].block, 'sgs/business-info' );
 	assert.equal( dec.surfaces.header[ 'Site/5#0' ].signature, 'span|0121 000 0000' );
 	assert.equal( dec.surfaces.header[ 'Site/9#0' ].remove, true );
@@ -229,10 +227,7 @@ test( 'MUST FAIL: --apply-review saves block:<slug> marks, removals and every ac
 	assert.equal( fs.existsSync( path.join( HERE, '..', 'data', 'skeleton-decisions.json' ) ) ? JSON.stringify( JSON.parse( fs.readFileSync( path.join( HERE, '..', 'data', 'skeleton-decisions.json' ), 'utf8' ) ) ).includes( CLIENT ) : false, false, 'the framework-wide file is never written' );
 	const varied = { ...JSON.parse( read( 'intake.json' ) ) };
 	varied.skeletons.footer.rows[ 1 ].distinctWords = 3;
-	assert.deepEqual( reviewDecisions( varied, '2026-10-12' ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) ).map( ( d ) => d.element.key ), [ 'Site/18#0' ], 'negative control: copies with other words and no inventory words save the first copy only' );
-	const own = { 'Site/18#0': 'Pricing', 'Site/18#1': 'Delivery', 'Site/18#2': 'Payment' };
-	const each = reviewDecisions( varied, '2026-10-12', ( s, k ) => ( 'footer' === s ? own[ k ] : undefined ) ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) );
-	assert.deepEqual( each.map( ( d ) => [ d.element.key, d.element.words ] ), Object.entries( own ), 'MUST FAIL: every copy is saved with its own words, so one mark settles the whole repeated item' );
+	assert.deepEqual( reviewDecisions( varied, '2026-10-12' ).filter( ( d ) => 'footer' === d.surface && d.element.key.startsWith( 'Site/18' ) ).map( ( d ) => d.element.key ), [ 'Site/18#0' ], 'copies with other words save the first copy only' );
 } );
 
 test( 'MUST FAIL: --apply-review naming an unknown block in a block:<slug> mark writes nothing', () => {
@@ -277,41 +272,6 @@ test( 'MUST FAIL: a remove mark on a confident skeleton row is saved as a remova
 		{ rowId: 'skeleton:header:Site/3#0', key: 'Site/3#0', tag: 'a', words: 'Home', block: 'sgs/container' },
 	] } }, review: [ { rowId: 'skeleton:header:Site/2#0', mark: 'remove' }, { rowId: 'skeleton:header:Site/3#0', mark: 'accept' } ] };
 	const d = reviewDecisions( intake, '2026-10-13' );
-	assert.deepEqual( d.map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/2#0', { remove: true } ], [ 'Site/3#0', { block: 'sgs/container' } ] ], 'the removed row and the accepted confident row are both saved' );
+	assert.deepEqual( d.map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/2#0', { remove: true } ] ], 'the removed row is saved; the accepted confident row is not' );
 	assert.match( d[ 0 ].reason, /Bean marked remove/ );
-	assert.match( d[ 1 ].reason, /^Bean accepted sgs\/container in the intake review on 2026-10-13$/ );
-	assert.equal( d[ 1 ].proposed, 'sgs/container' );
-	const structural = { skeletons: { header: { rows: [
-		{ rowId: 'skeleton:header:Site/4#0', key: 'Site/4#0', tag: 'span', words: '', action: 'absorbed', into: 'Site/2#0' },
-		{ rowId: 'skeleton:header:Site/6#0', key: 'Site/6#0', tag: 'div', words: '', action: 'remove' },
-		{ rowId: 'skeleton:header:Site/7#0', key: 'Site/7#0', tag: 'div', words: '', action: 'unresolved' },
-	] } }, review: [ 'Site/4#0', 'Site/6#0', 'Site/7#0' ].map( ( k ) => ( { rowId: `skeleton:header:${ k }`, mark: 'accept' } ) ) };
-	assert.deepEqual( reviewDecisions( structural, '2026-10-13' ).map( ( x ) => [ x.element.key, x.choice ] ), [ [ 'Site/6#0', { remove: true } ] ], 'an accepted remove is saved; an absorbed or unresolved row leaves nothing for a decision to reproduce' );
-	const reconsidered = { skeletons: { header: { rows: [ { rowId: 'skeleton:header:Site/8#0', key: 'Site/8#0', tag: 'a', words: 'Home', block: 'sgs/text', ruleWould: { label: 'sgs/button', reason: 'r', decision: { label: 'sgs/text', reason: '' } } } ] } }, review: [ { rowId: 'skeleton:header:Site/8#0', mark: 'accept' } ] };
-	assert.equal( reviewDecisions( reconsidered, '2026-10-14' )[ 0 ].proposed, 'sgs/button', 'accepting a row the rules disagreed with acknowledges what they propose now' );
-} );
-
-// MUST FAIL: saving accepted proposals made --apply-review check the writer's own blocks against the framework database,
-// which holds no WooCommerce block, so an accepted product collection (Spec 48 FR-48-83) refused the whole review
-// (Eye Care, 2026-11-01). Only a block Bean typed is checked.
-test( 'MUST FAIL: an accepted proposal is not typed; a block:<slug> mark is, whatever words either element has', () => {
-	const intake = { skeletons: { 'page-shop': { rows: [
-		{ rowId: 'skeleton:page-shop:Shop/1#0', key: 'Shop/1#0', tag: 'div', words: 'Best sellers', block: 'woocommerce/product-collection' },
-		{ rowId: 'skeleton:page-shop:Shop/2#0', key: 'Shop/2#0', tag: 'span', words: '', block: 'sgs/text' },
-	] } }, review: [ { rowId: 'skeleton:page-shop:Shop/1#0', mark: 'accept' }, { rowId: 'skeleton:page-shop:Shop/2#0', mark: 'block:sgs/heading' } ] };
-	const typed = Object.fromEntries( reviewDecisions( intake, '2026-11-01' ).map( ( d ) => [ d.element.key, d.typed ] ) );
-	assert.deepEqual( typed, { 'Shop/1#0': false, 'Shop/2#0': true } );
-} );
-
-// MUST FAIL (qc-council 2026-11-01): re-applying a review re-stamped every saved decision as "Bean accepted … today",
-// erasing when (and by whom) an earlier choice was made.
-test( 'MUST FAIL: re-applying a review leaves an identical saved decision as it was; a changed choice is rewritten', () => {
-	const file = path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'rec-dec-' ) ), 'decisions.json' );
-	const old = { block: 'sgs/button', signature: 'a|Call', reason: 'Bean accepted sgs/button in the intake review on 2026-10-29', proposed: 'sgs/button' };
-	fs.writeFileSync( file, JSON.stringify( { surfaces: { header: { 'H/18#0': old, 'H/19#0': { ...old, signature: 'a|Mail' } } } } ) );
-	const d = ( key, words, block ) => ( { surface: 'header', element: { key, tag: 'a', words }, choice: { block }, reason: `Bean accepted ${ block } in the intake review on 2026-11-01`, proposed: block } );
-	recordReviewDecisions( [ d( 'H/18#0', 'Call', 'sgs/button' ), d( 'H/19#0', 'Mail', 'sgs/text' ) ], file );
-	const saved = JSON.parse( fs.readFileSync( file, 'utf8' ) ).surfaces.header;
-	assert.equal( saved[ 'H/18#0' ].reason, old.reason, 'the earlier choice keeps its own date' );
-	assert.equal( saved[ 'H/19#0' ].block, 'sgs/text', 'negative control: a changed choice is written' );
 } );

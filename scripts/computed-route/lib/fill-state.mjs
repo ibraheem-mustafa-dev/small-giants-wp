@@ -38,11 +38,8 @@ import { stateDrafts, ancestorLook, ancestorHolds, motionHolds } from './fill-st
 export { stateDrafts, ancestorLook, motionHolds };
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
 import { scriptGapReason, openSlots } from './fill-state-script.mjs';
-import { partStateSlots } from './fill-state-parts.mjs';
-import { partPresent } from './fill-part-present.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
-import { STATE_UNHELD } from './fill-custom-css.mjs';
 
 export { focusSharesHover };
 
@@ -103,13 +100,8 @@ export function interactionStates( db ) {
 	return new Set( statesVocabulary( db ).rows.filter( ( r ) => INTERACTION_FAMILIES.includes( r.family ) ).map( ( r ) => r.state ) );
 }
 
-// The ground a text colour is read against, held with it (holdDefaults): the element's background colour, or its
-// background image where the draft rests on a gradient at every width it is drawn (a gradient paints over the colour,
-// so a block that changes its ground colour on a state changes the ground the gradient paints).
-export function groundOf( rest ) {
-	const images = Object.values( rest[ 'background-image' ] || {} );
-	return images.length && images.every( ( v ) => /gradient\(/.test( v ) ) ? 'background-image' : 'background-color';
-}
+// A text colour and the ground it is read against, held together (holdDefaults).
+const PAIR = [ 'color', 'background-color' ];
 
 const pathOf = ( effect ) => effect.slice( 0, effect.lastIndexOf( '|' ) );
 const propOf = ( effect ) => effect.slice( effect.lastIndexOf( '|' ) + 1 );
@@ -234,18 +226,13 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 	const ctx = stateContext( reads, target.id );
 	const read = ( prop ) => READ_WIDTHS.some( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ prop ] );
 	const declared = ( state, prop ) => [ ...drafts.values() ].some( ( d ) => d.state === state && ! d.pseudo && ( d.prop === prop || longhands( d.prop ).includes( prop ) ) );
-	// A text colour and its ground, held together.
-	const ground = groundOf( rest );
-	const PAIR = [ 'color', ground ];
-	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), code: STATE_UNHELD, reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
+	const gapRow = ( prop, state, why ) => ( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( rest[ prop ] || {} ), reason: `default-state: ${ rec.name } changes ${ prop } on ${ state } by itself and the draft does not, and nothing holds it (${ why })` } );
 	for ( const state of interaction ) {
 		const look = defaultStateLook( cal, state, rest, ctx.at );
 		const plan = [];
-		for ( const changed of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
-			// A change of the ground colour is a change of the ground the draft paints, a gradient's included (groundOf).
-			const prop = 'background-color' === changed ? ground : changed;
-			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} ).filter( ( p ) => partPresent( { path: p, block: rec.name, node, db } ) );
-			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( changed ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
+		for ( const prop of [ ...new Set( Object.values( look ).flatMap( ( s ) => [ ...s ] ) ) ] ) {
+			const slots = holdSlots( cal, node, target.slot, prop, rest[ prop ] || {} );
+			if ( declared( state, prop ) || ! slots.some( ( p ) => look[ LOOSE( p ) ]?.has( prop ) ) || ( ! rest[ prop ] && read( prop ) ) ) {
 				continue;
 			}
 			const from = follows( state, prop );
@@ -354,7 +341,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
 				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ].concat( atRest ? [] : partStateSlots( { db, cal, block: rec.name, prop, slot, state } ) ), calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );

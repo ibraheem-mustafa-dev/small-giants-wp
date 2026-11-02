@@ -9,11 +9,7 @@
       "textHash": "1505",
       "line": 11
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/9#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/34#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-1": {
     "tpl": "Root/9#0",
@@ -27,10 +23,7 @@
       "textHash": "1505",
       "line": 12
     },
-    "slots": {
-      ".sgs-hero__content": "Root/9#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-2": {
     "tpl": "Root/10#0",
@@ -45,11 +38,7 @@
       "textHash": "1505",
       "line": 13
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/12#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/13#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-3": {
     "tpl": "Root/12#0",
@@ -66,7 +55,7 @@
       "textHash": "b99e60c6",
       "line": 15
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-4": {
     "tpl": "Root/13#0",
@@ -83,7 +72,7 @@
       "textHash": "9b0610e6",
       "line": 16
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-5": {
     "tpl": "Root/14#0",
@@ -100,26 +89,9 @@
       "textHash": "81a0c46b",
       "line": 17
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-6": {
-    "tpl": "Root/15#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "38eb6139",
-      "parentTags": [
-        "main",
-        "section",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 18
-    },
-    "draft": "8a4e3beea02443ed"
-  },
-  "cr-ref-gifts-12": {
     "tpl": "Root/16#0",
     "fingerprint": {
       "tag": "div",
@@ -135,9 +107,27 @@
       "textHash": "4b2e44f3",
       "line": 19
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-15": {
+  "cr-ref-gifts-7": {
+    "tpl": "Root/17#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 20
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-8": {
     "tpl": "Root/20#0",
     "fingerprint": {
       "tag": "div",
@@ -153,9 +143,45 @@
       "textHash": "a02467c0",
       "line": 21
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-18": {
+  "cr-ref-gifts-9": {
+    "tpl": "Root/21#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 22
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-10": {
+    "tpl": "Root/24#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp1",
+      "styleHash": "1fd4209a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "64bb8a6e",
+      "line": 23
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-11": {
     "tpl": "Root/25#0",
     "fingerprint": {
       "tag": "div",
@@ -169,13 +195,9 @@
       "textHash": "1505",
       "line": 26
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/26#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/29#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-19": {
+  "cr-ref-gifts-12": {
     "tpl": "Root/26#0",
     "fingerprint": {
       "tag": "div",
@@ -190,13 +212,9 @@
       "textHash": "1505",
       "line": 27
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/27#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/28#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-20": {
+  "cr-ref-gifts-13": {
     "tpl": "Root/27#0",
     "fingerprint": {
       "tag": "div",
@@ -212,9 +230,9 @@
       "textHash": "1505",
       "line": 27
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-21": {
+  "cr-ref-gifts-14": {
     "tpl": "Root/28#0",
     "fingerprint": {
       "tag": "div",
@@ -230,9 +248,9 @@
       "textHash": "c49ff12",
       "line": 27
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-22": {
+  "cr-ref-gifts-15": {
     "tpl": "Root/29#0",
     "fingerprint": {
       "tag": "div",
@@ -247,13 +265,9 @@
       "textHash": "1505",
       "line": 28
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/31#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/32#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-23": {
+  "cr-ref-gifts-16": {
     "tpl": "Root/31#0",
     "fingerprint": {
       "tag": "div",
@@ -269,9 +283,9 @@
       "textHash": "6a9d2509",
       "line": 30
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-24": {
+  "cr-ref-gifts-17": {
     "tpl": "Root/32#0",
     "fingerprint": {
       "tag": "div",
@@ -287,9 +301,9 @@
       "textHash": "1f784f51",
       "line": 31
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-25": {
+  "cr-ref-gifts-18": {
     "tpl": "Root/33#0",
     "fingerprint": {
       "tag": "div",
@@ -305,9 +319,9 @@
       "textHash": "c72c1d5c",
       "line": 32
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-26": {
+  "cr-ref-gifts-19": {
     "tpl": "Root/34#0",
     "fingerprint": {
       "tag": "section",
@@ -319,12 +333,9 @@
       "textHash": "1505",
       "line": 38
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/35#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-27": {
+  "cr-ref-gifts-20": {
     "tpl": "Root/35#0",
     "fingerprint": {
       "tag": "div",
@@ -337,12 +348,9 @@
       "textHash": "1505",
       "line": 39
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/36#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-28": {
+  "cr-ref-gifts-21": {
     "tpl": "Root/36#0",
     "fingerprint": {
       "tag": "h2",
@@ -356,9 +364,25 @@
       "textHash": "fae3953c",
       "line": 40
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-31": {
+  "cr-ref-gifts-22": {
+    "tpl": "Root/37#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "15d72e31",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 41
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-23": {
     "tpl": "Root/39#0",
     "fingerprint": {
       "tag": "div",
@@ -373,14 +397,880 @@
       "textHash": "1505",
       "line": 43
     },
-    "slots": {
-      ".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title": "Root>ProductCard@40#0/1#0",
-      ".sgs-product-card__body": "Root/40#0",
-      ".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag": "Root>ProductCard@40#0/4#0"
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-24": {
+    "tpl": "Root/40#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-25": {
+    "tpl": "Root>ProductCard@40#0/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpe",
+      "styleHash": "84143dc9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-26": {
+    "tpl": "Root>ProductCard@40#0/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "94b88499",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-27": {
+    "tpl": "Root>ProductCard@40#0/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-28": {
+    "tpl": "Root>ProductCard@40#0/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a97420cb",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-29": {
+    "tpl": "Root>ProductCard@40#0/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "23d7703c",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-30": {
+    "tpl": "Root>ProductCard@40#0/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-31": {
+    "tpl": "Root>ProductCard@40#0/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "59769a22",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-gifts-32": {
+    "tpl": "Root>ProductCard@40#0/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "314c6a14",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-33": {
+    "tpl": "Root>ProductCard@40#0/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9 scpa",
+      "styleHash": "b47beac4",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7a4fe9f7",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-34": {
+    "tpl": "Root/39#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-35": {
+    "tpl": "Root/40#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-36": {
+    "tpl": "Root>ProductCard@40#1/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpe",
+      "styleHash": "95a16264",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-37": {
+    "tpl": "Root>ProductCard@40#1/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "f32b036e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-38": {
+    "tpl": "Root>ProductCard@40#1/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-39": {
+    "tpl": "Root>ProductCard@40#1/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "70e26b00",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-40": {
+    "tpl": "Root>ProductCard@40#1/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a17944b6",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-41": {
+    "tpl": "Root>ProductCard@40#1/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-42": {
+    "tpl": "Root>ProductCard@40#1/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5955f3",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-43": {
+    "tpl": "Root>ProductCard@40#1/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e29dd066",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-44": {
+    "tpl": "Root>ProductCard@40#1/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9 scpa",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-45": {
+    "tpl": "Root/39#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-46": {
+    "tpl": "Root/40#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-47": {
+    "tpl": "Root>ProductCard@40#2/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpe",
+      "styleHash": "d0e900f0",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-48": {
+    "tpl": "Root>ProductCard@40#2/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "94105535",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-49": {
+    "tpl": "Root>ProductCard@40#2/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-50": {
+    "tpl": "Root>ProductCard@40#2/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "eacd19e8",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-51": {
+    "tpl": "Root>ProductCard@40#2/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ab7465a6",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-52": {
+    "tpl": "Root>ProductCard@40#2/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-53": {
+    "tpl": "Root>ProductCard@40#2/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b8414e2",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-54": {
+    "tpl": "Root>ProductCard@40#2/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f6ec68c0",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-55": {
+    "tpl": "Root>ProductCard@40#2/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9 scpa",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-56": {
+    "tpl": "Root/39#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-57": {
+    "tpl": "Root/40#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-58": {
+    "tpl": "Root>ProductCard@40#3/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpe",
+      "styleHash": "4dccaa38",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-59": {
+    "tpl": "Root>ProductCard@40#3/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "7de396ec",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-60": {
+    "tpl": "Root>ProductCard@40#3/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-61": {
+    "tpl": "Root>ProductCard@40#3/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "550b4971",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-62": {
+    "tpl": "Root>ProductCard@40#3/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "8e5f5fef",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-63": {
+    "tpl": "Root>ProductCard@40#3/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-64": {
+    "tpl": "Root>ProductCard@40#3/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b841400",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-65": {
+    "tpl": "Root>ProductCard@40#3/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "57c181e9",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-66": {
+    "tpl": "Root>ProductCard@40#3/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9 scpa",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-gifts-67": {
     "tpl": "Root/44#0",
     "fingerprint": {
       "tag": "section",
@@ -392,12 +1282,9 @@
       "textHash": "1505",
       "line": 50
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/45#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-33": {
+  "cr-ref-gifts-68": {
     "tpl": "Root/45#0",
     "fingerprint": {
       "tag": "div",
@@ -410,13 +1297,9 @@
       "textHash": "1505",
       "line": 51
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/46#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/47#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-34": {
+  "cr-ref-gifts-69": {
     "tpl": "Root/46#0",
     "fingerprint": {
       "tag": "div",
@@ -430,9 +1313,9 @@
       "textHash": "108d50d0",
       "line": 52
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-35": {
+  "cr-ref-gifts-70": {
     "tpl": "Root/47#0",
     "fingerprint": {
       "tag": "h2",
@@ -446,9 +1329,9 @@
       "textHash": "365ad77b",
       "line": 53
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-36": {
+  "cr-ref-gifts-71": {
     "tpl": "Root/48#0",
     "fingerprint": {
       "tag": "div",
@@ -462,13 +1345,9 @@
       "textHash": "1505",
       "line": 54
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/50#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/50#1"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-37": {
+  "cr-ref-gifts-72": {
     "tpl": "Root/50#0",
     "fingerprint": {
       "tag": "div",
@@ -483,13 +1362,9 @@
       "textHash": "1505",
       "line": 56
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/51#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/52#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-38": {
+  "cr-ref-gifts-73": {
     "tpl": "Root/51#0",
     "fingerprint": {
       "tag": "div",
@@ -505,9 +1380,9 @@
       "textHash": "2b594",
       "line": 57
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-39": {
+  "cr-ref-gifts-74": {
     "tpl": "Root/52#0",
     "fingerprint": {
       "tag": "div",
@@ -523,9 +1398,9 @@
       "textHash": "11b1ef69",
       "line": 58
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-40": {
+  "cr-ref-gifts-75": {
     "tpl": "Root/53#0",
     "fingerprint": {
       "tag": "div",
@@ -541,9 +1416,9 @@
       "textHash": "29e6108b",
       "line": 59
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-41": {
+  "cr-ref-gifts-76": {
     "tpl": "Root/50#1",
     "fingerprint": {
       "tag": "div",
@@ -558,13 +1433,9 @@
       "textHash": "1505",
       "line": 56
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/51#1",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/52#1"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-42": {
+  "cr-ref-gifts-77": {
     "tpl": "Root/51#1",
     "fingerprint": {
       "tag": "div",
@@ -580,9 +1451,9 @@
       "textHash": "2b597",
       "line": 57
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-43": {
+  "cr-ref-gifts-78": {
     "tpl": "Root/52#1",
     "fingerprint": {
       "tag": "div",
@@ -598,9 +1469,9 @@
       "textHash": "34283b99",
       "line": 58
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-44": {
+  "cr-ref-gifts-79": {
     "tpl": "Root/53#1",
     "fingerprint": {
       "tag": "div",
@@ -616,9 +1487,9 @@
       "textHash": "ad23a02f",
       "line": 59
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-45": {
+  "cr-ref-gifts-80": {
     "tpl": "Root/50#2",
     "fingerprint": {
       "tag": "div",
@@ -633,13 +1504,9 @@
       "textHash": "1505",
       "line": 56
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/51#2",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/52#2"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-46": {
+  "cr-ref-gifts-81": {
     "tpl": "Root/51#2",
     "fingerprint": {
       "tag": "div",
@@ -655,9 +1522,9 @@
       "textHash": "2b596",
       "line": 57
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-47": {
+  "cr-ref-gifts-82": {
     "tpl": "Root/52#2",
     "fingerprint": {
       "tag": "div",
@@ -673,9 +1540,9 @@
       "textHash": "62866149",
       "line": 58
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-48": {
+  "cr-ref-gifts-83": {
     "tpl": "Root/53#2",
     "fingerprint": {
       "tag": "div",
@@ -691,9 +1558,9 @@
       "textHash": "303c4628",
       "line": 59
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-49": {
+  "cr-ref-gifts-84": {
     "tpl": "Root/55#0",
     "fingerprint": {
       "tag": "div",
@@ -706,13 +1573,9 @@
       "textHash": "1505",
       "line": 67
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/56#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/66#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-50": {
+  "cr-ref-gifts-85": {
     "tpl": "Root/56#0",
     "fingerprint": {
       "tag": "div",
@@ -726,13 +1589,9 @@
       "textHash": "1505",
       "line": 68
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/57#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/58#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-51": {
+  "cr-ref-gifts-86": {
     "tpl": "Root/57#0",
     "fingerprint": {
       "tag": "div",
@@ -747,9 +1606,9 @@
       "textHash": "dd961b3",
       "line": 69
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-52": {
+  "cr-ref-gifts-87": {
     "tpl": "Root/58#0",
     "fingerprint": {
       "tag": "h2",
@@ -764,9 +1623,9 @@
       "textHash": "a68306b6",
       "line": 70
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-53": {
+  "cr-ref-gifts-88": {
     "tpl": "Root/59#0",
     "fingerprint": {
       "tag": "p",
@@ -781,9 +1640,9 @@
       "textHash": "7de37b52",
       "line": 71
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-54": {
+  "cr-ref-gifts-89": {
     "tpl": "Root/61#0",
     "fingerprint": {
       "tag": "input",
@@ -802,9 +1661,9 @@
     "slots": {
       ".sgs-form-field__input": "Root/61#0"
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-55": {
+  "cr-ref-gifts-90": {
     "tpl": "Root/63#0",
     "fingerprint": {
       "tag": "textarea",
@@ -823,9 +1682,9 @@
     "slots": {
       ".sgs-form-field__input": "Root/63#0"
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-56": {
+  "cr-ref-gifts-91": {
     "tpl": "Root/65#0",
     "fingerprint": {
       "tag": "input",
@@ -844,9 +1703,9 @@
     "slots": {
       ".sgs-form-field__input": "Root/65#0"
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-57": {
+  "cr-ref-gifts-92": {
     "tpl": "Root/66#0",
     "fingerprint": {
       "tag": "div",
@@ -860,13 +1719,9 @@
       "textHash": "1505",
       "line": 76
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/68#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/69#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-58": {
+  "cr-ref-gifts-93": {
     "tpl": "Root/68#0",
     "fingerprint": {
       "tag": "img",
@@ -881,9 +1736,9 @@
       "textHash": "1505",
       "line": 78
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-59": {
+  "cr-ref-gifts-94": {
     "tpl": "Root/69#0",
     "fingerprint": {
       "tag": "div",
@@ -898,9 +1753,9 @@
       "textHash": "6a9d2509",
       "line": 79
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-60": {
+  "cr-ref-gifts-95": {
     "tpl": "Root/70#0",
     "fingerprint": {
       "tag": "div",
@@ -915,9 +1770,9 @@
       "textHash": "8d972d8c",
       "line": 80
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-61": {
+  "cr-ref-gifts-96": {
     "tpl": "Root/71#0",
     "fingerprint": {
       "tag": "div",
@@ -932,9 +1787,9 @@
       "textHash": "c72c1d5c",
       "line": 81
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-62": {
+  "cr-ref-gifts-97": {
     "tpl": "Root/73#0",
     "fingerprint": {
       "tag": "a",
@@ -947,13 +1802,9 @@
       "textHash": "1505",
       "line": 87
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/74#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/75#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-63": {
+  "cr-ref-gifts-98": {
     "tpl": "Root/74#0",
     "fingerprint": {
       "tag": "img",
@@ -967,9 +1818,9 @@
       "textHash": "1505",
       "line": 88
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-64": {
+  "cr-ref-gifts-99": {
     "tpl": "Root/75#0",
     "fingerprint": {
       "tag": "div",
@@ -983,13 +1834,9 @@
       "textHash": "1505",
       "line": 89
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/76#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/77#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-65": {
+  "cr-ref-gifts-100": {
     "tpl": "Root/76#0",
     "fingerprint": {
       "tag": "div",
@@ -1004,9 +1851,9 @@
       "textHash": "23be2472",
       "line": 90
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-66": {
+  "cr-ref-gifts-101": {
     "tpl": "Root/77#0",
     "fingerprint": {
       "tag": "div",
@@ -1021,9 +1868,9 @@
       "textHash": "47f414c",
       "line": 91
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-67": {
+  "cr-ref-gifts-102": {
     "tpl": "Root/78#0",
     "fingerprint": {
       "tag": "div",
@@ -1038,9 +1885,9 @@
       "textHash": "e6e36f68",
       "line": 92
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-68": {
+  "cr-ref-gifts-103": {
     "tpl": "Root/79#0",
     "fingerprint": {
       "tag": "div",
@@ -1055,13 +1902,9 @@
       "textHash": "1505",
       "line": 93
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/80#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/81#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-69": {
+  "cr-ref-gifts-104": {
     "tpl": "Root/80#0",
     "fingerprint": {
       "tag": "span",
@@ -1077,9 +1920,9 @@
       "textHash": "b8414e2",
       "line": 93
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-70": {
+  "cr-ref-gifts-105": {
     "tpl": "Root/81#0",
     "fingerprint": {
       "tag": "span",
@@ -1095,9 +1938,9 @@
       "textHash": "b841441",
       "line": 93
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-gifts-71": {
+  "cr-ref-gifts-106": {
     "tpl": "Root/82#0",
     "fingerprint": {
       "tag": "span",
@@ -1113,9 +1956,6 @@
       "textHash": "b841402",
       "line": 93
     },
-    "slots": {
-      ".sgs-button__label": "Root/82#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   }
 }

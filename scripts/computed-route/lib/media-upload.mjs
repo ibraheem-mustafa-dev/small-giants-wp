@@ -11,7 +11,6 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
-import { recordSite } from './cache.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -117,10 +116,7 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 // photo IDs the draft holds without painting (never uploaded) and `failed` the stock downloads that did not complete
 // (the run goes on without them).
 export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted } ) {
-	// A mirror shares its test site's record (lib/cache.mjs::recordSite): a refresh or a push copies the database, so both
-	// hold the same attachment ids and every reader looks there; an upload on either site checks and writes that one record.
-	const key = recordSite( site );
-	const known = map.sites?.[ key ]?.files || [];
+	const known = map.sites?.[ site ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
@@ -201,18 +197,17 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			await carryStock( row );
 		}
 	} catch ( e ) {
-		e.map = { ...map, sites: { ...( map.sites || {} ), [ key ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
+		e.map = { ...map, sites: { ...( map.sites || {} ), [ site ]: { files: [ ...files, ...known.filter( ( k ) => ! files.some( ( f ) => f.asset === k.asset ) ) ] } } };
 		throw e;
 	}
-	return { map: { ...map, sites: { ...( map.sites || {} ), [ key ]: { files } } }, ...report };
+	return { map: { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } }, ...report };
 }
 
 // The asset a painted image URL shows on a site, through the map (FR-48-58's identity check): the attachment whose URL
 // the painted URL is, else a stock preview whose source URL it is, else one a size WordPress made of it matches (`name-300x200.png`, `name-scaled.png`); null when none.
 export function paintedAsset( map, site, src ) {
-	const files = map.sites?.[ recordSite( site ) ]?.files || [];
-	// A mirror and its test site share the record but not the host, so a URL is compared from its uploads path on.
-	const plain = ( u ) => ( ( p ) => ( p.includes( '/wp-content/uploads/' ) ? p.slice( p.indexOf( '/wp-content/uploads/' ) ) : p ) )( String( u ).split( /[?#]/ )[ 0 ] );
+	const files = map.sites?.[ site ]?.files || [];
+	const plain = ( u ) => String( u ).split( /[?#]/ )[ 0 ];
 	const unsized = ( u ) => plain( u ).replace( /-(?:\d+x\d+|scaled)(?=\.[a-z0-9]+$)/i, '' );
 	// The exact URL first, so an asset whose own name ends like a size (hero-1200x600.png) is never taken for another's.
 	// A stock preview the draft paints from its source URL is found by that URL without the query.

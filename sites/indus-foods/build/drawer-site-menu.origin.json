@@ -9,12 +9,6 @@
       "textHash": "1505",
       "line": 157
     },
-    "slots": {
-      ".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo": "Root/114#0",
-      ".sgs-nav-drawer__chrome > .sgs-nav-drawer__close": "Root/118#0",
-      ".sgs-nav-drawer__body": "Root/108#0",
-      "@scrim": "Root/111#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-drawer-site-menu-1": {
@@ -57,12 +51,25 @@
       "textHash": "1505",
       "line": 161
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/115#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-drawer-site-menu-4": {
+    "tpl": "Root/114#0",
+    "fingerprint": {
+      "tag": "indus-logo",
+      "cls": "",
+      "styleHash": "8adea707",
+      "parentTags": [
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 162
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-5": {
     "tpl": "Root/115#0",
     "fingerprint": {
       "tag": "div",
@@ -77,7 +84,23 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-8": {
+  "cr-ref-drawer-site-menu-9": {
+    "tpl": "Root/118#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9",
+      "styleHash": "6b3f799d",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 166
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-10": {
     "tpl": "Root/121#0",
     "fingerprint": {
       "tag": "div",
@@ -89,13 +112,9 @@
       "textHash": "1505",
       "line": 172
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/122#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/178#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-9": {
+  "cr-ref-drawer-site-menu-11": {
     "tpl": "Root/122#0",
     "fingerprint": {
       "tag": "nav",
@@ -108,21 +127,9 @@
       "textHash": "1505",
       "line": 173
     },
-    "slots": {
-      ".sgs-nav-drawer-menu__bar": "Root/122#0",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link": "Root/124#0",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link": "Root/124#5",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": "Root/125#0",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": "Root/125#5",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary": "Root/125#1",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": "Root/126#1",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": "Root/126#2",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": "Root/126#3",
-      ".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": "Root/126#4"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-10": {
+  "cr-ref-drawer-site-menu-12": {
     "tpl": "Root/178#0",
     "fingerprint": {
       "tag": "div",
@@ -135,12 +142,9 @@
       "textHash": "1505",
       "line": 255
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/179#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-11": {
+  "cr-ref-drawer-site-menu-13": {
     "tpl": "Root/179#0",
     "fingerprint": {
       "tag": "span",
@@ -156,7 +160,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-17": {
+  "cr-ref-drawer-site-menu-19": {
     "tpl": "Root/196#0",
     "fingerprint": {
       "tag": "div",
@@ -168,12 +172,9 @@
       "textHash": "1505",
       "line": 260
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/197#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-drawer-site-menu-18": {
+  "cr-ref-drawer-site-menu-20": {
     "tpl": "Root/197#0",
     "fingerprint": {
       "tag": "a",
@@ -185,11 +186,6 @@
       ],
       "textHash": "1505",
       "line": 261
-    },
-    "slots": {
-      ".sgs-button__label": "Root/198#0",
-      ".sgs-button__icon": "Root/199#0",
-      ".sgs-button__icon > svg": "Root/200#0"
     },
     "draft": "0fe5aee1c396a997"
   }

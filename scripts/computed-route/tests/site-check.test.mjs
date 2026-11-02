@@ -103,19 +103,6 @@ test( 'MUST FAIL: a drawer that never opens fails', async () => {
 	assert.match( item.error, /did not show after the burger's click/ );
 } );
 
-test( 'MUST FAIL: a drawer that opens after a slow transition passes; a closed dialog that renders anyway fails with its own message', async () => {
-	const slow = drawerHtml( true ).replace( "d.showModal();", "setTimeout( () => d.showModal(), 250 );" );
-	const ok = await pageWith( slow, 375 );
-	const passed = await drawerItem( ok, { width: 375, url: BASE, shoot } );
-	await ok.close();
-	assert.equal( passed.status, 'pass', passed.error );
-	const shown = await pageWith( drawerHtml( true ).replace( '<dialog ', '<dialog style="display:flex;position:fixed;inset:0" ' ), 375 );
-	const failed = await drawerItem( shown, { width: 375, url: BASE, shoot } );
-	await shown.close();
-	assert.equal( failed.status, 'fail' );
-	assert.match( failed.error, /renders while closed/ );
-} );
-
 test( 'MUST FAIL: a drawer that opens from its burger and closes by its close button passes', async () => {
 	const page = await pageWith( drawerHtml( true ), 375 );
 	const item = await drawerItem( page, { width: 375, url: BASE, shoot } );
@@ -199,29 +186,6 @@ test( 'MUST FAIL: a choice flow that advances and comes back passes; one that ne
 	}
 } );
 
-// A buybox's flow sits in a closed popup its button opens (FR-43-22): the check opens it as a shopper does.
-const popupFlowHtml = ( opener ) => `
-	${ opener ? '<button type="button" data-sgs-modal-open="sgs-flow-lenses">Add my prescription</button>' : '' }
-	<div id="sgs-flow-lenses"><dialog id="sgs-modal-21">${ flowHtml( true ) }</dialog></div>
-	<script>
-		const o = document.querySelector( '[data-sgs-modal-open]' );
-		o && ( o.onclick = () => document.getElementById( 'sgs-modal-21' ).showModal() );
-	</script>`;
-
-test( 'MUST FAIL: a flow in a closed popup is opened by its visible opener and then checked; with no opener it fails naming the popup', async () => {
-	const page = await pageWith( popupFlowHtml( true ) );
-	const { flows } = await page.evaluate( readPartsInPage, MARK );
-	const item = await flowItem( page, flows[ 0 ], { url: BASE, shoot } );
-	await page.close();
-	assert.equal( item.status, 'pass', item.error || item.detail );
-	const bare = await pageWith( popupFlowHtml( false ) );
-	const parts = await bare.evaluate( readPartsInPage, MARK );
-	const none = await flowItem( bare, parts.flows[ 0 ], { url: BASE, shoot } );
-	await bare.close();
-	assert.equal( none.status, 'fail' );
-	assert.match( none.error, /closed popup \(#sgs-flow-lenses\) that no visible control on the page opens/ );
-} );
-
 const formHtml = ( works ) => `
 	<div class="sgs-form" data-wp-interactive="sgs/form" data-wp-context='{"formId":"contact","successMessage":"Thanks!","successRedirect":""}'>
 		<form class="sgs-form__inner" novalidate>
@@ -301,10 +265,5 @@ test( 'MUST FAIL: page targets and the flows owner', () => {
 	assert.equal( t.skipped.length, 3 );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'local-test', mirrorOf: 'test-site' } )[ 0 ].id, 5, 'a mirror keeps its test site\'s ids' );
 	assert.equal( rowsFor( rows, 'test-site', { site: 'other' } )[ 0 ].id, null, 'another site\'s ids are dropped' );
-	// MUST FAIL (indus-foods on indus-test, 2026-11-01): a map recorded under the mirror's name holds the test site's ids
-	// too, because push-to-remote.sh copies the mirror's database over; the one-way rule dropped every id on the test site.
-	const targets = { 'local-test': { mirrorOf: 'test-site' } };
-	assert.equal( rowsFor( rows, 'local-test', { site: 'test-site' }, targets )[ 0 ].id, 5, 'a test site keeps ids recorded under its mirror' );
-	assert.equal( rowsFor( rows, 'local-test', { site: 'other' }, targets )[ 0 ].id, null, 'a mirror name never stands for another site' );
 	assert.equal( flowsClient( '/repo/sites/some-client/build/qa/flows' ), 'some-client' );
 } );

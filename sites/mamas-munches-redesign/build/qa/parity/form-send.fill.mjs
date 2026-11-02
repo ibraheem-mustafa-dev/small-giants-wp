@@ -5,14 +5,14 @@ import base from './form-send.fill-base.mjs';
 const generated = [
 	{ name: "gen-form-send-0", text: false, structure: false, draft: {"tpl":"Root/44#0"}, live: ".cr-ref-form-send-0" },
 	{ name: "gen-form-send-1", text: false, structure: false, draft: {"tpl":"Root/45#0"}, live: ".cr-ref-form-send-1" },
-	{ name: "gen-form-send-2", text: false, structure: false, draft: {"tpl":"Root/46#0"}, live: ".cr-ref-form-send-2", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-form-send-2", text: false, structure: false, draft: {"tpl":"Root/46#0"}, live: ".cr-ref-form-send-2" },
 	{ name: "gen-form-send-3", text: false, structure: false, draft: {"tpl":"Root/48#0"}, live: ".cr-ref-form-send-3" },
-	{ name: "gen-form-send-4", text: false, structure: false, draft: {"tpl":"Root/51#0"}, live: ".cr-ref-form-send-4", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-form-send-4", text: false, structure: false, draft: {"tpl":"Root/51#0"}, live: ".cr-ref-form-send-4" },
 	{ name: "gen-form-send-5", text: false, structure: false, draft: {"tpl":"Root/53#0"}, live: ".cr-ref-form-send-5" },
 	{ name: "gen-form-send-6", text: false, structure: false, draft: {"tpl":"Root/55#0"}, live: ".cr-ref-form-send-6" },
 	{ name: "gen-form-send-7", text: false, structure: false, draft: {"tpl":"Root/58#0"}, live: ".cr-ref-form-send-7" },
-	{ name: "gen-form-send-10", text: false, structure: false, draft: {"tpl":"Root/66#0"}, live: ".cr-ref-form-send-10" },
-	{ name: "gen-form-send-11", text: false, structure: false, draft: {"tpl":"Root/67#0"}, live: ".cr-ref-form-send-11" },
+	{ name: "gen-form-send-8", text: false, structure: false, draft: {"tpl":"Root/66#0"}, live: ".cr-ref-form-send-8" },
+	{ name: "gen-form-send-9", text: false, structure: false, draft: {"tpl":"Root/67#0"}, live: ".cr-ref-form-send-9" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

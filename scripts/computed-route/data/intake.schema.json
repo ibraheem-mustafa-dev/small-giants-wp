@@ -309,11 +309,6 @@
         "$ref": "#/$defs/pageMapRow"
       }
     },
-    "pageMapLeaving": {
-      "description": "The rows of the written page-map.json holding a WordPress id that this record's page map no longer has (lib/intake-pagemap-regen.mjs::leavingRows): review.md lists each as a page-map row Bean marks drop to remove it; Accept all never covers one.",
-      "type": "array",
-      "items": { "$ref": "#/$defs/pageMapRow" }
-    },
     "palette": {
       "type": "object",
       "required": [
@@ -470,13 +465,6 @@
         }
       }
     },
-    "renderParts": {
-      "description": "The parts a render-context surface (a drawer) draws another surface's block in, each read with its state open and its inventory saved beside the surfaces' (lib/intake-skeletons.mjs renderParts, lib/fill-render.mjs): slug to { id, kind, name, context, parent, root, opened, inventory }.",
-      "type": "object",
-      "additionalProperties": {
-        "type": "object"
-      }
-    },
     "skeletons": {
       "type": "object",
       "additionalProperties": {
@@ -630,12 +618,6 @@
         "route": {
           "type": "string"
         },
-        "folds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "slug": {
           "type": "string",
           "pattern": "^[a-z0-9-]+$"
@@ -749,28 +731,9 @@
           "type": "string",
           "pattern": "^surfaces\\.json \\S+$"
         },
-        "opens": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "kind",
-              "slug"
-            ],
-            "properties": {
-              "kind": {
-                "enum": [
-                  "modal",
-                  "flow"
-                ]
-              },
-              "slug": {
-                "type": "string",
-                "pattern": "^[a-z0-9-]+$"
-              }
-            }
-          }
+        "opensFlow": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
         },
         "id": {
           "type": [

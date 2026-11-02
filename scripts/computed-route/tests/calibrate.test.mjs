@@ -40,17 +40,17 @@ test( 'MUST FAIL TO MATCH: a real code change still differs after normalising', 
 	assert.notEqual( normaliseBundle( './view.asset.php', "array('dependencies' => array('a'), 'version' => 'x')" ), normaliseBundle( './view.asset.php', "array('dependencies' => array('b'), 'version' => 'x')" ) );
 } );
 
-// One library-wide cache (§3.2): a current slot map calibrated on one site is never replaced by a run on another site
-// unless the run asks for it; a stale one is measured again wherever it was measured.
+// One library-wide cache (§3.2): a block calibrated on one site is never replaced by a run on another site unless the
+// run asks for it.
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { slotMapSkip, cachedSite } from '../lib/cache.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
-const cacheDir = ( site, slotKey = 'old' ) => {
+const cacheDir = ( site ) => {
 	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-cache-' ) );
-	fs.writeFileSync( path.join( d, 'heading.json' ), JSON.stringify( { block: 'sgs/heading', site, slotKey, readKey: READ_KEY } ) );
+	fs.writeFileSync( path.join( d, 'heading.json' ), JSON.stringify( { block: 'sgs/heading', site, slotKey: 'old', readKey: READ_KEY } ) );
 	return d;
 };
 
@@ -60,8 +60,8 @@ test( 'a block with no slot map, or one from the same site with a changed key, m
 	assert.equal( slotMapSkip( cacheDir( 'eye-care-test' ), 'sgs/heading', 'sandybrown', 'k', true ), null );
 } );
 
-test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces a current eye-care-test slot map without --recalibrate', () => {
-	const d = cacheDir( 'eye-care-test', 'k' );
+test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test slot map without --recalibrate', () => {
+	const d = cacheDir( 'eye-care-test' );
 	assert.match( slotMapSkip( d, 'sgs/heading', 'sandybrown', 'k' ), /calibrated on eye-care-test/ );
 	assert.equal( cachedSite( path.join( d, 'heading.json' ) ), 'eye-care-test' );
 } );

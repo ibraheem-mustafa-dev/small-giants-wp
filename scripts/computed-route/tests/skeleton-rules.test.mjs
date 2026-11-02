@@ -13,8 +13,6 @@ import { makeRules } from '../lib/skeleton-rules.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { skeletonProblems } from '../lib/fill-skeleton.mjs';
 import { handoverProblems } from '../lib/fill-handover.mjs';
-import { needsFinaliser } from '../lib/intake-run-finalise.mjs';
-import { fixtureRecord, fixtureResolved } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -47,12 +45,9 @@ function inventory( root ) {
 		return el.allText;
 	};
 	walk( root, null, 0 );
-	return fixtureResolved( { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements } );
+	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const run = ( root, o = {} ) => {
-	const inv = inventory( root );
-	return proposeSkeleton( { inventory: inv, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', motion: o.motion || new Set(), db, factRecord: fixtureRecord( inv, o.factRecord ) } );
-};
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord } );
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -139,13 +134,15 @@ test( 'mapEmbed: an embedded Google map is business-info\'s map display; MUST FA
 	assert.notEqual( byTag( run( tree, { facts: facts( 'mapEmbed' ) } ), 'iframe' ).block, 'sgs/business-info' );
 } );
 
-// The open-status line is read from the draft's code, never its words: tests/skeleton-clock.test.mjs.
-test( 'hoursRows: an hours row is the hours display; MUST FAIL without the rule', () => {
-	const tree = section( [ E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Monday – Thursday' } ), E( 'span', { words: '9:30am – 5pm' } ) ] ) ] );
+test( 'openStatus and hoursRows: a live open line is the open-status display, the next line part of it; an hours row is the hours display; MUST FAIL without each', () => {
+	const tree = section( [ E( 'span', { words: 'Open now' }, [ E( 'span', { style: 'width:8px;height:8px;border-radius:50%' } ) ] ), E( 'span', { words: 'Closes at 5pm today' } ), E( 'div', { display: 'flex' }, [ E( 'span', { words: 'Monday – Thursday' } ), E( 'span', { words: '9:30am – 5pm' } ) ] ) ] );
 	const r = run( tree );
+	assert.deepEqual( [ byWords( r, 'Open now' ).block, byWords( r, 'Open now' ).attributes.displayType ], [ 'sgs/business-info', 'open-status' ] );
+	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
 	const hours = row( r, ( x ) => 'div' === x.tag && x.depth === 1 );
 	assert.deepEqual( [ hours.block, hours.attributes.displayType ], [ 'sgs/business-info', 'hours' ] );
 	assert.equal( byWords( r, '9:30am – 5pm' ).action, 'absorbed' );
+	assert.notEqual( byWords( run( tree, { facts: facts( 'openStatus' ) } ), 'Open now' ).rule, 'openStatus' );
 	assert.notEqual( row( run( tree, { facts: facts( 'hoursRows' ) } ), ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'hoursRows' );
 } );
 
@@ -228,16 +225,12 @@ test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each 
 	assert.notEqual( byTag( run( tree, { facts: facts( 'listWrapper' ) } ), 'div' ).action, 'unwrap' );
 } );
 
-test( 'a surface with a hand-built reference post goes through the same confidence and review path as any other; MUST FAIL while a built post settles its rows', () => {
+test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
 	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );
-	const propose = ( extra ) => proposeSkeleton( { inventory: inventory( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'drawer', surfaceName: 'Fixture', motion: new Set(), db, ...extra } );
-	const withPost = propose( { built } );
-	assert.ok( withPost.proposal.rows.some( ( x ) => x.low ), 'a row the rules are unsure of stays low, so the review sees it' );
-	assert.ok( withPost.proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule && ! x.builtPost ), 'no row names a built post' );
-	assert.equal( withPost.proposal.builtPost, undefined );
-	const outcome = ( r ) => r.proposal.rows.map( ( x ) => [ x.key, x.block, x.action, x.low, x.rule ] );
-	assert.deepEqual( outcome( withPost ), outcome( propose( {} ) ), 'negative control: the proposal is the same with or without a reference post' );
+	assert.ok( run( tree, { kind: 'drawer', built } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' === x.rule && x.builtPost === built && ! x.low ), 'every row is settled by the post, so none awaits the finaliser' );
+	assert.ok( run( tree, { kind: 'drawer' } ).proposal.rows.some( ( x ) => x.low ), 'the same surface unbuilt has a row the finaliser would be asked about' );
+	assert.ok( run( tree, { kind: 'drawer', built, facts: facts( 'clientBuiltSurface' ) } ).proposal.rows.every( ( x ) => 'clientBuiltSurface' !== x.rule ) );
 } );
 
 test( 'marquee: a strip whose own animation loops a translate for ever is a brand strip (logos) or trust bar (labels); MUST FAIL without the rule or the motion record', () => {
@@ -378,13 +371,23 @@ test( 'cardAction: every copy of one template element takes one verdict, a butto
 		last.tpl = first.tpl;
 		last.key = `Root/${ first.tpl }#1`;
 		inv.elements.filter( ( x ) => x.parentKey === was ).forEach( ( x ) => ( x.parentKey = last.key ) );
-		return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', built: null, motion: new Set(), db, factRecord: fixtureRecord( inv ) } );
+		return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', built: null, motion: new Set(), db } );
 	};
 	const kind = ( r ) => [ 'Explore Alpha', 'Explore Beta' ].map( ( w ) => byWords( r, w ).rule );
 	assert.deepEqual( kind( copies( true ) ), [ 'cardAction', 'cardAction' ], 'both copies end their card in an action' );
 	const mixed = copies( false );
 	assert.deepEqual( kind( mixed ).map( ( x ) => 'cardAction' === x ), [ false, false ], 'one copy does not, so neither is a button' );
 	assert.equal( byWords( mixed, 'Alpha' ) ? byTag( mixed, 'a' ).attributes.sgsBlockLink : null, '/a', 'the card whose action is not a button keeps its own link' );
+} );
+
+test( 'openStatus: a second open-status line in a cousin position joins the first display and takes no text attribute', () => {
+	const tree = section( [ E( 'div', {}, [ E( 'div', {}, [ E( 'span', { words: 'Open now' } ) ] ), E( 'div', {}, [ E( 'span', { words: 'Closes at 5pm today' } ) ] ) ] ) ] );
+	const r = run( tree );
+	const displays = r.proposal.rows.filter( ( x ) => 'sgs/business-info' === x.block && 'open-status' === x.attributes?.displayType );
+	assert.equal( displays.length, 1, 'one open-status display, not two' );
+	assert.deepEqual( settled( byWords( r, 'Closes at 5pm today' ) ), { block: null, action: 'absorbed', rule: 'openStatus' } );
+	assert.equal( byWords( r, 'Closes at 5pm today' ).into, displays[ 0 ].key );
+	assert.deepEqual( Object.keys( displays[ 0 ].attributes ), [ 'displayType' ], 'no generic text attribute (copyrightPrefix) on a rule-set display' );
 } );
 
 test( 'readingProgress hands the bar over as a Floating UI site setting; without the rule no such handover exists', () => {
@@ -405,7 +408,7 @@ test( 'a client decision on an element a block absorbs is flagged stale, never s
 	const nav = E( 'header', {}, [ E( 'nav', { display: 'flex' }, [ E( 'button', { words: 'About' } ), E( 'button', { words: 'Sectors' } ) ] ) ] );
 	const tree = inventory( nav );
 	const key = tree.elements.find( ( x ) => 'About' === x.words ).key;
-	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ key ]: { block: 'sgs/button', signature: 'button|About' } } } }, db } );
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ key ]: { block: 'sgs/button', signature: 'button|About' } } } }, db } );
 	const about = byWords( r, 'About' );
 	assert.equal( about.action, 'absorbed' );
 	assert.match( about.stale || '', /client decision .* no longer applies/ );
@@ -416,7 +419,7 @@ test( 'a client decision with attributes on a rule-eligible element puts them on
 	const tree = inventory( nav );
 	const navEl = tree.elements.find( ( x ) => 'nav' === x.tag );
 	const decision = { block: 'sgs/nav-bar-menu', attributes: { ref: 5 }, signature: `nav|${ navEl.words }` };
-	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ navEl.key ]: decision } } }, db } );
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ navEl.key ]: decision } } }, db } );
 	assert.equal( byTag( r, 'nav' ).source, 'client decision' );
 	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 	assert.equal( flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name )?.attributes?.ref, 5, 'the node carries the decision attributes' );
@@ -433,7 +436,7 @@ const SETTINGS = { itemColour: { slot: '.bar > .item:nth-of-type(3) > .link', st
 const STATES = [ { name: 'desktop nav (≥ 1024)', how_to_reach: 'state.w ≥ 1024', sc_if_tpl_ids: [ '44', '49', '51' ] }, { name: 'current section', how_to_reach: 'route', sc_if_tpl_ids: [ '51' ] }, { name: 'tablet (≥ 768)', how_to_reach: 'state.w ≥ 768', sc_if_tpl_ids: [ '57' ] }, { name: 'compact (< 1024)', how_to_reach: 'state.w < 1024', sc_if_tpl_ids: [ '55' ] } ];
 const navRun = ( o = {} ) => {
 	const tree = inventory( navTree() );
-	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', calSettings: () => SETTINGS, states: STATES, thresholds: [ 768, 1024 ], db, ...o } );
+	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', calSettings: () => SETTINGS, states: STATES, thresholds: [ 768, 1024 ], db, ...o } );
 	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 	return { r, node: flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name ), tree };
 };
@@ -722,60 +725,4 @@ test( 'dotMarker never takes a control and needs text beside it; cardHeading rea
 	assert.notEqual( byTag( run( section( [ swatch ] ) ), 'span' ).rule, 'dotMarker' );
 	const card = ( y ) => E( 'div', { y }, [ E( 'div', { words: `Wholesale ${ y }`, style: 'font-weight:bold;font-size:1.25rem' } ), E( 'div', { words: 'Pallet volumes for cash and carries.', style: 'font-size:1rem' } ) ] );
 	assert.equal( byWords( run( section( [ E( 'div', { display: 'grid' }, [ card( 0 ), card( 1 ) ] ) ] ) ), 'Wholesale 0' ).rule, 'cardHeading' );
-} );
-
-test( 'MUST FAIL: two links drawn as buttons (padding and a ground) stacked by their wrapping row are a button group, never a list', () => {
-	const pill = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
-	const ground = 'display:inline-flex;background:rgb(0, 0, 0);color:rgb(216, 202, 80);padding:15px 26px;border-radius:999px';
-	const edged = 'display:inline-flex;background:transparent;border:2px solid rgb(0, 0, 0);padding:15px 26px';
-	for ( const style of [ ground, edged ] ) {
-		const r = run( section( [ E( 'div', { display: 'flex', style: 'display:flex;flex-wrap:wrap;gap:14px' }, [ pill( 'Apply', 0, style ), pill( 'Catalogue', 60, style ) ] ) ] ) );
-		assert.equal( byTag( r, 'div' ).block, 'sgs/multi-button', style );
-		assert.deepEqual( r.proposal.rows.filter( ( x ) => 'a' === x.tag ).map( ( x ) => x.block ), [ 'sgs/button', 'sgs/button' ] );
-	}
-} );
-
-test( 'NEGATIVE: stacked links with no ground, no padding, a clear background or a zero border are still a list', () => {
-	const link = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
-	for ( const style of [ 'color:rgb(0, 0, 0)', 'background:rgb(0, 0, 0)', 'padding:4px 8px;background:rgba(0, 0, 0, 0)', 'padding:4px 8px;border:0px solid rgb(0, 0, 0)', 'padding:0px;background:rgb(0, 0, 0)', 'padding:4px;background:none', 'padding:4px;background-color:transparent' ] ) {
-		const r = run( section( [ E( 'div', {}, [ link( 'Trade', 0, style ), link( 'Brands', 30, style ) ] ) ] ) );
-		assert.deepEqual( settled( byTag( r, 'div' ) ), { block: null, action: 'unwrap', rule: 'listWrapper' }, style );
-	}
-} );
-
-// D1 (Bean, 2026-10-29): a rule row whose framework DB scoring strongly prefers another block goes to the finaliser.
-const mapFrame = () => section( [ E( 'iframe', { attrs: { src: 'https://www.google.com/maps/embed?pb=1' } } ) ] );
-const withFacts = ( edit ) => {
-	const f = facts();
-	edit( f.decisions.rules );
-	return f;
-};
-
-test( 'MUST FAIL (D1): a rule row the DB scores as another specific block keeps the rule\'s block at low confidence, with both candidates and both reasons, so the finaliser decides it', () => {
-	const x = byTag( run( mapFrame() ), 'iframe' );
-	assert.equal( x.rule, 'mapEmbed' );
-	assert.equal( x.block, 'sgs/business-info', 'the rule still wins the build' );
-	assert.deepEqual( [ x.low, x.action, x.confidence ], [ true, null, 0.5 ] );
-	assert.deepEqual( x.candidates.map( ( c ) => c.block ), [ 'sgs/business-info', 'sgs/media' ] );
-	assert.deepEqual( [ x.conflict.ruleBlock, x.conflict.dbBlock ], [ 'sgs/business-info', 'sgs/media' ] );
-	assert.match( x.reason, /map display; the framework DB prefers sgs\/media \(confidence 0\.75: html_tag_to_core_block: iframe -> sgs\/media/ );
-	assert.ok( needsFinaliser( x ), 'the finaliser is asked about it' );
-} );
-
-test( 'NEGATIVE (D1): no conflict without the rule entry, under the confidence floor, above the rule-share ceiling, or when the DB only offers a generic wrapper', () => {
-	const plain = ( f ) => byTag( run( mapFrame(), { facts: f } ), 'iframe' );
-	assert.deepEqual( [ plain( facts( 'ruleConflict' ) ).confidence, plain( facts( 'ruleConflict' ) ).conflict ], [ 1, undefined ], 'the rule entry removed' );
-	assert.equal( plain( withFacts( ( R ) => ( R.ruleConflict.minConfidence = 0.8 ) ) ).conflict, undefined, 'the DB is not confident enough' );
-	assert.ok( plain( withFacts( ( R ) => ( R.ruleConflict.minConfidence = 0.75 ) ) ).conflict, 'a DB confidence at the floor counts' );
-	assert.equal( plain( withFacts( ( R ) => ( R.ruleConflict.maxRuleShare = -1 ) ) ).conflict, undefined, 'a DB scoring holding more of the rule block than the ceiling is no disagreement' );
-	// A pill label with a marker dot is the label block by its rule; the DB's own top for it is the generic wrapper shell
-	// (it holds a child), which is no preference.
-	const pill = run( section( [ E( 'span', { words: 'CERTIFIED', style: 'display:inline-flex;text-transform:uppercase;padding:7px 13px;border-radius:999px' }, [ E( 'span', { style: 'width:7px;height:7px;border-radius:50%' } ) ] ), E( 'p', { words: 'Body copy for the section.' } ) ] ) );
-	const dot = byWords( pill, 'CERTIFIED' );
-	assert.deepEqual( [ dot.rule, dot.conflict, dot.confidence ], [ 'label', undefined, 1 ] );
-	// A label is a rule row whose DB alternative is the generic wrapper shell, which is no preference.
-	const label = byWords( run( section( [ E( 'span', { words: 'NEW', style: 'text-transform:uppercase' } ), E( 'p', { words: 'Body copy for the section.' } ) ] ) ), 'NEW' );
-	assert.equal( label.rule, 'label' );
-	assert.equal( label.conflict, undefined );
-	assert.equal( label.confidence, 1 );
 } );

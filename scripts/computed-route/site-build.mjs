@@ -3,7 +3,6 @@
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--only <row key,...>] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 //   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
-//   node site-build.mjs <client> --site <site> --flow-products [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
@@ -14,11 +13,9 @@
 // (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
 // draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
 // Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
-// each published product covered by a page-map product row whose `opens` names one flow gets that flow's slug as `_sgs_choice_flow`
+// each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
 // (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
-// --templates-only nor --only) runs the same step after its four phases. --flow-products runs only the flow products
-// (lib/site-build-flow-product.mjs): each choice flow's `flowProductId` set to the catalogue product its basket call adds (a
-// dry run without --apply); a whole build runs it after the flow links. --catalogue runs only the draft catalogue
+// --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
 // (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
 // complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
 // permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written. --store-visible runs
@@ -41,10 +38,9 @@ import { readState } from './lib/site-build-state.mjs';
 import { readLinkTextReport, readSurfaces } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
-import { applyPhase, siteEnv, wpBuildPage } from './lib/site-build-apply.mjs';
+import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
-import { runFlowProducts } from './lib/site-build-flow-product.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
@@ -81,9 +77,6 @@ const apply = args.includes( '--apply' );
 // of over SSH; a site with no target entry runs over SSH.
 const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
 const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
-// A local mirror shares its test site's database and ids (calibration-targets.json `mirrorOf`; push-to-remote.sh copies it
-// over), so the page map's ids are recorded and compared under the test site's name either way.
-const idsSite = target.mirrorOf || site;
 if ( args.includes( '--catalogue' ) ) {
 	try {
 		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );
@@ -108,17 +101,9 @@ if ( args.includes( '--flow-links' ) ) {
 		process.exit( 1 );
 	}
 }
-if ( args.includes( '--flow-products' ) ) {
-	try {
-		process.exit( runFlowProducts( { repo, client, rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
-	} catch ( e ) {
-		console.error( `FAILED: ${ e.message }` );
-		process.exit( 1 );
-	}
-}
 if ( args.includes( '--menus' ) ) {
 	try {
-		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), idsSite );
+		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
 		const runPhp = wpEvalRunner( target, site, repo );
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
@@ -165,7 +150,7 @@ const print = ( plan ) => {
 
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
-	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), idsSite );
+	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
 	const runPhp = wpEvalRunner( target, site, repo );
 	const wp = wpCommand( target, site, repo );
 	const ids = {};
@@ -180,23 +165,23 @@ try {
 		}
 		const all = withSiteOptions( p, { repo, client, runPhp } );
 		if ( templatesOnly ) {
-			return { ...all, actions: all.actions.filter( ( a ) => [ 'template', 'template-remove' ].includes( a.type ) ), options: all.options.filter( ( o ) => o.name.startsWith( 'sgs_site_build_templates[' ) ) };
+			return { ...all, actions: all.actions.filter( ( a ) => 'template' === a.type ), options: all.options.filter( ( o ) => o.name.startsWith( 'sgs_site_build_templates[' ) ) };
 		}
-		return onlyRows ? { ...all, actions: all.actions.filter( ( a ) => ! [ 'template', 'template-remove' ].includes( a.type ) && onlyRows.includes( a.key ) ), options: [] } : all;
+		return onlyRows ? { ...all, actions: all.actions.filter( ( a ) => 'template' !== a.type && onlyRows.includes( a.key ) ), options: [] } : all;
 	};
 	const first = plan();
 	print( first );
 	const counts = tally( first.actions );
 	if ( ! apply ) {
-		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
+		console.log( `${ counts.creates } to create, ${ counts.changes } to change, ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
 		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) );
 	}
-	const build = wpBuildPage( repo, site, target );
+	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
 	// (lib/wp-run-session.mjs::openDetachedSession): each wp-build-page.js child attaches through SGS_CDP_URL instead of
 	// launching and logging in on its own.
-	const session = await openDetachedSession( site, readEnv( siteEnv( target, site ).envFile, siteEnv( target, site ).envKey, repo ) );
-	writeIdsSite( mapFile, idsSite );
+	const session = await openDetachedSession( site, readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo ) );
+	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;
 		rows = writePageMap( mapFile, original, ids );
@@ -219,10 +204,6 @@ try {
 	// The product flow links last, once the posts phase has made the flow posts they name.
 	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowLinks( { rows, runPhp, apply: true } ) ) {
 		throw new Error( 'the product flow links did not complete' );
-	}
-	// Each flow's product (`flowProductId`) last of all, once the catalogue step has made the products it sells.
-	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowProducts( { repo, client, rows, runPhp, apply: true } ) ) {
-		throw new Error( 'the flow products did not complete' );
 	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );

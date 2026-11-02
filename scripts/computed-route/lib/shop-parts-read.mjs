@@ -255,7 +255,7 @@ function routeOf( href, sources ) {
 // item's own (`itemBound`), whether a condition inside the loop reads the item (`itemCond`: it shows on some items only),
 // and whether its handler leaves the surface for somewhere else (`leaves`: it sets to false a key the surface's handoff
 // record opens it with, `openKeys`, and sets another key besides).
-export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set(), openKeys = new Set(), perUnit = [] } ) {
+export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set(), openKeys = new Set() } ) {
 	const out = [];
 	const expanded = new Set( elements( region ).filter( ( e ) => e.attrs[ 'aria-expanded' ] ).map( ( e ) => stripExpr( e.attrs[ 'aria-expanded' ] ) ) );
 	const visit = ( node, ctx ) => {
@@ -267,7 +267,7 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 				const text = squash( c.text );
 				if ( /[A-Za-z0-9{]/.test( text ) ) {
 					const b = bindingsOf( text );
-					out.push( { ...base, kind: 'text', tag: '#text', parent: node.tag, text, facts: { ...facts, money: b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) ), count: 1 === b.length && countBinding( L, b[ 0 ] ), perUnit: perUnit.find( ( p ) => b.some( ( x ) => x.endsWith( `.${ p.field }` ) ) )?.word || null } } );
+					out.push( { ...base, kind: 'text', tag: '#text', parent: node.tag, text, facts: { ...facts, money: b.length > 0 && b.every( ( x ) => moneyBinding( L, x ) ), count: 1 === b.length && countBinding( L, b[ 0 ] ) } } );
 				}
 				continue;
 			}
@@ -308,7 +308,6 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 					narrows: effect.sets.some( ( k ) => listingKeys.has( k ) ),
 					editsBasket: ! effect.appends && ( effect.writesStore || effect.sets.some( ( k ) => addKeys.has( k ) ) ),
 					money: bindingsOf( label ).some( ( x ) => moneyBinding( L, x ) ),
-					perUnit: perUnit.find( ( p ) => bindingsOf( label ).some( ( x ) => x.endsWith( `.${ p.field }` ) ) )?.word || null,
 					itemBound,
 					itemCond: !! ctx.itemCond,
 					leaves: effect.off.some( ( k ) => openKeys.has( k ) ) && effect.sets.some( ( k ) => ! openKeys.has( k ) ),
@@ -326,36 +325,6 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 	return out;
 }
 
-// The shop's result count wherever the shop page draws it (FR-48-61): every text run bound to a count of a collection
-// (lib/shop-parts-logic.mjs::countBinding) on the page holding the product listing (the listing's <main>, else the draft)
-// outside the filter region, the drawers, the imported components and the listing's own items, one unit each, so a count
-// above the listing or beside the cards is the shop's count as one inside the filter is; a count on another page of the
-// draft (a basket or wishlist count) is not the shop's.
-export function countUnits( root, regions, { file, dc = null, L = null } ) {
-	const drawers = drawerRegions( root, L );
-	const loop = listing( root, L )?.loop ?? null;
-	let page = loop;
-	while ( page && 'main' !== page.tag ) {
-		page = page.parent;
-	}
-	const outside = ( e ) => ( ! page || within( e, ( p ) => p === page ) ) && ! regions.some( ( r ) => within( e, ( p ) => p === r ) ) && ! drawers.some( ( d ) => within( e, ( p ) => p === d ) ) && ! inImport( e ) && ! ( loop && within( e, ( p ) => p === loop ) ) && ! within( e, ( p ) => SKIPPED.has( p.tag ) );
-	const out = [];
-	for ( const el of elements( root ).filter( outside ) ) {
-		for ( const c of el.children.filter( ( x ) => ! x.tag ) ) {
-			const text = squash( c.text );
-			const b = bindingsOf( text );
-			if ( 1 === b.length && countBinding( L, b[ 0 ] ) ) {
-				const conds = [];
-				for ( let p = el; p; p = p.parent ) {
-					'sc-if' === p.tag && conds.unshift( stripExpr( p.attrs.value || '' ) );
-				}
-				out.push( { conds, file, dc, tpl: stampOf( el ), rowN: rowOf( el ).n, kind: 'text', tag: '#text', parent: el.tag, text, facts: { loop: null, heading: 0, stepper: false, bar: false, empty: false, disclosed: false, money: false, count: true } } );
-			}
-		}
-	}
-	return out;
-}
-
 const dcFile = ( dc ) => `${ dc }.dc.html`;
 const NAMES = {
 	buybox: [ /buy ?box/i, /^product$/i ],
@@ -369,7 +338,7 @@ const openKeysOf = ( rec ) => new Set( ( rec.states || [] ).flatMap( ( st ) => O
 // Every shop surface of a draft: for each kind, the first name pattern that some handoff surface record matches picks
 // the draft file (`dc`) to read, and the region reader finds the surface in it. `sources` maps a draft file name to its
 // source. A kind with no matching record, no file or no region is returned with `problem` set and no units.
-export function readShopSurfaces( { records, sources, perUnit = [] } ) {
+export function readShopSurfaces( { records, sources } ) {
 	return SURFACE_KINDS.map( ( kind ) => {
 		const rec = NAMES[ kind ].map( ( rx ) => records.filter( ( r ) => rx.test( r.name || '' ) ) ).find( ( l ) => l.length )?.[ 0 ];
 		if ( ! rec ) {
@@ -388,7 +357,6 @@ export function readShopSurfaces( { records, sources, perUnit = [] } ) {
 		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
 		const addKeys = basketKeys( root, L );
 		const openKeys = openKeysOf( rec );
-		const units = regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys, perUnit } ) );
-		return { kind, record: rec.name, file, units: 'filter' === kind ? [ ...units, ...countUnits( root, regions, { file, dc: rec.dc, L } ) ] : units, problem: null };
+		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys } ) ), problem: null };
 	} );
 }

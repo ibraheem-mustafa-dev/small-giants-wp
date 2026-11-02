@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:54:28.702Z",
-	"inventory": "2026-10-31T01:43:36.402Z",
-	"source": "http://127.0.0.1:59243/Indus%20Foods%20Website%20v2.dc.html#/careers",
+	"generated": "2026-10-28T06:35:35.850Z",
+	"inventory": "2026-10-27T14:01:19.633Z",
+	"source": "http://127.0.0.1:61503/Indus%20Foods%20Website%20v2.dc.html#/careers",
 	"surface": "inline-form-careers",
 	"siteName": null,
 	"surfaceParts": [
@@ -39,286 +39,17 @@
 	},
 	"counts": {
 		"inventoryElements": 42,
-		"parts": 14,
-		"rows": 28,
+		"parts": 11,
+		"rows": 31,
 		"skeletonNodes": 13,
 		"expandedNodes": 13,
 		"low": 0,
-		"removed": 15,
+		"removed": 18,
 		"unresolved": 0,
 		"byRule": {
 			"formHost": 1,
 			"formControl": 23
 		}
-	},
-	"partPairing": {
-		"paired": 4,
-		"unpaired": [
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(3)",
-				"reason": ".sgs-form__inner > .sgs-form__actions: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress > .sgs-form__progress-bar",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(1)",
-				"reason": ".sgs-form__inner > .sgs-form__actions: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(5): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(6): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__label",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__label",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(6): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__label",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__icon",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__icon",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__consent > .sgs-form-field__consent-text",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(8): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(2)",
-				"reason": ".sgs-form__inner > .sgs-form__actions: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__help",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-hint",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__error",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(5): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(6): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(7): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(8): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-file__progress",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-review > .sgs-form-review__heading",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-label",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-label",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-button",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(9): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__column-heading",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(6): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__row-heading",
-				"reason": ".sgs-form__inner > .sgs-form-field:nth-of-type(6): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-number",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/550#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-number",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/551#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/552#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/553#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/553#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/553#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/571#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/571#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -337,7 +68,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formHost",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form",
@@ -351,14 +81,7 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<form sc-camel-on-submit=\"{{ b.onSubmit }}\" data-dc-tpl=\"550\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p> <div style=\"display:grid;grid-template-columns:{{ R.fo",
-			"attributes": {
-				"anchor": "careers"
-			},
-			"slots": {
-				".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input": {
-					"tpl": "Root/569#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 1,
@@ -374,7 +97,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -390,8 +112,7 @@
 			"screenshots": {},
 			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3>",
 			"attributes": {
-				"content": "Register your interest",
-				"level": "h3"
+				"content": "Register your interest"
 			}
 		},
 		{
@@ -408,7 +129,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -441,7 +161,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -460,14 +179,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/560#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/560#1"
-				}
 			}
 		},
 		{
@@ -504,17 +215,34 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
-			"parts": [
-				"Root/558#0"
-			],
+			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
 			"attributes": {}
 		},
 		{
 			"order": 6,
+			"key": "Root/558#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
 			"key": "Root/560#0",
 			"tag": "input",
 			"depth": 3,
@@ -527,7 +255,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -542,7 +269,8 @@
 			"screenshots": {},
 			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
 			"attributes": {
-				"label": "Full name"
+				"label": "Full name",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -551,7 +279,7 @@
 			}
 		},
 		{
-			"order": 7,
+			"order": 8,
 			"key": "Root/555#1",
 			"tag": "label",
 			"depth": 2,
@@ -571,7 +299,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 8,
+			"order": 9,
 			"key": "Root/556#1",
 			"tag": "span",
 			"depth": 3,
@@ -584,17 +312,34 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
-			"parts": [
-				"Root/558#1"
-			],
+			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
 			"attributes": {}
 		},
 		{
-			"order": 9,
+			"order": 10,
+			"key": "Root/558#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
 			"key": "Root/560#1",
 			"tag": "input",
 			"depth": 3,
@@ -607,7 +352,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-email",
@@ -622,7 +366,8 @@
 			"screenshots": {},
 			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
 			"attributes": {
-				"label": "Email"
+				"label": "Email",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -631,7 +376,7 @@
 			}
 		},
 		{
-			"order": 10,
+			"order": 12,
 			"key": "Root/555#2",
 			"tag": "label",
 			"depth": 2,
@@ -651,7 +396,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 11,
+			"order": 13,
 			"key": "Root/556#2",
 			"tag": "span",
 			"depth": 3,
@@ -664,7 +409,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -672,7 +416,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 12,
+			"order": 14,
 			"key": "Root/560#2",
 			"tag": "input",
 			"depth": 3,
@@ -685,7 +429,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-phone",
@@ -709,7 +452,7 @@
 			}
 		},
 		{
-			"order": 13,
+			"order": 15,
 			"key": "Root/555#3",
 			"tag": "label",
 			"depth": 2,
@@ -729,7 +472,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 14,
+			"order": 16,
 			"key": "Root/556#3",
 			"tag": "span",
 			"depth": 3,
@@ -742,17 +485,34 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
-			"parts": [
-				"Root/558#2"
-			],
+			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
 			"attributes": {}
 		},
 		{
-			"order": 15,
+			"order": 17,
+			"key": "Root/558#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#3)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
 			"key": "Root/562#0",
 			"tag": "select",
 			"depth": 3,
@@ -765,7 +525,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-select",
@@ -787,7 +546,8 @@
 			"screenshots": {},
 			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
 			"attributes": {
-				"label": "Team"
+				"label": "Team",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -796,7 +556,7 @@
 			}
 		},
 		{
-			"order": 16,
+			"order": 19,
 			"key": "Root/555#4",
 			"tag": "label",
 			"depth": 2,
@@ -816,7 +576,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 17,
+			"order": 20,
 			"key": "Root/556#4",
 			"tag": "span",
 			"depth": 3,
@@ -829,7 +589,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -837,7 +596,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 18,
+			"order": 21,
 			"key": "Root/562#1",
 			"tag": "select",
 			"depth": 3,
@@ -850,7 +609,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-select",
@@ -880,7 +638,7 @@
 			}
 		},
 		{
-			"order": 19,
+			"order": 22,
 			"key": "Root/555#5",
 			"tag": "label",
 			"depth": 2,
@@ -900,7 +658,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 20,
+			"order": 23,
 			"key": "Root/556#5",
 			"tag": "span",
 			"depth": 3,
@@ -913,7 +671,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -921,7 +678,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 21,
+			"order": 24,
 			"key": "Root/568#0",
 			"tag": "input",
 			"depth": 3,
@@ -934,7 +691,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-file",
@@ -953,7 +709,7 @@
 			}
 		},
 		{
-			"order": 22,
+			"order": 25,
 			"key": "Root/555#6",
 			"tag": "label",
 			"depth": 2,
@@ -973,7 +729,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 26,
 			"key": "Root/556#6",
 			"tag": "span",
 			"depth": 3,
@@ -986,7 +742,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -994,7 +749,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 24,
+			"order": 27,
 			"key": "Root/566#0",
 			"tag": "textarea",
 			"depth": 3,
@@ -1007,7 +762,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-textarea",
@@ -1031,7 +785,7 @@
 			}
 		},
 		{
-			"order": 25,
+			"order": 28,
 			"key": "Root/569#0",
 			"tag": "label",
 			"depth": 1,
@@ -1051,7 +805,7 @@
 			"attributes": {}
 		},
 		{
-			"order": 26,
+			"order": 29,
 			"key": "Root/570#0",
 			"tag": "input",
 			"depth": 2,
@@ -1064,7 +818,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-consent",
@@ -1084,7 +837,7 @@
 			}
 		},
 		{
-			"order": 27,
+			"order": 30,
 			"key": "Root/571#0",
 			"tag": "button",
 			"depth": 1,
@@ -1097,7 +850,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1114,11 +866,6 @@
 			"snippet": "<button type=\"submit\" sc-camel-on-mouse-enter=\"{{ btnEnter }}\" sc-camel-on-mouse-leave=\"{{ btnLeave }}\" data-mag=\"\" style=\"margin-top:26px;color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);",
 			"attributes": {
 				"label": "Send application"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/571#0"
-				}
 			}
 		}
 	]

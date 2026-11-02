@@ -35,19 +35,8 @@ const run = ( blocks, records, over = {} ) => {
 };
 const reasons = ( out ) => out.unmapped.map( ( u ) => `${ u.value }: ${ u.reason }` );
 const style = ( ...pairs ) => ( { style: { static: pairs, holes: [] } } );
-// A live status display: a pill whose text is a script value holding a round dot whose paint is one.
-const STATUS_TEMPLATE = { elements: {
-	'Site/9': { realParent: 'Site/1', srcLine: 9, ...style( [ 'display', 'inline-flex' ] ), holes: [ { where: 'text', expr: 'status.label' } ], words: '{{ status.label }}', parentChain: [ 'Site/1' ] },
-	'Site/10': { realParent: 'Site/9', srcLine: 10, ...style( [ 'width', '8px' ], [ 'height', '8px' ], ...[ 'top-left', 'top-right', 'bottom-right', 'bottom-left' ].map( ( c ) => [ `border-${ c }-radius`, '50%' ] ) ), holes: [ { where: 'style:background', expr: 'status.dot' } ], words: '', parentChain: [ 'Site/9', 'Site/1' ] },
-} };
-// A pinned stage: a tall section (Site/30) holding a sticky stage (Site/31) whose track (Site/10) the scroll moves sideways.
-const PIN_TEMPLATE = { elements: {
-	'Site/30': { realParent: 'Site/1', srcLine: 30, ...style( [ 'position', 'relative' ] ), parentChain: [ 'Site/1' ] },
-	'Site/31': { realParent: 'Site/30', srcLine: 31, ...style( [ 'position', 'sticky' ], [ 'overflow-x', 'hidden' ] ), parentChain: [ 'Site/30', 'Site/1' ] },
-	'Site/10': { realParent: 'Site/31', srcLine: 32, ...style( [ 'display', 'flex' ] ), parentChain: [ 'Site/31', 'Site/30', 'Site/1' ] },
-} };
 
-const HEADER = rec( 'S-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: "this._headerEl.style.boxShadow = window.scrollY > 8 ? '0 10px 30px -18px rgba(20,40,60,.35)' : 'none'" },
+const HEADER = rec( 'S-1', { mechanism: 'js-style-write', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: 'this._headerEl.style.boxShadow = window.scrollY > 8 ?' },
 	properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ], duration_ms: 300 } );
 const TEMPLATE = { elements: {
 	'Site/5': { realParent: 'Site/1', srcLine: 5, ...style( [ 'display', 'flex' ] ), parentChain: [ 'Site/1' ] },
@@ -64,12 +53,12 @@ test( 'MUST FAIL: a scroll-position box-shadow write is the header\'s scrolled s
 	assert.deepEqual( attrs(), { scrolledOffset: 8, shadowScrolled: '0px 10px 30px -18px', shadowScrolledColour: '#14283C59', headerSticky: { desktop: 'on' } } );
 } );
 
-test( 'MUST FAIL: the header is pinned only when its own template element is sticky or fixed, never by its description', () => {
+test( 'MUST FAIL: the header is pinned only when its own template element is sticky or fixed (or its description says so)', () => {
 	const unpinned = { elements: { ...TEMPLATE.elements, 'Site/10': { ...TEMPLATE.elements[ 'Site/10' ], ...style( [ 'top', '0' ] ) } } };
 	const { attrs } = run( [ [ 'sgs/site-header', '10' ] ], [ HEADER ], { template: unpinned } );
 	assert.equal( attrs().headerSticky, undefined );
 	assert.equal( attrs().scrolledOffset, 8 );
-	assert.equal( run( [ [ 'sgs/site-header', '10' ] ], [ { ...HEADER, element: { ...HEADER.element, description: 'Sticky header' } } ], { template: unpinned } ).attrs().headerSticky, undefined, 'a description saying sticky is not the code pinning it' );
+	assert.equal( run( [ [ 'sgs/site-header', '10' ] ], [ { ...HEADER, element: { ...HEADER.element, description: 'Sticky header' } } ], { template: unpinned } ).attrs().headerSticky.desktop, 'on' );
 } );
 
 test( 'MUST FAIL: a strip above the pinned header scrolls away: its row hides on scroll; a pinned, later or unrelated element does not', () => {
@@ -93,12 +82,13 @@ test( 'MUST FAIL: a settings behaviour on a block that is not the one it maps to
 } );
 
 test( 'MUST FAIL: an endless ring growing from a status dot is the open-status dot pulse with the record\'s duration', () => {
-	const DOT = rec( 'S-2', { trigger: { type: 'mount', detail: '' }, iterations: 'infinite', duration_ms: 1600, easing: 'linear', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref ring', description: '' },
+	const DOT = rec( 'S-2', { trigger: { type: 'mount', detail: '' }, iterations: 'infinite', duration_ms: 1600, easing: 'linear', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setPulseEl', description: 'Status dot in the footer opening hours badge' },
 		properties: [ { property: 'box-shadow', from: '0 0 0 0 currentColor', to: '0 0 0 8px transparent' } ] } );
-	const { attrs, out } = run( [ [ 'sgs/business-info', '10' ] ], [ DOT ], { template: STATUS_TEMPLATE } );
+	const { attrs, out } = run( [ [ 'sgs/business-info', '10' ] ], [ DOT ] );
 	assert.deepEqual( reasons( out ), [] );
 	assert.deepEqual( attrs(), { openStatusDotPulse: true, openStatusDotPulseDuration: 1600 } );
-	assert.equal( recogniseBehaviour( DOT, { template: TEMPLATE } ), null, 'a ring on an element that is not a status dot is not the pulse' );
+	const other = rec( 'S-2b', { ...DOT, element: { ...DOT.element, description: 'Glow behind the card' }, name: 'Glow' } );
+	assert.equal( recogniseBehaviour( other ), null, 'a ring that is not on a dot is not the pulse' );
 } );
 
 test( 'MUST FAIL: a script that scrolls the container to the accordion row it opened is the scroll-to-opened settings, the gap taken from the code', () => {
@@ -108,28 +98,28 @@ test( 'MUST FAIL: a script that scrolls the container to the accordion row it op
 } );
 
 test( 'MUST FAIL: a state-driven card entrance with an interval is the testimonial slider\'s autoplay: one card, the interval in ms, the change duration; the slide-change differences are accepted', () => {
-	const CARD = rec( 'S-4', { source: { code: 'this._iv = setInterval(() => this.setState({ tIdx: this.state.tIdx + 1 }), 6500)' }, trigger: { type: 'state', detail: 'state.tIdx changes: prev/next, dots, or the 6.5s setInterval in componentDidMount', state_keys: [ 'tIdx' ] }, duration_ms: 520, easing: EASE, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setTCard', description: 'Gold testimonial card' },
+	const CARD = rec( 'S-4', { trigger: { type: 'state', detail: 'state.tIdx changes: prev/next, dots, or the 6.5s setInterval in componentDidMount', state_keys: [ 'tIdx' ] }, duration_ms: 520, easing: EASE, element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setTCard', description: 'Gold testimonial card' },
 		properties: [ { property: 'opacity', from: 0, to: 1 }, { property: 'transform', from: 'translateX(26px)', to: 'none' } ] } );
 	const { attrs, out } = run( [ [ 'sgs/testimonial-slider', '10' ] ], [ CARD ] );
 	assert.deepEqual( attrs(), { autoplay: true, autoplaySpeed: 6500, slidesVisible: 1, transitionDuration: '520' } );
 	assert.equal( attrs().pauseButton, undefined, 'the draft has no pause button, so the setting stays off' );
 	assert.match( out.notes.map( ( n ) => n.text ).join( '\n' ), /accepted difference: the slide change/ );
-	const plain = { ...CARD, source: { code: "this._tCard.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 520 }); log('setInterval(f, 6500)')" } };
+	const plain = { ...CARD, trigger: { ...CARD.trigger, detail: 'state.tIdx changes' } };
 	assert.equal( recogniseBehaviour( plain ), null, 'a card entrance with no interval is not the autoplay' );
 } );
 
-const PIN = 'window scroll (rAF-throttled) -> move(). p = clamp((stickyTop - stage.top) / (stage.offsetHeight - sticky.offsetHeight), 0, 1)';
-const pinned = ( id, over ) => rec( id, { mechanism: 'js-style-write', source: { file: 'Site.dc.html', function: 'move' }, trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-x]' }, breakpoints: [ 'desktop' ], ...over } );
+const PIN = 'window scroll (rAF-throttled) -> updatePins(). p = clamp((stickyTop - pin.top) / (pin.offsetHeight - sticky.offsetHeight), 0, 1)';
+const pinned = ( id, over ) => rec( id, { mechanism: 'js-style-write', trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-pin] -> [data-pin-x]' }, breakpoints: [ 'desktop' ], ...over } );
 const TRACK = pinned( 'S-5', { trigger: { type: 'scroll-position', detail: `${ PIN }. Tablet and mobile get a native horizontal scroller with no JS.` }, properties: [ { property: 'transform', from: 'translate3d(0px,0,0)', to: 'translate3d(-dist px,0,0)', formula: 'dist = max(0, track.scrollWidth - innerWidth); translate3d(−p × dist px, 0, 0)' } ] } );
 const FOCUS = pinned( 'S-6', { properties: [ { property: 'opacity', from: 0.55, to: 1, formula: 'k = min(1, |cardCentre - innerWidth/2| / (innerWidth × 0.7)); opacity = 1 - 0.45k' }, { property: 'scale', from: 0.94, to: 1, formula: 'scale = 1 - 0.06k' } ] } );
 const YEAR = pinned( 'S-7', { properties: [ { property: 'color', from: 'transparent', to: '#D8CA50' }, { property: '-webkit-text-stroke-color', from: '#0A7EA8', to: '#D8CA50' } ] } );
-const COUNT = pinned( 'S-8', { mechanism: 'js-text-write', source: { file: 'Site.dc.html', function: 'move', code: 'cnt.textContent = String(best + 1).padStart(2, \'0\')' }, properties: [ { property: 'textContent', from: '01 / NN', to: 'NN / NN', formula: 'index of card nearest centre, zero-padded / total' } ] } );
+const COUNT = pinned( 'S-8', { mechanism: 'js-text-write', source: { code: 'cnt.textContent = String(best + 1).padStart(2, \'0\')' }, properties: [ { property: 'textContent', from: '01 / NN', to: 'NN / NN', formula: 'index of card nearest centre, zero-padded / total' } ] } );
 
 test( 'MUST FAIL: the pinned timeline\'s track, proximity focus, active year and counter are the sgs/timeline settings; the switch point is an accepted difference', () => {
-	const { attrs, out } = run( [ [ 'sgs/timeline', '10' ] ], [ TRACK, FOCUS, YEAR, COUNT ], { template: PIN_TEMPLATE } );
+	const { attrs, out } = run( [ [ 'sgs/timeline', '10' ] ], [ TRACK, FOCUS, YEAR, COUNT ] );
 	assert.deepEqual( reasons( out ), [] );
 	assert.deepEqual( attrs(), {
-		scrollEffect: 'pinned-horizontal', orientation: 'horizontal',
+		scrollEffect: 'pinned-horizontal', mobileLayout: 'carousel',
 		panelProximityFocus: true, panelEdgeOpacity: 0.55, panelFocusOpacity: 1, panelEdgeScale: 0.94, panelFocusScale: 1,
 		dateActiveColour: 'accent', dateActiveTextStrokeColour: 'accent',
 		panelCounter: true, panelCounterFormat: 'padded-index-of-total',
@@ -139,9 +129,9 @@ test( 'MUST FAIL: the pinned timeline\'s track, proximity focus, active year and
 
 test( 'MUST FAIL: the pinned timeline\'s progress bar stays a scroll-progress effect fed by the pin, and a pinned-style record outside a pin is not the timeline', () => {
 	const BAR = pinned( 'S-9', { properties: [ { property: 'transform', from: 'scaleX(0)', to: 'scaleX(1)', formula: 'scaleX(p)' } ] } );
-	const { doc } = run( [ [ 'sgs/site-header', '10' ] ], [ TRACK, BAR ], { template: PIN_TEMPLATE } );
+	const { doc } = run( [ [ 'sgs/site-header', '10' ] ], [ BAR ] );
 	assert.deepEqual( doc().elements.root.effects[ 0 ].values, { source: 'pin', output: 'bar-x' } );
-	assert.equal( recogniseBehaviour( { ...BAR, source: { file: 'Site.dc.html', function: 'other' }, trigger: { type: 'scroll-position', detail: 'window scroll' }, element: { dc: 'Site', selector: 'ref setBar' } }, { records: [ TRACK ], template: PIN_TEMPLATE } ), null, 'a scaleX(p) write another writer makes, outside the stage, is not a scroll progress' );
+	assert.equal( recogniseBehaviour( { ...BAR, trigger: { type: 'scroll-position', detail: 'window scroll' }, element: { dc: 'Site', selector: 'ref setBar' } } ), null, 'a scaleX(p) write with no pin is not a scroll progress' );
 	assert.equal( recogniseBehaviour( { ...YEAR, trigger: { type: 'scroll-position', detail: 'window scroll' }, element: { dc: 'Site', selector: 'h2' } } ), null );
 } );
 
@@ -152,8 +142,7 @@ test( 'MUST FAIL: a close animation held at its end is the exit of the same elem
 	assert.deepEqual( reasons( out ), [] );
 	assert.deepEqual( doc().elements.root.entrance.base.close, { to: { translateX: '100%' }, closeDuration: 340, closeEasing: 'cubic-bezier(.7,0,.84,0)' } );
 	assert.equal( recogniseBehaviour( { ...CLOSE, fill: 'none' } ), null, 'a close-named animation that does not hold its end is not the exit' );
-	assert.equal( recogniseBehaviour( { ...CLOSE, properties: [ { property: 'transform', from: 'translateX(100%)', to: 'none' } ] } ), null, 'an animation that moves to rest is not the exit' );
-	assert.equal( recogniseBehaviour( { ...CLOSE, properties: [ { property: 'transform', from: 'none', to: 'translateX(0)' } ] } ), null, 'an animation that stays at rest is not the exit' );
+	assert.equal( recogniseBehaviour( { ...CLOSE, source: { function: 'openMobile' }, trigger: { type: 'press', detail: 'burger' }, name: 'Slide' } ), null, 'an animation that is not a close is not the exit' );
 	const alone = run( [ [ 'sgs/nav-drawer', '10' ] ], [ CLOSE ] );
 	assert.match( reasons( alone.out ).join( '\n' ), /S-11: the exit of an open entrance, but this element has no open entrance to close/ );
 } );

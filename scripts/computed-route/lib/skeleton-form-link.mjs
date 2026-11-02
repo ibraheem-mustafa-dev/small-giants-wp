@@ -9,7 +9,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import { formElement } from './skeleton-form-element.mjs';
 
 // The linked forms of a client's manifest (sites/<client>/build/surfaces.json and the intake record it names): none when the
 // client has no manifest or no intake record yet.
@@ -45,15 +44,11 @@ function innermostRoot( roots, elements ) {
 }
 
 // A function over inventory elements: the verdict of the form-link rule for an element, or null.
-//   { block, attributes }  the element is the form (lib/skeleton-form-element.mjs::formElement), so it becomes the linked
-//                          reference block;
+//   { block, attributes }  the element is the form, so it becomes the linked reference block;
 //   { remove: true }       another element under the same root: the form is one embed, so it goes.
-// When the first element is the page's layout around the form (formElement: the grid around the form card and the aside
-// beside it), that element and what it holds beside the form get no verdict: the page's own rules build them, and the saved
-// form never holds them.
 // view: lib/skeleton-record.mjs::recordView; scope: the surface's record context (surfaceContext); els: the inventory's
 // elements in document order; rule: decisions `rules.formLink`; links: formLinksOf's result.
-export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } ) {
+export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
 	const none = () => null;
 	if ( ! scope || ! rule?.block ) {
 		return none;
@@ -79,13 +74,7 @@ export function linkedFormOf( { view, scope, links, refs, els, rule, m = null } 
 	for ( const [ root, list ] of under ) {
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
-		// A record whose root is the <form> element itself starts the search at that element (its inventory copy), never at its
-		// first child; formElement then settles on the form or the layout card inside it, and the rest of the root's children go.
-		const own = els.find( ( e ) => 'form' === e.tag && view.entry( e ) === view.elements[ root ] ) ?? null;
-		const start = own ?? list[ 0 ];
-		const form = m ? formElement( m, start ) : start;
-		verdicts.set( form.key, { block, attributes } );
-		( own ? list.filter( ( e ) => e !== form ) : list.slice( 1 ) ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
+		list.forEach( ( e, i ) => verdicts.set( e.key, i ? { remove: true } : { block, attributes } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }

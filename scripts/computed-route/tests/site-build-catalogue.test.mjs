@@ -6,12 +6,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { readCatalogue } from '../lib/catalogue-read.mjs';
-import { PHOTO_TO_COME, catalogueImages, heldDraft, planCatalogue, recordSite, runCatalogue, siteTypeOf, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
+import { PHOTO_TO_COME, catalogueImages, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
 import { catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from '../lib/site-build-catalogue-php.mjs';
 import { linkContext, resolveDraftLink, linkWrite } from '../lib/draft-link.mjs';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
-import { FLOW_ROWS, withFlow } from './fixtures/catalogue/flow.mjs';
-import { spawnSync } from 'node:child_process';
 
 const ROWS = [ { route: 'Shop.dc.html', slug: 'shop', postType: 'shop', collection: 'live' }, { route: 'Item.dc.html', slug: 'product', postType: 'product', collection: 'live', template: 'single-product' } ];
 const setup = () => {
@@ -22,7 +20,7 @@ const setup = () => {
 	return { repo, catalogue };
 };
 const site = ( products = [], extra = {} ) => ( { woocommerce: true, products, images: {}, productBase: 'product', brandTaxonomy: true, plugins: [], ...extra } );
-const found = ( p, extra = {} ) => ( { draftId: p.draftId, id: 40, how: 'sku', fixture: false, type: siteTypeOf( p ), giftAmounts: p.giftCard ? p.giftCard.amounts.map( ( a ) => Math.round( a * 100 ) ) : null, status: 'publish', sku: p.sku, price: String( p.price ), image: 7, gallery: p.gallery.length, categories: p.categories, brand: p.brand ? [ p.brand ] : [], rrp: null === p.rrp ? '' : String( p.rrp ), draftMeta: p.draftId, attributes: Object.keys( p.facets ).map( ( k ) => `pa_${ k }` ), facets: p.facets, variations: p.variations.map( ( v ) => v.sku ), permalink: `https://x.test/product/${ p.slug }/`, ...extra } );
+const found = ( p, extra = {} ) => ( { draftId: p.draftId, id: 40, how: 'sku', fixture: false, type: p.type, status: 'publish', sku: p.sku, price: String( p.price ), image: 7, gallery: p.gallery.length, categories: p.categories, brand: p.brand ? [ p.brand ] : [], rrp: null === p.rrp ? '' : String( p.rrp ), draftMeta: p.draftId, attributes: Object.keys( p.facets ).map( ( k ) => `pa_${ k }` ), facets: p.facets, variations: p.variations.map( ( v ) => v.sku ), permalink: `https://x.test/product/${ p.slug }/`, ...extra } );
 
 test( 'an empty site plans a create per product; a complete one plans nothing to make', () => {
 	const { catalogue } = setup();
@@ -65,7 +63,7 @@ test( 'the product base the catalogue names is planned when the site differs; pl
 	const plan = planCatalogue( { ...catalogue, productBase: 'goods' }, site( [], { productBase: '' } ) );
 	assert.deepEqual( plan.productBase, { from: 'product', to: 'goods' } );
 	assert.ok( plan.notes.some( ( n ) => /no subscriptions plugin is active.*switch gap\(s\) of jar stand/.test( n ) ) );
-	assert.ok( ! plan.notes.some( ( n ) => /gift-card plugin/.test( n ) ), 'an amount-only product is the framework gift card, no open-amount gap stands' );
+	assert.ok( plan.notes.some( ( n ) => /no gift-card plugin is active.*open-amount gap\(s\) of voucher stand/.test( n ) ) );
 	const withPlugin = planCatalogue( catalogue, site( [], { plugins: [ 'woocommerce-subscriptions/woocommerce-subscriptions.php' ] } ) );
 	assert.ok( withPlugin.notes.some( ( n ) => /woocommerce-subscriptions\.php is active/.test( n ) ) );
 } );
@@ -226,19 +224,6 @@ test( 'photo to come: a fixture is left; the apply PHP sets and clears the marke
 // SGS's product preflight publishes a variable product only when one of its variation terms carries a Google variesBy
 // value (`_sgs_variesby_value`, no_variesby); the catalogue writes each attribute's axis and keeps a product with none a
 // draft.
-// The shared catalogue with its voucher as a variable product whose only choice creates variations and is no Google
-// variesBy axis (what a gift-card amount is on a site without the gift-card type): the held-draft case.
-const withHeldVoucher = ( catalogue ) => ( {
-	...catalogue,
-	products: catalogue.products.map( ( p ) => {
-		if ( 'gift-card' !== p.type ) {
-			return p;
-		}
-		const { giftCard, ...rest } = p;
-		return { ...rest, type: 'variable', attributes: [ { key: 'amount', label: 'Amount', slug: 'amount', packSize: false, variesBy: null, variation: true, options: giftCard.amounts.map( ( a ) => ( { value: a, term: String( a ), price: a, swatch: null, badge: null } ) ), default: null } ], variations: giftCard.amounts.map( ( a ) => ( { sku: `${ p.sku }-${ a }`, options: { amount: String( a ) }, price: a } ) ) };
-	} ),
-} );
-
 const writeOf = ( repo, cat ) => {
 	let write = null;
 	runCatalogue( { repo, client: 'demo', site: 's', apply: true, log: () => {}, error: () => {}, runPhp: ( php ) => {
@@ -263,11 +248,7 @@ test( 'variesBy: a found product whose axis terms lack the mapping is completed 
 } );
 
 test( 'variesBy: a product with no variesBy axis is made and kept a draft, noted, and its publishing never planned', () => {
-	const base = setup();
-	const { repo } = base;
-	const catalogue = withHeldVoucher( base.catalogue );
-	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), `${ JSON.stringify( catalogue, null, 2 ) }
-` );
+	const { repo, catalogue } = setup();
 	const [ jar, box, voucher ] = catalogue.products;
 	const plan = planCatalogue( catalogue, site( [ found( jar, { status: 'draft' } ), found( box ), found( voucher, { status: 'draft' } ) ] ) );
 	assert.deepEqual( plan.actions.map( ( a ) => [ a.draftId, a.action, a.hold ] ), [ [ 'jar', 'complete', false ], [ 'box', 'exists', false ], [ 'voucher', 'exists', true ] ] );
@@ -368,91 +349,4 @@ test( 'product base: a site that cannot call itself passes on the stored rules a
 	const same = baseRun( { repo, catalogue, want: 'product', flush: { ...BASE_OK, rules: 0 } } );
 	assert.deepEqual( same.calls, [ 'read', 'write', 'read' ] );
 	assert.equal( same.code, 0 );
-} );
-
-test( 'MUST FAIL (RC16): each attribute is written as a variation only when it creates variations; only those decide a held draft and are named as variations', () => {
-	const { repo, catalogue } = setup();
-	assert.match( writeOf( repo, catalogue ), /\$attr->set_variation\( ! empty\( \$a\['variation'\] \) \);/ );
-	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: null }, { variation: false, variesBy: 'color' } ] } ), true, 'an answer attribute\'s axis never publishes the variations' );
-	const jar = catalogue.products[ 0 ];
-	const answered = { ...jar, attributes: jar.attributes.map( ( a ) => ( 'grain' === a.key ? { ...a, variation: false } : a ) ), variations: jar.variations.filter( ( v ) => 'Fine set' === v.options.grain ) };
-	const plan = planCatalogue( { ...catalogue, products: [ answered ] }, site( [ { draftId: 'jar', id: 0 } ] ) );
-	assert.match( plan.actions[ 0 ].say, /price 4, 2 variations of Pack size \(6\/12\), answer attributes Grain \(Fine set\/Coarse set\),/ );
-	// Negative control: a variation axis with a variesBy value publishes; a simple product is never held; with no answer
-	// attribute the plan names none.
-	assert.equal( heldDraft( { type: 'variable', attributes: [ { variation: true, variesBy: 'size' }, { variation: false, variesBy: null } ] } ), false );
-	assert.equal( heldDraft( { type: 'simple', attributes: [ { variation: false, variesBy: null } ] } ), false );
-	assert.doesNotMatch( planCatalogue( catalogue, site( [ { draftId: 'jar', id: 0 } ] ) ).actions[ 0 ].say, /answer attributes/ );
-} );
-
-// What a product carries on the site when it was made from a record: each attribute's role and terms, each variation's price.
-const madeFrom = ( p ) => ( {
-	attributes: [ ...p.attributes.map( ( a ) => `pa_${ a.slug }` ), ...Object.keys( p.facets ).map( ( k ) => `pa_${ k }` ) ],
-	attributeDetail: Object.fromEntries( p.attributes.map( ( a ) => [ `pa_${ a.slug }`, { variation: a.variation, terms: a.options.map( ( o ) => o.term ) } ] ) ),
-	variations: p.variations.map( ( v ) => v.sku ), variationPrices: Object.fromEntries( p.variations.map( ( v ) => [ v.sku, String( v.price ) ] ) ),
-} );
-
-test( 'MUST FAIL: a product the catalogue made (its SKU) is reconciled to its record: attribute roles and terms, a gone attribute, gone variations and changed prices', () => {
-	const repo = repoWith( 'shared', withFlow );
-	const now = readCatalogue( { repo, client: 'demo', rows: FLOW_ROWS } ).catalogue;
-	const before = readCatalogue( { repo, client: 'demo', rows: ROWS } ).catalogue;
-	const jar = now.products[ 0 ];
-	const old = before.products[ 0 ];
-	// The site holds the jar as the record without the flow made it: grain a variation axis, no toppings, 4 variations.
-	const held = { ...madeFrom( old ), attributeDetail: { ...madeFrom( old ).attributeDetail, 'pa_gone': { variation: true, terms: [ 'x', 'y' ] } }, variationPrices: { ...madeFrom( old ).variationPrices, 'sgs-draft-jar-6-fine-set': '3.5' } };
-	const plan = planCatalogue( now, site( [ found( jar, held ) ] ) );
-	assert.equal( plan.actions[ 0 ].action, 'complete' );
-	assert.equal( plan.actions[ 0 ].say, 'complete jar: product 40 (found by sku) lacks 2 of 2 variations, pa_grain as an answer attribute, attribute pa_top, the removal of attribute pa_gone, the removal of 4 variation(s) the record no longer has' );
-	const priced = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), variationPrices: { 'sgs-draft-jar-6': '4', 'sgs-draft-jar-12': '7' } } ) ] ) );
-	assert.match( priced.actions[ 0 ].say, /lacks the price of 1 variation\(s\) \(sgs-draft-jar-12 7\.5\)/ );
-	const terms = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_top': { variation: false, terms: [ 'Nuts' ] } } } ) ] ) );
-	assert.match( terms.actions[ 0 ].say, /lacks pa_top terms Nuts\/Seeds\/Comb/ );
-	for ( const held of [ [ 'Nuts', 'Seeds', 'Honey' ], [ 'Nuts', 'Seeds', 'Comb', 'Honey' ] ] ) {
-		const other = planCatalogue( now, site( [ found( jar, { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_top': { variation: false, terms: held } } } ) ] ) );
-		assert.match( other.actions[ 0 ].say, /lacks pa_top terms Nuts\/Seeds\/Comb/, held.join( '/' ) );
-	}
-	// The write takes the record's attributes for a product it made, keeps its filter attributes, sets changed prices and
-	// deletes gone variations, and only for its own products; the PHP parses.
-	const write = catalogueApplyPhp( [ { draftId: 'jar', product: jar, image: null, gallery: [] } ], {}, {}, null, now );
-	assert.match( write, /if \( \( \$ours \|\| ! \$wc->get_attributes\(\) \) && \$p\['attributes'\]/ );
-	assert.match( write, /if \( in_array\( \$tax, \$facet_tax, true \) \) \{ \$list\[ \$tax \] = \$kept; \}/ );
-	assert.match( write, /foreach \( \$ours \? \$have : array\(\) as \$vsku => \$vid \)/ );
-	assert.match( write, /if \( \$ours && \$va && \(float\) \$va->get_regular_price\(\) !== \(float\) \$v\['price'\] \)/ );
-	const lint = spawnSync( 'php', [ '-l' ], { input: `<?php
-${ write }
-`, encoding: 'utf8' } );
-	assert.equal( lint.status, 0, lint.stdout + lint.stderr );
-	const state = catalogueStatePhp( [ { draftId: 'jar', sku: jar.sku, slug: jar.slug } ], {}, now );
-	assert.match( state, /'attributeDetail' => \(object\) \$detail/ );
-	assert.match( state, /'variationPrices' => \(object\) \$var_prices/ );
-	assert.equal( spawnSync( 'php', [ '-l' ], { input: `<?php
-${ state }
-`, encoding: 'utf8' } ).status, 0 );
-} );
-
-test( 'NEGATIVE: a product made as its record plans nothing; a product found another way (not its SKU) is never reconciled', () => {
-	const repo = repoWith( 'shared', withFlow );
-	const now = readCatalogue( { repo, client: 'demo', rows: FLOW_ROWS } ).catalogue;
-	const old = readCatalogue( { repo, client: 'demo', rows: ROWS } ).catalogue.products[ 0 ];
-	const jar = now.products[ 0 ];
-	assert.equal( planCatalogue( now, site( [ found( jar, madeFrom( jar ) ) ] ) ).actions[ 0 ].say, 'exists jar: product 40' );
-	// Its filter attribute (a facet) is the facets' own, never removed.
-	const filtered = { ...madeFrom( jar ), attributeDetail: { ...madeFrom( jar ).attributeDetail, 'pa_origin': { variation: false, terms: [ 'hills' ] } } };
-	assert.equal( planCatalogue( now, site( [ found( jar, filtered ) ] ) ).actions[ 0 ].say, 'exists jar: product 40' );
-	const other = planCatalogue( now, site( [ found( jar, { ...madeFrom( old ), sku: 'SEEDED', how: 'slug' } ) ] ) );
-	assert.doesNotMatch( other.actions[ 0 ].say, /removal|as an answer|attribute pa_|price of/ );
-} );
-
-test( 'MUST FAIL: the gift card is made as the framework gift-card product with its amounts in pence, and a site without that type makes a simple product and says so', () => {
-	const { repo, catalogue } = setup();
-	const write = catalogueApplyPhp( [], {}, {}, null );
-	assert.match( write, /new \\SGS\\Blocks\\Gift_Card\\Gift_Card_Product\(\)/ );
-	assert.match( write, /update_meta_data\( '_sgs_gift_card_amounts', array_map\( function \( \$a \) \{ return \(int\) round\( \$a \* 100 \); \}, \$p\['giftCard'\]\['amounts'\] \) \)/ );
-	assert.match( write, /the gift-card product type is not loaded on this site, so a simple product is made/ );
-	assert.deepEqual( decoded( writeOf( repo, catalogue ), 'steps' ).find( ( s ) => 'voucher' === s.draftId ).product.giftCard, { amounts: [ 10, 20 ] } );
-	const plan = planCatalogue( catalogue, site( catalogue.products.map( ( p ) => found( p ) ) ) );
-	const voucher = catalogue.products.find( ( p ) => 'voucher' === p.draftId );
-	const lacking = planCatalogue( catalogue, site( catalogue.products.map( ( p ) => found( p, 'voucher' === p.draftId ? { giftAmounts: [ 1000 ] } : {} ) ) ) );
-	assert.equal( plan.actions.find( ( a ) => 'voucher' === a.draftId ).action, 'exists' );
-	assert.match( lacking.actions.find( ( a ) => voucher.draftId === a.draftId ).say, /lacks gift-card amounts 10, 20/, 'negative control: a gift card holding other amounts is completed' );
 } );

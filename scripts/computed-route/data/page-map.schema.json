@@ -16,12 +16,6 @@
       "route": {
         "type": "string"
       },
-      "folds": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      },
       "slug": {
         "type": "string",
         "pattern": "^[a-z0-9-]+$"
@@ -135,28 +129,9 @@
         "type": "string",
         "pattern": "^surfaces\\.json \\S+$"
       },
-      "opens": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "slug"
-          ],
-          "properties": {
-            "kind": {
-              "enum": [
-                "modal",
-                "flow"
-              ]
-            },
-            "slug": {
-              "type": "string",
-              "pattern": "^[a-z0-9-]+$"
-            }
-          }
-        }
+      "opensFlow": {
+        "type": "string",
+        "pattern": "^[a-z0-9-]+$"
       },
       "id": {
         "type": [

@@ -5,7 +5,7 @@
 			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/599#0"
+			"tpl": "Root/601#0"
 		},
 		"draftFingerprint": {
 			"tag": "main",
@@ -13,16 +13,17 @@
 			"styleHash": "e0705001",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 1371
+			"line": 1374
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/hero",
 				"attributes": {
-					"layout": "grid"
+					"layout": "grid",
+					"variant": "split"
 				},
 				"draftRef": {
-					"tpl": "Root/600#0"
+					"tpl": "Root/602#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -32,7 +33,7 @@
 						"main"
 					],
 					"textHash": "1505",
-					"line": 1372
+					"line": 1375
 				},
 				"innerBlocks": [
 					{
@@ -41,7 +42,7 @@
 							"text": "About Eye Care"
 						},
 						"draftRef": {
-							"tpl": "Root/602#0"
+							"tpl": "Root/604#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -53,18 +54,17 @@
 								"div"
 							],
 							"textHash": "34b72d44",
-							"line": 1374
+							"line": 1377
 						},
 						"innerBlocks": []
 					},
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Fatima Nawaz",
-							"level": "h1"
+							"content": "Fatima Nawaz"
 						},
 						"draftRef": {
-							"tpl": "Root/603#0"
+							"tpl": "Root/605#0"
 						},
 						"draftFingerprint": {
 							"tag": "h1",
@@ -76,7 +76,7 @@
 								"div"
 							],
 							"textHash": "8f608df0",
-							"line": 1375
+							"line": 1378
 						},
 						"innerBlocks": []
 					},
@@ -86,7 +86,7 @@
 							"text": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care"
 						},
 						"draftRef": {
-							"tpl": "Root/604#0"
+							"tpl": "Root/606#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -98,7 +98,7 @@
 								"div"
 							],
 							"textHash": "e4ddf8fd",
-							"line": 1376
+							"line": 1379
 						},
 						"innerBlocks": []
 					},
@@ -108,7 +108,7 @@
 							"text": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site."
 						},
 						"draftRef": {
-							"tpl": "Root/605#0"
+							"tpl": "Root/607#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -120,7 +120,7 @@
 								"div"
 							],
 							"textHash": "e2caf20f",
-							"line": 1377
+							"line": 1380
 						},
 						"innerBlocks": []
 					},
@@ -130,7 +130,7 @@
 							"text": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame."
 						},
 						"draftRef": {
-							"tpl": "Root/606#0"
+							"tpl": "Root/608#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -142,7 +142,7 @@
 								"div"
 							],
 							"textHash": "ba9a04b9",
-							"line": 1378
+							"line": 1381
 						},
 						"innerBlocks": []
 					},
@@ -152,7 +152,7 @@
 							"text": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will."
 						},
 						"draftRef": {
-							"tpl": "Root/607#0"
+							"tpl": "Root/609#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -164,7 +164,7 @@
 								"div"
 							],
 							"textHash": "edd071ed",
-							"line": 1379
+							"line": 1382
 						},
 						"innerBlocks": []
 					},
@@ -175,96 +175,53 @@
 							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/608#0"
+							"tpl": "Root/611#0"
 						},
 						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "f25efba1",
+							"tag": "a",
+							"cls": "scpq",
+							"styleHash": "58c6e5cb",
 							"parentTags": [
 								"main",
 								"div",
+								"div",
 								"div"
 							],
-							"textHash": "1505",
-							"line": 1380
+							"textHash": "ac9484c6",
+							"line": 1384
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/whatsapp-cta",
-								"attributes": {
-									"label": "Message me",
-									"variant": "inline"
-								},
-								"draftRef": {
-									"tpl": "Root/609#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "scpq",
-									"styleHash": "58c6e5cb",
-									"parentTags": [
-										"main",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "ac9484c6",
-									"line": 1381
-								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-whatsapp-cta__label": {
-										"tpl": "Root/609#0"
-									}
-								}
-							},
-							{
-								"name": "sgs/button",
-								"attributes": {
-									"label": "Shop the range",
-									"url": "/shop/"
-								},
-								"draftRef": {
-									"tpl": "Root/611#0"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "scpr",
-									"styleHash": "e2166b48",
-									"parentTags": [
-										"main",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "3ed0f727",
-									"line": 1385
-								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/611#0"
-									}
-								}
-							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/609#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/611#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
-						"name": "sgs/heading",
+						"name": "sgs/button",
 						"attributes": {
-							"content": "BSc (Hons)"
+							"label": "Shop the range"
 						},
 						"draftRef": {
-							"tpl": "Root/614#0"
+							"tpl": "Root/613#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scpr",
+							"styleHash": "e2166b48",
+							"parentTags": [
+								"main",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "3ed0f727",
+							"line": 1388
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "BSc (Hons)"
+						},
+						"draftRef": {
+							"tpl": "Root/616#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -277,7 +234,7 @@
 								"div"
 							],
 							"textHash": "605ea04c",
-							"line": 1389
+							"line": 1392
 						},
 						"innerBlocks": []
 					},
@@ -287,7 +244,7 @@
 							"text": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council."
 						},
 						"draftRef": {
-							"tpl": "Root/615#0"
+							"tpl": "Root/617#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -300,17 +257,17 @@
 								"div"
 							],
 							"textHash": "109a6165",
-							"line": 1389
+							"line": 1392
 						},
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/heading",
+						"name": "sgs/text",
 						"attributes": {
-							"content": "MCOptom"
+							"text": "MCOptom"
 						},
 						"draftRef": {
-							"tpl": "Root/617#0"
+							"tpl": "Root/619#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -323,7 +280,7 @@
 								"div"
 							],
 							"textHash": "9ef1b562",
-							"line": 1390
+							"line": 1393
 						},
 						"innerBlocks": []
 					},
@@ -333,7 +290,7 @@
 							"text": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum."
 						},
 						"draftRef": {
-							"tpl": "Root/618#0"
+							"tpl": "Root/620#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -346,17 +303,17 @@
 								"div"
 							],
 							"textHash": "54fa9549",
-							"line": 1390
+							"line": 1393
 						},
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/heading",
+						"name": "sgs/text",
 						"attributes": {
-							"content": "DipTp(IP)"
+							"text": "DipTp(IP)"
 						},
 						"draftRef": {
-							"tpl": "Root/620#0"
+							"tpl": "Root/622#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -369,7 +326,7 @@
 								"div"
 							],
 							"textHash": "b7a6a6e4",
-							"line": 1391
+							"line": 1394
 						},
 						"innerBlocks": []
 					},
@@ -379,7 +336,7 @@
 							"text": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't."
 						},
 						"draftRef": {
-							"tpl": "Root/621#0"
+							"tpl": "Root/623#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -392,17 +349,17 @@
 								"div"
 							],
 							"textHash": "72a97ef9",
-							"line": 1391
+							"line": 1394
 						},
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/heading",
+						"name": "sgs/text",
 						"attributes": {
-							"content": "Paediatric Eye Care"
+							"text": "Paediatric Eye Care"
 						},
 						"draftRef": {
-							"tpl": "Root/623#0"
+							"tpl": "Root/625#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -415,7 +372,7 @@
 								"div"
 							],
 							"textHash": "75991e3d",
-							"line": 1392
+							"line": 1395
 						},
 						"innerBlocks": []
 					},
@@ -425,7 +382,7 @@
 							"text": "Additional certification in children's vision, which matters when the order is for a child."
 						},
 						"draftRef": {
-							"tpl": "Root/624#0"
+							"tpl": "Root/626#0"
 						},
 						"draftFingerprint": {
 							"tag": "p",
@@ -438,17 +395,19 @@
 								"div"
 							],
 							"textHash": "7faa41e",
-							"line": 1392
+							"line": 1395
 						},
 						"innerBlocks": []
 					}
+				],
+				"handover": [
+					{
+						"owner": "content-page",
+						"kind": "presence",
+						"detail": "the hero image: choose it in the hero's split media setting"
+					}
 				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/600#0"
-			}
-		}
+		]
 	}
 ]

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:57:18.366Z",
-	"inventory": "2026-11-02T00:04:34.031Z",
-	"source": "http://127.0.0.1:56146/",
+	"generated": "2026-10-28T06:47:40.134Z",
+	"inventory": "2026-10-28T06:47:39.828Z",
+	"source": "http://127.0.0.1:57270/",
 	"surface": "footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -27,31 +27,26 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"siteOptions": {
-		"sgs_floating_ui_reading_progress_enabled": true,
-		"sgs_floating_ui_reading_progress_gradient": "linear-gradient(90deg, rgb(235, 221, 120) 0%, rgb(231, 215, 104) 24%, rgb(216, 202, 80) 46%, rgb(46, 173, 226) 76%, rgb(10, 126, 168) 100%)",
-		"sgs_floating_ui_reading_progress_height": 3
-	},
 	"counts": {
 		"inventoryElements": 96,
 		"parts": 13,
 		"rows": 83,
-		"skeletonNodes": 47,
-		"expandedNodes": 51,
-		"low": 2,
-		"removed": 32,
+		"skeletonNodes": 44,
+		"expandedNodes": 48,
+		"low": 0,
+		"removed": 34,
 		"unresolved": 0,
 		"byRule": {
 			"widthWrapper": 2,
 			"footerSlots": 3,
 			"wholeCardLink": 2,
 			"solitaryIcon": 3,
-			"label": 3,
-			"openStatus": 3,
-			"hoursRows": 3,
-			"drawsChildren": 16,
+			"label": 5,
+			"hoursRows": 12,
+			"openStatus": 1,
 			"homeLink": 1,
 			"logoElement": 1,
+			"drawsChildren": 10,
 			"columnHeading": 2,
 			"listWrapper": 1,
 			"mapEmbed": 1,
@@ -59,1130 +54,9 @@
 			"typedDivider": 2,
 			"backToTop": 1,
 			"decorationLayer": 2,
-			"recognise": 3,
+			"pillButton": 3,
 			"readingProgress": 1
 		}
-	},
-	"partPairing": {
-		"paired": 60,
-		"unpaired": [
-			{
-				"key": "Root/653#0",
-				"block": "sgs/site-footer",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/653#0",
-				"block": "sgs/site-footer",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/658#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/658#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/658#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/659#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/659#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg",
-				"reason": ".sgs-icon__shape > .sgs-icon__glyph: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/660#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/660#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/660#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/662#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/663#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/664#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/664#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/664#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/665#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/665#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg",
-				"reason": ".sgs-icon__shape > .sgs-icon__glyph: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/666#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/666#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/666#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/668#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/669#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/670#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/670#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/670#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/671#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/671#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/671#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": "a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/673#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/675#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/675#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/675#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": "a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": "a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#1",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": "a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#2",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": "a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info > .sgs-business-info__link: a wrapper another render of the block adds around a part, which this draft does not draw"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/677#3",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/682#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/682#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/684#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": ".sgs-responsive-logo__link: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/685#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/702#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/702#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/702#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/703#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list__heading",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/706#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/708#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/708#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/709#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/709#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/709#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/710#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/711#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/711#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/711#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/712#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/713#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/713#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/713#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/714#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/717#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/717#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/720#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/720#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/720#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/721#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/723#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/726#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/726#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/726#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/726#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/727#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/727#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph > svg",
-				"reason": ".sgs-icon__shape > .sgs-icon__glyph: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/728#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
-				"reason": ".sgs-whatsapp-cta__card-text: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/728#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-subline",
-				"reason": ".sgs-whatsapp-cta__card-text: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/728#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__icon",
-				"reason": "the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -1201,7 +75,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-footer",
@@ -1300,7 +173,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1321,14 +193,6 @@
 				"tagName": "div",
 				"layout": "flex",
 				"sgsBlockLinkSource": "phone"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/659#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/660#0"
-				}
 			}
 		},
 		{
@@ -1345,7 +209,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -1361,12 +224,7 @@
 				"1440": "shots/Root_659_0@1440.png"
 			},
 			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"659\">{{ footPhone }}</span>",
-			"attributes": {},
-			"slots": {
-				".sgs-icon__shape": {
-					"tpl": "Root/659#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 5,
@@ -1382,7 +240,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1402,14 +259,6 @@
 			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"660\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"661\">Call us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(20px,1.9vw,24px);margin-top:8px;\" data-dc-tpl=\"662\">0121 771 4330</span>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/661#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/662#0"
-				}
 			}
 		},
 		{
@@ -1426,7 +275,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1461,7 +309,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -1540,7 +387,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1561,14 +407,6 @@
 				"tagName": "div",
 				"layout": "flex",
 				"sgsBlockLinkSource": "email"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/665#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/666#0"
-				}
 			}
 		},
 		{
@@ -1585,7 +423,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -1601,12 +438,7 @@
 				"1440": "shots/Root_665_0@1440.png"
 			},
 			"snippet": "<span style=\"flex-shrink:0;width:52px;height:52px;border-radius:50%;background:#D8CA50;color:#2C3E50;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"665\">{{ footMail }}</span>",
-			"attributes": {},
-			"slots": {
-				".sgs-icon__shape": {
-					"tpl": "Root/665#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 11,
@@ -1622,7 +454,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1642,14 +473,6 @@
 			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"666\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;\" data-dc-tpl=\"667\">Email us</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(15px,1.25vw,17px);margin-top:8px;white-space:nowrap;\" data-dc-tpl=\"668\"",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/667#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/668#0"
-				}
 			}
 		},
 		{
@@ -1666,7 +489,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1701,7 +523,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -1780,7 +601,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1802,14 +622,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/671#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/675#0"
-				}
 			}
 		},
 		{
@@ -1826,7 +638,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1848,14 +659,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/672#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/673#0"
-				}
 			}
 		},
 		{
@@ -1872,7 +675,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -1898,21 +700,21 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Closed",
-			"block": "sgs/business-info",
+			"block": "sgs/label",
 			"action": null,
-			"reason": "a live open or closed line (text the draft's code computes from the clock against the opening hours it holds, lib/skeleton-clock.mjs) is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
-			"source": "rule openStatus",
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "openStatus",
+			"rule": "label",
 			"candidates": [
 				{
-					"block": "sgs/business-info",
+					"block": "sgs/label",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule openStatus: a live open or closed line (text the draft's code computes from the clock against the opening hours it holds, lib/skeleton-clock.mjs) is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
 					]
 				}
 			],
@@ -1922,9 +724,7 @@
 				"1440": "shots/Root_673_0@1440.png"
 			},
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
-			"attributes": {
-				"displayType": "open-status"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 19,
@@ -1934,12 +734,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule openStatus",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "openStatus",
+			"rule": "label",
 			"into": "Root/673#0",
 			"candidates": [],
 			"parts": [],
@@ -1963,7 +763,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1985,14 +784,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/677#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/677#1"
-				}
 			}
 		},
 		{
@@ -2009,7 +800,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -2029,14 +819,6 @@
 			"attributes": {
 				"displayType": "hours",
 				"hoursLayout": "rows"
-			},
-			"slots": {
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
-					"tpl": "Root/678#0"
-				},
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
-					"tpl": "Root/677#0"
-				}
 			}
 		},
 		{
@@ -2092,49 +874,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
-			"reason": null,
-			"source": "client decision",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"ruleWould": {
-				"label": "absorbed",
-				"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
-				"decision": {
-					"label": "sgs/business-info",
-					"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-				}
-			},
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"client decision: Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-					]
-				}
-			],
+			"rule": "hoursRows",
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_1@375.png",
 				"1440": "shots/Root_677_1@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"copyrightPrefix": ""
-			},
-			"slots": {
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
-					"tpl": "Root/678#1"
-				},
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
-					"tpl": "Root/677#1"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 25,
@@ -2144,13 +900,13 @@
 			"words": "Friday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#1)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#1",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2167,13 +923,13 @@
 			"words": "9:30am – 12pm, 2:30 – 5pm",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#1)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#1",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2189,49 +945,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
-			"reason": null,
-			"source": "client decision",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"ruleWould": {
-				"label": "absorbed",
-				"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
-				"decision": {
-					"label": "sgs/business-info",
-					"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-				}
-			},
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"client decision: Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-					]
-				}
-			],
+			"rule": "hoursRows",
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_2@375.png",
 				"1440": "shots/Root_677_2@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"copyrightPrefix": ""
-			},
-			"slots": {
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
-					"tpl": "Root/678#2"
-				},
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
-					"tpl": "Root/677#2"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 28,
@@ -2241,13 +971,13 @@
 			"words": "Saturday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#2)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#2",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2264,13 +994,13 @@
 			"words": "10am – 3pm",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#2)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#2",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2286,49 +1016,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
-			"reason": null,
-			"source": "client decision",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"ruleWould": {
-				"label": "absorbed",
-				"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
-				"decision": {
-					"label": "sgs/business-info",
-					"reason": "Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-				}
-			},
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"client decision: Bean accepted sgs/business-info in the intake review on 2026-10-28 (recovered from the review history, 2026-11-01)"
-					]
-				}
-			],
+			"rule": "hoursRows",
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_3@375.png",
 				"1440": "shots/Root_677_3@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"copyrightPrefix": ""
-			},
-			"slots": {
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day": {
-					"tpl": "Root/678#3"
-				},
-				".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)": {
-					"tpl": "Root/677#3"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 31,
@@ -2338,13 +1042,13 @@
 			"words": "Sunday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#3)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#3",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2361,13 +1065,13 @@
 			"words": "Closed",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: decisions rules.drawsChildren: sgs/business-info reads its content from Site Info",
-			"source": "client decision (inside Root/677#3)",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawsChildren",
-			"into": "Root/677#3",
+			"rule": "hoursRows",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2383,22 +1087,32 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "Opens at 9:30am",
-			"block": null,
-			"action": "absorbed",
-			"reason": "a live open or closed line (text the draft's code computes from the clock against the opening hours it holds, lib/skeleton-clock.mjs) is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
 			"source": "rule openStatus",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "openStatus",
-			"into": "Root/673#0",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_680_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
-			"attributes": {}
+			"attributes": {
+				"displayType": "open-status"
+			}
 		},
 		{
 			"order": 34,
@@ -2449,7 +1163,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -2469,17 +1182,6 @@
 			"snippet": "<div style=\"grid-column:{{ R.footBrandSpan }};min-width:0;\" data-dc-tpl=\"682\"> <a href=\"#/\" aria-label=\"Indus Foods home\" style=\"display:block;width:{{ R.footLogoW }};max-width:100%;margin:0 auto;\" data-dc-tpl=\"683\"><indus-logo variant=\"square\" aria-label=\"Indus Foods Ltd\" style=\"display:block;width:100%;aspect-ratio:1998 / 1302;\" data-dc-tpl=\"684\"></indus-logo></a> <p style=\"font-size:17px;line-h",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__svg-bg": {
-					"tpl": "Root/686#0"
-				},
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/684#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/685#0"
-				}
 			}
 		},
 		{
@@ -2524,7 +1226,6 @@
 				"kind": "presence",
 				"detail": "the logo image: choose the site logo in the editor"
 			},
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -2562,7 +1263,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -2598,7 +1298,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/social-icons",
@@ -2838,7 +1537,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -2858,14 +1556,6 @@
 			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"702\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"703\">Quick links</div> <div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;\" data-dc-tpl=\"704\"> <sc-for list=\"{{ footerQuick }}\" as=\"l\" hint-placehold",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/703#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/706#0"
-				}
 			}
 		},
 		{
@@ -2882,7 +1572,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "columnHeading",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -2971,62 +1660,6 @@
 			"item": {
 				"text": "Certifications",
 				"url": "/about/certifications/"
-			},
-			"slots": {
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-					"tpl": "Root/706#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-					"tpl": "Root/706#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": {
-					"tpl": "Root/706#1"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": {
-					"tpl": "Root/706#2"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text": {
-					"tpl": "Root/706#3"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text": {
-					"tpl": "Root/706#4"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text": {
-					"tpl": "Root/706#5"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-					"tpl": "Root/706#1"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-					"tpl": "Root/706#2"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
-					"tpl": "Root/706#3"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)": {
-					"tpl": "Root/706#4"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)": {
-					"tpl": "Root/706#5"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#1"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#2"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#3"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#4"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon": {
-					"tpl": "Root/707#5"
-				}
 			}
 		},
 		{
@@ -3212,7 +1845,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Delivery & Logistics",
-				"url": "/apply/delivery/"
+				"url": "/delivery/"
 			}
 		},
 		{
@@ -3274,7 +1907,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Terms & Conditions",
-				"url": "/apply/terms/"
+				"url": "/terms/"
 			}
 		},
 		{
@@ -3376,7 +2009,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -3396,11 +2028,6 @@
 			"attributes": {
 				"label": "Apply For A Trade Account",
 				"url": "/apply/"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/708#0"
-				}
 			}
 		},
 		{
@@ -3417,7 +2044,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3437,14 +2063,6 @@
 			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"709\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#D8CA50;margin-bottom:18px;\" data-dc-tpl=\"710\">Visit us</div> <div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Ind",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/710#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/711#0"
-				}
 			}
 		},
 		{
@@ -3461,7 +2079,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "columnHeading",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -3496,7 +2113,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3516,14 +2132,6 @@
 			"snippet": "<div style=\"position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#3A4D60;\" data-dc-tpl=\"711\"> <iframe title=\"Indus Foods location map\" src=\"https://maps.google.com/maps?q=55-58%20Stratford%20Street%20North%2C%20Birmingham%20B11%201BU&amp;z=14&amp;output=embed\" loading=\"lazy\" style=\"width:100%;height:210px;border:0;display:block;filter:grayscale(.35",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/712#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/713#0"
-				}
 			}
 		},
 		{
@@ -3534,10 +2142,10 @@
 			"words": "",
 			"block": "sgs/business-info",
 			"action": null,
-			"reason": "an embedded map is sgs/business-info's map display; the framework DB prefers sgs/media (confidence 0.75: html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\"); block_composition: sgs/media is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+			"reason": "an embedded map is sgs/business-info's map display",
 			"source": "rule mapEmbed",
-			"confidence": 0.5,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": "mapEmbed",
 			"handover": {
@@ -3545,30 +2153,13 @@
 				"kind": "presence",
 				"detail": "map source: the Google Business Profile listing when Site Info has one (preferred), else the address"
 			},
-			"conflict": {
-				"rule": "mapEmbed",
-				"ruleBlock": "sgs/business-info",
-				"dbBlock": "sgs/media",
-				"dbConfidence": 0.75,
-				"why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
-			},
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
 					"score": 1,
-					"share": 0.5,
+					"share": 1,
 					"evidence": [
 						"rule mapEmbed: an embedded map is sgs/business-info's map display"
-					]
-				},
-				{
-					"block": "sgs/media",
-					"score": 0.75,
-					"share": 0.5,
-					"evidence": [
-						"html_tag_to_core_block: iframe -> sgs/media (\"Embedded iframe (YouTube/Vimeo) → sgs/media\")",
-						"block_composition: sgs/media is a leaf; the element holds words and no block children"
 					]
 				}
 			],
@@ -3596,7 +2187,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3618,14 +2208,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/714#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/717#0"
-				}
 			}
 		},
 		{
@@ -3642,7 +2224,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -3689,7 +2270,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "siteInfoLink",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -3710,11 +2290,6 @@
 				"url": "https://www.google.com/maps/dir/?api=1&destination=55-58+Stratford+Street+North+Birmingham+B11+1BU",
 				"linkTarget": "_blank",
 				"linkSource": "directions"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/717#0"
-				}
 			}
 		},
 		{
@@ -3793,7 +2368,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3815,14 +2389,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/721#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/723#0"
-				}
 			}
 		},
 		{
@@ -3839,7 +2405,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -3884,7 +2449,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "typedDivider",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -3902,29 +2466,18 @@
 			"block": "sgs/business-info",
 			"action": null,
 			"reason": null,
-			"source": null,
-			"confidence": 0.38,
-			"low": true,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
-					"score": 0.75,
-					"share": 0.5,
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"block_attributes: sgs/business-info.displayType enum has \"attribution\"",
-						"decisions: attribution pattern (a credit line for the agency that built the site)"
-					]
-				},
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 0.5,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: A website-credit link is Site Info attribution; sgs/business-info has displayType attribution and is the top candidate."
 					]
 				}
 			],
@@ -3935,6 +2488,7 @@
 			},
 			"snippet": "<a href=\"#/\" style=\"color:#FFFFFF;background:linear-gradient(#D8CA50,#D8CA50) no-repeat left bottom / 0% 1px;padding-bottom:2px;transition:color .3s,background-size .3s;\" style-hover=\"color:#D8CA50;background-size:100% 1px\" data-dc-tpl=\"723\">Website by Ibraheem Mustafa</a>",
 			"attributes": {
+				"copyrightPrefix": "Website by Ibraheem Mustafa",
 				"displayType": "attribution"
 			}
 		},
@@ -3952,7 +2506,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "typedDivider",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -3976,7 +2529,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4000,7 +2552,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "backToTop",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4021,12 +2572,6 @@
 				"tagName": "div",
 				"layout": "flex",
 				"sgsBlockLinkSource": "top"
-			},
-			"rowNote": "its own words \"Back to top\" are the sgs/text child before its children",
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/727#0"
-				}
 			}
 		},
 		{
@@ -4043,7 +2588,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -4059,12 +2603,7 @@
 				"1440": "shots/Root_727_0@1440.png"
 			},
 			"snippet": "<span style=\"width:40px;height:40px;border-radius:50%;border:1.5px solid var(--tb,rgba(255,255,255,.4));background:var(--tbg,transparent);display:flex;align-items:center;justify-content:center;transform:var(--tt,rotate(-90deg));transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .2s,background .2s;\" data-dc-tpl=\"727\">{{ arrowIcon }}</span>",
-			"attributes": {},
-			"slots": {
-				".sgs-icon__shape": {
-					"tpl": "Root/727#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 77,
@@ -4080,7 +2619,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4104,7 +2642,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4120,22 +2657,21 @@
 			"tag": "a",
 			"depth": 1,
 			"words": "",
-			"block": "sgs/whatsapp-cta",
+			"block": "sgs/button",
 			"action": null,
-			"reason": "names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating",
-			"source": "rule recognise",
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
-			"acceptedDecision": true,
+			"rule": "pillButton",
 			"candidates": [
 				{
-					"block": "sgs/whatsapp-cta",
+					"block": "sgs/button",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule recognise: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating"
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
 					]
 				}
 			],
@@ -4146,14 +2682,7 @@
 			},
 			"snippet": "<a href=\"https://wa.me/441217714330\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Indus Foods on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:140;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:15px;font-weight:600;box-shadow:0 10px 30px rgba(13,110,53,.32);transition:transform .25",
 			"attributes": {
-				"variant": "floating",
-				"floatingHideLabelBelow": 768,
 				"label": "Chat with our team"
-			},
-			"slots": {
-				".sgs-whatsapp-cta__label": {
-					"tpl": "Root/731#0"
-				}
 			},
 			"strip": "Root/728#0"
 		},
@@ -4165,12 +2694,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
+			"rule": "pillButton",
 			"into": "Root/728#0",
 			"candidates": [],
 			"parts": [],
@@ -4189,12 +2718,12 @@
 			"words": "Chat with our team",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
+			"rule": "pillButton",
 			"into": "Root/728#0",
 			"candidates": [],
 			"parts": [],
@@ -4223,11 +2752,6 @@
 				"owner": "behaviour",
 				"kind": "behaviour",
 				"detail": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
-			},
-			"siteOptions": {
-				"sgs_floating_ui_reading_progress_enabled": true,
-				"sgs_floating_ui_reading_progress_gradient": "linear-gradient(90deg, rgb(235, 221, 120) 0%, rgb(231, 215, 104) 24%, rgb(216, 202, 80) 46%, rgb(46, 173, 226) 76%, rgb(10, 126, 168) 100%)",
-				"sgs_floating_ui_reading_progress_height": 3
 			},
 			"candidates": [],
 			"parts": [],

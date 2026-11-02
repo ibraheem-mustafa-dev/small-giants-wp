@@ -104,19 +104,6 @@ test( 'MUST FAIL: the first run uploads each image once, a second uploads nothin
 	assert.deepEqual( ( await run( third.map ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ] );
 } );
 
-// MUST FAIL: an upload through a mirror read and wrote the record under the mirror's own name, found nothing there and
-// uploaded every file again, while every reader looks under the test site the mirror copies (Eye Care, 2026-11-01: 48
-// duplicates on local-eye-care, the wordmark never reached the record the logo check reads).
-test( 'MUST FAIL: an upload through a mirror checks and writes the test site\'s record, which both share', async () => {
-	const repo = fixtureRepo();
-	const wp = fakeWordPress();
-	const creds = siteCredentials( repo, 'acme-test' );
-	const first = await uploadMedia( { repo, client: 'acme', site: 'eye-care-clone-test', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: true } );
-	const viaMirror = await uploadMedia( { repo, client: 'acme', site: 'local-eye-care', map: first.map, creds, fetchImpl: wp.fetchImpl, apply: true } );
-	assert.deepEqual( [ viaMirror.uploaded.length, wp.calls.uploads ], [ 0, 3 ], 'nothing is uploaded again through the mirror' );
-	assert.deepEqual( Object.keys( viaMirror.map.sites ), [ 'eye-care-clone-test' ] );
-} );
-
 test( 'MUST FAIL: two files with the same bytes share one attachment, on the first run and on a rerun', async () => {
 	const repo = fixtureRepo();
 	ship( repo, 'hero-copy.png', 'PNG-hero' );
@@ -464,12 +451,4 @@ test( 'MUST FAIL: the stock review lists each stock image with where it is paint
 	assert.match( md, /\| https:\/\/images\.unsplash\.com\/photo-1111111111111-aaaaaaaaaaaa \| Home\.dc\.html:1<br>Home\.dc\.html:2 \| \d+ \|/ );
 	assert.equal( ( md.match( /^\| https:/gm ) || [] ).length, 3 );
 	assert.ok( ! md.includes( 'bread.jpg' ) );
-} );
-
-// MUST FAIL (qc-council 2026-11-01): paintedAsset read the record by the raw site name and compared full URLs, so on a mirror
-// (local-*, its own host) no painted image was found in the record it shares with its test site.
-test( 'MUST FAIL: a mirror finds the painted image in the shared record whatever the host', () => {
-	const map = { sites: { 'eye-care-clone-test': { files: [ { asset: 'sites/acme/handoff/assets/hero.png', id: 7, url: 'https://eye-care-clone-test.example/wp-content/uploads/2026/11/hero.png' } ] } } };
-	assert.equal( paintedAsset( map, 'local-eye-care', 'http://localhost:8081/wp-content/uploads/2026/11/hero-300x200.png' )?.id, 7 );
-	assert.equal( paintedAsset( map, 'local-eye-care', 'http://localhost:8081/wp-content/uploads/2026/11/other.png' ), null, 'negative control: another file is not matched' );
 } );

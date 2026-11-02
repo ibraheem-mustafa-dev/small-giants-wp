@@ -9,11 +9,7 @@
       "textHash": "1505",
       "line": 11
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/9#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/17#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-my-account-1": {
     "tpl": "Root/9#0",
@@ -27,10 +23,7 @@
       "textHash": "1505",
       "line": 12
     },
-    "slots": {
-      ".sgs-hero__content": "Root/10#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-my-account-2": {
     "tpl": "Root/11#0",
@@ -46,7 +39,7 @@
       "textHash": "85556af0",
       "line": 14
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-my-account-3": {
     "tpl": "Root/12#0",
@@ -62,7 +55,7 @@
       "textHash": "3af91e50",
       "line": 15
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-my-account-4": {
     "tpl": "Root/17#0",
@@ -77,6 +70,6 @@
       "textHash": "1505",
       "line": 21
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   }
 }

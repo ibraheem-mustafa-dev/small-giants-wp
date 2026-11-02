@@ -119,10 +119,6 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ), ...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
-		// The one picture an element with no <img> of its own paints as its CSS background (a card whose photo is its
-		// `background-image: url()`): its address as the page resolved it. Several layers, a gradient or a none are not one picture.
-		const bgm = /^url\(\s*(["']?)([^"')]+)\1\s*\)$/.exec( getComputedStyle( el ).backgroundImage );
-		snap.bgImg = ! snap.img && bgm ? { tag: 'background', src: bgm[ 2 ], alt: null, caption: null } : null;
 		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one
 		// address count once), so a list block can give each of its items the picture the draft draws in that item.
 		const pictures = [];
@@ -234,15 +230,6 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.childSize = kid && null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ? { width: `${ kw }px`, height: `${ kh }px`, tag: kid.localName } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
-		// A list item's CSS-drawn marker (lib/fill-list-marker.mjs): its list-style type and image and its ::marker content,
-		// with the ::marker's colour and size. Null for an element that is not a list item.
-		const ics = getComputedStyle( el );
-		if ( /list-item/.test( ics.display ) ) {
-			const mk = getComputedStyle( el, '::marker' );
-			snap.marker = { type: ics.listStyleType, image: ics.listStyleImage, content: mk.content, color: srgb( mk.color ), fontSize: mk.fontSize };
-		} else {
-			snap.marker = null;
-		}
 		if ( j.own ) {
 			const cs = getComputedStyle( el );
 			for ( const p of props.filter( ( x ) => [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ].includes( x ) ) ) {
@@ -250,7 +237,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				snap.styles[ p ] = /color$/.test( p ) ? srgb( v ) : v;
 			}
 		}
-		// collectPair reads a text colour off the paint carrying most of its text (parity/lib/paint.mjs::textCarrier); an element with no text (an icon-only link)
+		// collectPair reads a text colour off the element painting the first text; an element with no text (an icon-only link)
 		// keeps its own, which a glyph drawn in currentColor paints and lib/fill-state.mjs::holdDefaults holds with its ground.
 		if ( props.includes( 'color' ) && ! snap.styles.color ) {
 			snap.styles.color = srgb( getComputedStyle( el ).color );

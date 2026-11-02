@@ -54,9 +54,7 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {
-							"homeLabel": ""
-						},
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -95,12 +93,7 @@
 									"textHash": "d8aa523",
 									"line": 446
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/326#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/text",
@@ -125,12 +118,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
-								"tpl": "Root/326#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -154,21 +142,12 @@
 							"textHash": "6e53944f",
 							"line": 450
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Trade · Terms & Conditions"
-								},
-								"innerBlocks": []
-							}
-						]
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Trade terms and conditions.",
-							"level": "h1"
+							"content": "Trade terms and conditions."
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -213,15 +192,7 @@
 						},
 						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/322#0"
-					},
-					".sgs-hero__video-bg": {
-						"tpl": "Root/318#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -308,33 +279,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/icon-list",
+												"name": "sgs/container",
 												"attributes": {
-													"markerType": "numbered",
-													"numberFormat": "decimal-leading-zero",
-													"items": [
-														{
-															"text": "Trade accounts"
-														},
-														{
-															"text": "Orders"
-														},
-														{
-															"text": "Pricing"
-														},
-														{
-															"text": "Delivery"
-														},
-														{
-															"text": "Shortages, damage & returns"
-														},
-														{
-															"text": "Payment"
-														},
-														{
-															"text": "Contact"
-														}
-													]
+													"tagName": "div"
 												},
 												"draftRef": {
 													"tpl": "Root/645#0"
@@ -353,34 +300,335 @@
 													"textHash": "f4ee86d1",
 													"line": 920
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-														"tpl": "Root/645#0"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-														"tpl": "Root/645#1"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-														"tpl": "Root/645#2"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
-														"tpl": "Root/645#3"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)": {
-														"tpl": "Root/645#4"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)": {
-														"tpl": "Root/645#5"
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "01"
+														},
+														"draftRef": {
+															"tpl": "Root/646#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596804",
+															"line": 920
+														},
+														"innerBlocks": []
 													}
-												}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "ac047198",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "02"
+														},
+														"draftRef": {
+															"tpl": "Root/646#1"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596807",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "cf40660d",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "03"
+														},
+														"draftRef": {
+															"tpl": "Root/646#2"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596806",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "cfd6a179",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "04"
+														},
+														"draftRef": {
+															"tpl": "Root/646#3"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596801",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d1151a7f",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "05"
+														},
+														"draftRef": {
+															"tpl": "Root/646#4"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596800",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "e84ec6ff",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "06"
+														},
+														"draftRef": {
+															"tpl": "Root/646#5"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596803",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d9d08625",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "07"
+														},
+														"draftRef": {
+															"tpl": "Root/646#6"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596802",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/645#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -430,8 +678,7 @@
 													{
 														"name": "sgs/heading",
 														"attributes": {
-															"content": "01Trade accounts",
-															"level": "h3"
+															"content": "Trade accounts"
 														},
 														"draftRef": {
 															"tpl": "Root/650#0"
@@ -451,19 +698,7 @@
 															"textHash": "f4ee86d1",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"01\" inside \"01Trade accounts\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
-															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#0"
-															}
-														}
+														"innerBlocks": []
 													},
 													{
 														"name": "sgs/text",
@@ -490,15 +725,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#0"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#0"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -524,10 +751,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "02Orders",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#1"
@@ -547,19 +773,34 @@
 															"textHash": "ac047198",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"02\" inside \"02Orders\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "02"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596807",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#1"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -586,15 +827,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#1"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#1"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -620,10 +853,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "03Pricing",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#2"
@@ -643,19 +875,34 @@
 															"textHash": "cf40660d",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"03\" inside \"03Pricing\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "03"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596806",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#2"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -682,15 +929,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#2"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#2"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -716,10 +955,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "04Delivery",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#3"
@@ -739,19 +977,34 @@
 															"textHash": "cfd6a179",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"04\" inside \"04Delivery\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "04"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596801",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#3"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -778,15 +1031,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#3"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#3"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -812,10 +1057,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "05Shortages, damage &amp; returns",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#4"
@@ -835,19 +1079,34 @@
 															"textHash": "d1151a7f",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"05\" inside \"05Shortages, damage & returns\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "05"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#4"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596800",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#4"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -874,15 +1133,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#4"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#4"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -908,10 +1159,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "06Payment",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#5"
@@ -931,19 +1181,34 @@
 															"textHash": "e84ec6ff",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"06\" inside \"06Payment\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "06"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#5"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596803",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#5"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -970,15 +1235,7 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#5"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#5"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -1004,10 +1261,9 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/heading",
+														"name": "sgs/container",
 														"attributes": {
-															"content": "07Contact",
-															"level": "h3"
+															"tagName": "div"
 														},
 														"draftRef": {
 															"tpl": "Root/650#6"
@@ -1027,19 +1283,34 @@
 															"textHash": "d9d08625",
 															"line": 926
 														},
-														"innerBlocks": [],
-														"handover": [
+														"innerBlocks": [
 															{
-																"owner": "content-page",
-																"kind": "text",
-																"detail": "the words \"07\" inside \"07Contact\" are drawn with color rgb(10, 126, 168), font-size 14px: no format of sgs/heading content holds it and no inline style is written (Spec 32), so they print in the text's own style"
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "07"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#6"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596802",
+																	"line": 926
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															"a": {
-																"tpl": "Root/651#6"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/text",
@@ -1066,58 +1337,16 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/650#6"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/652#6"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/649#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/649#1"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/643#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/647#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/642#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#0"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/316#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/344#0"
-			}
-		}
+		]
 	}
 ]

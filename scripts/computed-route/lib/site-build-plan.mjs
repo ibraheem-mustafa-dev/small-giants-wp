@@ -11,8 +11,6 @@
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
 import fs from 'fs';
 import path from 'path';
-import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
-import { commerceRefusal, commerceRoles, rowCommerceRole } from './skeleton-commerce-refusal.mjs';
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
@@ -23,8 +21,6 @@ import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefa
 export const PERMALINKS = '/%postname%/';
 export const PHASES = [ 'posts', 'menus', 'layout', 'site' ];
 const CREATES = [ 'create', 'menu', 'item-add' ];
-// The post fields a person may change after the site build set them (FIELDS_META).
-const OWN_FIELDS = [ 'post_title', 'post_name', 'post_parent' ];
 
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
@@ -174,11 +170,6 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		const { tree, source } = pageTreeFor( repo, client, row, menuIds );
-		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree, roles: commerceRoles(), what: key } );
-		if ( noRegion ) {
-			problems.push( `${ key }: ${ noRegion }` );
-			continue;
-		}
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
@@ -199,21 +190,19 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 				actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
 			}
 		}
-		// Title, slug and parent follow the page map on every run (FR-48-55), except where a person changed them: a value that
-		// differs from the one the site build last set (FIELDS_META) is a person's rename or move, which stays and is
-		// reported. A post with no record takes the map's values. A parent made in this run is set when it exists.
+		// Status, title, slug and parent are set once, at creation: a post someone has since drafted, renamed, moved or made
+		// private stays as they left it, and a difference is reported. A parent made in this run is set when it exists.
 		const want = { post_title: row.title, post_name: row.slug, ...fields };
 		const have = { post_title: p.title, post_name: p.slug, post_parent: p.parent, page_template: p.template };
 		const differs = Object.entries( want ).filter( ( [ k, v ] ) => String( v?.ref ? '' : v ) !== String( have[ k ] ) || v?.ref );
-		const recorded = p.builtFields && 'object' === typeof p.builtFields ? p.builtFields : null;
-		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && OWN_FIELDS.includes( k ) && null !== recorded && k in recorded && String( recorded[ k ] ) !== String( have[ k ] );
+		const ownedByPerson = ( [ k, v ] ) => ! v?.ref && [ 'post_title', 'post_name', 'post_parent' ].includes( k );
 		const diff = Object.fromEntries( differs.filter( ( e ) => ! ownedByPerson( e ) ) );
 		const drift = differs.filter( ownedByPerson );
 		if ( drift.length ) {
 			notes.push( `${ key }: post ${ p.id } differs from the page map (${ drift.map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } (map ${ JSON.stringify( v ) })` ).join( '; ' ) }); the site build leaves a person's change` );
 		}
 		if ( Object.keys( diff ).length ) {
-			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, record: { ...Object.fromEntries( OWN_FIELDS.map( ( k ) => [ k, recorded && k in recorded ? recorded[ k ] : have[ k ] ] ) ), ...Object.fromEntries( Object.entries( diff ).filter( ( [ k ] ) => OWN_FIELDS.includes( k ) ) ) }, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
+			actions.push( { phase, type: 'update', key, id: p.id, fields: diff, say: `${ key }: post ${ p.id }: ${ Object.entries( diff ).map( ( [ k, v ] ) => `${ k } ${ JSON.stringify( have[ k ] ) } -> ${ shown( v ) }` ).join( '; ' ) }` } );
 		}
 	}
 
@@ -226,9 +215,6 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
 	const builders = new Map();
 	const uncopied = [];
-	// The templates a manifest surface builds (the site run's copies). A copy file under trees/template/ with no surface
-	// here is a stale tree and is never read, so a template the manifest stopped building is not recreated.
-	const surfaced = new Set( Object.values( readSurfaces( repo, client ) ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
 	for ( const slug of servedTemplates( rows ) ) {
 		const how = copySource( rows, slug );
 		const mine = rowsOf( rows, slug );
@@ -236,7 +222,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const trees = sources.map( ( row ) => ( { row, ...treeFor( repo, client, row, {} ) } ) ).filter( ( t ) => 'placeholder' !== t.source );
 		const owner = mine[ 0 ] || null;
 		let pick = null;
-		if ( surfaced.has( slug ) && fs.existsSync( copyFile( buildDir, slug ) ) ) {
+		if ( fs.existsSync( copyFile( buildDir, slug ) ) ) {
 			pick = { row: owner, tree: JSON.parse( fs.readFileSync( copyFile( buildDir, slug ), 'utf8' ) ), source: rel( copyFile( buildDir, slug ) ) };
 		} else if ( 'whole' === how && trees.length ) {
 			pick = { row: trees[ 0 ].row, tree: copyTree( { slug, whole: trees[ 0 ].tree } ), source: trees[ 0 ].source };
@@ -257,11 +243,6 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, pick ] of builders ) {
-		const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ], tree: pick.tree, roles: commerceRoles(), what: `the ${ slug } template (${ pick.source })` } );
-		if ( noRegion ) {
-			problems.push( `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
-			continue;
-		}
 		const hash = treeHash( pick.tree );
 		const saved = ( state.customTemplates || [] ).includes( slug );
 		// A recorded hash with no saved copy is a build that stopped before it saved: built again.
@@ -281,22 +262,6 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
 		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
-	}
-
-	// A saved template the clone wrote (its slug is recorded in `sgs_site_build_templates`, which the site build and the site
-	// run both write after each template they save) that no manifest surface and no site-build copy builds now goes back to the
-	// theme or plugin file (FR-48-55 step 8, R-48-2): the saved wp_template post is deleted and its recorded hash dropped. A
-	// saved template the clone did not write (WooCommerce's or a person's) is noted and kept. Template parts and posts are never touched.
-	for ( const slug of ( state.customTemplates || [] ).filter( ( t ) => ! builders.has( t ) && ! surfaced.has( t ) ) ) {
-		if ( ! Object.hasOwn( hashes, slug ) ) {
-			notes.push( `template:${ slug }: kept: not written by the clone` );
-			continue;
-		}
-		const { [ slug ]: dropped, ...kept } = hashes;
-		const id = ( state.templateIds || {} )[ slug ];
-		actions.push( { phase: 'posts', type: 'template-remove', key: `template:${ slug }`, template: slug, id, hashes: kept, previous: hashes, say: `template:${ slug }: remove the saved copy${ id ? ` (wp_template ${ id })` : '' }; the clone wrote it and no manifest surface builds it now, so the theme or plugin file stands` } );
-		hashes = kept;
-		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: dropped.slice( 0, 12 ), after: '(removed)' } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -334,9 +299,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
 			matched[ it.key ] = e.id;
-			// WordPress stores an item title equal to its object's own title as empty and shows the object's title
-			// (wp_update_nav_menu_item; `shown` is the title wp_setup_nav_menu_item resolves), so that is no difference.
-			const titleOff = it.title ? e.title !== it.title && ( e.title || ( e.shown ?? '' ) !== it.title ) : '' !== e.title;
+			const titleOff = it.title ? e.title !== it.title : '' !== e.title;
 			if ( titleOff && ! it.title ) {
 				notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
 			}
@@ -435,7 +398,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	return problems.length ? { actions: [], problems, notes, options: [], uncopied } : { actions, problems, notes, options, uncopied };
 }
 
-// The plan's counts: posts, menus and items it creates; everything else it changes (a saved template it removes counts as a change) (an adoption only fills the map).
+// The plan's counts: posts, menus and items it creates; everything else it changes (an adoption only fills the map).
 export const tally = ( actions ) => ( {
 	creates: actions.filter( ( a ) => CREATES.includes( a.type ) ).length,
 	changes: actions.filter( ( a ) => ! CREATES.includes( a.type ) && 'adopt' !== a.type ).length,

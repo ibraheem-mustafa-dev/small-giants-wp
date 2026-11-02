@@ -6,7 +6,7 @@
 //        [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
-// divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, modal-frame.json (a modal surface's frame look, lib/fill-modal-frame.mjs), fill-report.md, fill-report.json, unmapped.json,
+// divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
 // handover.json, binding-groups.json, breakpoints.json, opener.json (the state a drawer or panel surface was opened with, the widths it rendered at and any state refused), the generated walker config and, when the draft's focus, press or link-state looks
 // live in the theme, theme-snapshot.patch.json (the keys to merge into the client's theme-snapshot.json: Fill never
 // edits it). It never builds a page and never writes the surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
@@ -20,14 +20,12 @@ import { readTree, addRefs, refOf, walk } from './lib/tree.mjs';
 import { lintSkeleton } from './lint.mjs';
 import { load as loadLedger, addEntries } from './lib/ledger.mjs';
 import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
-import { liftModalFrame } from './lib/fill-modal-frame.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { stateOpener, readUrlOf, refusalRows, openedAt, describeWays } from './lib/fill-open.mjs';
 import { widthStateKeys } from './lib/state-reach.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
-import { surfaceRefusal } from './lib/skeleton-commerce-refusal.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -37,26 +35,19 @@ import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
 import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
-import { customCssWrites, openedElements } from './lib/fill-custom-css.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
-import { customCssEffectIds } from './lib/effect-css-equivalent.mjs';
-import { draftCssOf, hasAttrOf, templateOf } from './lib/fill-behaviour.mjs';
-import { headerRootIds } from './lib/fill-header-behaviour.mjs';
+import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
-import { currentAttrKeys } from './lib/fill-current-attr.mjs';
 import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
-import { draftFolderOf } from './lib/fill-form-success.mjs';
 import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
-import { inlineByKey } from './lib/inline-writer.mjs';
-import { draftLinksFor } from './lib/draft-link.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -66,23 +57,56 @@ import { sweepSteps } from './lib/fill-values.mjs';
 import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
+import { calibrationFor } from './solve.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
-import { readDecisions, skeletonDir } from './lib/skeleton-finalise.mjs';
-import { injectedSvgWrites } from './lib/fill-injected-svg.mjs';
-import { liveReadSlots } from './lib/written-slot.mjs';
-import { renderScoped } from './lib/fill-render.mjs';
-import { renderSourcePass } from './lib/fill-render-source.mjs';
-import { pruneRunsReport } from './lib/prune-runs.mjs';
-import { calibrationLoader, parseMirrors, stamp, animationInventory } from './lib/fill-inputs.mjs';
+import { assertCurrent } from './lib/freshness.mjs';
 
-export { calibrationLoader, parseMirrors };
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 
+// The calibration loader for one site: the route's own cache (solve.mjs::calibrationFor), or the cache files in `dir` (a
+// run against another checkout's measured cache). Default paint comes from `site`'s own file only.
+export function calibrationLoader( site, dir = null ) {
+	return ( block ) => calibrationFor( block, site, dir ? path.resolve( dir ) : undefined );
+}
+
+// `--mirror <url> <file>` (repeatable) as { url: absolute file path }.
+export function parseMirrors( argv ) {
+	const out = {};
+	argv.forEach( ( a, i ) => {
+		if ( '--mirror' === a ) {
+			if ( ! argv[ i + 1 ] || ! argv[ i + 2 ] ) {
+				throw new Error( '--mirror takes a url and a file' );
+			}
+			out[ argv[ i + 1 ] ] = path.resolve( argv[ i + 2 ] );
+		}
+	} );
+	return out;
+}
+
+const stamp = () => new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 );
+
+// The re-derived animation inventory (Spec 48 FR-48-25) from the client's intake: { records, rootComponent }, where
+// rootComponent is the served index draft's component (else the inventory's first, entry, draft); no records when
+// intake has not run.
+function animationInventory( buildDir, draftIndex, log ) {
+	const file = path.join( buildDir, 'intake', 'intake.json' );
+	if ( ! fs.existsSync( file ) ) {
+		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
+		return { records: [], rootComponent: null, draftDefects: [], flags: [] };
+	}
+	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	assertCurrent( intake, path.join( buildDir, '..', 'handoff' ), { label: path.relative( REPO, file ) } );
+	const inv = intake.inventory?.animations || {};
+	const drafts = inv.drafts || [];
+	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
+	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [], flags: intake.flags || [] };
+}
+
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
-// livePrime (URLs the walker's live context visits first, lib/live-prime.mjs), out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
+// out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
 // from disk), repo, log }. Returns the report object.
 export async function fillSurface( o ) {
 	const repo = o.repo || REPO;
@@ -96,8 +120,6 @@ export async function fillSurface( o ) {
 		throw new Error( 'name the draft with exactly one of --draft-url and --draft-dir' );
 	}
 	const buildDir = path.join( repo, 'sites', o.client, 'build' );
-	// Names this surface in every Custom CSS scope key the passes write, so no two posts of one page share one (lib/custom-css-writer.mjs::scopeKey).
-	const keyScope = `${ o.client }|${ o.surface }`;
 	const surfaces = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
 	const entry = surfaces[ o.surface ];
 	if ( ! entry ) {
@@ -114,10 +136,6 @@ export async function fillSurface( o ) {
 	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
-	}
-	const noRegion = surfaceRefusal( { repo, client: o.client, entry, tree: authored, surface: o.surface } );
-	if ( noRegion ) {
-		throw new Error( noRegion );
 	}
 	const skeleton = expandSiteInfoRows( authored );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
@@ -158,8 +176,6 @@ export async function fillSurface( o ) {
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
 		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
-		// Aria-current bound as an attribute on a component's items: read on the draft's other pages (lib/fill-current-attr.mjs).
-		const currentAttr = { keys: facts ? currentAttrKeys( facts ) : [], pages: facts ? [ ...new Set( ( facts.pages || [] ).map( ( p ) => p.route ) ) ] : [], rootComponent: intakeParts.rootComponent };
 		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
 		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.
 		const intakeData = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
@@ -174,38 +190,29 @@ export async function fillSurface( o ) {
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );
 		opener && log( opener.state ? `state opener: ${ describeWays( opener ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
 		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
-		// A block drawn in two surfaces' renders reads on this surface only the settings this surface's render draws
-		// (lib/fill-render.mjs): the settings drawn only in another surface kind's render are left out of its slot map.
-		const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
-		const calFor = renderScoped( calibrationLoader( entry.site, o.cache ), { fixtures, surfaceKind: handoffRecord?.kind ?? null } );
+		const calFor = calibrationLoader( entry.site, o.cache );
 		const shopRecord = loadShopParts( buildDir );
 		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
 		// The skeleton inventory beside the skeleton: the draft rendered on this surface (the list pass reads a loop's copies
 		// from it) and the place of each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, currentAttr, scrolledIds: headerRootIds( nodes, hasAttrOf( db ) ), log } );
+		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
-		const draftFolder = draftFolderOf( { draftDir: o.draftDir, entry, repo, client: o.client } );
-		const fillOptions = {
-			db, origin: reads.origin, draftFolder,
+		const result = fillTree( {
+			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
 			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
-			// A draft text element's inline markup (bold, links) as each setting holds it (lib/inline-writer.mjs).
-			inline: inlineByKey( { inventory, record: facts, rootComponent: intakeParts.rootComponent, draftLinks: draftLinksFor( { repo, client: o.client } ) } ),
-			fixtures,
+			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
-		};
-		const result = fillTree( { tree, nodes, reads, calFor, ...fillOptions } );
-		// The settings each node's block draws only in another surface's render, read from that render's part (lib/fill-render-source.mjs).
-		await renderSourcePass( { result, tree, nodes, flat, calFor, fullCalFor: calibrationLoader( entry.site, o.cache ), inventory, db, intake: intakeData, handoffFile, facts, rootComponent: intakeParts.rootComponent, widthKeys, url, state: opener?.keys ?? {}, draftFolder: path.join( repo, 'sites', o.client, 'handoff' ), read: { headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows }, inventoriesDir: path.join( buildDir, 'intake', 'inventories' ), fill: ( x ) => fillTree( { ...fillOptions, ...x } ), log } );
+		} );
 		// FR-48-81: each target's state looks, through the settings that hold their states.
 		const states = fillStates( { tree, nodes, reads, calFor, db, snapshot } );
 		result.writes.push( ...states.writes );
@@ -233,7 +240,7 @@ export async function fillSurface( o ) {
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
-		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ) } );
+		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, ladder.ledger );
 		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );
@@ -242,15 +249,15 @@ export async function fillSurface( o ) {
 		result.unmapped = dims.unmapped;
 		result.notes.push( ...ladder.notes, ...dims.notes );
 		// A step between the read widths that a written per-device setting cannot hold, as a scoped @media rule at the draft's threshold (lib/fill-step-rungs.mjs).
-		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ) } );
+		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, stepRungs.ledger );
 		result.writes.push( ...stepRungs.writes );
 		result.notes.push( ...stepRungs.notes );
 		// FR-48-86: each custom-CSS rule's gaps row (the native control it could become), carried in fill-report.json.
-		result.customCssGaps = [ ...stepRungs.gaps ];
+		result.customCssGaps = stepRungs.gaps;
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
-		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, keyScope, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
 		addEntries( ledgerFile, gates.ledger );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
@@ -262,25 +269,19 @@ export async function fillSurface( o ) {
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
 		// The draft's logic, read from the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder),
 		// also when the draft is served by URL: the form's button words and the list items read it.
-		const idxFor = logicReader( draftFolder );
-		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( draftFolder, facts, intakeParts.rootComponent ), idxFor, draftFolder } );
+		const idxFor = logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) );
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ), idxFor } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.settled.push( ...forms.settled );
 		result.notes.push( ...forms.notes );
 		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
 		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs, `idxFor` above).
-		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null, inline: fillOptions.inline } );
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
 		result.writes.push( ...listed.writes );
 		result.unmapped.push( ...listed.unmapped );
 		result.handover.push( ...listed.handover );
 		result.notes.push( ...listed.notes );
-		// RC12: the SVG the draft's code injects into an element (the skeleton inventory's per-width read), through the
-		// block's SVG content or inline SVG setting (lib/fill-injected-svg.mjs).
-		const injected = injectedSvgWrites( { nodes, flat, refOf, inventory, db, draftFolder, rootComponent: intakeParts.rootComponent } );
-		result.writes.push( ...injected.writes );
-		result.unmapped.push( ...injected.unmapped );
-		result.notes.push( ...injected.notes );
 		// FR-48-60 to FR-48-62: the draft's own values of the shop parts (build/shop-parts.json) on the blocks that hold them.
 		const shop = shopPartWrites( { record: shopRecord, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
 		result.writes.push( ...shop.writes );
@@ -304,7 +305,7 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
 		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
-		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor, keyScope, cssEffects: customCssEffectIds( intakeData ), clientMotion: readDecisions( path.join( skeletonDir( repo, o.client ), 'decisions.json' ) ).motion?.[ o.surface ] || null } );
+		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
 		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).
@@ -334,31 +335,22 @@ export async function fillSurface( o ) {
 		result.notes.push( ...bound.groups.map( ( g ) => `binding ${ g.binding } sets ${ g.attr } to ${ JSON.stringify( g.value ) } on ${ g.members.length } elements in ${ g.sections } sections: one shared setting` ), ...bound.split.map( ( x ) => `binding ${ x.binding } sets ${ x.attr } to ${ x.values.length } different values: not grouped` ) );
 		// Rows the element already renders (lib/fill-held.mjs) leave UNMAPPED and are listed under their reason in the report.
 		Object.assign( result, result.settleHeld( result ) );
-		// Every draft declaration no setting of its block holds, applied through that block's Custom CSS as a scoped rule and kept as its gap row (lib/fill-custom-css.mjs).
-		const customCss = customCssWrites( { unmapped: result.unmapped, writes: result.writes, nodes, flat, refOf, keyScope, opened: opener?.state && nodes.length ? openedElements( { nodes, flat, refOf } ) : null } );
-		result.writes.push( ...customCss.writes );
-		result.unmapped = customCss.unmapped;
-		result.customCssGaps.push( ...customCss.gaps );
-		result.notes.push( ...customCss.notes );
 		// R7: a declared read that failed is an UNMAPPED row with its reason, never only a log line.
 		result.unmapped.push( ...readFailureRows( { reads, nodes, flat, refOf } ) );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'custom-css' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor, palette: snapshot.palette } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension' ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk, prime: o.livePrime || null, liveReads: liveReadSlots( { writes: result.writes, calFor } ) } );
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: walkOpener, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening', walk } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		// A list host's new children join the tree last: every pass above reads the tree by its skeleton's node indices.
 		applyChildren( flat, listed.children );
-		// A modal surface's frame node leaves the post's tree; its look is kept for the page's frame (lib/fill-modal-frame.mjs).
-		const frame = liftModalFrame( { skeleton, tree } );
-		frame && put( 'modal-frame.json', `${ JSON.stringify( frame, null, 2 ) }\n` );
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
 		siteOptions && put( 'site-options.json', `${ JSON.stringify( siteOptions, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );
@@ -401,11 +393,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		} else {
 			const r = await fillSurface( {
 				client: flag( '--client' ), surface: flag( '--surface' ), skeleton: flag( '--skeleton' ), draftUrl: flag( '--draft-url' ), draftDir: flag( '--draft-dir' ), draftIndex: flag( '--draft-index' ),
-				liveUrl: flag( '--live-url' ), livePrime: flag( '--live-prime' ) ? [ flag( '--live-prime' ) ] : null, out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ),
+				liveUrl: flag( '--live-url' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ),
 				log: ( m ) => console.log( m ),
 			} );
-			// A default run folder replaces the surface's older ones (site-run passes --out and prunes after its own checks).
-			flag( '--out' ) || pruneRunsReport( { parent: path.dirname( r.outDir ), keep: r.outDir } );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );
 		}
 	} catch ( e ) {

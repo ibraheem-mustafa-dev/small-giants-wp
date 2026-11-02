@@ -16,9 +16,8 @@ export const specHit = ( spec, text ) => ( rxList( spec ).find( ( r ) => r.test(
 
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 
-// The facts object. o: { db, client, repo (the client's data: its sites/<client> folder), codeRepo? (the framework's block.json
-// files; `repo` by default), siteName, decisionsFile }. Queries are made on demand and cached.
-export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName = null, decisionsFile = DECISIONS_FILE } ) {
+// The facts object. o: { db, client, repo, siteName, decisionsFile }. Queries are made on demand and cached.
+export function loadFacts( { db, client, repo = REPO, siteName = null, decisionsFile = DECISIONS_FILE } ) {
 	const q = ( sql, ...a ) => db.prepare( sql ).all( ...a ).map( ( r ) => ( { ...r } ) );
 	const decisions = readJson( decisionsFile );
 	const mapFile = path.join( repo, 'sites', client, 'site-info-placeholder-map.json' );
@@ -31,14 +30,7 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 	const attr = ( slug, name ) => q( 'SELECT attr_name, attr_type, default_value, enum_values, role, css_property FROM block_attributes WHERE block_slug = ? AND attr_name = ?', slug, name )[ 0 ] || null;
 	const attrsByRole = ( slug, role ) => q( 'SELECT attr_name, attr_type FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL', slug, role );
 	// The first (by declaration order) content setting of a role: a block's primary text and link settings.
-	// What a block's item fields can hold (the `array_item_schema` roles of its content arrays): an icon, an image, a label.
-	const itemKindsCache = {};
-	const itemKinds = ( slug ) => ( itemKindsCache[ slug ] ||= ( ( roles ) => ( { icon: roles.some( ( r ) => [ 'icon-slug', 'svg' ].includes( r ) ), image: roles.includes( 'image-object' ), label: roles.includes( 'text-content' ) } ) )(
-		slug ? q( "SELECT s.role FROM array_item_schema s JOIN block_attributes a ON a.block_slug = s.block_slug AND a.attr_name = s.array_attr AND a.role = 'content' WHERE s.block_slug = ?", slug ).map( ( r ) => r.role ) : [] ) );
 	const firstAttrByRole = ( slug, role ) => q( 'SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = ? AND css_property IS NULL ORDER BY rowid LIMIT 1', slug, role )[ 0 ]?.attr_name || null;
-	// The block's own accessible name: an a11y-text setting not tied to one of its parts (its canonical slot is empty or
-	// names the setting itself), before one that names a part (a button's iconTitle names its icon, slot `icon`).
-	const ownNameAttr = ( slug ) => q( "SELECT attr_name FROM block_attributes WHERE block_slug = ? AND role = 'a11y-text' AND css_property IS NULL ORDER BY ( canonical_slot IS NOT NULL AND canonical_slot <> '' AND canonical_slot <> attr_name ), rowid LIMIT 1", slug )[ 0 ]?.attr_name || null;
 	const blocksWithDisplayType = ( kind ) => q( "SELECT block_slug FROM block_attributes WHERE attr_name = 'displayType' AND enum_values LIKE ?", `%"${ kind }"%` ).map( ( r ) => r.block_slug );
 	const enumOf = ( slug, name ) => {
 		const a = attr( slug, name );
@@ -49,13 +41,13 @@ export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName 
 	const listSlug = tagMap.ul?.core_block_slug || null;
 	let listItem = null;
 	if ( listSlug ) {
-		const file = path.join( codeRepo, 'plugins/sgs-blocks/src/blocks', listSlug.replace( /^sgs\//, '' ), 'block.json' );
+		const file = path.join( repo, 'plugins/sgs-blocks/src/blocks', listSlug.replace( /^sgs\//, '' ), 'block.json' );
 		const props = fs.existsSync( file ) ? readJson( file ).attributes?.items?.items?.properties || {} : {};
 		const kinds = /([a-z]+(?:\s*\|\s*[a-z]+)+)/.exec( props.siteInfoSource?.description || '' )?.[ 1 ].split( /\s*\|\s*/ ) || [];
 		listItem = { text: props.text ? 'text' : null, url: Object.keys( props ).find( ( k ) => 'url-href' === props[ k ].role ) || null, siteInfoSource: props.siteInfoSource ? 'siteInfoSource' : null, siteInfoLink: props.siteInfoLink ? 'siteInfoLink' : null, kinds };
 	}
 	return {
-		client, repo, codeRepo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, itemKinds, ownNameAttr, blocksWithDisplayType, enumOf, q,
+		client, repo, decisions, placeholderMap, composition, tagMap, capsOf, blocksWithCap, attr, attrsByRole, firstAttrByRole, blocksWithDisplayType, enumOf, q,
 		// SGS bans core blocks: each core block's SGS replacement, from blocks.replaces (a comma list per SGS block).
 		replacedBy: Object.fromEntries( q( "SELECT slug, replaces FROM blocks WHERE replaces IS NOT NULL AND replaces <> ''" ).flatMap( ( r ) => r.replaces.split( ',' ).map( ( c ) => [ c.trim(), r.slug ] ) ).filter( ( [ c ] ) => c ) ),
 		brands: brandRegistry(),
@@ -87,7 +79,7 @@ export function decisionsProblems( facts ) {
 	known( d.structural?.columnLabel?.block, 'structural.columnLabel' );
 	( d.elements || [] ).forEach( ( e ) => e.block && known( e.block, `elements.${ e.id }` ) );
 	const r = d.rules || {};
-	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.marquee.textBlock', r.marquee?.textBlock ], [ 'rules.loopBlocks.carousel.block', r.loopBlocks?.carousel?.block ], [ 'rules.loopBlocks.carousel.cardBlock', r.loopBlocks?.carousel?.cardBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ], [ 'rules.modalFrame', r.modalFrame?.block ], [ 'rules.formPrefillOpener', r.formPrefillOpener?.block ], [ 'rules.formHost', r.formHost?.block ], [ 'rules.formLink', r.formLink?.block ], [ 'rules.formControl.inputPartHost', r.formControl?.inputPartHost ], [ 'rules.marqueeCodeItems', r.marqueeCodeItems?.block ], [ 'rules.megaGroup', r.megaGroup?.block ], [ 'rules.megaAside', r.megaAside?.block ], [ 'rules.megaContainer', r.megaContainer?.block ], [ 'rules.drawerIconRun', r.drawerIconRun?.block ], [ 'rules.headerSlots', r.headerSlots?.block ], [ 'rules.headerSlots.rowBlock', r.headerSlots?.rowBlock ], [ 'rules.footerSlots', r.footerSlots?.block ], [ 'rules.footerSlots.rowBlock', r.footerSlots?.rowBlock ], [ 'rules.accordion', r.accordion?.block ], [ 'rules.accordion.itemBlock', r.accordion?.itemBlock ], [ 'rules.accordion.panelBlock', r.accordion?.panelBlock ],
+	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ], [ 'rules.formHost', r.formHost?.block ], [ 'rules.formLink', r.formLink?.block ], [ 'rules.formControl.inputPartHost', r.formControl?.inputPartHost ], [ 'rules.marqueeCodeItems', r.marqueeCodeItems?.block ], [ 'rules.megaGroup', r.megaGroup?.block ], [ 'rules.megaAside', r.megaAside?.block ], [ 'rules.megaContainer', r.megaContainer?.block ], [ 'rules.drawerIconRun', r.drawerIconRun?.block ], [ 'rules.headerSlots', r.headerSlots?.block ], [ 'rules.headerSlots.rowBlock', r.headerSlots?.rowBlock ], [ 'rules.footerSlots', r.footerSlots?.block ], [ 'rules.footerSlots.rowBlock', r.footerSlots?.rowBlock ],
 		...Object.entries( r.navigation?.bySurface || {} ).map( ( [ k, b ] ) => [ `rules.navigation.${ k }`, b ] ), ...( r.surfaceRoot?.entries || [] ).map( ( x, i ) => [ `rules.surfaceRoot[${ i }]`, x.block ] ),
 		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ),
 		...[ 'block', 'step', 'question', 'result' ].map( ( k ) => [ `rules.choiceFlow.${ k }`, r.choiceFlow?.[ k ] ] ),
@@ -96,11 +88,6 @@ export function decisionsProblems( facts ) {
 	for ( const [ k, x ] of Object.entries( r.blockOwnedPart?.byTemplate || {} ) ) {
 		[ 'style', 'label', 'countStyle', 'showZero', 'ariaLabel' ].filter( ( f ) => x.trigger && ! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) ) )
 			.forEach( ( f ) => problems.push( `rules.blockOwnedPart.byTemplate.${ k }.trigger.${ f } must name a setting ${ x.block } has` ) );
-	}
-	// The modal frame names the framework DB `css_element` of each part the block draws (the scrim, the dialog and the close), and a reason for every element it takes.
-	for ( const [ role, part ] of Object.entries( r.modalFrame ? r.modalFrame.names || {} : {} ) ) {
-		facts.q( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND css_element = ? LIMIT 1', r.modalFrame.block, part ).length || problems.push( `rules.modalFrame.names.${ role } names ${ part }, which is no css_element of ${ r.modalFrame.block }` );
-		r.modalFrame.parts?.[ role ] || problems.push( `rules.modalFrame.parts.${ role } needs a reason` );
 	}
 	if ( r.choiceFlow && [ 'block', 'step', 'question', 'result' ].some( ( k ) => ! r.choiceFlow[ k ] ) ) {
 		problems.push( 'rules.choiceFlow must name its block, step, question and result blocks' );
@@ -111,10 +98,10 @@ export function decisionsProblems( facts ) {
 	if ( r.footerSlots && ( ! r.footerSlots.slotAttribute || ! facts.attr( r.footerSlots.rowBlock, r.footerSlots.slotAttribute ) || ! Array.isArray( r.footerSlots.slots ) || 3 !== r.footerSlots.slots.length ) ) {
 		problems.push( `rules.footerSlots must name three slots and a slot attribute that ${ r.footerSlots.rowBlock } has` );
 	}
-	// A commerce region's block (and the owner block that draws its row's parts): a core block only as a listed exception, WooCommerce's own block (outside the framework
+	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.
 	for ( const [ role, spec ] of Object.entries( r.commerceRegion?.roles || {} ) ) {
-		const all = [ spec.block, ...( spec.owner ? [ spec.owner ] : [] ), ...JSON.stringify( spec.inner || [] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [] ];
+		const all = [ spec.block, ...JSON.stringify( spec.inner || [] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [] ];
 		for ( const slug of all ) {
 			if ( slug?.startsWith( 'core/' ) ? ! ( r.coreExceptions || [] ).some( ( x ) => x.block === slug ) : ! slug?.startsWith( 'woocommerce/' ) ) {
 				slug?.startsWith( 'core/' ) ? problems.push( `rules.commerceRegion.${ role } names ${ slug }, a core block not listed in rules.coreExceptions` ) : known( slug, `rules.commerceRegion.${ role }` );
@@ -131,12 +118,6 @@ export function decisionsProblems( facts ) {
 		[ [ f.block, Object.keys( f.attributes || {} ) ], [ f.heading?.block, [ 'content', ...Object.keys( f.heading?.attributes || {} ) ] ] ].forEach( ( [ block, attrs ] ) => attrs.filter( ( a ) => block && ! supports.has( a ) && ! facts.attr( block, a ) ).forEach( ( a ) => problems.push( `rules.filterRail writes ${ a } on ${ block }, a setting it does not have` ) ) );
 		[ 'facet', 'price', 'brand', 'category' ].filter( ( k ) => ! f.groups?.[ k ]?.name ).forEach( ( k ) => problems.push( `rules.filterRail.groups.${ k } must name its block` ) );
 		[ 'choice', 'checkbox' ].filter( ( k ) => ! f.displayStyles?.[ k ] ).forEach( ( k ) => problems.push( `rules.filterRail.displayStyles.${ k } must name a block` ) );
-	}
-	if ( r.filterDrawer ) {
-		const d = r.filterDrawer;
-		[ 'block', 'modeAttribute', 'positionAttribute' ].filter( ( k ) => ! d[ k ] ).forEach( ( k ) => problems.push( `rules.filterDrawer.${ k } must be set` ) );
-		[ [ 'modes', [ 'rail', 'drawer' ] ], [ 'sides', [ 'left', 'right' ] ] ].forEach( ( [ k, names ] ) => names.filter( ( n ) => ! d[ k ]?.[ n ] ).forEach( ( n ) => problems.push( `rules.filterDrawer.${ k }.${ n } must be set` ) ) );
-		d.block && ! d.block.startsWith( 'woocommerce/' ) && known( d.block, 'rules.filterDrawer' );
 	}
 	if ( r.commerceRegion ) {
 		try {
@@ -157,7 +138,7 @@ export function decisionsProblems( facts ) {
 	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );
 	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );
 	const specs = [ ...specs0, ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ],
-		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ] ];
+		...[ 'typedDivider', 'homeLink', 'backToTop', 'mapEmbed', 'openStatus' ].map( ( k ) => [ `rules.${ k }`, r[ k ] ] ), [ 'rules.backToTop.handlers', r.backToTop?.handlers ] ];
 	for ( const [ where, spec ] of specs ) {
 		try {
 			rxList( spec );

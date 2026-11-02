@@ -34,7 +34,7 @@
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/label",
+						"name": "sgs/text",
 						"attributes": {
 							"text": "ask us anything"
 						},
@@ -58,8 +58,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Help & FAQs",
-							"level": "h1"
+							"content": "Help & FAQs"
 						},
 						"draftRef": {
 							"tpl": "Root/12#0"
@@ -101,9 +100,6 @@
 						"draftSlots": {
 							".sgs-icon__shape > .sgs-icon__glyph > svg": {
 								"tpl": "Root/15#0"
-							},
-							".sgs-icon__shape": {
-								"tpl": "Root/14#0"
 							}
 						}
 					},
@@ -157,25 +153,9 @@
 								"kind": "behaviour",
 								"detail": "the choice narrows a list on this page: wire it to the list's filter"
 							}
-						],
-						"draftSlots": {
-							".sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(2) > .sgs-option-picker__pill": {
-								"tpl": "Root/21#1"
-							},
-							".sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill": {
-								"tpl": "Root/21#0"
-							},
-							".sgs-option-picker__options": {
-								"tpl": "Root/19#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/10#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -221,573 +201,1805 @@
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/accordion",
+						"name": "sgs/container",
 						"attributes": {
-							"allowMultiple": false,
-							"defaultOpen": 0
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f9ab064a",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Ordering & delivery",
-									"isOpen": true
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#0"
+									"tpl": "Root/27#0"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "f9ab064a",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#0"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Ordering & delivery"
+												},
+												"draftRef": {
+													"tpl": "Root/29#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "c214d7d1",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "When will my order arrive?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "8333fb51",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c526029",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
 							},
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/text",
 								"attributes": {
-									"title": "Ordering & delivery"
+									"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
 								},
 								"draftRef": {
-									"tpl": "Root/26#1"
+									"tpl": "Root/33#0"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "p",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "64ba72aa",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
+										"div"
+									],
+									"textHash": "f3666877",
+									"line": 32
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/27#1"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "193a3de7",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Yes, anywhere in the UK. Delivery is free on orders over £35."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#1"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Ordering & delivery"
+												},
+												"draftRef": {
+													"tpl": "Root/29#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "c214d7d1",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Do you deliver across the UK?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "974aefaf",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Ordering & delivery"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#2"
+									"tpl": "Root/27#2"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Yes. Build your box with a base, your chips and up to three of Zainab’s 11 flavours, and we split the box evenly between them."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#2"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Ordering & delivery"
+												},
+												"draftRef": {
+													"tpl": "Root/29#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "c214d7d1",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Can I choose my own flavours?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "8d7a3ca6",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#3"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Ingredients & allergens"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#3"
+									"tpl": "Root/27#3"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Oats (gluten), eggs, milk and fenugreek, a legume that may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts. The vegan base has no eggs or dairy."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#3"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Ingredients & allergens"
+												},
+												"draftRef": {
+													"tpl": "Root/29#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "779f7c5c",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "What allergens do they contain?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "7526e1a2",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#4"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Ingredients & allergens"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#4"
+									"tpl": "Root/27#4"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "No. Everything is made with natural, wholesome ingredients and baked to order."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#4"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Ingredients & allergens"
+												},
+												"draftRef": {
+													"tpl": "Root/29#4"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "779f7c5c",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Do you use preservatives?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#4"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "eae803b8",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#5"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Breastfeeding"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#5"
+									"tpl": "Root/27#5"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "They’re made from everyday food ingredients. Fenugreek isn’t right for everyone, so if you or your baby are sensitive to it, or you have a health condition, check with your midwife or GP first."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#5"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Breastfeeding"
+												},
+												"draftRef": {
+													"tpl": "Root/29#5"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "626d9fb4",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Are they OK to eat while breastfeeding?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#5"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "da3910ed",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#5"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#6"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Breastfeeding"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#6"
+									"tpl": "Root/27#6"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "We make nourishing food, not medicine, so we can’t promise that. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#6"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Breastfeeding"
+												},
+												"draftRef": {
+													"tpl": "Root/29#6"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "626d9fb4",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Will they increase my milk supply?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#6"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "3441bd64",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#6"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#7"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Gifting"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#7"
+									"tpl": "Root/27#7"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Yes. Choose “It’s a gift” at checkout, add her address and your note, and we’ll leave the prices off the packing slip."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#7"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Gifting"
+												},
+												"draftRef": {
+													"tpl": "Root/29#7"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "bd3d2999",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Can I send them straight to a new mum?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#7"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "35d4e9a2",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#7"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#8"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Gifting"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#8"
+									"tpl": "Root/27#8"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "You get a printed card in an envelope to give at the shower. She redeems it online once baby arrives and builds her own box, so every cookie is fresh."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#8"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Gifting"
+												},
+												"draftRef": {
+													"tpl": "Root/29#8"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "bd3d2999",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "How do the baby shower gift cards work?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#8"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "4e5b3dae",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#8"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#9"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Gifting"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#9"
+									"tpl": "Root/27#9"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Yes, for baby showers, markets and events. Tell us numbers and dates through the contact page."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#9"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Gifting"
+												},
+												"draftRef": {
+													"tpl": "Root/29#9"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "bd3d2999",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Can you do bulk orders for events?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#9"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "b4ed6277",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#9"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#10"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Subscriptions"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#10"
+									"tpl": "Root/27#10"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Build your box and choose every 2 or 4 weeks. You get 10% off every box, free delivery on 20 and 40 packs and a guaranteed slot in every bake."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#10"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Subscriptions"
+												},
+												"draftRef": {
+													"tpl": "Root/29#10"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "5ec90f15",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "How does Subscribe & save work?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#10"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "862ec2d9",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#10"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
-							},
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/26#11"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a6c4e440",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/accordion-item",
+								"name": "sgs/container",
 								"attributes": {
-									"title": "Subscriptions"
+									"tagName": "div",
+									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/26#11"
+									"tpl": "Root/27#11"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "a6c4e440",
+									"styleHash": "193a3de7",
 									"parentTags": [
 										"main",
 										"section",
+										"div",
 										"div"
 									],
 									"textHash": "1505",
-									"line": 30
+									"line": 31
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/text",
+										"name": "sgs/container",
 										"attributes": {
-											"text": "Any time, online. You can also skip a box or swap flavours before it’s baked."
+											"tagName": "div",
+											"layout": "stack"
 										},
-										"innerBlocks": [],
 										"draftRef": {
-											"tpl": "Root/33#0"
+											"tpl": "Root/28#11"
 										},
 										"draftFingerprint": {
-											"tag": "p",
+											"tag": "span",
 											"cls": "",
-											"styleHash": "64ba72aa",
+											"styleHash": "99ba61aa",
 											"parentTags": [
 												"main",
 												"section",
 												"div",
-												"div"
+												"div",
+												"button"
 											],
-											"textHash": "f3666877",
-											"line": 32
-										}
+											"textHash": "1505",
+											"line": 31
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {
+													"text": "Subscriptions"
+												},
+												"draftRef": {
+													"tpl": "Root/29#11"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "ad7165c0",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "5ec90f15",
+													"line": 31
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Can I pause or cancel?"
+												},
+												"draftRef": {
+													"tpl": "Root/30#11"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe58a810",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "da5fae76",
+													"line": 31
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "+"
+										},
+										"draftRef": {
+											"tpl": "Root/31#11"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "2764538",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b58e",
+											"line": 31
+										},
+										"innerBlocks": []
 									}
 								]
 							}
 						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/24#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -829,7 +2041,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/label",
+								"name": "sgs/text",
 								"attributes": {
 									"text": "getting it to you"
 								},
@@ -853,8 +2065,7 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Delivery",
-									"level": "h2"
+									"content": "Delivery"
 								},
 								"draftRef": {
 									"tpl": "Root/40#0"
@@ -941,9 +2152,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/container",
 												"attributes": {
-													"text": "<strong>Royal Mail Tracked 48</strong><br>2–3 days after baking"
+													"tagName": "div"
 												},
 												"draftRef": {
 													"tpl": "Root/44#0"
@@ -962,19 +2173,63 @@
 													"textHash": "1505",
 													"line": 45
 												},
-												"innerBlocks": [],
-												"handover": [
+												"innerBlocks": [
 													{
-														"owner": "content-page",
-														"kind": "text",
-														"detail": "the words \"2–3 days after baking\" inside \"Royal Mail Tracked 48 2–3 days after baking\" are drawn with font-size 14px: no format of sgs/text text holds it and no inline style is written (Spec 32), so they print in the text's own style"
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Royal Mail Tracked 48"
+														},
+														"draftRef": {
+															"tpl": "Root/45#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "824f5bc7",
+															"line": 45
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "2–3 days after baking"
+														},
+														"draftRef": {
+															"tpl": "Root/47#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "c936e472",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "67f9a294",
+															"line": 45
+														},
+														"innerBlocks": []
 													}
 												]
 											},
 											{
-												"name": "sgs/text",
+												"name": "sgs/container",
 												"attributes": {
-													"text": "£3.95<br>Free over £35"
+													"tagName": "div"
 												},
 												"draftRef": {
 													"tpl": "Root/48#0"
@@ -993,29 +2248,35 @@
 													"textHash": "fcdc3057",
 													"line": 45
 												},
-												"innerBlocks": [],
-												"handover": [
+												"innerBlocks": [
 													{
-														"owner": "content-page",
-														"kind": "text",
-														"detail": "the words \"Free over £35\" inside \"£3.95 Free over £35\" are drawn with font-size 13px: no format of sgs/text text holds it and no inline style is written (Spec 32), so they print in the text's own style"
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Free over £35"
+														},
+														"draftRef": {
+															"tpl": "Root/50#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "cc9937bc",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"b"
+															],
+															"textHash": "79a16e3a",
+															"line": 45
+														},
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													"a": {
-														"tpl": "Root/50#0"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/44#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/48#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1041,9 +2302,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/container",
 												"attributes": {
-													"text": "<strong>Royal Mail Tracked 24</strong><br>The day after baking"
+													"tagName": "div"
 												},
 												"draftRef": {
 													"tpl": "Root/52#0"
@@ -1062,12 +2323,56 @@
 													"textHash": "1505",
 													"line": 46
 												},
-												"innerBlocks": [],
-												"handover": [
+												"innerBlocks": [
 													{
-														"owner": "content-page",
-														"kind": "text",
-														"detail": "the words \"The day after baking\" inside \"Royal Mail Tracked 24 The day after baking\" are drawn with font-size 14px: no format of sgs/text text holds it and no inline style is written (Spec 32), so they print in the text's own style"
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Royal Mail Tracked 24"
+														},
+														"draftRef": {
+															"tpl": "Root/53#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "824f5b0d",
+															"line": 46
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "The day after baking"
+														},
+														"draftRef": {
+															"tpl": "Root/55#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "c936e472",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "fbb7506c",
+															"line": 46
+														},
+														"innerBlocks": []
 													}
 												]
 											},
@@ -1095,15 +2400,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/52#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/56#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1129,9 +2426,9 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
+												"name": "sgs/container",
 												"attributes": {
-													"text": "<strong>Taster Trio &amp; gift cards</strong><br>Letterbox-sized"
+													"tagName": "div"
 												},
 												"draftRef": {
 													"tpl": "Root/58#0"
@@ -1150,12 +2447,56 @@
 													"textHash": "1505",
 													"line": 47
 												},
-												"innerBlocks": [],
-												"handover": [
+												"innerBlocks": [
 													{
-														"owner": "content-page",
-														"kind": "text",
-														"detail": "the words \"Letterbox-sized\" inside \"Taster Trio & gift cards Letterbox-sized\" are drawn with font-size 14px: no format of sgs/text text holds it and no inline style is written (Spec 32), so they print in the text's own style"
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Taster Trio & gift cards"
+														},
+														"draftRef": {
+															"tpl": "Root/59#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "55e9eabd",
+															"line": 47
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Letterbox-sized"
+														},
+														"draftRef": {
+															"tpl": "Root/61#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "c936e472",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"span"
+															],
+															"textHash": "feafdbc2",
+															"line": 47
+														},
+														"innerBlocks": []
 													}
 												]
 											},
@@ -1183,42 +2524,35 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/58#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/62#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/43#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/51#0"
-									}
-								}
-							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/39#0"
+								]
 							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/40#0"
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Prices and timings to be confirmed by Zainab."
+								},
+								"draftRef": {
+									"tpl": "Root/63#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "28c134e4",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "86ae6f96",
+									"line": 49
+								},
+								"innerBlocks": []
 							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/38#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -1260,7 +2594,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/label",
+								"name": "sgs/text",
 								"attributes": {
 									"text": "please read carefully"
 								},
@@ -1284,8 +2618,7 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "Ingredients & allergens",
-									"level": "h2"
+									"content": "Ingredients & allergens"
 								},
 								"draftRef": {
 									"tpl": "Root/67#0"
@@ -1418,15 +2751,7 @@
 										},
 										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/69#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/70#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/text",
@@ -1451,9 +2776,9 @@
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/container",
 								"attributes": {
-									"text": "<strong>Vegan base:</strong> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page."
+									"tagName": "div"
 								},
 								"draftRef": {
 									"tpl": "Root/74#0"
@@ -1470,29 +2795,35 @@
 									"textHash": "c86f4e4c",
 									"line": 59
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									"a": {
-										"tpl": "Root/75#0"
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Vegan base:"
+										},
+										"draftRef": {
+											"tpl": "Root/75#0"
+										},
+										"draftFingerprint": {
+											"tag": "b",
+											"cls": "",
+											"styleHash": "1505",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"p"
+											],
+											"textHash": "118aa4f1",
+											"line": 59
+										},
+										"innerBlocks": []
 									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/66#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/67#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/65#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -1556,9 +2887,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Privacy policy"
+											"text": "Privacy policy"
 										},
 										"draftRef": {
 											"tpl": "Root/79#0"
@@ -1601,15 +2932,7 @@
 										},
 										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/79#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/80#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/container",
@@ -1633,9 +2956,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Terms & conditions"
+											"text": "Terms & conditions"
 										},
 										"draftRef": {
 											"tpl": "Root/82#0"
@@ -1678,25 +3001,9 @@
 										},
 										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/82#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/83#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/78#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/81#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1741,9 +3048,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/label",
+										"name": "sgs/heading",
 										"attributes": {
-											"text": "still stuck?"
+											"content": "still stuck?"
 										},
 										"draftRef": {
 											"tpl": "Root/86#0"
@@ -1764,9 +3071,9 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Message Zainab"
+											"text": "Message Zainab"
 										},
 										"draftRef": {
 											"tpl": "Root/87#0"
@@ -1786,15 +3093,7 @@
 										},
 										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/86#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/87#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/button",
@@ -1817,41 +3116,12 @@
 									"textHash": "29437",
 									"line": 70
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/88#0"
-									}
-								}
+								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/85#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/88#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/77#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root/84#0"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/9#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/23#0"
-			}
-		}
+		]
 	}
 ]

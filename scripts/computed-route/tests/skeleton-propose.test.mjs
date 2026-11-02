@@ -10,9 +10,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { skeletonProblems, finderKind, expandSiteInfoRows, parseTplKey } from '../lib/fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
-import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -22,7 +22,7 @@ const committed = JSON.parse( fs.readFileSync( path.join( DIR, 'footer.tree.json
 const db = openDb();
 const SITE = 'Eye Care Birmingham';
 const facts = ( siteName = SITE ) => loadFacts( { db, client: CLIENT, repo: REPO, siteName } );
-const run = ( inv = inventory, o = {} ) => proposeFixture( { inventory: inv, facts: o.facts || facts(), surface: 'footer', db, ...o } );
+const run = ( inv = inventory, o = {} ) => proposeSkeleton( { inventory: inv, facts: o.facts || facts(), surface: 'footer', db, ...o } );
 const real = run();
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byHref = ( r, re ) => row( r, ( x ) => re.test( inventory.elements.find( ( e ) => e.key === x.key )?.attrs?.href || '' ) );
@@ -150,20 +150,6 @@ test( 'a client decision is top evidence, and goes stale when the element under 
 	assert.equal( row( removed, ( r ) => r.key === key ).action, 'remove' );
 } );
 
-test( 'MUST FAIL: a client decision the rules now disagree with keeps its block and records what the rules propose (ruleWould)', () => {
-	const key = byWords( real, 'Privacy', 'a' ).key;
-	const decide = ( proposed ) => ( { surfaces: { footer: { [ key ]: { block: 'sgs/text', signature: 'a|Privacy', reason: 'Bean accepted sgs/text in the intake review on 2026-10-20', ...( proposed ? { proposed } : {} ) } } } } );
-	const changed = row( run( inventory, { clientDecisions: decide( 'sgs/heading' ) } ), ( r ) => r.key === key );
-	assert.equal( changed.block, 'sgs/text', 'the saved choice stands' );
-	assert.equal( changed.ruleWould.label, 'sgs/button', 'the rules now propose sgs/button' );
-	assert.equal( changed.ruleWould.decision.label, 'sgs/text' );
-	assert.match( changed.ruleWould.decision.reason, /on 2026-10-20/ );
-	const same = row( run( inventory, { clientDecisions: decide( 'sgs/button' ) } ), ( r ) => r.key === key );
-	assert.equal( same.ruleWould, undefined, 'negative control: the rules still propose what they proposed when it was saved' );
-	const legacy = row( run( inventory, { clientDecisions: decide( null ) } ), ( r ) => r.key === key );
-	assert.equal( legacy.ruleWould, undefined, 'negative control: a decision saved without a baseline records nothing' );
-} );
-
 // ---------- the 13 uncertain rows ----------
 // The first prototype's rows with confidence below 0.7, scored against what the committed footer tree records. `tree` is the
 // path of the answer in footer.tree.json (i = innerBlocks index, items[n] = icon-list item n); `where` finds the element in
@@ -206,7 +192,7 @@ test( 'MUST FAIL: the skeleton agrees with Bean\'s recorded choices on at least 
 
 test( 'MUST FAIL (2026-10-10 header: sgs/hero and sgs/site-header both list "header" and tied, so list order chose hero): a root block whose accepted children fit the root\'s own children wins the tie', () => {
 	const header = JSON.parse( fs.readFileSync( path.join( DIR, 'skeleton', 'header.inventory.json' ), 'utf8' ) );
-	const r = proposeFixture( { inventory: header, facts: facts(), surface: 'header', db } );
+	const r = proposeSkeleton( { inventory: header, facts: facts(), surface: 'header', db } );
 	const root = r.proposal.rows.find( ( x ) => 0 === header.elements.find( ( e ) => e.key === x.key )?.depth );
 	assert.equal( root.candidates[ 0 ].block, 'sgs/site-header' );
 	assert.ok( root.candidates[ 0 ].score > root.candidates.find( ( c ) => 'sgs/hero' === c.block ).score );

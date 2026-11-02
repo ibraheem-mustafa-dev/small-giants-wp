@@ -39,10 +39,6 @@
       "textHash": "1505",
       "line": 27
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/13#0",
-      ".sgs-button:nth-of-type(2)": "Root/14#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-3": {
@@ -58,9 +54,6 @@
       ],
       "textHash": "61ec7831",
       "line": 28
-    },
-    "slots": {
-      ".sgs-button__label": "Root/13#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -78,10 +71,6 @@
       "textHash": "1505",
       "line": 29
     },
-    "slots": {
-      ".sgs-button__label": "Root/16#0",
-      ".sgs-button__icon": "Root/18#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-5": {
@@ -98,10 +87,6 @@
       "textHash": "1505",
       "line": 29
     },
-    "slots": {
-      ".sgs-button__label": "Root/18#0",
-      ".sgs-button__icon": "Root/16#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-6": {
@@ -117,9 +102,6 @@
       ],
       "textHash": "f9b825f5",
       "line": 30
-    },
-    "slots": {
-      ".sgs-button__label": "Root/20#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -171,9 +153,6 @@
       "textHash": "1505",
       "line": 66
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/58#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-header-15": {
@@ -190,9 +169,6 @@
       ],
       "textHash": "61ec7831",
       "line": 68
-    },
-    "slots": {
-      ".sgs-button__label": "Root/58#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -217,13 +193,7 @@
       ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": "Root/59#0",
       ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": "Root/60#0",
       ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": "Root/61#0",
-      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": "Root/62#0",
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link": "Root/48#1",
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(5) > .sgs-nav-bar-menu__link": "Root/48#2",
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(6) > .sgs-nav-bar-menu__link": "Root/48#3",
-      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text": "Root/48#5",
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link > .sgs-nav-bar-menu__badge": "Root/48#1",
-      "@companion": "Root/52#0"
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": "Root/62#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -240,9 +210,6 @@
       ],
       "textHash": "61ec7831",
       "line": 61
-    },
-    "slots": {
-      ".sgs-button__label": "Root/54#0"
     },
     "draft": "0fe5aee1c396a997"
   }

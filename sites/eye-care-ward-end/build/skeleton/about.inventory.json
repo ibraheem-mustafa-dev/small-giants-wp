@@ -1,11 +1,11 @@
 {
-  "generated": "2026-11-01T21:19:17.897Z",
-  "source": "http://127.0.0.1:62097/#@state/page=about",
+  "generated": "2026-10-28T06:37:49.026Z",
+  "source": "http://127.0.0.1:57904/#@state/page=about",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
     "rootName": "Root",
-    "rootKey": "Root/599#0",
+    "rootKey": "Root/601#0",
     "unstamped": [],
     "duplicateKeys": 0,
     "perWidthCounts": {
@@ -24,88 +24,29 @@
   },
   "elements": [
     {
-      "key": "Root/599#0",
+      "key": "Root/601#0",
       "parentKey": "Root/6#0",
       "depth": 0,
       "tag": "main",
       "template": "Root",
-      "tpl": 599,
+      "tpl": 601,
       "attrs": {
         "class": "sgs-page-about",
         "style": "max-width: 1100px; margin: 0px auto; padding: 48px 52px 90px;"
       },
       "words": "",
       "allText": "About Eye Care Fatima Nawaz BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care Eye Care Birmingh",
-      "srcLine": 1371,
+      "srcLine": 1374,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "main",
       "srcOwnText": "",
-      "snippet": "<main class=\"sgs-page-about\" data-screen-label=\"About\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"599\"> <div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"600\"> <div data-dc-tpl=\"601\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:ris",
-      "flow": [
-        " ",
-        {
-          "key": "Root/600#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "375px",
-          "height": "1458.42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "28px",
-          "padding-right": "20px",
-          "padding-bottom": "60px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "768px",
-          "height": "1137.2px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "48px",
-          "padding-right": "52px",
-          "padding-bottom": "90px",
-          "padding-left": "52px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "1100px",
-          "height": "671.953px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "48px",
-          "padding-right": "52px",
-          "padding-bottom": "90px",
-          "padding-left": "52px"
-        }
-      },
+      "snippet": "<main class=\"sgs-page-about\" data-screen-label=\"About\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"601\"> <div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"602\"> <div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:ris",
       "box": {
         "375": {
           "x": 0,
@@ -138,104 +79,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_599_0@375.png",
-        "1440": "shots/Root_599_0@1440.png"
+        "375": "shots/Root_601_0@375.png",
+        "1440": "shots/Root_601_0@1440.png"
       }
     },
     {
-      "key": "Root/600#0",
-      "parentKey": "Root/599#0",
+      "key": "Root/602#0",
+      "parentKey": "Root/601#0",
       "depth": 1,
       "tag": "div",
       "template": "Root",
-      "tpl": 600,
+      "tpl": 602,
       "attrs": {
         "style": "display: grid; grid-template-columns: minmax(0px, 1.1fr) minmax(0px, 1fr); gap: 48px; align-items: start;"
       },
       "words": "",
       "allText": "About Eye Care Fatima Nawaz BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care Eye Care Birmingh",
-      "srcLine": 1372,
+      "srcLine": 1375,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"600\"> <div data-dc-tpl=\"601\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"602\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-si",
-      "flow": [
-        " ",
-        {
-          "key": "Root/601#0"
-        },
-        " ",
-        {
-          "key": "Root/612#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "1370.42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "999.203px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "996px",
-          "height": "533.953px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"602\"> <div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-si",
       "box": {
         "375": {
           "x": 20,
@@ -268,122 +140,33 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_600_0@375.png",
-        "1440": "shots/Root_600_0@1440.png"
+        "375": "shots/Root_602_0@375.png",
+        "1440": "shots/Root_602_0@1440.png"
       }
     },
     {
-      "key": "Root/601#0",
-      "parentKey": "Root/600#0",
+      "key": "Root/603#0",
+      "parentKey": "Root/602#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 601,
+      "tpl": 603,
       "attrs": {},
       "words": "",
       "allText": "About Eye Care Fatima Nawaz BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care Eye Care Birmingh",
-      "srcLine": 1373,
+      "srcLine": 1376,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div data-dc-tpl=\"601\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"602\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"603\">Fatima Nawaz</h1> <p s",
-      "flow": [
-        " ",
-        {
-          "key": "Root/602#0"
-        },
-        " ",
-        {
-          "key": "Root/603#0"
-        },
-        " ",
-        {
-          "key": "Root/604#0"
-        },
-        " ",
-        {
-          "key": "Root/605#0"
-        },
-        " ",
-        {
-          "key": "Root/606#0"
-        },
-        " ",
-        {
-          "key": "Root/607#0"
-        },
-        " ",
-        {
-          "key": "Root/608#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "702.672px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "461.953px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "496.562px",
-          "height": "533.953px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"605\">Fatima Nawaz</h1> <p s",
       "box": {
         "375": {
           "x": 20,
@@ -416,94 +199,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_601_0@375.png",
-        "1440": "shots/Root_601_0@1440.png"
+        "375": "shots/Root_603_0@375.png",
+        "1440": "shots/Root_603_0@1440.png"
       }
     },
     {
-      "key": "Root/602#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/604#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 602,
+      "tpl": 604,
       "attrs": {
         "style": "margin: 0px 0px 10px; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accInk,#6F6152); animation: 0.5s ease 0s 1 normal both running rise;"
       },
       "words": "About Eye Care",
       "allText": "About Eye Care",
-      "srcLine": 1374,
+      "srcLine": 1377,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "About Eye Care",
-      "snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"602\">About Eye Care</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "2.88px",
-          "text-transform": "uppercase",
-          "line-height": "18px",
-          "width": "335px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "2.88px",
-          "text-transform": "uppercase",
-          "line-height": "18px",
-          "width": "664px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "2.88px",
-          "text-transform": "uppercase",
-          "line-height": "18px",
-          "width": "496.562px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p>",
       "box": {
         "375": {
           "x": 20,
@@ -536,94 +260,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_602_0@375.png",
-        "1440": "shots/Root_602_0@1440.png"
+        "375": "shots/Root_604_0@375.png",
+        "1440": "shots/Root_604_0@1440.png"
       }
     },
     {
-      "key": "Root/603#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/605#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "h1",
       "template": "Root",
-      "tpl": 603,
+      "tpl": 605,
       "attrs": {
         "style": "margin: 0px 0px 20px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 48px; line-height: 1.02; text-wrap: pretty; animation: 0.6s ease 0s 1 normal both running rise;"
       },
       "words": "Fatima Nawaz",
       "allText": "Fatima Nawaz",
-      "srcLine": 1375,
+      "srcLine": 1378,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "h1",
       "srcOwnText": "Fatima Nawaz",
-      "snippet": "<h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"603\">Fatima Nawaz</h1>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "34px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "34.68px",
-          "width": "335px",
-          "height": "34.6719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "48px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "48.96px",
-          "width": "664px",
-          "height": "48.9531px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "48px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "48.96px",
-          "width": "496.562px",
-          "height": "48.9531px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"605\">Fatima Nawaz</h1>",
       "box": {
         "375": {
           "x": 20,
@@ -656,94 +321,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_603_0@375.png",
-        "1440": "shots/Root_603_0@1440.png"
+        "375": "shots/Root_605_0@375.png",
+        "1440": "shots/Root_605_0@1440.png"
       }
     },
     {
-      "key": "Root/604#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/606#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 604,
+      "tpl": 606,
       "attrs": {
         "style": "margin: 0px 0px 28px; font-size: 15px; color: rgb(107, 101, 94); letter-spacing: 0.04em; animation: 0.7s ease 0s 1 normal both running rise;"
       },
       "words": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care",
       "allText": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care",
-      "srcLine": 1376,
+      "srcLine": 1379,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care",
-      "snippet": "<p style=\"margin:0 0 28px;font-size:15px;color:#6B655E;letter-spacing:.04em;animation:rise .7s both\" data-dc-tpl=\"604\">BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "0.6px",
-          "text-transform": "none",
-          "line-height": "22.5px",
-          "width": "335px",
-          "height": "45px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "0.6px",
-          "text-transform": "none",
-          "line-height": "22.5px",
-          "width": "664px",
-          "height": "22.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "0.6px",
-          "text-transform": "none",
-          "line-height": "22.5px",
-          "width": "496.562px",
-          "height": "45px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:0 0 28px;font-size:15px;color:#6B655E;letter-spacing:.04em;animation:rise .7s both\" data-dc-tpl=\"606\">BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care</p>",
       "box": {
         "375": {
           "x": 20,
@@ -776,94 +382,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_604_0@375.png",
-        "1440": "shots/Root_604_0@1440.png"
+        "375": "shots/Root_606_0@375.png",
+        "1440": "shots/Root_606_0@1440.png"
       }
     },
     {
-      "key": "Root/605#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/607#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 605,
+      "tpl": 607,
       "attrs": {
         "style": "margin: 0px 0px 18px; font-size: 17px; text-wrap: pretty; animation: 0.8s ease 0s 1 normal both running rise;"
       },
       "words": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.",
       "allText": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the",
-      "srcLine": 1377,
+      "srcLine": 1380,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.",
-      "snippet": "<p style=\"margin:0 0 18px;font-size:17px;text-wrap:pretty;animation:rise .8s both\" data-dc-tpl=\"605\">Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "25.5px",
-          "width": "335px",
-          "height": "153px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "25.5px",
-          "width": "664px",
-          "height": "76.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "25.5px",
-          "width": "496.562px",
-          "height": "102px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:0 0 18px;font-size:17px;text-wrap:pretty;animation:rise .8s both\" data-dc-tpl=\"607\">Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.</p>",
       "box": {
         "375": {
           "x": 20,
@@ -896,94 +443,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_605_0@375.png",
-        "1440": "shots/Root_605_0@1440.png"
+        "375": "shots/Root_607_0@375.png",
+        "1440": "shots/Root_607_0@1440.png"
       }
     },
     {
-      "key": "Root/606#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/608#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 606,
+      "tpl": 608,
       "attrs": {
         "style": "margin: 0px 0px 18px; font-size: 16px; color: rgb(94, 88, 79); text-wrap: pretty; animation: 0.85s ease 0s 1 normal both running rise;"
       },
       "words": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.",
       "allText": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I c",
-      "srcLine": 1378,
+      "srcLine": 1381,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.",
-      "snippet": "<p style=\"margin:0 0 18px;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .85s both\" data-dc-tpl=\"606\">Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "120px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "72px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "496.562px",
-          "height": "72px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:0 0 18px;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .85s both\" data-dc-tpl=\"608\">Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.</p>",
       "box": {
         "375": {
           "x": 20,
@@ -1016,94 +504,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_606_0@375.png",
-        "1440": "shots/Root_606_0@1440.png"
+        "375": "shots/Root_608_0@375.png",
+        "1440": "shots/Root_608_0@1440.png"
       }
     },
     {
-      "key": "Root/607#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/609#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 607,
+      "tpl": 609,
       "attrs": {
         "style": "margin: 0px; font-size: 16px; color: rgb(94, 88, 79); text-wrap: pretty; animation: 0.9s ease 0s 1 normal both running rise;"
       },
       "words": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.",
       "allText": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so bef",
-      "srcLine": 1379,
+      "srcLine": 1382,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.",
-      "snippet": "<p style=\"margin:0;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .9s both\" data-dc-tpl=\"607\">Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "96px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "48px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "496.562px",
-          "height": "72px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:0;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .9s both\" data-dc-tpl=\"609\">Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.</p>",
       "box": {
         "375": {
           "x": 20,
@@ -1136,104 +565,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_607_0@375.png",
-        "1440": "shots/Root_607_0@1440.png"
+        "375": "shots/Root_609_0@375.png",
+        "1440": "shots/Root_609_0@1440.png"
       }
     },
     {
-      "key": "Root/608#0",
-      "parentKey": "Root/601#0",
+      "key": "Root/610#0",
+      "parentKey": "Root/603#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 608,
+      "tpl": 610,
       "attrs": {
         "style": "display: flex; gap: 10px; margin-top: 32px; flex-wrap: wrap; animation: 1s ease 0s 1 normal both running rise;"
       },
       "words": "",
       "allText": "Message me Shop the range",
-      "srcLine": 1380,
+      "srcLine": 1383,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;animation:rise 1s both\" data-dc-tpl=\"608\"> <a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" d",
-      "flow": [
-        " ",
-        {
-          "key": "Root/609#0"
-        },
-        " ",
-        {
-          "key": "Root/611#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "110px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "496.562px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;animation:rise 1s both\" data-dc-tpl=\"610\"> <a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" d",
       "box": {
         "375": {
           "x": 20,
@@ -1266,24 +626,19 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_608_0@375.png",
-        "1440": "shots/Root_608_0@1440.png"
+        "375": "shots/Root_610_0@375.png",
+        "1440": "shots/Root_610_0@1440.png"
       }
     },
     {
-      "key": "Root/609#0",
-      "parentKey": "Root/608#0",
+      "key": "Root/611#0",
+      "parentKey": "Root/610#0",
       "depth": 4,
       "tag": "a",
       "template": "Root",
-      "tpl": 609,
+      "tpl": 611,
       "attrs": {
         "href": "https://wa.me/4479605978",
         "target": "_blank",
@@ -1292,78 +647,17 @@
       },
       "words": "Message me",
       "allText": "Message me",
-      "srcLine": 1381,
+      "srcLine": 1384,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "a",
       "srcOwnText": "Message me",
-      "snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" data-dc-tpl=\"609\"> <img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=",
-      "flow": [
-        " ",
-        {
-          "key": "Root/610#0"
-        },
-        " Message me "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "155.281px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "155.281px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "155.281px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" data-dc-tpl=\"611\"> <img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=",
       "box": {
         "375": {
           "x": 20,
@@ -1396,23 +690,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_609_0@1440.png"
+        "1440": "shots/Root_611_0@1440.png"
       }
     },
     {
-      "key": "Root/610#0",
-      "parentKey": "Root/609#0",
+      "key": "Root/612#0",
+      "parentKey": "Root/611#0",
       "depth": 5,
       "tag": "img",
       "template": "Root",
-      "tpl": 610,
+      "tpl": 612,
       "attrs": {
         "aria-hidden": "true",
         "style": "display: block;",
@@ -1420,70 +709,17 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 1382,
+      "srcLine": 1385,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"610\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "19px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "19px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "19px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"612\">",
       "box": {
         "375": {
           "x": 44,
@@ -1516,94 +752,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_610_0@1440.png"
+        "1440": "shots/Root_612_0@1440.png"
       }
     },
     {
-      "key": "Root/611#0",
-      "parentKey": "Root/608#0",
+      "key": "Root/613#0",
+      "parentKey": "Root/610#0",
       "depth": 4,
       "tag": "button",
       "template": "Root",
-      "tpl": 611,
+      "tpl": 613,
       "attrs": {
         "class": "scpr",
         "style": "background: none; color: rgb(20, 20, 20); border: 1px solid rgb(20, 20, 20); padding: 0px 24px; min-height: 50px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;"
       },
       "words": "Shop the range",
       "allText": "Shop the range",
-      "srcLine": 1385,
+      "srcLine": 1388,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "button",
       "srcOwnText": "Shop the range",
-      "snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:none;color:#141414;border:1px solid #141414;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#F3F0EB\" data-dc-tpl=\"611\">Shop the range</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "1.3px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "176.359px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "1.3px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "176.359px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "1.3px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "176.359px",
-          "height": "50px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:none;color:#141414;border:1px solid #141414;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#F3F0EB\" data-dc-tpl=\"613\">Shop the range</button>",
       "box": {
         "375": {
           "x": 20,
@@ -1636,112 +813,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_611_0@375.png",
-        "1440": "shots/Root_611_0@1440.png"
+        "375": "shots/Root_613_0@375.png",
+        "1440": "shots/Root_613_0@1440.png"
       }
     },
     {
-      "key": "Root/612#0",
-      "parentKey": "Root/600#0",
+      "key": "Root/614#0",
+      "parentKey": "Root/602#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 612,
+      "tpl": 614,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 1px; background: rgb(230, 225, 218); border: 1px solid rgb(230, 225, 218); animation: 0.8s ease 0s 1 normal both running rise;"
       },
       "words": "",
       "allText": "BSc (Hons)An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical ",
-      "srcLine": 1388,
+      "srcLine": 1391,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .8s both\" data-dc-tpl=\"612\"> <div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"613\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"614\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"615\">An",
-      "flow": [
-        " ",
-        {
-          "key": "Root/613#0"
-        },
-        " ",
-        {
-          "key": "Root/616#0"
-        },
-        " ",
-        {
-          "key": "Root/619#0"
-        },
-        " ",
-        {
-          "key": "Root/622#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "335px",
-          "height": "619.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "664px",
-          "height": "489.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "451.438px",
-          "height": "532.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .8s both\" data-dc-tpl=\"614\"> <div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"615\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An",
       "box": {
         "375": {
           "x": 20,
@@ -1774,101 +874,35 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_612_0@375.png",
-        "1440": "shots/Root_612_0@1440.png"
+        "375": "shots/Root_614_0@375.png",
+        "1440": "shots/Root_614_0@1440.png"
       }
     },
     {
-      "key": "Root/613#0",
-      "parentKey": "Root/612#0",
+      "key": "Root/615#0",
+      "parentKey": "Root/614#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 613,
+      "tpl": 615,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 22px 24px;"
       },
       "words": "",
       "allText": "BSc (Hons)An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical ",
-      "srcLine": 1389,
+      "srcLine": 1392,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"613\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"614\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"615\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p></div>",
-      "flow": [
-        {
-          "key": "Root/614#0"
-        },
-        {
-          "key": "Root/615#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "333px",
-          "height": "170px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "662px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "449.438px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"615\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p></div>",
       "box": {
         "375": {
           "x": 21,
@@ -1901,94 +935,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_613_0@375.png",
-        "1440": "shots/Root_613_0@1440.png"
+        "375": "shots/Root_615_0@375.png",
+        "1440": "shots/Root_615_0@1440.png"
       }
     },
     {
-      "key": "Root/614#0",
-      "parentKey": "Root/613#0",
+      "key": "Root/616#0",
+      "parentKey": "Root/615#0",
       "depth": 4,
       "tag": "div",
       "template": "Root",
-      "tpl": 614,
+      "tpl": 616,
       "attrs": {
         "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 22px;"
       },
       "words": "BSc (Hons)",
       "allText": "BSc (Hons)",
-      "srcLine": 1389,
+      "srcLine": 1392,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "BSc (Hons)",
-      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"614\">BSc (Hons)</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "285px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "614px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "401.438px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div>",
       "box": {
         "375": {
           "x": 45,
@@ -2021,94 +996,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_614_0@375.png",
-        "1440": "shots/Root_614_0@1440.png"
+        "375": "shots/Root_616_0@375.png",
+        "1440": "shots/Root_616_0@1440.png"
       }
     },
     {
-      "key": "Root/615#0",
-      "parentKey": "Root/613#0",
+      "key": "Root/617#0",
+      "parentKey": "Root/615#0",
       "depth": 4,
       "tag": "p",
       "template": "Root",
-      "tpl": 615,
+      "tpl": 617,
       "attrs": {
         "style": "margin: 6px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79);"
       },
       "words": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.",
       "allText": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.",
-      "srcLine": 1389,
+      "srcLine": 1392,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.",
-      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"615\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "285px",
-          "height": "87px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "614px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "401.438px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p>",
       "box": {
         "375": {
           "x": 45,
@@ -2141,101 +1057,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_615_0@375.png",
-        "1440": "shots/Root_615_0@1440.png"
+        "375": "shots/Root_617_0@375.png",
+        "1440": "shots/Root_617_0@1440.png"
       }
     },
     {
-      "key": "Root/616#0",
-      "parentKey": "Root/612#0",
+      "key": "Root/618#0",
+      "parentKey": "Root/614#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 616,
+      "tpl": 618,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 22px 24px;"
       },
       "words": "",
       "allText": "MCOptomMember of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum",
-      "srcLine": 1390,
+      "srcLine": 1393,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"616\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"617\">MCOptom</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"618\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p></div>",
-      "flow": [
-        {
-          "key": "Root/617#0"
-        },
-        {
-          "key": "Root/618#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "333px",
-          "height": "148.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "662px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "449.438px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"618\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"619\">MCOptom</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"620\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p></div>",
       "box": {
         "375": {
           "x": 21,
@@ -2268,94 +1118,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_616_0@375.png",
-        "1440": "shots/Root_616_0@1440.png"
+        "375": "shots/Root_618_0@375.png",
+        "1440": "shots/Root_618_0@1440.png"
       }
     },
     {
-      "key": "Root/617#0",
-      "parentKey": "Root/616#0",
+      "key": "Root/619#0",
+      "parentKey": "Root/618#0",
       "depth": 4,
       "tag": "div",
       "template": "Root",
-      "tpl": 617,
+      "tpl": 619,
       "attrs": {
         "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 22px;"
       },
       "words": "MCOptom",
       "allText": "MCOptom",
-      "srcLine": 1390,
+      "srcLine": 1393,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "MCOptom",
-      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"617\">MCOptom</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "285px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "614px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "401.438px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"619\">MCOptom</div>",
       "box": {
         "375": {
           "x": 45,
@@ -2388,94 +1179,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_617_0@375.png",
-        "1440": "shots/Root_617_0@1440.png"
+        "375": "shots/Root_619_0@375.png",
+        "1440": "shots/Root_619_0@1440.png"
       }
     },
     {
-      "key": "Root/618#0",
-      "parentKey": "Root/616#0",
+      "key": "Root/620#0",
+      "parentKey": "Root/618#0",
       "depth": 4,
       "tag": "p",
       "template": "Root",
-      "tpl": 618,
+      "tpl": 620,
       "attrs": {
         "style": "margin: 6px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79);"
       },
       "words": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.",
       "allText": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.",
-      "srcLine": 1390,
+      "srcLine": 1393,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.",
-      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"618\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "285px",
-          "height": "65.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "614px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "401.438px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"620\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p>",
       "box": {
         "375": {
           "x": 45,
@@ -2508,101 +1240,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_618_0@375.png",
-        "1440": "shots/Root_618_0@1440.png"
+        "375": "shots/Root_620_0@375.png",
+        "1440": "shots/Root_620_0@1440.png"
       }
     },
     {
-      "key": "Root/619#0",
-      "parentKey": "Root/612#0",
+      "key": "Root/621#0",
+      "parentKey": "Root/614#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 619,
+      "tpl": 621,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 22px 24px; border-left: 3px solid var(--acc,#9C8B78);"
       },
       "words": "",
       "allText": "DipTp(IP)Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medi",
-      "srcLine": 1391,
+      "srcLine": 1394,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"background:#fff;padding:22px 24px;border-left:3px solid var(--acc,#9C8B78)\" data-dc-tpl=\"619\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"620\">DipTp(IP)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"621\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescrib",
-      "flow": [
-        {
-          "key": "Root/620#0"
-        },
-        {
-          "key": "Root/621#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "333px",
-          "height": "170px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "662px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "449.438px",
-          "height": "148.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<div style=\"background:#fff;padding:22px 24px;border-left:3px solid var(--acc,#9C8B78)\" data-dc-tpl=\"621\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"622\">DipTp(IP)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"623\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescrib",
       "box": {
         "375": {
           "x": 21,
@@ -2635,94 +1301,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_619_0@375.png",
-        "1440": "shots/Root_619_0@1440.png"
+        "375": "shots/Root_621_0@375.png",
+        "1440": "shots/Root_621_0@1440.png"
       }
     },
     {
-      "key": "Root/620#0",
-      "parentKey": "Root/619#0",
+      "key": "Root/622#0",
+      "parentKey": "Root/621#0",
       "depth": 4,
       "tag": "div",
       "template": "Root",
-      "tpl": 620,
+      "tpl": 622,
       "attrs": {
         "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 22px;"
       },
       "words": "DipTp(IP)",
       "allText": "DipTp(IP)",
-      "srcLine": 1391,
+      "srcLine": 1394,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "DipTp(IP)",
-      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"620\">DipTp(IP)</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "282px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "611px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "398.438px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"622\">DipTp(IP)</div>",
       "box": {
         "375": {
           "x": 48,
@@ -2755,94 +1362,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_620_0@375.png",
-        "1440": "shots/Root_620_0@1440.png"
+        "375": "shots/Root_622_0@375.png",
+        "1440": "shots/Root_622_0@1440.png"
       }
     },
     {
-      "key": "Root/621#0",
-      "parentKey": "Root/619#0",
+      "key": "Root/623#0",
+      "parentKey": "Root/621#0",
       "depth": 4,
       "tag": "p",
       "template": "Root",
-      "tpl": 621,
+      "tpl": 623,
       "attrs": {
         "style": "margin: 6px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79);"
       },
       "words": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.",
       "allText": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for ",
-      "srcLine": 1391,
+      "srcLine": 1394,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.",
-      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"621\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "282px",
-          "height": "87px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "611px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "398.438px",
-          "height": "65.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"623\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.</p>",
       "box": {
         "375": {
           "x": 48,
@@ -2875,101 +1423,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_621_0@375.png",
-        "1440": "shots/Root_621_0@1440.png"
+        "375": "shots/Root_623_0@375.png",
+        "1440": "shots/Root_623_0@1440.png"
       }
     },
     {
-      "key": "Root/622#0",
-      "parentKey": "Root/612#0",
+      "key": "Root/624#0",
+      "parentKey": "Root/614#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 622,
+      "tpl": 624,
       "attrs": {
         "style": "background: rgb(255, 255, 255); padding: 22px 24px;"
       },
       "words": "",
       "allText": "Paediatric Eye CareAdditional certification in children's vision, which matters when the order is for a child.",
-      "srcLine": 1392,
+      "srcLine": 1395,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"622\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"623\">Paediatric Eye Care</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"624\">Additional certification in children's vision, which matters when the order is for a child.</p></div>",
-      "flow": [
-        {
-          "key": "Root/623#0"
-        },
-        {
-          "key": "Root/624#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "333px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "662px",
-          "height": "104.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "449.438px",
-          "height": "126.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "22px",
-          "padding-right": "24px",
-          "padding-bottom": "22px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"624\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"625\">Paediatric Eye Care</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"626\">Additional certification in children's vision, which matters when the order is for a child.</p></div>",
       "box": {
         "375": {
           "x": 21,
@@ -3002,94 +1484,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_622_0@375.png",
-        "1440": "shots/Root_622_0@1440.png"
+        "375": "shots/Root_624_0@375.png",
+        "1440": "shots/Root_624_0@1440.png"
       }
     },
     {
-      "key": "Root/623#0",
-      "parentKey": "Root/622#0",
+      "key": "Root/625#0",
+      "parentKey": "Root/624#0",
       "depth": 4,
       "tag": "div",
       "template": "Root",
-      "tpl": 623,
+      "tpl": 625,
       "attrs": {
         "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 22px;"
       },
       "words": "Paediatric Eye Care",
       "allText": "Paediatric Eye Care",
-      "srcLine": 1392,
+      "srcLine": 1395,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "div",
       "srcOwnText": "Paediatric Eye Care",
-      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"623\">Paediatric Eye Care</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "285px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "614px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "22px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "33px",
-          "width": "401.438px",
-          "height": "33px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"625\">Paediatric Eye Care</div>",
       "box": {
         "375": {
           "x": 45,
@@ -3122,94 +1545,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_623_0@375.png",
-        "1440": "shots/Root_623_0@1440.png"
+        "375": "shots/Root_625_0@375.png",
+        "1440": "shots/Root_625_0@1440.png"
       }
     },
     {
-      "key": "Root/624#0",
-      "parentKey": "Root/622#0",
+      "key": "Root/626#0",
+      "parentKey": "Root/624#0",
       "depth": 4,
       "tag": "p",
       "template": "Root",
-      "tpl": 624,
+      "tpl": 626,
       "attrs": {
         "style": "margin: 6px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79);"
       },
       "words": "Additional certification in children's vision, which matters when the order is for a child.",
       "allText": "Additional certification in children's vision, which matters when the order is for a child.",
-      "srcLine": 1392,
+      "srcLine": 1395,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ isAbout }}",
-          "tpl": "598"
+          "tpl": "600"
         }
       ],
       "srcTag": "p",
       "srcOwnText": "Additional certification in children's vision, which matters when the order is for a child.",
-      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"624\">Additional certification in children's vision, which matters when the order is for a child.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "285px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "614px",
-          "height": "21.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14.5px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "401.438px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"626\">Additional certification in children's vision, which matters when the order is for a child.</p>",
       "box": {
         "375": {
           "x": 45,
@@ -3242,40 +1606,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_624_0@375.png",
-        "1440": "shots/Root_624_0@1440.png"
+        "375": "shots/Root_626_0@375.png",
+        "1440": "shots/Root_626_0@1440.png"
       }
     }
-  ],
-  "sources": {
-    "files": {
-      "Eye Care Birmingham.dc.html": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d",
-      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
-      "README.md": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8",
-      "animations.json": "4d482eaddd75a737f7892b582c127792869a95addf11632ff77af05c2a5e7616",
-      "assets/ec-logo.png": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
-      "assets/eye-care-wordmark.png": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
-      "assets/google-g.svg": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875",
-      "assets/instagram.svg": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38",
-      "assets/whatsapp-deep.svg": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0",
-      "assets/whatsapp-green.svg": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a",
-      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
-      "assets/whatsapp-white.svg": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699",
-      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
-      "surfaces.json": "cafeb0dd42a0e3ebef175d71f3f599973c122d17ae33fd2c58eb684fadc99386",
-      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
-      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
-      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
-    },
-    "route": {
-      "commit": "5e08045ecee496f0204a71ed4bcf94973557144b"
-    }
-  }
+  ]
 }

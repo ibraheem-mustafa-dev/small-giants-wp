@@ -8,28 +8,18 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import path from 'path';
-import { draftLogicOf, narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
-import { accordionLoops } from './skeleton-accordion.mjs';
+import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
-import { formElement, holdsField } from './skeleton-form-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
-import { acrossWidths, elementFacts, pxOf } from './element-facts.mjs';
-import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
-import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
-import { loopBlocks } from './skeleton-loop-blocks.mjs';
-import { platformLookOf } from './platform-look.mjs';
-import { filterRail, placeableFacets } from './skeleton-filter-rail.mjs';
-import { filterDrawer } from './skeleton-filter-drawer.mjs';
+import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
-import { inlineText } from './inline-text.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
-import { makeOpenerRules } from './skeleton-openers.mjs';
+import { blockPartSurfaces } from './skeleton-surface-role.mjs';
+import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
-import { makeRecogniser, hostKindOf } from './skeleton-recognise.mjs';
-import { backToTopOptions, fixedAt, missingFixedFeature, readingProgressOptions, timedPopupMissing } from './skeleton-fixed-controls.mjs';
-import { makeClock } from './skeleton-clock.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -38,35 +28,61 @@ export function isSiteInfoValue( text, kind ) {
 	return !! VALUE[ kind ]?.test( String( text ?? '' ) );
 }
 
+// The element's declared inline style as { property: value } (lower-case property names; values as written, which may
+// hold a draft binding such as {{ R.px }}).
+export function declared( e ) {
+	const out = {};
+	for ( const part of String( e.attrs?.style || '' ).split( ';' ) ) {
+		const at = part.indexOf( ':' );
+		if ( at > 0 ) {
+			out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).trim();
+		}
+	}
+	return out;
+}
+
+const px = ( v ) => {
+	const n = /^(-?[\d.]+)px$/.exec( String( v ?? '' ).trim() );
+	return n ? Number( n[ 1 ] ) : null;
+};
+// A letter-spacing in em (a px value over a 16px base).
+const em = ( v ) => {
+	const n = /^(-?[\d.]+)(em|px)$/.exec( String( v ?? '' ).trim() );
+	if ( ! n ) {
+		return null;
+	}
+	return 'em' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) / 16;
+};
 const DECORATION_TAGS = new Set( [ 'img', 'iframe', 'video', 'input', 'textarea', 'select', 'hr' ] );
 
-// A small marker that holds nothing, in the flow of the text beside it: a dot (its rendered box at most D.maxDotPx on both
-// sides) or a short bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide), judged at each width it renders
-// (lib/element-facts.mjs::acrossWidths: { holds, fails, every, some }). D is the decisions entry rules.dotMarker; none, never.
-// `read` is the element-facts reader (lib/element-facts.mjs; the model's own by default).
-export function markerWidths( e, m, D, read = m.read ) {
-	const none = acrossWidths( [], () => false );
-	const declaredOut = [ 'absolute', 'fixed' ].includes( read.declared( e ).position );
-	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || declaredOut ) {
-		return none;
+// A small marker that holds nothing, in the flow of the text beside it: a dot (both sides at most D.maxDotPx) or a short
+// bar (at most D.maxBarHeightPx tall and D.maxBarWidthPx wide). D is the decisions entry rules.dotMarker; none, never.
+export function isMarker( e, m, D, view = recordView( null ) ) {
+	const st = declared( e );
+	if ( ! D || m.words( e ) || m.blockKids( e ).length || m.kids( e ).some( ( k ) => 'svg' === k.tag ) || DECORATION_TAGS.has( e.tag ) || [ 'absolute', 'fixed' ].includes( st.position ) ) {
+		return false;
 	}
-	// A control the visitor operates (a slider's pagination dot, a swatch: any event binding) is never a marker.
-	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != read.view.attr( e, 'tabindex' ) || read.events( e ).length ) {
-		return none;
+	// A control the visitor operates (a slider's pagination dot, a swatch) is never a marker.
+	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != view.attr( e, 'tabindex' ) || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
+		return false;
+	}
+	const w = px( st.width );
+	const h = px( st.height );
+	if ( null == w || null == h || ! ( ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx ) ) ) {
+		return false;
 	}
 	// It marks text: its parent holds words of its own or in another child.
 	const p = m.byKey[ e.parentKey ];
-	if ( ! p || ! ( !! m.words( p ) || m.blockKids( p ).some( ( k ) => k !== e && String( k.allText ?? m.words( k ) ).trim() ) ) ) {
-		return none;
-	}
-	return acrossWidths( read.widths( e ), ( w ) => {
-		const b = read.boxAt( e, w );
-		const out = [ 'absolute', 'fixed' ].includes( e.position?.[ w ] );
-		return !! b && ! out && ( ( b.w <= D.maxDotPx && b.h <= D.maxDotPx ) || ( b.h <= D.maxBarHeightPx && b.w <= D.maxBarWidthPx ) );
-	} );
+	return !! p && ( !! m.words( p ) || m.blockKids( p ).some( ( k ) => k !== e && String( k.allText ?? m.words( k ) ).trim() ) );
 }
-// A marker at every width it renders (markerWidths' `every`): what a row's structure reads (lib/skeleton-write-units.mjs).
-export const isMarker = ( e, m, D, read = m.read ) => markerWidths( e, m, D, read ).every;
+// A length in px, with rem and em read against a 16px root (the draft's declared lengths); null for anything else.
+function lengthPx( v ) {
+	const n = /^(-?[\d.]+)(px|rem|em)$/.exec( String( v ?? '' ).trim() );
+	if ( ! n ) {
+		return null;
+	}
+	return 'px' === n[ 2 ] ? Number( n[ 1 ] ) : Number( n[ 1 ] ) * 16;
+}
 // A font weight as a number: keywords as CSS maps them (normal 400, bold and bolder 700, lighter 300).
 const WEIGHT_WORDS = { normal: 400, bold: 700, bolder: 700, lighter: 300 };
 function weightOf( v ) {
@@ -75,7 +91,6 @@ function weightOf( v ) {
 }
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
-const EMOJI_RUN = /(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+/gu;
 const HEADING = /^h[1-6]$/;
 
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
@@ -89,11 +104,7 @@ const HEADING = /^h[1-6]$/;
 // `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
-	// Every fact of an element is read through the one reader (lib/element-facts.mjs).
-	const read = elementFacts( view );
-	const declared = read.declared;
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
-	const recogniser = makeRecogniser( { m, facts } );
 	const arrayBlocks = new Set( facts.q( 'SELECT DISTINCT block_slug FROM array_item_schema' ).map( ( r ) => r.block_slug ) );
 	const drawsListed = Object.fromEntries( ( R.drawsChildren?.blocks || [] ).map( ( d ) => [ d.block, d.reason ] ) );
 
@@ -122,35 +133,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
-	// Whether the element is a back-to-top control: a link, button or handler whose words or handler name say so.
-	const isBackToTop = ( e, text ) => ( [ 'a', 'button' ].includes( e.tag ) || !! read.handler( e ) ) && !! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, read.handler( e ) ) );
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
-	// A live open or closed line, read from the draft's code (lib/skeleton-clock.mjs), never from the words a read showed: the
-	// element's own text is a value the clock decides by the opening hours the code holds, or it has no words of its own and
-	// every worded piece inside it is such a line.
-	const clock = makeClock( { facts, view, read } );
-	const openLine = ( x ) => {
-		if ( clock( x )?.openStatus ) {
-			return true;
-		}
-		const worded = desc( x ).filter( ( y ) => m.words( y ) );
-		return ! m.words( x ) && worded.length > 0 && worded.every( ( y ) => clock( y )?.openStatus );
-	};
-	// A control the visitor operates: a button, anything binding an event (any event: a click, a change, a pointer or key),
-	// a pressed or expanded state. It is never static text (a label, a heading, a card title).
-	const interactive = ( e ) => 'button' === e.tag || read.events( e ).length > 0 || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
+	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
+	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
+	// static text (a label, a heading, a card title).
+	const interactive = ( e ) => 'button' === e.tag || !! handlerOf( e ) || null != view.attr( e, 'aria-pressed' ) || null != view.attr( e, 'aria-expanded' );
 	// A disclosure or slider control (it opens, closes or steps something): never a pill button.
-	const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) || /toggle|prev|next|open|close|expand|collapse/i.test( read.handler( e ) );
+	const disclosure = ( e ) => null != view.attr( e, 'aria-expanded' ) || null != view.attr( e, 'aria-pressed' ) || /toggle|prev|next|open|close|expand|collapse/i.test( handlerOf( e ) );
 	// Words that are only a number (a count, an index "01"): never a label or a title.
 	const numberOnly = ( e ) => /^\d+$/.test( m.words( e ).trim() );
 	const textLeaves = ( e ) => desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length );
 	const logoish = ( k ) => k.tag.endsWith( '-logo' ) || facts.logoBlocks.includes( hooks.topBlock( k ) );
 	// An element the draft fills from one script value (`{{ arrowIcon }}`) that renders no words: the value is a glyph,
 	// injected unstamped, so the inventory holds no child for it.
-	const bindingGlyph = ( e ) => bare( e ) && read.textBinding( e ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
-	const srcOf = ( e ) => read.attr( e, 'src' ) || '';
+	const bindingGlyph = ( e ) => bare( e ) && /^<[^>]+>\s*\{\{\s*[\w.$]+\s*\}\}\s*<\/[a-z0-9-]+>$/i.test( e.snippet || '' ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
+	const srcOf = ( e ) => e.attrs?.src || /\ssrc="([^"]+)"/.exec( e.snippet || '' )?.[ 1 ] || '';
 	// The first block child of a column that sits directly in a header or footer row: the column's heading.
 	const headsRowColumn = ( e ) => {
 		const col = m.byKey[ e.parentKey ];
@@ -211,14 +210,6 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return verdicts.get( tk ) ? card : null;
 	};
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
-	// The navigation element of the surface (the first <nav> that is no part of another block), or null.
-	const navigationOf = () => ( R.navigation?.bySurface?.[ surface.kind ] ? m.els.find( ( n ) => 'nav' === n.tag && ! m.isPart( n ) ) ?? null : null );
-	// Whether a link is set in the type of the navigation's own links (lib/nav-link-look.mjs), compared with the first link of
-	// the navigation.
-	const looksLikeNavLink = ( e, nav ) => {
-		const model = desc( nav ).find( ( k ) => 'a' === k.tag && m.words( k ) );
-		return sameNavLook( e, model, declared, ( x ) => m.byKey[ x.parentKey ], R.navigationLink.properties );
-	};
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
 	// by its rendered input type; null for anything else.
 	const controlBlock = ( e ) => {
@@ -344,16 +335,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return out;
 	};
-	const markerShape = ( e ) => markerWidths( e, m, R.dotMarker, read );
+	const markerShape = ( e ) => isMarker( e, m, R.dotMarker, view );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
-	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text. Its size and
-	// weight are the resolved values at each width it renders (a clamp() or an inherited size included), judged per width:
-	// { holds, fails, every, some } (lib/element-facts.mjs::acrossWidths).
-	const headsCard = ( e ) => {
+	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
+	const headsCard = ( e, st ) => {
 		const C = R.cardHeading;
-		const none = acrossWidths( [], () => false );
-		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size || m.words( e ).split( ' ' ).length > C.maxWords ) {
-			return none;
+		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size ) {
+			return false;
+		}
+		const size = lengthPx( st[ 'font-size' ] );
+		if ( ( weightOf( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
+			return false;
 		}
 		let card = m.byKey[ e.parentKey ];
 		for ( let i = 0; card && i < 2 && textLeaves( card ).length < 2; i++ ) {
@@ -362,33 +354,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const texts = card ? textLeaves( card ).filter( ( k ) => ! numberOnly( k ) ) : [];
 		const next = texts[ texts.indexOf( e ) + 1 ];
 		if ( texts[ 0 ] !== e || ! next ) {
-			return none;
+			return false;
 		}
-		return acrossWidths( read.widths( e ), ( w ) => {
-			const size = read.lengthAt( e, 'font-size', w );
-			if ( ( weightOf( read.resolved( e, 'font-weight', w ) ) || 0 ) < C.minWeight || null == size || size < C.minSizePx ) {
-				return false;
-			}
-			const nextSize = read.lengthAt( next, 'font-size', w );
-			return null != nextSize ? nextSize < size : ( weightOf( read.resolved( next, 'font-weight', w ) ) || 400 ) < C.minWeight;
-		} );
+		const ns = declared( next );
+		const nextSize = lengthPx( ns[ 'font-size' ] );
+		return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
 	};
-	// A short run of words set in capitals or wide tracking (its tracking over its own font size), or drawn as a pill (a fully
-	// rounded corner and padding), judged at each width it renders from the resolved values.
-	const kickerLook = ( e ) => acrossWidths( read.widths( e ), ( w ) => {
-		const size = read.lengthAt( e, 'font-size', w );
-		const tracking = read.lengthAt( e, 'letter-spacing', w );
-		const caps = 'uppercase' === read.resolved( e, 'text-transform', w ) || ( null != tracking && size > 0 && tracking / size >= ( R.label?.minTrackingEm ?? 0.06 ) );
-		const pill = ( read.lengthAt( e, 'border-top-left-radius', w ) ?? 0 ) >= 99 && [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ( read.lengthAt( e, `padding-${ side }`, w ) ?? 0 ) > 0 );
-		return caps || pill;
-	} );
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
 	const linkKindOf = ( e ) => {
 		const kinds = [ ...hooks.siteInfoKinds( e ) ].map( ( [ k ] ) => k );
 		const map = R.linkSourceForKind?.map || {};
-		const hostKind = hostKindOf( e.attrs?.href, R.linkSourceForKind?.hosts );
-		const k = kinds.find( ( x ) => map[ x ] ) || ( map[ hostKind ] ? hostKind : null );
+		const k = kinds.find( ( x ) => map[ x ] );
 		return k ? { kind: k, source: map[ k ] } : null;
 	};
 	// Whether the element's words are the Site Info value itself (a typed phone number or email address), so the label
@@ -399,24 +376,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const wordBound = ( lk ) => ( lk ? { wordBound: { labelFromSiteInfo: lk.kind } } : {} );
 	// A verdict of a rule, or null when the decisions data has no entry for it (each rule is switched on by its entry).
 	const v = ( rule, extra ) => ( R[ rule ] ? { rule, reason: R[ rule ].reason || rule, ...extra } : null );
-	// The verdict of a rule judged per width (acrossWidths' result): the rule's verdict when it holds at every width the
-	// element renders, the same verdict marked `widthDependent` (the widths it holds and fails at) when it holds at some
-	// only, so the review decides it (rules.widthDependent), and null when it holds at none.
-	const byWidth = ( judged, rule, extra ) => {
-		if ( judged.every ) {
-			return v( rule, extra );
-		}
-		const out = judged.some && R.widthDependent ? v( rule, { ...extra, widthDependent: { holds: judged.holds, fails: judged.fails } } ) : null;
-		return out && { ...out, reason: `${ out.reason }; width-dependent (holds at ${ judged.holds.join( ', ' ) }, not at ${ judged.fails.join( ', ' ) }): ${ R.widthDependent.reason }` };
-	};
 	// A link setting's value as a site address (lib/draft-link.mjs, through hooks.siteLink): { attributes, handover? }, the
 	// setting absent when the draft's destination resolves to no address.
 	const siteLinkOf = ( attr, e ) => {
-		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null, null, read ) )( realHref( e ), e ), realHref( e ) );
+		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null ) )( realHref( e ), e ), realHref( e ) );
 		return { attributes: null !== out.value ? { [ attr ]: out.value } : {}, ...( out.handover ? { handover: out.handover } : {} ) };
 	};
-	// An element's words as the markup a block setting holds (lib/inline-text.mjs::inlineText), or null with no inline parts.
-	const richOf = ( e, block, attr, clickable = false ) => inlineText( { m, e, block, attr, codeRepo: facts.codeRepo, siteLink: hooks.siteLink || siteLinkResolver( null, null, read ), clickable } );
 	const linkAttrs = ( e, lk ) => {
 		if ( lk ) {
 			return { attributes: { sgsBlockLinkSource: lk.source } };
@@ -443,41 +408,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		// The bar is judged at each width it has a box at: fixed there, no taller than the rule's height, and declared full width.
-		( { e, st } ) => {
-			if ( ! bare( e ) || hasSvg( e ) || ! /^100(?:%|vw)$/.test( st.width || '' ) ) {
-				return null;
-			}
-			const laidOut = [ 375, 768, 1440 ].filter( ( w ) => read.boxAt( e, w ) );
-			const judged = acrossWidths( laidOut, ( w ) => ( 'fixed' === e.position?.[ w ] || 'fixed' === st.position ) && ( read.lengthAt( e, 'height', w ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) );
-			return byWidth( judged, 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' }, ...( R.readingProgress?.options ? { siteOptions: readingProgressOptions( e, st, R.readingProgress, judged.holds.map( ( w ) => read.lengthAt( e, 'height', w ) ) ) } : {} ) } );
-		},
+		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
 		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
 		// the block it sits in.
 		( { e, st } ) => {
 			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) ) ) {
 				return null;
 			}
-			// A ring draws its outline on every side (a one-sided line, a connector or a rule, is a layer).
-			const ring = [ 'top', 'right', 'bottom', 'left' ].every( ( side ) => ( pxOf( st[ `border-${ side }-width` ] ) ?? 0 ) > 0 && ! [ '', 'none', 'hidden', 'initial' ].includes( String( st[ `border-${ side }-style` ] ?? '' ).trim() ) );
+			const ring = /\d/.test( st.border || st[ 'border-width' ] || '' ) && ! /^(?:0|none)/.test( st.border || '' );
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
-		// A draft <form> element is the form block; its fields sit inside it. The form element of a form surface's root
-		// (lib/skeleton-form-element.mjs) is the saved form's root block whatever its tag (a wizard drawn in a <div>): the saved
-		// form's root must be the form block, which the linked embed renders. A root that is the page's layout around the form
-		// goes, and what it holds beside the form (an aside, a bar) is the page's, never the saved form's.
-		( { e } ) => {
-			const form = 'form' === surface.kind ? formElement( m, m.root ) : null;
-			if ( ! form || form === m.root || form === e || ! holdsField( m, form ) ) {
-				return null;
-			}
-			const inside = ( a, x ) => x === a || ( !! x && inside( a, m.byKey[ x.parentKey ] ) );
-			return inside( e, form ) ? v( 'formHost', { action: 'unwrap', reason: R.formHost?.layoutReason } ) : inside( form, e ) ? null : v( 'formHost', { action: 'remove', reason: R.formHost?.besideReason } );
-		},
-		// A form block stands only where there is something to fill in (holdsField): a <form> or a form surface's root holding
-		// only a button or a link is that control.
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && e === formElement( m, m.root ) ) ) && holdsField( m, e ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
+		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
+		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
@@ -497,7 +441,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A small dot or short bar beside text is the marker of the block that holds the text (a label's dot, a list
 		// item's marker, the separator between a row's items): it gets no block of its own.
-		( { e } ) => byWidth( markerShape( e ), 'dotMarker', { action: 'remove' } ),
+		( { e } ) => ( markerShape( e ) ? v( 'dotMarker', { action: 'remove' } ) : null ),
 		// A custom element named as a logo (<brand-logo>) is the logo block, which reads the site logo.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( facts.decisions.logoImage, e.tag ) && facts.logoBlocks.length ? v( 'logoElement', { block: facts.logoBlocks[ 0 ], absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: 'the logo image: choose the site logo in the editor' } } ) : null ),
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
@@ -516,36 +460,24 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const laysOut = /grid|flex/.test( st.display || e.display || '' );
 			return ! m.words( e ) && kidsB.length && parentBlock && 'wrapper-shell' !== role && centred && ! ( 'section-root' === role && laysOut ) ? v( 'widthWrapper', { action: 'unwrap' } ) : null;
 		},
-		// A back-to-top control fixed to the viewport is the Floating UI back-to-top setting, read from the control's own look.
-		( { e, st, text } ) => ( R.backToTop?.floating && isBackToTop( e, text ) && fixedAt( e, st ) ? v( 'backToTop', { action: 'remove', reason: R.backToTop.floating.reason, siteOptions: backToTopOptions( e, st, R.backToTop.floating ), handover: { owner: 'behaviour', kind: 'behaviour', detail: R.backToTop.floating.reason } } ) : null ),
-		// A cookie consent banner or a persistent bottom bar fixed to the viewport has no framework equivalent: a missing feature.
-		( { e, st, text } ) => {
-			const miss = missingFixedFeature( { e, st, text, R, m } );
-			return miss ? v( miss.rule, { action: 'remove', reason: miss.why, missingFeature: { line: miss.line, why: miss.why } } ) : null;
-		},
-		// An element whose own features (link host, class, aria-label, position, shape) are held by one mode-bearing block's name and
-		// setting values is that block, in the mode the element itself shows (lib/skeleton-recognise.mjs).
-		( { e } ) => {
-			const r = recogniser.recognise( e );
-			return r ? v( 'recognise', { block: r.block, attributes: r.attributes, absorb: true, reason: r.evidence.join( '; ' ) } ) : null;
-		},
 		// A back-to-top control is a link whose source is 'top'.
 		( { e, text, kidsB } ) => {
-			if ( ! isBackToTop( e, text ) ) {
+			const control = [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e );
+			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
 				return null;
 			}
 			return kidsB.length ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: text } } );
 		},
 		( { e } ) => ( 'iframe' === e.tag && specHit( R.mapEmbed, srcOf( e ) ) ? v( 'mapEmbed', { block: R.mapEmbed?.block, attributes: { displayType: 'map' }, absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: R.mapEmbed.handover } } ) : null ),
 		// A live open or closed line; a second line beside the first is part of the same display.
-		( { e } ) => {
-			if ( ! openLine( e ) || desc( e ).length > 2 ) {
+		( { e, text } ) => {
+			if ( ! specHit( R.openStatus, text ) || desc( e ).length > 2 ) {
 				return null;
 			}
 			// An earlier open-status line within the same block (up to two levels up, as a sibling or a cousin) holds it.
 			const scope = m.byKey[ m.byKey[ e.parentKey ]?.parentKey ] || m.byKey[ e.parentKey ];
 			const order = m.els.indexOf( e );
-			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && openLine( x ) && desc( x ).length <= 2 ) : null;
+			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
 			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
 		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time. The
@@ -593,11 +525,6 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return lk ? v( 'siteInfoLink', { block: R.siteInfoLink?.block, attributes: { label: text, linkSource: lk.source, ...( wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } ) : null;
 		},
 		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
-		// A text link in a header outside its navigation element, in the navigation links' own type, joins the navigation.
-		( { e, kidsB } ) => {
-			const nav = 'a' === e.tag && 'header' === surface.kind && R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) && ! ( e.membership || [] ).some( ( x ) => 'sc-for' === x.kind ) ? navigationOf() : null;
-			return nav && ( realHref( e ) || read.handler( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;
-		},
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
 		// The call to action that ends a card link is the card's button, holding the card's link.
 		( { e } ) => {
@@ -607,8 +534,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			const lk = linkKindOf( card );
 			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
-			// The label keeps the action's inline markup as the button's label holds it; contentAttrs names what it cannot hold.
-			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: richOf( e, R.cardAction?.block, 'label', true )?.value ?? m.words( e ), ...link.attributes } } );
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.
@@ -621,14 +547,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( heading ) {
 				return heading;
 			}
-			const label = ! hooks.isColumnLabel( e ) && byWidth( kickerLook( e ), 'label', { block: R.label?.block } );
+			const caps = 'uppercase' === st[ 'text-transform' ] || ( em( st[ 'letter-spacing' ] ) ?? 0 ) >= ( R.label?.minTrackingEm ?? 0.06 );
+			const pill = ( px( st[ 'border-radius' ] ) ?? 0 ) >= 99 && !! st.padding;
+			const label = ( caps || pill ) && ! hooks.isColumnLabel( e ) && v( 'label', { block: R.label?.block } );
 			if ( label ) {
 				return label;
 			}
 			return titlesCard( e ) ? v( 'cardTitle', { block: R.cardTitle?.block } ) : null;
 		},
 		// The bold, larger first text of a card (not a link) titles it.
-		( { e } ) => byWidth( headsCard( e ), 'cardHeading', { block: R.cardHeading?.block } ),
+		( { e, st } ) => ( headsCard( e, st ) ? v( 'cardHeading', { block: R.cardHeading?.block } ) : null ),
 	];
 
 	// Whether an ancestor in the element's template parent chain is a form element (a `<form>`, its real tag).
@@ -667,38 +595,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// A page wrapper that sits directly under the page's root, or inside another such wrapper.
 	const wrapperOfPage = ( e ) => pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) );
-	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) never sits
-	// inside another section, and sits only in a slot that gives it its full width. On a page that is a page's own section: an
-	// element directly under the page surface's root, or directly inside a page wrapper (never the wrapper itself). On any
-	// other surface (a header or footer row, a drawer, modal or mega panel body) it is an element no section block holds (a
-	// section root that holds only the slot blocks its allowed list names, as the site header holds its rows, is a frame of
-	// slots, not a section) and that the draft lays out as one full-width child at every width it shows, through every
-	// ancestor up to the surface root or that frame: it spans its parent's content box and no sibling sits beside it, so a
-	// footer column, or one of a row's columns, is never such a slot. Badges inside a section are labels.
-	const sectionKind = ( b ) => 'section' === facts.composition[ b ]?.container_kind;
-	const slotFrame = ( b ) => sectionKind( b ) && 'section-root' === facts.composition[ b ]?.composition_role && !! facts.composition[ b ]?.accepts;
-	const insideSection = ( e ) => ancestorBlocks( e ).some( ( a ) => a.key !== m.root.key && sectionKind( a.block ) && ! slotFrame( a.block ) );
-	const px = ( v ) => parseFloat( v ) || 0;
-	const fullWidthChild = ( c, parent ) => Object.entries( c.box || {} ).filter( ( [ , b ] ) => b ).every( ( [ w, b ] ) => {
-		const p = parent.box?.[ w ];
-		const pad = parent.resolved?.[ w ] || {};
-		const side = ( k ) => k !== c && ( k.box?.[ w ] ) && k.box[ w ].y < b.y + b.h - 1 && b.y < k.box[ w ].y + k.box[ w ].h - 1;
-		return ! p || ( b.w >= p.w - px( pad[ 'padding-left' ] ) - px( pad[ 'padding-right' ] ) - 1 && ! m.blockKids( parent ).some( side ) );
-	} );
-	const fullWidthSlot = ( e ) => {
-		for ( let c = e, parent = m.byKey[ e.parentKey ]; parent; c = parent, parent = m.byKey[ parent.parentKey ] ) {
-			if ( ! fullWidthChild( c, parent ) ) {
-				return false;
-			}
-			if ( parent === m.root || slotFrame( hooks.blockOfKey?.( parent.key ) ) ) {
-				return true;
-			}
-		}
-		return true;
-	};
-	const pageSection = ( e, block ) => ! sectionKind( block ) || ( 'page' === surface.kind
-		? ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) )
-		: ! insideSection( e ) && fullWidthSlot( e ) );
+	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) is only
+	// ever a page's own section: an element directly under a page surface's root, or directly inside a page wrapper (never the
+	// wrapper itself). Badges inside a section are labels.
+	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
@@ -707,66 +607,71 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The navigation element of the surface whose block draws its own collapsed-navigation opener (the block holds a collapse
 	// setting: rules.navigation.collapseAttribute), or null.
 	const burgerNav = () => m.els.find( ( n ) => 'nav' === n.tag && ! m.isPart( n ) && R.navigation?.collapseAttribute?.[ hooks.topBlock( n ) ] ) ?? null;
-	// What a control opens or closes, a modal's frame parts, the drawer top row's logo and a block-owned opener's trigger (lib/skeleton-openers.mjs).
-	const { opensModal, closesOwnDrawer, drawerLogo, formAnchor, opensForm, modalParts, modalFrameRule, opensDrawer, opensOwnedDrawer, triggerOf } = makeOpenerRules( { m, view, read, facts, R, surface, scope, hooks, v, desc, textLeaves, numberOnly } );
+	// The state keys a button or link's click handler (a renderVals key of its component) writes with an opening value, a
+	// toggle included (lib/skeleton-handler-opens.mjs); an empty Set for any other element or a client with no draft folder.
+	const handlerKeys = ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && facts.repo && facts.client
+		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
+		: new Set() );
+	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
+	// states holds at true, or the handler is named in the drawer's recorded opener words.
+	const opensDrawer = ( e ) => {
+		const h = handlerOf( e );
+		if ( ! h || ! [ 'a', 'button' ].includes( e.tag ) ) {
+			return false;
+		}
+		const keys = handlerKeys( e );
+		return Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && ( opensOn( s, keys ) || String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) ) );
+	};
+	// The drawers the page map hands to another row's block that names its owning block (rules.blockOwnedPart), found once for
+	// a header surface (the block's trigger is the site-wide control the header carries; a page's own link to the same drawer,
+	// such as a checkout's Edit link, stays a link): [ { surface, row, part, own (the byTemplate entry) } ].
+	const ownedDrawers = R.blockOwnedPart && R.blockPartOpener && 'header' === surface.kind && surface.pageMap?.length
+		? blockPartSurfaces( { pageMap: surface.pageMap, surfaces: view.surfaces, elements: view.elements, kind: 'drawer' } ).map( ( d ) => ( { ...d, own: R.blockOwnedPart.byTemplate?.[ d.row.template ] } ) ).filter( ( d ) => d.own )
+		: [];
+	// The block-owned drawer a button or link opens: its click handler (a renderVals key of its component) writes a state key
+	// that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or null.
+	const opensOwnedDrawer = ( e ) => {
+		if ( ! ownedDrawers.length ) {
+			return null;
+		}
+		const keys = handlerKeys( e );
+		return ownedDrawers.find( ( d ) => opensOn( d.surface, keys ) ) ?? null;
+	};
+	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words
+	// beside a count make a pill with that label, no words an icon; a count that paints its own box is a bubble, else plain;
+	// a count showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
+	const triggerOf = ( e, T ) => {
+		if ( ! T ) {
+			return {};
+		}
+		const leaves = [ ...( m.words( e ) ? [ e ] : [] ), ...textLeaves( e ) ];
+		const count = leaves.find( numberOnly ) ?? null;
+		const label = leaves.filter( ( k ) => k !== count ).map( ( k ) => m.words( k ).trim() ).filter( Boolean ).join( ' ' );
+		const aria = view.attr( e, 'aria-label' );
+		return {
+			[ T.style ]: label ? T.pill : T.icon,
+			...( label ? { [ T.label ]: label } : {} ),
+			...( count ? { [ T.countStyle ]: view.ownPaint( count ) ? T.bubble : T.plain } : {} ),
+			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: true } : {} ),
+			...( aria && ! /\{\{/.test( aria ) ? { [ T.ariaLabel ]: aria } : {} ),
+		};
+	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
-	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion, toolbarRule: R.shopToolbar } );
-	// A loop of products, brands or reviews on any page is the working block its items say (lib/skeleton-loop-blocks.mjs).
-	const loopResult = loopBlocks( { m, rows: surface.loops?.rows || [], brands: surface.loops?.brands || [], carousels: surface.loops?.carousels || new Set(), commerce: surface.commerce, rule: R.loopBlocks, money: R.commerceRegion?.money, shop: R.commerceRegion?.roles?.shop, look: platformLookOf( { read, facts } ) } );
-	const loopRegions = new Map( loopResult.regions.map( ( x ) => [ x.key, x ] ) );
-	// The cards of a review carousel are its testimonials (each draws its own quote, name and rating).
-	const carouselCardOf = new Map( loopResult.regions.filter( ( x ) => x.cards ).flatMap( ( x ) => x.cards.map( ( k ) => [ k, x ] ) ) );
-	// A loop of disclosures is the accordion, each item one of its items (lib/skeleton-accordion.mjs).
-	const accordion = accordionLoops( { m, read, rich: richOf, rule: R.accordion, titleAttr: R.accordion && facts.firstAttrByRole( R.accordion.itemBlock, 'text-content' ), textAttr: R.accordion && facts.firstAttrByRole( R.accordion.panelBlock, 'text-content' ),
-		logicOf: ( component ) => ( facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null ) } );
-	// The filter rail beside a product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets: the shop's
-	// commerce region, or on any other page the product collection a loop places (a gift finder narrowing a product loop is
-	// that collection with its working filters, Bean 2026-10-31).
-	const listing = region?.key ? region : loopResult.regions.find( ( x ) => 'products' === x.kind ) ?? null;
-	const rail = listing?.key ? filterRail( { m, region: listing, filters: surface.commerce?.filters ?? surface.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
-	// A drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state (lib/skeleton-filter-drawer.mjs).
-	const drawer = 'drawer' === surface.kind && R.filterDrawer ? filterDrawer( { m, filters: surface.filters ?? surface.commerce?.filters, rule: R.filterDrawer, placeable: placeableFacets } ) : null;
-	const drawerMissing = drawer ? drawer.notes.map( ( why ) => ( { key: m.root.key, line: 'The shop filter drawer: a full-viewport sheet, fade, locked page scroll and sticky footer', why } ) ) : [];
+	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
+	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
+	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
-	// The catalogue product it sells (lib/flow-product.mjs::flowSale through `surface.saleOf( component )`) binds its product-option steps.
-	const flowRoot = view.entry( m.root )?.template ?? null;
-	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: flowRoot?.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], sale: flowRoot && surface.saleOf ? surface.saleOf( flowRoot.component ) : null, script: flowRoot && surface.scriptOf ? surface.scriptOf( flowRoot.component ) : null } ) : null;
-	// An element another structural rule owns, or one below it: a form (its linked reference block, or the draft's own <form>), a
-	// commerce region, a looped holder or item, an accordion, the filter rail. Walked from the element up to the hero, because the
-	// hero's own media and layout wrappers are never an owned element, nor anything under one (rules.heroInner).
-	const ownedBelowHero = ( e, heroKey ) => {
-		for ( let x = e; x && x.key !== heroKey; x = m.byKey[ x.parentKey ] ) {
-			if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) || region?.key === x.key || rail?.key === x.key || loopRegions.has( x.key ) || carouselCardOf.has( x.key ) || accordion.holders.has( x.key ) || accordion.items.has( x.key ) ) {
-				return true;
-			}
-		}
-		return false;
-	};
-
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
 		( { e } ) => ( flow && e === m.root ? v( 'choiceFlow', { block: R.choiceFlow.block, absorb: true, attributes: flow.attributes } ) : null ),
-		// The shop filter's drawer is the filter block with its overlay settings (rules.filterDrawer): the drawer's elements are absorbed.
-		( { e } ) => ( drawer && e === m.root ? v( 'filterDrawer', { block: R.filterDrawer.block, absorb: true, attributes: drawer.attributes, reason: drawer.reason } ) : null ),
 		// A surface the page map holds as a block-owned part of another row (the cart page's bag drawer) is that block, which
 		// draws everything in it (S5); a row template with no owning block named leaves the root to the scoring.
 		( { e } ) => {
 			const own = e === m.root && 'blockPart' === role?.role ? R.blockOwnedPart?.byTemplate?.[ role.row.template ] : null;
 			return own ? v( 'blockOwnedPart', { block: own.block, absorb: true, attributes: { ...( own.attributes || {} ) }, reason: `${ own.reason }; the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row` } ) : null;
-		},
-		// A surface the page map holds as a part of another row, with no row of its own (lib/skeleton-surface-role.mjs, FR-48-87),
-		// is never built as its own form or blocks: on a WooCommerce row it is that row's piece, which draws it (the checkout's
-		// form, the account's address form), so the piece is the root and everything in it is absorbed; any other part (a part of
-		// its page, a record the draft code shows nothing for) is built on its row's own surface, so this surface places nothing.
-		( { e } ) => {
-			if ( e !== m.root || 'ownedPart' !== role?.role || ! R.ownedPart ) {
-				return null;
-			}
-			const held = `the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row (owner ${ role.part.owner })`;
-			const block = 'woocommerce' === role.part.owner ? ownerBlockOf( role.row, R.commerceRegion ) : null;
-			return block ? v( 'ownedPart', { block, absorb: true, reason: `${ R.ownedPart.pieceReason }; ${ held }` } ) : v( 'ownedPart', { action: 'remove', reason: `${ R.ownedPart.rowReason }; ${ held }` } );
 		},
 		// The control that opens such a drawer is that block too (the bag pill is the cart block's trigger): the block draws the
 		// drawer and its own trigger, so the control's label, count and icon are absorbed into the trigger settings. Before the
@@ -778,41 +683,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
-		// A holder of looped products, brands or reviews is the working block, which draws its items (rules.loopBlocks).
-		( { e } ) => {
-			const loop = loopRegions.get( e.key );
-			const card = carouselCardOf.get( e.key );
-			if ( card ) {
-				return v( 'loopBlocks', { block: card.cardBlock, absorb: true, attributes: {}, kind: 'carouselCard', reason: card.reason } );
-			}
-			return loop ? v( 'loopBlocks', { block: loop.block, absorb: false !== loop.absorb, attributes: loop.attributes, inner: loop.inner, item: loop.item?.key ?? null, kind: loop.kind, ...( loop.handover ? { handover: loop.handover } : {} ), reason: loop.reason } ) : null;
-		},
-		( { e } ) => ( accordion.holders.has( e.key ) ? v( 'accordion', { block: R.accordion.block, ...accordion.holders.get( e.key ) } ) : null ),
-		( { e } ) => ( accordion.items.has( e.key ) ? v( 'accordionItem', { block: R.accordion.itemBlock, absorb: true, ...accordion.items.get( e.key ) } ) : null ),
-		// The draft's sort control and result count (and the wrappers holding only them) are drawn by the toolbar row at the top of the
-		// shop's product collection (rules.shopToolbar): absorbed into the collection.
-		( { e } ) => ( region?.toolbar?.absorb.includes( e.key ) ? v( 'shopToolbar', { action: 'absorbed', into: region.key, reason: R.shopToolbar.reason } ) : null ),
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
-		// A button or link that opens a draft modal the page map holds as an sgs_modal row is a button linking `#<anchor>` of the
-		// modal frame the page carries (lib/skeleton-opener.mjs): the frame, and the modal post it shows, open on that link.
-		( { e, text } ) => {
-			const hit = opensModal( e );
-			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.modalOpener.block, 'link-href' ), facts.firstAttrByRole( R.modalOpener.block, 'text-content' ) ] : [];
-			return hit && link ? v( 'modalOpener', { block: R.modalOpener.block, absorb: true, opens: hit, attributes: { ...( label && text ? { [ label ]: text } : {} ), [ link ]: `#${ hit.anchor }` }, reason: `${ R.modalOpener.reason }; it opens ${ hit.surface.id } (${ hit.surface.name }), the ${ hit.row.slug } row` } ) : null;
-		},
-		// A button or link whose click handler scrolls to a form and sets its fields opens that form on the clone (lib/skeleton-form-prefill.mjs):
-		// a button linking the page's form with each field in the query, which the form's fields read through `valueFromParam`.
-		( { e, text } ) => {
-			const hit = opensForm( e );
-			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.formPrefillOpener.block, 'link-href' ), facts.firstAttrByRole( R.formPrefillOpener.block, 'text-content' ) ] : [];
-			return hit && link ? v( 'formPrefillOpener', { block: R.formPrefillOpener.block, absorb: true, attributes: { [ link ]: hit.href, ...( label && text ? { [ label ]: text } : {} ) }, reason: `${ R.formPrefillOpener.reason }; it opens the ${ hit.form } form` } ) : null;
-		},
-		// The draft's own close control of a drawer surface is the drawer block's close (FR-36-6: close is the drawer's own chrome):
-		// the block draws its close above its body, so the control is absorbed into the surface root and its look is read into
-		// the block's close settings (the node's draftSlots at the close part). The surface's own record is found by its kind, so only a
-		// drawer surface has one; a drawer another block draws is that block's whole, root and children.
-		( { e } ) => ( closesOwnDrawer( e ) ? v( 'drawerClose', { action: 'absorbed', into: m.root.key } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -824,7 +696,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).
 		( { e } ) => {
 			const hit = panel.panelChild( e );
-			return hit ? v( hit.rule, hit.action ? { action: hit.action } : { block: hit.block } ) : null;
+			return hit ? v( hit.rule, { block: hit.block } ) : null;
 		},
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
 		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is
@@ -842,15 +714,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: fieldContent( e, R.optionSetForm.block ), absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
-			// On the shop, chips that narrow the listing and are labelled with the catalogue's categories are the product category filter.
-			const categories = new Set( ( surface.commerce?.filters?.categories || [] ).map( ( c ) => String( c ).trim().toLowerCase() ) );
-			const named = chips.filter( ( c ) => categories.has( String( m.words( c ) ).replace( /\s+/g, ' ' ).trim().toLowerCase() ) );
-			if ( filter && R.categoryChips && 'shop' === surface.commerce?.role && named.length >= R.categoryChips.minMatches ) {
-				const counts = chips.some( ( c ) => m.kids( c ).some( ( k ) => /^\d+$/.test( String( m.words( k ) ).trim() ) ) );
-				const inner = JSON.parse( JSON.stringify( R.categoryChips.inner ) );
-				inner[ 0 ].attributes.showCounts = counts;
-				return v( 'categoryChips', { block: R.categoryChips.block, attributes: {}, absorb: true, inner, reason: `${ R.categoryChips.reason } (${ named.length } of ${ chips.length } chips are categories)` } );
-			}			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
+			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
 		// trust bar; the repeated items are its items.
@@ -866,32 +730,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! loops( e ) || ! kidsB.length ) {
 				return null;
 			}
-			// What the items show: an icon (an svg or a lone emoji glyph), an image, a label. Logos alone are the logo block's;
-			// items with an icon or an image beside a label are the item block's, chosen only when its item fields hold every
-			// kind the items show (`array_item_schema` roles) and the section block fits where the strip sits (pageSection).
-			const sub = ( k ) => m.kids( k ).flatMap( ( c ) => [ c, ...sub( c ) ] );
-			const shows = ( k ) => ( { icon: [ k, ...sub( k ) ].some( ( c ) => 'svg' === c.tag || emojiOnly( c ) ), image: [ k, ...sub( k ) ].some( isMedia ), label: !! all( k ).replace( EMOJI_RUN, '' ).trim() } );
-			const items = kidsB.map( shows );
-			const logos = items.every( ( x ) => x.image && ! x.label );
-			if ( logos ) {
-				return v( 'marquee', { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } );
+			const logos = desc( e ).some( isMedia );
+			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
+				return null;
 			}
-			const held = facts.itemKinds?.( R.marquee?.itemBlock ) ?? { icon: true, image: true, label: true };
-			const holds = items.every( ( x ) => ( ! x.icon || held.icon ) && ( ! x.image || held.image ) && ( ! x.label || held.label ) );
-			// A strip the section block cannot fill (inside another section, or in a slot that lays it out as one of several
-			// columns) takes the layout block that offers the marquee, its labels as text items, since the block a button group
-			// or a link run would pick offers none.
-			if ( ! holds || ! pageSection( e, R.marquee?.itemBlock ) ) {
-				return R.marquee?.textBlock ? v( 'marquee', { block: R.marquee.textBlock, attributes: { ...( R.marquee.textAttributes || {} ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the labels of this strip: add each as a brand name' } } ) : null;
-			}
-			return v( 'marquee', { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {
 			const T = R.trustBar;
 			// A badge is a short label that is not a business detail (an open status, hours or a Site Info value have their
 			// own rules); the badges sit side by side, never stacked.
-			const detail = ( k ) => openLine( k ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+			const detail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
 			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ! HEADING.test( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
 			// What makes a badge a trust badge is its meaning: at least one names a capability the framework database records
 			// for the trust bar (accreditation, certification, halal and the like), matched on the word's stem.
@@ -921,10 +771,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),
 		// A wrapper that only aligns or spaces its content (text-align, padding, margin) goes: the blocks around and inside
-		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays. A
-		// property the template binds to a script value (`padding: {{ pad }}`) is declared as much as a written one.
+		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays.
 		( { e, st, kidsB, parentBlock } ) => {
-			const props = [ ...new Set( [ ...Object.keys( st ), ...read.bound( e ) ] ) ];
+			const props = Object.keys( st );
 			const only = new Set( R.alignWrapper?.properties || [] );
 			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
 			// unwrapping it would lose that gap, so the wrapper stays.
@@ -934,7 +783,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
-			if ( ! hero || ownedBelowHero( e, hero.key ) ) {
+			if ( ! hero ) {
 				return null;
 			}
 			if ( isMedia( e ) ) {
@@ -950,21 +799,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
-		const x = { e, st: read.declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
-		for ( const rule of [ modalFrameRule, ...STRUCTURES, ...RULES ] ) {
+		const x = { e, st: declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
+		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {
-				return drawerLogo( e, out ) || out;
+				return out;
 			}
 		}
 		return null;
 	};
 
-	// The missing-features entry for a popup surface that opens on a timer or on exit intent (rules.timedPopup), or null.
-	const timedPopup = () => ( 'modal' === surface.kind ? timedPopupMissing( { openedBy: scope?.openedBy, R } ) : null );
-
-	// The elements a structure owns (an accordion's holder and items, a loop's holder and cards): their facts are theirs, never an
-	// ancestor's (lib/skeleton-identity-draft.mjs), and the loops whose block may stand over its own parts beside them.
-	const owned = new Set( [ ...accordion.holders.keys(), ...accordion.items.keys(), ...loopRegions.keys(), ...carouselCardOf.keys() ] );
-	return { ruleFor, owned, loopRegions: loopResult.regions, accordionRuns: accordion.runs, timedPopup, drawsChildren, declared, modalParts, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, filterDrawer: drawer ? { key: m.root.key, block: R.filterDrawer.block, attributes: drawer.attributes, facets: drawer.facets, notes: drawer.notes, missing: drawerMissing } : null, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

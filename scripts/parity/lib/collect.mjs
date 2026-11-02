@@ -142,7 +142,7 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 	const textOwned = opts?.textOthers ? ownedOf( opts.textOthers ) : owned;
 	const cs = getComputedStyle( el );
 	const r = el.getBoundingClientRect();
-	// Text properties come from the paint carrying most of the visible text (paint.mjs::textCarrier: a button's label span, not the button; a paragraph, not the bold words it opens with).
+	// Text properties come from the element painting the first visible text (a button's label span, not the button).
 	const TEXT_PROPS = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow' ];
 	// A text-run finder ({ textRun: { within, direct } }) measures the block's rendered text only: its extent and its paint.
 	// A group finder ({ group: { paths } }) measures the union box of its elements only (no styles).
@@ -312,22 +312,6 @@ export function collectPair( [ finder, props, resolveSrc, refPrefix, traceSrc, p
 		if ( src && ! /^icon-/.test( p ) ) {
 			const v = src.getPropertyValue( p ).trim();
 			styles[ p ] = /color$/.test( p ) ? srgb( v ) : ( /gap$/.test( p ) && ( 'normal' === v || ! /(^|-)(flex|grid)$/.test( lcs.display ) ) ? '0px' : v );
-		}
-	}
-	// A property Fill wrote is read where its setting paints (opts.liveAt: { property: slot selector inside the block }, the
-	// calibrated slot, computed-route lib/written-slot.mjs): the block's inner band, not its wrapper. A slot that matches no
-	// element keeps the wrapper's read.
-	for ( const [ p, slot ] of Object.entries( run ? {} : opts?.liveAt || {} ) ) {
-		let at = null;
-		try {
-			at = props.includes( p ) ? el.querySelector( `:scope ${ slot }` ) : null;
-		} catch {
-			at = null;
-		}
-		if ( at ) {
-			const acs = getComputedStyle( at );
-			const v = acs.getPropertyValue( p ).trim();
-			styles[ p ] = /color$/.test( p ) ? srgb( v ) : ( /gap$/.test( p ) && ( 'normal' === v || ! /(^|-)(flex|grid)$/.test( acs.display ) ) ? '0px' : v );
 		}
 	}
 	// An offset means something only on a box taken out of flow; in flow, the flow-position rows cover where it sits.

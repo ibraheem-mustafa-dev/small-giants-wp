@@ -3,10 +3,11 @@
 import base from './template-cart.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-template-cart-0", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-template-cart-0", liveAt: {"padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-bottom":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-template-cart-0", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-template-cart-0" },
 	{ name: "gen-template-cart-1", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-template-cart-1" },
 	{ name: "gen-template-cart-2", text: false, structure: false, draft: {"tpl":"Root/10#0"}, live: ".cr-ref-template-cart-2" },
-	{ name: "gen-template-cart-3", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-template-cart-3", liveAt: {"padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-template-cart-3", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-template-cart-3" },
+	{ name: "gen-template-cart-4", text: false, structure: false, draft: {"tpl":"Root/12#0"}, live: ".cr-ref-template-cart-4" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

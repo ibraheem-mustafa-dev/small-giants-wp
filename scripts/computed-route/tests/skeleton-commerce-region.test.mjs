@@ -8,8 +8,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { commerceOf, commerceRegion, leadsTo } from '../lib/skeleton-commerce-region.mjs';
-import { proposeFixture, fixtureModel } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -26,7 +27,7 @@ const el = ( key, parentKey, tag, words = '', x = {} ) => {
 };
 const FIXED = { 375: 'fixed', 768: 'fixed', 1440: 'fixed' };
 const inv = ( elements ) => ( { generated: 'test', source: 'test', root: 'div', keyFormat: 'tpl', checks: { duplicateKeys: 0 }, elements } );
-const run = ( elements, commerce ) => proposeFixture( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce, db } );
+const run = ( elements, commerce ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce, db } );
 const find = ( tree, name ) => {
 	for ( const n of tree ) {
 		if ( n.name === name ) {
@@ -74,14 +75,6 @@ test( 'MUST FAIL: the basket\'s order lines and checkout link are the page\'s ow
 	assert.equal( names( skeleton ).filter( ( n ) => 'core/post-content' === n ).length, 1, 'the drawer, a fixed panel, is never the page\'s region' );
 	const rows = proposal.rows.filter( ( r ) => 'absorbed' === r.action && 'commerceRegion' === r.rule );
 	assert.ok( rows.some( ( r ) => 'Root/6#0' === r.key ), 'the checkout link is drawn by WooCommerce, never built' );
-} );
-
-test( 'a commerce region (and everything in it) under the page hero section belongs to the region, never the inner of the hero (rules.heroInner)', () => {
-	const inHero = CART.map( ( x ) => ( [ 'Root/2#0', 'Root/3#0', 'Root/7#0' ].includes( x.key ) ? { ...x, parentKey: 'Root/20#0', depth: x.depth + 1 } : { ...x, depth: x.depth + ( 'Root/1#0' === x.key ? 0 : 1 ) } ) );
-	const { proposal } = proposeFixture( { inventory: inv( [ inHero[ 0 ], el( 'Root/20#0', 'Root/1#0', 'section', '', { depth: 1 } ), ...inHero.slice( 1 ) ] ), facts: facts(), surface: 'test', surfaceKind: 'page', commerce: { role: 'cart', checkout: 'Checkout.dc.html' }, db } );
-assert.equal( proposal.rows.find( ( r ) => 'Root/20#0' === r.key )?.rule, 'hero', 'the section is the hero' );
-	assert.equal( proposal.rows.find( ( r ) => 'Root/3#0' === r.key )?.rule, 'commerceRegion' );
-	assert.deepEqual( proposal.rows.filter( ( r ) => 'heroInner' === r.rule && [ 'Root/3#0', 'Root/4#0', 'Root/5#0', 'Root/6#0' ].includes( r.key ) ), [], 'nothing in the region is the inner of the hero' );
 } );
 
 test( 'MUST FAIL: the checkout\'s payment fields and order lines are the Checkout block; the page header stays', () => {
@@ -155,7 +148,7 @@ test( 'MUST FAIL: an account page read signed out makes its sign-in prompt, the 
 } );
 
 test( 'no account region without a sign-in page to link to, without a condition, or with two signed-out views', () => {
-	const m = ( els ) => fixtureModel( inv( els ) );
+	const m = ( els ) => inventoryModel( inv( els ) );
 	const of = ( els, commerce ) => commerceRegion( { m: m( els ), commerce, rule: RULE() } );
 	assert.equal( of( SIGNED_OUT, { role: 'account', checkout: null } ), null, 'a row whose forms all sit on its own page names no sign-in page' );
 	const registerOnly = SIGNED_OUT.filter( ( e ) => ! [ 'Root/23#0', 'Root/30#0' ].includes( e.key ) );
@@ -168,7 +161,7 @@ test( 'no account region without a sign-in page to link to, without a condition,
 	const second = [ ...SIGNED_OUT, cond( el( 'Root/40#0', 'Root/8#0', 'div', '', { depth: 1 } ), 39 ), cond( el( 'Root/41#0', 'Root/40#0', 'a', 'Sign in', { depth: 2, attrs: { href: 'SignIn.dc.html' }, keep: true } ), 39 ) ];
 	assert.match( of( second, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).note, /2 elements read as the account region/ );
 	const fields = [ ...SIGNED_OUT, el( 'Root/50#0', 'Root/8#0', 'form', '', { depth: 1 } ), el( 'Root/51#0', 'Root/50#0', 'input', '', { depth: 2, attrs: { type: 'password' }, keep: true } ) ];
-	assert.equal( of( fields, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/50#0', 'a shown password field decides first: its own form is the region' );
+	assert.equal( of( fields, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/51#0', 'a shown password field decides first' );
 } );
 
 // A shop: a heading and the grid of mounted product cards, four to a row.
@@ -199,7 +192,7 @@ test( 'MUST FAIL: the shop\'s product grid is WooCommerce\'s product collection 
 } );
 
 test( 'no region without the structure: a page surface, a cart with only the drawer\'s lines, words alone, or two candidates', () => {
-	const m = ( els ) => fixtureModel( inv( els ) );
+	const m = ( els ) => inventoryModel( inv( els ) );
 	assert.equal( commerceRegion( { m: m( CART ), commerce: null, rule: RULE() } ), null, 'an ordinary page has no commerce role' );
 	assert.equal( commerceRegion( { m: m( [ CART[ 0 ], ...DRAWER ] ), commerce: { role: 'cart', checkout: 'Checkout.dc.html' }, rule: RULE() } ), null, 'the drawer\'s lines are the drawer\'s' );
 	const words = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', 'Your basket: checkout now' ), el( 'Root/3#0', 'Root/1#0', 'a', 'Checkout', { attrs: { href: 'Checkout.dc.html' }, keep: true } ) ];

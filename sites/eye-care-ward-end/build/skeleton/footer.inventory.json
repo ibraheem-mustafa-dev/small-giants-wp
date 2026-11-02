@@ -1,10 +1,10 @@
 {
-  "generated": "2026-11-01T21:23:38.011Z",
-  "source": "http://127.0.0.1:62097/",
+  "generated": "2026-10-28T06:45:06.800Z",
+  "source": "http://127.0.0.1:57904/",
   "root": "footer",
   "beside": [
     {
-      "key": "Root/111#0",
+      "key": "Root/113#0",
       "side": "before",
       "distance": 1,
       "position": "static",
@@ -12,7 +12,7 @@
       "holdsOtherRoot": true
     },
     {
-      "key": "Root/1158#0",
+      "key": "Root/1161#0",
       "side": "after",
       "distance": 1,
       "position": "fixed",
@@ -39,7 +39,7 @@
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
     "rootName": "Root",
-    "rootKey": "Root/1122#0",
+    "rootKey": "Root/1124#0",
     "unstamped": [
       {
         "tag": "span",
@@ -49,11 +49,11 @@
     ],
     "duplicateKeys": 0,
     "perWidthCounts": {
-      "375": 39,
-      "768": 39,
-      "1440": 39
+      "375": 40,
+      "768": 40,
+      "1440": 40
     },
-    "tagAgree": 39,
+    "tagAgree": 40,
     "tagDisagree": [],
     "keysMissingAt": {
       "375": [],
@@ -63,122 +63,58 @@
     "screenshotSkips": [
       {
         "w": 1440,
-        "key": "Root/1151#0",
+        "key": "Root/1154#0",
         "why": "not visible (box 0x18)"
       },
       {
         "w": 375,
-        "key": "Root/1151#0",
+        "key": "Root/1154#0",
         "why": "not visible (box 0x18)"
       },
       {
         "w": 375,
-        "key": "Root/1160#0",
+        "key": "Root/1163#0",
         "why": "not rendered (no layout box)"
       }
     ]
   },
   "elements": [
     {
-      "key": "Root/1122#0",
+      "key": "Root/1124#0",
       "parentKey": "Root/6#0",
       "depth": 0,
       "tag": "footer",
       "template": "Root",
-      "tpl": 1122,
+      "tpl": 1124,
       "attrs": {
         "class": "sgs-footer",
         "style": "border-top: 1px solid rgb(230, 225, 218); background: rgb(250, 248, 245); margin-top: 40px;"
       },
       "words": "",
-      "allText": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lensesGlasses — arrivi",
-      "srcLine": 1996,
+      "allText": "EYE CARE BIRMINGHAM Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription le",
+      "srcLine": 1999,
       "membership": [],
       "srcTag": "footer",
       "srcOwnText": "",
-      "snippet": "<footer class=\"sgs-footer\" style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"1122\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1123\"> <div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" ",
-      "textBreaks": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lensesGlasses — arriving soon HelpDelivery & returnsFAQsSize guideContact Visit or call About Eye Care 0121 729 8233 644 Washwood Heath Rd<br>Birmingham B8 2HQ Mon–Sat 9.30–17.30 © 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners PrivacyTerms",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1123#0"
-        },
-        " ",
-        {
-          "key": "Root/1153#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "375px",
-          "height": "925.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "768px",
-          "height": "612.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "1440px",
-          "height": "424.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<footer class=\"sgs-footer\" style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"1124\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;l",
       "box": {
         "375": {
           "x": 0,
           "y": 8048.4,
           "w": 375,
-          "h": 925.3
+          "h": 938.5
         },
         "768": {
           "x": 0,
           "y": 8642.2,
           "w": 768,
-          "h": 612.8
+          "h": 626
         },
         "1440": {
           "x": 0,
           "y": 6002.4,
           "w": 1440,
-          "h": 424.8
+          "h": 425.3
         }
       },
       "visible": {
@@ -193,125 +129,47 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1122_0@375.png",
-        "1440": "shots/Root_1122_0@1440.png"
+        "375": "shots/Root_1124_0@375.png",
+        "1440": "shots/Root_1124_0@1440.png"
       }
     },
     {
-      "key": "Root/1123#0",
-      "parentKey": "Root/1122#0",
+      "key": "Root/1125#0",
+      "parentKey": "Root/1124#0",
       "depth": 1,
       "tag": "div",
       "template": "Root",
-      "tpl": 1123,
+      "tpl": 1125,
       "attrs": {
         "style": "max-width: 1440px; margin: 0px auto; padding: 104px 52px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 36px; font-size: 14px;"
       },
       "words": "",
-      "allText": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lensesGlasses — arrivi",
-      "srcLine": 1997,
+      "allText": "EYE CARE BIRMINGHAM Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription le",
+      "srcLine": 2000,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1123\"> <div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\"> <p style=\"margin:18px 0 0;color:#5",
-      "textBreaks": "Designer eyewear from an independent optician in Birmingham. ShopSunglassesAll brandsPrescription lensesGlasses — arriving soon HelpDelivery & returnsFAQsSize guideContact Visit or call About Eye Care 0121 729 8233 644 Washwood Heath Rd<br>Birmingham B8 2HQ Mon–Sat 9.30–17.30",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1124#0"
-        },
-        " ",
-        {
-          "key": "Root/1134#0"
-        },
-        " ",
-        {
-          "key": "Root/1140#0"
-        },
-        " ",
-        {
-          "key": "Root/1146#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "375px",
-          "height": "827.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "56px",
-          "padding-right": "20px",
-          "padding-bottom": "56px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "768px",
-          "height": "560.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "104px",
-          "padding-right": "52px",
-          "padding-bottom": "104px",
-          "padding-left": "52px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "1440px",
-          "height": "372.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "104px",
-          "padding-right": "52px",
-          "padding-bottom": "104px",
-          "padding-left": "52px"
-        }
-      },
+      "snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;",
       "box": {
         "375": {
           "x": 0,
           "y": 8049.4,
           "w": 375,
-          "h": 827.3
+          "h": 840.5
         },
         "768": {
           "x": 0,
           "y": 8643.2,
           "w": 768,
-          "h": 560.8
+          "h": 574
         },
         "1440": {
           "x": 0,
           "y": 6003.4,
           "w": 1440,
-          "h": 372.8
+          "h": 373.3
         }
       },
       "visible": {
@@ -326,344 +184,208 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1123_0@375.png",
-        "1440": "shots/Root_1123_0@1440.png"
-      }
-    },
-    {
-      "key": "Root/1124#0",
-      "parentKey": "Root/1123#0",
-      "depth": 2,
-      "tag": "div",
-      "template": "Root",
-      "tpl": 1124,
-      "attrs": {},
-      "words": "",
-      "allText": "Designer eyewear from an independent optician in Birmingham.",
-      "srcLine": 1998,
-      "membership": [],
-      "srcTag": "div",
-      "srcOwnText": "",
-      "snippet": "<div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1126\">Designer eyewear from an independent optician in Birmingham.</p> <div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"112",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1125#0"
-        },
-        " ",
-        {
-          "key": "Root/1126#0"
-        },
-        " ",
-        {
-          "key": "Root/1127#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "152px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "152px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
-      "box": {
-        "375": {
-          "x": 20,
-          "y": 8105.4,
-          "w": 335,
-          "h": 152
-        },
-        "768": {
-          "x": 52,
-          "y": 8747.2,
-          "w": 314,
-          "h": 152
-        },
-        "1440": {
-          "x": 52,
-          "y": 6107.4,
-          "w": 307,
-          "h": 164.8
-        }
-      },
-      "visible": {
-        "375": true,
-        "768": true,
-        "1440": true
-      },
-      "display": "block",
-      "position": {
-        "375": "static",
-        "768": "static",
-        "1440": "static"
-      },
-      "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
-      "layoutChanged375": true,
-      "screenshots": {
-        "375": "shots/Root_1124_0@375.png",
-        "1440": "shots/Root_1124_0@1440.png"
-      }
-    },
-    {
-      "key": "Root/1125#0",
-      "parentKey": "Root/1124#0",
-      "depth": 3,
-      "tag": "img",
-      "template": "Root",
-      "tpl": 1125,
-      "attrs": {
-        "alt": "Eye Care Birmingham",
-        "style": "display: block; object-fit: contain;",
-        "srcBasename": "eye-care-wordmark.png"
-      },
-      "words": "",
-      "allText": "",
-      "srcLine": 1999,
-      "membership": [],
-      "srcTag": "img",
-      "srcOwnText": "",
-      "snippet": "<img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "111px",
-          "height": "32px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "111px",
-          "height": "32px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "111px",
-          "height": "32px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
-      "box": {
-        "375": {
-          "x": 20,
-          "y": 8105.4,
-          "w": 111,
-          "h": 32
-        },
-        "768": {
-          "x": 52,
-          "y": 8747.2,
-          "w": 111,
-          "h": 32
-        },
-        "1440": {
-          "x": 52,
-          "y": 6107.4,
-          "w": 111,
-          "h": 32
-        }
-      },
-      "visible": {
-        "375": true,
-        "768": true,
-        "1440": true
-      },
-      "display": "block",
-      "position": {
-        "375": "static",
-        "768": "static",
-        "1440": "static"
-      },
-      "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
-      "layoutChanged375": false,
-      "screenshots": {
+        "375": "shots/Root_1125_0@375.png",
         "1440": "shots/Root_1125_0@1440.png"
       }
     },
     {
       "key": "Root/1126#0",
-      "parentKey": "Root/1124#0",
+      "parentKey": "Root/1125#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1126,
+      "attrs": {},
+      "words": "",
+      "allText": "EYE CARE BIRMINGHAM Designer eyewear from an independent optician in Birmingham.",
+      "srcLine": 2001,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an indepen",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8105.4,
+          "w": 335,
+          "h": 165.3
+        },
+        "768": {
+          "x": 52,
+          "y": 8747.2,
+          "w": 314,
+          "h": 165.3
+        },
+        "1440": {
+          "x": 52,
+          "y": 6107.4,
+          "w": 307,
+          "h": 165.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_1126_0@375.png",
+        "1440": "shots/Root_1126_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/1127#0",
+      "parentKey": "Root/1126#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1127,
+      "attrs": {
+        "style": "font-family: \"Playfair Display\", serif; font-weight: 500; letter-spacing: 0.14em; font-size: 18px;"
+      },
+      "words": "EYE CARE",
+      "allText": "EYE CARE",
+      "srcLine": 2002,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "EYE CARE",
+      "snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8105.4,
+          "w": 335,
+          "h": 27
+        },
+        "768": {
+          "x": 52,
+          "y": 8747.2,
+          "w": 314,
+          "h": 27
+        },
+        "1440": {
+          "x": 52,
+          "y": 6107.4,
+          "w": 307,
+          "h": 27
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_1127_0@375.png",
+        "1440": "shots/Root_1127_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/1128#0",
+      "parentKey": "Root/1126#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1128,
+      "attrs": {
+        "style": "font-size: 9.5px; letter-spacing: 0.32em; color: rgb(119, 113, 106); margin-top: 4px;"
+      },
+      "words": "BIRMINGHAM",
+      "allText": "BIRMINGHAM",
+      "srcLine": 2003,
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "BIRMINGHAM",
+      "snippet": "<div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8136.4,
+          "w": 335,
+          "h": 14.3
+        },
+        "768": {
+          "x": 52,
+          "y": 8778.2,
+          "w": 314,
+          "h": 14.3
+        },
+        "1440": {
+          "x": 52,
+          "y": 6138.4,
+          "w": 307,
+          "h": 14.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_1128_0@375.png",
+        "1440": "shots/Root_1128_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/1129#0",
+      "parentKey": "Root/1126#0",
       "depth": 3,
       "tag": "p",
       "template": "Root",
-      "tpl": 1126,
+      "tpl": 1129,
       "attrs": {
         "style": "margin: 18px 0px 0px; color: rgb(94, 88, 79); max-width: 32ch; text-wrap: pretty;"
       },
       "words": "Designer eyewear from an independent optician in Birmingham.",
       "allText": "Designer eyewear from an independent optician in Birmingham.",
-      "srcLine": 2000,
+      "srcLine": 2004,
       "membership": [],
       "srcTag": "p",
       "srcOwnText": "Designer eyewear from an independent optician in Birmingham.",
-      "snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1126\">Designer eyewear from an independent optician in Birmingham.</p>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "293.875px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "293.875px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "293.875px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an independent optician in Birmingham.</p>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8155.4,
+          "y": 8168.6,
           "w": 293.9,
           "h": 42
         },
         "768": {
           "x": 52,
-          "y": 8797.2,
+          "y": 8810.5,
           "w": 293.9,
           "h": 42
         },
         "1440": {
           "x": 52,
-          "y": 6157.4,
+          "y": 6170.7,
           "w": 293.9,
           "h": 42
         }
@@ -680,102 +402,44 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1126_0@1440.png"
+        "1440": "shots/Root_1129_0@1440.png"
       }
     },
     {
-      "key": "Root/1127#0",
-      "parentKey": "Root/1124#0",
+      "key": "Root/1130#0",
+      "parentKey": "Root/1126#0",
       "depth": 3,
       "tag": "div",
       "template": "Root",
-      "tpl": 1127,
+      "tpl": 1130,
       "attrs": {
         "style": "display: flex; gap: 10px; margin-top: 20px;"
       },
       "words": "",
       "allText": "",
-      "srcLine": 2001,
+      "srcLine": 2005,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"1127\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"1130\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584",
       "box": {
         "375": {
           "x": 20,
-          "y": 8217.4,
+          "y": 8230.6,
           "w": 335,
           "h": 40
         },
         "768": {
           "x": 52,
-          "y": 8859.2,
+          "y": 8872.5,
           "w": 314,
           "h": 40
         },
         "1440": {
           "x": 52,
-          "y": 6219.4,
+          "y": 6232.7,
           "w": 307,
           "h": 40
         }
@@ -792,24 +456,19 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1127_0@375.png",
-        "1440": "shots/Root_1127_0@1440.png"
+        "375": "shots/Root_1130_0@375.png",
+        "1440": "shots/Root_1130_0@1440.png"
       }
     },
     {
-      "key": "Root/1128#0",
-      "parentKey": "Root/1127#0",
+      "key": "Root/1131#0",
+      "parentKey": "Root/1130#0",
       "depth": 4,
       "tag": "a",
       "template": "Root",
-      "tpl": 1128,
+      "tpl": 1131,
       "attrs": {
         "href": "https://www.instagram.com/eyecare.birmingham/",
         "aria-label": "Instagram",
@@ -820,80 +479,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2002,
+      "srcLine": 2006,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "",
-      "snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584\" data-dc-tpl=\"1128\"> <img src=\"assets/instagram.svg\" alt=\"\" aria-hidde",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584\" data-dc-tpl=\"1131\"> <img src=\"assets/instagram.svg\" alt=\"\" aria-hidde",
       "box": {
         "375": {
           "x": 20,
-          "y": 8217.4,
+          "y": 8230.6,
           "w": 40,
           "h": 40
         },
         "768": {
           "x": 52,
-          "y": 8859.2,
+          "y": 8872.5,
           "w": 40,
           "h": 40
         },
         "1440": {
           "x": 52,
-          "y": 6219.4,
+          "y": 6232.7,
           "w": 40,
           "h": 40
         }
@@ -910,23 +516,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1128_0@1440.png"
+        "1440": "shots/Root_1131_0@1440.png"
       }
     },
     {
-      "key": "Root/1129#0",
-      "parentKey": "Root/1128#0",
+      "key": "Root/1132#0",
+      "parentKey": "Root/1131#0",
       "depth": 5,
       "tag": "img",
       "template": "Root",
-      "tpl": 1129,
+      "tpl": 1132,
       "attrs": {
         "aria-hidden": "true",
         "style": "display: block;",
@@ -934,80 +535,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2003,
+      "srcLine": 2007,
       "membership": [],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/instagram.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1129\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/instagram.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1132\">",
       "box": {
         "375": {
           "x": 31,
-          "y": 8228.4,
+          "y": 8241.6,
           "w": 18,
           "h": 18
         },
         "768": {
           "x": 63,
-          "y": 8870.2,
+          "y": 8883.5,
           "w": 18,
           "h": 18
         },
         "1440": {
           "x": 63,
-          "y": 6230.4,
+          "y": 6243.7,
           "w": 18,
           "h": 18
         }
@@ -1024,23 +572,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1129_0@1440.png"
+        "1440": "shots/Root_1132_0@1440.png"
       }
     },
     {
-      "key": "Root/1130#0",
-      "parentKey": "Root/1127#0",
+      "key": "Root/1133#0",
+      "parentKey": "Root/1130#0",
       "depth": 4,
       "tag": "a",
       "template": "Root",
-      "tpl": 1130,
+      "tpl": 1133,
       "attrs": {
         "href": "https://share.google/9YZzTiRj2gvW1Xrpr",
         "aria-label": "Google Business profile",
@@ -1051,80 +594,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2005,
+      "srcLine": 2009,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "",
-      "snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"1130\"> <img src=\"assets/google-g.svg",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"1133\"> <img src=\"assets/google-g.svg",
       "box": {
         "375": {
           "x": 70,
-          "y": 8217.4,
+          "y": 8230.6,
           "w": 40,
           "h": 40
         },
         "768": {
           "x": 102,
-          "y": 8859.2,
+          "y": 8872.5,
           "w": 40,
           "h": 40
         },
         "1440": {
           "x": 102,
-          "y": 6219.4,
+          "y": 6232.7,
           "w": 40,
           "h": 40
         }
@@ -1141,23 +631,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1130_0@1440.png"
+        "1440": "shots/Root_1133_0@1440.png"
       }
     },
     {
-      "key": "Root/1131#0",
-      "parentKey": "Root/1130#0",
+      "key": "Root/1134#0",
+      "parentKey": "Root/1133#0",
       "depth": 5,
       "tag": "img",
       "template": "Root",
-      "tpl": 1131,
+      "tpl": 1134,
       "attrs": {
         "aria-hidden": "true",
         "style": "display: block;",
@@ -1165,80 +650,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2006,
+      "srcLine": 2010,
       "membership": [],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1131\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1134\">",
       "box": {
         "375": {
           "x": 81,
-          "y": 8228.4,
+          "y": 8241.6,
           "w": 18,
           "h": 18
         },
         "768": {
           "x": 113,
-          "y": 8870.2,
+          "y": 8883.5,
           "w": 18,
           "h": 18
         },
         "1440": {
           "x": 113,
-          "y": 6230.4,
+          "y": 6243.7,
           "w": 18,
           "h": 18
         }
@@ -1255,23 +687,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1131_0@1440.png"
+        "1440": "shots/Root_1134_0@1440.png"
       }
     },
     {
-      "key": "Root/1132#0",
-      "parentKey": "Root/1127#0",
+      "key": "Root/1135#0",
+      "parentKey": "Root/1130#0",
       "depth": 4,
       "tag": "a",
       "template": "Root",
-      "tpl": 1132,
+      "tpl": 1135,
       "attrs": {
         "href": "https://wa.me/4479605978",
         "aria-label": "WhatsApp",
@@ -1282,80 +709,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2008,
+      "srcLine": 2012,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "",
-      "snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"1132\"> <img src=\"assets/whatsapp",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "40px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"1135\"> <img src=\"assets/whatsapp",
       "box": {
         "375": {
           "x": 120,
-          "y": 8217.4,
+          "y": 8230.6,
           "w": 40,
           "h": 40
         },
         "768": {
           "x": 152,
-          "y": 8859.2,
+          "y": 8872.5,
           "w": 40,
           "h": 40
         },
         "1440": {
           "x": 152,
-          "y": 6219.4,
+          "y": 6232.7,
           "w": 40,
           "h": 40
         }
@@ -1372,23 +746,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1132_0@1440.png"
+        "1440": "shots/Root_1135_0@1440.png"
       }
     },
     {
-      "key": "Root/1133#0",
-      "parentKey": "Root/1132#0",
+      "key": "Root/1136#0",
+      "parentKey": "Root/1135#0",
       "depth": 5,
       "tag": "img",
       "template": "Root",
-      "tpl": 1133,
+      "tpl": 1136,
       "attrs": {
         "aria-hidden": "true",
         "style": "display: block;",
@@ -1396,80 +765,27 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2009,
+      "srcLine": 2013,
       "membership": [],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/whatsapp-green.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1133\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/whatsapp-green.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1136\">",
       "box": {
         "375": {
           "x": 131,
-          "y": 8228.4,
+          "y": 8241.6,
           "w": 18,
           "h": 18
         },
         "768": {
           "x": 163,
-          "y": 8870.2,
+          "y": 8883.5,
           "w": 18,
           "h": 18
         },
         "1440": {
           "x": 163,
-          "y": 6230.4,
+          "y": 6243.7,
           "w": 18,
           "h": 18
         }
@@ -1486,107 +802,32 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1133_0@1440.png"
+        "1440": "shots/Root_1136_0@1440.png"
       }
     },
     {
-      "key": "Root/1134#0",
-      "parentKey": "Root/1123#0",
+      "key": "Root/1137#0",
+      "parentKey": "Root/1125#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 1134,
+      "tpl": 1137,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 10px;"
       },
       "words": "",
       "allText": "ShopSunglassesAll brandsPrescription lensesGlasses — arriving soon",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1134\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1135\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1136\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1137\">All brands</a><a href=\"#\" sc-camel-",
-      "flow": [
-        {
-          "key": "Root/1135#0"
-        },
-        {
-          "key": "Root/1136#0"
-        },
-        {
-          "key": "Root/1137#0"
-        },
-        {
-          "key": "Root/1138#0"
-        },
-        {
-          "key": "Root/1139#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "145.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "152px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1137\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a><a href=\"#\" sc-camel-",
       "box": {
         "375": {
           "x": 20,
-          "y": 8293.4,
+          "y": 8306.6,
           "w": 335,
           "h": 145.3
         },
@@ -1594,13 +835,13 @@
           "x": 402,
           "y": 8747.2,
           "w": 314,
-          "h": 152
+          "h": 165.3
         },
         "1440": {
           "x": 395,
           "y": 6107.4,
           "w": 307,
-          "h": 164.8
+          "h": 165.3
         }
       },
       "visible": {
@@ -1615,92 +856,33 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1134_0@375.png",
-        "1440": "shots/Root_1134_0@1440.png"
+        "375": "shots/Root_1137_0@375.png",
+        "1440": "shots/Root_1137_0@1440.png"
       }
     },
     {
-      "key": "Root/1135#0",
-      "parentKey": "Root/1134#0",
+      "key": "Root/1138#0",
+      "parentKey": "Root/1137#0",
       "depth": 3,
       "tag": "span",
       "template": "Root",
-      "tpl": 1135,
+      "tpl": 1138,
       "attrs": {
         "style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
       },
       "words": "Shop",
       "allText": "Shop",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Shop",
-      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1135\">Shop</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "335px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "314px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "307px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8293.4,
+          "y": 8306.6,
           "w": 335,
           "h": 17.3
         },
@@ -1729,92 +911,33 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1135_0@375.png",
-        "1440": "shots/Root_1135_0@1440.png"
+        "375": "shots/Root_1138_0@375.png",
+        "1440": "shots/Root_1138_0@1440.png"
       }
     },
     {
-      "key": "Root/1136#0",
-      "parentKey": "Root/1134#0",
+      "key": "Root/1139#0",
+      "parentKey": "Root/1137#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1136,
+      "tpl": 1139,
       "attrs": {
         "href": "#"
       },
       "words": "Sunglasses",
       "allText": "Sunglasses",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Sunglasses",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1136\">Sunglasses</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8324.6,
+          "y": 8337.9,
           "w": 335,
           "h": 21
         },
@@ -1843,92 +966,33 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1136_0@375.png",
-        "1440": "shots/Root_1136_0@1440.png"
+        "375": "shots/Root_1139_0@375.png",
+        "1440": "shots/Root_1139_0@1440.png"
       }
     },
     {
-      "key": "Root/1137#0",
-      "parentKey": "Root/1134#0",
+      "key": "Root/1140#0",
+      "parentKey": "Root/1137#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1137,
+      "tpl": 1140,
       "attrs": {
         "href": "#"
       },
       "words": "All brands",
       "allText": "All brands",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "All brands",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1137\">All brands</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8355.6,
+          "y": 8368.9,
           "w": 335,
           "h": 21
         },
@@ -1957,92 +1021,33 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1137_0@375.png",
-        "1440": "shots/Root_1137_0@1440.png"
+        "375": "shots/Root_1140_0@375.png",
+        "1440": "shots/Root_1140_0@1440.png"
       }
     },
     {
-      "key": "Root/1138#0",
-      "parentKey": "Root/1134#0",
+      "key": "Root/1141#0",
+      "parentKey": "Root/1137#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1138,
+      "tpl": 1141,
       "attrs": {
         "href": "#"
       },
       "words": "Prescription lenses",
       "allText": "Prescription lenses",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Prescription lenses",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"1138\">Prescription lenses</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"1141\">Prescription lenses</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8386.6,
+          "y": 8399.9,
           "w": 335,
           "h": 21
         },
@@ -2071,92 +1076,33 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1138_0@375.png",
-        "1440": "shots/Root_1138_0@1440.png"
+        "375": "shots/Root_1141_0@375.png",
+        "1440": "shots/Root_1141_0@1440.png"
       }
     },
     {
-      "key": "Root/1139#0",
-      "parentKey": "Root/1134#0",
+      "key": "Root/1142#0",
+      "parentKey": "Root/1137#0",
       "depth": 3,
       "tag": "span",
       "template": "Root",
-      "tpl": 1139,
+      "tpl": 1142,
       "attrs": {
         "style": "color: rgb(139, 132, 120);"
       },
       "words": "Glasses — arriving soon",
       "allText": "Glasses — arriving soon",
-      "srcLine": 2013,
+      "srcLine": 2017,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Glasses — arriving soon",
-      "snippet": "<span style=\"color:#8B8478\" data-dc-tpl=\"1139\">Glasses — arriving soon</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"color:#8B8478\" data-dc-tpl=\"1142\">Glasses — arriving soon</span>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8417.6,
+          "y": 8430.9,
           "w": 335,
           "h": 21
         },
@@ -2185,114 +1131,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1139_0@375.png",
-        "1440": "shots/Root_1139_0@1440.png"
+        "375": "shots/Root_1142_0@375.png",
+        "1440": "shots/Root_1142_0@1440.png"
       }
     },
     {
-      "key": "Root/1140#0",
-      "parentKey": "Root/1123#0",
+      "key": "Root/1143#0",
+      "parentKey": "Root/1125#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 1140,
+      "tpl": 1143,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 10px;"
       },
       "words": "",
       "allText": "HelpDelivery & returnsFAQsSize guideContact",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1140\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1141\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1142\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1143\">FAQs</a><a href=\"#\" sc-camel-on-",
-      "flow": [
-        {
-          "key": "Root/1141#0"
-        },
-        {
-          "key": "Root/1142#0"
-        },
-        {
-          "key": "Root/1143#0"
-        },
-        {
-          "key": "Root/1144#0"
-        },
-        {
-          "key": "Root/1145#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "145.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1143\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a><a href=\"#\" sc-camel-on-",
       "box": {
         "375": {
           "x": 20,
-          "y": 8474.6,
+          "y": 8487.9,
           "w": 335,
           "h": 145.3
         },
         "768": {
           "x": 52,
-          "y": 8935.2,
+          "y": 8948.5,
           "w": 314,
           "h": 164.8
         },
@@ -2300,7 +1171,7 @@
           "x": 738,
           "y": 6107.4,
           "w": 307,
-          "h": 164.8
+          "h": 165.3
         }
       },
       "visible": {
@@ -2315,98 +1186,39 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1140_0@375.png",
-        "1440": "shots/Root_1140_0@1440.png"
+        "375": "shots/Root_1143_0@375.png",
+        "1440": "shots/Root_1143_0@1440.png"
       }
     },
     {
-      "key": "Root/1141#0",
-      "parentKey": "Root/1140#0",
+      "key": "Root/1144#0",
+      "parentKey": "Root/1143#0",
       "depth": 3,
       "tag": "span",
       "template": "Root",
-      "tpl": 1141,
+      "tpl": 1144,
       "attrs": {
         "style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
       },
       "words": "Help",
       "allText": "Help",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Help",
-      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1141\">Help</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "335px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "314px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "307px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8474.6,
+          "y": 8487.9,
           "w": 335,
           "h": 17.3
         },
         "768": {
           "x": 52,
-          "y": 8935.2,
+          "y": 8948.5,
           "w": 314,
           "h": 17.3
         },
@@ -2429,98 +1241,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1141_0@375.png",
-        "1440": "shots/Root_1141_0@1440.png"
+        "375": "shots/Root_1144_0@375.png",
+        "1440": "shots/Root_1144_0@1440.png"
       }
     },
     {
-      "key": "Root/1142#0",
-      "parentKey": "Root/1140#0",
+      "key": "Root/1145#0",
+      "parentKey": "Root/1143#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1142,
+      "tpl": 1145,
       "attrs": {
         "href": "#"
       },
       "words": "Delivery & returns",
       "allText": "Delivery & returns",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Delivery & returns",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1142\">Delivery &amp; returns</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8505.9,
+          "y": 8519.1,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 52,
-          "y": 8966.5,
+          "y": 8979.7,
           "w": 314,
           "h": 21
         },
@@ -2543,98 +1296,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1142_0@375.png",
-        "1440": "shots/Root_1142_0@1440.png"
+        "375": "shots/Root_1145_0@375.png",
+        "1440": "shots/Root_1145_0@1440.png"
       }
     },
     {
-      "key": "Root/1143#0",
-      "parentKey": "Root/1140#0",
+      "key": "Root/1146#0",
+      "parentKey": "Root/1143#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1143,
+      "tpl": 1146,
       "attrs": {
         "href": "#"
       },
       "words": "FAQs",
       "allText": "FAQs",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "FAQs",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1143\">FAQs</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8536.9,
+          "y": 8550.1,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 52,
-          "y": 8997.5,
+          "y": 9010.7,
           "w": 314,
           "h": 21
         },
@@ -2657,98 +1351,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1143_0@375.png",
-        "1440": "shots/Root_1143_0@1440.png"
+        "375": "shots/Root_1146_0@375.png",
+        "1440": "shots/Root_1146_0@1440.png"
       }
     },
     {
-      "key": "Root/1144#0",
-      "parentKey": "Root/1140#0",
+      "key": "Root/1147#0",
+      "parentKey": "Root/1143#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1144,
+      "tpl": 1147,
       "attrs": {
         "href": "#"
       },
       "words": "Size guide",
       "allText": "Size guide",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Size guide",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"1144\">Size guide</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"1147\">Size guide</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8567.9,
+          "y": 8581.1,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 52,
-          "y": 9028.5,
+          "y": 9041.7,
           "w": 314,
           "h": 21
         },
@@ -2771,98 +1406,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1144_0@375.png",
-        "1440": "shots/Root_1144_0@1440.png"
+        "375": "shots/Root_1147_0@375.png",
+        "1440": "shots/Root_1147_0@1440.png"
       }
     },
     {
-      "key": "Root/1145#0",
-      "parentKey": "Root/1140#0",
+      "key": "Root/1148#0",
+      "parentKey": "Root/1143#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1145,
+      "tpl": 1148,
       "attrs": {
         "href": "#"
       },
       "words": "Contact",
       "allText": "Contact",
-      "srcLine": 2014,
+      "srcLine": 2018,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Contact",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1145\">Contact</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1148\">Contact</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8598.9,
+          "y": 8612.1,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 52,
-          "y": 9059.5,
+          "y": 9072.7,
           "w": 314,
           "h": 21
         },
@@ -2885,121 +1461,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1145_0@375.png",
-        "1440": "shots/Root_1145_0@1440.png"
+        "375": "shots/Root_1148_0@375.png",
+        "1440": "shots/Root_1148_0@1440.png"
       }
     },
     {
-      "key": "Root/1146#0",
-      "parentKey": "Root/1123#0",
+      "key": "Root/1149#0",
+      "parentKey": "Root/1125#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 1146,
+      "tpl": 1149,
       "attrs": {
         "style": "display: flex; flex-direction: column; gap: 10px;"
       },
       "words": "",
       "allText": "Visit or call About Eye Care 0121 729 8233 644 Washwood Heath RdBirmingham B8 2HQ Mon–Sat 9.30–17.30",
-      "srcLine": 2015,
+      "srcLine": 2019,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1146\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1147\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1148\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"1149\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target",
-      "textBreaks": "Visit or call About Eye Care 0121 729 8233 644 Washwood Heath Rd<br>Birmingham B8 2HQ Mon–Sat 9.30–17.30",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1147#0"
-        },
-        " ",
-        {
-          "key": "Root/1148#0"
-        },
-        " ",
-        {
-          "key": "Root/1149#0"
-        },
-        " ",
-        {
-          "key": "Root/1150#0"
-        },
-        " ",
-        {
-          "key": "Root/1152#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "164.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1149\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target",
       "box": {
         "375": {
           "x": 20,
-          "y": 8655.9,
+          "y": 8669.1,
           "w": 335,
           "h": 164.8
         },
         "768": {
           "x": 402,
-          "y": 8935.2,
+          "y": 8948.5,
           "w": 314,
           "h": 164.8
         },
@@ -3007,7 +1501,7 @@
           "x": 1081,
           "y": 6107.4,
           "w": 307,
-          "h": 164.8
+          "h": 165.3
         }
       },
       "visible": {
@@ -3022,98 +1516,39 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1146_0@375.png",
-        "1440": "shots/Root_1146_0@1440.png"
+        "375": "shots/Root_1149_0@375.png",
+        "1440": "shots/Root_1149_0@1440.png"
       }
     },
     {
-      "key": "Root/1147#0",
-      "parentKey": "Root/1146#0",
+      "key": "Root/1150#0",
+      "parentKey": "Root/1149#0",
       "depth": 3,
       "tag": "span",
       "template": "Root",
-      "tpl": 1147,
+      "tpl": 1150,
       "attrs": {
         "style": "font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: rgb(119, 113, 106); margin-bottom: 4px;"
       },
       "words": "Visit or call",
       "allText": "Visit or call",
-      "srcLine": 2016,
+      "srcLine": 2020,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Visit or call",
-      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1147\">Visit or call</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "335px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "314px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "11.5px",
-          "font-weight": "400",
-          "letter-spacing": "2.3px",
-          "text-transform": "uppercase",
-          "line-height": "17.25px",
-          "width": "307px",
-          "height": "17.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8655.9,
+          "y": 8669.1,
           "w": 335,
           "h": 17.3
         },
         "768": {
           "x": 402,
-          "y": 8935.2,
+          "y": 8948.5,
           "w": 314,
           "h": 17.3
         },
@@ -3136,98 +1571,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1147_0@375.png",
-        "1440": "shots/Root_1147_0@1440.png"
+        "375": "shots/Root_1150_0@375.png",
+        "1440": "shots/Root_1150_0@1440.png"
       }
     },
     {
-      "key": "Root/1148#0",
-      "parentKey": "Root/1146#0",
+      "key": "Root/1151#0",
+      "parentKey": "Root/1149#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1148,
+      "tpl": 1151,
       "attrs": {
         "href": "#"
       },
       "words": "About Eye Care",
       "allText": "About Eye Care",
-      "srcLine": 2017,
+      "srcLine": 2021,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "About Eye Care",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1148\">About Eye Care</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8687.1,
+          "y": 8700.4,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 402,
-          "y": 8966.5,
+          "y": 8979.7,
           "w": 314,
           "h": 21
         },
@@ -3250,101 +1626,39 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1148_0@375.png",
-        "1440": "shots/Root_1148_0@1440.png"
+        "375": "shots/Root_1151_0@375.png",
+        "1440": "shots/Root_1151_0@1440.png"
       }
     },
     {
-      "key": "Root/1149#0",
-      "parentKey": "Root/1146#0",
+      "key": "Root/1152#0",
+      "parentKey": "Root/1149#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1149,
+      "tpl": 1152,
       "attrs": {
         "href": "tel:01217298233"
       },
       "words": "0121 729 8233",
       "allText": "0121 729 8233",
-      "srcLine": 2018,
+      "srcLine": 2022,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "{{ phone }}",
-      "snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"1149\">{{ phone }}</a>",
-      "flow": [
-        "0121 729 8233"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8718.1,
+          "y": 8731.4,
           "w": 335,
           "h": 21
         },
         "768": {
           "x": 402,
-          "y": 8997.5,
+          "y": 9010.7,
           "w": 314,
           "h": 21
         },
@@ -3367,24 +1681,19 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1149_0@375.png",
-        "1440": "shots/Root_1149_0@1440.png"
+        "375": "shots/Root_1152_0@375.png",
+        "1440": "shots/Root_1152_0@1440.png"
       }
     },
     {
-      "key": "Root/1150#0",
-      "parentKey": "Root/1146#0",
+      "key": "Root/1153#0",
+      "parentKey": "Root/1149#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1150,
+      "tpl": 1153,
       "attrs": {
         "href": "https://maps.google.com/?q=644+Washwood+Heath+Rd+Birmingham+B8+2HQ",
         "target": "_blank",
@@ -3392,83 +1701,21 @@
       },
       "words": "644 Washwood Heath Rd Birmingham B8 2HQ",
       "allText": "644 Washwood Heath RdBirmingham B8 2HQ",
-      "srcLine": 2019,
+      "srcLine": 2023,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "644 Washwood Heath Rd Birmingham B8 2HQ",
-      "snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"color:#5E584F\" data-dc-tpl=\"1150\">644 Washwood Heath Rd<br data-dc-tpl=\"1151\">Birmingham B8 2HQ</a>",
-      "textBreaks": "644 Washwood Heath Rd<br>Birmingham B8 2HQ",
-      "flow": [
-        "644 Washwood Heath Rd",
-        {
-          "key": "Root/1151#0"
-        },
-        "Birmingham B8 2HQ"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "335px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "314px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "307px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"color:#5E584F\" data-dc-tpl=\"1153\">644 Washwood Heath Rd<br data-dc-tpl=\"1154\">Birmingham B8 2HQ</a>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8749.1,
+          "y": 8762.4,
           "w": 335,
           "h": 42
         },
         "768": {
           "x": 402,
-          "y": 9028.5,
+          "y": 9041.7,
           "w": 314,
           "h": 42
         },
@@ -3491,95 +1738,37 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1150_0@375.png",
-        "1440": "shots/Root_1150_0@1440.png"
+        "375": "shots/Root_1153_0@375.png",
+        "1440": "shots/Root_1153_0@1440.png"
       }
     },
     {
-      "key": "Root/1151#0",
-      "parentKey": "Root/1150#0",
+      "key": "Root/1154#0",
+      "parentKey": "Root/1153#0",
       "depth": 4,
       "tag": "br",
       "template": "Root",
-      "tpl": 1151,
+      "tpl": 1154,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 2019,
+      "srcLine": 2023,
       "membership": [],
       "srcTag": "br",
       "srcOwnText": "",
-      "snippet": "<br data-dc-tpl=\"1151\">",
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<br data-dc-tpl=\"1154\">",
       "box": {
         "375": {
           "x": 176.8,
-          "y": 8750.1,
+          "y": 8763.4,
           "w": 0,
           "h": 18
         },
         "768": {
           "x": 558.8,
-          "y": 9029.5,
+          "y": 9042.7,
           "w": 0,
           "h": 18
         },
@@ -3602,95 +1791,36 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": null,
       "screenshots": {}
     },
     {
-      "key": "Root/1152#0",
-      "parentKey": "Root/1146#0",
+      "key": "Root/1155#0",
+      "parentKey": "Root/1149#0",
       "depth": 3,
       "tag": "span",
       "template": "Root",
-      "tpl": 1152,
+      "tpl": 1155,
       "attrs": {
         "style": "color: rgb(139, 132, 120); font-size: 13px;"
       },
       "words": "Mon–Sat 9.30–17.30",
       "allText": "Mon–Sat 9.30–17.30",
-      "srcLine": 2020,
+      "srcLine": 2024,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Mon–Sat 9.30–17.30",
-      "snippet": "<span style=\"color:#8B8478;font-size:13px\" data-dc-tpl=\"1152\">Mon–Sat 9.30–17.30</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.5px",
-          "width": "335px",
-          "height": "19.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.5px",
-          "width": "314px",
-          "height": "19.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.5px",
-          "width": "307px",
-          "height": "19.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"color:#8B8478;font-size:13px\" data-dc-tpl=\"1155\">Mon–Sat 9.30–17.30</span>",
       "box": {
         "375": {
           "x": 20,
-          "y": 8801.1,
+          "y": 8814.4,
           "w": 335,
           "h": 19.5
         },
         "768": {
           "x": 402,
-          "y": 9080.5,
+          "y": 9093.7,
           "w": 314,
           "h": 19.5
         },
@@ -3713,114 +1843,45 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1152_0@375.png",
-        "1440": "shots/Root_1152_0@1440.png"
+        "375": "shots/Root_1155_0@375.png",
+        "1440": "shots/Root_1155_0@1440.png"
       }
     },
     {
-      "key": "Root/1153#0",
-      "parentKey": "Root/1122#0",
+      "key": "Root/1156#0",
+      "parentKey": "Root/1124#0",
       "depth": 1,
       "tag": "div",
       "template": "Root",
-      "tpl": 1153,
+      "tpl": 1156,
       "attrs": {
         "style": "border-top: 1px solid rgb(230, 225, 218); padding: 16px 24px; font-size: 12px; color: rgb(119, 113, 106); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; max-width: 1440px; margin: 0px auto;"
       },
       "words": "",
       "allText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners PrivacyTerms",
-      "srcLine": 2023,
+      "srcLine": 2027,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"1153\"> <span data-dc-tpl=\"1154\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"1155\"><a href=\"#\" d",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1154#0"
-        },
-        " ",
-        {
-          "key": "Root/1155#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "375px",
-          "height": "97px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "24px",
-          "padding-bottom": "16px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "768px",
-          "height": "51px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "24px",
-          "padding-bottom": "16px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "1440px",
-          "height": "51px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "24px",
-          "padding-bottom": "16px",
-          "padding-left": "24px"
-        }
-      },
+      "snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"1156\"> <span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" d",
       "box": {
         "375": {
           "x": 0,
-          "y": 8876.6,
+          "y": 8889.9,
           "w": 375,
           "h": 97
         },
         "768": {
           "x": 0,
-          "y": 9204,
+          "y": 9217.2,
           "w": 768,
           "h": 51
         },
         "1440": {
           "x": 0,
-          "y": 6376.2,
+          "y": 6376.7,
           "w": 1440,
           "h": 51
         }
@@ -3837,102 +1898,43 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1153_0@375.png",
-        "1440": "shots/Root_1153_0@1440.png"
+        "375": "shots/Root_1156_0@375.png",
+        "1440": "shots/Root_1156_0@1440.png"
       }
     },
     {
-      "key": "Root/1154#0",
-      "parentKey": "Root/1153#0",
+      "key": "Root/1157#0",
+      "parentKey": "Root/1156#0",
       "depth": 2,
       "tag": "span",
       "template": "Root",
-      "tpl": 1154,
+      "tpl": 1157,
       "attrs": {},
       "words": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
       "allText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
-      "srcLine": 2024,
+      "srcLine": 2028,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
-      "snippet": "<span data-dc-tpl=\"1154\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "327px",
-          "height": "36px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "512.125px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "512.125px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
       "box": {
         "375": {
           "x": 24,
-          "y": 8893.6,
+          "y": 8906.9,
           "w": 327,
           "h": 36
         },
         "768": {
           "x": 24,
-          "y": 9221,
+          "y": 9234.2,
           "w": 512.1,
           "h": 18
         },
         "1440": {
           "x": 24,
-          "y": 6393.2,
+          "y": 6393.7,
           "w": 512.1,
           "h": 18
         }
@@ -3949,111 +1951,45 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1154_0@375.png",
-        "1440": "shots/Root_1154_0@1440.png"
+        "375": "shots/Root_1157_0@375.png",
+        "1440": "shots/Root_1157_0@1440.png"
       }
     },
     {
-      "key": "Root/1155#0",
-      "parentKey": "Root/1153#0",
+      "key": "Root/1158#0",
+      "parentKey": "Root/1156#0",
       "depth": 2,
       "tag": "span",
       "template": "Root",
-      "tpl": 1155,
+      "tpl": 1158,
       "attrs": {
         "style": "display: flex; gap: 14px;"
       },
       "words": "",
       "allText": "PrivacyTerms",
-      "srcLine": 2025,
+      "srcLine": 2029,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "",
-      "snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"1155\"><a href=\"#\" data-dc-tpl=\"1156\">Privacy</a><a href=\"#\" data-dc-tpl=\"1157\">Terms</a></span>",
-      "flow": [
-        {
-          "key": "Root/1156#0"
-        },
-        {
-          "key": "Root/1157#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "86.2969px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "86.2969px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "86.2969px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" data-dc-tpl=\"1159\">Privacy</a><a href=\"#\" data-dc-tpl=\"1160\">Terms</a></span>",
       "box": {
         "375": {
           "x": 24,
-          "y": 8939.6,
+          "y": 8952.9,
           "w": 86.3,
           "h": 18
         },
         "768": {
           "x": 657.7,
-          "y": 9221,
+          "y": 9234.2,
           "w": 86.3,
           "h": 18
         },
         "1440": {
           "x": 1329.7,
-          "y": 6393.2,
+          "y": 6393.7,
           "w": 86.3,
           "h": 18
         }
@@ -4070,104 +2006,45 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1155_0@375.png",
-        "1440": "shots/Root_1155_0@1440.png"
+        "375": "shots/Root_1158_0@375.png",
+        "1440": "shots/Root_1158_0@1440.png"
       }
     },
     {
-      "key": "Root/1156#0",
-      "parentKey": "Root/1155#0",
+      "key": "Root/1159#0",
+      "parentKey": "Root/1158#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1156,
+      "tpl": 1159,
       "attrs": {
         "href": "#"
       },
       "words": "Privacy",
       "allText": "Privacy",
-      "srcLine": 2025,
+      "srcLine": 2029,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Privacy",
-      "snippet": "<a href=\"#\" data-dc-tpl=\"1156\">Privacy</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "39.7188px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "39.7188px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "39.7188px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" data-dc-tpl=\"1159\">Privacy</a>",
       "box": {
         "375": {
           "x": 24,
-          "y": 8939.6,
+          "y": 8952.9,
           "w": 39.7,
           "h": 18
         },
         "768": {
           "x": 657.7,
-          "y": 9221,
+          "y": 9234.2,
           "w": 39.7,
           "h": 18
         },
         "1440": {
           "x": 1329.7,
-          "y": 6393.2,
+          "y": 6393.7,
           "w": 39.7,
           "h": 18
         }
@@ -4184,103 +2061,44 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1156_0@1440.png"
+        "1440": "shots/Root_1159_0@1440.png"
       }
     },
     {
-      "key": "Root/1157#0",
-      "parentKey": "Root/1155#0",
+      "key": "Root/1160#0",
+      "parentKey": "Root/1158#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 1157,
+      "tpl": 1160,
       "attrs": {
         "href": "#"
       },
       "words": "Terms",
       "allText": "Terms",
-      "srcLine": 2025,
+      "srcLine": 2029,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "Terms",
-      "snippet": "<a href=\"#\" data-dc-tpl=\"1157\">Terms</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "32.5781px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "32.5781px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "18px",
-          "width": "32.5781px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" data-dc-tpl=\"1160\">Terms</a>",
       "box": {
         "375": {
           "x": 77.7,
-          "y": 8939.6,
+          "y": 8952.9,
           "w": 32.6,
           "h": 18
         },
         "768": {
           "x": 711.4,
-          "y": 9221,
+          "y": 9234.2,
           "w": 32.6,
           "h": 18
         },
         "1440": {
           "x": 1383.4,
-          "y": 6393.2,
+          "y": 6393.7,
           "w": 32.6,
           "h": 18
         }
@@ -4297,18 +2115,13 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1157_0@1440.png"
+        "1440": "shots/Root_1160_0@1440.png"
       }
     },
     {
-      "key": "Root/1158#0",
+      "key": "Root/1161#0",
       "parentKey": null,
       "strip": {
         "side": "after",
@@ -4317,7 +2130,7 @@
       "depth": 1,
       "tag": "a",
       "template": "Root",
-      "tpl": 1158,
+      "tpl": 1161,
       "attrs": {
         "href": "https://wa.me/4479605978",
         "aria-label": "Message Fatima on WhatsApp",
@@ -4327,74 +2140,11 @@
       },
       "words": "",
       "allText": "Ask me anything",
-      "srcLine": 2029,
+      "srcLine": 2033,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a class=\"sgs-whatsapp-fab\" href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Fatima on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:35;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:13.5px;font-weight:500;box-shadow:0 10px 30px rgba(13,110,53,.32);trans",
-      "flow": [
-        " ",
-        {
-          "key": "Root/1159#0"
-        },
-        " ",
-        {
-          "key": "Root/1160#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "54px",
-          "height": "52px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "18px",
-          "padding-bottom": "0px",
-          "padding-left": "14px"
-        },
-        "768": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "163.469px",
-          "height": "52px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "18px",
-          "padding-bottom": "0px",
-          "padding-left": "14px"
-        },
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "163.469px",
-          "height": "52px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "18px",
-          "padding-bottom": "0px",
-          "padding-left": "14px"
-        }
-      },
       "box": {
         "375": {
           "x": 299,
@@ -4427,24 +2177,19 @@
         "1440": "fixed"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_1158_0@375.png",
-        "1440": "shots/Root_1158_0@1440.png"
+        "375": "shots/Root_1161_0@375.png",
+        "1440": "shots/Root_1161_0@1440.png"
       }
     },
     {
-      "key": "Root/1159#0",
-      "parentKey": "Root/1158#0",
+      "key": "Root/1162#0",
+      "parentKey": "Root/1161#0",
       "depth": 2,
       "tag": "img",
       "template": "Root",
-      "tpl": 1159,
+      "tpl": 1162,
       "attrs": {
         "aria-hidden": "true",
         "style": "display: block;",
@@ -4452,64 +2197,11 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 2030,
+      "srcLine": 2034,
       "membership": [],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"1159\">",
-      "resolved": {
-        "375": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "22px",
-          "height": "22px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "22px",
-          "height": "22px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "22px",
-          "height": "22px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"1162\">",
       "box": {
         "375": {
           "x": 313,
@@ -4542,87 +2234,28 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_1159_0@1440.png"
+        "1440": "shots/Root_1162_0@1440.png"
       }
     },
     {
-      "key": "Root/1160#0",
-      "parentKey": "Root/1158#0",
+      "key": "Root/1163#0",
+      "parentKey": "Root/1161#0",
       "depth": 2,
       "tag": "span",
       "template": "Root",
-      "tpl": 1160,
+      "tpl": 1163,
       "attrs": {
         "style": "display: inline;"
       },
       "words": "Ask me anything",
       "allText": "Ask me anything",
-      "srcLine": 2031,
+      "srcLine": 2035,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Ask me anything",
-      "snippet": "<span style=\"display:{{ hideOnMobile }}\" data-dc-tpl=\"1160\">Ask me anything</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "99.4688px",
-          "height": "20.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "500",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.25px",
-          "width": "99.4688px",
-          "height": "20.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"display:{{ hideOnMobile }}\" data-dc-tpl=\"1163\">Ask me anything</span>",
       "box": {
         "375": null,
         "768": {
@@ -4650,39 +2283,10 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "none",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_1160_0@1440.png"
+        "1440": "shots/Root_1163_0@1440.png"
       }
     }
-  ],
-  "sources": {
-    "files": {
-      "Eye Care Birmingham.dc.html": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d",
-      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
-      "README.md": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8",
-      "animations.json": "4d482eaddd75a737f7892b582c127792869a95addf11632ff77af05c2a5e7616",
-      "assets/ec-logo.png": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
-      "assets/eye-care-wordmark.png": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
-      "assets/google-g.svg": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875",
-      "assets/instagram.svg": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38",
-      "assets/whatsapp-deep.svg": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0",
-      "assets/whatsapp-green.svg": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a",
-      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
-      "assets/whatsapp-white.svg": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699",
-      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
-      "surfaces.json": "cafeb0dd42a0e3ebef175d71f3f599973c122d17ae33fd2c58eb684fadc99386",
-      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
-      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
-      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
-    },
-    "route": {
-      "commit": "5e08045ecee496f0204a71ed4bcf94973557144b"
-    }
-  }
+  ]
 }

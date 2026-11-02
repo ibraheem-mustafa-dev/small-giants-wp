@@ -88,25 +88,6 @@ function formAccepted( marker, changes ) {
 	} );
 }
 
-// A marked reading kept as its difference from the default reading it is compared with: every element property whose value
-// is not strictly the default's, and every element the default does not hold ({ width: { path: { prop: value } } }). slotFor
-// and discoverEffects skip every value equal to the default's, so they give the same answer on the difference as on the
-// whole reading; a block whose instances each draw hundreds of elements keeps one whole reading per variant, not one per
-// instance.
-export function diffReads( defReads, markReads ) {
-	const out = {};
-	for ( const [ w, els ] of Object.entries( markReads || {} ) ) {
-		const d = defReads?.[ w ] || {};
-		const keep = {};
-		for ( const [ p, styles ] of Object.entries( els || {} ) ) {
-			const changed = Object.entries( styles || {} ).filter( ( [ prop, v ] ) => v !== d[ p ]?.[ prop ] );
-			changed.length && ( keep[ p ] = Object.fromEntries( changed ) );
-		}
-		out[ w ] = keep;
-	}
-	return out;
-}
-
 // Works out one setting's slot from the default and marked readings ({ width: { path: { prop: value } } }).
 // Returns { slot, slots, property, transform, reachedAt, oneWidth, effects, look? } or { dead }. containerQuery: the block's
 // tiers follow its container's width (an @container rule), so a tier reached at fewer page widths is expected, not oneWidth.
@@ -309,42 +290,6 @@ export function discoverEffects( defReads, markReads ) {
 		}
 	}
 	return Object.fromEntries( Object.entries( found ).map( ( [ k, v ] ) => [ k, { slots: v.slots, value: v.value } ] ) );
-}
-
-// Whether an instance's raw reading ({ width: { path: styles } | null }) found its root at any width. A block that
-// renders nothing for an instance on this site (a business-details display type the site has no value for) reads null.
-export const renderedAt = ( read ) => WIDTHS.some( ( w ) => !! read?.[ w ] );
-
-// Whether an instance has a reading to fold: its own root was found at some width, and so was its default's.
-export const isRendered = ( read, defRead ) => renderedAt( read ) && renderedAt( defRead );
-
-// The default paint's elements across the default instances that rendered: every variant's elements, a path seen in
-// several variants keeping the first. A default that never rendered adds nothing.
-export function defaultElements( instances ) {
-	const elements = {};
-	instances.filter( ( i ) => i.isDefault && i.rendered ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
-	return elements;
-}
-
-// The settings, and discovered attributes, whose every instance rendered nothing: [ { setting, reason } ] in first-seen
-// order. `inst.rendered` is false for an instance that was not read, or whose default was not. A setting with one
-// rendered instance has a reading and is not listed; one listed was never measured, so it is never dead.
-export function notRenderedSettings( instances ) {
-	const seen = new Map();
-	for ( const inst of instances ) {
-		const name = inst.discover?.attr ?? ( inst.content ? null : inst.row?.attr_name );
-		if ( ! name ) {
-			continue;
-		}
-		seen.set( name, ( seen.get( name ) ?? false ) || false !== inst.rendered );
-	}
-	return [ ...seen ].filter( ( [ , rendered ] ) => ! rendered ).map( ( [ setting ] ) => ( { setting, reason: 'its instance rendered nothing on this site' } ) );
-}
-
-// True when the block has default instances and none of them rendered at any width: there is nothing to measure.
-export function noDefaultRendered( instances ) {
-	const defaults = instances.filter( ( i ) => i.isDefault );
-	return defaults.length > 0 && ! defaults.some( ( i ) => false !== i.rendered );
 }
 
 // The default paint of every element at each width, without inherited properties.

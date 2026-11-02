@@ -324,18 +324,6 @@ export function markDrawerInPage( mark ) {
 	return { burger: true, drawer: true, drawerAnywhere, controls: drawer.id, closer };
 }
 
-// In-page: whether the marked drawer renders although it is closed (a <dialog> without `open` whose CSS display overrides
-// the browser's display:none): { shows, display } . Such a drawer covers the page and blocks the burger's click.
-export function closedDrawerShowsInPage( mark ) {
-	const d = document.querySelector( `[${ mark }="drawer"]` );
-	if ( ! d || 'DIALOG' !== d.tagName || d.open ) {
-		return { shows: false, display: d ? getComputedStyle( d ).display : null };
-	}
-	const r = d.getBoundingClientRect();
-	const shows = d.checkVisibility( { checkOpacity: true, checkVisibilityCSS: true } ) && r.width > 0 && r.height > 0 && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
-	return { shows, display: getComputedStyle( d ).display };
-}
-
 // The drawer check at one width, on the page loaded at that width: n-a when the page has no drawer, or (above the
 // phone width) when the bar shows its links instead of a burger; fail when a drawer exists but no burger shows at the
 // phone width, the drawer never shows after the burger's click, or it does not close.
@@ -351,10 +339,6 @@ export async function drawerItem( page, { width, url, shoot, phoneWidth = 375 } 
 			{ status: 'n-a', subject, url, detail: 'no burger shows at this width (the bar shows its links)' };
 	}
 	const selector = `header button[aria-controls="${ m.controls }"]`;
-	const closedShows = await page.evaluate( closedDrawerShowsInPage, MARK );
-	if ( closedShows.shows ) {
-		return { status: 'fail', subject, url, selector, screenshot: await shoot( `drawer-${ width }-shows-closed` ), error: `the drawer #${ m.controls } renders while closed (a <dialog> without open shows with display ${ closedShows.display }), covering the page and the burger, so the burger cannot be clicked and a screenshot shows a drawer that was never opened` };
-	}
 	await page.locator( `[${ MARK }="burger"]` ).first().click( { timeout: 5000 } ).catch( () => {} );
 	await page.waitForTimeout( SETTLE_MS );
 	const opened = await stateOf( page, 'burger', 'drawer' );

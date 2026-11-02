@@ -122,70 +122,6 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
-		"accordion": {
-			"block": "sgs/accordion",
-			"itemBlock": "sgs/accordion-item",
-			"panelBlock": "sgs/text",
-			"attributes": { "allowMultiple": "allowMultiple", "defaultOpen": "defaultOpen", "isOpen": "isOpen" },
-			"reason": "a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6)"
-		},
-		"accordionItem": {
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
-		},
-		"loopBlocks": {
-			"reason": "a loop on any page is the working block its data and items say (Spec 48A FR-48A-8, Bean S5): products, brands or reviews, never decided by a section heading (FR-48-30)",
-			"products": { "reason": "a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4)" },
-			"brands": {
-				"block": "sgs/brand-strip",
-				"attributes": { "source": "product-brands", "brandLinkToShop": true, "brandHideEmpty": true },
-				"minMatches": 2,
-				"reason": "a loop of links labelled with the catalogue's brands is the brand strip reading the product brands (FR-48-83)"
-			},
-			"carousel": {
-				"block": "sgs/testimonial-slider",
-				"cardBlock": "sgs/testimonial",
-				"attributes": {},
-				"reason": "a loop of review cards whose holder is a scroll track the draft's script steps (a timer, pointer drag or arrow controls, never a name) is the testimonial slider, each card one of its testimonials (Spec 48 FR-48-77, register row C5)"
-			},
-			"testimonials": {
-				"person": "^(?:(?:\\p{Lu}{1,3}\\.?|\\p{Lu}[\\p{Ll}'’-]+\\.?(?:\\s+(?:\\p{Lu}[\\p{Ll}'’-]*\\.?|\\p{Lu}{1,3}\\.?)){0,2})(?:\\s*[·•|,—–-]\\s*.+)?|[\\p{L}][\\p{L}\\p{N}._'’-]*(?:\\s+[\\p{L}][\\p{L}\\p{N}._'’-]*){0,2}\\s*[·•|—–]\\s*.*\\d.*)$",
-				"personMaxWords": 6,
-				"quotation": "^[\"“„«].*[\"”»]$|^[\"“”„«»]$",
-				"attributes": { "autoplay": false, "showArrows": false, "showDots": false },
-				"reason": "a loop of review cards with no provider link and no script moving it, each card naming the person who wrote it (a short line of a capitalised name or initials, a date or place after a separator allowed, or any one to three word name or handle followed by a separator and a date, never a heading) and showing no price, each with a rating and a quote or with a quotation, is the testimonial family: sgs/testimonial-slider in its still form (autoplay, arrows and dots off, the visible-card count is Fill's reading of the draft's track), each card an sgs/testimonial whose parts the content writer reads into its quote, name, date and rating fields; a provider link still picks that provider's block, and a script-moved track the carousel (Spec 48 FR-48-83, Bean 2026-10-31)"
-			},
-			"reviews": {
-				"rating": "[\u2605\u2B50]{3,}|(?:\u00e2\u02dc\u2026){3,}|\\b[1-5](?:\\.\\d)?\\s*(?:out of 5|\\/\\s*5)\\b",
-				"quoteLength": 40,
-				"providers": {
-					"google": { "host": "(^|[./])(share\\.google|google\\.[a-z.]+|g\\.page|goo\\.gl)", "block": "sgs/google-reviews", "countAttribute": "maxReviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Google place the reviews come from: set the place in the reviews block" } },
-					"trustpilot": { "host": "trustpilot\\.com", "block": "sgs/trustpilot-reviews", "attributes": {}, "handover": { "owner": "content-page", "kind": "presence", "detail": "the Trustpilot business unit the reviews come from: set it in the reviews block" } }
-				},
-				"reason": "a loop of items that each show a rating and a quote, linking to a review provider, is that provider's reviews block (FR-48-83)"
-			}
-		},
-		"shopToolbar": {
-			"block": "sgs/container",
-			"attributes": { "tagName": "div", "className": "sgs-shop-toolbar" },
-			"count": "woocommerce/product-results-count",
-			"sort": "woocommerce/catalog-sorting",
-			"sortOptions": {
-				"menu_order": "^(featured|default|menu_order|recommended|relevance)$|default sort",
-				"popularity": "popular|best.?sell",
-				"rating": "rating|rated",
-				"date": "newest|latest|recent|^date$",
-				"price": "price.?asc|low.{0,6}high|^low$|cheapest|lowest",
-				"price-desc": "price.?desc|high.{0,6}low|^high$|dearest|highest"
-			},
-			"missingReason": "WooCommerce's sorting block has a fixed set of orders; a draft order it cannot express needs a framework build or a Bean decision (FR-48-61)",
-			"reason": "the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87)"
-		},
-		"categoryChips": {
-			"block": "woocommerce/product-filters",
-			"inner": [ { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-chips" }, "innerBlocks": [ { "name": "woocommerce/product-filter-chips", "attributes": {}, "innerBlocks": [] } ] } ],
-			"minMatches": 2,
-			"reason": "a group of pressable chips on the shop whose labels are the catalogue's product categories is WooCommerce's product category filter in its chips look, which narrows the listing for real (FR-48-61, FR-48-87); found by the catalogue's categories (FR-48-92), never by a heading"
-		},
 		"filterRail": {
 			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
 			"block": "sgs/container",
@@ -211,17 +147,6 @@
 				"category": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] }
 			}
 		},
-		"filterDrawer": {
-			"id": "filterDrawer",
-			"reason": "a drawer whose root holds the catalogue's filter groups is the shop filter's own narrow-width open state, never a second drawer: its look is the filter block's overlay settings (Spec 48 FR-48-61), and what those settings cannot carry is a missing feature",
-			"block": "woocommerce/product-filters",
-			"modeAttribute": "overlayMode",
-			"positionAttribute": "overlayPosition",
-			"modes": { "rail": "mobile", "drawer": "always" },
-			"sides": { "left": "left", "right": "right" },
-			"minFacets": 2,
-			"fullShare": 0.95
-		},
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
@@ -234,23 +159,6 @@
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
-				"product": {
-					"block": "sgs/container",
-					"owner": "sgs/buybox",
-					"attributes": { "tagName": "div" },
-					"inner": [
-						{ "name": "sgs/heading", "attributes": { "level": "h1", "metadata": { "bindings": { "content": { "source": "sgs-product/field", "args": { "key": "title", "source": "auto" } } } } } },
-						{ "name": "sgs/buybox", "attributes": {}, "reads": false }
-					],
-					"description": { "name": "sgs/text", "attributes": { "metadata": { "bindings": { "text": { "source": "sgs-product/field", "args": { "key": "short_description", "source": "auto" } } } } }, "innerBlocks": [] },
-					"reason": "the single-product template is the whole draft page (FR-48-56); the area that varies per product is the working, bound pieces: the title is a heading bound to the product (sgs-product/field), the prose that varies per product is a text block bound to the product's description (short_description), and the hero (gallery, price, option pickers, stock line, add-to-basket) is sgs/buybox, the composite that draws them from the WooCommerce product, the stated fallback until the Spec 27 parts split exists (FR-48-60 step 1, Bean S13)"
-				},
-				"confirmation": {
-					"block": "woocommerce/order-confirmation-totals-wrapper",
-					"attributes": { "align": "wide" },
-					"inner": [ { "name": "woocommerce/order-confirmation-totals", "attributes": { "lock": { "remove": true } } } ],
-					"reason": "the order confirmation is a commerce page (FR-48-87, Bean S4): the draft's order summary, its lines and the amount paid, is WooCommerce's order-confirmation totals, which draw the placed order; the draft's heading, steps and notes around it stay its own blocks"
-				},
 				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",
@@ -326,24 +234,7 @@
 		"readingProgress": {
 			"maxHeightPx": 6,
 			"reason": "a full-width bar a few pixels tall, fixed to the viewport, is the Floating UI reading progress setting, not a block",
-			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings",
-			"options": { "enabled": "sgs_floating_ui_reading_progress_enabled", "colour": "sgs_floating_ui_reading_progress_colour", "gradient": "sgs_floating_ui_reading_progress_gradient", "height": "sgs_floating_ui_reading_progress_height" },
-			"range": [ 2, 8 ]
-		},
-		"cookieConsent": {
-			"patterns": [ "\\bcookies?\\b", "\\bconsent\\b" ],
-			"flags": "i",
-			"why": "a cookie consent banner fixed to the viewport has no framework equivalent (Spec 48 FR-48-84 reads cookie consent; no block or setting offers it), so it is a missing feature"
-		},
-		"persistentBar": {
-			"minShare": 0.98,
-			"maxHeightPx": 140,
-			"why": "a bar fixed across the bottom of the viewport holding a link or a button (cart, sale, call to action) is the persistent bottom bar of Spec 18 section 1.1, which is not built, so it is a missing feature"
-		},
-		"timedPopup": {
-			"patterns": [ "\\bafter\\s+\\d+\\s*(?:ms|s|secs?|seconds?|minutes?)\\b", "\\bexit[- ]intent\\b", "\\btimer\\b", "\\bon a delay\\b" ],
-			"flags": "i",
-			"why": "sgs/modal opens from a trigger or a hash and has no delay or exit-intent setting, so a popup that opens on a timer or on exit intent is a missing feature"
+			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
 		},
 		"decorationLayer": {
 			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
@@ -392,10 +283,6 @@
 			},
 			"wholeBlock": "sgs/container",
 			"lone": "sgs/button",
-			"floating": {
-				"options": { "enabled": "sgs_floating_ui_back_to_top_enabled", "position": "sgs_floating_ui_back_to_top_position", "background": "sgs_floating_ui_back_to_top_bg_colour", "icon": "sgs_floating_ui_back_to_top_icon_colour" },
-				"reason": "a back-to-top control fixed to the viewport is the Floating UI back-to-top setting (Spec 18 section 2.1), not a block: its side, background and icon colour are site options"
-			},
 			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
 		},
 		"mapEmbed": {
@@ -411,13 +298,12 @@
 			"block": "sgs/business-info"
 		},
 		"openStatus": {
-			"reason": "a live open or closed line (text the draft's code computes from the clock against the opening hours it holds, lib/skeleton-clock.mjs) is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"patterns": [
+				"^\\s*(?:open now|closed now|open today|closed today|opens? at\\b|closes? at\\b|closed until\\b)"
+			],
+			"flags": "i",
+			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
 			"block": "sgs/business-info"
-		},
-		"timeText": {
-			"reason": "text the draft's code picks by the hour of the clock (a conditional chain on getHours, lib/skeleton-clock.mjs) is the text block's time-based text option: one hour range per branch with its words, swapped in the visitor's browser",
-			"attribute": "sgsTimeText",
-			"zoneAttribute": "sgsTimeTextZone"
 		},
 		"hoursRows": {
 			"maxChars": 80,
@@ -429,64 +315,6 @@
 			"clients": [ "indus-foods" ],
 			"part": "burger",
 			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
-		},
-		"modalOpener": {
-			"block": "sgs/button",
-			"reason": "a button or link whose click handler writes the state a draft modal surface opens on (a state key one of its surfaces.json states holds at true, or at the literal the handler writes, lib/skeleton-handler-opens.mjs::opensOnWrites) opens that modal on the clone, and the page map holds the modal as an sgs_modal row: the control is a button linking #<anchor> of the sgs/modal frame the page carries (lib/skeleton-opener.mjs), which opens its modal post on any link to its anchor; the draft's control is never a dead button"
-		},
-		"formPrefillOpener": {
-			"block": "sgs/button",
-			"reason": "a button or link whose click handler scrolls to a form and sets its fields (a class method that looks a form element up and scrolls to it, called with the field values; lib/skeleton-form-prefill.mjs) opens that form on the clone, with the fields prefilled: the control is a button linking ?<field>=<value> (the query before the hash) and #<the form's anchor>, each loop copy's values read from the element printing them in that copy, and the form's fields read the query through valueFromParam; the draft's control is never a dead button"
-		},
-		"modalFrame": {
-			"block": "sgs/modal",
-			"names": { "scrim": "backdrop", "dialog": "dialog", "close": "close" },
-			"reason": "a modal surface's backdrop, panel and close control are the sgs/modal frame's own settings (Bean S8, 2026-10-28): the frame draws the scrim, the dialog and the close, so only the dialog's inner content is the modal post (lib/skeleton-modal-frame.mjs)",
-			"parts": {
-				"root": "the modal's full-viewport overlay: the sgs/modal frame draws the overlay, so its children are the post's content",
-				"dialog": "the modal's panel (the element declaring role dialog): the sgs/modal frame draws the panel and its paint becomes the frame's dialog settings, so its children are the post's content",
-				"scrim": "the modal's backdrop (an empty layer covering the overlay): its fill becomes the frame's scrim settings",
-				"close": "the modal's close control (its click handler writes a falsy value to the state the modal opens on): the sgs/modal frame draws the close and its look becomes the frame's close settings; the draft's button is never built as a second, dead close"
-			}
-		},
-		"identity": {
-			"maxShare": 0.5,
-			"reviewConfidence": 0.4,
-			"structural": [ "headerSlots", "footerSlots", "surfaceRoot", "formLink", "formHost", "formControl", "formSteps", "commerceRegion", "shopToolbar", "optionSetForm", "filterRail", "filterDrawer", "categoryChips", "ownedPart", "blockOwnedPart", "blockPartOpener", "choiceFlow", "modalFrame" ],
-			"confirm": "Bean, 2026-10-30 (plan F1): blocks are identified by elimination, compared by meaning (roles and aria states, never literal tags); a form field reproducing a chip's choice with its own markup (optionSetForm) is no difference; only a proven absence rules a block out, a platform separates only a look-alike family, and Bean's marks, client decisions and the structural rules come first",
-			"reason": "identified by elimination over the framework DB's block_identity_facts: each fact the draft region shows rules out the blocks that never show it, and the facts few blocks share rank the survivors",
-			"ruleReason": "the element's facts rule out the standing rule's block, so the row keeps it at low confidence for the review",
-			"regionReason": "the block's own parts stand beside the element it was placed on, so it is placed over the smallest element holding them"
-		},
-		"platformLook": {
-			"minChroma": 20,
-			"maxDeltaE": 1,
-			"minColours": 2,
-			"properties": "^(?:color|fill|stroke|background(?:-color|-image)?|border(?:-(?:top|right|bottom|left))?(?:-color)?|outline(?:-color)?)$",
-			"confirm": "Bean, 2026-10-31: a platform block (sgs/trustpilot-reviews, sgs/google-reviews) paints the platform's own interface with its brand colours locked, so platform evidence (a name, a link, a labelled image) picks it only where the draft's cards are painted in that platform's own colours; cards in the client's own style are the testimonial family, and the platform summary (score, stars, the platform link) stays its own blocks beside them",
-			"reason": "the region names a review platform but is painted in the client's own colours, not the platform's own, so the testimonial family stands and the platform summary stays its own blocks"
-		},
-		"ruleConflict": {
-			"minConfidence": 0.7,
-			"maxRuleShare": 0.2,
-			"confidence": 0.5,
-			"confirm": "Bean, 2026-10-29 (D1): rules keep winning by default, but a rule row whose DB evidence strongly prefers another block goes to the finaliser and the review instead of being final",
-			"reason": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
-		},
-		"widthDependent": {
-			"confidence": 0.5,
-			"confirm": "Bean, 2026-10-29: a rule judges a value at every width the element renders unless the rule itself names a platform or a width range",
-			"reason": "the rule holds at some of the widths the element renders and not at others: the row keeps the rule's verdict but is low confidence, marked width-dependent, so the review decides it"
-		},
-		"drawerLogo": {
-			"part": "chromeLogo",
-			"idSetting": "chromeLogoId",
-			"reason": "a logo in a drawer's top row (the row holding the drawer's own close control, not its navigation) is the drawer block's own top-row logo (Spec 36 FR-36-6: sgs/nav-drawer draws its logo from its chrome logo settings above its body), so the block takes it: the logo's carried attachment is the block's logo setting and its look the block's logo settings; the draft's logo is never built as a second logo block"
-		},
-		"drawerClose": {
-			"part": "close",
-			"labelSetting": "closeLabel",
-			"reason": "a button or link inside a drawer surface whose click handler writes a falsy value to a state key one of the drawer's own surfaces.json states holds at true (lib/skeleton-handler-opens.mjs::handlerCloses; a handler that also writes the key to an opening value is a toggle, not a close) is the drawer block's own close control (Spec 36 FR-36-6: close is the drawer's chrome, drawn by sgs/nav-drawer above its body), so the block takes it and its look becomes the block's close settings; the draft's button is never built as a second, dead close"
 		},
 		"pillButton": {
 			"block": "sgs/button",
@@ -508,21 +336,7 @@
 				"whatsapp": "whatsapp",
 				"google": "google"
 			},
-			"hosts": {
-				"wa.me": "whatsapp",
-				"api.whatsapp.com": "whatsapp",
-				"web.whatsapp.com": "whatsapp"
-			},
-			"reason": "the shared link source each Site Info kind becomes on a link; hosts is the short and API addresses a kind uses that the brand registry cannot derive from the brand name"
-		},
-		"recognise": {
-			"modes": { "floating": "floating", "flow": [ "static", "inline" ] },
-			"featureWords": { "bar": [ "bar", "banner", "announcement", "notice" ] },
-			"barShare": 0.98,
-			"barMaxHeightPx": 120,
-			"minScore": 1,
-			"maxParts": 8,
-			"reason": "an element is the block whose name or setting values hold the words of its own features (its link host, class, aria-label, position and shape); the mode follows the element alone: fixed to the viewport is the floating setting with the corner, offset and hidden-label width the draft shows, sticky is the sticky setting, in flow is the static or inline value"
+			"reason": "the shared link source each Site Info kind becomes on a link"
 		},
 		"navigation": {
 			"bySurface": {
@@ -534,10 +348,6 @@
 			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},
-		"navigationLink": {
-			"properties": [ "font-size", "text-transform", "letter-spacing" ],
-			"reason": "a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button"
-		},
 		"solitaryIcon": {
 			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
 			"block": "sgs/icon"
@@ -547,6 +357,9 @@
 			"minTrackingEm": 0.06,
 			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
 			"block": "sgs/label"
+		},
+		"clientBuiltSurface": {
+			"reason": "a surface the client already built as a post (a header, drawer or mega menu) follows that post's block tree"
 		},
 		"logoElement": {
 			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
@@ -580,15 +393,13 @@
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
-			"textBlock": "sgs/brand-strip",
-			"textAttributes": { "brandDisplay": "text" },
-			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee, the block chosen by what its items show and where it sits: logos alone make sgs/brand-strip; labels, alone or each with an icon or an image, make sgs/trust-bar when its item fields hold every kind the items show (array_item_schema roles: icon-slug or svg, image-object, text-content) and the section block fits where the strip sits; otherwise sgs/brand-strip showing the names as text. A section block (block_composition.container_kind section, as sgs/trust-bar) never sits inside another section, and sits only in a slot that gives it its full width: a header row, the footer's top row, a drawer's, modal's or mega panel's body, any slot the draft lays out as one full-width child (it spans its parent's content box through every ancestor up to the surface root or the section root that holds only its slot blocks, and no sibling sits beside it); never a slot that lays its children out as columns (the footer's column and bottom rows) and never a page section's own container. The marquee motion and the widths it runs at are the motion writer's (sgsMotion, belowBreakpoint), and the repeated items are its items (Bean, 2026-10-31)"
+			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"
 		},
 		"trustBar": {
 			"block": "sgs/trust-bar",
 			"minItems": 2,
 			"maxWords": 4,
-			"reason": "a trust bar is a section block (block_composition.container_kind section): placed where a section block fits (a page's own section, or on another surface a full-width slot no section holds, as rules.marquee says) on a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal), is sgs/trust-bar with the labels as its items; the same badges inside a section are sgs/label blocks in a row (Bean, 2026-10-13). The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
+			"reason": "a trust bar is a section block (block_composition.container_kind section): a page's own section that is a row of short non-interactive labels side by side, each with at most a glyph, at least one naming a capability the framework database records for sgs/trust-bar (accreditation, certification, halal), is sgs/trust-bar with the labels as its items; the same badges inside a section are sgs/label blocks in a row (Bean, 2026-10-13). The ignored capabilities (collection, features, icons) describe the block, not what its badges say",
 			"ignoreCapabilities": [
 				"collection",
 				"features",
@@ -600,7 +411,7 @@
 			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
 		},
 		"heroInner": {
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner"
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays"
 		},
 		"marqueeFrame": {
 			"reason": "the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade belongs to its marquee motion (Bean, 2026-10-13)"
@@ -710,9 +521,7 @@
 		"formHost": {
 			"tag": "form",
 			"block": "sgs/form",
-			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-			"layoutReason": "the page's layout around the form (it holds the form beside an aside or a bar): the page lays it out, so the saved form's root is the form block inside it",
-			"besideReason": "drawn beside the form by the page (an aside or a bar outside the form's own element): the page holds it, never the saved form"
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
 		},
 		"cardHeading": {
 			"block": "sgs/heading",
@@ -793,14 +602,6 @@
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21)"
 		},
-		"megaPanelGrid": {
-			"id": "megaPanelGrid",
-			"hostSetting": "groupGap",
-			"taughtBy": { "client": "eye-care-ward-end", "key": "Eye Care Birmingham/54#0", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
-			"scope": "the same panel as megaGroup, when its root declares no grid or flex layout and the grid or flex element that lays its columns out sits inside centring width wrappers (a lone child with a max-width and no words); the root itself laying out the columns is the megaGroup / megaAside case",
-			"clients": [ "eye-care-ward-end" ],
-			"reason": "the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card)"
-		},
 		"drawerIconRun": {
 			"id": "drawerIconRun",
 			"block": "sgs/social-icons",
@@ -819,13 +620,6 @@
 				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "trigger": { "style": "triggerStyle", "pill": "pill", "icon": "icon", "label": "pillLabel", "countStyle": "pillCountStyle", "bubble": "bubble", "plain": "plain", "showZero": "showZero", "ariaLabel": "ariaLabel" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
 			},
 			"reason": "a drawer the page map holds as a block-owned part of another row is drawn by that block, never the navigation drawer: the block is the surface's root and every element in it is absorbed (Bean, 2026-10-23, plan 2026-10-23-cloning-tool-completion S5: the bag drawer is part of the cart block)"
-		},
-		"ownedPart": {
-			"id": "ownedPart",
-			"scope": "a surface's root, when the page map holds the surface as a part of another row and gives it no row of its own (lib/skeleton-surface-role.mjs::surfaceRole role ownedPart: a part naming the surface's record with owner woocommerce, page or draft-notes, or a surface other than a page, header or footer on a WooCommerce row's page, its route the row's own or one the row folds in)",
-			"pieceReason": "the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87)",
-			"rowReason": "the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87)",
-			"reason": "a part the page map gives another row is drawn by that row: by its WooCommerce piece on a WooCommerce row, else by the row's own surface; it is never built as its own form or blocks (Bean, 2026-10-30)"
 		},
 		"blockPartOpener": {
 			"id": "blockPartOpener",

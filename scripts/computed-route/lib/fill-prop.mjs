@@ -143,7 +143,7 @@ export const TIER_WIDTHS = [ 1440, 768, 375 ];
 export { INHERITED };
 // Read from the element that paints the text and from the element that lays out the children (walker rows put them at
 // textPath and layoutPath), so a setting on an inner element can hold them.
-export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'grid-auto-rows', 'justify-items', 'align-content', 'justify-content', 'align-items' ];
+export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
 // The shared comparison rule (lib/css-equivalence/tolerance.mjs), exported here for the modules that read it from Fill.
 export { PX_TOL };
 
@@ -304,24 +304,16 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, owned = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, media = null, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
 	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
-	// The first slot where the draft already matches: a property can be inert there (flex-wrap on a block root) while the
-	// slot where it paints (the inner content band) still differs, so every other candidate slot is judged before the
-	// property is called equal.
-	let equalAt = null;
 	for ( const slot of slots ) {
 		// The baseline's own context is calibration's where the baseline is the calibrated default paint.
 		const baselineContext = ( w ) => ( undefined !== baseline( slot, w ) && baseline( slot, w ) === defaultPaint( calibration, slot, w, prop ) ? calibratedContext( calibration, slot, w ) : null );
-		// After a slot that matched, a later slot is judged only at the widths its baseline is known: an unmeasured slot is not
-		// evidence that the draft differs there.
-		const judged = null === equalAt ? draft : Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => undefined !== baseline( slot, Number( w ) ) ) );
-		const included = tiersDiffering( prop, judged, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
+		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
 		if ( ! Object.keys( included ).length ) {
-			equalAt ??= slot;
-			continue;
+			return { status: 'equal', slot };
 		}
 		if ( calibration && ! known.includes( LOOSE( slot ) ) ) {
 			firstGap ??= { gap: 'unmapped-element', detail: `${ block } path "${ slot }" is not a calibrated element`, slot };
@@ -332,7 +324,7 @@ export function resolveProperty( ctx ) {
 		const call = ( perWidth ) => {
 			sink.length = 0;
 			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink, media } );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		if ( r.gap ) {
@@ -369,5 +361,5 @@ export function resolveProperty( ctx ) {
 		}
 		return { status: 'written', slot, writes, included, how, ...( fit ? { fluid: fit } : {} ) };
 	}
-	return null !== equalAt ? { status: 'equal', slot: equalAt } : { status: 'gap', ...firstGap };
+	return { status: 'gap', ...firstGap };
 }

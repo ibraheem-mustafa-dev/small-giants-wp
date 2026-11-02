@@ -14,7 +14,6 @@ import { parseLogic } from '../lib/intake-ast.mjs';
 import { iconDecisions, ICON_SETTINGS, iconSettings, LUCIDE_FILE, BRAND_FILE } from '../lib/fill-icon.mjs';
 import { makeContent, skeletonSettings } from '../lib/skeleton-write-content.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { elementFacts } from '../lib/element-facts.mjs';
 
 const attr = ( block_slug, attr_name, attr_type, more = {} ) => ( { block_slug, attr_name, attr_type, ...more } );
 const blocks = ( ...slugs ) => slugs.map( ( slug ) => ( { slug, title: slug, category: 'sgs', type: 'dynamic' } ) );
@@ -41,9 +40,7 @@ test( 'every FORM_BLOCK_SETTINGS name is written by the form pass', () => {
 	const steps = [ { key: 'a', label: 'Business', fields: [ { name: 'x', label: 'X' } ] }, { key: 'review', label: 'Review', intro: 'Check your answers', fields: [] } ];
 	const FACTS = {
 		logic: { statics: { Apply: { entries: [ { name: 'schema', source: 'getter', kind: 'array', length: 2, value: steps } ] } } },
-		// The form's sent state: a result surface rooted on the form, one worded element.
-		surfaces: { 'S-1': { kind: 'form', dc: 'Apply', roots: [ 'Apply/6' ] }, 'S-2': { kind: 'result', dc: 'Apply', parent: 'S-1', roots: [ 'Apply/9' ] } },
-		elements: { 'Apply/edit': { template: { key: 'Apply/edit', tag: 'button', words: 'Edit section', membership: { scFor: [ 'step' ] } } }, 'Apply/6': { template: { key: 'Apply/6', component: 'Apply', n: '6', tag: 'form', parentChain: [], membership: { scIf: [], scFor: [] } } }, 'Apply/9': { template: { key: 'Apply/9', component: 'Apply', n: '9', tag: 'p', parentChain: [ 'Apply/9' ], words: 'Thanks, we have it', membership: { scIf: [], scFor: [] } } } },
+		elements: { 'Apply/edit': { template: { key: 'Apply/edit', tag: 'button', words: 'Edit section', membership: { scFor: [ 'step' ] } } } },
 	};
 	const flags = [ { kind: 'prototype-only', draftId: 'Apply.dc.html:js:1:1', text: 'localStorage.setItem(KEY, v)', why: 'browser storage write' } ];
 	const flat = [
@@ -52,7 +49,7 @@ test( 'every FORM_BLOCK_SETTINGS name is written by the form pass', () => {
 		{ name: 'sgs/form-review', attributes: {}, innerBlocks: [], ref: 'review' },
 		{ name: 'sgs/button', attributes: {}, innerBlocks: [], ref: 'btn' },
 	];
-	const nodes = flat.map( ( n, i ) => ( { index: i, name: n.name, targets: [ { id: `${ i }:`, slot: '', ...( 'sgs/form' === n.name ? { finder: { tpl: 'Root>Apply@1#0/6#0' } } : {} ) } ] } ) );
+	const nodes = flat.map( ( n, i ) => ( { index: i, name: n.name, targets: [ { id: `${ i }:`, slot: '' } ] } ) );
 	const reads = { widths: { 1440: { '3:': { form: { tag: 'button', type: 'submit' } } } } };
 	const out = formWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, facts: FACTS, flags, db, component: 'Apply' } );
 	const written = new Set( out.writes.map( ( w ) => `${ w.block }.${ w.attr }` ) );
@@ -108,7 +105,7 @@ const SK = {
 test( 'every setting skeletonSettings claims is written by contentAttrs or carriedAttrs', () => {
 	const db = openDb( fixtureDb( SK ) );
 	const facts = loadFacts( { db, client: '' } );
-	const m = { read: elementFacts(), words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [], inlineParts: () => [], flowOf: () => [], els: [], byKey: {} };
+	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [] };
 	const carried = { logo: () => ( { id: 5, asset: 'logo.png' } ), menu: () => 9 };
 	const { contentAttrs, carriedAttrs } = makeContent( { m, facts, view: 1440, carried, surfaceKind: 'header', siteLink: ( href ) => ( { kind: 'url', value: href } ) } );
 	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };

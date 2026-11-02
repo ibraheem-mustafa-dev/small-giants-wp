@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-01T11:35:11.447Z",
-	"inventory": "2026-11-01T11:35:10.713Z",
-	"source": "http://127.0.0.1:57034/",
+	"generated": "2026-10-28T06:35:01.732Z",
+	"inventory": "2026-10-28T06:35:01.545Z",
+	"source": "http://127.0.0.1:60916/",
 	"surface": "page-basket-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -34,9 +34,9 @@
 		"inventoryElements": 58,
 		"parts": 0,
 		"rows": 58,
-		"skeletonNodes": 49,
-		"expandedNodes": 49,
-		"low": 20,
+		"skeletonNodes": 48,
+		"expandedNodes": 48,
+		"low": 21,
 		"removed": 10,
 		"unresolved": 0,
 		"byRule": {
@@ -44,575 +44,6 @@
 			"heroInner": 8,
 			"formControl": 2
 		}
-	},
-	"partPairing": {
-		"paired": 35,
-		"unpaired": [
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__bg-img",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__video-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media > .sgs-hero__split-media",
-				"reason": ".sgs-hero__media: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/22#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/22#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/22#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/25#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/32#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/36#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/36#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/40#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/30#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/32#1",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#1",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/36#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/36#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#1",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#1",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/40#1",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/45#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/46#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/57#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/58#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/58#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/58#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/59#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/60#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/61#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/61#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/61#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/62#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/63#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/65#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/66#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/67#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/67#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/multi-button",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/multi-button",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/69#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/69#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/70#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/70#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/71#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/72#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/72#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -650,11 +81,6 @@
 			"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
 			"attributes": {
 				"tagName": "main"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/9#0"
-				}
 			}
 		},
 		{
@@ -687,12 +113,7 @@
 				"1440": "shots/Root_9_0@1440.png"
 			},
 			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
-			"attributes": {},
-			"slots": {
-				".sgs-hero__content": {
-					"tpl": "Root/9#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -700,21 +121,21 @@
 			"tag": "div",
 			"depth": 2,
 			"words": "nearly there",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "finaliser pick",
-			"confidence": 0.7,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"finaliser pick: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -761,12 +182,6 @@
 			"snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"rowNote": "its own words \"Your basket\" are the sgs/text child before its children",
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/12#0"
-				}
 			}
 		},
 		{
@@ -775,21 +190,21 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "2",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "finaliser pick",
-			"confidence": 0.55,
+			"source": null,
+			"confidence": 0.25,
 			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"finaliser pick: The item-count pill inside the h1; a short pill is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
 					]
 				}
 			],
@@ -838,14 +253,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/25#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/29#0"
-				}
 			}
 		},
 		{
@@ -1009,14 +416,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/30#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/32#0"
-				}
 			}
 		},
 		{
@@ -1179,14 +578,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/35#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/39#0"
-				}
 			}
 		},
 		{
@@ -1223,14 +614,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/36#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/37#0"
-				}
 			}
 		},
 		{
@@ -1265,11 +648,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button>",
 			"attributes": {
 				"label": "−"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/36#0"
-				}
 			}
 		},
 		{
@@ -1337,11 +715,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.inc }}\" aria-label=\"One more\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"38\">+</button>",
 			"attributes": {
 				"label": "+"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/38#0"
-				}
 			}
 		},
 		{
@@ -1377,11 +750,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.rm }}\" style=\"border:0;background:none;font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;padding:10px 0\" data-dc-tpl=\"39\">Remove</button>",
 			"attributes": {
 				"label": "Remove"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/39#0"
-				}
 			}
 		},
 		{
@@ -1453,14 +821,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/30#1"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/32#1"
-				}
 			}
 		},
 		{
@@ -1623,14 +983,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/35#1"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/39#1"
-				}
 			}
 		},
 		{
@@ -1667,14 +1019,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/36#1"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/37#1"
-				}
 			}
 		},
 		{
@@ -1709,11 +1053,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button>",
 			"attributes": {
 				"label": "−"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/36#1"
-				}
 			}
 		},
 		{
@@ -1781,11 +1120,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.inc }}\" aria-label=\"One more\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"38\">+</button>",
 			"attributes": {
 				"label": "+"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/38#1"
-				}
 			}
 		},
 		{
@@ -1821,11 +1155,6 @@
 			"snippet": "<button sc-camel-on-click=\"{{ it.rm }}\" style=\"border:0;background:none;font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;padding:10px 0\" data-dc-tpl=\"39\">Remove</button>",
 			"attributes": {
 				"label": "Remove"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/39#1"
-				}
 			}
 		},
 		{
@@ -2133,14 +1462,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/59#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/60#0"
-				}
 			}
 		},
 		{
@@ -2245,14 +1566,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/62#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/63#0"
-				}
 			}
 		},
 		{
@@ -2357,14 +1670,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/65#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/66#0"
-				}
 			}
 		},
 		{
@@ -2468,11 +1773,6 @@
 			"attributes": {
 				"label": "Checkout securely →",
 				"url": "/checkout/"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/67#0"
-				}
 			}
 		},
 		{
@@ -2516,14 +1816,6 @@
 			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"68\"> <button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"69\">Apple Pay</button> <button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"70\">Googl",
 			"attributes": {
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-button:nth-of-type(1)": {
-					"tpl": "Root/69#0"
-				},
-				".sgs-button:nth-of-type(2)": {
-					"tpl": "Root/70#0"
-				}
 			}
 		},
 		{
@@ -2559,11 +1851,6 @@
 			"snippet": "<button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"69\">Apple Pay</button>",
 			"attributes": {
 				"label": "Apple Pay"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/69#0"
-				}
 			}
 		},
 		{
@@ -2599,11 +1886,6 @@
 			"snippet": "<button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"70\">Google Pay</button>",
 			"attributes": {
 				"label": "Google Pay"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/70#0"
-				}
 			}
 		},
 		{
@@ -2674,11 +1956,6 @@
 			"attributes": {
 				"label": "Keep shopping",
 				"url": "/shop/"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/72#0"
-				}
 			}
 		}
 	]

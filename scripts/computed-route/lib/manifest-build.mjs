@@ -4,7 +4,6 @@
 // copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
-import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
 import { isUnwalkedWooPage, keepsWooContent, wooContentRole } from './site-build-plan.mjs';
 import { megaPanelLabel } from './page-map-names.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
@@ -98,9 +97,7 @@ export function matchRecord( row, records ) {
 	if ( ! kind ) {
 		return { reason: `no record kind for post type ${ row.postType }` };
 	}
-	// A `template` row (the order confirmation) is played by a page or a result record: the draft shows the confirmation as the
-	// page it opens or as the result of placing an order.
-	let mine = records.filter( ( r ) => r.kind === kind || ( 'template' === row.postType && 'result' === r.kind ) );
+	let mine = records.filter( ( r ) => r.kind === kind );
 	if ( 'page' === kind ) {
 		mine = mine.filter( ( r ) => null != row.route && r.page_key === pageKeyOf( row.route ) );
 	} else if ( 'form' === kind ) {
@@ -108,8 +105,6 @@ export function matchRecord( row, records ) {
 	} else if ( mine.length > 1 ) {
 		mine = mine.filter( ( r ) => norm( r.name ) === norm( row.title ) );
 	}
-	// A page record and a result record of the same page: the page is the surface.
-	mine.length > 1 && 'template' === row.postType && mine.some( ( r ) => 'page' === r.kind ) && ( mine = mine.filter( ( r ) => 'page' === r.kind ) );
 	if ( 1 === mine.length ) {
 		return { record: mine[ 0 ] };
 	}
@@ -268,21 +263,14 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], noDraft: [], unplayed: [], matched: {} };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], noDraft: [], matched: {} };
 	const copies = templateSurfaces( rows );
-	// A copy Filled at its row needs that row's draft surface. A WooCommerce template (a slug with a commerce role) that no
-	// draft surface plays is never built as a copy (FR-48-87): its role needs WooCommerce's own piece, which only the draft's
-	// surface places, so WooCommerce's own template stands and the surface is listed in `unplayed` (manifest.mjs removes its
-	// earlier entry). Any other copy Filled at an unplayed row is built from the page copy's shell around the theme template's
-	// own content (a draft whose basket is a drawer has no cart page surface).
-	for ( const c of copies.filter( ( x ) => 'fill' === x.copy.from && ! matchRecord( x.row, records ).record ) ) {
-		if ( COMMERCE_ROLES[ c.slug ] ) {
-			copies.splice( copies.indexOf( c ), 1 );
-			out.unplayed.push( { key: c.key, slug: c.slug, why: `no draft surface plays the ${ c.slug } template: WooCommerce's own template stands` } );
-		} else {
-			c.copy = { from: 'page', unplayed: rowKey( c.row ) };
-		}
-	}
+	// A copy Filled at its row needs that row's draft surface: one the handoff has no record for (a draft whose basket is
+	// a drawer has no cart page surface) is built as the derived copies are, from the page copy's shell around the theme
+	// template's own content.
+	copies.filter( ( c ) => 'fill' === c.copy.from && ! matchRecord( c.row, records ).record ).forEach( ( c ) => {
+		c.copy = { from: 'page', unplayed: rowKey( c.row ) };
+	} );
 	const shellOf = new Map( copies.filter( ( c ) => 'pages' === c.copy.from ).flatMap( ( c ) => c.copy.surfaces.map( ( k ) => [ k, c.slug ] ) ) );
 	const mapKeys = new Set( [ ...rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ), ...copies.map( ( c ) => c.key ) ] );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
@@ -309,10 +297,6 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	for ( const row of [ ...rows, ...filled.map( ( c ) => ( { ...c.row, templateOf: c } ) ) ] ) {
 		const isTemplate = !! row.templateOf;
 		if ( ! isTemplate && null == row.id && ! builtTemplate( row ) ) {
-			// A `template` row is addressed by its slug, never a post id: the template copy Filled at this row plays it.
-			if ( 'template' === row.postType && filled.some( ( c ) => c.row === row ) ) {
-				continue;
-			}
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
 			continue;
 		}
@@ -384,12 +368,11 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		if ( have ) {
 			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );
 			added.length && ( out.added[ key ] = added );
-			// The skip and a template copy's `copy` are generated truth, never kept fields: they follow the draft (a copy kept
-			// from a run before the draft's record matched stayed an unplayed copy of the page shell, so no draft was read for it).
+			// The skip is generated truth, never a kept field: it follows the draft.
 			// A kept intakeSurface naming a skeleton intake no longer holds (a record now read as one skeleton per tab panel)
 			// gives way to the generated link.
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
-			entries[ key ] = { ...entry, ...have, ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
+			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
 			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );

@@ -63,11 +63,10 @@ export function renameHost( key, from, to ) {
 	return p && p.dc === from ? templateKey( { dc: to, tpl: p.tpl } ) : key;
 }
 
-// An instance key whose chain starts at the root host `from`, with that head renamed to `to` at any depth (`Site/5#1` and
-// `Site>H@1#0/5#1` alike: both runtimes name a mounted host's elements under the root host); any other key as it is.
+// An instance key whose chain is the single root host `from`, renamed to `to`; any other key as it is.
 export function renameRootHost( key, from, to ) {
 	const p = parseInstanceKey( key );
-	return p && p.chain[ 0 ] === from ? instanceKey( { ...p, chain: [ to, ...p.chain.slice( 1 ) ] } ) : key;
+	return p && 1 === p.chain.length && p.chain[ 0 ] === from ? instanceKey( { ...p, chain: [ to ] } ) : key;
 }
 
 // The template key a selector string names: its last `data-dc-tpl="<n>"` in the root component's key space (a Site Info row

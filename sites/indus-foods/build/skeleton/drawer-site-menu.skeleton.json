@@ -1,9 +1,7 @@
 [
 	{
 		"name": "sgs/nav-drawer",
-		"attributes": {
-			"chromeLogoId": 81
-		},
+		"attributes": {},
 		"draftRef": {
 			"tpl": "Root/108#0"
 		},
@@ -73,6 +71,40 @@
 				},
 				"innerBlocks": [
 					{
+						"name": "sgs/responsive-logo",
+						"attributes": {
+							"logoId": 81
+						},
+						"draftRef": {
+							"tpl": "Root/114#0"
+						},
+						"draftFingerprint": {
+							"tag": "indus-logo",
+							"cls": "",
+							"styleHash": "8adea707",
+							"parentTags": [
+								"div",
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 162
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+							},
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: choose the site logo in the editor"
+							}
+						]
+					},
+					{
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "div",
@@ -125,15 +157,33 @@
 										"detail": "the drawer's top row shows this icon group: set sgs/nav-drawer chromeSlotType to icons and keep the group the first block of the drawer body (includes/nav-drawer-chrome-icons.php lifts it into the top row)"
 									}
 								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/118#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scp9",
+									"styleHash": "6b3f799d",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 166
+								},
+								"innerBlocks": []
 							}
 						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/115#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -173,39 +223,7 @@
 							"textHash": "1505",
 							"line": 173
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-nav-drawer-menu__bar": {
-								"tpl": "Root/122#0"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link": {
-								"tpl": "Root/124#0"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link": {
-								"tpl": "Root/124#5"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(1) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": {
-								"tpl": "Root/125#0"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(6) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__ornament": {
-								"tpl": "Root/125#5"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary": {
-								"tpl": "Root/125#1"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(2) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
-								"tpl": "Root/126#1"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(3) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
-								"tpl": "Root/126#2"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(4) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
-								"tpl": "Root/126#3"
-							},
-							".sgs-nav-drawer-menu__bar > .sgs-nav-drawer-menu__item:nth-of-type(5) > .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__accordion > .sgs-nav-drawer-menu__accordion-summary > .sgs-nav-drawer-menu__caret": {
-								"tpl": "Root/126#4"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/container",
@@ -280,22 +298,9 @@
 									"instagram": "[data-dc-tpl=\"193\"]"
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/179#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/122#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root/178#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -319,7 +324,6 @@
 					{
 						"name": "sgs/button",
 						"attributes": {
-							"url": "/apply/",
 							"label": "Become A Trade Customer"
 						},
 						"draftRef": {
@@ -336,40 +340,10 @@
 							"textHash": "1505",
 							"line": 261
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root/198#0"
-							},
-							".sgs-button__icon": {
-								"tpl": "Root/199#0"
-							},
-							".sgs-button__icon > svg": {
-								"tpl": "Root/200#0"
-							}
-						}
+						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/197#0"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-nav-drawer__chrome > .sgs-nav-drawer__chrome-logo": {
-				"tpl": "Root/114#0"
-			},
-			".sgs-nav-drawer__chrome > .sgs-nav-drawer__close": {
-				"tpl": "Root/118#0"
-			},
-			".sgs-nav-drawer__body": {
-				"tpl": "Root/108#0"
-			},
-			"@scrim": {
-				"tpl": "Root/111#0"
-			}
-		}
+		]
 	}
 ]

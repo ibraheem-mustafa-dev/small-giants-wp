@@ -14,7 +14,7 @@ const run = ( series, props = [ 'padding-left' ] ) => {
 	const one = { styles: Object.fromEntries( props.map( ( p ) => [ p, '15px' ] ) ), rect: { w: 1, h: 1 } };
 	const reads = { sweep: { '0:link': Object.fromEntries( props.map( ( p ) => [ p, series ] ) ) }, widths: { 375: { '0:link': { missing: true } }, 768: { '0:link': { missing: true } }, 1440: { '0:link': one } } };
 	const writes = props.map( ( prop ) => ( { node: 'n0', slot: LINK, prop, attr: 'itemPadding', how: 'tiers' } ) );
-	return stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-23' } );
+	return stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes, scope: 'header', entries: [], date: '2026-10-23' } );
 };
 
 test( 'MUST FAIL: each scoped @media rule a step ladder writes returns one gaps row naming the setting and the step it needs', () => {

@@ -3,7 +3,10 @@
 import base from './template-checkout.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-template-checkout-0", text: false, structure: false, draft: {"tpl":"Root/16#0"}, live: ".cr-ref-template-checkout-0", liveAt: {"column-gap":".sgs-container__inner","padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-bottom":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-template-checkout-0", text: false, structure: false, draft: {"tpl":"Root/16#0"}, live: ".cr-ref-template-checkout-0" },
+	{ name: "gen-template-checkout-2", text: false, structure: false, draft: {"tpl":"Root/19#0"}, live: ".cr-ref-template-checkout-2" },
+	{ name: "gen-template-checkout-3", text: false, structure: false, draft: {"tpl":"Root/20#0"}, live: ".cr-ref-template-checkout-3" },
+	{ name: "gen-template-checkout-4", text: false, structure: false, draft: {"tpl":"Root/21#0"}, live: ".cr-ref-template-checkout-4" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

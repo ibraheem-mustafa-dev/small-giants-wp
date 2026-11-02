@@ -40,13 +40,9 @@ const PAGE_TYPES = { page: 'page_id', shop: 'page_id', post: 'p' };
 export const STORE_EXAMPLES = { product: '/wp-json/wc/store/v1/products?per_page=1', product_cat: '/wp-json/wc/store/v1/products/categories?per_page=1' };
 
 // The page map's ids belong to the site its `page-map.site` names; a mirror (calibration-targets.json `mirrorOf`) shares
-// that site's ids both ways (push-to-remote.sh copies the mirror's database over), so a map recorded under a mirror's name
-// holds its test site's ids too. Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
-// targets: calibration-targets.json, to resolve a mirror name recorded in `page-map.site`.
-export function rowsFor( rows, idsSite, target, targets = {} ) {
-	const canonical = ( name ) => targets[ name ]?.mirrorOf || name;
-	const here = target.mirrorOf || target.site;
-	return rowsForSite( rows, idsSite, idsSite && canonical( idsSite ) === here ? idsSite : target.site );
+// that site's ids. Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
+export function rowsFor( rows, idsSite, target ) {
+	return rowsForSite( rows, idsSite, idsSite && target.mirrorOf === idsSite ? idsSite : target.site );
 }
 
 // The rows the page check loads: { pages: [{ key, slug, title, url, menus }], examples: [{ key, slug, kind, url }],
@@ -76,9 +72,7 @@ export function pageTargets( rows, base ) {
 export function readRows( repo, client, target ) {
 	const file = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 	const idsSite = readIdsSite( file );
-	const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
-	const targets = fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) ) : {};
-	return { rows: rowsFor( readPageMap( file ), idsSite, target, targets ), idsSite };
+	return { rows: rowsFor( readPageMap( file ), idsSite, target ), idsSite };
 }
 
 // The client whose functional flows live in scripts/parity/flows: the `sites/<client>` folder their own results go to

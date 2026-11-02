@@ -6,9 +6,6 @@
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { makeRules } from './skeleton-rules.mjs';
-import { makeIdentity } from './skeleton-identity.mjs';
-import { draftLogicOf } from './skeleton-narrowing.mjs';
-import path from 'path';
 
 export const W = { tag: 0.5, composition: 0.35, capability: 0.25, structure: 0.4, siteInfo: 0.3, pattern: 0.5, decision: 1, logo: 0.5, rule: 1 };
 
@@ -61,10 +58,7 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	const sig = `${ e.tag }|${ words }`;
 	const own = clientDecisions.surfaces?.[ surface ]?.[ e.key ];
 	if ( own ) {
-		// An acceptance (its own label is the label the rules proposed when it was saved) is not an override: the classifier
-		// runs the rules in full and keeps their result while it still has that label (makeClassifier's classify).
-		const decision = { ...own, source: 'client decision' };
-		return own.signature && own.signature !== sig ? { stale: `decision for ${ e.key } was made for "${ own.signature }" and the element is now "${ sig }"` } : { ...decision, ...( own.proposed && proposalLabel( decision ) === own.proposed ? { acceptance: true } : {} ) };
+		return own.signature && own.signature !== sig ? { stale: `decision for ${ e.key } was made for "${ own.signature }" and the element is now "${ sig }"` } : { ...own, source: 'client decision' };
 	}
 	if ( picks[ e.key ] ) {
 		return { ...picks[ e.key ], source: 'finaliser pick' };
@@ -73,18 +67,11 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
 
-// Whether a decision settles an element against the rules: a client decision that is not an acceptance (a typed block, a
-// removal chosen against the proposal, a decision saved without `proposed`).
-export const isOverride = ( d ) => 'client decision' === d?.source && ! d.acceptance;
-
-// The label of what a proposal or a decision settles an element as: its action, else its block, else `no block`.
-export const proposalLabel = ( r ) => ( r.remove ? 'remove' : r.action || r.block || r.candidates?.[ 0 ]?.block || 'no block' );
-
 export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set(), view = undefined, scope = null, formLinkOf = () => null, siteLink = undefined } ) {
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
 	const textBlock = tagMap.p?.core_block_slug || null;
-	const sectionRoots = Object.values( composition ).filter( ( r ) => 'section-root' === r.composition_role );
+	const sectionRoots = Object.values( composition ).filter( ( r ) => 'section-root' === r.composition_role && r.accepts );
 
 	// Brand-registry hits for an element: which brand's address it links to, which placeholder it is bound to, its label.
 	const brandFor = ( e ) => {
@@ -130,7 +117,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
-		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.kind ? { kind: r.kind } : {} ), ...( r.opens ? { opens: r.opens } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.widthDependent ? { widthDependent: r.widthDependent, confidence: decisions.rules?.widthDependent?.confidence ?? 0.5 } : {} ) };
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ) };
 		if ( r.action ) {
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), candidates: [] };
 		}
@@ -139,77 +126,22 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), ...base, absorb: !! r.absorb };
 	};
 
-	// A rule that names a block keeps winning, unless the framework DB's own scoring of the element (the same classifier with
-	// the rules set aside) strongly prefers another block (Bean, D1, 2026-10-29): its top SGS block differs from the rule's,
-	// it is a specific block (a generic wrapper shell, the fallback for any element with children, is no preference), its
-	// confidence reaches rules.ruleConflict.minConfidence, and the rule's block holds no more than
-	// rules.ruleConflict.maxRuleShare of the DB's candidates. Such a row stays the rule's block but is low confidence, with
-	// both reasons and both candidates, so the finaliser and the review decide it instead of the rule being final.
-	const ruleAgainstDb = ( e, parentBlock, ctx, out ) => {
-		const D = decisions.rules?.ruleConflict;
-		const ruleBlock = out.candidates?.[ 0 ]?.block;
-		if ( ! D || ! ruleBlock ) {
-			return out;
-		}
-		const db = sgsOnly( classify( e, parentBlock, { ...ctx, noRule: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
-		const top = db.candidates?.[ 0 ];
-		const ruleShare = db.candidates.find( ( c ) => c.block === ruleBlock )?.share ?? 0;
-		if ( ! top || top.block === ruleBlock || facts.wrapperShells.includes( top.block ) || db.confidence < D.minConfidence || ruleShare > D.maxRuleShare ) {
-			return out;
-		}
-		const dbReason = `the framework DB prefers ${ top.block } (confidence ${ db.confidence }: ${ top.evidence.map( ( x ) => x.text ).join( '; ' ) })`;
-		return {
-			...out, confidence: D.confidence, conflict: { rule: out.rule, ruleBlock, dbBlock: top.block, dbConfidence: db.confidence, why: D.reason },
-			reason: `${ out.reason }; ${ dbReason }; ${ D.reason }`,
-			candidates: [ { ...out.candidates[ 0 ], share: 0.5 }, { ...top, share: 0.5 } ],
-		};
-	};
-
-	// What the rules give an element with its client decision set aside: `raw` as classify returns it, `settled` as the
-	// classifier's result is (lib/skeleton-identity.mjs and the region widening applied).
-	const withoutClient = ( e, parentBlock, ctx ) => {
-		const raw = sgsOnly( classify( e, parentBlock, { ...ctx, noClient: true } ), facts.replacedBy, decisions.rules?.coreExceptions || [] );
-		return { raw, settled: settle( e, raw, { ...ctx, noClient: true } ) };
-	};
-
-	// A client decision records what the rules propose for its element when that differs from what they proposed as it was
-	// saved (`decision.proposed`, a label from `proposalLabel`): { ruleWould: { label, reason, decision: { label, reason } } }.
-	// A decision saved without `proposed` has no baseline and records nothing.
-	const ruleWouldOf = ( e, parentBlock, ctx, over ) => {
-		if ( 'client decision' !== over.source || ! over.proposed || ctx.noClient ) {
-			return {};
-		}
-		const alt = withoutClient( e, parentBlock, ctx ).settled;
-		const label = proposalLabel( alt );
-		return label === over.proposed ? {} : { ruleWould: { label, reason: alt.reason || alt.source || '', decision: { label: proposalLabel( over ), reason: over.reason || '' } } };
-	};
-
-	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name), noRule (the
-	// standing rules set aside: the DB's own scoring) }.
+	// The candidates for one element. ctx: { parentBlock, typedBrand (the element is part of a typed brand name) }.
 	function classify( e, parentBlock = null, ctx = {} ) {
 		const C = {};
 		const words = m.words( e );
-		const decided = overrides( e, words );
-		const over = ctx.noClient && 'client decision' === decided?.source ? null : decided;
-		// An acceptance: the rules run in full and their result stands (absorption, handovers, attributes included) while its
-		// label is the one accepted; a rule that now proposes another label leaves the accepted block standing with `ruleWould`.
-		if ( over?.acceptance && ! ctx.noClient ) {
-			const alt = withoutClient( e, parentBlock, ctx );
-			if ( proposalLabel( alt.settled ) === over.proposed ) {
-				return { ...alt.raw, acceptedDecision: true };
-			}
-		}
-		const verdict = ! ctx.typedBrand && ! ctx.noRule && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
+		const over = overrides( e, words );
+		const verdict = ! ctx.typedBrand && 'client decision' !== over?.source ? rules.ruleFor( e, parentBlock ) : null;
 		if ( verdict ) {
-			return ruleAgainstDb( e, parentBlock, ctx, fromRule( verdict ) );
+			return fromRule( verdict );
 		}
 		if ( over?.remove ) {
-			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1, ...ruleWouldOf( e, parentBlock, ctx, over ) };
+			return { action: 'remove', reason: over.reason || over.source, source: over.source, candidates: [], confidence: 1 };
 		}
 		if ( over?.block ) {
 			add( C, over.block, 'decision', W.decision, `${ over.source }${ over.reason ? `: ${ over.reason }` : '' }`, { attributes: over.attributes } );
 			const r = finish( C );
-			return { ...r, confidence: over.confidence ?? 1, source: over.source, ...ruleWouldOf( e, parentBlock, ctx, over ) };
+			return { ...r, confidence: over.confidence ?? 1, source: over.source };
 		}
 		const stale = over?.stale || null;
 		const brief = briefOnly( e );
@@ -224,10 +156,9 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			const fits = ( accepted ) => bk.some( ( c ) => ( 'content-block' === composition[ accepted ]?.composition_role && m.blockKids( c ).length ) || tagMap[ c.tag ]?.core_block_slug === accepted );
 			rootRule.forEach( ( r ) => {
 				add( C, r.block_slug, 'capability', W.capability * 2, `block_capabilities: ${ r.block_slug } lists "${ e.tag }" (the draft root tag)` );
-				add( C, r.block_slug, 'db', W.composition, `block_composition: ${ r.block_slug } is a section-root accepting ${ r.accepts ? JSON.stringify( r.accepts ) : 'any block' }` );
+				add( C, r.block_slug, 'db', W.composition, `block_composition: ${ r.block_slug } is a section-root accepting ${ JSON.stringify( r.accepts ) }` );
 				add( C, r.block_slug, 'structure', 0.15, 'the root of the surface' );
-				// A null list is a declared "accepts any block" (edit.js sets no allowedBlocks): it fits whatever the root holds.
-				const fit = r.accepts ? r.accepts.filter( fits ) : [];
+				const fit = r.accepts.filter( fits );
 				fit.length && add( C, r.block_slug, 'structure', W.structure, `the root's children fit what it accepts (${ fit.join( ', ' ) })` );
 			} );
 			return { ...finish( C ), stale };
@@ -315,107 +246,5 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	// Identification by elimination (lib/skeleton-identity.mjs) over what the scoring and the rules settled, in the authority
-	// order: a client decision, a finaliser pick and a standing decision stand; a structural rule (rules.identity.structural:
-	// the header and footer slots, the form link, the commerce region, owned parts) stands; another rule is checked against the
-	// element's facts; the scoring's pick is matched.
-	const logicOf = ( component ) => ( view && facts.repo && facts.client ? draftLogicOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component } ) : null );
-	const identity = makeIdentity( { m, facts, surface, logicOf, carousels: surface.loops?.carousels || new Set(), owned: rules.owned || new Set() } );
-	const structural = new Set( decisions.rules?.identity?.structural || [] );
-	let widened = null;
-	// A loop's block placed on its holder stands over its own parts beside it (R2): climbing from the holder, every block
-	// sibling met is a part when it shows a fact the block shows (its platform, a role or state few blocks share) and nothing
-	// the block cannot show; the block moves to the highest element whose other children were all its parts, and the parts and
-	// the wrappers on the way are drawn by it (absorbed) or, for a block holding its items, unwrapped into it.
-	const widening = () => {
-		if ( widened ) {
-			return widened;
-		}
-		widened = { at: new Map(), inner: new Map() };
-		const decided = ( e ) => isOverride( overrides( e, m.words( e ) ) );
-		for ( const x of identity ? rules.loopRegions || [] : [] ) {
-			const anchor = m.byKey[ x.key ];
-			if ( ! anchor || ! x.block || decided( anchor ) ) {
-				continue;
-			}
-			// A sibling is the block's part when it shows a fact the block shows (its platform, a role or state few blocks share,
-			// a named part: stars, a score, a count, an arrow, a dot) and nothing the block cannot show; it is a whole part when
-			// every block child it holds is one too, or holds no words of its own (a glyph, a separator).
-			const shows = ( s ) => ! identity.ruledOut( x.block, s ) && [ ...identity.region( s ).values() ].some( ( f ) => ( 'platform' === f.fact || 'shows-part' === f.fact || identity.naming( f ) ) && 'yes' === identity.table.state( x.block, f.fact, f.value ) );
-			const quiet = ( k ) => ! m.words( k ).trim() && ! m.blockKids( k ).some( ( c ) => m.words( c ).trim() );
-			const memo = new Map();
-			const whole = ( s ) => memo.get( s.key ) ?? memo.set( s.key, shows( s ) && m.blockKids( s ).every( ( k ) => whole( k ) || quiet( k ) ) ).get( s.key );
-			// The whole parts within a sibling: itself, else the whole parts among its children, never inside a unit of its own (a
-			// control or card link, a loop's item, what a structure owns: a product card keeps its star rating and price).
-			const unit = ( s ) => [ 'a', 'button' ].includes( s.tag ) || !! m.read.handler( s ) || ( rules.owned || new Set() ).has( s.key ) || ( s.membership || [] ).some( ( x ) => 'sc-for' === x.kind );
-			const partsIn = ( s ) => ( whole( s ) ? [ s ] : unit( s ) ? [] : m.blockKids( s ).flatMap( partsIn ) );
-			let top = null;
-			let clean = true;
-			let parts = [];
-			const route = [];
-			for ( let at = anchor, p = m.byKey[ anchor.parentKey ]; p && p !== m.root; at = p, p = m.byKey[ p.parentKey ] ) {
-				const sibs = m.blockKids( p ).filter( ( k ) => k !== at );
-				clean && route.push( at );
-				if ( ! sibs.length ) {
-					continue;
-				}
-				const found = sibs.flatMap( partsIn );
-				if ( ! found.length ) {
-					break;
-				}
-				// The block moves up only while every sibling is wholly its part; parts found beside other content are drawn by it
-				// where they stand (absorbed into it), and the walk stops at the first level holding no part.
-				if ( clean && sibs.every( whole ) ) {
-					top = p;
-				} else {
-					clean = false;
-				}
-				parts = [ ...parts, ...found ];
-			}
-			if ( ! parts.length || ( top && ( decided( top ) || widened.at.has( top.key ) ) ) ) {
-				continue;
-			}
-			const verdict = rules.ruleFor( anchor, null );
-			if ( ! verdict?.block ) {
-				continue;
-			}
-			const host = top ?? anchor;
-			const within = ( k ) => top && [ ...( function* up( e ) {
-				for ( let q = e; q; q = m.byKey[ q.parentKey ] ) {
-					yield q;
-				}
-			} )( k ) ].includes( top );
-			const shown = parts.flatMap( ( s ) => [ ...identity.region( s ).values() ].filter( ( f ) => 'yes' === identity.table.state( x.block, f.fact, f.value ) && ( 'platform' === f.fact || 'shows-part' === f.fact || identity.naming( f ) ) ).map( ( f ) => `${ f.fact } ${ f.value }` ) ).sort( ( a, b ) => Number( b.startsWith( 'shows-part' ) ) - Number( a.startsWith( 'shows-part' ) ) );
-			const why = `${ decisions.rules.identity.regionReason }: ${ x.block } placed on ${ anchor.key } draws its own parts beside it (${ [ ...new Set( shown ) ].slice( 0, 10 ).join( ', ' ) }; at ${ parts.map( ( k ) => k.key ).slice( 0, 6 ).join( ', ' ) })`;
-			top && widened.at.set( top.key, { ...fromRule( { ...verdict, reason: `${ verdict.reason }; ${ why }` } ), identityRegion: { anchor: anchor.key, parts: parts.map( ( s ) => s.key ) } } );
-			const absorbed = { action: 'absorbed', rule: 'identity', into: host.key, source: 'identity matcher', reason: `${ why }: drawn by ${ x.block }`, confidence: 1, candidates: [] };
-			if ( top && ! verdict.absorb ) {
-				route.filter( ( k ) => k !== top ).forEach( ( k ) => widened.inner.set( k.key, { action: 'unwrap', rule: 'identity', source: 'identity matcher', reason: `${ why }: unwrapped into ${ top.key }`, confidence: 1, candidates: [] } ) );
-			}
-			// A part inside the moved block's own subtree is drawn by it already when the block absorbs; any other part is absorbed.
-			parts.filter( ( k ) => ! ( verdict.absorb && within( k ) ) ).forEach( ( k ) => widened.inner.set( k.key, absorbed ) );
-		}
-		return widened;
-	};
-	const settle = ( e, r, ctx = {} ) => {
-		if ( ! identity || ctx.typedBrand || ctx.noRule || [ 'client decision', 'finaliser pick' ].includes( r.source ) || /^standing decision/.test( r.source || '' ) ) {
-			return r;
-		}
-		const w = widening();
-		const moved = w.at.get( e.key ) ?? w.inner.get( e.key );
-		if ( moved ) {
-			return sgsOnly( moved, facts.replacedBy, facts.decisions.rules?.coreExceptions || [] );
-		}
-		if ( structural.has( r.rule ) || r.action ) {
-			return r;
-		}
-		return r.rule ? identity.check( e, r ) : identity.match( e, r ) || r;
-	};
-	// A rule result that stands for an accepted proposal keeps the mark `acceptedDecision` through the settling.
-	const classifySettled = ( e, parentBlock = null, ctx = {} ) => {
-		const raw = sgsOnly( classify( e, parentBlock, ctx ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] );
-		const out = settle( e, raw, ctx );
-		return raw.acceptedDecision && ! out.acceptedDecision ? { ...out, acceptedDecision: true } : out;
-	};
-	return { classify: classifySettled, identity, accordionRuns: rules.accordionRuns || new Map(), brandFor, siteInfoKinds, isColumnLabel, briefOnly, timedPopup: rules.timedPopup, drawsChildren: rules.drawsChildren, modalParts: rules.modalParts, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, filterDrawer: rules.filterDrawer, choiceFlow: rules.choiceFlow };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, choiceFlow: rules.choiceFlow };
 }

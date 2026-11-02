@@ -80,8 +80,7 @@ export function usageRoles( groups, uses ) {
 		return hit?.[ 0 ] ?? null;
 	};
 	const flagged = uses.some( ( u ) => u.text );
-	// A run of glyphs only (a tick, an arrow) is an icon, never text evidence; a row without `words` (an older palette.json) counts as before.
-	const isText = ( u ) => 'color' === u.property && ( ! flagged || u.text ) && false !== u.words;
+	const isText = ( u ) => 'color' === u.property && ( ! flagged || u.text );
 	const tag = ( u ) => ( u.tag || '' ).toLowerCase();
 	const sum = ( m ) => [ ...m.values() ].reduce( ( s, n ) => s + n, 0 );
 
@@ -97,8 +96,8 @@ export function usageRoles( groups, uses ) {
 	give( 'footer-bg', best( tally( ( u ) => 'footer-ground' === u.property ) ), ( n ) => `the footer's ground on ${ n } page(s)` );
 	// Headings, links and muted text count on a light, opaque ground: on a strong ground they take that ground's text colour.
 	const light = ( hex ) => !! hex && 1 === hexToLab( hex ).alpha && lightness( hex ) >= LIGHT_L && ( chroma( hex ) <= SATURATED_C || lightness( hex ) >= PALE_L );
-	const heading = give( 'heading', best( tally( ( u ) => 'color' === u.property && false !== u.words && HEADING_TAG.test( tag( u ) ) && ( ! u.ground || light( u.ground ) ) ) ), ( n ) => `the most used heading colour on light grounds (${ n } headings)` );
-	const links = tally( ( u ) => 'color' === u.property && false !== u.words && 'a' === tag( u ) && ( ! u.ground || light( u.ground ) ) );
+	const heading = give( 'heading', best( tally( ( u ) => 'color' === u.property && HEADING_TAG.test( tag( u ) ) && ( ! u.ground || light( u.ground ) ) ) ), ( n ) => `the most used heading colour on light grounds (${ n } headings)` );
+	const links = tally( ( u ) => 'color' === u.property && 'a' === tag( u ) && ( ! u.ground || light( u.ground ) ) );
 	const linkTotal = sum( links );
 	give( 'link', best( links, ( g ) => g !== text && links.get( g ) * 10 >= linkTotal ) || best( links ),
 		( n ) => `the most used link colour on light grounds that is not the page text, or the page text when no other colour holds a tenth of them (${ n } of ${ linkTotal } links)` );
@@ -107,26 +106,22 @@ export function usageRoles( groups, uses ) {
 	const divider = ( g ) => g !== surface && opaque( g.hex ) && chroma( g.hex ) <= SATURATED_C;
 	const border = give( 'border', best( lines, divider ), ( n ) => `the divider line colour that draws the most (${ n } px; a link's underline and a line in the page ground's colour are not dividers)` );
 	border && give( 'border-light', best( lines, ( g ) => g !== border && divider( g ) && lightness( g.hex ) > lightness( border.hex ) ), ( n ) => `the next divider line colour by length, lighter than the border (${ n } px)` );
-	// A colour painted only as the ground of links that open a registry brand's channel (WhatsApp, Facebook...) is that
-	// brand's colour, which the brand's block paints itself: it takes no slot, and it is never offered as primary, accent or
-	// section. A colour that also paints other grounds (the client's own blue on its buttons and on one Google review link)
-	// keeps its place in the contest.
-	const channelGrounds = tally( ( u ) => !! u.channel && isBackground( u.property ) );
-	const allGrounds = tally( ( u ) => isBackground( u.property ) );
-	const channel = new Set( [ ...channelGrounds.keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C && channelGrounds.get( g ) === allGrounds.get( g ) ) );
+	// A colour painted as the ground of a link that opens WhatsApp is that channel's colour, never a brand ground.
+	const channel = give( 'whatsapp', best( tally( ( u ) => 'whatsapp' === u.channel && isBackground( u.property ) ), ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ),
+		( n ) => `the ground of the links that open WhatsApp (${ n } elements)` );
 	const grounds = tally( ( u ) => isBackground( u.property ) && ! BASE_TAG.test( tag( u ) ) );
 	const buttons = tally( ( u ) => isBackground( u.property ) && BUTTON_TAG.test( tag( u ) ) );
 	const linkGrounds = tally( ( u ) => isBackground( u.property ) && 'a' === tag( u ) );
 	const strong = ( g ) => opaque( g.hex ) && g !== surface && ( chroma( g.hex ) > SATURATED_C || ( !! page && contrast( g.hex, page ) >= 3 ) );
 	// A strong ground by where it paints: buttons first, then links styled as buttons, then any element.
 	const strongest = ( ok ) => ( [ [ buttons, 'buttons' ], [ linkGrounds, 'links' ], [ grounds, 'elements' ] ].map( ( [ m, what ] ) => {
-		const hit = best( m, ( g ) => strong( g ) && ! channel.has( g ) && ok( g ) );
+		const hit = best( m, ( g ) => strong( g ) && g !== channel && ok( g ) );
 		return hit ? [ hit[ 0 ], `${ hit[ 1 ] } ${ what }` ] : null;
 	} ).find( Boolean ) ) ?? null;
 	const primary = give( 'primary', strongest( () => true ), ( n ) => `the most used strong ground (${ n })` );
 	const accent = give( 'accent', strongest( ( g ) => g !== primary ), ( n ) => `the next most used strong ground (${ n })` );
 	const alt = give( 'surface-alt', best( grounds, ( g ) => opaque( g.hex ) && ! strong( g ) && g !== surface ), ( n ) => `the most used light ground after the page ground (${ n } elements)` );
-	const section = give( 'section', best( grounds, ( g ) => opaque( g.hex ) && ! [ surface, alt, primary ].includes( g ) && ! channel.has( g ) ), ( n ) => `the most used ground after the page, raised and primary grounds (${ n } elements)` );
+	const section = give( 'section', best( grounds, ( g ) => opaque( g.hex ) && ! [ surface, alt, primary ].includes( g ) ), ( n ) => `the most used ground after the page, raised and primary grounds (${ n } elements)` );
 	const dark = best( grounds, ( g ) => opaque( g.hex ) && lightness( g.hex ) < 40 )?.[ 0 ] ?? null;
 	// The most used colour on elements sitting on a ground (an element holding text counts twice), readable on it.
 	const on = ( g ) => ( g ? best( tally( ( u ) => 'color' === u.property && g.hexes.has( u.ground ), ( u ) => ( u.count ?? 1 ) * ( u.text ? 2 : 1 ) ),

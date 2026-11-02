@@ -82,6 +82,8 @@
 		"--tint-on-blue": [
 			"custom-tint-on-blue"
 		],
-		"--whatsapp-green": []
+		"--whatsapp-green": [
+			"whatsapp"
+		]
 	}
 }

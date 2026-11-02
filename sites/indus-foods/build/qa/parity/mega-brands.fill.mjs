@@ -3,10 +3,10 @@
 import base from './mega-brands.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-mega-brands-0", text: false, structure: false, draft: {"tpl":"Root/95#0"}, live: ".cr-ref-mega-brands-0", liveAt: {"border-top-color":".sgs-mega-panel__content > .sgs-mega-group"} },
-	{ name: "gen-mega-brands-1", text: false, structure: false, draft: {"tpl":"Root/96#0"}, live: ".cr-ref-mega-brands-1", liveAt: {"column-gap":".sgs-container__inner","padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-bottom":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-mega-brands-0", text: false, structure: false, draft: {"tpl":"Root/95#0"}, live: ".cr-ref-mega-brands-0" },
+	{ name: "gen-mega-brands-1", text: false, structure: false, draft: {"tpl":"Root/96#0"}, live: ".cr-ref-mega-brands-1" },
 	{ name: "gen-mega-brands-2", text: false, structure: false, draft: {"tpl":"Root/97#0"}, live: ".cr-ref-mega-brands-2" },
-	{ name: "gen-mega-brands-3", text: false, structure: false, draft: {"tpl":"Root/98#0"}, live: ".cr-ref-mega-brands-3", liveAt: {"column-gap":".sgs-gallery__grid"} },
+	{ name: "gen-mega-brands-3", text: false, structure: false, draft: {"tpl":"Root/98#0"}, live: ".cr-ref-mega-brands-3" },
 	{ name: "gen-mega-brands-4", text: false, structure: false, draft: {"tpl":"Root/102#0"}, live: ".cr-ref-mega-brands-4" },
 	{ name: "gen-mega-brands-5", text: false, structure: false, draft: {"tpl":"Root/103#0"}, live: ".cr-ref-mega-brands-5" },
 	{ name: "gen-mega-brands-6", text: false, structure: false, draft: {"tpl":"Root/104#0"}, live: ".cr-ref-mega-brands-6" },

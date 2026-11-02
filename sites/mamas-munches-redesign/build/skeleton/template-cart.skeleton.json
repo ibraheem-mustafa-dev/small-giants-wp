@@ -34,7 +34,7 @@
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/label",
+						"name": "sgs/text",
 						"attributes": {
 							"text": "nearly there"
 						},
@@ -77,7 +77,22 @@
 							{
 								"name": "sgs/text",
 								"attributes": {
-									"text": "Your basket"
+									"text": "2"
+								},
+								"draftRef": {
+									"tpl": "Root/12#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "fd852d6a",
+									"parentTags": [
+										"main",
+										"div",
+										"h1"
+									],
+									"textHash": "2b597",
+									"line": 14
 								},
 								"innerBlocks": []
 							}
@@ -88,18 +103,8 @@
 						"attributes": {},
 						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/9#0"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/9#0"
-			}
-		}
+		]
 	}
 ]

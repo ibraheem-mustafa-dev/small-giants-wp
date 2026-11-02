@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss, instancesDue } from '../lib/cache.mjs';
+import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss } from '../lib/cache.mjs';
 import { calibrationFor } from '../solve.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
@@ -157,33 +157,4 @@ test( 'slotMapWriteDecision refuses a lossy write, accepts a named loss and a fi
 test( 'parseAllowLoss splits block:name on the first colon after the block slug', () => {
 	assert.deepEqual( parseAllowLoss( 'sgs/a:x,sgs/b:discovered:layout,sgs/a:y' ), { 'sgs/a': [ 'x', 'y' ], 'sgs/b': [ 'discovered:layout' ] } );
 	assert.deepEqual( parseAllowLoss( null ), {} );
-} );
-
-// A run whose slot map is current but whose default paint is due builds only what the paint is read from: each variant's
-// default instance and each paint state. Setting markers and their bases are never built (they measured nothing the paint
-// file holds; nav-bar-menu spent about 100 minutes on them on 2026-11-01). MUST FAIL: a filter that keeps every instance,
-// or one that drops a paint state, fails here.
-test( 'instancesDue: a paint-only run builds the default and paint-state instances alone', () => {
-	const planned = [
-		{ key: 'default-v0', isDefault: true },
-		{ key: 'default-v1', isDefault: true },
-		{ key: 'paint-empty', paintState: { name: 'empty' } },
-		{ key: 'base-x-v0', isBase: true },
-		{ key: 'padding-37', row: { attr_name: 'padding' } },
-		{ key: 'content-title' },
-	];
-	assert.deepEqual( instancesDue( planned, { slotMap: false, paint: true } ).map( ( i ) => i.key ), [ 'default-v0', 'default-v1', 'paint-empty' ] );
-	assert.deepEqual( instancesDue( planned, { slotMap: true, paint: true } ), planned );
-	assert.deepEqual( instancesDue( planned, { slotMap: true, paint: false } ), planned );
-} );
-
-// A stale slot map (deploy hash not the build's) is measured again on any site. MUST FAIL: the other-site rule ran
-// first, so a stale map measured on local-indus was never refreshed on local-mamas, while the site run refused it as
-// stale (sgs/accordion-item, sgs/choice-flow on 2026-11-01).
-test( 'slotMapSkip: a stale map measured on another site is due; a current one is kept', () => {
-	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cache-stale-' ) );
-	writeSlotMap( dir, 'sgs/heading', { block: 'sgs/heading', site: 'site-a', slotKey: 'old', readKey: READ_KEY, settings: {} } );
-	assert.equal( slotMapSkip( dir, 'sgs/heading', 'site-b', 'new' ), null );
-	assert.match( slotMapSkip( dir, 'sgs/heading', 'site-b', 'old' ), /calibrated on site-a/ );
-	assert.match( slotMapSkip( dir, 'sgs/heading', 'site-a', 'old' ), /current/ );
 } );

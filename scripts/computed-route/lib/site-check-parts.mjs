@@ -48,16 +48,12 @@ export function readPartsInPage( mark ) {
 	return { modals, flows, forms };
 }
 
-// The page-map choice-flow rows (sgs_choice_flow) no rendered flow shows, and the modal rows (sgs_modal) no rendered modal
-// shows. `flows` and `modals` are readPartsInPage's from every checked page. A flow that names its saved flow
-// (data-flow-slug, choice-flow/render.php) is that row by slug; a flow that names none (an older render) is that row by its
-// aria-label, case ignored. A flow naming another row's slug is never matched by label. A modal is the row whose slug is its
-// anchor (the frame's `anchor`, where the opener links point), else the row whose title is its accessible name (the saved
-// modal post's title, modal/render.php), case ignored.
-export function missingFlowRows( rows, flows, modals = [] ) {
-	const flowRows = rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter( ( r ) => ! flows.some( ( f ) => ( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) ) );
-	const modalRows = rows.filter( ( r ) => 'sgs_modal' === r.postType ).filter( ( r ) => ! modals.some( ( m ) => m.anchor === r.slug || String( m.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) );
-	return [ ...flowRows, ...modalRows ];
+// The page-map choice-flow rows (sgs_choice_flow) no rendered flow shows. `flows` are readPartsInPage's flows from every
+// checked page. A flow that names its saved flow (data-flow-slug, choice-flow/render.php) is that row by slug; a flow that
+// names none (an older render) is that row by its aria-label, case ignored. A flow naming another row's slug is never
+// matched by label.
+export function missingFlowRows( rows, flows ) {
+	return rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter( ( r ) => ! flows.some( ( f ) => ( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) ) );
 }
 
 // One modal on the loaded page (marked by readPartsInPage): opens from its trigger, closes by its close button or
@@ -93,29 +89,6 @@ export function flowStateInPage( [ mark, id, shownSrc ] ) {
 
 // One choice flow on the loaded page: its first step shows; picking the first option (and Continue, when the flow
 // shows it) moves to another step; Back returns to the first. Nothing is added to the basket.
-// In-page. Whether the flow marked `id` sits inside a closed <dialog>, and if so marks the dialog's first visible opener
-// (`.sgs-modal__trigger[data-modal-id]`, `[data-sgs-modal-open="<anchor>"]` or `a[href="#<anchor>"]`, the anchor being the
-// dialog's parent's id) with `<id>-opener`. Returns { closed, opener, anchor }.
-export function popupOfFlowInPage( [ mark, id ] ) {
-	const d = document.querySelector( `[${ mark }="${ id }"]` )?.closest( 'dialog' );
-	if ( ! d || d.open ) {
-		return { closed: false };
-	}
-	const anchor = d.parentElement?.id || '';
-	const visible = ( e ) => {
-		const r = e.getBoundingClientRect();
-		const cs = getComputedStyle( e );
-		return r.width > 0 && r.height > 0 && 'hidden' !== cs.visibility && 'none' !== cs.display;
-	};
-	const triggers = [
-		...( d.id ? document.querySelectorAll( `.sgs-modal__trigger[data-modal-id="${ CSS.escape( d.id ) }"]` ) : [] ),
-		...( anchor ? document.querySelectorAll( `[data-sgs-modal-open="${ CSS.escape( anchor ) }"], a[href="#${ CSS.escape( anchor ) }"]` ) : [] ),
-	];
-	const opener = triggers.find( visible );
-	opener && opener.setAttribute( mark, `${ id }-opener` );
-	return { closed: true, opener: !! opener, anchor };
-}
-
 export async function flowItem( page, f, { url, shoot } ) {
 	const subject = `choice flow "${ f.label || f.flowId }"`;
 	const selector = `${ FLOW_ROOT }[data-flow-id="${ f.flowId }"]`;
@@ -123,19 +96,6 @@ export async function flowItem( page, f, { url, shoot } ) {
 	const state = () => page.evaluate( flowStateInPage, [ MARK, id, shownInPage.toString() ] );
 	if ( f.broken ) {
 		return { status: 'fail', subject, url, selector, error: 'it renders its broken-link notice (the linked flow is missing or unpublished)' };
-	}
-	// A flow inside a closed popup (a buybox's flow modal, FR-43-22) is opened first, as a shopper opens it: by clicking the
-	// popup's visible opener on the page (the same openers the modal check reads).
-	const popup = await page.evaluate( popupOfFlowInPage, [ MARK, id ] );
-	if ( popup.closed ) {
-		if ( ! popup.opener ) {
-			return { status: 'fail', subject, url, selector, screenshot: await shoot( `${ id }-no-opener` ), error: `it sits in a closed popup (${ popup.anchor ? `#${ popup.anchor }` : 'no anchor' }) that no visible control on the page opens` };
-		}
-		await page.locator( `[${ MARK }="${ id }-opener"]` ).first().click();
-		await page.waitForTimeout( SETTLE_MS );
-		if ( ! await page.evaluate( ( [ mark, fid ] ) => !! document.querySelector( `[${ mark }="${ fid }"]` )?.closest( 'dialog' )?.open, [ MARK, id ] ) ) {
-			return { status: 'fail', subject, url, selector, screenshot: await shoot( `${ id }-not-opened` ), error: `clicking its popup's opener (#${ popup.anchor }) did not open the popup` };
-		}
 	}
 	const s0 = await state();
 	if ( ! s0.steps || s0.at < 0 ) {

@@ -9,10 +9,6 @@
       "textHash": "1505",
       "line": 269
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/316#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/344#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-1": {
@@ -26,10 +22,6 @@
       ],
       "textHash": "1505",
       "line": 435
-    },
-    "slots": {
-      ".sgs-hero__content": "Root/322#0",
-      ".sgs-hero__video-bg": "Root/318#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -61,9 +53,6 @@
       ],
       "textHash": "1505",
       "line": 445
-    },
-    "slots": {
-      ".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": "Root/328#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -150,9 +139,6 @@
       "textHash": "1505",
       "line": 474
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-9": {
@@ -167,9 +153,6 @@
       ],
       "textHash": "1505",
       "line": 476
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/604#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -187,15 +170,6 @@
       "textHash": "1505",
       "line": 872
     },
-    "slots": {
-      ".sgs-post-grid__inner": "Root/604#0",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1) > .sgs-post-grid__image-link > .sgs-post-grid__image": "Root/607#0",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2) > .sgs-post-grid__image-link > .sgs-post-grid__image": "Root/607#1",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1) > .sgs-post-grid__badge": "Root/609#0",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2) > .sgs-post-grid__badge": "Root/609#1",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1)": "Root/606#0",
-      ".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2)": "Root/606#1"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-11": {
@@ -209,9 +183,6 @@
       ],
       "textHash": "1505",
       "line": 474
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/345#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -228,9 +199,6 @@
       "textHash": "1505",
       "line": 476
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/515#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-13": {
@@ -246,10 +214,6 @@
       ],
       "textHash": "1505",
       "line": 741
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/516#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/517#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -301,10 +265,6 @@
       ],
       "textHash": "1505",
       "line": 745
-    },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/520#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/522#0"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -377,10 +337,6 @@
       "textHash": "1505",
       "line": 750
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/525#0",
-      ".sgs-button:nth-of-type(2)": "Root/526#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-21": {
@@ -399,9 +355,6 @@
       "textHash": "fc5594e5",
       "line": 751
     },
-    "slots": {
-      ".sgs-button__label": "Root/525#0"
-    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-blog-22": {
@@ -419,9 +372,6 @@
       ],
       "textHash": "d9580830",
       "line": 752
-    },
-    "slots": {
-      ".sgs-button__label": "Root/526#0"
     },
     "draft": "0fe5aee1c396a997"
   }

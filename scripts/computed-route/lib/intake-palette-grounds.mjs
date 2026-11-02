@@ -6,15 +6,15 @@
 // page text is the body's colour. Footers are the `footer` elements and `role="contentinfo"` landmarks not inside
 // another one, each with its ground (its own background or the one it inherits). An element "holds text" when one of
 // its own child nodes is visible, non-blank text; its character count is that text's length. An element is on a
-// brand channel when it is, or sits inside, a link: the page records the link's address and the route names the
-// registry brand that address opens (lib/intake-siteinfo-shape.mjs::channelOfAddress). Everything is read from rendered
-// structure and the links' own addresses; no class or token name is consulted.
+// WhatsApp channel when it is, or sits inside, a link whose address opens WhatsApp (wa.me, api.whatsapp.com,
+// whatsapp:). Everything is read from rendered structure and the links' own addresses; no class or token name is
+// consulted.
 import fs from 'fs';
 import path from 'path';
 import { colourHex } from './tokens.mjs';
 
 // In-page. in: [ rootSelector ]. { page: { ground, text, htmlBg, bodyBg }, grounds: { [path]: colour }, texts: { [path]:
-// characters }, words: { [path]: true when the element's own text holds a letter or digit, not only a glyph }, channels: { [path]: the address of the link the element sits in }, footers: [{ path, ground, own }] } with raw computed colour strings;
+// characters }, channels: { [path]: 'whatsapp' }, footers: [{ path, ground, own }] } with raw computed colour strings;
 // `path` is the reading record's path for the same element.
 export function readGrounds( [ rootSelector ] ) {
 	const painted = ( c ) => !! c && 'transparent' !== c && ! /^rgba\([^)]*,\s*0\)$/.test( c );
@@ -48,10 +48,10 @@ export function readGrounds( [ rootSelector ] ) {
 		return [ rootSelector, ...parts ].join( ' > ' );
 	};
 	const ownText = ( e ) => ( e.getClientRects().length > 0 ? [ ...e.childNodes ].filter( ( n ) => 3 === n.nodeType ).map( ( n ) => n.textContent.trim() ).join( ' ' ).trim().length : 0 );
-	const linkOf = ( e ) => { const a = e.closest( 'a[href]' ); return a ? a.getAttribute( 'href' ).trim() : ''; };
+	const WHATSAPP = /^(?:https?:\/\/(?:wa\.me|api\.whatsapp\.com|(?:web\.)?whatsapp\.com\/send)|whatsapp:)/i;
+	const onWhatsapp = ( e ) => { const a = e.closest( 'a[href]' ); return !! a && WHATSAPP.test( a.getAttribute( 'href' ).trim() ); };
 	const grounds = {};
 	const texts = {};
-	const words = {};
 	const channels = {};
 	if ( root ) {
 		for ( const e of [ root, ...root.querySelectorAll( '[data-dc-tpl]' ) ] ) {
@@ -60,15 +60,14 @@ export function readGrounds( [ rootSelector ] ) {
 				grounds[ at ] = groundOf( e );
 				const n = ownText( e );
 				n && ( texts[ at ] = n );
-				n && /[\p{L}\p{N}]/u.test( [ ...e.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.textContent ).join( ' ' ) ) && ( words[ at ] = true );
-				linkOf( e ) && ( channels[ at ] = linkOf( e ) );
+				onWhatsapp( e ) && ( channels[ at ] = 'whatsapp' );
 			}
 		}
 	}
 	const marks = [ ...document.querySelectorAll( 'footer, [role="contentinfo"]' ) ];
 	const footers = marks.filter( ( f ) => ! marks.some( ( o ) => o !== f && o.contains( f ) ) ).filter( ( f ) => f.getClientRects().length > 0 )
 		.map( ( f ) => ( { path: root && root.contains( f ) ? pathOf( f ) : f.tagName.toLowerCase(), ground: groundOf( f ), own: painted( bg( f ) ) } ) );
-	return { page: { ground, text: body ? getComputedStyle( body ).color : getComputedStyle( html ).color, htmlBg: bg( html ), bodyBg: body ? bg( body ) : null }, grounds, texts, words, channels, footers };
+	return { page: { ground, text: body ? getComputedStyle( body ).color : getComputedStyle( html ).color, htmlBg: bg( html ), bodyBg: body ? bg( body ) : null }, grounds, texts, channels, footers };
 }
 
 // The colours the draft's code gives its live status messages, painted or not at rest: an element whose markup is a

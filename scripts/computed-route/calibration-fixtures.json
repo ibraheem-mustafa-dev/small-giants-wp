@@ -2245,8 +2245,7 @@
       "ratingValue": 4.6,
       "reviewCount": 12,
       "overrideElements": [
-        "description",
-        "name"
+        "description"
       ],
       "description": "A short description with a <a href=\"https://example.com/\">link</a>.",
       "attributeTagTaxonomy": "pa_cr-feature"
@@ -2833,21 +2832,7 @@
         "showBackground": true,
         "linkUrl": "/"
       }
-    ],
-    "preconditions": {
-      "labelColourHover": {
-        "showLabel": true,
-        "labelText": "Label"
-      },
-      "labelColourHoverGradient": {
-        "showLabel": true,
-        "labelText": "Label"
-      },
-      "labelTextStrokeColourHover": {
-        "showLabel": true,
-        "labelText": "Label"
-      }
-    }
+    ]
   },
   "sgs/image-sequence": {
     "attributes": {

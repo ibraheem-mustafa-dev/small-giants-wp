@@ -1,4 +1,4 @@
-// The skeleton writer's intake context (skeleton.mjs::proposeSurface, lib/key-space.mjs): the surface kind, name and
+// The skeleton writer's intake context (skeleton.mjs::proposeSurface, lib/key-space.mjs): the surface kind, name, built post and
 // motion that intake passes, the link a manifest entry holds to its intake skeleton, and the two key spaces of a draft's
 // elements. A temp repo; no browser, no network.
 import test from 'node:test';
@@ -11,8 +11,6 @@ import { openDb } from '../lib/db.mjs';
 import { proposeSurface, reviewSurface, intakeContext, main } from '../skeleton.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
-import { sourcesOf } from '../lib/freshness.mjs';
-import { proposalContext } from '../lib/skeleton-context.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -31,24 +29,21 @@ test( 'the committed footer inventory holds a root-host paragraph with words (th
 } );
 
 // A temp repo holding one surface: the manifest entry, intake.json, the inventory and the saved files.
-function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, extra = [] } = {} ) {
+function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, built = null } = {} ) {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'skel-ctx-' ) );
 	const build = path.join( repo, 'sites', CLIENT, 'build' );
 	fs.mkdirSync( path.join( build, 'intake' ), { recursive: true } );
 	fs.mkdirSync( path.join( build, 'skeleton' ), { recursive: true } );
 	fs.writeFileSync( path.join( build, 'surfaces.json' ), JSON.stringify( { footer: entry } ) );
-	const animations = { records: [ { iterations: 'infinite', element: { dc: ROOT, template_tpl_id: '847' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] }, ...extra ] };
+	const animations = { records: [ { iterations: 'infinite', element: { dc: ROOT, template_tpl_id: '847' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'translateX(-50%)' } ] } ] };
 	fs.writeFileSync( path.join( build, 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'site-footer': { id: 'S-14', kind: 'footer', name: 'Footer', inventory: { checks: { rootName: ROOT } } } }, inventory: { animations } } ) );
-	// The saved inventory records the export it was read from (lib/freshness.mjs): here an export holding one draft.
-	const handoff = path.join( repo, 'sites', CLIENT, 'handoff' );
-	fs.mkdirSync( handoff, { recursive: true } );
-	fs.writeFileSync( path.join( handoff, 'Home.dc.html' ), '<p>draft</p>' );
-	fs.writeFileSync( path.join( build, 'skeleton', 'footer.inventory.json' ), JSON.stringify( { ...footer, sources: sourcesOf( handoff, { commit: null } ) } ) );
+	fs.writeFileSync( path.join( build, 'skeleton', 'footer.inventory.json' ), JSON.stringify( footer ) );
 	fs.writeFileSync( path.join( build, 'skeleton', 'decisions.json' ), JSON.stringify( decisions ) );
 	// The facts read the list block's block.json from the repo they are given.
 	const list = loadFacts( { db, client: CLIENT, repo: REPO } ).tagMap.ul.core_block_slug.replace( /^sgs\//, '' );
 	fs.mkdirSync( path.join( repo, 'plugins/sgs-blocks/src/blocks', list ), { recursive: true } );
 	fs.copyFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ), path.join( repo, 'plugins/sgs-blocks/src/blocks', list, 'block.json' ) );
+	built && fs.writeFileSync( path.join( build, 'skeleton', 'built-surfaces.json' ), JSON.stringify( { surfaces: built } ) );
 	return { repo, done: () => fs.rmSync( repo, { recursive: true, force: true } ) };
 }
 const spy = ( seen ) => ( args ) => {
@@ -65,61 +60,27 @@ test( 'propose without an intakeSurface refuses and names the missing link', () 
 	bad.done();
 } );
 
-test( 'MUST FAIL (a proposal is built only from an inventory that describes the export): one read before the draft changed is refused naming the changed file, and one recording no sources is refused too', () => {
-	const f = fixture();
-	const inv = path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'footer.inventory.json' );
-	fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'handoff', 'Home.dc.html' ), '<p>draft, edited</p>' );
-	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } ), /footer\.inventory\.json is stale: .*Home\.dc\.html changed/ );
-	const { sources, ...bare } = JSON.parse( fs.readFileSync( inv, 'utf8' ) );
-	assert.ok( sources );
-	fs.writeFileSync( inv, JSON.stringify( bare ) );
-	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } ), /records no sources/ );
-	f.done();
-	// Negative control: an inventory whose export is unchanged is proposed.
-	const g = fixture();
+test( 'propose passes the intake skeleton kind, name, built post and looping templates under the intake slug', () => {
 	const seen = [];
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: g.repo, db, propose: spy( seen ) } );
-	assert.equal( seen.length, 1 );
-	g.done();
-} );
-
-test( 'propose passes the intake skeleton kind, name and looping templates under the intake slug', () => {
-	const seen = [];
-	const f = fixture();
+	const f = fixture( { built: { 'S-14': { postId: 7 } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
 	const a = seen[ 0 ];
 	assert.equal( a.surface, 'site-footer' );
 	assert.equal( a.surfaceKind, 'footer' );
 	assert.equal( a.surfaceName, 'Footer' );
-	assert.equal( a.built, undefined );
+	assert.deepEqual( a.built, { postId: 7 } );
 	assert.deepEqual( [ ...a.motion ], [ 'Root/847' ], 'a looping template of the root host is keyed in the served space' );
 	f.done();
 } );
 
-// MUST FAIL: the site run built its own copy of the proposal inputs and left out the catalogue's filter data, so a page whose
-// filter rail Bean reviewed (Mama's gifts, rows 15 to 20, 2026-11-01) was proposed without its rail and failed the reviewed gate.
-test( 'MUST FAIL: propose takes every input intake proposes with (proposalContext), the catalogue filter data included', () => {
-	const seen = [];
-	const f = fixture();
-	const catalogue = { products: [ { draftId: 'p1', brand: 'Acme', categories: [ 'Gifts' ] } ], dropped: [], facets: [ { key: 'moment', label: 'Moment' } ] };
-	fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'catalogue.json' ), JSON.stringify( catalogue ) );
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
-	const a = seen[ 0 ];
-	assert.deepEqual( a.filters, { facets: catalogue.facets, brands: [ 'Acme' ], categories: [ 'Gifts' ] } );
-	const intake = proposalContext( { repo: f.repo, client: CLIENT, slug: 'site-footer', id: 'S-14' } );
-	const missing = Object.keys( intake ).filter( ( k ) => ! ( k in a ) );
-	assert.deepEqual( missing, [], `the site run's proposal lacks inputs intake passes: ${ missing.join( ', ' ) }` );
-	f.done();
-} );
-
-test( 'a served inventory applies decisions saved in intake space; an import chain key takes the served root too', () => {
+test( 'a served inventory applies decisions saved in intake space; an import chain key is not rewritten', () => {
 	const sig = SIG;
 	const own = { block: 'sgs/heading', signature: `${ sig.tag }|${ sig.words.replace( /\s+/g, ' ' ).trim() }` };
 	const chain = `${ ROOT }>Child@5#0/3#0`;
 	const seen = [];
 	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
-	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, 'Root>Child@5#0/3#0' ] );
+	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, chain ] );
 	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
 	assert.equal( real.proposal.rows.find( ( r ) => KEY === r.key ).source, 'client decision' );
 	f.done();
@@ -154,26 +115,10 @@ test( 'the intake context carries the handoff record states of the intake skelet
 	f.done();
 } );
 
-test( 'MUST FAIL (C5 skeleton 12): propose passes the scroll tracks the draft script steps, keyed in the served space, with the loops the loop reader gets', () => {
-	const timer = { id: 'J-1', mechanism: 'js-scroll', status: 'active', element: { dc: ROOT, template_tpl_id: '312' }, source: { function: 'step', code: 't.scrollTo({ left: 0 })' }, trigger: { type: 'interval', detail: 'setInterval every 6000ms via step' }, properties: [ { property: 'scroll-position' } ] };
-	const seen = [];
-	const f = fixture( { extra: [ timer ] } );
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
-	assert.deepEqual( [ ...seen[ 0 ].loops.carousels ], [ 'Root/312' ] );
-	assert.deepEqual( [ ...intakeContext( { client: CLIENT, surface: 'footer', repo: f.repo } ).carousels ], [ `${ ROOT }/312` ], 'intake keys it by the entry component' );
-	f.done();
-	const plain = [];
-	const g = fixture();
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: g.repo, db, propose: spy( plain ) } );
-	assert.equal( plain[ 0 ].loops.carousels.size, 0, 'negative control: a marquee track is no carousel' );
-	g.done();
-} );
-
-test( 'key-space helpers rewrite the root host at the head of any chain, and nothing else', () => {
+test( 'key-space helpers rewrite only a root-host key', () => {
 	assert.equal( servedKey( `${ ROOT }/12#3`, ROOT ), 'Root/12#3' );
 	assert.equal( servedKey( 'Other/12#3', ROOT ), 'Other/12#3' );
-	assert.equal( servedKey( `${ ROOT }>Child@5#0/3#0`, ROOT ), 'Root>Child@5#0/3#0' );
-	assert.equal( servedKey( 'Other>Child@5#0/3#0', ROOT ), 'Other>Child@5#0/3#0' );
+	assert.equal( servedKey( `${ ROOT }>Child@5#0/3#0`, ROOT ), `${ ROOT }>Child@5#0/3#0` );
 	assert.equal( servedKey( `${ ROOT }/12#3`, null ), `${ ROOT }/12#3` );
 	assert.deepEqual( [ ...servedMotion( [ `${ ROOT }/9`, 'Other/9' ], ROOT ) ], [ 'Root/9', 'Other/9' ] );
 	assert.equal( isServedInventory( footer ), true );

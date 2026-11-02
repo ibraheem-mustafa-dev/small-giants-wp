@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T05:00:26.486Z",
-	"inventory": "2026-11-02T01:27:17.478Z",
-	"source": "http://127.0.0.1:58694/",
+	"generated": "2026-10-28T06:48:35.922Z",
+	"inventory": "2026-10-28T06:48:35.769Z",
+	"source": "http://127.0.0.1:60916/",
 	"surface": "page-basket-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -41,102 +41,13 @@
 		"rows": 58,
 		"skeletonNodes": 6,
 		"expandedNodes": 6,
-		"low": 0,
-		"removed": 53,
+		"low": 2,
+		"removed": 52,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
 			"commerceRegion": 53
 		}
-	},
-	"partPairing": {
-		"paired": 2,
-		"unpaired": [
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__bg-img",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__video-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media > .sgs-hero__split-media",
-				"reason": ".sgs-hero__media: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/11#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -155,7 +66,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -175,11 +85,6 @@
 			"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
 			"attributes": {
 				"tagName": "main"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/9#0"
-				}
 			}
 		},
 		{
@@ -196,7 +101,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "hero",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -213,12 +117,7 @@
 				"1440": "shots/Root_9_0@1440.png"
 			},
 			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
-			"attributes": {},
-			"slots": {
-				".sgs-hero__content": {
-					"tpl": "Root/9#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -226,21 +125,21 @@
 			"tag": "div",
 			"depth": 2,
 			"words": "nearly there",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -268,7 +167,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -288,8 +186,7 @@
 			"snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"rowNote": "its own words \"Your basket\" are the sgs/text child before its children"
+			}
 		},
 		{
 			"order": 4,
@@ -297,22 +194,33 @@
 			"tag": "span",
 			"depth": 3,
 			"words": "2",
-			"block": null,
-			"action": "remove",
-			"reason": "Bean marked remove in the intake review on 2026-11-02: the element is absorbed into its parent block",
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_12_0@375.png",
 				"1440": "shots/Root_12_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "2"
+			}
 		},
 		{
 			"order": 5,
@@ -328,7 +236,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "commerceRegion",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "core/post-content",
@@ -336,7 +243,6 @@
 					"share": 1,
 					"evidence": [
 						"rule commerceRegion: the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button (the order lines loop (24 elements); the checkout link Root/67#0)",
-						"rules.coreExceptions: core/post-content is kept (a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion))",
 						"rules.coreExceptions: core/post-content is kept (a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion))"
 					]
 				}
@@ -409,7 +315,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/25#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -481,7 +387,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/29#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -553,7 +459,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/32#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -577,7 +483,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/33#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -601,7 +507,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/34#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -625,7 +531,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/35#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -648,7 +554,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/36#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -671,7 +577,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/37#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -694,7 +600,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/38#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -717,7 +623,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/39#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -741,7 +647,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/40#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -765,7 +671,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/29#1 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -885,7 +791,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/34#1 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -909,7 +815,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/35#1 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -932,7 +838,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/36#1 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -955,7 +861,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/37#1 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -978,7 +884,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/38#1 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1001,7 +907,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/39#1 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1097,7 +1003,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/43#0 (sgs/form-field-checkbox) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1120,7 +1026,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/44#0 (remove) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1144,7 +1050,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/45#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1168,7 +1074,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/46#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1216,7 +1122,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/57#0 (sgs/heading) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1240,7 +1146,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/58#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1264,7 +1170,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/59#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1287,7 +1193,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/60#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1311,7 +1217,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/61#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1335,7 +1241,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/62#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1358,7 +1264,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/63#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1382,7 +1288,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/64#0 (sgs/container) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1406,7 +1312,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/65#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1429,7 +1335,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/66#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1453,7 +1359,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/67#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1477,7 +1383,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/68#0 (sgs/multi-button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1501,7 +1407,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/69#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1525,7 +1431,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/70#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1549,7 +1455,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/71#0 (sgs/text) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],
@@ -1573,7 +1479,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/72#0 (sgs/button) no longer applies: core/post-content draws this element",
+			"stale": null,
 			"rule": "commerceRegion",
 			"into": "Root/22#0",
 			"candidates": [],

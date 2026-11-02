@@ -58,8 +58,7 @@ test( 'rows carry the route data: titles, parents from menu grouping, post rows 
 	assert.equal( bySlug( hashMap, 'first-article' ).title, 'First article', 'a crumb shared by every article falls through to hero.title' );
 	assert.deepEqual( [ bySlug( hashMap, 'first-article' ).postType, bySlug( hashMap, 'first-article' ).route ], [ 'post', 'post-first' ] );
 	assert.equal( bySlug( hashMap, 'team' ).parent, 'about', 'About links to its own page and holds Our team' );
-	assert.equal( bySlug( hashMap, 'repairs' ).parent, 'cleaning', 'Services only links to its first child, which is its landing page: Repairs sits under it (register D7)' );
-	assert.equal( bySlug( hashMap, 'cleaning' ).parent, null, 'the landing page itself stays at the top' );
+	assert.equal( bySlug( hashMap, 'repairs' ).parent, null, 'Services only links to its first child, so it parents nothing' );
 	assert.equal( bySlug( hashMap, 'news' ).collection, 'live', 'the news page lists the articles that have their own routes' );
 	assert.equal( bySlug( hashMap, 'about' ).collection, 'static' );
 	assert.deepEqual( bySlug( hashMap, 'contact' ).menus, [ { menu: 'header', position: 4, parentItem: null }, { menu: 'footer', position: 1, parentItem: null } ] );
@@ -133,8 +132,6 @@ test( 'MUST FAIL: an embedded data-sgs-manifest is the proposal; the rules fill 
 	assert.deepEqual( routes, [ 'home:home:page', 'shop:shop:shop', 'signin:my-account:page', 'faq:faq:page' ], 'wp slugs and types come from the manifest' );
 	assert.equal( bySlug( m, 'shop' ).template, 'archive-product', 'the WooCommerce shop page keeps slug shop whatever slug the manifest names' );
 	assert.ok( m.linkMap.some( ( l ) => 'my-account' === l.slug ), 'the signed-in view shares the one my-account row' );
-	assert.deepEqual( bySlug( m, 'my-account' ).folds, [ 'account' ], 'MUST FAIL: the row records the signed-in view it folds in, so that view takes its role (FR-48-87)' );
-	assert.equal( bySlug( m, 'faq' ).folds, undefined, 'a row folding nothing in records none' );
 	assert.ok( m.gaps.some( ( g ) => 'page-map' === g.construct && g.error.includes( '"help"' ) ), 'a manifest parent naming no row is a gap row' );
 	assert.equal( bySlug( m, 'faq' ).parent, null );
 	assert.deepEqual( pageMapProblems( m.rows, ajv ), [] );

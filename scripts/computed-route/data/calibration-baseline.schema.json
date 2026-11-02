@@ -2,12 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Calibration baseline (Spec 48 Appendix C, FR-48-3)",
   "type": "object",
-  "required": ["client", "site", "takenOn", "manifestSha256", "playwright", "browser", "blockSet", "blocks"],
+  "required": ["client", "site", "takenOn", "playwright", "browser", "blockSet", "blocks"],
   "properties": {
     "client": { "type": "string" },
     "site": { "type": "string" },
     "takenOn": { "type": "string", "format": "date-time" },
-    "manifestSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "playwright": { "type": "string" },
     "browser": { "type": "string" },
     "blockSet": { "type": "array", "items": { "type": "string", "pattern": "^sgs/" } },

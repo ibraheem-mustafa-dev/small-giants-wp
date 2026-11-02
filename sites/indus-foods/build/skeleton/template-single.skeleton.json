@@ -56,9 +56,7 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {
-							"homeLabel": ""
-						},
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -97,12 +95,7 @@
 									"textHash": "7c80d483",
 									"line": 446
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/326#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/text",
@@ -127,12 +120,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
-								"tpl": "Root/326#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/label",
@@ -159,8 +147,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Supporting the trade through Ramadan",
-							"level": "h1"
+							"content": "Supporting the trade through Ramadan"
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -212,21 +199,7 @@
 						"kind": "presence",
 						"detail": "the hero image: choose it in the hero's split media setting"
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/330#0"
-					},
-					".sgs-hero__video-bg": {
-						"tpl": "Root/318#0"
-					},
-					".sgs-hero__media > .sgs-hero__split-media": {
-						"tpl": "Root/341#0"
-					},
-					".sgs-hero__media": {
-						"tpl": "Root/340#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -407,15 +380,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/619#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/620#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/text",
@@ -443,8 +408,7 @@
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "Planning starts months ahead",
-											"level": "h2"
+											"content": "Planning starts months ahead"
 										},
 										"draftRef": {
 											"tpl": "Root/631#0"
@@ -554,18 +518,12 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											"footer": {
-												"tpl": "Root/635#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/heading",
 										"attributes": {
-											"content": "Ordering early",
-											"level": "h2"
+											"content": "Ordering early"
 										},
 										"draftRef": {
 											"tpl": "Root/631#1"
@@ -676,26 +634,9 @@
 															"textHash": "1505",
 															"line": 909
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape": {
-																"tpl": "Root/638#0"
-															}
-														}
-													},
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "All articles"
-														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/638#0"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/button",
@@ -720,46 +661,15 @@
 													"textHash": "5625d969",
 													"line": 910
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/639#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/637#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/639#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/618#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/627#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/617#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -869,8 +779,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "More from the blog.",
-													"level": "h2"
+													"content": "More from the blog."
 												},
 												"draftRef": {
 													"tpl": "Root/352#0"
@@ -891,15 +800,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/350#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/352#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/button",
@@ -923,22 +824,9 @@
 											"textHash": "391a6ef3",
 											"line": 490
 										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-button__label": {
-												"tpl": "Root/356#0"
-											}
-										}
+										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/348#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/356#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/post-grid",
@@ -960,47 +848,11 @@
 									"textHash": "1505",
 									"line": 872
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-post-grid__inner": {
-										"tpl": "Root/604#0"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1) > .sgs-post-grid__image-link > .sgs-post-grid__image": {
-										"tpl": "Root/607#0"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2) > .sgs-post-grid__image-link > .sgs-post-grid__image": {
-										"tpl": "Root/607#1"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1) > .sgs-post-grid__badge": {
-										"tpl": "Root/609#0"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2) > .sgs-post-grid__badge": {
-										"tpl": "Root/609#1"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(1)": {
-										"tpl": "Root/606#0"
-									},
-									".sgs-post-grid__inner > .sgs-post-grid__card:nth-of-type(2)": {
-										"tpl": "Root/606#1"
-									}
-								}
+								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/347#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/604#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#1"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -1152,8 +1004,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Open a trade account today.",
-													"level": "h2"
+													"content": "Open a trade account today."
 												},
 												"draftRef": {
 													"tpl": "Root/522#0"
@@ -1198,15 +1049,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/520#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/522#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/multi-button",
@@ -1253,12 +1096,7 @@
 													"textHash": "fc5594e5",
 													"line": 751
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/525#0"
-													}
-												}
+												"innerBlocks": []
 											},
 											{
 												"name": "sgs/button",
@@ -1284,55 +1122,16 @@
 													"textHash": "d9580830",
 													"line": 752
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/526#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-button:nth-of-type(1)": {
-												"tpl": "Root/525#0"
-											},
-											".sgs-button:nth-of-type(2)": {
-												"tpl": "Root/526#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/516#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/517#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/515#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#2"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/316#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/344#0"
-			}
-		}
+		]
 	}
 ]

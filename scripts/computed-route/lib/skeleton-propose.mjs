@@ -13,14 +13,9 @@ import { inventoryModel } from './skeleton-model.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
-import { pairSkeletonParts } from './skeleton-part-pairing.mjs';
-import { sharedElementProblems } from './skeleton-one-node.mjs';
-import { holeField } from './fill-list-items.mjs';
-import { templateKeyOf } from './fact-key.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
-import { hiddenFieldNodes, hiddenFieldContext } from './skeleton-hidden-fields.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { linkedFormOf } from './skeleton-form-link.mjs';
 import { surfaceRole } from './skeleton-surface-role.mjs';
@@ -29,12 +24,8 @@ import { detectReferences } from './references.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
-import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
-import { modalFrame, modalTargets } from './skeleton-opener.mjs';
-import { modalFrameNode } from './skeleton-modal-frame.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
-import { elementFacts } from './element-facts.mjs';
 
 export const COVERAGE_WRITES = [
 	'construct:dc-import',
@@ -104,36 +95,32 @@ export const COVERAGE_WRITES = [
 
 const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks || [] ), 0 );
 
-// o: { inventory, facts, surface, surfaceKind, surfaceName, motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
-// calibration element keys), calSettings (slug -> the calibration's settings with their slots), calPaint (slug -> the calibration's default paint: element path to
-// its computed style per width, in document order), calText (slug -> the part each content setting shows), states (the surface's handoff
+// o: { inventory, facts, surface, surfaceKind, surfaceName, built (the client's own built post for this surface, from
+// sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
+// calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
 // formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
-// part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted), surfaceRoute
-// (its surfaces.json route: the page whose page-map row may hold it as a part) and saleOf
-// (component -> lib/flow-product.mjs::flowSale's answer for a choice flow drawn by that component; null sells nothing) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), calPaint = () => ( {} ), calText = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null, loops = null, scriptOf = () => null, saleOf = null } ) {
-	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
-	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`). Every
-	// skeleton rule reads an element's facts through the one reader over this view (lib/element-facts.mjs), `m.read`.
-	const factRecord = undefined === given ? recordFor( facts ) : given;
-	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
-	const m = inventoryModel( inventory, elementFacts( view ) );
+// part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
+	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
 	const rowOf = {};
-	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName, id: surfaceId } ) : null;
+	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
+	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`).
+	const factRecord = undefined === given ? recordFor( facts ) : given;
+	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
+	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
-	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, m, rule: facts.decisions.rules?.formLink } );
+	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
-	const siteLink = siteLinkResolver( draftLinks, rootComponent, m.read );
-	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
-	// (lib/skeleton-surface-role.mjs).
-	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, filters, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops, formLinks, saleOf, scriptOf }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const siteLink = siteLinkResolver( draftLinks );
+	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
+	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -152,31 +139,27 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const w = {};
 	const ctx = {
 		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w, siteLink,
-		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], openedModals: new Map(), nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [], unitItems: new Map(),
+		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;
 	Object.assign( w, makeRecorder( ctx ) );
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
 	Object.assign( w, makeSlotRows( ctx ) );
-	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot, ownWordsNode } = w;
+	const { record, removeSubtree, absorbSubtree, absorbWidthKids, takeVariants, unitsOf, buildBrand, buildIcons, buildList, contentAttrs, carriedAttrs, buildHeaderRows, buildFooterRows, hostSlot } = w;
 	Object.assign( w, { buildNode, buildChildren } );
-
-	// The source a descendant row carries when only a saved decision on its ancestor `e` removed or absorbed it, so the reviewed
-	// gate (lib/site-run-reviewed.mjs) reads it as explained; null when the ancestor's own result is a rule's.
-	const savedSource = ( r, e ) => ( /^(client decision|finaliser pick|standing decision )/.test( r.source || '' ) ? `${ r.source } (inside ${ e.key })` : null );
 
 	function buildNode( e, parentBlock ) {
 		// A bare wrapper whose children are exactly one list: the list block is that wrapper (unless the client decided it).
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source ? [] : unitsOf( e );
 		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
 			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
-			return [ buildList( units[ 0 ].els, units[ 0 ].rows ) ];
+			return [ buildList( units[ 0 ].els ) ];
 		}
 		const r = cls.classify( e, parentBlock );
 		if ( 'remove' === r.action ) {
 			record( e, r );
-			removeSubtree( e, `inside a removed element (${ e.key })`, savedSource( r, e ) );
+			removeSubtree( e, `inside a removed element (${ e.key })` );
 			return null;
 		}
 		if ( 'unwrap' === r.action ) {
@@ -189,7 +172,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			absorbSubtree( e, { block: 'the element before it', key: r.into }, r.reason, r.rule );
 			// An absorbed element that is one of the absorbing block's own parts (the drawer's opener, the navigation's burger)
 			// becomes the node's slot for that part once the block's node exists.
-			R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part, rule: r.rule } );
+			R[ r.rule ]?.part && partPending.push( { e, into: r.into, part: R[ r.rule ].part } );
 			return null;
 		}
 		const top = r.candidates[ 0 ];
@@ -198,16 +181,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			return null;
 		}
 		const block = top.block;
-		// A block the identity matcher places over a tab set takes one item per control (lib/skeleton-identity.mjs).
-		if ( r.items ) {
-			return w.buildItems( e, r, top );
-		}
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
-		// A block that draws its children still takes the element's own link (lib/skeleton-write-content.mjs::linkAttrs).
 		const own = r.rule && ( drawn || top.attributes?.displayType );
-		const { a, handover } = own ? ( drawn && ! top.attributes?.displayType ? w.linkAttrs( block, e, top ) : { a: {}, handover: [] } ) : contentAttrs( block, e, top );
+		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
@@ -217,35 +195,21 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		carryProblems.push( ...missing );
 		Object.assign( a, carry, null != collapse?.value ? { [ collapseAttr ]: collapse.value } : {}, top.attributes || {}, carry );
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
-		r.handover && handover.push( ...[].concat( r.handover ) );
+		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
-		'modalOpener' === r.rule && ctx.openedModals.set( r.opens.row.slug, r.opens );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
-		const loopProducts = 'loopBlocks' === r.rule && 'products' === r.kind;
-		const drawsItself = 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule || loopProducts;
-		if ( drawsItself ) {
+		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule ) {
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
-		if ( ( 'commerceRegion' === r.rule || loopProducts || 'accordionItem' === r.rule ) && r.inner ) {
+		if ( 'commerceRegion' === r.rule && r.inner ) {
 			const item = r.item ? m.byKey[ r.item ] : null;
-			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ), ...( false === n.reads ? { reads: false } : {} ), ...( n.itemKey ? { itemKey: n.itemKey } : {} ) } );
-			// An SGS block in the region reads the draft's item (the shop's product card its first card, the product page's
-			// heading its title; a block naming its own `itemKey`, the product page's description, that element) unless its rule
-			// entry says `reads: false` (a block that draws itself from WooCommerce).
-			const read = ( { reads, itemKey, ...n } ) => {
-				const own = itemKey ? m.byKey[ itemKey ] : item;
-				return 'sgs/' === n.name.slice( 0, 4 ) && own && false !== reads ? { ...n, draftRef: finder( own ), draftFingerprint: m.fingerprint( own ) } : n;
-			};
+			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
+			const read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );
 			node.innerBlocks = r.inner.map( copy ).map( mark );
-		}
-		// The category chips are WooCommerce's category filter (rules.categoryChips): its blocks are the rule's, read from nothing.
-		if ( 'categoryChips' === r.rule && r.inner ) {
-			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
-			node.innerBlocks = r.inner.map( copy );
 		}
 		// The filter rail's groups (lib/skeleton-filter-rail.mjs): a heading reads the draft's group label (`draftKey`), and a
 		// facet's filter names the site's attribute id for its slug, a carried id (lib/skeleton-carried.mjs).
@@ -287,7 +251,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound, drawsItself }, drawn, r.rule || 'drawsChildren', node, parentBlock, savedSource( r, e ) );
+			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn, r.rule || 'drawsChildren', node, parentBlock );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
@@ -317,10 +281,6 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		hosts.push( { block, node, row } );
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		hosts.pop();
-		// The container's own words stand beside its children as a text child (lib/skeleton-write-content.mjs::ownWordsNode).
-		const loose = ownWordsNode( e, block );
-		loose && ( loose.leading ? node.innerBlocks.unshift( loose.node ) : node.innerBlocks.push( loose.node ) );
-		loose && ( row.rowNote = [ row.rowNote, `its own words "${ Object.values( loose.node.attributes )[ 0 ] }" are the ${ loose.node.name } child ${ loose.leading ? 'before' : 'after' } its children` ].filter( Boolean ).join( '; ' ) );
 		return node;
 	}
 
@@ -328,7 +288,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els, u.logo ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els, u.rows ) : 'accordion' === u.type ? w.buildAccordion( u.els, u.run, e ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );
@@ -373,24 +333,17 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const rootRow = rowOf[ m.root.key ];
 		rootRow && cls.choiceFlow.notes.length && ( rootRow.slotNotes = [ ...( rootRow.slotNotes || [] ), ...cls.choiceFlow.notes ] );
 	}
-	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( hiddenFieldNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), hiddenFieldContext( { factRecord, m, view, nodeOfKey, rowOf, rules: R, attr: facts.attr, scriptOf } ) ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
+	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
-	// the part's sub-part slots; the block node stays where its own element stands, and the wrapper the part leaves empty is
-	// dropped (lib/skeleton-part-slots.mjs).
+	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
+	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
 		const node = nodeOfKey[ p.into ];
 		if ( ! node ) {
 			return;
 		}
-		// A control with words of its own ("Close", not a bare glyph) gives the block's label setting for the part its rule names.
-		const labelSetting = R[ p.rule ]?.labelSetting;
-		const words = labelSetting ? m.words( p.e ).trim() : '';
-		labelSetting && /\p{L}/u.test( words ) && facts.attr( node.name, labelSetting ) && ( node.attributes = { ...node.attributes, [ labelSetting ]: words } );
-		// A logo the block draws from its own setting (rules.drawerLogo) gives that setting the attachment the build carries for the logo.
-		const idSetting = R[ p.rule ]?.idSetting;
-		const logoId = idSetting && facts.attr( node.name, idSetting ) ? carriedAttrs( facts.logoBlocks[ 0 ], p.e ).attrs.logoId : null;
-		logoId && ( node.attributes = { ...node.attributes, [ idSetting ]: logoId } );
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
+		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );
 		place?.note && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), place.note ] );
 		if ( ! db ) {
@@ -403,72 +356,21 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		made.notes.length && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), ...made.notes ] );
 	} );
-	// A modal surface's frame look (lib/skeleton-modal-frame.mjs): the `sgs/modal` frame node reads the draft's backdrop, panel and close at
-	// the block's calibrated parts; Fill lifts it out of the post's tree and the site build merges it onto the page's frame by anchor.
-	const frameParts = R.modalFrame ? cls.modalParts() : null;
-	const frameOf = frameParts ? modalTargets( { pageMap, surfaces: view.surfaces } ).find( ( t ) => t.surface.id === scope?.id ) : null;
-	if ( frameParts ) {
-		const made = modalFrameNode( { db, block: R.modalFrame.block, cal: { settings: calSettings( R.modalFrame.block ) }, parts: frameParts, names: R.modalFrame.names, anchor: frameOf?.anchor ?? null, m, finder } );
-		skeleton.push( made.node );
-		const notes = [ ...made.notes, ...( frameOf ? [] : [ `the ${ surface } modal has no sgs_modal row in the page map, so its frame carries no anchor and no page can take its look` ] ) ];
-		notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...notes ] );
-	}
-	// Every part a block draws itself, paired with the draft element standing there (lib/skeleton-part-pairing.mjs); a slot an
-	// earlier pass gave (a form field's input, the burger) stands.
-	// The text fields a draft element prints: the fact record's text holes on its template (`{{ r.name }}` prints `name`).
-	const fieldsOf = ( e ) => {
-		const t = factRecord?.elements?.[ templateKeyOf( e.key, rootComponent ) ]?.template;
-		return ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag ) ).filter( ( f ) => f?.text ).map( ( f ) => f.name );
-	};
-	const partPairing = db ? pairSkeletonParts( { db, tree: skeleton, m, finder, rowOf, calSettings, calPaint, calText, fieldsOf, unitItems: ctx.unitItems, mediaSpec: R.mediaElement } ) : null;
+	// A surface the client already built as a post: that post's block tree is the skeleton, so every row is settled by it.
 	rows.forEach( ( x ) => {
 		const top = rootOf( m.byKey[ x.key ] );
 		top !== m.root && ( x.strip = top.key );
 	} );
-	// Each modal a control of this surface opens is framed once on the page that holds the control (lib/skeleton-opener.mjs); a
-	// header, footer, drawer or other part has no page to stand a frame on, and the proposal says so.
-	const openerNotes = [];
-	for ( const target of ctx.openedModals.values() ) {
-		if ( surfaceKind && 'page' !== surfaceKind ) {
-			openerNotes.push( `the ${ target.row.slug } modal is opened from this ${ surfaceKind } surface, which stands on no page: a page that holds the modal frame is needed` );
-			continue;
-		}
-		const frame = modalFrame( { target, carried } );
-		skeleton.push( frame.node );
-		frame.missing && carryProblems.push( frame.missing );
-	}
-	const problems = [ ...skeletonProblems( skeleton ), ...sharedElementProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ) ];
-	// A draft sort option WooCommerce's sorting cannot express is a missing feature on its own row (lib/intake-missing.mjs).
-	for ( const x of cls.commerceRegion?.toolbar?.missing || [] ) {
-		rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );
-	}
-	// What a choice flow's product-option step cannot draw is a missing feature on its question's row (the flow root's when the
-	// question never rendered).
-	for ( const x of flowNode ? cls.choiceFlow.missing : [] ) {
-		const row = rows.find( ( r ) => view.entry( m.byKey[ r.key ] )?.template.key === x.key ) ?? rowOf[ m.root.key ];
-		row && ( row.missingFeature = { line: x.line, why: x.why } );
-	}
-	// What the filter drawer's overlay settings cannot carry is a missing feature on the drawer's root row.
-	for ( const x of cls.filterDrawer?.missing || [] ) {
-		Object.assign( rowOf[ x.key ] ?? {}, { missingFeature: { line: x.line, why: x.why } } );
-	}
-	// A popup that opens on a timer or on exit intent is a missing feature on the surface's root row (rules.timedPopup).
-	const timed = cls.timedPopup();
-	timed && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].missingFeature = timed );
-	// The Floating UI site options the draft's fixed back-to-top control and reading progress bar set (rules.backToTop.floating, rules.readingProgress): one map for the surface, applied by the site build.
-	const siteOptions = Object.assign( {}, ...rows.map( ( r ) => r.siteOptions ) );
+	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
-		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W,
-		...( Object.keys( siteOptions ).length ? { siteOptions } : {} ),
+		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
-		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block, ...( cls.commerceRegion.toolbar ? { toolbar: { sort: cls.commerceRegion.toolbar.sort, count: cls.commerceRegion.toolbar.count, absorbed: cls.commerceRegion.toolbar.absorb, missing: cls.commerceRegion.toolbar.missing } } : {} ) } } : {} ),
-		...( cls.filterDrawer ? { filterDrawer: { key: cls.filterDrawer.key, block: cls.filterDrawer.block, attributes: cls.filterDrawer.attributes, facets: cls.filterDrawer.facets, notes: cls.filterDrawer.notes } } : {} ),
+		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block } } : {} ),
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
-		...( ctx.openedModals.size ? { openedModals: [ ...ctx.openedModals.values() ].map( ( t ) => ( { slug: t.row.slug, anchor: t.anchor, surface: t.surface.id } ) ), openerNotes } : {} ),
-		...( partPairing ? { partPairing } : {} ),
 		widthAlternatives, problems, rows,
 	};
 	return { skeleton, proposal, problems };

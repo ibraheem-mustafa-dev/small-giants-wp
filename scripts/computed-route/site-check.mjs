@@ -18,7 +18,6 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { pruneRunsReport } from './lib/prune-runs.mjs';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, headerRowsOf, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
@@ -133,7 +132,6 @@ async function main() {
 		fs.writeFileSync( path.join( dir, 'result.json' ), `${ JSON.stringify( result, null, '\t' ) }\n` );
 		fs.writeFileSync( path.join( dir, 'result.md' ), renderMarkdown( result ) );
 		console.log( `site check ${ args.client } on ${ args.site }: ${ ordered.filter( ( c ) => 'fail' === c.status ).length } failed. ${ rel( path.join( dir, 'result.md' ) ) }` );
-		args.out || pruneRunsReport( { parent: path.dirname( dir ), keep: dir } );
 		return result.exitCode;
 	};
 
@@ -241,13 +239,11 @@ async function main() {
 		await guard( 'modals', async () => {
 			const items = [];
 			const seenFlows = [];
-			const seenModals = [];
 			for ( const p of loaded.filter( ( x ) => x.parts.modals.length || x.parts.flows.length ) ) {
 				const { page, context, shoot } = await newPage();
 				await page.goto( p.finalUrl, LOAD );
 				const parts = await page.evaluate( readPartsInPage, MARK );
 				for ( const m of parts.modals ) {
-					seenModals.push( m );
 					items.push( { ...await modalItem( page, m, { url: p.finalUrl, shoot } ), subject: `modal "${ m.label || m.id }" on ${ p.key }` } );
 				}
 				for ( const f of parts.flows ) {
@@ -256,12 +252,10 @@ async function main() {
 				}
 				await context.close();
 			}
-			for ( const r of missingFlowRows( rows, seenFlows, seenModals ) ) {
-				items.push( 'sgs_modal' === r.postType
-					? { status: 'fail', subject: `page-map modal ${ r.slug } ("${ r.title }")`, error: `no checked page renders the modal ${ r.slug } (an sgs/modal frame with that anchor) or one named "${ r.title }" (${ loaded.length } pages checked)` }
-					: { status: 'fail', subject: `page-map choice flow ${ r.slug } ("${ r.title }")`, error: `no checked page renders the choice flow ${ r.slug } (data-flow-slug) or one labelled "${ r.title }" (${ loaded.length } pages checked)` } );
+			for ( const r of missingFlowRows( rows, seenFlows ) ) {
+				items.push( { status: 'fail', subject: `page-map choice flow ${ r.slug } ("${ r.title }")`, error: `no checked page renders the choice flow ${ r.slug } (data-flow-slug) or one labelled "${ r.title }" (${ loaded.length } pages checked)` } );
 			}
-			return checkRecord( 'modals', items, 'no checked page renders a modal or a choice flow, and the page map names no modal or choice flow' );
+			return checkRecord( 'modals', items, 'no checked page renders a modal or a choice flow, and the page map names no choice flow' );
 		} );
 
 		await guard( 'forms', async () => {

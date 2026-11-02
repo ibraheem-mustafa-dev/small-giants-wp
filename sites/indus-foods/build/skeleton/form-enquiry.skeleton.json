@@ -1,9 +1,7 @@
 [
 	{
 		"name": "sgs/form",
-		"attributes": {
-			"anchor": "enquiry"
-		},
+		"attributes": {},
 		"draftRef": {
 			"tpl": "Root>EnquiryForm@468#0/6#0"
 		},
@@ -60,8 +58,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "What can we help with?",
-							"level": "h3"
+							"content": "What can we help with?"
 						},
 						"draftRef": {
 							"tpl": "Root>EnquiryForm@468#0/9#0"
@@ -78,22 +75,33 @@
 							"line": 16
 						},
 						"innerBlocks": []
-					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root>EnquiryForm@468#0/8#0"
 					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root>EnquiryForm@468#0/9#0"
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Choose all that apply"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/10#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d2c9c594",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "d5c85a24",
+							"line": 17
+						},
+						"innerBlocks": []
 					}
-				}
+				]
 			},
 			{
 				"name": "sgs/form-field-tiles",
-				"attributes": {
-					"layout": "grid"
-				},
+				"attributes": {},
 				"draftRef": {
 					"tpl": "Root>EnquiryForm@468#0/11#0"
 				},
@@ -107,12 +115,7 @@
 					"textHash": "1505",
 					"line": 19
 				},
-				"innerBlocks": [],
-				"draftSlots": {
-					".sgs-form-field__group > .sgs-container": {
-						"tpl": "Root>EnquiryForm@468#0/11#0"
-					}
-				}
+				"innerBlocks": []
 			},
 			{
 				"name": "sgs/container",
@@ -158,8 +161,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Your details",
-							"level": "h3"
+							"content": "Your details"
 						},
 						"draftRef": {
 							"tpl": "Root>EnquiryForm@468#0/22#0"
@@ -177,15 +179,7 @@
 						},
 						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root>EnquiryForm@468#0/21#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root>EnquiryForm@468#0/22#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -254,12 +248,7 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root>EnquiryForm@468#0/26#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -308,12 +297,7 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root>EnquiryForm@468#0/26#1"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -362,12 +346,7 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root>EnquiryForm@468#0/26#2"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -416,12 +395,7 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root>EnquiryForm@468#0/26#3"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -470,22 +444,9 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root>EnquiryForm@468#0/31#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root>EnquiryForm@468#0/25#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root>EnquiryForm@468#0/25#1"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -508,6 +469,27 @@
 				},
 				"innerBlocks": [
 					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Reply by"
+						},
+						"draftRef": {
+							"tpl": "Root>EnquiryForm@468#0/37#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "83026f48",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1c2c80c",
+							"line": 51
+						},
+						"innerBlocks": []
+					},
+					{
 						"name": "sgs/button",
 						"attributes": {
 							"label": "Email"
@@ -526,12 +508,7 @@
 							"textHash": "bfda129",
 							"line": 53
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root>EnquiryForm@468#0/39#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/button",
@@ -552,12 +529,7 @@
 							"textHash": "de11eb9",
 							"line": 53
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root>EnquiryForm@468#0/39#1"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/button",
@@ -578,22 +550,9 @@
 							"textHash": "71fcb1bd",
 							"line": 53
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root>EnquiryForm@468#0/39#2"
-							}
-						}
+						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root>EnquiryForm@468#0/39#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root>EnquiryForm@468#0/39#1"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -655,22 +614,9 @@
 							"textHash": "5b4a5872",
 							"line": 59
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root>EnquiryForm@468#0/42#0"
-							}
-						}
+						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root>EnquiryForm@468#0/41#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root>EnquiryForm@468#0/42#0"
-					}
-				}
+				]
 			}
 		]
 	}

@@ -9,8 +9,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
 import { readShopSurfaces } from './lib/shop-parts-read.mjs';
-import { catalogueSources } from './lib/catalogue-source.mjs';
-import { perUnitFields } from './lib/shop-parts-per-unit.mjs';
 import { ShopPartsError, buildRecord, loadVocab, resolveVocab } from './lib/shop-parts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -46,7 +44,7 @@ export function draftSurfaces( client, repo = REPO ) {
 	}
 	const records = JSON.parse( readFileSync( path.join( draft, 'surfaces.json' ), 'utf8' ) ).records;
 	const sources = Object.fromEntries( readdirSync( draft ).filter( ( f ) => f.endsWith( '.dc.html' ) ).map( ( f ) => [ f, readFileSync( path.join( draft, f ), 'utf8' ) ] ) );
-	return readShopSurfaces( { records, sources, perUnit: perUnitFields( catalogueSources( draft ) ) } );
+	return readShopSurfaces( { records, sources } );
 }
 
 // The client's record. Every client draft with a surfaces.json is read as a fixture, so a vocabulary entry no draft

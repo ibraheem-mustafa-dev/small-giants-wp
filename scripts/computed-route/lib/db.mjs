@@ -10,10 +10,9 @@ export const DB_PATH = path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-eng
 
 const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role';
 
-// Opens the database read-only. `file` overrides the path (tests). A reader waits up to 10 seconds for a lock another
-// process holds (several route processes opening the WAL database at once briefly lock it) instead of failing at once.
+// Opens the database read-only. `file` overrides the path (tests).
 export function openDb( file = DB_PATH ) {
-	return new DatabaseSync( file, { readOnly: true, timeout: 10000 } );
+	return new DatabaseSync( file, { readOnly: true } );
 }
 
 const plain = ( r ) => ( { ...r } );
@@ -121,15 +120,10 @@ export function statesVocabulary( db ) {
 	return { rows: db.prepare( 'SELECT state, family, kind, token, reach, call, note FROM states ORDER BY id' ).all().map( plain ), missing: null };
 }
 
-// The suffix a per-device sibling setting carries for each narrower device (backgroundImageTablet, svgContentMobile), and a
-// setting's base name without it.
-export const DEVICE_SUFFIX = Object.freeze( { tablet: 'Tablet', mobile: 'Mobile' } );
-export const deviceBase = ( attr ) => String( attr ).replace( new RegExp( `(${ Object.values( DEVICE_SUFFIX ).join( '|' ) })$` ), '' );
-
 // The other rows sharing a flat_sibling base name (backgroundImage, backgroundImageTablet, backgroundImageMobile).
 export function siblings( db, block, attr ) {
-	const base = deviceBase( attr );
-	return attrsFor( db, block ).filter( ( r ) => 'flat_sibling' === r.tier_shape && deviceBase( r.attr_name ) === base );
+	const base = attr.replace( /(Tablet|Mobile)$/, '' );
+	return attrsFor( db, block ).filter( ( r ) => 'flat_sibling' === r.tier_shape && r.attr_name.replace( /(Tablet|Mobile)$/, '' ) === base );
 }
 
 // One setting's row whatever its source (lint: is this attribute native_wp or a core style?).

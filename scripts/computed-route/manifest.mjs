@@ -98,19 +98,13 @@ try {
 	result.noFacts.forEach( ( u ) => console.log( `states-no-facts ${ u.key }: ${ u.why }; the key names R, item and bp decided [${ u.names.join( ' | ' ) }]` ) );
 	result.noIntake.forEach( ( u ) => console.log( `no-intake-surface ${ u.key }: ${ u.why }` ) );
 	result.noDraft.forEach( ( u ) => console.log( `no-draft-page ${ u.key }: ${ u.why }` ) );
-	// An entry for a WooCommerce template no draft surface plays is removed: WooCommerce's own template stands (FR-48-87).
-	const unplayed = result.unplayed.map( ( u ) => u.key ).filter( ( k ) => Object.hasOwn( keep, k ) );
-	unplayed.forEach( ( k ) => {
-		console.log( `removed ${ k }: ${ result.unplayed.find( ( u ) => u.key === k ).why }` );
-		delete keep[ k ];
-	} );
 	// A stale entry building a template that a template copy surface now builds is that surface's earlier key: replaced.
 	const replaced = result.stale.filter( ( k ) => keep[ k ]?.target?.template && Object.entries( result.entries ).some( ( [ n, e ] ) => n !== k && e.target?.template === keep[ k ].target.template ) );
 	replaced.forEach( ( k ) => {
 		console.log( `replaced ${ k }: its ${ keep[ k ].target.template } template is built by ${ Object.keys( result.entries ).find( ( n ) => result.entries[ n ].target?.template === keep[ k ].target.template ) }` );
 		delete keep[ k ];
 	} );
-	result.stale.filter( ( k ) => ! replaced.includes( k ) && Object.hasOwn( keep, k ) ).forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
+	result.stale.filter( ( k ) => ! replaced.includes( k ) ).forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
 	result.skipped.forEach( ( s ) => console.log( `skipped ${ s.row }: ${ s.reason }` ) );
 	result.disagree.forEach( ( d ) => console.log( `states-disagree ${ d.key }: handoff [${ d.handoff.join( ' | ' ) }] intake [${ d.intake.join( ' | ' ) }]` ) );
 	result.unresolved.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );

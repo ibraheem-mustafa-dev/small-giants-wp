@@ -765,38 +765,3 @@ test( 'MUST FAIL: isUnwalkedWooPage is true only for a cart or checkout page tha
 	const src = fs.readFileSync( fileURLToPath( new URL( '../site-run.mjs', import.meta.url ) ), 'utf8' );
 	assert.match( src, /isUnwalkedWooPage\( entry\.target, row \) \? wooContentRole\( row \) : null/, 'site-run takes the wooPage skip from the shared predicate' );
 } );
-
-// A `template` row (the order confirmation) is addressed by its slug, never a post id.
-const confRow = ( extra = {} ) => row( 'template', 'order-confirmation', null, { template: 'order-confirmation', route: 'Confirmation.dc.html', ...extra } );
-const confRecord = rec( 'S-32', 'result', 'Order confirmation', [ { name: 'default', state_keys: {} } ], { dc: 'Confirmation', page_key: 'Confirmation', route: 'Confirmation.dc.html' } );
-
-test( 'MUST FAIL: a template row with a draft route and no id is a played template surface that reads its draft', () => {
-	const out = run( [ confRow() ], [ confRecord ], { entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ] } );
-	const e = out.entries[ 'template-order-confirmation' ];
-	assert.deepEqual( e.target, { template: 'order-confirmation' } );
-	assert.equal( e.draftIndex, 'Confirmation.dc.html' );
-	assert.deepEqual( e.copy, { from: 'fill', row: 'template:order-confirmation' } );
-	assert.equal( 'unplayed' in e.copy, false );
-	assert.equal( out.matched[ 'template-order-confirmation' ], 'S-32' );
-	assert.deepEqual( out.skipped, [] );
-	// An existing entry kept from a run before the record matched gives way to the generated copy.
-	const stale = { ...e, copy: { from: 'page', unplayed: 'template:order-confirmation' } };
-	const again = run( [ confRow() ], [ confRecord ], { entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ], existing: { 'template-order-confirmation': stale } } );
-	assert.deepEqual( again.entries[ 'template-order-confirmation' ].copy, { from: 'fill', row: 'template:order-confirmation' } );
-} );
-
-test( "MUST FAIL: a WooCommerce template no draft surface plays gets no copy: WooCommerce's own template stands (FR-48-87)", () => {
-	const out = run( [ confRow( { route: undefined } ) ], [ confRecord ] );
-	assert.equal( 'template-order-confirmation' in out.entries, false, 'no surface, so the site run builds no copy' );
-	assert.deepEqual( out.unplayed.map( ( u ) => [ u.key, u.slug ] ), [ [ 'template-order-confirmation', 'order-confirmation' ] ] );
-	// Negative control: the same template played by a draft surface is still a copy Filled at it.
-	const played = run( [ confRow() ], [ confRecord ], { entryFiles: [ 'Home.dc.html', 'Confirmation.dc.html' ] } );
-	assert.deepEqual( played.unplayed, [] );
-	assert.deepEqual( played.entries[ 'template-order-confirmation' ].copy, { from: 'fill', row: 'template:order-confirmation' } );
-} );
-
-test( 'MUST FAIL: a page row with a null id is still skipped; rows needing a post id still need one', () => {
-	const out = run( [ row( 'page', 'about', null ) ], [ rec( 'S-1', 'page', 'About', undefined, { page_key: 'about' } ) ] );
-	assert.equal( 'about' in out.entries, false );
-	assert.deepEqual( out.skipped, [ { row: 'page:about', reason: 'no id' } ] );
-} );

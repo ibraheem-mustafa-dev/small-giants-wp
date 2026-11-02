@@ -1,8 +1,7 @@
 // Spec 48 FR-48-31 (Bean, 2026-10-27): a colour token named for a brand in plugins/sgs-blocks/includes/data/brand-registry.json
 // (its slug, Site Info name, label words or aliases, as a whole word of the token name) is that brand's colour, which the
-// brand-aware blocks paint themselves, so the palette proposal gives it no slot and never a custom token, and its uses
-// never compete for a slot (a brand icon's ground linking anywhere is not the section ground). A value a non-brand token
-// shares keeps the slot a rendered fact or a name rule gives it. WhatsApp has no slot of its own: it follows the same rule.
+// brand-aware blocks paint themselves, so the palette proposal gives it no slot and never a custom token. A brand that
+// already has a palette slot keeps it (WhatsApp's whatsapp slug comes from its own rule first).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { proposePalette, loadPaletteSlugs } from '../lib/intake-palette.mjs';
@@ -46,47 +45,6 @@ test( 'MUST FAIL: the proposal gives a brand-named token no slot and no custom t
 	assert.deepEqual( row.roles, [] );
 	assert.equal( row.brand, 'facebook' );
 	assert.match( row.why, /brand colour: Facebook/ );
-} );
-
-test( 'MUST FAIL: WhatsApp follows the brand-token rule: --wa and every --wa-* token, used or not, get no slot and name the brand', () => {
-	const tokens = [ ...TOKENS, { name: '--wa', type: 'colour', hex: '#25D366' }, { name: '--wa-hover', type: 'colour', hex: '#1EBE5A' }, { name: '--wa-soft', type: 'colour', hex: '#E9F9EF' } ];
-	const usage = [ ...USAGE, use( '#25D366', 'background-color', 'a', 6, { channel: 'whatsapp' } ) ];
-	const rows = proposePalette( { tokens, usage, slugs: SLUGS } ).rows;
-	for ( const name of [ '--wa', '--wa-hover', '--wa-soft' ] ) {
-		const row = rows.find( ( r ) => name === r.token );
-		assert.equal( row.role, null, name );
-		assert.deepEqual( row.roles, [], name );
-		assert.equal( row.brand, 'whatsapp', name );
-		assert.match( row.why, /brand colour: WhatsApp/, name );
-	}
-	assert.ok( ! rows.some( ( r ) => r.roles.includes( 'whatsapp' ) ), 'no row holds a whatsapp slug' );
-} );
-
-test( 'negative control: a brand-named token whose value a rendered fact gives a slot keeps that slot', () => {
-	const tokens = [ ...TOKENS, { name: '--facebook-ink', type: 'colour', hex: '#141414' } ];
-	const row = proposePalette( { tokens, usage: USAGE, slugs: SLUGS } ).rows.find( ( r ) => '--facebook-ink' === r.token );
-	assert.ok( row.roles.includes( 'text' ), row.why );
-	assert.equal( row.brand, undefined );
-} );
-
-// The draft's LinkedIn icon circles link to '#/', so no channel is read: the brand name alone must keep the value out of
-// the ground contest, and the section slot goes to the next ground.
-const ICONS = [ ...TOKENS, { name: '--social-linkedin', type: 'colour', hex: '#0A66C2' }, { name: '--sand', type: 'colour', hex: '#E8D9B0' } ];
-const ICON_USES = [ ...USAGE, use( '#0A66C2', 'background-color', 'a', 46 ), use( '#E8D9B0', 'background-color', 'section', 4 ) ];
-
-test( 'MUST FAIL: a brand-named value painted as the most used ground, on links with no channel, takes no slot', () => {
-	const rows = proposePalette( { tokens: ICONS, usage: ICON_USES, slugs: SLUGS } ).rows;
-	const linkedin = rows.find( ( r ) => '--social-linkedin' === r.token );
-	assert.deepEqual( linkedin.roles, [], linkedin.why );
-	assert.equal( linkedin.brand, 'linkedin' );
-	assert.ok( ! rows.some( ( r ) => r.token !== '--sand' && r.roles.includes( 'section' ) ), 'only the next ground may hold section' );
-} );
-
-test( 'negative control: the same value under a plain name competes and wins a ground slot', () => {
-	const tokens = ICONS.map( ( t ) => ( '--social-linkedin' === t.name ? { ...t, name: '--deep-blue' } : t ) );
-	const row = proposePalette( { tokens, usage: ICON_USES, slugs: SLUGS } ).rows.find( ( r ) => '--deep-blue' === r.token );
-	assert.ok( row.roles.length > 0, row.why );
-	assert.equal( row.brand, undefined );
 } );
 
 test( 'negative control: an unnamed colour with no role still becomes a custom token', () => {

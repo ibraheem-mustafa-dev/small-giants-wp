@@ -2,7 +2,7 @@
 // under its state trigger. Element keys are elementPath() keys from the instance root; a pseudo-element layer is its
 // element's key plus `::before`, `::after`, `::placeholder` or `::first-letter`; a panel the instance controls through
 // aria-controls (a cart dialog moved to <body>, a drawer) is keyed `@controls > <path>` (`@controls:2` for a second).
-import { WIDTHS, CAL_PREFIX, ANY_REF_SELECTOR, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from './calibrate-props.mjs';
+import { WIDTHS, CAL_PREFIX, READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from './calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 import { probeState, probeMechanisms } from './calibrate-probe.mjs';
@@ -366,19 +366,6 @@ export function missingDependencyReason( block, site, noticeText ) {
 	return null === noticeText ? null : `${ block } rendered only its editor notice on ${ site } (${ noticeText }): a dependency is missing there; calibrate it on a mirror that has it`;
 }
 
-// Why a calibration page at `width` px, on which no instance root appeared, fails the block. Only a page with no rendered
-// instance at all reaches this: an instance that renders nothing among others that do (a business-details block on a site
-// that has no phone) is read as not rendered (lib/calibrate.mjs::renderedAt). A server error is the page failing, not the
-// build: a PHP fatal anywhere on it (a header block, a stale build) renders no calibration wrapper either.
-export function calibrationPageFailure( { wrappers, status, width } ) {
-	if ( ! wrappers && status >= 500 ) {
-		return `the calibration page at ${ width }px returned HTTP ${ status } and holds none of the calibration wrappers (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)`;
-	}
-	return wrappers
-		? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ width }px (no .${ CAL_PREFIX }<n> on the page)`
-		: `the calibration page at ${ width }px holds none of the calibration wrappers (the build did not save, or the page is cached)`;
-}
-
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
 async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, settle = null, settleGone = null, owner } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
@@ -386,11 +373,16 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
 	// are still read.
 	try {
-		await page.waitForSelector( ANY_REF_SELECTOR, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
+		await page.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
 	} catch {
-		// The page loaded and no instance appeared: the block rendered nothing in any of them (an early return in its render.php).
+		// The page loaded and the instance never appeared: the block rendered nothing (an early return in its render.php).
 		const wrappers = await page.locator( '[class*="cr-cal-"]' ).count();
-		throw new Error( calibrationPageFailure( { wrappers, status: response ? response.status() : null, width: w } ) );
+		// A server error is the page failing, not the build: a PHP fatal anywhere on it (a header block, a stale build)
+		// renders no calibration wrapper either.
+		if ( ! wrappers && response && response.status() >= 500 ) {
+			throw new Error( `the calibration page at ${ w }px returned HTTP ${ response.status() } and holds none of the calibration wrappers (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)` );
+		}
+		throw new Error( wrappers ? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ w }px (no .${ CAL_PREFIX }0 on the page)` : `the calibration page at ${ w }px holds none of the calibration wrappers (the build did not save, or the page is cached)` );
 	}
 	// A pass whose content a script builds after load (a fixture's wishlist rows, fetched over REST) names the element
 	// it waits for (`settle`), and a block its script shows only after load (the wishlist panel prints `hidden` until its

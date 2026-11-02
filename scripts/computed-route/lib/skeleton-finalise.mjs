@@ -1,9 +1,9 @@
 // Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices:
 //   decisions.json          Bean's recorded choices per element (`skeleton.mjs decide`): top-priority evidence for propose.
-//   <surface>.picks.json    the clone agent's picks for the low-confidence rows (`skeleton.mjs finalise --apply`).
+//   <surface>.picks.json    the finaliser subagent's picks for the low-confidence rows (`skeleton.mjs finalise --apply`).
 // A decision keeps the element's signature (tag and words), so a re-read draft whose element changed under the same key
 // is reported stale instead of silently applied. Scripts never call a model: `finalise` writes a request file, the session
-// follows prompts/skeleton-finaliser.md over it, and `finalise --apply` merges the picks it returns.
+// runs prompts/skeleton-finaliser.md over it as a subagent, and `finalise --apply` merges the picks it returns.
 import fs from 'fs';
 import path from 'path';
 
@@ -16,11 +16,11 @@ const writeJson = ( file, value ) => {
 	fs.writeFileSync( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
 };
 
-// { siteName?, surfaces: { <surface>: { <key>: { block | remove, attributes?, signature, proposed?, reason? } } } }.
+// { siteName?, surfaces: { <surface>: { <key>: { block | remove, attributes?, signature, reason? } } } }.
 export const readDecisions = ( file ) => readJson( file, { surfaces: {} } );
 
 // Records one decision for an element of a surface. `choice`: { block, attributes? } or { remove: true }. Returns the file's content.
-export function recordDecision( { file, surface, element, choice, reason = null, proposed = null } ) {
+export function recordDecision( { file, surface, element, choice, reason = null } ) {
 	if ( ! element ) {
 		throw new Error( 'decide needs an element that is in the inventory' );
 	}
@@ -28,7 +28,7 @@ export function recordDecision( { file, surface, element, choice, reason = null,
 		throw new Error( 'decide needs --block <slug> or --remove' );
 	}
 	const all = readDecisions( file );
-	( all.surfaces[ surface ] ||= {} )[ element.key ] = { ...( choice.remove ? { remove: true } : { block: choice.block, ...( choice.attributes ? { attributes: choice.attributes } : {} ) } ), signature: signatureOf( element ), ...( proposed ? { proposed } : {} ), ...( reason ? { reason } : {} ) };
+	( all.surfaces[ surface ] ||= {} )[ element.key ] = { ...( choice.remove ? { remove: true } : { block: choice.block, ...( choice.attributes ? { attributes: choice.attributes } : {} ) } ), signature: signatureOf( element ), ...( reason ? { reason } : {} ) };
 	writeJson( file, all );
 	return all;
 }
@@ -43,7 +43,7 @@ export function recordSiteName( { file, siteName } ) {
 
 export const readPicks = ( file ) => readJson( file, {} );
 
-// What the clone agent is asked: one entry per low-confidence row with the element's record, the candidates and the evidence.
+// What the finaliser subagent is asked: one entry per low-confidence row with the element's record, the candidates and the evidence.
 export function finaliseRequest( { inventory, proposal, surface, promptFile } ) {
 	const byKey = Object.fromEntries( inventory.elements.map( ( e ) => [ e.key, e ] ) );
 	const rows = proposal.rows.filter( ( r ) => ( r.low && ! r.action ) || 'unresolved' === r.action );

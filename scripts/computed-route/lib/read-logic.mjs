@@ -12,8 +12,7 @@ import { readStatics, readStateValues, stateJobsOf, holesByState, valueGaps } fr
 export const READ_WIDTHS = [ 375, 768, 1440 ];
 const MAX_LOOP = 60;
 const MAX_SCOPES = 200;
-// Every copy of a loop (up to MAX_LOOP) keeps its distinct value, so a list the draft holds in its logic is read whole.
-const MAX_VALUES = MAX_LOOP;
+const MAX_VALUES = 8;
 
 // In-page. in: { comps: { <component>: [ { k, expr, loops: [ { list, as } ] } ] } }. Returns { <component>: { mounted,
 // error?, holes: { <k>: { v: [ summary ], n (scopes read), loop, err? } } } }. A summary is { t, v? } with t one of

@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 import { readSlotMap, refusedFile } from './cache.mjs';
 import { READ_KEY } from './calibrate-props.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
-import { manifestSha256 } from './site-run-intake-gate.mjs';
 import { fixtureRoles, refsProblem, resolveFixture } from './calibration-refs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -103,8 +102,8 @@ export const paintChanges = ( before, after ) => Object.keys( after ).filter( ( 
 
 const count = ( v ) => ( Array.isArray( v ) ? v.length : Number.isInteger( v ) ? v : 0 );
 
-// The Appendix C baseline: the sha256 of the export's MANIFEST.json (`manifestSha256`, which the site run compares) and per block the deploy hash and the slot map's debt counts.
-export function buildBaseline( { client, site, takenOn, playwright, cacheDir, blocks, hashes, manifestSha256: manifestHash } ) {
+// The Appendix C baseline: per block the deploy hash and the slot map's debt counts.
+export function buildBaseline( { client, site, takenOn, playwright, cacheDir, blocks, hashes } ) {
 	const maps = blocks.map( ( b ) => readSlotMap( cacheDir, b ) );
 	// The browser that measured the set; when the maps disagree the most recent measurement names it.
 	const newest = maps.filter( ( m ) => m?.browserVersion ).sort( ( a, b ) => String( b.measured ).localeCompare( String( a.measured ) ) )[ 0 ];
@@ -112,7 +111,6 @@ export function buildBaseline( { client, site, takenOn, playwright, cacheDir, bl
 		client,
 		site,
 		takenOn,
-		manifestSha256: manifestHash,
 		playwright,
 		browser: newest?.browserVersion ?? '',
 		blockSet: blocks,
@@ -199,7 +197,7 @@ export async function runStage0( o, deps ) {
 		return fail();
 	}
 	const hashes = Object.fromEntries( list.map( ( s ) => [ s.block, s.deployHash ] ) );
-	const baseline = buildBaseline( { client: o.client, site: o.site, takenOn: deps.now(), playwright: deps.playwright, cacheDir: o.cacheDir, blocks, hashes, manifestSha256: manifestSha256( path.join( handoff, 'MANIFEST.json' ) ) } );
+	const baseline = buildBaseline( { client: o.client, site: o.site, takenOn: deps.now(), playwright: deps.playwright, cacheDir: o.cacheDir, blocks, hashes } );
 	const problems = baselineProblems( baseline );
 	if ( problems.length ) {
 		problems.forEach( ( p ) => log( `FAIL baseline ${ p }` ) );

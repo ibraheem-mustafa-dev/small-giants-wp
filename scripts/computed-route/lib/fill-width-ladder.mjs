@@ -16,8 +16,7 @@
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
 // (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
-import { ONE_VALUE_EVERY_WIDTH, LOOSE, splitProperty } from './resolve.mjs';
-import { isBoxRow, boxTierValue, calibratedPaint } from './box-tier.mjs';
+import { ONE_VALUE_EVERY_WIDTH, LOOSE } from './resolve.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
@@ -168,12 +167,12 @@ export function valuesAt( row, reads, target, home ) {
 	return out;
 }
 
-export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', keyScope, entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
+export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
 	for ( const row of perNode( unmapped ) ) {
 		const hit = isLadderRow( row ) ? rowTarget( { nodes, flat, refOf }, row ) : null;
-		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, date, collapse, resolver } ) : false;
+		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) : false;
 		done ? out.answered.push( answer( row, done ) ) : out.unmapped.push( row );
 	}
 	out.unmapped = regroup( out.unmapped );
@@ -182,7 +181,7 @@ export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 
 // The read widths a row is settled at when it is written or its effect is the block's own (truthy), or false.
 
-function ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, date, collapse, resolver } ) {
+function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) {
 	const { rec, target } = hit;
 	const { reads, db } = ctx;
 	const node = flat[ rec.index ];
@@ -237,8 +236,8 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, da
 	if ( ! varies && ! ( tiered.length && widths.some( differs ) ) ) {
 		return false;
 	}
-	const { short, side, corner } = splitProperty( prop );
-	for ( const r of tiered ) {
+	if ( tiered.length ) {
+		const r = tiered[ 0 ];
 		const tiers = {};
 		let carried = null;
 		for ( const w of [ ...widths ].reverse() ) {
@@ -249,19 +248,9 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, da
 				carried = values[ w ];
 			}
 		}
-		// A box setting holds { top, right, bottom, left } per device (lib/box-tier.mjs), never a string: a per-side row writes
-		// its own side and the sides compose by deep merge. A shape no box can be built from (a corner of border-radius, a
-		// shorthand of several values) is no tier-shaped home for this row, and the setting is skipped.
-		const named = ( t ) => ( 'flat_sibling' === r.tier_shape ? siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name : r.attr_name );
-		const boxOf = ( t, v ) => boxTierValue( { row: r, short, side, corner, value: v, existing: 'flat_sibling' === r.tier_shape ? node.attributes?.[ named( t ) ] : node.attributes?.[ r.attr_name ]?.[ t ], paint: calibratedPaint( { calibration: cal, slot, tier: t } ) } );
-		const box = isBoxRow( r );
-		const built = Object.fromEntries( Object.entries( tiers ).map( ( [ t, v ] ) => [ t, box ? boxOf( t, v ) : v ] ) );
-		if ( Object.values( built ).some( ( v ) => null === v ) ) {
-			continue;
-		}
 		const writes = 'flat_sibling' === r.tier_shape
-			? Object.entries( built ).map( ( [ t, value ] ) => ( { attr: named( t ), value, merge: box ? 'deep' : 'replace' } ) )
-			: [ { attr: r.attr_name, value: built, merge: 'deep' } ];
+			? Object.entries( tiers ).map( ( [ t, value ] ) => ( { attr: siblings( db, rec.name, r.attr_name ).find( ( s ) => s.css_tier === t )?.attr_name, value, merge: 'replace' } ) )
+			: [ { attr: r.attr_name, value: tiers, merge: 'deep' } ];
 		if ( writes.every( ( w ) => w.attr ) ) {
 			return took( { writes, included: Object.fromEntries( widths.map( ( w ) => [ w, true ] ) ) }, 'width-ladder', `${ r.attr_name } holds a value per device, so the draft's ${ widths.map( ( w ) => `${ values[ w ] } at ${ w }` ).join( ', ' ) } is written there` );
 		}
@@ -294,7 +283,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, keyScope, entries, da
 		e && out.ledger.push( e );
 	}
 	const label = `Width ladder ${ prop }${ state ? ` (${ state })` : '' }: ${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) }`;
-	const puts = scopedCssPuts( node, { css: css.css, keyScope, index: rec.index, why: `width ladder (${ prop })`, label } );
+	const puts = scopedCssPuts( node, { css: css.css, index: rec.index, why: `width ladder (${ prop })`, label } );
 	for ( const x of puts ) {
 		const { before, after } = setAttr( node, { attr: x.attr, value: x.value } );
 		// `covers` and `readSlot` name the property and the element it was read on that the rule answers (`prop` is its label),

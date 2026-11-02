@@ -1,12 +1,12 @@
 {
-	"generated": "2026-11-02T04:39:31.144Z",
-	"inventory": "2026-11-01T21:23:38.011Z",
-	"source": "http://127.0.0.1:62097/",
+	"generated": "2026-10-28T06:45:06.969Z",
+	"inventory": "2026-10-28T06:45:06.800Z",
+	"source": "http://127.0.0.1:57904/",
 	"surface": "footer",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [],
 	"stripRoots": [
-		"Root/1158#0"
+		"Root/1161#0"
 	],
 	"recordDisagreements": [],
 	"recordUntranslated": [
@@ -27,800 +27,27 @@
 		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 39,
+		"inventoryElements": 40,
 		"parts": 1,
-		"rows": 38,
+		"rows": 39,
 		"skeletonNodes": 23,
 		"expandedNodes": 23,
 		"low": 1,
-		"removed": 9,
+		"removed": 10,
 		"unresolved": 0,
 		"byRule": {
 			"footerSlots": 2,
 			"logoGrid": 7,
 			"columnHeading": 3,
-			"recognise": 3
+			"pillButton": 3
 		}
-	},
-	"partPairing": {
-		"paired": 26,
-		"unpaired": [
-			{
-				"key": "Root/1122#0",
-				"block": "sgs/site-footer",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1122#0",
-				"block": "sgs/site-footer",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1124#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1124#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1124#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1125#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1126#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1)",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2)",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3)",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(1) > .sgs-gallery__caption",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(2) > .sgs-gallery__caption",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": ".sgs-gallery__grid > .sgs-gallery__item:nth-of-type(3) > .sgs-gallery__caption",
-				"reason": ".sgs-gallery__grid: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1127#0",
-				"block": "sgs/gallery",
-				"slot": "@scrim",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1134#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1134#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1134#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1135#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list__heading",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1136#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1140#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1140#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1140#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1141#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list__heading",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
-				"reason": "the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
-				"reason": "the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 4 copies of this repeated part"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1142#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1146#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1146#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1146#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1147#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list__heading",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon > svg",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text",
-				"reason": "the first copy of this repeated part has no element here, so neither has this one"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__text",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6)",
-				"reason": "the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(5): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6) > .sgs-icon-list__icon",
-				"reason": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(6): the draft draws 3 copies of this repeated part"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1148#0",
-				"block": "sgs/icon-list",
-				"slot": ".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text > .sgs-icon-list__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1152#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4) > .sgs-business-hours__day",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(1)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(2)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(3)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1154#0",
-				"block": "sgs/business-info",
-				"slot": ".sgs-business-info > .sgs-business-hours__row:nth-of-type(4)",
-				"reason": ".sgs-business-info: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1155#0",
-				"block": "sgs/multi-button",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1155#0",
-				"block": "sgs/multi-button",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1156#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1156#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1157#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1157#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1158#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-title",
-				"reason": ".sgs-whatsapp-cta__card-text: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1158#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__card-text > .sgs-whatsapp-cta__card-subline",
-				"reason": ".sgs-whatsapp-cta__card-text: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/1158#0",
-				"block": "sgs/whatsapp-cta",
-				"slot": ".sgs-whatsapp-cta__icon",
-				"reason": "the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/1122#0",
+			"key": "Root/1124#0",
 			"tag": "footer",
 			"depth": 0,
 			"words": "",
@@ -832,7 +59,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-footer",
@@ -848,15 +74,15 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1122_0@375.png",
-				"1440": "shots/Root_1122_0@1440.png"
+				"375": "shots/Root_1124_0@375.png",
+				"1440": "shots/Root_1124_0@1440.png"
 			},
-			"snippet": "<footer class=\"sgs-footer\" style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"1122\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1123\"> <div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" ",
+			"snippet": "<footer class=\"sgs-footer\" style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"1124\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;l",
 			"attributes": {}
 		},
 		{
 			"order": 1,
-			"key": "Root/1123#0",
+			"key": "Root/1125#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -880,10 +106,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1123_0@375.png",
-				"1440": "shots/Root_1123_0@1440.png"
+				"375": "shots/Root_1125_0@375.png",
+				"1440": "shots/Root_1125_0@1440.png"
 			},
-			"snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1123\"> <div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\"> <p style=\"margin:18px 0 0;color:#5",
+			"snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;",
 			"attributes": {
 				"layout": "grid",
 				"rowSlot": "columns"
@@ -891,7 +117,7 @@
 		},
 		{
 			"order": 2,
-			"key": "Root/1124#0",
+			"key": "Root/1126#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -903,86 +129,97 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
 						"no row block fits: a generic wrapper"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1124_0@375.png",
-				"1440": "shots/Root_1124_0@1440.png"
+				"375": "shots/Root_1126_0@375.png",
+				"1440": "shots/Root_1126_0@1440.png"
 			},
-			"snippet": "<div data-dc-tpl=\"1124\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1126\">Designer eyewear from an independent optician in Birmingham.</p> <div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"112",
+			"snippet": "<div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an indepen",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/1125#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/1126#0"
-				}
 			}
 		},
 		{
 			"order": 3,
-			"key": "Root/1125#0",
-			"tag": "img",
+			"key": "Root/1127#0",
+			"tag": "div",
 			"depth": 3,
-			"words": "",
+			"words": "EYE CARE",
 			"block": "sgs/responsive-logo",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.82,
+			"confidence": 0.8,
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
-					"score": 1.15,
-					"share": 0.821,
+					"score": 1,
+					"share": 0.8,
 					"evidence": [
 						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"logo image: eye-care-wordmark.png / alt \"Eye Care Birmingham\" (an image whose file name, alt text or class says it is the brand mark)",
-						"the image's alt text is the site name \"Eye Care Birmingham\""
+						"typed brand name: the words equal the site name \"Eye Care Birmingham\""
 					]
 				},
 				{
-					"block": "sgs/media",
+					"block": "sgs/text",
 					"score": 0.25,
-					"share": 0.179,
+					"share": 0.2,
 					"evidence": [
-						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+						"html_tag_to_core_block: p -> sgs/text, halved: the words are a brand name"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1125_0@1440.png"
+				"375": "shots/Root_1127_0@375.png",
+				"1440": "shots/Root_1127_0@1440.png"
 			},
-			"snippet": "<img src=\"assets/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" width=\"111\" height=\"32\" style=\"display:block;object-fit:contain\" data-dc-tpl=\"1125\">",
-			"attributes": {
-				"logoId": 491
-			},
-			"carried": {
-				"logoId": "media-map.json: sites/eye-care-ward-end/handoff/assets/eye-care-wordmark.png"
-			}
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div>",
+			"attributes": {},
+			"unit": "brand",
+			"note": "typed brand name \"EYE CARE BIRMINGHAM\" is the logo block"
 		},
 		{
 			"order": 4,
-			"key": "Root/1126#0",
+			"key": "Root/1128#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "BIRMINGHAM",
+			"block": null,
+			"action": "absorbed",
+			"reason": "part of the typed brand name; the logo block carries it",
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_1128_0@375.png",
+				"1440": "shots/Root_1128_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div>",
+			"attributes": {},
+			"into": "Root/1127#0"
+		},
+		{
+			"order": 5,
+			"key": "Root/1129#0",
 			"tag": "p",
 			"depth": 3,
 			"words": "Designer eyewear from an independent optician in Birmingham.",
@@ -994,7 +231,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1008,16 +244,16 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1126_0@1440.png"
+				"1440": "shots/Root_1129_0@1440.png"
 			},
-			"snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1126\">Designer eyewear from an independent optician in Birmingham.</p>",
+			"snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an independent optician in Birmingham.</p>",
 			"attributes": {
 				"text": "Designer eyewear from an independent optician in Birmingham."
 			}
 		},
 		{
-			"order": 5,
-			"key": "Root/1127#0",
+			"order": 6,
+			"key": "Root/1130#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
@@ -1029,7 +265,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "logoGrid",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/gallery",
@@ -1042,61 +277,15 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1127_0@375.png",
-				"1440": "shots/Root_1127_0@1440.png"
+				"375": "shots/Root_1130_0@375.png",
+				"1440": "shots/Root_1130_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"1127\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584",
-			"attributes": {}
-		},
-		{
-			"order": 6,
-			"key": "Root/1128#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/gallery: rule logoGrid",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "logoGrid",
-			"into": "Root/1127#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_1128_0@1440.png"
-			},
-			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584\" data-dc-tpl=\"1128\"> <img src=\"assets/instagram.svg\" alt=\"\" aria-hidde",
+			"snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"1130\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584",
 			"attributes": {}
 		},
 		{
 			"order": 7,
-			"key": "Root/1129#0",
-			"tag": "img",
-			"depth": 5,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/gallery: rule logoGrid",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "logoGrid",
-			"into": "Root/1127#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_1129_0@1440.png"
-			},
-			"snippet": "<img src=\"assets/instagram.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1129\">",
-			"attributes": {}
-		},
-		{
-			"order": 8,
-			"key": "Root/1130#0",
+			"key": "Root/1131#0",
 			"tag": "a",
 			"depth": 4,
 			"words": "",
@@ -1108,64 +297,18 @@
 			"low": false,
 			"stale": null,
 			"rule": "logoGrid",
-			"into": "Root/1127#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_1130_0@1440.png"
-			},
-			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"1130\"> <img src=\"assets/google-g.svg",
-			"attributes": {}
-		},
-		{
-			"order": 9,
-			"key": "Root/1131#0",
-			"tag": "img",
-			"depth": 5,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/gallery: rule logoGrid",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "logoGrid",
-			"into": "Root/1127#0",
+			"into": "Root/1130#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_1131_0@1440.png"
 			},
-			"snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1131\">",
+			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584\" data-dc-tpl=\"1131\"> <img src=\"assets/instagram.svg\" alt=\"\" aria-hidde",
 			"attributes": {}
 		},
 		{
-			"order": 10,
+			"order": 8,
 			"key": "Root/1132#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/gallery: rule logoGrid",
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "logoGrid",
-			"into": "Root/1127#0",
-			"candidates": [],
-			"parts": [],
-			"screenshots": {
-				"1440": "shots/Root_1132_0@1440.png"
-			},
-			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"1132\"> <img src=\"assets/whatsapp",
-			"attributes": {}
-		},
-		{
-			"order": 11,
-			"key": "Root/1133#0",
 			"tag": "img",
 			"depth": 5,
 			"words": "",
@@ -1177,18 +320,110 @@
 			"low": false,
 			"stale": null,
 			"rule": "logoGrid",
-			"into": "Root/1127#0",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1132_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/instagram.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1132\">",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/1133#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_1133_0@1440.png"
 			},
-			"snippet": "<img src=\"assets/whatsapp-green.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1133\">",
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"1133\"> <img src=\"assets/google-g.svg",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/1134#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1134_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1134\">",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/1135#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1135_0@1440.png"
+			},
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"1135\"> <img src=\"assets/whatsapp",
 			"attributes": {}
 		},
 		{
 			"order": 12,
-			"key": "Root/1134#0",
+			"key": "Root/1136#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1136_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-green.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1136\">",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/1137#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1200,7 +435,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1215,26 +449,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1134_0@375.png",
-				"1440": "shots/Root_1134_0@1440.png"
+				"375": "shots/Root_1137_0@375.png",
+				"1440": "shots/Root_1137_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1134\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1135\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1136\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1137\">All brands</a><a href=\"#\" sc-camel-",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1137\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a><a href=\"#\" sc-camel-",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/1135#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/1136#0"
-				}
 			}
 		},
 		{
-			"order": 13,
-			"key": "Root/1135#0",
+			"order": 14,
+			"key": "Root/1138#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Shop",
@@ -1246,7 +472,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "columnHeading",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1259,17 +484,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1135_0@375.png",
-				"1440": "shots/Root_1135_0@1440.png"
+				"375": "shots/Root_1138_0@375.png",
+				"1440": "shots/Root_1138_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1135\">Shop</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span>",
 			"attributes": {
 				"content": "Shop"
 			}
 		},
 		{
-			"order": 14,
-			"key": "Root/1136#0",
+			"order": 15,
+			"key": "Root/1139#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Sunglasses",
@@ -1303,34 +528,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1136_0@375.png",
-				"1440": "shots/Root_1136_0@1440.png"
+				"375": "shots/Root_1139_0@375.png",
+				"1440": "shots/Root_1139_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1136\">Sunglasses</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Sunglasses",
-				"url": "/shop/"
-			},
-			"slots": {
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-					"tpl": "Root/1136#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-					"tpl": "Root/1136#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-					"tpl": "Root/1137#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-					"tpl": "Root/1138#0"
-				}
+				"text": "Sunglasses"
 			}
 		},
 		{
-			"order": 15,
-			"key": "Root/1137#0",
+			"order": 16,
+			"key": "Root/1140#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "All brands",
@@ -1356,10 +566,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1137_0@375.png",
-				"1440": "shots/Root_1137_0@1440.png"
+				"375": "shots/Root_1140_0@375.png",
+				"1440": "shots/Root_1140_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1137\">All brands</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -1367,8 +577,8 @@
 			}
 		},
 		{
-			"order": 16,
-			"key": "Root/1138#0",
+			"order": 17,
+			"key": "Root/1141#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Prescription lenses",
@@ -1394,20 +604,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1138_0@375.png",
-				"1440": "shots/Root_1138_0@1440.png"
+				"375": "shots/Root_1141_0@375.png",
+				"1440": "shots/Root_1141_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"1138\">Prescription lenses</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"1141\">Prescription lenses</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Prescription lenses",
-				"url": "/prescription-lenses/"
+				"text": "Prescription lenses"
 			}
 		},
 		{
-			"order": 17,
-			"key": "Root/1139#0",
+			"order": 18,
+			"key": "Root/1142#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Glasses — arriving soon",
@@ -1419,19 +628,18 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1139_0@375.png",
-				"1440": "shots/Root_1139_0@1440.png"
+				"375": "shots/Root_1142_0@375.png",
+				"1440": "shots/Root_1142_0@1440.png"
 			},
-			"snippet": "<span style=\"color:#8B8478\" data-dc-tpl=\"1139\">Glasses — arriving soon</span>",
+			"snippet": "<span style=\"color:#8B8478\" data-dc-tpl=\"1142\">Glasses — arriving soon</span>",
 			"attributes": {}
 		},
 		{
-			"order": 18,
-			"key": "Root/1140#0",
+			"order": 19,
+			"key": "Root/1143#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1443,7 +651,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1458,26 +665,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1140_0@375.png",
-				"1440": "shots/Root_1140_0@1440.png"
+				"375": "shots/Root_1143_0@375.png",
+				"1440": "shots/Root_1143_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1140\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1141\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1142\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1143\">FAQs</a><a href=\"#\" sc-camel-on-",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1143\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a><a href=\"#\" sc-camel-on-",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/1141#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/1142#0"
-				}
 			}
 		},
 		{
-			"order": 19,
-			"key": "Root/1141#0",
+			"order": 20,
+			"key": "Root/1144#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Help",
@@ -1489,7 +688,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "columnHeading",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1502,17 +700,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1141_0@375.png",
-				"1440": "shots/Root_1141_0@1440.png"
+				"375": "shots/Root_1144_0@375.png",
+				"1440": "shots/Root_1144_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1141\">Help</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span>",
 			"attributes": {
 				"content": "Help"
 			}
 		},
 		{
-			"order": 20,
-			"key": "Root/1142#0",
+			"order": 21,
+			"key": "Root/1145#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Delivery & returns",
@@ -1546,37 +744,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1142_0@375.png",
-				"1440": "shots/Root_1142_0@1440.png"
+				"375": "shots/Root_1145_0@375.png",
+				"1440": "shots/Root_1145_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1142\">Delivery &amp; returns</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Delivery & returns",
-				"url": "/help/"
-			},
-			"slots": {
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-					"tpl": "Root/1142#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-					"tpl": "Root/1142#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-					"tpl": "Root/1143#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-					"tpl": "Root/1144#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
-					"tpl": "Root/1145#0"
-				}
+				"text": "Delivery & returns"
 			}
 		},
 		{
-			"order": 21,
-			"key": "Root/1143#0",
+			"order": 22,
+			"key": "Root/1146#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "FAQs",
@@ -1602,20 +782,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1143_0@375.png",
-				"1440": "shots/Root_1143_0@1440.png"
+				"375": "shots/Root_1146_0@375.png",
+				"1440": "shots/Root_1146_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1143\">FAQs</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "FAQs",
-				"url": "/help/"
+				"text": "FAQs"
 			}
 		},
 		{
-			"order": 22,
-			"key": "Root/1144#0",
+			"order": 23,
+			"key": "Root/1147#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Size guide",
@@ -1641,10 +820,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1144_0@375.png",
-				"1440": "shots/Root_1144_0@1440.png"
+				"375": "shots/Root_1147_0@375.png",
+				"1440": "shots/Root_1147_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"1144\">Size guide</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"1147\">Size guide</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -1652,8 +831,8 @@
 			}
 		},
 		{
-			"order": 23,
-			"key": "Root/1145#0",
+			"order": 24,
+			"key": "Root/1148#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Contact",
@@ -1679,20 +858,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1145_0@375.png",
-				"1440": "shots/Root_1145_0@1440.png"
+				"375": "shots/Root_1148_0@375.png",
+				"1440": "shots/Root_1148_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1145\">Contact</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1148\">Contact</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Contact",
-				"url": "/contact/"
+				"text": "Contact"
 			}
 		},
 		{
-			"order": 24,
-			"key": "Root/1146#0",
+			"order": 25,
+			"key": "Root/1149#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1704,7 +882,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1719,26 +896,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1146_0@375.png",
-				"1440": "shots/Root_1146_0@1440.png"
+				"375": "shots/Root_1149_0@375.png",
+				"1440": "shots/Root_1149_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1146\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1147\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1148\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"1149\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1149\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/1147#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/1148#0"
-				}
 			}
 		},
 		{
-			"order": 25,
-			"key": "Root/1147#0",
+			"order": 26,
+			"key": "Root/1150#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Visit or call",
@@ -1750,7 +919,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "columnHeading",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1763,17 +931,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1147_0@375.png",
-				"1440": "shots/Root_1147_0@1440.png"
+				"375": "shots/Root_1150_0@375.png",
+				"1440": "shots/Root_1150_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1147\">Visit or call</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span>",
 			"attributes": {
 				"content": "Visit or call"
 			}
 		},
 		{
-			"order": 26,
-			"key": "Root/1148#0",
+			"order": 27,
+			"key": "Root/1151#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "About Eye Care",
@@ -1807,34 +975,19 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1148_0@375.png",
-				"1440": "shots/Root_1148_0@1440.png"
+				"375": "shots/Root_1151_0@375.png",
+				"1440": "shots/Root_1151_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1148\">About Eye Care</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "About Eye Care",
-				"url": "/about/"
-			},
-			"slots": {
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-					"tpl": "Root/1148#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-					"tpl": "Root/1148#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-					"tpl": "Root/1149#0"
-				},
-				".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-					"tpl": "Root/1150#0"
-				}
+				"text": "About Eye Care"
 			}
 		},
 		{
-			"order": 27,
-			"key": "Root/1149#0",
+			"order": 28,
+			"key": "Root/1152#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "0121 729 8233",
@@ -1860,10 +1013,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1149_0@375.png",
-				"1440": "shots/Root_1149_0@1440.png"
+				"375": "shots/Root_1152_0@375.png",
+				"1440": "shots/Root_1152_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"1149\">{{ phone }}</a>",
+			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -1873,8 +1026,8 @@
 			"siteInfoKind": "phone"
 		},
 		{
-			"order": 28,
-			"key": "Root/1150#0",
+			"order": 29,
+			"key": "Root/1153#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "644 Washwood Heath Rd Birmingham B8 2HQ",
@@ -1899,13 +1052,13 @@
 				}
 			],
 			"parts": [
-				"Root/1151#0"
+				"Root/1154#0"
 			],
 			"screenshots": {
-				"375": "shots/Root_1150_0@375.png",
-				"1440": "shots/Root_1150_0@1440.png"
+				"375": "shots/Root_1153_0@375.png",
+				"1440": "shots/Root_1153_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"color:#5E584F\" data-dc-tpl=\"1150\">644 Washwood Heath Rd<br data-dc-tpl=\"1151\">Birmingham B8 2HQ</a>",
+			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"color:#5E584F\" data-dc-tpl=\"1153\">644 Washwood Heath Rd<br data-dc-tpl=\"1154\">Birmingham B8 2HQ</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -1916,8 +1069,8 @@
 			"siteInfoKind": "address"
 		},
 		{
-			"order": 29,
-			"key": "Root/1152#0",
+			"order": 30,
+			"key": "Root/1155#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Mon–Sat 9.30–17.30",
@@ -1929,7 +1082,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -1952,17 +1104,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1152_0@375.png",
-				"1440": "shots/Root_1152_0@1440.png"
+				"375": "shots/Root_1155_0@375.png",
+				"1440": "shots/Root_1155_0@1440.png"
 			},
-			"snippet": "<span style=\"color:#8B8478;font-size:13px\" data-dc-tpl=\"1152\">Mon–Sat 9.30–17.30</span>",
+			"snippet": "<span style=\"color:#8B8478;font-size:13px\" data-dc-tpl=\"1155\">Mon–Sat 9.30–17.30</span>",
 			"attributes": {
 				"displayType": "hours"
 			}
 		},
 		{
-			"order": 30,
-			"key": "Root/1153#0",
+			"order": 31,
+			"key": "Root/1156#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -1986,18 +1138,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1153_0@375.png",
-				"1440": "shots/Root_1153_0@1440.png"
+				"375": "shots/Root_1156_0@375.png",
+				"1440": "shots/Root_1156_0@1440.png"
 			},
-			"snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"1153\"> <span data-dc-tpl=\"1154\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"1155\"><a href=\"#\" d",
+			"snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"1156\"> <span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" d",
 			"attributes": {
 				"layout": "flex",
 				"rowSlot": "bottom"
 			}
 		},
 		{
-			"order": 31,
-			"key": "Root/1154#0",
+			"order": 32,
+			"key": "Root/1157#0",
 			"tag": "span",
 			"depth": 2,
 			"words": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
@@ -2009,7 +1161,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -2032,18 +1183,18 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1154_0@375.png",
-				"1440": "shots/Root_1154_0@1440.png"
+				"375": "shots/Root_1157_0@375.png",
+				"1440": "shots/Root_1157_0@1440.png"
 			},
-			"snippet": "<span data-dc-tpl=\"1154\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
+			"snippet": "<span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
 			"attributes": {
 				"displayType": "copyright",
 				"copyrightPrefix": ""
 			}
 		},
 		{
-			"order": 32,
-			"key": "Root/1155#0",
+			"order": 33,
+			"key": "Root/1158#0",
 			"tag": "span",
 			"depth": 2,
 			"words": "",
@@ -2055,7 +1206,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/multi-button",
@@ -2077,25 +1227,17 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1155_0@375.png",
-				"1440": "shots/Root_1155_0@1440.png"
+				"375": "shots/Root_1158_0@375.png",
+				"1440": "shots/Root_1158_0@1440.png"
 			},
-			"snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"1155\"><a href=\"#\" data-dc-tpl=\"1156\">Privacy</a><a href=\"#\" data-dc-tpl=\"1157\">Terms</a></span>",
+			"snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" data-dc-tpl=\"1159\">Privacy</a><a href=\"#\" data-dc-tpl=\"1160\">Terms</a></span>",
 			"attributes": {
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-button:nth-of-type(1)": {
-					"tpl": "Root/1156#0"
-				},
-				".sgs-button:nth-of-type(2)": {
-					"tpl": "Root/1157#0"
-				}
 			}
 		},
 		{
-			"order": 33,
-			"key": "Root/1156#0",
+			"order": 34,
+			"key": "Root/1159#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Privacy",
@@ -2107,7 +1249,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -2121,21 +1262,16 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1156_0@1440.png"
+				"1440": "shots/Root_1159_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" data-dc-tpl=\"1156\">Privacy</a>",
+			"snippet": "<a href=\"#\" data-dc-tpl=\"1159\">Privacy</a>",
 			"attributes": {
 				"label": "Privacy"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/1156#0"
-				}
 			}
 		},
 		{
-			"order": 34,
-			"key": "Root/1157#0",
+			"order": 35,
+			"key": "Root/1160#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Terms",
@@ -2147,7 +1283,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -2161,108 +1296,95 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1157_0@1440.png"
+				"1440": "shots/Root_1160_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" data-dc-tpl=\"1157\">Terms</a>",
+			"snippet": "<a href=\"#\" data-dc-tpl=\"1160\">Terms</a>",
 			"attributes": {
 				"label": "Terms"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/1157#0"
-				}
 			}
 		},
 		{
-			"order": 35,
-			"key": "Root/1158#0",
+			"order": 36,
+			"key": "Root/1161#0",
 			"tag": "a",
 			"depth": 1,
 			"words": "",
-			"block": "sgs/whatsapp-cta",
+			"block": "sgs/button",
 			"action": null,
-			"reason": "names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating",
-			"source": "rule recognise",
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
-			"acceptedDecision": true,
+			"rule": "pillButton",
 			"candidates": [
 				{
-					"block": "sgs/whatsapp-cta",
+					"block": "sgs/button",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule recognise: names and attributes: sgs/whatsapp-cta holds whatsapp (score 1.00, features: floating, link kind whatsapp); fixed to the viewport (bottom-right): variant = floating"
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_1158_0@375.png",
-				"1440": "shots/Root_1158_0@1440.png"
+				"375": "shots/Root_1161_0@375.png",
+				"1440": "shots/Root_1161_0@1440.png"
 			},
 			"snippet": "<a class=\"sgs-whatsapp-fab\" href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Fatima on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:35;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:13.5px;font-weight:500;box-shadow:0 10px 30px rgba(13,110,53,.32);trans",
 			"attributes": {
-				"variant": "floating",
-				"floatingHideLabelBelow": 768,
 				"label": "Ask me anything"
 			},
-			"slots": {
-				".sgs-whatsapp-cta__label": {
-					"tpl": "Root/1160#0"
-				}
-			},
-			"strip": "Root/1158#0"
+			"strip": "Root/1161#0"
 		},
 		{
-			"order": 36,
-			"key": "Root/1159#0",
+			"order": 37,
+			"key": "Root/1162#0",
 			"tag": "img",
 			"depth": 2,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
-			"into": "Root/1158#0",
+			"rule": "pillButton",
+			"into": "Root/1161#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1159_0@1440.png"
+				"1440": "shots/Root_1162_0@1440.png"
 			},
-			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"1159\">",
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"1162\">",
 			"attributes": {},
-			"strip": "Root/1158#0"
+			"strip": "Root/1161#0"
 		},
 		{
-			"order": 37,
-			"key": "Root/1160#0",
+			"order": 38,
+			"key": "Root/1163#0",
 			"tag": "span",
 			"depth": 2,
 			"words": "Ask me anything",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/whatsapp-cta: rule recognise",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "recognise",
-			"into": "Root/1158#0",
+			"rule": "pillButton",
+			"into": "Root/1161#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_1160_0@1440.png"
+				"1440": "shots/Root_1163_0@1440.png"
 			},
-			"snippet": "<span style=\"display:{{ hideOnMobile }}\" data-dc-tpl=\"1160\">Ask me anything</span>",
+			"snippet": "<span style=\"display:{{ hideOnMobile }}\" data-dc-tpl=\"1163\">Ask me anything</span>",
 			"attributes": {},
-			"strip": "Root/1158#0"
+			"strip": "Root/1161#0"
 		}
 	]
 }

@@ -91,7 +91,7 @@ test( 'MUST FAIL: the width gate takes a threshold as a block\'s own setting onl
 	const run = ( block, collapse ) => {
 		const flat = [ { name: block, attributes: {}, ref: 'r0' } ];
 		const nodes = [ { index: 0, name: block, parent: null, node: { draftRef: { tpl: 'Page/45#0' } }, children: [], targets: [] } ];
-		widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-22', collapse } );
+		widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], date: '2026-10-22', collapse } );
 		return flat[ 0 ].attributes;
 	};
 	assert.deepEqual( run( 'sgs/other', { 'sgs/menu': 'collapsePoint' } ), { sgsHideOnMobile: true, sgsHideOnTablet: true }, 'a number named mobileBreakpoint is not the collapse setting' );

@@ -3,19 +3,19 @@
 import base from './drawer-eye-care-birmingham.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-drawer-eye-care-birmingham-0", text: false, structure: false, draft: {"tpl":"Root/1162#0"}, live: ".cr-ref-drawer-eye-care-birmingham-0", liveAt: {"opacity":"@scrim::before"} },
-	{ name: "gen-drawer-eye-care-birmingham-1", text: false, structure: false, draft: {"tpl":"Root/1163#0"}, live: ".cr-ref-drawer-eye-care-birmingham-1", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-drawer-eye-care-birmingham-2", text: false, structure: false, draft: {"tpl":"Root/1164#0"}, live: ".cr-ref-drawer-eye-care-birmingham-2", liveAt: {"width":".sgs-responsive-logo__link"} },
-	{ name: "gen-drawer-eye-care-birmingham-3", text: false, structure: false, draft: {"tpl":"Root/1165#0"}, live: ".cr-ref-drawer-eye-care-birmingham-3" },
-	{ name: "gen-drawer-eye-care-birmingham-4", text: false, structure: false, draft: {"tpl":"Root/1166#0"}, live: ".cr-ref-drawer-eye-care-birmingham-4" },
-	{ name: "gen-drawer-eye-care-birmingham-5", text: false, structure: false, draft: {"tpl":"Root/1172#0"}, live: ".cr-ref-drawer-eye-care-birmingham-5" },
-	{ name: "gen-drawer-eye-care-birmingham-6", text: false, structure: false, draft: {"tpl":"Root/1177#0"}, live: ".cr-ref-drawer-eye-care-birmingham-6", liveAt: {"column-gap":".sgs-container__inner","padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-drawer-eye-care-birmingham-7", text: false, structure: false, draft: {"tpl":"Root/1178#0"}, live: ".cr-ref-drawer-eye-care-birmingham-7" },
-	{ name: "gen-drawer-eye-care-birmingham-8", text: false, structure: false, draft: {"tpl":"Root/1181#0"}, live: ".cr-ref-drawer-eye-care-birmingham-8", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-drawer-eye-care-birmingham-9", text: false, structure: false, draft: {"tpl":"Root/1182#0"}, live: ".cr-ref-drawer-eye-care-birmingham-9" },
-	{ name: "gen-drawer-eye-care-birmingham-10", text: false, structure: false, draft: {"tpl":"Root/1187#0"}, live: ".cr-ref-drawer-eye-care-birmingham-10" },
-	{ name: "gen-drawer-eye-care-birmingham-11", text: false, structure: false, draft: {"tpl":"Root/1190#0"}, live: ".cr-ref-drawer-eye-care-birmingham-11", liveAt: {"padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-drawer-eye-care-birmingham-12", text: false, structure: false, draft: {"tpl":"Root/1191#0"}, live: ".cr-ref-drawer-eye-care-birmingham-12" },
+	{ name: "gen-drawer-eye-care-birmingham-0", text: false, structure: false, draft: {"tpl":"Root/1165#0"}, live: ".cr-ref-drawer-eye-care-birmingham-0" },
+	{ name: "gen-drawer-eye-care-birmingham-1", text: false, structure: false, draft: {"tpl":"Root/1166#0"}, live: ".cr-ref-drawer-eye-care-birmingham-1" },
+	{ name: "gen-drawer-eye-care-birmingham-2", text: false, structure: false, draft: {"tpl":"Root/1167#0"}, live: ".cr-ref-drawer-eye-care-birmingham-2" },
+	{ name: "gen-drawer-eye-care-birmingham-3", text: false, structure: false, draft: {"tpl":"Root/1168#0"}, live: ".cr-ref-drawer-eye-care-birmingham-3" },
+	{ name: "gen-drawer-eye-care-birmingham-4", text: false, structure: false, draft: {"tpl":"Root/1169#0"}, live: ".cr-ref-drawer-eye-care-birmingham-4" },
+	{ name: "gen-drawer-eye-care-birmingham-5", text: false, structure: false, draft: {"tpl":"Root/1175#0"}, live: ".cr-ref-drawer-eye-care-birmingham-5" },
+	{ name: "gen-drawer-eye-care-birmingham-6", text: false, structure: false, draft: {"tpl":"Root/1180#0"}, live: ".cr-ref-drawer-eye-care-birmingham-6" },
+	{ name: "gen-drawer-eye-care-birmingham-7", text: false, structure: false, draft: {"tpl":"Root/1181#0"}, live: ".cr-ref-drawer-eye-care-birmingham-7" },
+	{ name: "gen-drawer-eye-care-birmingham-8", text: false, structure: false, draft: {"tpl":"Root/1184#0"}, live: ".cr-ref-drawer-eye-care-birmingham-8" },
+	{ name: "gen-drawer-eye-care-birmingham-9", text: false, structure: false, draft: {"tpl":"Root/1185#0"}, live: ".cr-ref-drawer-eye-care-birmingham-9" },
+	{ name: "gen-drawer-eye-care-birmingham-10", text: false, structure: false, draft: {"tpl":"Root/1190#0"}, live: ".cr-ref-drawer-eye-care-birmingham-10" },
+	{ name: "gen-drawer-eye-care-birmingham-11", text: false, structure: false, draft: {"tpl":"Root/1193#0"}, live: ".cr-ref-drawer-eye-care-birmingham-11" },
+	{ name: "gen-drawer-eye-care-birmingham-12", text: false, structure: false, draft: {"tpl":"Root/1194#0"}, live: ".cr-ref-drawer-eye-care-birmingham-12" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

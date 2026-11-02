@@ -54,9 +54,7 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {
-							"homeLabel": ""
-						},
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -95,12 +93,7 @@
 									"textHash": "a07c5b4d",
 									"line": 446
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/326#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/text",
@@ -125,12 +118,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
-								"tpl": "Root/326#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/label",
@@ -157,8 +145,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Our own brand, and the brands we distribute.",
-							"level": "h1"
+							"content": "Our own brand, and the brands we distribute."
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -203,15 +190,7 @@
 						},
 						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/322#0"
-					},
-					".sgs-hero__video-bg": {
-						"tpl": "Root/318#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -321,8 +300,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Brands we supply.",
-													"level": "h2"
+													"content": "Brands we supply."
 												},
 												"draftRef": {
 													"tpl": "Root/352#0"
@@ -367,22 +345,9 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/350#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/352#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/348#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/container",
@@ -474,19 +439,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#0"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#0"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -538,15 +493,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -616,19 +563,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#1"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#1"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -680,15 +617,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#1"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#1"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -758,19 +687,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#2"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#2"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -822,15 +741,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#2"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#2"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -900,19 +811,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#3"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#3"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -964,15 +865,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#3"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#3"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1042,19 +935,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#4"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#4"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1106,15 +989,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#4"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#4"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1184,19 +1059,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#5"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#5"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1248,15 +1113,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#5"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#5"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1326,19 +1183,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#6"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#6"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1390,15 +1237,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#6"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#6"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1468,19 +1307,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#7"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#7"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1532,15 +1361,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#7"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#7"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1610,19 +1431,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#8"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#8"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1674,15 +1485,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#8"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#8"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1752,19 +1555,9 @@
 															"textHash": "1505",
 															"line": 717
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/503#9"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/503#9"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/heading",
@@ -1816,42 +1609,13 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/502#9"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/505#9"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/501#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/501#1"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/347#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/499#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -1961,8 +1725,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Sanam, packed in Birmingham.",
-													"level": "h2"
+													"content": "Sanam, packed in Birmingham."
 												},
 												"draftRef": {
 													"tpl": "Root/384#0"
@@ -2008,81 +1771,134 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/icon-list",
+												"name": "sgs/container",
 												"attributes": {
-													"markerType": "bullet",
-													"items": [
-														{
-															"text": "Premium rice"
-														},
-														{
-															"text": "Flour & atta"
-														},
-														{
-															"text": "Spices"
-														},
-														{
-															"text": "Lentils, dried fruit & nuts"
-														}
-													]
+													"tagName": "div",
+													"layout": "grid"
 												},
 												"draftRef": {
-													"tpl": "Root/390#0"
+													"tpl": "Root/388#0"
 												},
 												"draftFingerprint": {
 													"tag": "div",
 													"cls": "",
-													"styleHash": "592aa752",
+													"styleHash": "37ecd678",
 													"parentTags": [
 														"main",
 														"section",
 														"div",
 														"div",
-														"div",
 														"div"
 													],
-													"textHash": "5c297023",
-													"line": 541
+													"textHash": "1505",
+													"line": 539
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
-														"tpl": "Root/391#0"
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "5c297023",
+															"line": 541
+														},
+														"innerBlocks": []
 													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-														"tpl": "Root/390#0"
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "9176fee1",
+															"line": 541
+														},
+														"innerBlocks": []
 													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-														"tpl": "Root/390#0"
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "c62b6a1a",
+															"line": 541
+														},
+														"innerBlocks": []
 													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": {
-														"tpl": "Root/390#1"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": {
-														"tpl": "Root/390#2"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__text": {
-														"tpl": "Root/390#3"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-														"tpl": "Root/390#1"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-														"tpl": "Root/390#2"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4)": {
-														"tpl": "Root/390#3"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": {
-														"tpl": "Root/391#1"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": {
-														"tpl": "Root/391#2"
-													},
-													".sgs-icon-list > .sgs-icon-list__item:nth-of-type(4) > .sgs-icon-list__icon": {
-														"tpl": "Root/391#3"
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "c709fb94",
+															"line": 541
+														},
+														"innerBlocks": []
 													}
-												}
+												]
 											},
 											{
 												"name": "sgs/button",
@@ -2107,22 +1923,9 @@
 													"textHash": "4e67f1cc",
 													"line": 546
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/393#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/382#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/384#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -2190,50 +1993,17 @@
 															"textHash": "1505",
 															"line": 551
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-media__img": {
-																"tpl": "Root/396#0"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/396#0"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/395#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/380#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/394#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/379#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#1"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -2385,8 +2155,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Want your own brand?",
-													"level": "h2"
+													"content": "Want your own brand?"
 												},
 												"draftRef": {
 													"tpl": "Root/522#0"
@@ -2431,15 +2200,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/520#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/522#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/multi-button",
@@ -2486,18 +2247,13 @@
 													"textHash": "c189c62a",
 													"line": 751
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/525#0"
-													}
-												}
+												"innerBlocks": []
 											},
 											{
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Request catalogue",
-													"url": "/apply/catalogue/"
+													"url": "/catalogue/"
 												},
 												"draftRef": {
 													"tpl": "Root/526#0"
@@ -2516,55 +2272,16 @@
 													"textHash": "9b742957",
 													"line": 752
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/526#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-button:nth-of-type(1)": {
-												"tpl": "Root/525#0"
-											},
-											".sgs-button:nth-of-type(2)": {
-												"tpl": "Root/526#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/516#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/517#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/515#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#2"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/316#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/344#0"
-			}
-		}
+		]
 	}
 ]

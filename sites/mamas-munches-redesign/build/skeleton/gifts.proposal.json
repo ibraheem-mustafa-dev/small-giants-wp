@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:50:39.200Z",
-	"inventory": "2026-11-02T01:08:37.207Z",
-	"source": "http://127.0.0.1:55806/",
+	"generated": "2026-10-28T06:35:45.797Z",
+	"inventory": "2026-10-28T06:35:45.384Z",
+	"source": "http://127.0.0.1:59003/",
 	"surface": "page-gifts-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -61,840 +61,28 @@
 		"logo": 0.5,
 		"rule": 1
 	},
-	"filterRail": {
-		"key": "Root/15#0",
-		"groups": [
-			{
-				"kind": "facet",
-				"key": "Root/16#0",
-				"label": "Root/16#0",
-				"facet": "what-s-the-moment"
-			},
-			{
-				"kind": "price",
-				"key": "Root/20#0",
-				"label": "Root/20#0"
-			}
-		],
-		"notes": [
-			"the rail's group Root/24#0 \"Show 4 gifts ↓\" filters nothing the catalogue holds, so it is not placed"
-		],
-		"attributeIds": {
-			"what-s-the-moment": 9
-		}
-	},
 	"counts": {
 		"inventoryElements": 127,
 		"parts": 0,
 		"rows": 127,
-		"skeletonNodes": 72,
-		"expandedNodes": 72,
-		"low": 13,
-		"removed": 68,
+		"skeletonNodes": 107,
+		"expandedNodes": 107,
+		"low": 33,
+		"removed": 20,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
-			"heroInner": 1,
-			"filterRail": 13,
+			"heroInner": 2,
+			"optionSetFilter": 9,
 			"decorationLayer": 2,
-			"loopBlocks": 49,
+			"pillButton": 8,
 			"alignWrapper": 2,
 			"formControl": 6,
 			"wholeCardLink": 1,
+			"cardTitle": 1,
 			"label": 2,
 			"cardAction": 1
 		}
-	},
-	"partPairing": {
-		"paired": 40,
-		"unpaired": [
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__bg-img",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__video-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media > .sgs-hero__split-media",
-				"reason": ".sgs-hero__media: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/10#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/10#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/10#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/13#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/14#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/15#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/15#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/15#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/15#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/15#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/16#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/20#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/25#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/25#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/25#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/26#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/26#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/26#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/27#0",
-				"block": "sgs/media",
-				"slot": ".sgs-media__caption",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/27#0",
-				"block": "sgs/media",
-				"slot": ".sgs-media__img",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/27#0",
-				"block": "sgs/media",
-				"slot": ".sgs-video > .sgs-video__bar > .sgs-video__time",
-				"reason": ".sgs-video: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/28#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/29#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/31#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/32#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/34#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/35#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/36#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-button",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": "div:nth-of-type(1)",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__label",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(2) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(3) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(4) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(5) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(2) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(3) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2) > .sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__price-group > .sgs-product-card__price",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__description",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-note",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__tag",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__description > a",
-				"reason": ".sgs-product-card__body > .sgs-product-card__description: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2) > .sgs-option-picker__label",
-				"reason": ".sgs-product-card__body > .sgs-option-picker:nth-of-type(2): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__rating > .sgs-product-card__rating-stars",
-				"reason": ".sgs-product-card__body > .sgs-product-card__rating: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": "div:nth-of-type(1) > .sgs-product-card__brand",
-				"reason": "div:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": "div:nth-of-type(1) > .sgs-product-card__saving-badge",
-				"reason": "div:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__price-group > .sgs-product-card__rrp",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches > .sgs-product-card__swatch:nth-of-type(1)",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches > .sgs-product-card__swatch:nth-of-type(2)",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches > .sgs-product-card__swatch:nth-of-type(3)",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches > .sgs-product-card__swatch:nth-of-type(4)",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": "div:nth-of-type(1) > .sgs-product-card__wishlist",
-				"reason": "div:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": "div:nth-of-type(1) > div > span",
-				"reason": "div:nth-of-type(1): the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__rating",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches > .sgs-product-card__swatch-more",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/39#0",
-				"block": "sgs/product-card",
-				"slot": ".sgs-product-card__body > .sgs-product-card__price-row > .sgs-product-card__swatches",
-				"reason": ".sgs-product-card__body > .sgs-product-card__price-row: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/45#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/45#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/45#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/47#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/48#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/48#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/48#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/52#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/53#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#1",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/52#1",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/53#1",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#2",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#2",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/50#2",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/52#2",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/53#2",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/55#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/55#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/55#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/56#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/56#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/56#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/58#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/59#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/66#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/66#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/66#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/69#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/70#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/71#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/73#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/73#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/73#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/74#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/75#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/75#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/75#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/77#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/78#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/79#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/79#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/79#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/82#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/82#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -913,7 +101,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -933,14 +120,6 @@
 			"snippet": "<main data-dc-tpl=\"8\"> <section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;overflow:hidden\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;padding:{{ L.heroPad }};display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center\" data-dc-tpl=\"10\"> <div style=\"display:flex;flex-direction:column;gap:18px\" data-dc-tpl=\"11\"> <div data-reveal=\"\" style=\"f",
 			"attributes": {
 				"tagName": "main"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/9#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/34#0"
-				}
 			}
 		},
 		{
@@ -957,7 +136,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "hero",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -974,12 +152,7 @@
 				"1440": "shots/Root_9_0@1440.png"
 			},
 			"snippet": "<section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;overflow:hidden\" data-dc-tpl=\"9\"> <div style=\"max-width:1240px;margin:0 auto;padding:{{ L.heroPad }};display:grid;grid-template-columns:{{ L.heroCols }};gap:{{ L.gap }};align-items:center\" data-dc-tpl=\"10\"> <div style=\"display:flex;flex-direction:column;gap:18px\" data-dc-tpl=\"11\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cur",
-			"attributes": {},
-			"slots": {
-				".sgs-hero__content": {
-					"tpl": "Root/9#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -995,7 +168,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1017,14 +189,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/12#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/13#0"
-				}
 			}
 		},
 		{
@@ -1035,7 +199,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -1056,21 +220,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "for the mum-to-be & the brand new mum ♥",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -1098,7 +262,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1117,8 +280,7 @@
 			},
 			"snippet": "<h1 data-reveal=\"\" style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em;text-wrap:balance\" data-dc-tpl=\"13\">Gifts she’ll actually eat</h1>",
 			"attributes": {
-				"content": "Gifts she’ll actually eat",
-				"level": "h1"
+				"content": "Gifts she’ll actually eat"
 			}
 		},
 		{
@@ -1135,7 +297,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1163,36 +324,22 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words (2 group(s): What’s the moment? (attribute what-s-the-moment), Budget (price))",
-			"source": "rule filterRail",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"acceptedDecision": true,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule filterRail: the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words (2 group(s): What’s the moment? (attribute what-s-the-moment), Budget (price))"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_15_0@375.png",
 				"1440": "shots/Root_15_0@1440.png"
 			},
 			"snippet": "<div data-reveal=\"\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:6px 6px 0 #3A2A22;max-width:580px\" data-dc-tpl=\"15\"> <div style=\"font-family:'Young Serif',serif;font-size:21px\" data-dc-tpl=\"16\">What’s the moment?</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"17\"><sc-for list=\"{{ occ ",
-			"attributes": {
-				"tagName": "aside",
-				"anchor": "sgs-shop-filters",
-				"className": "sgs-shop-filters"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 8,
@@ -1200,23 +347,33 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "What’s the moment?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/16#0 (sgs/text) no longer applies: sgs/container draws this element",
-			"rule": "filterRail",
-			"into": "Root/15#0",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_16_0@375.png",
 				"1440": "shots/Root_16_0@1440.png"
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:21px\" data-dc-tpl=\"16\">What’s the moment?</div>",
-			"attributes": {}
+			"attributes": {
+				"text": "What’s the moment?"
+			}
 		},
 		{
 			"order": 9,
@@ -1224,16 +381,29 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
-			"source": null,
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)",
+			"source": "rule optionSetFilter",
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/17#0 (sgs/option-picker) no longer applies: sgs/container draws this element",
-			"rule": "filterRail",
-			"into": "Root/15#0",
-			"candidates": [],
+			"stale": null,
+			"rule": "optionSetFilter",
+			"handover": {
+				"owner": "behaviour",
+				"kind": "behaviour",
+				"detail": "the choice narrows a list on this page: wire it to the list's filter"
+			},
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSetFilter: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_17_0@375.png",
@@ -1250,13 +420,13 @@
 			"words": "Baby shower",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/17#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1273,13 +443,13 @@
 			"words": "Just had a baby",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/17#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1296,13 +466,13 @@
 			"words": "Sending love from afar",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/17#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1320,13 +490,13 @@
 			"words": "The first 40 days",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/17#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1342,23 +512,33 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "Budget",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/20#0 (sgs/text) no longer applies: sgs/container draws this element",
-			"rule": "filterRail",
-			"into": "Root/15#0",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_20_0@375.png",
 				"1440": "shots/Root_20_0@1440.png"
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:21px\" data-dc-tpl=\"20\">Budget</div>",
-			"attributes": {}
+			"attributes": {
+				"text": "Budget"
+			}
 		},
 		{
 			"order": 15,
@@ -1366,16 +546,29 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
-			"source": null,
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)",
+			"source": "rule optionSetFilter",
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/21#0 (sgs/option-picker) no longer applies: sgs/container draws this element",
-			"rule": "filterRail",
-			"into": "Root/15#0",
-			"candidates": [],
+			"stale": null,
+			"rule": "optionSetFilter",
+			"handover": {
+				"owner": "behaviour",
+				"kind": "behaviour",
+				"detail": "the choice narrows a list on this page: wire it to the list's filter"
+			},
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSetFilter: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_21_0@375.png",
@@ -1392,13 +585,13 @@
 			"words": "Any",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/21#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1415,13 +608,13 @@
 			"words": "Under £20",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/21#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1438,13 +631,13 @@
 			"words": "£20 and up",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"reason": "drawn by sgs/option-picker: rule optionSetFilter",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "filterRail",
-			"into": "Root/15#0",
+			"rule": "optionSetFilter",
+			"into": "Root/21#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1460,23 +653,35 @@
 			"tag": "a",
 			"depth": 5,
 			"words": "Show 4 gifts ↓",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/container: rule filterRail",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/24#0 (sgs/button) no longer applies: sgs/container draws this element",
-			"rule": "filterRail",
-			"into": "Root/15#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_24_0@375.png",
 				"1440": "shots/Root_24_0@1440.png"
 			},
 			"snippet": "<a href=\"#results\" style=\"height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#F9D5D3;transform:translate(-3px,-3px);b",
-			"attributes": {}
+			"attributes": {
+				"label": "Show 4 gifts ↓",
+				"url": "#results"
+			}
 		},
 		{
 			"order": 20,
@@ -1492,7 +697,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1512,14 +716,6 @@
 			"snippet": "<div data-reveal=\"\" style=\"position:relative;height:{{ L.artH }}\" data-dc-tpl=\"25\"> <div style=\"position:absolute;left:4%;top:0;width:62%;background:#FFFAF0;padding:10px 10px 40px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-5deg);box-shadow:8px 8px 0 #3A2A22;transition:transform .45s cubic-bezier(.3,1.4,.5,1)\" style-hover=\"transform:rotate(-1deg) translateY(-10px)\" data-dc-tpl=\"26",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/26#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/29#0"
-				}
 			}
 		},
 		{
@@ -1536,7 +732,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1556,14 +751,6 @@
 			"snippet": "<div style=\"position:absolute;left:4%;top:0;width:62%;background:#FFFAF0;padding:10px 10px 40px;border:2px solid #3A2A22;border-radius:8px;transform:rotate(-5deg);box-shadow:8px 8px 0 #3A2A22;transition:transform .45s cubic-bezier(.3,1.4,.5,1)\" style-hover=\"transform:rotate(-1deg) translateY(-10px)\" data-dc-tpl=\"26\"><div style=\"aspect-ratio:3 / 4;background:url(assets/photo-gift-heart.jpg) center ",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/27#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/28#0"
-				}
 			}
 		},
 		{
@@ -1612,7 +799,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1647,7 +833,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1667,14 +852,6 @@
 			"snippet": "<div style=\"position:absolute;right:0;bottom:0;width:56%;background:#FFFAF0;border:2px solid #3A2A22;border-radius:6px;padding:24px 20px 18px;transform:rotate(4deg);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"29\"> <span aria-hidden=\"true\" style=\"position:absolute;top:-12px;left:50%;width:84px;height:24px;background:rgba(249,207,110,.85);transform:translateX(-50%) rotate(-3deg)\" data-dc-tpl=\"30\"></s",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/31#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/32#0"
-				}
 			}
 		},
 		{
@@ -1691,7 +868,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1715,7 +891,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1750,7 +925,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1785,7 +959,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1820,7 +993,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1840,11 +1012,6 @@
 			"snippet": "<section id=\"results\" style=\"padding:{{ L.secPad }};scroll-margin-top:72px\" data-dc-tpl=\"34\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"35\"> <h2 style=\"margin:0 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"36\">{{ resultTitle }}</h2> <div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.cardGap }}\" d",
 			"attributes": {
 				"tagName": "section"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/35#0"
-				}
 			}
 		},
 		{
@@ -1861,7 +1028,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1881,11 +1047,6 @@
 			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"35\"> <h2 style=\"margin:0 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"36\">{{ resultTitle }}</h2> <div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.cardGap }}\" data-dc-tpl=\"37\"> <sc-for list=\"{{ results }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"3",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/36#0"
-				}
 			}
 		},
 		{
@@ -1902,7 +1063,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -1921,8 +1081,7 @@
 			},
 			"snippet": "<h2 style=\"margin:0 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"36\">{{ resultTitle }}</h2>",
 			"attributes": {
-				"content": "Gifts for “just had a baby”",
-				"level": "h2"
+				"content": "Gifts for “just had a baby”"
 			}
 		},
 		{
@@ -1931,22 +1090,23 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "woocommerce/product-collection",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page)",
-			"source": "rule loopBlocks",
+			"reason": null,
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "woocommerce/product-collection",
+					"block": "sgs/container",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule loopBlocks: a loop of items that show a price and link to a product page is the site's product collection, the block the shop region uses, with its own query (FR-48-83, Spec 27 FR-24-4) (a loop of 4 items showing a price and linking to a product page)"
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
 					]
 				}
 			],
@@ -1957,21 +1117,8 @@
 			},
 			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.cardGap }}\" data-dc-tpl=\"37\"> <sc-for list=\"{{ results }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"38\"> <div style=\"min-width:0\" data-dc-tpl=\"39\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import></div> </sc-for> </div>",
 			"attributes": {
-				"queryId": 0,
-				"query": {
-					"inherit": false,
-					"perPage": 4,
-					"isProductCollectionBlock": true
-				},
 				"tagName": "div",
-				"displayLayout": {
-					"type": "flex",
-					"columns": 4,
-					"shrinkColumns": true
-				},
-				"queryContextIncludes": [
-					"collection"
-				]
+				"layout": "grid"
 			}
 		},
 		{
@@ -1980,33 +1127,33 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/39#0 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_39_0@375.png",
 				"1440": "shots/Root_39_0@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"39\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import></div>",
-			"attributes": {},
-			"slots": {
-				".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title": {
-					"tpl": "Root>ProductCard@40#0/1#0"
-				},
-				".sgs-product-card__body": {
-					"tpl": "Root/40#0"
-				},
-				".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag": {
-					"tpl": "Root>ProductCard@40#0/4#0"
-				}
+			"attributes": {
+				"tagName": "div"
 			}
 		},
 		{
@@ -2015,23 +1162,34 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/40#0 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_40_0@375.png",
 				"1440": "shots/Root_40_0@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 35,
@@ -2039,23 +1197,36 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_0_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 36,
@@ -2063,23 +1234,33 @@
 			"tag": "a",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
-			"source": null,
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_1_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {}
+			"attributes": {
+				"label": "Build your own"
+			}
 		},
 		{
 			"order": 37,
@@ -2089,13 +1270,13 @@
 			"words": "Build your own",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
+			"rule": "pillButton",
+			"into": "Root>ProductCard@40#0/1#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2111,23 +1292,36 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_4_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 39,
@@ -2135,23 +1329,35 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "Zookies",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_5_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {}
+			"attributes": {
+				"label": "Zookies",
+				"url": "/product/zookies/"
+			}
 		},
 		{
 			"order": 40,
@@ -2159,22 +1365,33 @@
 			"tag": "p",
 			"depth": 8,
 			"words": "Our giant lactation cookie, baked to order in the flavour you pick.",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_40_0_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "Our giant lactation cookie, baked to order in the flavour you pick."
+			}
 		},
 		{
 			"order": 41,
@@ -2182,23 +1399,36 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_8_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 42,
@@ -2206,23 +1436,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "from £9.50",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_9_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "from £9.50"
+			}
 		},
 		{
 			"order": 43,
@@ -2230,23 +1470,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "£1.19 a cookie",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_10_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "£1.19 a cookie"
+			}
 		},
 		{
 			"order": 44,
@@ -2254,23 +1504,34 @@
 			"tag": "button",
 			"depth": 8,
 			"words": "Build your box",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_0_11_0@375.png",
 				"1440": "shots/Root_ProductCard_40_0_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {}
+			"attributes": {
+				"label": "Build your box"
+			}
 		},
 		{
 			"order": 45,
@@ -2278,23 +1539,34 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/39#1 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_39_1@375.png",
 				"1440": "shots/Root_39_1@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"39\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import></div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 46,
@@ -2302,23 +1574,34 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/40#1 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_40_1@375.png",
 				"1440": "shots/Root_40_1@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 47,
@@ -2326,23 +1609,36 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_0_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 48,
@@ -2350,23 +1646,33 @@
 			"tag": "a",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
-			"source": null,
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_1_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {}
+			"attributes": {
+				"label": "New? Start here"
+			}
 		},
 		{
 			"order": 49,
@@ -2376,13 +1682,13 @@
 			"words": "New? Start here",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
+			"rule": "pillButton",
+			"into": "Root>ProductCard@40#1/1#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2398,23 +1704,36 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_4_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 51,
@@ -2422,23 +1741,35 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "Taster Trio",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_5_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {}
+			"attributes": {
+				"label": "Taster Trio",
+				"url": "/product/taster-trio/"
+			}
 		},
 		{
 			"order": 52,
@@ -2446,22 +1777,33 @@
 			"tag": "p",
 			"depth": 8,
 			"words": "3 Classic Zookies to try. Postage included, fits through the letterbox.",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_40_1_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "3 Classic Zookies to try. Postage included, fits through the letterbox."
+			}
 		},
 		{
 			"order": 53,
@@ -2469,23 +1811,36 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_8_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 54,
@@ -2493,23 +1848,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "£5",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_9_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "£5"
+			}
 		},
 		{
 			"order": 55,
@@ -2517,23 +1882,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "postage included",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_10_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "postage included"
+			}
 		},
 		{
 			"order": 56,
@@ -2541,23 +1916,34 @@
 			"tag": "button",
 			"depth": 8,
 			"words": "Add to basket",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_1_11_0@375.png",
 				"1440": "shots/Root_ProductCard_40_1_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {}
+			"attributes": {
+				"label": "Add to basket"
+			}
 		},
 		{
 			"order": 57,
@@ -2565,23 +1951,34 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/39#2 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_39_2@375.png",
 				"1440": "shots/Root_39_2@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"39\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import></div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 58,
@@ -2589,23 +1986,34 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/40#2 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_40_2@375.png",
 				"1440": "shots/Root_40_2@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 59,
@@ -2613,23 +2021,36 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_0_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 60,
@@ -2637,23 +2058,33 @@
 			"tag": "a",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
-			"source": null,
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_1_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {}
+			"attributes": {
+				"label": "Gift favourite"
+			}
 		},
 		{
 			"order": 61,
@@ -2663,13 +2094,13 @@
 			"words": "Gift favourite",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
+			"rule": "pillButton",
+			"into": "Root>ProductCard@40#2/1#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2685,23 +2116,36 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_4_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 63,
@@ -2709,23 +2153,35 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "New Baby Gift Box",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_5_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {}
+			"attributes": {
+				"label": "New Baby Gift Box",
+				"url": "/product/new-baby-gift-box/"
+			}
 		},
 		{
 			"order": 64,
@@ -2733,22 +2189,33 @@
 			"tag": "p",
 			"depth": 8,
 			"words": "A mix of Zookies in a gift box, sent with your message.",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_40_2_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "A mix of Zookies in a gift box, sent with your message."
+			}
 		},
 		{
 			"order": 65,
@@ -2756,23 +2223,36 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_8_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 66,
@@ -2780,23 +2260,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "£15",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_9_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "£15"
+			}
 		},
 		{
 			"order": 67,
@@ -2804,23 +2294,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "gift-boxed",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_10_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "gift-boxed"
+			}
 		},
 		{
 			"order": 68,
@@ -2828,23 +2328,34 @@
 			"tag": "button",
 			"depth": 8,
 			"words": "Add to basket",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_2_11_0@375.png",
 				"1440": "shots/Root_ProductCard_40_2_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {}
+			"attributes": {
+				"label": "Add to basket"
+			}
 		},
 		{
 			"order": 69,
@@ -2852,23 +2363,34 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/39#3 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_39_3@375.png",
 				"1440": "shots/Root_39_3@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"39\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import></div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 70,
@@ -2876,23 +2398,34 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/40#3 (sgs/container) no longer applies: woocommerce/product-collection draws this element",
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_40_3@375.png",
 				"1440": "shots/Root_40_3@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"40\"></dc-import>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div"
+			}
 		},
 		{
 			"order": 71,
@@ -2900,23 +2433,36 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_0_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 72,
@@ -2924,23 +2470,33 @@
 			"tag": "a",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
-			"source": null,
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_1_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {}
+			"attributes": {
+				"label": "Most thoughtful"
+			}
 		},
 		{
 			"order": 73,
@@ -2950,13 +2506,13 @@
 			"words": "Most thoughtful",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"reason": "drawn by sgs/button: rule pillButton",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
+			"rule": "pillButton",
+			"into": "Root>ProductCard@40#3/1#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -2972,23 +2528,36 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_4_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 75,
@@ -2996,23 +2565,35 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "40-Day Care Bundle",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_5_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {}
+			"attributes": {
+				"label": "40-Day Care Bundle",
+				"url": "/product/40-day-care-bundle/"
+			}
 		},
 		{
 			"order": 76,
@@ -3020,22 +2601,33 @@
 			"tag": "p",
 			"depth": 8,
 			"words": "Six weekly deliveries for the 40-day postnatal window.",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_40_3_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "Six weekly deliveries for the 40-day postnatal window."
+			}
 		},
 		{
 			"order": 77,
@@ -3043,23 +2635,36 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_8_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 78,
@@ -3067,23 +2672,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "£42",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_9_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "£42"
+			}
 		},
 		{
 			"order": 79,
@@ -3091,23 +2706,33 @@
 			"tag": "span",
 			"depth": 9,
 			"words": "6 deliveries",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_10_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "6 deliveries"
+			}
 		},
 		{
 			"order": 80,
@@ -3115,23 +2740,34 @@
 			"tag": "button",
 			"depth": 8,
 			"words": "Add to basket",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by woocommerce/product-collection: rule loopBlocks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "loopBlocks",
-			"into": "Root/37#0",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_40_3_11_0@375.png",
 				"1440": "shots/Root_ProductCard_40_3_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {}
+			"attributes": {
+				"label": "Add to basket"
+			}
 		},
 		{
 			"order": 81,
@@ -3147,7 +2783,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3167,11 +2802,6 @@
 			"snippet": "<section style=\"background:#F9D5D3;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;padding:{{ L.secPad }}\" data-dc-tpl=\"44\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"45\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"46\">easy as that</div> <h2 data-reveal=\"\" style=\"margin:4px 0 28px;font-family:'Young S",
 			"attributes": {
 				"tagName": "section"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/45#0"
-				}
 			}
 		},
 		{
@@ -3188,7 +2818,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3208,14 +2837,6 @@
 			"snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"45\"> <div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"46\">easy as that</div> <h2 data-reveal=\"\" style=\"margin:4px 0 28px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"47\">How gifting works</h2> <div style=\"display:gri",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/46#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/47#0"
-				}
 			}
 		},
 		{
@@ -3224,21 +2845,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "easy as that",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3266,7 +2887,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -3285,8 +2905,7 @@
 			},
 			"snippet": "<h2 data-reveal=\"\" style=\"margin:4px 0 28px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"47\">How gifting works</h2>",
 			"attributes": {
-				"content": "How gifting works",
-				"level": "h2"
+				"content": "How gifting works"
 			}
 		},
 		{
@@ -3303,7 +2922,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3325,14 +2943,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/50#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/50#1"
-				}
 			}
 		},
 		{
@@ -3349,7 +2959,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3369,14 +2978,6 @@
 			"snippet": "<div data-reveal=\"\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:24px;transform:rotate({{ s.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"50\"> <div style=\"width:52px;height:52px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/51#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/52#0"
-				}
 			}
 		},
 		{
@@ -3385,21 +2986,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "1",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3419,21 +3020,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "Pick a gift",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3444,7 +3045,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:22px;margin:14px 0 6px\" data-dc-tpl=\"52\">{{ s.t }}</div>",
 			"attributes": {
-				"content": "Pick a gift"
+				"text": "Pick a gift"
 			}
 		},
 		{
@@ -3461,7 +3062,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3496,7 +3096,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3516,14 +3115,6 @@
 			"snippet": "<div data-reveal=\"\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:24px;transform:rotate({{ s.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"50\"> <div style=\"width:52px;height:52px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/51#1"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/52#1"
-				}
 			}
 		},
 		{
@@ -3532,21 +3123,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "2",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3565,21 +3156,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "Write your note",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3590,7 +3181,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:22px;margin:14px 0 6px\" data-dc-tpl=\"52\">{{ s.t }}</div>",
 			"attributes": {
-				"content": "Write your note"
+				"text": "Write your note"
 			}
 		},
 		{
@@ -3607,7 +3198,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3642,7 +3232,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3662,14 +3251,6 @@
 			"snippet": "<div data-reveal=\"\" style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:24px;transform:rotate({{ s.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"50\"> <div style=\"width:52px;height:52px;border-radius:999px;background:#F9CF6E;border:2px solid #3A2A",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/51#2"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/52#2"
-				}
 			}
 		},
 		{
@@ -3678,21 +3259,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "3",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The step number in a 52px filled circle with a border; a short pill-shaped badge is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3711,21 +3292,21 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "We bake and post",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: Each step's Young Serif 22px title ({{ s.t }}) above its description; it titles the step."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3736,7 +3317,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:22px;margin:14px 0 6px\" data-dc-tpl=\"52\">{{ s.t }}</div>",
 			"attributes": {
-				"content": "We bake and post"
+				"text": "We bake and post"
 			}
 		},
 		{
@@ -3753,7 +3334,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3811,7 +3391,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3833,14 +3412,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/56#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/66#0"
-				}
 			}
 		},
 		{
@@ -3857,7 +3428,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3879,14 +3449,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/57#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/58#0"
-				}
 			}
 		},
 		{
@@ -3895,21 +3457,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "go on, have a go",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3937,7 +3499,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -3956,8 +3517,7 @@
 			},
 			"snippet": "<h2 data-reveal=\"\" style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"58\">Write her a note</h2>",
 			"attributes": {
-				"content": "Write her a note",
-				"level": "h2"
+				"content": "Write her a note"
 			}
 		},
 		{
@@ -3974,7 +3534,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4033,7 +3592,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -4096,7 +3654,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-textarea",
@@ -4159,7 +3716,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -4199,7 +3755,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4219,14 +3774,6 @@
 			"snippet": "<div data-reveal=\"\" style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:8px;padding:{{ L.notePad }};transform:rotate(-2deg);box-shadow:10px 10px 0 #3A2A22;background-image:repeating-linear-gradient(#FFFAF0 0 43px, #F1DFCF 43px 44px);min-height:{{ L.noteH }}\" data-dc-tpl=\"66\"> <span aria-hidden=\"true\" style=\"position:absolute;top:-14px;left:30px;width:110px;height:28p",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/68#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/69#0"
-				}
 			}
 		},
 		{
@@ -4243,7 +3790,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "decorationLayer",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4267,7 +3813,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -4314,7 +3859,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4349,7 +3893,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4384,7 +3927,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4442,7 +3984,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4462,14 +4003,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/74#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/75#0"
-				}
 			}
 		},
 		{
@@ -4486,7 +4019,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -4533,7 +4065,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4555,14 +4086,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/76#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/77#0"
-				}
 			}
 		},
 		{
@@ -4571,21 +4094,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "baby shower coming up?",
-			"block": "sgs/label",
+			"block": "sgs/heading",
 			"action": null,
-			"reason": null,
-			"source": "client decision",
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "cardTitle",
 			"candidates": [
 				{
-					"block": "sgs/label",
+					"block": "sgs/heading",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean marked block:sgs/label in the intake review on 2026-11-02"
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
 					]
 				}
 			],
@@ -4596,7 +4119,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#7A5A12;line-height:1\" data-dc-tpl=\"76\">baby shower coming up?</div>",
 			"attributes": {
-				"text": "baby shower coming up?"
+				"content": "baby shower coming up?"
 			}
 		},
 		{
@@ -4605,21 +4128,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "Give it now, she bakes it later",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The band's Young Serif title at the h2 size; the script kicker before it was made the heading by cardTitle, so the band holds two headings."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -4630,7 +4153,7 @@
 			},
 			"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"77\">Give it now, she bakes it later</div>",
 			"attributes": {
-				"content": "Give it now, she bakes it later"
+				"text": "Give it now, she bakes it later"
 			}
 		},
 		{
@@ -4647,7 +4170,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4682,7 +4204,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4704,14 +4225,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/80#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/81#0"
-				}
 			}
 		},
 		{
@@ -4728,7 +4241,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -4762,7 +4274,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -4796,7 +4307,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -4815,11 +4325,6 @@
 			"attributes": {
 				"label": "£40",
 				"url": "/product/baby-shower-gift-card/"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/82#0"
-				}
 			}
 		}
 	]

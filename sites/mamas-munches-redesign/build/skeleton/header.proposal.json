@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:56:52.623Z",
-	"inventory": "2026-11-02T01:23:38.492Z",
-	"source": "http://127.0.0.1:52267/",
+	"generated": "2026-10-28T06:45:51.970Z",
+	"inventory": "2026-10-28T06:45:51.645Z",
+	"source": "http://127.0.0.1:55059/",
 	"surface": "site-header-announcement-strip-bar",
 	"siteName": null,
 	"surfaceParts": [
@@ -54,515 +54,19 @@
 		"inventoryElements": 45,
 		"parts": 12,
 		"rows": 33,
-		"skeletonNodes": 18,
-		"expandedNodes": 18,
-		"low": 9,
-		"removed": 15,
+		"skeletonNodes": 19,
+		"expandedNodes": 19,
+		"low": 8,
+		"removed": 14,
 		"unresolved": 0,
 		"byRule": {
 			"headerSlots": 1,
 			"widthWrapper": 1,
 			"typedDivider": 2,
+			"drawerOpener": 4,
 			"blockPartOpener": 4,
 			"navigation": 6
 		}
-	},
-	"partPairing": {
-		"paired": 16,
-		"unpaired": [
-			{
-				"key": "Root>SiteHeader@7#0/13#0",
-				"block": "sgs/site-header",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/13#0",
-				"block": "sgs/site-header",
-				"slot": "@controls",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/13#0",
-				"block": "sgs/site-header",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/7#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/10#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/12#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/21#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/21#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/21#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/21#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/22#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/24#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__trigger > .sgs-cart__icon",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__trigger > .sgs-cart__badge",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": "@scrim",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__trigger > .sgs-cart__pill-label",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track > .sgs-cart__free-delivery-fill",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading > .sgs-cart__panel-count",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-text",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions > .sgs-cart__panel-checkout",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-note",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal > .sgs-cart__panel-subtotal-value",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-items",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close > svg",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/28#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/36#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/36#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/36#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/36#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/37#0",
-				"block": "sgs/responsive-logo",
-				"slot": ".sgs-responsive-logo__link > .sgs-responsive-logo__picture > .sgs-responsive-logo__image",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(5) > .sgs-nav-bar-menu__link",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(6) > .sgs-nav-bar-menu__link",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(7) > .sgs-nav-bar-menu__link",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-text",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu > .sgs-nav-bar-menu__subitem:nth-of-type(1) > .sgs-nav-bar-menu__sublink",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__submenu-wrap > .sgs-nav-bar-menu__submenu > .sgs-nav-bar-menu__subitem:nth-of-type(2) > .sgs-nav-bar-menu__sublink",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": "@scrim",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(4) > .sgs-nav-bar-menu__link > .sgs-nav-bar-menu__badge",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": "@companion",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": "@companion > .sgs-nav-bar-menu__detach-wrap > .sgs-nav-bar-menu__burger",
-				"reason": "@companion: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(1) > .sgs-nav-bar-menu__submenu-root > .sgs-nav-bar-menu__subtoggle > .sgs-nav-bar-menu__caret",
-				"reason": ".sgs-nav-bar-menu__bar: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/38#0",
-				"block": "sgs/nav-bar-menu",
-				"slot": ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)",
-				"reason": ".sgs-nav-bar-menu__toggle-wrap: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/44#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/45#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__trigger > .sgs-cart__icon",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__trigger > .sgs-cart__badge",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track > .sgs-cart__free-delivery-fill",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-track",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-heading > .sgs-cart__panel-count",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__free-delivery > .sgs-cart__free-delivery-text",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions > .sgs-cart__panel-checkout",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-note",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-subtotal > .sgs-cart__panel-subtotal-value",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-items",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-header > .sgs-cart__panel-close > svg",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			},
-			{
-				"key": "Root>SiteHeader@7#0/49#0",
-				"block": "sgs/cart",
-				"slot": ".sgs-cart__panel > .sgs-cart__panel-inner > .sgs-cart__panel-footer > .sgs-cart__panel-actions",
-				"reason": ".sgs-cart__panel: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -581,7 +85,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-header",
@@ -600,7 +103,7 @@
 					"share": 0.417,
 					"evidence": [
 						"block_capabilities: sgs/hero lists \"header\" (the draft root tag)",
-						"block_composition: sgs/hero is a section-root accepting any block",
+						"block_composition: sgs/hero is a section-root accepting [\"sgs/media\"]",
 						"the root of the surface"
 					]
 				}
@@ -692,7 +195,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -728,7 +230,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "typedDivider",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -752,7 +253,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -787,7 +287,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "typedDivider",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -812,7 +311,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -848,7 +346,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-header-row",
@@ -876,29 +373,35 @@
 			"tag": "div",
 			"depth": 2,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)",
-			"source": "client decision",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"ruleWould": {
-				"label": "sgs/container",
-				"reason": "",
-				"decision": {
-					"label": "remove",
-					"reason": "Settled by evidence: remove in the intake review on 2026-11-01 (draft code, built page and block facts; sites/mamas-munches-redesign/build/intake/review-evidence.md)"
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
 				}
-			},
-			"candidates": [],
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_SiteHeader_7_0_16_0@375.png"
 			},
 			"snippet": "<div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"17\"> <span style=\"display:block;w",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 10,
@@ -907,13 +410,14 @@
 			"depth": 3,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root>SiteHeader@7#0/16#0)",
-			"source": "client decision (inside Root>SiteHeader@7#0/16#0)",
+			"action": "absorbed",
+			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": "rule drawerOpener",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -929,13 +433,14 @@
 			"depth": 4,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root>SiteHeader@7#0/16#0)",
-			"source": "client decision (inside Root>SiteHeader@7#0/16#0)",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -951,13 +456,14 @@
 			"depth": 4,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root>SiteHeader@7#0/16#0)",
-			"source": "client decision (inside Root>SiteHeader@7#0/16#0)",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -973,13 +479,14 @@
 			"depth": 4,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root>SiteHeader@7#0/16#0)",
-			"source": "client decision (inside Root>SiteHeader@7#0/16#0)",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1002,7 +509,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1021,11 +527,6 @@
 			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" style=\"display:block\" data-dc-tpl=\"21\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\"></a>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root>SiteHeader@7#0/22#0"
-				}
 			}
 		},
 		{
@@ -1042,7 +543,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -1088,7 +588,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1109,14 +608,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root>SiteHeader@7#0/24#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root>SiteHeader@7#0/28#0"
-				}
 			}
 		},
 		{
@@ -1133,7 +624,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -1153,14 +643,6 @@
 			"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"24\"><svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;st",
 			"attributes": {
 				"linkUrl": "/my-account/"
-			},
-			"slots": {
-				".sgs-icon__shape": {
-					"tpl": "Root>SiteHeader@7#0/24#0"
-				},
-				".sgs-icon__shape > .sgs-icon__glyph > svg": {
-					"tpl": "Root>SiteHeader@7#0/25#0"
-				}
 			}
 		},
 		{
@@ -1171,36 +653,19 @@
 			"words": "",
 			"block": "sgs/cart",
 			"action": null,
-			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row; the framework DB prefers sgs/button (confidence 0.75: html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\"); block_composition: sgs/button is a leaf; the element holds words and no block children); a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two",
+			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row",
 			"source": "rule blockPartOpener",
-			"confidence": 0.5,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": "blockPartOpener",
-			"conflict": {
-				"rule": "blockPartOpener",
-				"ruleBlock": "sgs/cart",
-				"dbBlock": "sgs/button",
-				"dbConfidence": 0.75,
-				"why": "a standing rule and the framework DB disagree: the row keeps the rule's block but is low confidence, so the finaliser and the review choose between the two"
-			},
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/cart",
 					"score": 1,
-					"share": 0.5,
+					"share": 1,
 					"evidence": [
 						"rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row"
-					]
-				},
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 0.5,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
 					]
 				}
 			],
@@ -1215,14 +680,6 @@
 				"displayMode": "drawer",
 				"triggerStyle": "icon",
 				"ariaLabel": "Open basket"
-			},
-			"slots": {
-				".sgs-cart__trigger > .sgs-cart__icon > svg": {
-					"tpl": "Root>SiteHeader@7#0/29#0"
-				},
-				".sgs-cart__trigger": {
-					"tpl": "Root>SiteHeader@7#0/28#0"
-				}
 			}
 		},
 		{
@@ -1239,7 +696,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/site-header-row",
@@ -1275,7 +731,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1294,11 +749,6 @@
 			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"36\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\"></a>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root>SiteHeader@7#0/37#0"
-				}
 			}
 		},
 		{
@@ -1315,7 +765,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
@@ -1361,7 +810,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "navigation",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/nav-bar-menu",
@@ -1386,13 +834,28 @@
 			"slots": {
 				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
 					"tpl": "Root>SiteHeader@7#0/39#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+					"tpl": "Root>SiteHeader@7#0/17#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/18#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/19#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
+					"tpl": "Root>SiteHeader@7#0/20#0"
 				}
 			},
 			"slotNotes": [
 				"no draft child is rendered by a \"current\" sc-if, so no current child slot",
 				"no draft child holds a glyph element, so no glyph slot",
-				"0 width thresholds show this navigation, so no collapse point"
-			]
+				"0 width thresholds show this navigation, so no collapse point",
+				"sgs/nav-bar-menu stands in Root>SiteHeader@7#0/16#0 where its Root>SiteHeader@7#0/17#0 part is, beside the wrapper's other content",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon"
+			],
+			"placedIn": "Root>SiteHeader@7#0/16#0"
 		},
 		{
 			"order": 23,
@@ -1523,7 +986,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1544,14 +1006,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root>SiteHeader@7#0/45#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root>SiteHeader@7#0/49#0"
-				}
 			}
 		},
 		{
@@ -1568,7 +1022,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -1592,9 +1045,6 @@
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
 					"tpl": "Root>SiteHeader@7#0/46#0"
-				},
-				".sgs-icon__shape": {
-					"tpl": "Root>SiteHeader@7#0/45#0"
 				}
 			}
 		},
@@ -1612,7 +1062,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "blockPartOpener",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/cart",
@@ -1640,15 +1089,6 @@
 			"slots": {
 				".sgs-cart__trigger > .sgs-cart__icon > svg": {
 					"tpl": "Root>SiteHeader@7#0/50#0"
-				},
-				"@scrim": {
-					"tpl": "Root>SiteHeader@7#0/54#0"
-				},
-				".sgs-cart__trigger": {
-					"tpl": "Root>SiteHeader@7#0/49#0"
-				},
-				".sgs-cart__trigger > .sgs-cart__pill-label": {
-					"tpl": "Root>SiteHeader@7#0/53#0"
 				}
 			}
 		},
@@ -1664,7 +1104,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root>SiteHeader@7#0/53#0 (sgs/text) no longer applies: sgs/cart draws this element",
+			"stale": null,
 			"rule": "blockPartOpener",
 			"into": "Root>SiteHeader@7#0/49#0",
 			"candidates": [],
@@ -1687,7 +1127,7 @@
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root>SiteHeader@7#0/54#0 (sgs/text) no longer applies: sgs/cart draws this element",
+			"stale": null,
 			"rule": "blockPartOpener",
 			"into": "Root>SiteHeader@7#0/49#0",
 			"candidates": [],

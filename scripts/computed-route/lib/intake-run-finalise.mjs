@@ -1,4 +1,4 @@
-// The intake command's finalise step, answered by the agent running the clone (Spec 48 §3.4 steps 3 and 4, FR-48-17) and its re-render, without any
+// The intake command's agent-run finaliser step (Spec 48 §3.4 steps 3 and 4, FR-48-17) and its re-render, without any
 // browser stage. The command stays deterministic: it never calls a model.
 //   --finalise <client>     writes build/intake/finalise-request.json: per surface, lib/skeleton-finalise.mjs::
 //                           finaliseRequest over the skeleton rows (after collapsing) that are low confidence or
@@ -14,12 +14,9 @@
 import fs from 'fs';
 import path from 'path';
 import { openDb } from './db.mjs';
-import { finaliseRequest, readDecisions, readPicks, recordDecision, signatureOf, skeletonDir } from './skeleton-finalise.mjs';
+import { finaliseRequest, readPicks, recordDecision, skeletonDir } from './skeleton-finalise.mjs';
 import { reviewRows, renderReview, readingCounts } from './intake-review.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
-import { carryReviewMdMarks } from './intake-review-carry.mjs';
-import { REPO as CODE_REPO } from './skeleton-facts.mjs';
-import { proposalLabel } from './skeleton-classify.mjs';
 
 export const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 export const LOW_BELOW = 0.7;
@@ -149,46 +146,32 @@ export function applyIntakePicks( intake, picks ) {
 	return { intake: next, applied: picked.length, missing };
 }
 
-// The label of what a skeleton row proposes as the rules proposed it: a finaliser pick stands for the writer's own proposal
-// it replaced (`original`), a row carrying `ruleWould` for what the rules propose now (Bean has seen it in the review).
-const proposedLabel = ( r ) => ( r.ruleWould ? r.ruleWould.label : proposalLabel( r.original || r ) );
-
-// The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked `block:<slug>`
-// (his correction) or `remove`, and a row he marked `accept` (a confident proposal or a finaliser pick) that places a block
-// or removes the element. A row the identity matcher absorbs or unwraps, and a row with no block, is not saved: its
-// `accept` leaves nothing for a decision to reproduce. Each decision carries `proposed`, the label of what the rules
-// proposed when it was saved (a later different proposal becomes a review row, lib/skeleton-classify.mjs::makeClassifier).
-// Each copy of a collapsed row is saved under its own element key: with the row's words when the copies share one text,
-// and with each copy's own words (the element signature is tag and words) when they differ and `wordsOf( surface, key )`
-// knows them (the saved inventory, lib/intake-run.mjs::inventoryWords); a copy whose words it does not know is not saved,
-// as a decision under another copy's words would read as stale.
-// Returns [ { surface, element: { key, tag, words }, choice, reason, proposed, typed } ], `typed` when Bean wrote the block
-// himself (`block:<slug>`) rather than accepting the writer's proposal.
-export function reviewDecisions( intake, today, wordsOf = () => undefined ) {
+// The skeleton choices --apply-review saves in the client decisions file (§3.4 step 4): a row Bean marked
+// `block:<slug>` (his correction), and a finaliser pick he accepted. A confident writer proposal he accepted is not
+// saved: it already follows from the framework DB, so a decision would add no evidence the next run lacks. Each copy of
+// a collapsed row is saved under its own element key when the copies share one text; otherwise only the first copy
+// (the element signature is tag and words, so a copy with other words would read as stale). Returns
+// [ { surface, element: { key, tag, words }, choice, reason } ].
+export function reviewDecisions( intake, today ) {
 	const marks = new Map( ( intake.review || [] ).map( ( r ) => [ r.rowId, r.mark ] ) );
 	const out = [];
 	for ( const [ surface, s ] of Object.entries( intake.skeletons || {} ) ) {
 		for ( const r of s.rows || [] ) {
 			const mark = marks.get( r.rowId || `skeleton:${ surface }:${ r.key }` ) ?? null;
 			const own = /^block:(.+)$/.exec( mark || '' )?.[ 1 ];
-			const typed = Boolean( own );
+			const accepted = 'accept' === mark && 'agent' === r.finalisedBy;
 			const removed = 'remove' === mark;
-			const accepted = 'accept' === mark && ! [ 'absorbed', 'unwrap', 'unresolved' ].includes( r.action ) && ( r.block || 'remove' === r.action );
 			if ( ! own && ! accepted && ! removed ) {
 				continue;
 			}
-			const what = own ? `block:${ own }` : removed || 'remove' === r.action ? 'remove' : r.block;
 			const choice = own ? { block: own } : removed || 'remove' === r.action ? { remove: true } : { block: r.block, ...( r.attributes ? { attributes: r.attributes } : {} ) };
-			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : 'agent' === r.finalisedBy ? `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim() : `Bean accepted ${ 'remove' === what ? 'remove' : what } in the intake review on ${ today }`;
-			const proposed = proposedLabel( r );
-			const distinct = Boolean( r.distinctWords && r.distinctWords > 1 );
-			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( r.alsoIn || [] ) ];
+			const reason = own ? `Bean marked block:${ own } in the intake review on ${ today }` : removed ? `Bean marked remove in the intake review on ${ today }: the element is absorbed into its parent block` : `Bean accepted the finaliser's pick in the intake review on ${ today }: ${ r.reason || '' }`.trim();
+			const one = Boolean( r.distinctWords && r.distinctWords > 1 );
+			const homes = [ { surface, keys: r.keys || [ r.key ] }, ...( one ? [] : r.alsoIn || [] ) ];
 			for ( const h of homes ) {
-				h.keys.forEach( ( key, i ) => {
-					const own = distinct ? wordsOf( h.surface, key ) : r.words ?? '';
-					const words = undefined === own && distinct && h.surface === surface && 0 === i ? r.words ?? '' : own;
-					undefined !== words && out.push( { surface: h.surface, element: { key, tag: r.tag, words }, choice, reason, proposed, typed } );
-				} );
+				for ( const key of one ? h.keys.slice( 0, 1 ) : h.keys ) {
+					out.push( { surface: h.surface, element: { key, tag: r.tag, words: r.words ?? '' }, choice, reason } );
+				}
 			}
 		}
 	}
@@ -205,15 +188,8 @@ export function dbKnownBlock() {
 export const decisionsFile = ( repo, client ) => path.join( skeletonDir( repo, client ), 'decisions.json' );
 
 // Writes each decision through recordDecision. Returns how many elements were recorded.
-// A decision already saved with the same choice for the same element is left as it is, so its reason, date and `proposed`
-// baseline keep saying who decided and when (a re-applied review never re-stamps an earlier choice as today's).
-export const sameDecision = ( held, d ) => Boolean( held ) && held.signature === signatureOf( d.element )
-	&& Boolean( held.remove ) === Boolean( d.choice.remove ) && ( held.block ?? null ) === ( d.choice.block ?? null )
-	&& JSON.stringify( held.attributes ?? null ) === JSON.stringify( d.choice.attributes ?? null );
-
 export function recordReviewDecisions( decisions, file ) {
-	const held = readDecisions( file ).surfaces || {};
-	decisions.filter( ( d ) => ! sameDecision( held[ d.surface ]?.[ d.element.key ], d ) ).forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason, proposed: d.proposed } ) );
+	decisions.forEach( ( d ) => recordDecision( { file, surface: d.surface, element: d.element, choice: d.choice, reason: d.reason } ) );
 	return decisions.length;
 }
 
@@ -234,7 +210,7 @@ export function runFinalise( at, o, { log } ) {
 	writeJson( file, req, '\t' );
 	const bytes = fs.statSync( file ).size;
 	say( `${ o.client }: ${ req.counts.rows } low-confidence or unresolved skeleton rows on ${ req.counts.surfaces } surfaces (${ ( bytes / 1024 ).toFixed( 0 ) } KB) written to ${ file }` );
-	say( req.counts.rows ? `next: follow ${ FINALISER_PROMPT } to write ${ path.join( at.dir, 'finalise-picks.json' ) } (shape ${ req.picksShape }), then run intake.mjs --apply-picks ${ o.client }` : 'nothing for the finaliser to decide' );
+	say( req.counts.rows ? `next: dispatch an agent with ${ FINALISER_PROMPT } to write ${ path.join( at.dir, 'finalise-picks.json' ) } (shape ${ req.picksShape }), then run intake.mjs --apply-picks ${ o.client }` : 'nothing for the finaliser to decide' );
 	return 0;
 }
 
@@ -244,7 +220,7 @@ export function runApplyPicks( at, o, { log, recordProblems, knownBlock = null }
 	const files = { request: path.join( at.dir, 'finalise-request.json' ), picks: path.join( at.dir, 'finalise-picks.json' ) };
 	for ( const f of [ at.intake, files.request, files.picks ] ) {
 		if ( ! fs.existsSync( f ) ) {
-			say( `${ f } is missing: ${ f === at.intake ? 'run the intake first' : f === files.request ? `run --finalise ${ o.client } first` : 'the picks have not been written' }` );
+			say( `${ f } is missing: ${ f === at.intake ? 'run the intake first' : f === files.request ? `run --finalise ${ o.client } first` : 'the finaliser agent has not written its picks' }` );
 			return 1;
 		}
 	}
@@ -307,7 +283,7 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	const db = openDb();
 	let res;
 	try {
-		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo, codeRepo: CODE_REPO } );
+		res = refreshIntakeSkeletons( { intake, client: o.client, db, repo: o.repo } );
 	} catch ( e ) {
 		say( `the skeletons could not be proposed again: ${ e.message }` );
 		return 1;
@@ -316,14 +292,6 @@ export function runRerunSkeletons( at, o, { log, recordProblems } ) {
 	}
 	res.missing.length && say( `no saved inventory for ${ res.missing.join( ', ' ) }: those surfaces keep their rows (run the intake to save them)` );
 	let next = res.intake;
-	// Marks written into review.md and not yet applied are carried onto the rows that are unchanged; a mark on a changed row is dropped.
-	if ( fs.existsSync( at.review ) ) {
-		const kept = carryReviewMdMarks( intake, next, fs.readFileSync( at.review, 'utf8' ), { day: fs.statSync( at.review ).mtime.toISOString().slice( 0, 10 ) } );
-		next = kept.intake;
-		kept.carried.length && say( `review.md: ${ kept.carried.length } mark(s) not yet applied are carried (${ kept.carried.slice( 0, 5 ).join( ', ' ) }${ kept.carried.length > 5 ? ', …' : '' })` );
-		kept.refused.length && say( `review.md: ${ kept.refused.length } mark(s) not carried: ${ kept.refused.slice( 0, 8 ).join( '; ' ) }${ kept.refused.length > 8 ? '; …' : '' }` );
-		kept.acceptAll.length && say( `review.md: Accept all was ticked in ${ kept.acceptAll.join( ', ' ) }; a tick is not carried, so tick it again in the new review.md` );
-	}
 	const request = intakeFinaliseRequest( next );
 	const files = { request: path.join( at.dir, 'finalise-request.json' ), picks: path.join( at.dir, 'finalise-picks.json' ) };
 	let carried = 0;

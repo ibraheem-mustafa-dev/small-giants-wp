@@ -100,15 +100,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/20#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/21#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/text",
@@ -136,8 +128,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Checkout",
-							"level": "h1"
+							"content": "Checkout"
 						},
 						"draftRef": {
 							"tpl": "Root/34#0"
@@ -201,12 +192,7 @@
 									"textHash": "6f6a4a5",
 									"line": 33
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/36#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/button",
@@ -230,12 +216,7 @@
 									"textHash": "1cf1f24",
 									"line": 34
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/37#0"
-									}
-								}
+								"innerBlocks": []
 							},
 							{
 								"name": "sgs/button",
@@ -259,22 +240,9 @@
 									"textHash": "c8fbb410",
 									"line": 35
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/38#0"
-									}
-								}
+								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-button:nth-of-type(1)": {
-								"tpl": "Root/36#0"
-							},
-							".sgs-button:nth-of-type(2)": {
-								"tpl": "Root/37#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -342,23 +310,8 @@
 									"line": 37
 								},
 								"innerBlocks": []
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "or pay by card"
-								},
-								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/40#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/41#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/text",
@@ -384,9 +337,9 @@
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/text",
+						"name": "sgs/container",
 						"attributes": {
-							"text": "Checking out as a guest. <a href=\"/my-account/\"><strong>Have an account? Sign in</strong></a>"
+							"tagName": "div"
 						},
 						"draftRef": {
 							"tpl": "Root/50#0"
@@ -404,19 +357,40 @@
 							"textHash": "51724e0",
 							"line": 46
 						},
-						"innerBlocks": [],
-						"handover": [
+						"innerBlocks": [
 							{
-								"owner": "behaviour",
-								"kind": "link",
-								"detail": "draft link \"SignIn.dc.html?next=checkout\" opens /my-account/; its draft query ?next=checkout has no site address and is dropped"
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Have an account? Sign in",
+									"url": "/my-account/"
+								},
+								"draftRef": {
+									"tpl": "Root/51#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "a99853ab",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div"
+									],
+									"textHash": "f172ecba",
+									"line": 46
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"SignIn.dc.html?next=checkout\" opens /my-account/; its draft query ?next=checkout has no site address and is dropped"
+									}
+								]
 							}
-						],
-						"draftSlots": {
-							"a": {
-								"tpl": "Root/51#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/form-field-email",
@@ -576,15 +550,7 @@
 							"textHash": "1505",
 							"line": 69
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__group > .sgs-container": {
-								"tpl": "Root/74#0"
-							},
-							".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": {
-								"tpl": "Root/75#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/text",
@@ -684,22 +650,9 @@
 									"textHash": "4f9e9616",
 									"line": 84
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/90#0"
-									}
-								}
+								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/89#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/90#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/form-field-text",
@@ -813,15 +766,7 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/95#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/97#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/form-field-tiles",
@@ -842,12 +787,7 @@
 							"textHash": "1505",
 							"line": 91
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__group > .sgs-container": {
-								"tpl": "Root/98#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/text",
@@ -984,20 +924,12 @@
 									}
 								}
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/112#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/114#0"
-							}
-						}
+						]
 					},
 					{
-						"name": "sgs/text",
+						"name": "sgs/container",
 						"attributes": {
-							"text": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts. <a href=\"/help/#allergens\"><strong>Full allergen info</strong></a>"
+							"tagName": "div"
 						},
 						"draftRef": {
 							"tpl": "Root/115#0"
@@ -1014,12 +946,32 @@
 							"textHash": "c5e0b94",
 							"line": 107
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							"a": {
-								"tpl": "Root/116#0"
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Full allergen info",
+									"url": "/help/#allergens"
+								},
+								"draftRef": {
+									"tpl": "Root/116#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "a99853ab",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div"
+									],
+									"textHash": "2a908bc2",
+									"line": 107
+								},
+								"innerBlocks": []
 							}
-						}
+						]
 					},
 					{
 						"name": "sgs/button",
@@ -1041,17 +993,12 @@
 							"textHash": "eb04f962",
 							"line": 108
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-button__label": {
-								"tpl": "Root/117#0"
-							}
-						}
+						"innerBlocks": []
 					},
 					{
-						"name": "sgs/text",
+						"name": "sgs/container",
 						"attributes": {
-							"text": "By placing your order you agree to our <a href=\"/help/#legal\">terms</a>."
+							"tagName": "div"
 						},
 						"draftRef": {
 							"tpl": "Root/118#0"
@@ -1068,12 +1015,32 @@
 							"textHash": "94085835",
 							"line": 109
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							"a": {
-								"tpl": "Root/119#0"
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "terms",
+									"url": "/help/#legal"
+								},
+								"draftRef": {
+									"tpl": "Root/119#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "ef1f56a3",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div"
+									],
+									"textHash": "ae998d8",
+									"line": 109
+								},
+								"innerBlocks": []
 							}
-						}
+						]
 					},
 					{
 						"name": "sgs/text",
@@ -1214,15 +1181,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/126#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/128#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1341,15 +1300,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/126#1"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/128#1"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1422,22 +1373,9 @@
 									"textHash": "c487271",
 									"line": 116
 								},
-								"innerBlocks": [],
-								"draftSlots": {
-									".sgs-button__label": {
-										"tpl": "Root/133#0"
-									}
-								}
+								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/132#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/133#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1507,15 +1445,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/135#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/136#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1585,15 +1515,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/138#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/139#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -1663,15 +1585,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/141#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/142#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/text",
@@ -1697,11 +1611,6 @@
 					}
 				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/17#0"
-			}
-		}
+		]
 	}
 ]

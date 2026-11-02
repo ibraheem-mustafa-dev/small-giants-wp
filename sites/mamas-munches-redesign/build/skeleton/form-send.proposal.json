@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:54:17.667Z",
-	"inventory": "2026-11-01T20:50:50.881Z",
-	"source": "http://127.0.0.1:54356/Contact.dc.html",
+	"generated": "2026-10-28T06:40:36.022Z",
+	"inventory": "2026-10-27T15:25:59.594Z",
+	"source": "http://127.0.0.1:64098/Contact.dc.html",
 	"surface": "contact-form",
 	"siteName": null,
 	"surfaceParts": [
@@ -59,8 +59,8 @@
 		"inventoryElements": 20,
 		"parts": 0,
 		"rows": 20,
-		"skeletonNodes": 12,
-		"expandedNodes": 12,
+		"skeletonNodes": 10,
+		"expandedNodes": 10,
 		"low": 0,
 		"removed": 10,
 		"unresolved": 0,
@@ -69,299 +69,6 @@
 			"formControl": 9,
 			"optionSetForm": 6
 		}
-	},
-	"partPairing": {
-		"paired": 7,
-		"unpaired": [
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(3)",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress > .sgs-form__progress-bar",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(1)",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__input",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__label",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__label",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__label",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__icon",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__icon",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__consent > .sgs-form-field__consent-text",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form__actions > .sgs-form__button:nth-of-type(2)",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__help",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-hint",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(2) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(3) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(4) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(5) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(7) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(8) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__error",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-file__progress",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-review > .sgs-form-review__heading",
-				"reason": "inside an inner block, which its own node reads"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-label",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-label",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label > .sgs-form-field__file-button",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(9) > .sgs-form-field__file-zone > .sgs-form-field__file-label",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__column-heading",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__inner > .sgs-form-field:nth-of-type(6) > .sgs-form-field__row-heading",
-				"reason": ".sgs-form__inner: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(1) > .sgs-form__progress-step-number",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/form",
-				"slot": ".sgs-form__progress-wrapper > .sgs-form__progress-steps > .sgs-form__progress-step:nth-of-type(2) > .sgs-form__progress-step-number",
-				"reason": ".sgs-form__progress-wrapper: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/45#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/46#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/46#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/46#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/46#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/67#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/67#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -380,7 +87,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formHost",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form",
@@ -395,13 +101,8 @@
 			"screenshots": {},
 			"snippet": "<form sc-camel-on-submit=\"{{ send }}\" style=\"display:flex;flex-direction:column;gap:16px\" data-dc-tpl=\"44\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2> <div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"dis",
 			"attributes": {
-				"layout": "stack",
-				"anchor": "form-send"
-			},
-			"slotNotes": [
-				"sgs/form-field-text \"How many cookies, roughly?\" is built from the fact record (Contact/62): the draft shows it only while {{ showBulk }}, so no rendered element carries it",
-				"sgs/form-field-date \"Date needed\" is built from the fact record (Contact/64): the draft shows it only while {{ showBulk }}, so no rendered element carries it"
-			]
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 1,
@@ -417,7 +118,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -433,8 +133,7 @@
 			"screenshots": {},
 			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2>",
 			"attributes": {
-				"content": "Send a message",
-				"level": "h2"
+				"content": "Send a message"
 			}
 		},
 		{
@@ -451,7 +150,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -468,11 +166,6 @@
 			"snippet": "<div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radi",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/48#0"
-				}
 			}
 		},
 		{
@@ -489,7 +182,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [],
 			"parts": [],
 			"screenshots": {},
@@ -510,7 +202,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "optionSetForm",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-tiles",
@@ -526,17 +217,6 @@
 			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow ",
 			"attributes": {
 				"label": "What’s it about?"
-			},
-			"slots": {
-				".sgs-form-field__group > .sgs-container": {
-					"tpl": "Root/48#0"
-				},
-				".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": {
-					"tpl": "Root/50#0"
-				},
-				".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label": {
-					"tpl": "Root/50#1"
-				}
 			}
 		},
 		{
@@ -658,7 +338,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -677,14 +356,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/53#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/55#0"
-				}
 			}
 		},
 		{
@@ -721,7 +392,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -779,7 +449,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-email",
@@ -837,7 +506,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -894,7 +562,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-textarea",
@@ -932,7 +599,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -949,11 +615,6 @@
 			"snippet": "<button type=\"submit\" style=\"align-self:flex-start;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:17px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-",
 			"attributes": {
 				"label": "Send message →"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/67#0"
-				}
 			}
 		}
 	]

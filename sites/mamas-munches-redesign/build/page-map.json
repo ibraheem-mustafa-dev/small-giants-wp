@@ -10,9 +10,6 @@
     "collection": "static",
     "flags": [],
     "id": 103,
-    "folds": [
-      "SignIn.dc.html"
-    ],
     "parts": [
       {
         "kind": "form",
@@ -186,12 +183,6 @@
     "parts": [
       {
         "kind": "form",
-        "label": "Gift finder",
-        "owner": "draft-notes",
-        "draftId": "surfaces.json S-20"
-      },
-      {
-        "kind": "form",
         "label": "Gift note preview",
         "owner": "draft-notes",
         "draftId": "surfaces.json S-22"
@@ -250,13 +241,7 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": 154,
-    "opens": [
-      {
-        "kind": "flow",
-        "slug": "choice-flow-build-your-zookie"
-      }
-    ]
+    "id": 154
   },
   {
     "route": "Product.dc.html",
@@ -297,12 +282,6 @@
         "label": "Product gift note",
         "owner": "draft-notes",
         "draftId": "surfaces.json S-16"
-      }
-    ],
-    "opens": [
-      {
-        "kind": "flow",
-        "slug": "choice-flow-build-your-zookie"
       }
     ]
   },
@@ -353,6 +332,18 @@
     "flags": [],
     "id": 157,
     "draftId": "surfaces.json S-34"
+  },
+  {
+    "slug": "choice-flow-gifts-she-ll-actually-eat",
+    "title": "Gifts she’ll actually eat",
+    "parent": null,
+    "template": null,
+    "menus": [],
+    "postType": "sgs_choice_flow",
+    "collection": "static",
+    "flags": [],
+    "id": 159,
+    "draftId": "surfaces.json S-20"
   },
   {
     "slug": "choice-flow-build-your-zookie",

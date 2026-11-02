@@ -132,22 +132,6 @@
 			}
 		},
 		{
-			"id": "buybox-per-unit",
-			"surface": "buybox",
-			"label": "Price per unit of a pack size",
-			"rule": "per-unit",
-			"hints": [],
-			"alongside": true,
-			"home": {
-				"type": "setting",
-				"block": "sgs/buybox",
-				"settings": [
-					"^perUnitDenomination$"
-				],
-				"valueFrom": "perUnit"
-			}
-		},
-		{
 			"id": "buybox-option-picker",
 			"surface": "buybox",
 			"label": "Option pickers",
@@ -561,12 +545,9 @@
 				"type": "setting",
 				"block": "sgs/cart",
 				"settings": [
-					"^viewCartLabel$"
-				],
-				"valueFrom": "text",
-				"also": {
-					"panelShowViewCart": true
-				}
+					"^viewCartLabel$",
+					"^panelShowViewCart$"
+				]
 			}
 		},
 		{

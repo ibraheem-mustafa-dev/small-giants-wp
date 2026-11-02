@@ -29,57 +29,6 @@ function testedKeys( p, n, stop ) {
 	return [ ...keys ];
 }
 
-// The interval timer that changes a state key: the first `setInterval( callback, delay )` call of the program whose callback
-// calls `setState` with an object (or a function returning one) that sets one of `keys`, or null. A record that runs when
-// those keys change is scheduled by it.
-export function schedulingTimer( p, keys ) {
-	if ( ! keys.length ) {
-		return null;
-	}
-	const sets = ( fn ) => {
-		let hit = false;
-		walkAst( fn, ( x ) => {
-			if ( hit || 'CallExpression' !== x.type || 'setState' !== prop( x.callee ) ) {
-				return;
-			}
-			const arg = x.arguments[ 0 ];
-			const obj = 'ObjectExpression' === arg?.type ? arg : isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;
-			hit = !! obj && obj.properties.some( ( q ) => keys.includes( q.key?.name ?? q.key?.value ) );
-		} );
-		return hit;
-	};
-	return p.nodes.find( ( n ) => 'CallExpression' === n.type && 'setInterval' === globalName( n.callee ) && isFn( n.arguments[ 0 ] ) && sets( n.arguments[ 0 ] ) ) ?? null;
-}
-
-// The template handler row a function bound through a renderVals property is wired to, or null: { row, key }. `a` is the
-// function and `up` its parent. A property of an object a loop item returns (`d.go`) is the handler of the element inside the
-// `sc-for` whose list is the renderVals key that holds the object (the nearest earlier `sc-for` of the component declaring the
-// handler expression's loop variable); a property of renderVals' own object (`onGift`) is the handler naming it.
-function boundHandler( model, comp, p, a, up ) {
-	if ( 'ObjectProperty' !== up?.type || up.value !== a || up.computed || 'renderVals' !== memberOf( p, a )?.name ) {
-		return null;
-	}
-	const key = up.key.name ?? up.key.value;
-	const holders = ancestors( p, a ).filter( ( x ) => 'ObjectProperty' === x.type && ! x.computed ).map( ( x ) => x.key.name ?? x.key.value );
-	const rows = model.rowsByComp.get( comp ) || [];
-	const num = ( r ) => Number( String( r.draftId ).split( ':' ).pop() );
-	const row = rows.find( ( x ) => {
-		if ( 'handler' !== x.kind || 'template' !== x.detail.wiring ) {
-			return false;
-		}
-		const [ root, ...path ] = String( x.detail.expression ?? '' ).split( '.' );
-		if ( ! path.length ) {
-			return root === key;
-		}
-		if ( path.at( -1 ) !== key ) {
-			return false;
-		}
-		const loop = rows.filter( ( r ) => 'sc-for' === r.kind && r.detail.as === root && num( r ) < num( x ) ).sort( ( m, n ) => num( n ) - num( m ) )[ 0 ];
-		return !! loop && holders.includes( String( loop.detail.list ?? '' ).replace( /^\{\{\s*|\s*\}\}$/g, '' ) );
-	} );
-	return row ? { row, key } : null;
-}
-
 // The trigger a code path runs on: { type, detail, state_keys?, delay?, via: [node starts of the timers, observers and
 // listeners passed], members: [member names passed], called: bool }. `called` is false when the code sits in a member
 // nothing calls, wires or references (METHOD.md §5.6 dead code).
@@ -145,13 +94,6 @@ function triggerWalk( model, comp, node, seen ) {
 			const [ type, detail ] = OBSERVERS[ globalName( up.callee ) ];
 			return done( { type, detail } );
 		}
-		// A function that is the value of a property inside renderVals (`go: () => …` in the object each loop item of `giftDots`
-		// returns, or `onGift: e => …` directly) runs as the template handler that property is bound to (`onClick="{{ d.go }}"`
-		// inside `<sc-for list="{{ giftDots }}" as="d">`, or `onScroll="{{ onGift }}"`).
-		const bound = boundHandler( model, comp, p, a, up );
-		if ( bound ) {
-			return done( { type: eventTrigger( bound.row.detail.event ), detail: `${ bound.row.detail.event } on ${ bound.row.draftId } (${ bound.key })` } );
-		}
 	}
 	const m = memberOf( p, node );
 	const cm = ! m && p.file ? ancestors( p, node ).find( ( a ) => 'ClassMethod' === a.type ) : null;
@@ -194,31 +136,28 @@ function triggerWalk( model, comp, node, seen ) {
 		const keys = testedKeys( p, node, m.node );
 		// A key that only a hashchange or popstate listener writes is the route: the change is a navigation.
 		const routed = keys.length && [ ...routeKeys( p ) ].length && keys.every( ( k ) => routeKeys( p ).has( k ) );
-		const timer = routed ? null : schedulingTimer( p, keys );
-		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys, ...( timer ? { timer } : {} ) } );
+		return done( { type: routed ? 'route' : 'state', detail: `componentDidUpdate${ keys.length ? ` when ${ keys.join( ', ' ) } changes` : '' }${ routed ? ' (set by a hash-route listener)' : '' }`, state_keys: keys } );
 	}
 	const rows = model.rowsByComp.get( comp ) || [];
-	// A method a template handler wires runs on that event, and also as whatever else calls it (the timer that steps a track the
-	// previous and next controls also step): the handler is one trigger among the callers', never the only one.
-	const wired = rows.filter( ( r ) => 'handler' === r.kind && 'template' === r.detail.wiring && r.detail.method === m.name );
-	const guard = wired.length ? guardTrigger( p, node ) : null;
-	const direct = wired.map( ( tpl ) => done( guard ?? { type: eventTrigger( tpl.detail.event ), detail: `${ tpl.detail.event } on ${ tpl.draftId } (${ m.name })` } ) );
-	if ( ! direct.length ) {
-		const keyOf = rows.find( ( r ) => 'renderVals-key' === r.kind && r.detail.value?.method === m.name );
-		const ref = keyOf && rows.find( ( r ) => 'ref' === r.kind && r.detail.expression === keyOf.detail.name );
-		if ( ref ) {
-			return done( { type: 'mount', detail: `ref callback ${ ref.detail.expression } on ${ ref.draftId }` } );
-		}
-		const listener = rows.find( ( r ) => 'handler' === r.kind && 'addEventListener' === r.detail.wiring && r.detail.method === m.name );
-		if ( listener ) {
-			return done( { type: eventTrigger( listener.detail.event ), detail: `${ listener.detail.event } listener on ${ listener.detail.target } (${ m.name })` } );
-		}
+	const tpl = rows.find( ( r ) => 'handler' === r.kind && 'template' === r.detail.wiring && r.detail.method === m.name );
+	if ( tpl ) {
+		const g = guardTrigger( p, node );
+		return done( g ?? { type: eventTrigger( tpl.detail.event ), detail: `${ tpl.detail.event } on ${ tpl.draftId } (${ m.name })` } );
+	}
+	const keyOf = rows.find( ( r ) => 'renderVals-key' === r.kind && r.detail.value?.method === m.name );
+	const ref = keyOf && rows.find( ( r ) => 'ref' === r.kind && r.detail.expression === keyOf.detail.name );
+	if ( ref ) {
+		return done( { type: 'mount', detail: `ref callback ${ ref.detail.expression } on ${ ref.draftId }` } );
+	}
+	const listener = rows.find( ( r ) => 'handler' === r.kind && 'addEventListener' === r.detail.wiring && r.detail.method === m.name );
+	if ( listener ) {
+		return done( { type: eventTrigger( listener.detail.event ), detail: `${ listener.detail.event } listener on ${ listener.detail.target } (${ m.name })` } );
 	}
 	if ( seen.has( `${ comp }:${ m.name }` ) ) {
-		return direct.length ? pickTriggers( direct ) : done( { type: 'state', detail: `recursive call into ${ m.name }`, called: false } );
+		return done( { type: 'state', detail: `recursive call into ${ m.name }`, called: false } );
 	}
 	seen.add( `${ comp }:${ m.name }` );
-	const found = [ ...direct ];
+	const found = [];
 	for ( const r of ( p.refs.get( m.name ) || [] ).filter( ( x ) => ! ( m.node.start <= x.start && x.end <= m.node.end ) ) ) {
 		const names = ancestors( p, r ).filter( ( a ) => 'ObjectProperty' === a.type && ! a.computed ).map( ( a ) => a.key.name ?? a.key.value );
 		const last = ( e ) => String( e ?? '' ).split( '.' ).pop();

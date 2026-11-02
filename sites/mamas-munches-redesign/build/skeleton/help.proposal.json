@@ -1,7 +1,7 @@
 {
-	"generated": "2026-11-02T04:51:27.540Z",
-	"inventory": "2026-11-02T01:10:33.435Z",
-	"source": "http://127.0.0.1:54484/",
+	"generated": "2026-10-28T06:36:21.953Z",
+	"inventory": "2026-10-28T06:36:21.557Z",
+	"source": "http://127.0.0.1:50585/",
 	"surface": "page-help-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -57,12 +57,12 @@
 	},
 	"counts": {
 		"inventoryElements": 146,
-		"parts": 15,
-		"rows": 131,
-		"skeletonNodes": 73,
-		"expandedNodes": 73,
-		"low": 7,
-		"removed": 71,
+		"parts": 7,
+		"rows": 139,
+		"skeletonNodes": 130,
+		"expandedNodes": 130,
+		"low": 42,
+		"removed": 9,
 		"unresolved": 0,
 		"byRule": {
 			"hero": 1,
@@ -71,562 +71,11 @@
 			"solitaryIcon": 1,
 			"optionSetFilter": 7,
 			"alignWrapper": 1,
-			"accordionItem": 73,
-			"label": 4,
+			"label": 16,
 			"wholeCardLink": 1,
+			"cardTitle": 1,
 			"cardAction": 1
 		}
-	},
-	"partPairing": {
-		"paired": 40,
-		"unpaired": [
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/8#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__bg-img",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__video-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media > .sgs-hero__split-media",
-				"reason": ".sgs-hero__media: the draft has no element of its own here"
-			},
-			{
-				"key": "Root/9#0",
-				"block": "sgs/hero",
-				"slot": ".sgs-hero__media",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/12#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/14#0",
-				"block": "sgs/icon",
-				"slot": ".sgs-icon__shape > .sgs-icon__glyph",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/19#0",
-				"block": "sgs/option-picker",
-				"slot": ".sgs-option-picker__label",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/23#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/24#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/33#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/37#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/38#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/38#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "a box the draft does not draw: its parts pair inside the element above"
-			},
-			{
-				"key": "Root/40#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/41#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/42#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/42#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/42#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/43#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/43#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/43#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/44#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/51#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/52#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/56#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/57#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/57#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/57#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/58#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/62#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/64#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__inner > p:nth-of-type(2)",
-				"reason": "no inner block of this node stands at this place"
-			},
-			{
-				"key": "Root/65#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/65#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/65#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/67#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/68#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/73#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/76#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/76#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/76#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/77#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/77#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/77#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/78#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/78#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/78#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/79#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/80#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/81#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/81#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/81#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/82#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/83#0",
-				"block": "sgs/text",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/84#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/84#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/84#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/85#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__image-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/85#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__overlay",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/85#0",
-				"block": "sgs/container",
-				"slot": ".sgs-container__svg-bg",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/87#0",
-				"block": "sgs/heading",
-				"slot": "a",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/88#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon",
-				"reason": "the draft has no element of its own here"
-			},
-			{
-				"key": "Root/88#0",
-				"block": "sgs/button",
-				"slot": ".sgs-button__icon > svg",
-				"reason": ".sgs-button__icon: the draft has no element of its own here"
-			}
-		]
 	},
 	"widthAlternatives": [],
 	"problems": [],
@@ -645,7 +94,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -665,14 +113,6 @@
 			"snippet": "<main data-dc-tpl=\"8\"> <section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:{{ L.align }};text-align:{{ L.talign }}\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1\" data-dc-tpl=\"11\">ask us an",
 			"attributes": {
 				"tagName": "main"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/9#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/23#0"
-				}
 			}
 		},
 		{
@@ -689,7 +129,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "hero",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/hero",
@@ -706,12 +145,7 @@
 				"1440": "shots/Root_9_0@1440.png"
 			},
 			"snippet": "<section style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22;padding:{{ L.heroPad }}\" data-dc-tpl=\"9\"> <div style=\"max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px;align-items:{{ L.align }};text-align:{{ L.talign }}\" data-dc-tpl=\"10\"> <div style=\"font-family:'Caveat',cursive;font-size:30px;color:#8E3444;line-height:1\" data-dc-tpl=\"11\">ask us anything</div> <h1 style=",
-			"attributes": {},
-			"slots": {
-				".sgs-hero__content": {
-					"tpl": "Root/10#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 2,
@@ -721,7 +155,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays; an element another rule owns (a form, the commerce region, a loop or accordion, the filter rail) and everything below it is never the hero's inner",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
 			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
@@ -742,21 +176,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "ask us anything",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label (above the h1)."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -784,7 +218,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -803,8 +236,7 @@
 			},
 			"snippet": "<h1 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.025em\" data-dc-tpl=\"12\">Help &amp; FAQs</h1>",
 			"attributes": {
-				"content": "Help & FAQs",
-				"level": "h1"
+				"content": "Help & FAQs"
 			}
 		},
 		{
@@ -844,7 +276,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "solitaryIcon",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/icon",
@@ -866,9 +297,6 @@
 			"slots": {
 				".sgs-icon__shape > .sgs-icon__glyph > svg": {
 					"tpl": "Root/15#0"
-				},
-				".sgs-icon__shape": {
-					"tpl": "Root/14#0"
 				}
 			}
 		},
@@ -886,7 +314,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "formControl",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/form-field-text",
@@ -929,7 +356,6 @@
 				"kind": "behaviour",
 				"detail": "the choice narrows a list on this page: wire it to the list's filter"
 			},
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/option-picker",
@@ -946,18 +372,7 @@
 				"1440": "shots/Root_19_0@1440.png"
 			},
 			"snippet": "<div style=\"max-width:900px;margin:18px auto 0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;justify-content:{{ L.chipJust }};padding:2px 2px 6px\" data-dc-tpl=\"19\"> <sc-for list=\"{{ cats }}\" as=\"c\" hint-placeholder-count=\"0\" data-dc-tpl=\"20\"><button sc-camel-on-click=\"{{ c.pick }}\" aria-pressed=\"{{ c.on }}\" style=\"flex:none;min-height:44px;padding:0 16px;border-radius:999px;border:2px ",
-			"attributes": {},
-			"slots": {
-				".sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(2) > .sgs-option-picker__pill": {
-					"tpl": "Root/21#1"
-				},
-				".sgs-option-picker__options > .sgs-option-picker__option:nth-of-type(1) > .sgs-option-picker__pill": {
-					"tpl": "Root/21#0"
-				},
-				".sgs-option-picker__options": {
-					"tpl": "Root/19#0"
-				}
-			}
+			"attributes": {}
 		},
 		{
 			"order": 9,
@@ -1140,7 +555,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -1162,12 +576,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"rowNote": "its children Root/26#0 to Root/26#11 are one sgs/accordion beside its other content: a loop whose items each hold a control that writes a state the item's own conditional panel reads is the accordion, read from the fact record and the logic's syntax tree with aria-expanded as the rendered confirmation, never from words or a surface kind (Spec 48 §3.4, RC6) (a loop of 12 items whose control writes \"open\", which the item's own panel reads; one item open at a time; the holder Root/23#0 also holds other content, so the items are one accordion beside it)",
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/24#0"
-				}
 			}
 		},
 		{
@@ -1184,7 +592,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -1211,22 +618,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -1237,8 +644,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Ordering & delivery",
-				"isOpen": true
+				"tagName": "div"
 			}
 		},
 		{
@@ -1247,23 +653,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#0 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_0@375.png",
 				"1440": "shots/Root_27_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 20,
@@ -1271,23 +690,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#0 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_0@375.png",
 				"1440": "shots/Root_28_0@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 21,
@@ -1295,23 +727,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Ordering & delivery",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/29#0 (sgs/label) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_0@375.png",
 				"1440": "shots/Root_29_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Ordering & delivery"
+			}
 		},
 		{
 			"order": 22,
@@ -1319,23 +761,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "When will my order arrive?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/30#0 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_0@375.png",
 				"1440": "shots/Root_30_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "When will my order arrive?"
+			}
 		},
 		{
 			"order": 23,
@@ -1343,23 +795,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#0 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_0@375.png",
 				"1440": "shots/Root_31_0@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 24,
@@ -1367,23 +829,34 @@
 			"tag": "p",
 			"depth": 4,
 			"words": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days.",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
-			"stale": "the client decision for Root/33#0 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#0",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_33_0@375.png",
 				"1440": "shots/Root_33_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;padding:0 20px 20px;font-size:16px;line-height:1.6;max-width:700px\" data-dc-tpl=\"33\">{{ f.a }}</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days."
+			}
 		},
 		{
 			"order": 25,
@@ -1391,22 +864,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -1417,7 +890,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Ordering & delivery"
+				"tagName": "div"
 			}
 		},
 		{
@@ -1426,23 +899,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#1 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#1",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_1@375.png",
 				"1440": "shots/Root_27_1@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 27,
@@ -1450,23 +936,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#1 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#1",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_1@375.png",
 				"1440": "shots/Root_28_1@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 28,
@@ -1474,23 +973,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Ordering & delivery",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#1",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_1@375.png",
 				"1440": "shots/Root_29_1@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Ordering & delivery"
+			}
 		},
 		{
 			"order": 29,
@@ -1498,23 +1007,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Do you deliver across the UK?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#1",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_1@375.png",
 				"1440": "shots/Root_30_1@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Do you deliver across the UK?"
+			}
 		},
 		{
 			"order": 30,
@@ -1522,23 +1041,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#1 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#1",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_1@375.png",
 				"1440": "shots/Root_31_1@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 31,
@@ -1546,22 +1075,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -1572,7 +1101,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Ordering & delivery"
+				"tagName": "div"
 			}
 		},
 		{
@@ -1581,23 +1110,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#2 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#2",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_2@375.png",
 				"1440": "shots/Root_27_2@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 33,
@@ -1605,23 +1147,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#2 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#2",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_2@375.png",
 				"1440": "shots/Root_28_2@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 34,
@@ -1629,23 +1184,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Ordering & delivery",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#2",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_2@375.png",
 				"1440": "shots/Root_29_2@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Ordering & delivery"
+			}
 		},
 		{
 			"order": 35,
@@ -1653,23 +1218,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Can I choose my own flavours?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#2",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_2@375.png",
 				"1440": "shots/Root_30_2@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Can I choose my own flavours?"
+			}
 		},
 		{
 			"order": 36,
@@ -1677,23 +1252,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#2 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#2",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_2@375.png",
 				"1440": "shots/Root_31_2@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 37,
@@ -1701,22 +1286,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -1727,7 +1312,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Ingredients & allergens"
+				"tagName": "div"
 			}
 		},
 		{
@@ -1736,23 +1321,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#3 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#3",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_3@375.png",
 				"1440": "shots/Root_27_3@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 39,
@@ -1760,23 +1358,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#3 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#3",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_3@375.png",
 				"1440": "shots/Root_28_3@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 40,
@@ -1784,23 +1395,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Ingredients & allergens",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#3",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_3@375.png",
 				"1440": "shots/Root_29_3@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Ingredients & allergens"
+			}
 		},
 		{
 			"order": 41,
@@ -1808,23 +1429,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "What allergens do they contain?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#3",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_3@375.png",
 				"1440": "shots/Root_30_3@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "What allergens do they contain?"
+			}
 		},
 		{
 			"order": 42,
@@ -1832,23 +1463,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#3 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#3",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_3@375.png",
 				"1440": "shots/Root_31_3@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 43,
@@ -1856,22 +1497,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -1882,7 +1523,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Ingredients & allergens"
+				"tagName": "div"
 			}
 		},
 		{
@@ -1891,23 +1532,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#4 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#4",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_4@375.png",
 				"1440": "shots/Root_27_4@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 45,
@@ -1915,23 +1569,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#4 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#4",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_4@375.png",
 				"1440": "shots/Root_28_4@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 46,
@@ -1939,23 +1606,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Ingredients & allergens",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#4",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_4@375.png",
 				"1440": "shots/Root_29_4@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Ingredients & allergens"
+			}
 		},
 		{
 			"order": 47,
@@ -1963,23 +1640,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Do you use preservatives?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#4",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_4@375.png",
 				"1440": "shots/Root_30_4@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Do you use preservatives?"
+			}
 		},
 		{
 			"order": 48,
@@ -1987,23 +1674,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#4 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#4",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_4@375.png",
 				"1440": "shots/Root_31_4@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 49,
@@ -2011,22 +1708,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2037,7 +1734,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Breastfeeding"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2046,23 +1743,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#5 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#5",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_5@375.png",
 				"1440": "shots/Root_27_5@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 51,
@@ -2070,23 +1780,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#5 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#5",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_5@375.png",
 				"1440": "shots/Root_28_5@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 52,
@@ -2094,23 +1817,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Breastfeeding",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#5",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_5@375.png",
 				"1440": "shots/Root_29_5@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Breastfeeding"
+			}
 		},
 		{
 			"order": 53,
@@ -2118,23 +1851,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Are they OK to eat while breastfeeding?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#5",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_5@375.png",
 				"1440": "shots/Root_30_5@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Are they OK to eat while breastfeeding?"
+			}
 		},
 		{
 			"order": 54,
@@ -2142,23 +1885,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#5 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#5",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_5@375.png",
 				"1440": "shots/Root_31_5@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 55,
@@ -2166,22 +1919,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2192,7 +1945,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Breastfeeding"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2201,23 +1954,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#6 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#6",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_6@375.png",
 				"1440": "shots/Root_27_6@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 57,
@@ -2225,23 +1991,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#6 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#6",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_6@375.png",
 				"1440": "shots/Root_28_6@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 58,
@@ -2249,23 +2028,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Breastfeeding",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#6",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_6@375.png",
 				"1440": "shots/Root_29_6@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Breastfeeding"
+			}
 		},
 		{
 			"order": 59,
@@ -2273,23 +2062,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Will they increase my milk supply?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#6",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_6@375.png",
 				"1440": "shots/Root_30_6@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Will they increase my milk supply?"
+			}
 		},
 		{
 			"order": 60,
@@ -2297,23 +2096,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#6 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#6",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_6@375.png",
 				"1440": "shots/Root_31_6@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 61,
@@ -2321,22 +2130,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2347,7 +2156,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Gifting"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2356,23 +2165,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#7 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#7",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_7@375.png",
 				"1440": "shots/Root_27_7@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 63,
@@ -2380,23 +2202,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#7 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#7",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_7@375.png",
 				"1440": "shots/Root_28_7@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 64,
@@ -2404,23 +2239,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Gifting",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#7",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_7@375.png",
 				"1440": "shots/Root_29_7@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Gifting"
+			}
 		},
 		{
 			"order": 65,
@@ -2428,23 +2273,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Can I send them straight to a new mum?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#7",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_7@375.png",
 				"1440": "shots/Root_30_7@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Can I send them straight to a new mum?"
+			}
 		},
 		{
 			"order": 66,
@@ -2452,23 +2307,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#7 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#7",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_7@375.png",
 				"1440": "shots/Root_31_7@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 67,
@@ -2476,22 +2341,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2502,7 +2367,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Gifting"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2511,23 +2376,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#8 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#8",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_8@375.png",
 				"1440": "shots/Root_27_8@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 69,
@@ -2535,23 +2413,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#8 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#8",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_8@375.png",
 				"1440": "shots/Root_28_8@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 70,
@@ -2559,23 +2450,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Gifting",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#8",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_8@375.png",
 				"1440": "shots/Root_29_8@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Gifting"
+			}
 		},
 		{
 			"order": 71,
@@ -2583,23 +2484,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "How do the baby shower gift cards work?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#8",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_8@375.png",
 				"1440": "shots/Root_30_8@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "How do the baby shower gift cards work?"
+			}
 		},
 		{
 			"order": 72,
@@ -2607,23 +2518,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#8 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#8",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_8@375.png",
 				"1440": "shots/Root_31_8@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 73,
@@ -2631,22 +2552,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2657,7 +2578,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Gifting"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2666,23 +2587,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#9 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#9",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_9@375.png",
 				"1440": "shots/Root_27_9@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 75,
@@ -2690,23 +2624,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#9 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#9",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_9@375.png",
 				"1440": "shots/Root_28_9@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 76,
@@ -2714,23 +2661,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Gifting",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#9",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_9@375.png",
 				"1440": "shots/Root_29_9@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Gifting"
+			}
 		},
 		{
 			"order": 77,
@@ -2738,23 +2695,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Can you do bulk orders for events?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#9",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_9@375.png",
 				"1440": "shots/Root_30_9@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Can you do bulk orders for events?"
+			}
 		},
 		{
 			"order": 78,
@@ -2762,23 +2729,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#9 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#9",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_9@375.png",
 				"1440": "shots/Root_31_9@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 79,
@@ -2786,22 +2763,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2812,7 +2789,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Subscriptions"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2821,23 +2798,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#10 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#10",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_10@375.png",
 				"1440": "shots/Root_27_10@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 81,
@@ -2845,23 +2835,36 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#10 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#10",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_28_10@375.png",
 				"1440": "shots/Root_28_10@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 82,
@@ -2869,23 +2872,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Subscriptions",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#10",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_29_10@375.png",
 				"1440": "shots/Root_29_10@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Subscriptions"
+			}
 		},
 		{
 			"order": 83,
@@ -2893,23 +2906,33 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "How does Subscribe & save work?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#10",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_10@375.png",
 				"1440": "shots/Root_30_10@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "How does Subscribe & save work?"
+			}
 		},
 		{
 			"order": 84,
@@ -2917,23 +2940,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#10 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#10",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_10@375.png",
 				"1440": "shots/Root_31_10@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 85,
@@ -2941,22 +2974,22 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/accordion-item",
+			"block": "sgs/container",
 			"action": null,
-			"reason": "one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)",
-			"source": "rule accordionItem",
-			"confidence": 1,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"acceptedDecision": true,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/accordion-item",
-					"score": 1,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"rule accordionItem: one item of a loop of disclosures is one accordion item: its control's words are the title and its panel's text, per copy, its content (Spec 48 §3.4, RC6)"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
@@ -2967,7 +3000,7 @@
 			},
 			"snippet": "<div style=\"border:2px solid #3A2A22;border-radius:22px;background:{{ f.bg }};box-shadow:{{ f.shadow }};transition:background .25s, box-shadow .25s\" data-dc-tpl=\"26\"> <button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-a",
 			"attributes": {
-				"title": "Subscriptions"
+				"tagName": "div"
 			}
 		},
 		{
@@ -2976,23 +3009,36 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/27#11 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#11",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_27_11@375.png",
 				"1440": "shots/Root_27_11@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ f.toggle }}\" aria-expanded=\"{{ f.open }}\" style=\"width:100%;min-height:68px;padding:16px 20px;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;cursor:pointer\" data-dc-tpl=\"27\"><span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 87,
@@ -3000,22 +3046,35 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
 			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": "the client decision for Root/28#11 (sgs/container) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#11",
-			"candidates": [],
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_28_11@1440.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"28\"><span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span><span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span></span>",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
 		},
 		{
 			"order": 88,
@@ -3023,22 +3082,32 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Subscriptions",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
-			"source": null,
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#11",
-			"candidates": [],
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_29_11@1440.png"
 			},
 			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8E3444\" data-dc-tpl=\"29\">{{ f.cat }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Subscriptions"
+			}
 		},
 		{
 			"order": 89,
@@ -3046,22 +3115,32 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "Can I pause or cancel?",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
-			"rule": "accordionItem",
-			"into": "Root/26#11",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_30_11@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:19px\" data-dc-tpl=\"30\">{{ f.q }}</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Can I pause or cancel?"
+			}
 		},
 		{
 			"order": 90,
@@ -3069,23 +3148,33 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "+",
-			"block": null,
-			"action": "absorbed",
-			"reason": "drawn by sgs/accordion-item: rule accordionItem",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": "the client decision for Root/31#11 (sgs/text) no longer applies: sgs/accordion-item draws this element",
-			"rule": "accordionItem",
-			"into": "Root/26#11",
-			"candidates": [],
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_11@375.png",
 				"1440": "shots/Root_31_11@1440.png"
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:22px;transform:rotate({{ f.rot }});transition:transform .3s cubic-bezier(.3,1.6,.5,1)\" data-dc-tpl=\"31\">+</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "+"
+			}
 		},
 		{
 			"order": 91,
@@ -3101,7 +3190,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3121,11 +3209,6 @@
 			"snippet": "<section id=\"delivery\" style=\"padding:{{ L.secPadTop0 }};scroll-margin-top:80px\" data-dc-tpl=\"37\"> <div style=\"max-width:900px;margin:0 auto;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}\" data-dc-tpl=\"38\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"39\">getting it to you</div> <h2 style=\"margin:4px 0 16px",
 			"attributes": {
 				"tagName": "section"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/38#0"
-				}
 			}
 		},
 		{
@@ -3142,7 +3225,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3162,14 +3244,6 @@
 			"snippet": "<div style=\"max-width:900px;margin:0 auto;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }}\" data-dc-tpl=\"38\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"39\">getting it to you</div> <h2 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" dat",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/39#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/40#0"
-				}
 			}
 		},
 		{
@@ -3178,21 +3252,21 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "getting it to you",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3220,7 +3294,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -3239,8 +3312,7 @@
 			},
 			"snippet": "<h2 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"40\">Delivery</h2>",
 			"attributes": {
-				"content": "Delivery",
-				"level": "h2"
+				"content": "Delivery"
 			}
 		},
 		{
@@ -3257,7 +3329,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3293,7 +3364,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3315,14 +3385,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/43#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/51#0"
-				}
 			}
 		},
 		{
@@ -3339,7 +3401,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3361,14 +3422,6 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/44#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/48#0"
-				}
 			}
 		},
 		{
@@ -3376,30 +3429,28 @@
 			"key": "Root/44#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Royal Mail Tracked 48 2–3 days after baking",
-			"block": "sgs/text",
+			"words": "",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 0.75,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/container",
+					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
 			"parts": [
-				"Root/45#0",
-				"Root/46#0",
-				"Root/47#0"
+				"Root/46#0"
 			],
 			"screenshots": {
 				"375": "shots/Root_44_0@375.png",
@@ -3407,15 +3458,15 @@
 			},
 			"snippet": "<span data-dc-tpl=\"44\"><b data-dc-tpl=\"45\">Royal Mail Tracked 48</b><br data-dc-tpl=\"46\"><span style=\"font-size:14px\" data-dc-tpl=\"47\">2–3 days after baking</span></span>",
 			"attributes": {
-				"text": "<strong>Royal Mail Tracked 48</strong><br>2–3 days after baking"
+				"tagName": "div"
 			}
 		},
 		{
 			"order": 99,
-			"key": "Root/48#0",
+			"key": "Root/45#0",
 			"tag": "b",
-			"depth": 5,
-			"words": "£3.95 Free over £35",
+			"depth": 6,
+			"words": "Royal Mail Tracked 48",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -3424,7 +3475,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3435,9 +3485,77 @@
 					]
 				}
 			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_45_0@375.png",
+				"1440": "shots/Root_45_0@1440.png"
+			},
+			"snippet": "<b data-dc-tpl=\"45\">Royal Mail Tracked 48</b>",
+			"attributes": {
+				"text": "Royal Mail Tracked 48"
+			}
+		},
+		{
+			"order": 100,
+			"key": "Root/47#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "2–3 days after baking",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_47_0@375.png",
+				"1440": "shots/Root_47_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:14px\" data-dc-tpl=\"47\">2–3 days after baking</span>",
+			"attributes": {
+				"text": "2–3 days after baking"
+			}
+		},
+		{
+			"order": 101,
+			"key": "Root/48#0",
+			"tag": "b",
+			"depth": 5,
+			"words": "£3.95",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
 			"parts": [
-				"Root/49#0",
-				"Root/50#0"
+				"Root/49#0"
 			],
 			"screenshots": {
 				"375": "shots/Root_48_0@375.png",
@@ -3445,16 +3563,44 @@
 			},
 			"snippet": "<b style=\"text-align:right\" data-dc-tpl=\"48\">£3.95<br data-dc-tpl=\"49\"><span style=\"font-size:13px;font-weight:600\" data-dc-tpl=\"50\">Free over £35</span></b>",
 			"attributes": {
-				"text": "£3.95<br>Free over £35"
-			},
-			"slots": {
-				"a": {
-					"tpl": "Root/50#0"
-				}
+				"tagName": "div"
 			}
 		},
 		{
-			"order": 100,
+			"order": 102,
+			"key": "Root/50#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Free over £35",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_50_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:13px;font-weight:600\" data-dc-tpl=\"50\">Free over £35</span>",
+			"attributes": {
+				"text": "Free over £35"
+			}
+		},
+		{
+			"order": 103,
 			"key": "Root/51#0",
 			"tag": "div",
 			"depth": 4,
@@ -3467,7 +3613,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3489,22 +3634,51 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/52#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/56#0"
-				}
 			}
 		},
 		{
-			"order": 101,
+			"order": 104,
 			"key": "Root/52#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Royal Mail Tracked 24 The day after baking",
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [
+				"Root/54#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_52_0@375.png",
+				"1440": "shots/Root_52_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"52\"><b data-dc-tpl=\"53\">Royal Mail Tracked 24</b><br data-dc-tpl=\"54\"><span style=\"font-size:14px\" data-dc-tpl=\"55\">The day after baking</span></span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 105,
+			"key": "Root/53#0",
+			"tag": "b",
+			"depth": 6,
+			"words": "Royal Mail Tracked 24",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -3513,7 +3687,39 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a b"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_53_0@1440.png"
+			},
+			"snippet": "<b data-dc-tpl=\"53\">Royal Mail Tracked 24</b>",
+			"attributes": {
+				"text": "Royal Mail Tracked 24"
+			}
+		},
+		{
+			"order": 106,
+			"key": "Root/55#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "The day after baking",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3524,22 +3730,17 @@
 					]
 				}
 			],
-			"parts": [
-				"Root/53#0",
-				"Root/54#0",
-				"Root/55#0"
-			],
+			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_52_0@375.png",
-				"1440": "shots/Root_52_0@1440.png"
+				"1440": "shots/Root_55_0@1440.png"
 			},
-			"snippet": "<span data-dc-tpl=\"52\"><b data-dc-tpl=\"53\">Royal Mail Tracked 24</b><br data-dc-tpl=\"54\"><span style=\"font-size:14px\" data-dc-tpl=\"55\">The day after baking</span></span>",
+			"snippet": "<span style=\"font-size:14px\" data-dc-tpl=\"55\">The day after baking</span>",
 			"attributes": {
-				"text": "<strong>Royal Mail Tracked 24</strong><br>The day after baking"
+				"text": "The day after baking"
 			}
 		},
 		{
-			"order": 102,
+			"order": 107,
 			"key": "Root/56#0",
 			"tag": "b",
 			"depth": 5,
@@ -3552,7 +3753,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3574,7 +3774,7 @@
 			}
 		},
 		{
-			"order": 103,
+			"order": 108,
 			"key": "Root/57#0",
 			"tag": "div",
 			"depth": 4,
@@ -3587,7 +3787,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3609,22 +3808,51 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/58#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/62#0"
-				}
 			}
 		},
 		{
-			"order": 104,
+			"order": 109,
 			"key": "Root/58#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Taster Trio & gift cards Letterbox-sized",
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [
+				"Root/60#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_58_0@375.png",
+				"1440": "shots/Root_58_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"58\"><b data-dc-tpl=\"59\">Taster Trio &amp; gift cards</b><br data-dc-tpl=\"60\"><span style=\"font-size:14px\" data-dc-tpl=\"61\">Letterbox-sized</span></span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 110,
+			"key": "Root/59#0",
+			"tag": "b",
+			"depth": 6,
+			"words": "Taster Trio & gift cards",
 			"block": "sgs/text",
 			"action": null,
 			"reason": null,
@@ -3633,7 +3861,39 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a b"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_59_0@1440.png"
+			},
+			"snippet": "<b data-dc-tpl=\"59\">Taster Trio &amp; gift cards</b>",
+			"attributes": {
+				"text": "Taster Trio & gift cards"
+			}
+		},
+		{
+			"order": 111,
+			"key": "Root/61#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Letterbox-sized",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3644,22 +3904,17 @@
 					]
 				}
 			],
-			"parts": [
-				"Root/59#0",
-				"Root/60#0",
-				"Root/61#0"
-			],
+			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_58_0@375.png",
-				"1440": "shots/Root_58_0@1440.png"
+				"1440": "shots/Root_61_0@1440.png"
 			},
-			"snippet": "<span data-dc-tpl=\"58\"><b data-dc-tpl=\"59\">Taster Trio &amp; gift cards</b><br data-dc-tpl=\"60\"><span style=\"font-size:14px\" data-dc-tpl=\"61\">Letterbox-sized</span></span>",
+			"snippet": "<span style=\"font-size:14px\" data-dc-tpl=\"61\">Letterbox-sized</span>",
 			"attributes": {
-				"text": "<strong>Taster Trio &amp; gift cards</strong><br>Letterbox-sized"
+				"text": "Letterbox-sized"
 			}
 		},
 		{
-			"order": 105,
+			"order": 112,
 			"key": "Root/62#0",
 			"tag": "b",
 			"depth": 5,
@@ -3672,7 +3927,6 @@
 			"low": true,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -3694,30 +3948,41 @@
 			}
 		},
 		{
-			"order": 106,
+			"order": 113,
 			"key": "Root/63#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "Prices and timings to be confirmed by Zainab.",
-			"block": null,
-			"action": "remove",
-			"reason": "Bean accepted the finaliser's pick in the intake review on 2026-11-02: A brief note to the client (Prices and timings to be confirmed by Zainab.), not design; a brief-only line is removed.",
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_63_0@375.png",
 				"1440": "shots/Root_63_0@1440.png"
 			},
 			"snippet": "<div style=\"font-size:13px;margin-top:12px;color:#5E4A3D\" data-dc-tpl=\"63\">Prices and timings to be confirmed by Zainab.</div>",
-			"attributes": {}
+			"attributes": {
+				"text": "Prices and timings to be confirmed by Zainab."
+			}
 		},
 		{
-			"order": 107,
+			"order": 114,
 			"key": "Root/64#0",
 			"tag": "section",
 			"depth": 1,
@@ -3730,7 +3995,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3750,15 +4014,10 @@
 			"snippet": "<section id=\"allergens\" style=\"padding:{{ L.secPadTop0 }};scroll-margin-top:80px\" data-dc-tpl=\"64\"> <div style=\"max-width:900px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }};box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"65\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"66\">please read carefully<",
 			"attributes": {
 				"tagName": "section"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/65#0"
-				}
 			}
 		},
 		{
-			"order": 108,
+			"order": 115,
 			"key": "Root/65#0",
 			"tag": "div",
 			"depth": 2,
@@ -3771,7 +4030,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3791,37 +4049,29 @@
 			"snippet": "<div style=\"max-width:900px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:{{ L.boxPad }};box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"65\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"66\">please read carefully</div> <h2 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/66#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/67#0"
-				}
 			}
 		},
 		{
-			"order": 109,
+			"order": 116,
 			"key": "Root/66#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "please read carefully",
-			"block": "sgs/label",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/label",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: a handwritten script line (Caveat) set directly above the section heading is its eyebrow; a kicker or eyebrow is sgs/label."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
 					]
 				}
 			],
@@ -3836,7 +4086,7 @@
 			}
 		},
 		{
-			"order": 110,
+			"order": 117,
 			"key": "Root/67#0",
 			"tag": "h2",
 			"depth": 3,
@@ -3849,7 +4099,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/heading",
@@ -3868,12 +4117,11 @@
 			},
 			"snippet": "<h2 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"67\">Ingredients &amp; allergens</h2>",
 			"attributes": {
-				"content": "Ingredients & allergens",
-				"level": "h2"
+				"content": "Ingredients & allergens"
 			}
 		},
 		{
-			"order": 111,
+			"order": 118,
 			"key": "Root/68#0",
 			"tag": "div",
 			"depth": 3,
@@ -3886,7 +4134,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -3908,18 +4155,10 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/69#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/70#0"
-				}
 			}
 		},
 		{
-			"order": 112,
+			"order": 119,
 			"key": "Root/69#0",
 			"tag": "span",
 			"depth": 4,
@@ -3932,7 +4171,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -3953,7 +4191,7 @@
 			}
 		},
 		{
-			"order": 113,
+			"order": 120,
 			"key": "Root/70#0",
 			"tag": "span",
 			"depth": 4,
@@ -3966,7 +4204,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -3987,7 +4224,7 @@
 			}
 		},
 		{
-			"order": 114,
+			"order": 121,
 			"key": "Root/71#0",
 			"tag": "span",
 			"depth": 4,
@@ -4000,7 +4237,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -4021,7 +4257,7 @@
 			}
 		},
 		{
-			"order": 115,
+			"order": 122,
 			"key": "Root/72#0",
 			"tag": "span",
 			"depth": 4,
@@ -4034,7 +4270,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "label",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -4056,7 +4291,7 @@
 			}
 		},
 		{
-			"order": 116,
+			"order": 123,
 			"key": "Root/73#0",
 			"tag": "p",
 			"depth": 3,
@@ -4069,7 +4304,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4092,12 +4326,12 @@
 			}
 		},
 		{
-			"order": 117,
+			"order": 124,
 			"key": "Root/74#0",
 			"tag": "p",
 			"depth": 3,
-			"words": "Vegan base: no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.",
-			"block": "sgs/text",
+			"words": "no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.",
+			"block": "sgs/container",
 			"action": null,
 			"reason": null,
 			"source": null,
@@ -4105,37 +4339,62 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
-					"block": "sgs/text",
+					"block": "sgs/container",
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
 					]
 				}
 			],
-			"parts": [
-				"Root/75#0"
-			],
+			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_74_0@375.png",
 				"1440": "shots/Root_74_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6\" data-dc-tpl=\"74\"><b data-dc-tpl=\"75\">Vegan base:</b> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page.</p>",
 			"attributes": {
-				"text": "<strong>Vegan base:</strong> no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page."
-			},
-			"slots": {
-				"a": {
-					"tpl": "Root/75#0"
-				}
+				"tagName": "div"
 			}
 		},
 		{
-			"order": 118,
+			"order": 125,
+			"key": "Root/75#0",
+			"tag": "b",
+			"depth": 4,
+			"words": "Vegan base:",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a b"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_75_0@1440.png"
+			},
+			"snippet": "<b data-dc-tpl=\"75\">Vegan base:</b>",
+			"attributes": {
+				"text": "Vegan base:"
+			}
+		},
+		{
+			"order": 126,
 			"key": "Root/76#0",
 			"tag": "section",
 			"depth": 1,
@@ -4148,7 +4407,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4168,18 +4426,10 @@
 			"snippet": "<section id=\"legal\" style=\"padding:{{ L.secPadTop0 }};scroll-margin-top:80px\" data-dc-tpl=\"76\"> <div style=\"max-width:900px;margin:0 auto;display:grid;grid-template-columns:{{ L.two }};gap:16px\" data-dc-tpl=\"77\"> <div style=\"border:2px dashed #3A2A22;border-radius:22px;padding:20px\" data-dc-tpl=\"78\"><b style=\"font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"79\">Privacy ",
 			"attributes": {
 				"tagName": "section"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/77#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/84#0"
-				}
 			}
 		},
 		{
-			"order": 119,
+			"order": 127,
 			"key": "Root/77#0",
 			"tag": "div",
 			"depth": 2,
@@ -4192,7 +4442,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4214,18 +4463,10 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/78#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/81#0"
-				}
 			}
 		},
 		{
-			"order": 120,
+			"order": 128,
 			"key": "Root/78#0",
 			"tag": "div",
 			"depth": 3,
@@ -4238,7 +4479,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4258,37 +4498,29 @@
 			"snippet": "<div style=\"border:2px dashed #3A2A22;border-radius:22px;padding:20px\" data-dc-tpl=\"78\"><b style=\"font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"79\">Privacy policy</b><p style=\"margin:6px 0 0;font-size:15px;line-height:1.55\" data-dc-tpl=\"80\">Policy text to be supplied.</p></div>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/79#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/80#0"
-				}
 			}
 		},
 		{
-			"order": 121,
+			"order": 129,
 			"key": "Root/79#0",
 			"tag": "b",
 			"depth": 4,
 			"words": "Privacy policy",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The Privacy policy title (Young Serif 20px) above its paragraph; it titles the block."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a b"
 					]
 				}
 			],
@@ -4298,11 +4530,11 @@
 			},
 			"snippet": "<b style=\"font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"79\">Privacy policy</b>",
 			"attributes": {
-				"content": "Privacy policy"
+				"text": "Privacy policy"
 			}
 		},
 		{
-			"order": 122,
+			"order": 130,
 			"key": "Root/80#0",
 			"tag": "p",
 			"depth": 4,
@@ -4315,7 +4547,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4338,7 +4569,7 @@
 			}
 		},
 		{
-			"order": 123,
+			"order": 131,
 			"key": "Root/81#0",
 			"tag": "div",
 			"depth": 3,
@@ -4351,7 +4582,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4371,37 +4601,29 @@
 			"snippet": "<div style=\"border:2px dashed #3A2A22;border-radius:22px;padding:20px\" data-dc-tpl=\"81\"><b style=\"font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"82\">Terms &amp; conditions</b><p style=\"margin:6px 0 0;font-size:15px;line-height:1.55\" data-dc-tpl=\"83\">Terms text to be supplied.</p></div>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/82#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/83#0"
-				}
 			}
 		},
 		{
-			"order": 124,
+			"order": 132,
 			"key": "Root/82#0",
 			"tag": "b",
 			"depth": 4,
 			"words": "Terms & conditions",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The Terms and conditions title (Young Serif 20px) above its paragraph; it titles the block."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a b"
 					]
 				}
 			],
@@ -4411,11 +4633,11 @@
 			},
 			"snippet": "<b style=\"font-family:'Young Serif',serif;font-weight:400;font-size:20px\" data-dc-tpl=\"82\">Terms &amp; conditions</b>",
 			"attributes": {
-				"content": "Terms & conditions"
+				"text": "Terms & conditions"
 			}
 		},
 		{
-			"order": 125,
+			"order": 133,
 			"key": "Root/83#0",
 			"tag": "p",
 			"depth": 4,
@@ -4428,7 +4650,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -4451,7 +4672,7 @@
 			}
 		},
 		{
-			"order": 126,
+			"order": 134,
 			"key": "Root/84#0",
 			"tag": "a",
 			"depth": 2,
@@ -4464,7 +4685,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4484,18 +4704,10 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/85#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/88#0"
-				}
 			}
 		},
 		{
-			"order": 127,
+			"order": 135,
 			"key": "Root/85#0",
 			"tag": "span",
 			"depth": 3,
@@ -4508,7 +4720,6 @@
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -4527,37 +4738,29 @@
 			"snippet": "<span data-dc-tpl=\"85\"><span style=\"font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;display:block;line-height:1\" data-dc-tpl=\"86\">still stuck?</span><span style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"87\">Message Zainab</span></span>",
 			"attributes": {
 				"tagName": "div"
-			},
-			"slots": {
-				".sgs-container__inner > p:nth-of-type(1)": {
-					"tpl": "Root/86#0"
-				},
-				".sgs-container__inner > p:nth-of-type(2)": {
-					"tpl": "Root/87#0"
-				}
 			}
 		},
 		{
-			"order": 128,
+			"order": 136,
 			"key": "Root/86#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "still stuck?",
-			"block": "sgs/label",
+			"block": "sgs/heading",
 			"action": null,
-			"reason": null,
-			"source": "client decision",
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "cardTitle",
 			"candidates": [
 				{
-					"block": "sgs/label",
+					"block": "sgs/heading",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean marked block:sgs/label in the intake review on 2026-11-02"
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
 					]
 				}
 			],
@@ -4567,30 +4770,30 @@
 			},
 			"snippet": "<span style=\"font-family:'Caveat',cursive;font-size:26px;color:#7A5A12;display:block;line-height:1\" data-dc-tpl=\"86\">still stuck?</span>",
 			"attributes": {
-				"text": "still stuck?"
+				"content": "still stuck?"
 			}
 		},
 		{
-			"order": 129,
+			"order": 137,
 			"key": "Root/87#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Message Zainab",
-			"block": "sgs/heading",
+			"block": "sgs/text",
 			"action": null,
 			"reason": null,
-			"source": "client decision",
-			"confidence": 1,
-			"low": false,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/heading",
-					"score": 1,
+					"block": "sgs/text",
+					"score": 0.25,
 					"share": 1,
 					"evidence": [
-						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-11-02: The card link's Young Serif 24px title; the script kicker before it (still stuck?) was made the heading by cardTitle, so the card holds two headings."
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
 					]
 				}
 			],
@@ -4600,11 +4803,11 @@
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"87\">Message Zainab</span>",
 			"attributes": {
-				"content": "Message Zainab"
+				"text": "Message Zainab"
 			}
 		},
 		{
-			"order": 130,
+			"order": 138,
 			"key": "Root/88#0",
 			"tag": "span",
 			"depth": 3,
@@ -4617,7 +4820,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"acceptedDecision": true,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -4637,11 +4839,6 @@
 			"attributes": {
 				"label": "→",
 				"url": "/contact/"
-			},
-			"slots": {
-				".sgs-button__label": {
-					"tpl": "Root/88#0"
-				}
 			}
 		}
 	]

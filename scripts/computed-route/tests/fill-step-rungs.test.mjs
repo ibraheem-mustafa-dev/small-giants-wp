@@ -15,7 +15,7 @@ const run = ( series, { how = 'tiers', styles = { 1440: '15px' }, prop = 'paddin
 	const flat = [ { name: 'sgs/nav-bar-menu', ref: 'n0', attributes } ];
 	const nodes = [ { index: 0, name: 'sgs/nav-bar-menu', children: [], targets: [ { id: '0:', slot: '' }, { id: '0:link', slot: LINK } ] } ];
 	const reads = { sweep: { '0:link': { [ prop ]: series } }, widths: { 375: { '0:link': { missing: true } }, 768: { '0:link': { missing: true } }, 1440: { '0:link': { styles: { [ prop ]: styles[ 1440 ] }, rect: { w: 1, h: 1 } } } } };
-	return { flat, ...stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes: [ { node: 'n0', slot: LINK, prop, how } ], keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-23' } ) };
+	return { flat, ...stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes: [ { node: 'n0', slot: LINK, prop, how } ], scope: 'header', entries: [], date: '2026-10-23' } ) };
 };
 
 test( 'MUST FAIL: a draft step the desktop tier read cannot hold is a scoped @media rule over the stretch the tier read does not represent', () => {
@@ -62,7 +62,7 @@ const runItems = ( items, { prop = 'padding-left', attr = 'itemPadding' } = {} )
 		reads.widths[ 1440 ][ `0:link${ n }` ] = { styles: { [ prop ]: '15px' }, rect: { w: 1, h: 1 } };
 	}
 	const writes = items.map( ( [ n ] ) => ( { node: 'n0', slot: itemLink( n ), prop, attr, how: 'tiers' } ) );
-	return { flat, ...stepRungWrites( { nodes, flat, refOf: ( x ) => x.ref, reads, writes, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-23' } ) };
+	return { flat, ...stepRungWrites( { nodes, flat, refOf: ( x ) => x.ref, reads, writes, scope: 'header', entries: [], date: '2026-10-23' } ) };
 };
 
 test( 'MUST FAIL: measured items that agree get one rule on every item of the set, not one rule per measured item', () => {
@@ -92,6 +92,6 @@ test( 'MUST FAIL: a snap the ledger already holds, followed by another snap, wri
 	const nodes = [ { index: 0, name: 'sgs/nav-bar-menu', children: [], targets: [ { id: '0:', slot: '' }, { id: '0:link', slot: LINK } ] } ];
 	const other = sweep( ( w ) => ( w < 1024 ? undefined : ( w < 1056 ? '10px' : '15px' ) ) );
 	const reads = { sweep: { '0:link': { 'padding-left': series, 'padding-right': other } }, widths: { 375: {}, 768: {}, 1440: { '0:link': { styles: { 'padding-left': '15px', 'padding-right': '15px' }, rect: { w: 1, h: 1 } } } } };
-	const r = stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes: props.map( ( prop ) => ( { node: 'n0', slot: LINK, prop, how: 'tiers' } ) ), keyScope: 'acme|surface', scope: 'header', entries: held, date: '2026-10-23' } );
+	const r = stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes: props.map( ( prop ) => ( { node: 'n0', slot: LINK, prop, how: 'tiers' } ) ), scope: 'header', entries: held, date: '2026-10-23' } );
 	assert.deepEqual( r.ledger.map( ( e ) => e.snap.draft ), [ 1056 ] );
 } );

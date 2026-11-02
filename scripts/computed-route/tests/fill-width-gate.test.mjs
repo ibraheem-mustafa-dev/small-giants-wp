@@ -24,7 +24,7 @@ function skeleton( specs ) {
 }
 const run = ( specs, facts, entries = [] ) => {
 	const { flat, nodes } = skeleton( specs );
-	return { flat, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries, date: '2026-10-22' } ) };
+	return { flat, ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries, date: '2026-10-22' } ) };
 };
 const attrsOf = ( r ) => Object.fromEntries( r.writes.map( ( w ) => [ w.attr, w.after ] ) );
 
@@ -97,7 +97,7 @@ test( 'the served root host is named Root in a finder and by the entry component
 	const facts = factsOf( gate( 'Page/12', isM, 'm' ), leaf( 'Page/13', [ 'Page/12' ] ) );
 	const flat = [ { name: 'sgs/button', attributes: {}, ref: 'r0' } ];
 	const nodes = [ { index: 0, name: 'sgs/button', parent: null, node: { draftRef: { tpl: 'Root/13#0' } }, children: [], targets: [] } ];
-	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.length;
+	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.length;
 	assert.equal( at( 'Page' ), 2 );
 	assert.equal( at( null ), 0, 'without the entry component the root key is not the fact record\'s' );
 } );
@@ -115,7 +115,7 @@ test( 'MUST FAIL WITHOUT THE OWN-ALTERNATIVE RULE: a nav drawing its own burger 
 	assert.equal( r.writes.some( ( w ) => /^sgsHideOn/.test( w.attr ) ), false );
 	const { flat, nodes } = skeleton( [ { name: 'sgs/nav-bar-menu', n: 45 } ] );
 	flat[ 0 ].attributes.collapsePoint = 1024;
-	const again = widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-22' } );
+	const again = widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], date: '2026-10-22' } );
 	assert.deepEqual( again.writes, [], 'a node already holding the value is left' );
 	const below = factsOf( gate( 'Page/55', isM, 'm' ), leaf( 'Page/56', [ 'Page/55' ] ) );
 	assert.deepEqual( run( [ { name: 'sgs/nav-bar-menu', n: 56 } ], below ).flat[ 0 ].attributes, { sgsHideOnTablet: true, sgsHideOnDesktop: true }, 'content shown only below a width is still hidden above it' );
@@ -125,7 +125,7 @@ test( 'MUST FAIL WITHOUT THE SELECTOR RESOLVER: a Site Info row node whose draft
 	const facts = factsOf( gate( 'Page/21', { w: '>=', n: 768 }, 'w >= 768' ), leaf( 'Page/22', [ 'Page/21' ] ) );
 	const flat = [ { name: 'sgs/social-icons', attributes: {}, ref: 'r0' } ];
 	const nodes = [ { index: 0, name: 'sgs/social-icons', parent: null, node: { draftRef: 'div[data-dc-tpl="9"] [data-dc-tpl="22"]' }, children: [], targets: [] } ];
-	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, keyScope: 'acme|surface', scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.map( ( w ) => w.attr );
+	const at = ( rootComponent ) => widthGateWrites( { nodes, flat: structuredClone( flat ), refOf: ( n ) => n.ref, facts, db, scope: 'header', entries: [], rootComponent, date: '2026-10-22' } ).writes.map( ( w ) => w.attr );
 	assert.deepEqual( at( 'Page' ), [ 'sgsHideOnMobile' ] );
 	assert.deepEqual( at( null ), [], 'no root component: no key' );
 } );

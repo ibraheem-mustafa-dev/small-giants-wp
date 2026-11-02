@@ -1,12 +1,14 @@
 // The cross-client guard for the skeleton rules (handoff readers plan, "The cross-client guard"):
-//   node scripts/computed-route/freeze.mjs snapshot <client>
-//   node scripts/computed-route/freeze.mjs diff <client> <freeze dir>
+//   node scripts/computed-route/freeze.mjs snapshot <client> [--no-built]
+//   node scripts/computed-route/freeze.mjs diff <client> <freeze dir> [--no-built]
 //   node scripts/computed-route/freeze.mjs diff-all <freeze stamp>
 // snapshot proposes every surface of the client again offline (lib/skeleton-rerun.mjs::rerunSkeletons, from the inventories
 // the last intake saved, with the motion inventory's loop records and no finaliser picks, as check-approved.mjs does) and
-// writes sites/<client>/build/qa/freeze/<YYYY-MM-DD-HHMM>/proposals.json: a header (client, commit, date, counts) and, per surface slug, each row's key, draft element tag, proposed block or action (removed,
+// writes sites/<client>/build/qa/freeze/<YYYY-MM-DD-HHMM>[-no-built]/proposals.json: a header (client, commit, date, the
+// --no-built flag, counts) and, per surface slug, each row's key, draft element tag, proposed block or action (removed,
 // absorbed, unwrap), the rule that settled it and its confidence. diff proposes the same rows with the current code and
 // prints every changed row (before, after, the rule on each side), every added row and every removed row, with counts.
+// The freeze header's --no-built flag decides how diff proposes; a --no-built flag that disagrees with it is a usage error.
 // diff-all runs diff for every client under sites/ whose freeze directory name starts with the stamp. Exit 0 when nothing
 // changed, 1 when anything did, 2 on usage or a missing file.
 import fs from 'fs';
@@ -15,7 +17,7 @@ import { spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
-const USAGE = 'usage: node scripts/computed-route/freeze.mjs snapshot <client> | diff <client> <freeze dir> | diff-all <freeze stamp>\n';
+const USAGE = 'usage: node scripts/computed-route/freeze.mjs snapshot <client> [--no-built] | diff <client> <freeze dir> [--no-built] | diff-all <freeze stamp>\n';
 const CLIENT = /^[a-z0-9-]+$/;
 
 // The outcome of a row: its block, or its action (with the element it was absorbed into).
@@ -73,7 +75,7 @@ const commitOf = ( repo ) => {
 };
 
 // The default proposer: the client's surfaces proposed offline from its saved intake and inventories.
-async function proposeClient( client, repo = REPO ) {
+async function proposeClient( client, useBuilt, repo = REPO ) {
 	const { rerunSkeletons, loopingKeys } = await import( './lib/skeleton-rerun.mjs' );
 	const { openDb } = await import( './lib/db.mjs' );
 	const file = path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
@@ -83,13 +85,13 @@ async function proposeClient( client, repo = REPO ) {
 	const intake = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	const db = openDb();
 	try {
-		return proposalsOf( rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ) } ).surfaces );
+		return proposalsOf( rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), useBuilt } ).surfaces );
 	} finally {
 		db.close();
 	}
 }
 
-async function diffOne( client, dir, o ) {
+async function diffOne( client, dir, flags, o ) {
 	const file = path.join( dir, 'proposals.json' );
 	if ( ! fs.existsSync( file ) ) {
 		o.err( `no ${ file }\n` );
@@ -100,7 +102,11 @@ async function diffOne( client, dir, o ) {
 		o.err( `${ file } is the freeze of ${ frozen.header.client }, not ${ client }\n` );
 		return 2;
 	}
-	const after = await o.propose( client, o.repo );
+	if ( flags.includes( '--no-built' ) !== frozen.header.noBuilt && flags.length ) {
+		o.err( `the freeze was taken ${ frozen.header.noBuilt ? 'with' : 'without' } --no-built; diff proposes as the freeze did\n` );
+		return 2;
+	}
+	const after = await o.propose( client, ! frozen.header.noBuilt, o.repo );
 	const d = diffProposals( frozen.surfaces, after );
 	report( client, d, frozen.header.counts.rows ).forEach( ( l ) => o.out( `${ l }\n` ) );
 	return d.changed.length + d.added.length + d.removed.length ? 1 : 0;
@@ -112,23 +118,24 @@ export async function main( argv, o = {} ) {
 	const [ cmd, ...rest ] = argv;
 	const flags = rest.filter( ( x ) => x.startsWith( '--' ) );
 	const args = rest.filter( ( x ) => ! x.startsWith( '--' ) );
-	if ( flags.length ) {
+	if ( flags.some( ( f ) => '--no-built' !== f ) ) {
 		opts.err( USAGE );
 		return 2;
 	}
 	try {
 		if ( 'snapshot' === cmd && 1 === args.length && CLIENT.test( args[ 0 ] ) ) {
-			const surfaces = await opts.propose( args[ 0 ], opts.repo );
+			const noBuilt = flags.includes( '--no-built' );
+			const surfaces = await opts.propose( args[ 0 ], ! noBuilt, opts.repo );
 			const now = opts.now();
-			const header = { client: args[ 0 ], commit: commitOf( opts.repo ), date: now.toISOString(), counts: { surfaces: Object.keys( surfaces ).length, rows: countRows( surfaces ) } };
-			const dir = path.join( opts.repo, 'sites', args[ 0 ], 'build', 'qa', 'freeze', stampOf( now ) );
+			const header = { client: args[ 0 ], commit: commitOf( opts.repo ), date: now.toISOString(), noBuilt, counts: { surfaces: Object.keys( surfaces ).length, rows: countRows( surfaces ) } };
+			const dir = path.join( opts.repo, 'sites', args[ 0 ], 'build', 'qa', 'freeze', `${ stampOf( now ) }${ noBuilt ? '-no-built' : '' }` );
 			fs.mkdirSync( dir, { recursive: true } );
 			fs.writeFileSync( path.join( dir, 'proposals.json' ), `${ JSON.stringify( { header, surfaces }, null, '\t' ) }\n` );
-			opts.out( `${ args[ 0 ] }: froze ${ header.counts.surfaces } surfaces, ${ header.counts.rows } rows in ${ path.relative( opts.repo, dir ) }\n` );
+			opts.out( `${ args[ 0 ] }: froze ${ header.counts.surfaces } surfaces, ${ header.counts.rows } rows${ noBuilt ? ' (--no-built)' : '' } in ${ path.relative( opts.repo, dir ) }\n` );
 			return 0;
 		}
 		if ( 'diff' === cmd && 2 === args.length && CLIENT.test( args[ 0 ] ) ) {
-			return await diffOne( args[ 0 ], path.resolve( opts.repo, args[ 1 ] ), opts );
+			return await diffOne( args[ 0 ], path.resolve( opts.repo, args[ 1 ] ), flags, opts );
 		}
 		if ( 'diff-all' === cmd && 1 === args.length && ! flags.length && /^\d{4}-\d{2}-\d{2}/.test( args[ 0 ] ) ) {
 			const sites = path.join( opts.repo, 'sites' );
@@ -138,7 +145,7 @@ export async function main( argv, o = {} ) {
 				const root = path.join( sites, client, 'build', 'qa', 'freeze' );
 				for ( const name of fs.existsSync( root ) ? fs.readdirSync( root ).sort().filter( ( n ) => n.startsWith( args[ 0 ] ) ) : [] ) {
 					found++;
-					worst = Math.max( worst, await diffOne( client, path.join( root, name ), opts ) );
+					worst = Math.max( worst, await diffOne( client, path.join( root, name ), [], opts ) );
 				}
 			}
 			if ( ! found ) {

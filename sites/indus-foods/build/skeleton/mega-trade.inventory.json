@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-31T01:41:10.788Z",
-  "source": "http://127.0.0.1:58295/Indus%20Foods%20Website%20v2.dc.html",
+  "generated": "2026-10-27T13:53:21.255Z",
+  "source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
   "root": "[data-sgs-skeleton-root=\"trade-mega-menu\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -162,70 +162,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;\" data-dc-tpl=\"67\"> <div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/68#0"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/76#0"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "618px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "618px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "618px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 411,
@@ -258,11 +194,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -294,82 +225,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ",
-      "flow": [
-        "  ",
-        {
-          "key": "Indus Foods Website v2/70#0"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/70#1"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/70#2"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/70#3"
-        },
-        "  ",
-        {
-          "key": "Indus Foods Website v2/70#4"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "318px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "22px",
-          "padding-bottom": "10px",
-          "padding-left": "26px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "318px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "22px",
-          "padding-bottom": "10px",
-          "padding-left": "26px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "318px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "22px",
-          "padding-bottom": "10px",
-          "padding-left": "26px"
-        }
-      },
       "box": {
         "375": {
           "x": 411,
@@ -402,11 +257,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -446,70 +296,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/71#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/72#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 437,
@@ -542,11 +328,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -584,63 +365,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.num }}",
       "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
-      "flow": [
-        "01"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 443,
@@ -673,11 +397,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -715,70 +434,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/73#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/74#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "173.641px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "173.641px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "173.641px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -811,11 +466,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -853,63 +503,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.label }}",
       "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
-      "flow": [
-        "Apply for Trade Account"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "173.641px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "173.641px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "173.641px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -942,11 +535,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -984,63 +572,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.desc }}",
       "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
-      "flow": [
-        "Get wholesale pricing"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "173.641px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "173.641px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "173.641px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -1073,11 +604,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1117,70 +643,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/71#1"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/72#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 437,
@@ -1213,11 +675,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1255,63 +712,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.num }}",
       "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
-      "flow": [
-        "02"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 443,
@@ -1344,11 +744,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1386,70 +781,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/73#1"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/74#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "137.688px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "137.688px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "137.688px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -1482,11 +813,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1524,63 +850,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.label }}",
       "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
-      "flow": [
-        "Request Catalogue"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "137.688px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "137.688px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "137.688px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -1613,11 +882,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1655,63 +919,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.desc }}",
       "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
-      "flow": [
-        "Our full product range"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "137.688px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "137.688px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "137.688px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -1744,11 +951,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1788,70 +990,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/71#2"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/72#2"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 437,
@@ -1884,11 +1022,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -1926,63 +1059,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.num }}",
       "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
-      "flow": [
-        "03"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 443,
@@ -2015,11 +1091,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2057,70 +1128,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/73#2"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/74#2"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "192.312px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "192.312px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "192.312px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -2153,11 +1160,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2195,63 +1197,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.label }}",
       "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
-      "flow": [
-        "Delivery & Logistics"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "192.312px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "192.312px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "192.312px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -2284,11 +1229,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2326,63 +1266,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.desc }}",
       "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
-      "flow": [
-        "UK & Europe from Birmingham"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "192.312px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "192.312px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "192.312px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -2415,11 +1298,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2459,70 +1337,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/71#3"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/72#3"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 437,
@@ -2555,11 +1369,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2597,63 +1406,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.num }}",
       "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
-      "flow": [
-        "04"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 443,
@@ -2686,11 +1438,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2728,70 +1475,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/73#3"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/74#3"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "186.25px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "186.25px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "186.25px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -2824,11 +1507,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2866,63 +1544,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.label }}",
       "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
-      "flow": [
-        "FAQs"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "186.25px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "186.25px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "186.25px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -2955,11 +1576,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -2997,63 +1613,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.desc }}",
       "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
-      "flow": [
-        "Common questions answered"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "186.25px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "186.25px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "186.25px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -3086,11 +1645,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3130,70 +1684,6 @@
       "srcTag": "a",
       "srcOwnText": "",
       "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/71#4"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/72#4"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "270px",
-          "height": "82.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "16px",
-          "padding-right": "6px",
-          "padding-bottom": "16px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 437,
@@ -3226,11 +1716,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3268,63 +1753,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.num }}",
       "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
-      "flow": [
-        "05"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "20.15px",
-          "width": "18px",
-          "height": "20.1406px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 443,
@@ -3357,11 +1785,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3399,70 +1822,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/73#4"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/74#4"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "142.328px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "142.328px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "142.328px",
-          "height": "49.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -3495,11 +1854,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3537,63 +1891,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.label }}",
       "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
-      "flow": [
-        "Terms & Conditions"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "142.328px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "142.328px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "-0.17px",
-          "text-transform": "none",
-          "line-height": "26.35px",
-          "width": "142.328px",
-          "height": "26.3438px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -3626,11 +1923,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3668,63 +1960,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ link.desc }}",
       "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
-      "flow": [
-        "Trade account terms"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "142.328px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "142.328px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "142.328px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 477,
@@ -3757,11 +1992,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3798,70 +2028,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};\" data-dc-tpl=\"76\"> <div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div> <div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span ",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/77#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/79#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "300px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "300px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "300px",
-          "height": "445.719px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        }
-      },
       "box": {
         "375": {
           "x": 729,
@@ -3894,11 +2060,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -3935,59 +2096,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div>",
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "130px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "130px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "130px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4020,11 +2128,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4035,10 +2138,7 @@
       "tag": "image-slot",
       "template": "Root",
       "tpl": 78,
-      "attrs": {
-        "id": "trade-feature",
-        "placeholder": "trade photo"
-      },
+      "attrs": {},
       "words": "",
       "allText": "",
       "srcLine": 100,
@@ -4062,59 +2162,6 @@
       "srcTag": "image-slot",
       "srcOwnText": "",
       "snippet": "<image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot>",
-      "resolved": {
-        "375": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "248px",
-          "height": "126px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "248px",
-          "height": "126px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "16.9px",
-          "width": "248px",
-          "height": "126px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 755,
@@ -4147,11 +2194,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4188,78 +2230,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span> <div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" d",
-      "flow": [
-        " ",
-        {
-          "key": "Indus Foods Website v2/80#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/81#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/82#0"
-        },
-        " ",
-        {
-          "key": "Indus Foods Website v2/83#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "169.281px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "169.281px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "29.45px",
-          "width": "252px",
-          "height": "169.281px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4292,11 +2262,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4333,63 +2298,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ activePanel.feature.tag }}",
       "snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span>",
-      "flow": [
-        "Trade partners"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12px",
-          "font-weight": "700",
-          "letter-spacing": "0.48px",
-          "text-transform": "uppercase",
-          "line-height": "18.6px",
-          "width": "119.875px",
-          "height": "28.5938px",
-          "border-top-left-radius": "3px",
-          "border-top-right-radius": "3px",
-          "border-bottom-right-radius": "3px",
-          "border-bottom-left-radius": "3px",
-          "padding-top": "5px",
-          "padding-right": "10px",
-          "padding-bottom": "5px",
-          "padding-left": "10px"
-        },
-        "768": {
-          "font-size": "12px",
-          "font-weight": "700",
-          "letter-spacing": "0.48px",
-          "text-transform": "uppercase",
-          "line-height": "18.6px",
-          "width": "119.875px",
-          "height": "28.5938px",
-          "border-top-left-radius": "3px",
-          "border-top-right-radius": "3px",
-          "border-bottom-right-radius": "3px",
-          "border-bottom-left-radius": "3px",
-          "padding-top": "5px",
-          "padding-right": "10px",
-          "padding-bottom": "5px",
-          "padding-left": "10px"
-        },
-        "1440": {
-          "font-size": "12px",
-          "font-weight": "700",
-          "letter-spacing": "0.48px",
-          "text-transform": "uppercase",
-          "line-height": "18.6px",
-          "width": "119.875px",
-          "height": "28.5938px",
-          "border-top-left-radius": "3px",
-          "border-top-right-radius": "3px",
-          "border-bottom-right-radius": "3px",
-          "border-bottom-left-radius": "3px",
-          "padding-top": "5px",
-          "padding-right": "10px",
-          "padding-bottom": "5px",
-          "padding-left": "10px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4422,11 +2330,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline-block",
-        "768": "inline-block",
-        "1440": "inline-block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4463,63 +2366,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ activePanel.feature.title }}",
       "snippet": "<div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" data-dc-tpl=\"81\">{{ activePanel.feature.title }}</div>",
-      "flow": [
-        "Trade with Indus Foods"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "22px",
-          "font-weight": "700",
-          "letter-spacing": "-0.44px",
-          "text-transform": "none",
-          "line-height": "26.4px",
-          "width": "252px",
-          "height": "26.3906px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "22px",
-          "font-weight": "700",
-          "letter-spacing": "-0.44px",
-          "text-transform": "none",
-          "line-height": "26.4px",
-          "width": "252px",
-          "height": "26.3906px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "22px",
-          "font-weight": "700",
-          "letter-spacing": "-0.44px",
-          "text-transform": "none",
-          "line-height": "26.4px",
-          "width": "252px",
-          "height": "26.3906px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4552,11 +2398,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4593,63 +2434,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ activePanel.feature.desc }}",
       "snippet": "<div style=\"font-size:15px;color:#E3EFF4;line-height:1.45;margin-top:8px;\" data-dc-tpl=\"82\">{{ activePanel.feature.desc }}</div>",
-      "flow": [
-        "Reliable stock, a named account manager and nationwide delivery."
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "252px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "252px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "15px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21.75px",
-          "width": "252px",
-          "height": "43.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4682,11 +2466,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     },
@@ -4725,63 +2504,6 @@
       "srcTag": "a",
       "srcOwnText": "{{ activePanel.feature.cta }} {{ arrowIcon }}",
       "snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
-      "flow": [
-        "Apply now "
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24.8px",
-          "width": "95.9375px",
-          "height": "29.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "3px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24.8px",
-          "width": "95.9375px",
-          "height": "29.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "3px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24.8px",
-          "width": "95.9375px",
-          "height": "29.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "3px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 753,
@@ -4814,11 +2536,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline-flex",
-        "768": "inline-flex",
-        "1440": "inline-flex"
-      },
       "layoutChanged375": false,
       "screenshots": {}
     }
@@ -4847,7 +2564,7 @@
       "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
     },
     "route": {
-      "commit": "483583e65e051f50edc343c67aad9aa20056c69b"
+      "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
     }
   }
 }

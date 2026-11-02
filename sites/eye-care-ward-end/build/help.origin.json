@@ -1,22 +1,18 @@
 {
   "cr-ref-help-0": {
-    "tpl": "Root/626#0",
+    "tpl": "Root/628#0",
     "fingerprint": {
       "tag": "main",
       "cls": "sgs-page-help",
       "styleHash": "e0705001",
       "parentTags": [],
       "textHash": "1505",
-      "line": 1399
+      "line": 1402
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/627#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/628#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-1": {
-    "tpl": "Root/627#0",
+    "tpl": "Root/629#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -25,12 +21,12 @@
         "main"
       ],
       "textHash": "7c860174",
-      "line": 1400
+      "line": 1403
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-2": {
-    "tpl": "Root/628#0",
+    "tpl": "Root/630#0",
     "fingerprint": {
       "tag": "h1",
       "cls": "",
@@ -39,12 +35,12 @@
         "main"
       ],
       "textHash": "b7675f1d",
-      "line": 1401
+      "line": 1404
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-3": {
-    "tpl": "Root/629#0",
+    "tpl": "Root/631#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -53,16 +49,12 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1402
+      "line": 1405
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/630#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/633#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-4": {
-    "tpl": "Root/630#0",
+    "tpl": "Root/632#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -72,16 +64,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1403
+      "line": 1406
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/631#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/632#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-5": {
-    "tpl": "Root/631#0",
+    "tpl": "Root/633#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -92,12 +80,12 @@
         "div"
       ],
       "textHash": "f5c372a7",
-      "line": 1403
+      "line": 1406
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-6": {
-    "tpl": "Root/632#0",
+    "tpl": "Root/634#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -108,12 +96,12 @@
         "div"
       ],
       "textHash": "8a2ba51e",
-      "line": 1403
+      "line": 1406
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-7": {
-    "tpl": "Root/633#0",
+    "tpl": "Root/635#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -123,16 +111,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1404
+      "line": 1407
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/634#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/635#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-8": {
-    "tpl": "Root/634#0",
+    "tpl": "Root/636#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -143,12 +127,12 @@
         "div"
       ],
       "textHash": "11cef46c",
-      "line": 1404
+      "line": 1407
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-9": {
-    "tpl": "Root/635#0",
+    "tpl": "Root/637#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -159,12 +143,12 @@
         "div"
       ],
       "textHash": "e9a5e626",
-      "line": 1404
+      "line": 1407
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-10": {
-    "tpl": "Root/636#0",
+    "tpl": "Root/638#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -174,16 +158,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1405
+      "line": 1408
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/637#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/638#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-11": {
-    "tpl": "Root/637#0",
+    "tpl": "Root/639#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -194,12 +174,12 @@
         "div"
       ],
       "textHash": "4deccc3c",
-      "line": 1405
+      "line": 1408
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-12": {
-    "tpl": "Root/638#0",
+    "tpl": "Root/640#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -210,12 +190,12 @@
         "div"
       ],
       "textHash": "6dd0f311",
-      "line": 1405
+      "line": 1408
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-13": {
-    "tpl": "Root/639#0",
+    "tpl": "Root/641#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -224,16 +204,12 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1407
+      "line": 1410
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/640#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/641#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-14": {
-    "tpl": "Root/640#0",
+    "tpl": "Root/642#0",
     "fingerprint": {
       "tag": "h2",
       "cls": "",
@@ -243,12 +219,12 @@
         "div"
       ],
       "textHash": "3023ef58",
-      "line": 1408
+      "line": 1411
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-15": {
-    "tpl": "Root/641#0",
+    "tpl": "Root/643#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -258,16 +234,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1409
+      "line": 1412
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/642#0",
-      ".sgs-button:nth-of-type(2)": "Root/643#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-16": {
-    "tpl": "Root/642#0",
+    "tpl": "Root/644#0",
     "fingerprint": {
       "tag": "button",
       "cls": "",
@@ -278,15 +250,12 @@
         "div"
       ],
       "textHash": "9d45087a",
-      "line": 1410
+      "line": 1413
     },
-    "slots": {
-      ".sgs-button__label": "Root/642#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-17": {
-    "tpl": "Root/643#0",
+    "tpl": "Root/645#0",
     "fingerprint": {
       "tag": "a",
       "cls": "",
@@ -297,15 +266,12 @@
         "div"
       ],
       "textHash": "915fa48d",
-      "line": 1411
+      "line": 1414
     },
-    "slots": {
-      ".sgs-button__label": "Root/643#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-18": {
-    "tpl": "Root/644#0",
+    "tpl": "Root/646#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -314,12 +280,12 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1414
+      "line": 1417
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-19": {
-    "tpl": "Root/646#0",
+    "tpl": "Root/648#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -329,214 +295,208 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1416
+      "line": 1419
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-20": {
-    "tpl": "Root/651#0",
+    "tpl": "Root/649#0",
     "fingerprint": {
-      "tag": "p",
+      "tag": "button",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "1527f7d8",
       "parentTags": [
         "main",
         "div",
         "div"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "1505",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-21": {
-    "tpl": "Root/646#1",
+    "tpl": "Root/650#0",
     "fingerprint": {
-      "tag": "div",
+      "tag": "span",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "1505",
       "parentTags": [
         "main",
-        "div"
+        "div",
+        "div",
+        "button"
       ],
-      "textHash": "1505",
-      "line": 1416
+      "textHash": "1468dff6",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-22": {
     "tpl": "Root/651#0",
     "fingerprint": {
-      "tag": "p",
+      "tag": "span",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "f6e4879d",
       "parentTags": [
         "main",
         "div",
-        "div"
+        "div",
+        "button"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "2b58e",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-23": {
-    "tpl": "Root/646#2",
+    "tpl": "Root/653#0",
     "fingerprint": {
-      "tag": "div",
+      "tag": "p",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "41c5229f",
       "parentTags": [
         "main",
+        "div",
         "div"
       ],
-      "textHash": "1505",
-      "line": 1416
+      "textHash": "1c18a59e",
+      "line": 1421
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-24": {
-    "tpl": "Root/651#0",
+    "tpl": "Root/648#1",
     "fingerprint": {
-      "tag": "p",
+      "tag": "div",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "35fd23a7",
       "parentTags": [
         "main",
-        "div",
         "div"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "1505",
+      "line": 1419
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-25": {
-    "tpl": "Root/646#3",
+    "tpl": "Root/649#1",
     "fingerprint": {
-      "tag": "div",
+      "tag": "button",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "1527f7d8",
       "parentTags": [
         "main",
+        "div",
         "div"
       ],
       "textHash": "1505",
-      "line": 1416
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-26": {
-    "tpl": "Root/651#0",
+    "tpl": "Root/650#1",
     "fingerprint": {
-      "tag": "p",
+      "tag": "span",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "1505",
       "parentTags": [
         "main",
         "div",
-        "div"
+        "div",
+        "button"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "2fd23612",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-27": {
-    "tpl": "Root/646#4",
+    "tpl": "Root/651#1",
     "fingerprint": {
-      "tag": "div",
+      "tag": "span",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "9b08ae28",
       "parentTags": [
         "main",
-        "div"
+        "div",
+        "div",
+        "button"
       ],
-      "textHash": "1505",
-      "line": 1416
+      "textHash": "2b58e",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-28": {
-    "tpl": "Root/651#0",
+    "tpl": "Root/648#2",
     "fingerprint": {
-      "tag": "p",
+      "tag": "div",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "35fd23a7",
       "parentTags": [
         "main",
-        "div",
         "div"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "1505",
+      "line": 1419
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-29": {
-    "tpl": "Root/646#5",
+    "tpl": "Root/649#2",
     "fingerprint": {
-      "tag": "div",
+      "tag": "button",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "1527f7d8",
       "parentTags": [
         "main",
+        "div",
         "div"
       ],
       "textHash": "1505",
-      "line": 1416
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-30": {
-    "tpl": "Root/651#0",
+    "tpl": "Root/650#2",
     "fingerprint": {
-      "tag": "p",
+      "tag": "span",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "1505",
       "parentTags": [
         "main",
         "div",
-        "div"
+        "div",
+        "button"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "78b7a57f",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-31": {
-    "tpl": "Root/646#6",
+    "tpl": "Root/651#2",
     "fingerprint": {
-      "tag": "div",
+      "tag": "span",
       "cls": "",
-      "styleHash": "35fd23a7",
+      "styleHash": "9b08ae28",
       "parentTags": [
         "main",
-        "div"
+        "div",
+        "div",
+        "button"
       ],
-      "textHash": "1505",
-      "line": 1416
+      "textHash": "2b58e",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-32": {
-    "tpl": "Root/651#0",
-    "fingerprint": {
-      "tag": "p",
-      "cls": "",
-      "styleHash": "41c5229f",
-      "parentTags": [
-        "main",
-        "div",
-        "div"
-      ],
-      "textHash": "1c18a59e",
-      "line": 1418
-    },
-    "draft": "9fdd17eaaf271355"
-  },
-  "cr-ref-help-33": {
-    "tpl": "Root/646#7",
+    "tpl": "Root/648#3",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -546,28 +506,322 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1416
+      "line": 1419
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-34": {
-    "tpl": "Root/651#0",
+  "cr-ref-help-33": {
+    "tpl": "Root/649#3",
     "fingerprint": {
-      "tag": "p",
+      "tag": "button",
       "cls": "",
-      "styleHash": "41c5229f",
+      "styleHash": "1527f7d8",
       "parentTags": [
         "main",
         "div",
         "div"
       ],
-      "textHash": "1c18a59e",
-      "line": 1418
+      "textHash": "1505",
+      "line": 1420
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-34": {
+    "tpl": "Root/650#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "5deacac",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-help-35": {
-    "tpl": "Root/652#0",
+    "tpl": "Root/651#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9b08ae28",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-36": {
+    "tpl": "Root/648#4",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1419
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-37": {
+    "tpl": "Root/649#4",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "1527f7d8",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-38": {
+    "tpl": "Root/650#4",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "b0c387b2",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-39": {
+    "tpl": "Root/651#4",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9b08ae28",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-40": {
+    "tpl": "Root/648#5",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1419
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-41": {
+    "tpl": "Root/649#5",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "1527f7d8",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-42": {
+    "tpl": "Root/650#5",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "ff4e378b",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-43": {
+    "tpl": "Root/651#5",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9b08ae28",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-44": {
+    "tpl": "Root/648#6",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1419
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-45": {
+    "tpl": "Root/649#6",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "1527f7d8",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-46": {
+    "tpl": "Root/650#6",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "575c0701",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-47": {
+    "tpl": "Root/651#6",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9b08ae28",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-48": {
+    "tpl": "Root/648#7",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1419
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-49": {
+    "tpl": "Root/649#7",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "1527f7d8",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-50": {
+    "tpl": "Root/650#7",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "fbb7736a",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-51": {
+    "tpl": "Root/651#7",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9b08ae28",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 1420
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-help-52": {
+    "tpl": "Root/654#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -576,16 +830,12 @@
         "main"
       ],
       "textHash": "1505",
-      "line": 1422
+      "line": 1425
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/653#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/656#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-36": {
-    "tpl": "Root/653#0",
+  "cr-ref-help-53": {
+    "tpl": "Root/655#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -595,16 +845,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1423
+      "line": 1426
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/654#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/655#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-37": {
-    "tpl": "Root/654#0",
+  "cr-ref-help-54": {
+    "tpl": "Root/656#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -615,12 +861,12 @@
         "div"
       ],
       "textHash": "1cd4743c",
-      "line": 1424
+      "line": 1427
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-38": {
-    "tpl": "Root/655#0",
+  "cr-ref-help-55": {
+    "tpl": "Root/657#0",
     "fingerprint": {
       "tag": "p",
       "cls": "",
@@ -631,12 +877,12 @@
         "div"
       ],
       "textHash": "b50aea88",
-      "line": 1425
+      "line": 1428
     },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-39": {
-    "tpl": "Root/656#0",
+  "cr-ref-help-56": {
+    "tpl": "Root/658#0",
     "fingerprint": {
       "tag": "div",
       "cls": "",
@@ -646,16 +892,12 @@
         "div"
       ],
       "textHash": "1505",
-      "line": 1427
+      "line": 1430
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/657#0",
-      ".sgs-button:nth-of-type(2)": "Root/658#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-40": {
-    "tpl": "Root/657#0",
+  "cr-ref-help-57": {
+    "tpl": "Root/659#0",
     "fingerprint": {
       "tag": "button",
       "cls": "scpp",
@@ -666,15 +908,12 @@
         "div"
       ],
       "textHash": "915fa48d",
-      "line": 1428
+      "line": 1431
     },
-    "slots": {
-      ".sgs-button__label": "Root/657#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-help-41": {
-    "tpl": "Root/658#0",
+  "cr-ref-help-58": {
+    "tpl": "Root/660#0",
     "fingerprint": {
       "tag": "a",
       "cls": "scps",
@@ -685,11 +924,8 @@
         "div"
       ],
       "textHash": "7c814547",
-      "line": 1429
+      "line": 1432
     },
-    "slots": {
-      ".sgs-button__label": "Root/658#0"
-    },
-    "draft": "9fdd17eaaf271355"
+    "draft": "10edcc3a998d8e4f"
   }
 }

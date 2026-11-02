@@ -203,9 +203,6 @@ export function skeletonProblems( tree ) {
 		if ( undefined !== node.draftFingerprint && ! ( node.draftFingerprint && 'object' === typeof node.draftFingerprint && isStr( node.draftFingerprint.tag ) ) ) {
 			problems.push( `${ label } draftFingerprint must be { tag, cls, styleHash }` );
 		}
-		if ( undefined !== node.hiddenControl && ! ( isStr( node.hiddenControl ) && /^[^/]+\/[^/#]+$/.test( node.hiddenControl ) && /^sgs\/form-field-/.test( node.name ) && undefined === node.draftRef ) ) {
-			problems.push( `${ label } hiddenControl must be a template key ("<component>/<n>") on a form field block with no draftRef` );
-		}
 		problems.push( ...handoverProblems( node.handover, label ), ...rowProblems( node, label ) );
 	}
 	return problems;
@@ -213,9 +210,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-// `hiddenControl` (lib/skeleton-hidden-fields.mjs) is the template key of a form control the render never shows, the draft element
-// of a field node that has no `draftRef`.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'hiddenControl', 'handover', 'modalFrame', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftFingerprint', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

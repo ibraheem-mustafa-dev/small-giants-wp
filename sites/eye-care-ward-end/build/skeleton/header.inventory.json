@@ -1,6 +1,6 @@
 {
-  "generated": "2026-11-01T21:22:37.344Z",
-  "source": "http://127.0.0.1:62097/",
+  "generated": "2026-10-28T06:42:46.052Z",
+  "source": "http://127.0.0.1:57904/",
   "root": "header",
   "beside": [
     {
@@ -12,7 +12,7 @@
       "holdsOtherRoot": false
     },
     {
-      "key": "Root/111#0",
+      "key": "Root/113#0",
       "side": "after",
       "distance": 1,
       "position": "static",
@@ -20,7 +20,7 @@
       "holdsOtherRoot": true
     },
     {
-      "key": "Root/1122#0",
+      "key": "Root/1124#0",
       "side": "after",
       "distance": 2,
       "position": "static",
@@ -28,7 +28,7 @@
       "holdsOtherRoot": true
     },
     {
-      "key": "Root/1158#0",
+      "key": "Root/1161#0",
       "side": "after",
       "distance": 3,
       "position": "fixed",
@@ -74,11 +74,11 @@
     ],
     "duplicateKeys": 0,
     "perWidthCounts": {
-      "375": 48,
-      "768": 30,
-      "1440": 41
+      "375": 50,
+      "768": 32,
+      "1440": 43
     },
-    "tagAgree": 58,
+    "tagAgree": 60,
     "tagDisagree": [],
     "keysMissingAt": {
       "375": [
@@ -87,11 +87,11 @@
         "Root/25#0",
         "Root/26#0",
         "Root/27#0",
-        "Root/33#0",
-        "Root/34#0",
         "Root/35#0",
         "Root/36#0",
-        "Root/37#0"
+        "Root/37#0",
+        "Root/38#0",
+        "Root/39#0"
       ],
       "768": [
         "Root/23#0",
@@ -99,11 +99,11 @@
         "Root/25#0",
         "Root/26#0",
         "Root/27#0",
-        "Root/33#0",
-        "Root/34#0",
         "Root/35#0",
         "Root/36#0",
         "Root/37#0",
+        "Root/38#0",
+        "Root/39#0",
         "Root/10#2",
         "Root/11#2",
         "Root/12#2",
@@ -146,17 +146,17 @@
     "screenshotSkips": [
       {
         "w": 1440,
-        "key": "Root/46#0",
-        "why": "not rendered (no layout box)"
-      },
-      {
-        "w": 1440,
-        "key": "Root/47#0",
-        "why": "not rendered (no layout box)"
-      },
-      {
-        "w": 1440,
         "key": "Root/48#0",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Root/49#0",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Root/50#0",
         "why": "not rendered (no layout box)"
       },
       {
@@ -166,7 +166,7 @@
       },
       {
         "w": 375,
-        "key": "Root/45#0",
+        "key": "Root/47#0",
         "why": "not rendered (no layout box)"
       }
     ]
@@ -184,72 +184,12 @@
         "style": "position: sticky; top: 0px; z-index: 40; background: rgba(250, 248, 245, 0.9); backdrop-filter: blur(16px); border-bottom: 1px solid rgb(230, 225, 218);"
       },
       "words": "",
-      "allText": "Sunglasses Brands Lenses Glasses SOON 0121 729 8233 About Eye Care Help Bag 0",
+      "allText": "Sunglasses Brands Lenses Glasses SOON EYE CARE BIRMINGHAM 0121 729 8233 About Eye Care Help Bag 0",
       "srcLine": 556,
       "membership": [],
       "srcTag": "header",
       "srcOwnText": "",
       "snippet": "<header class=\"sgs-header\" style=\"position:sticky;top:0;z-index:40;background:rgba(250,248,245,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid #E6E1DA\" sc-camel-on-mouse-leave=\"{{ closeMega }}\" data-dc-tpl=\"13\"> <div style=\"max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap: {{ navGap }};padding: {{ navPad",
-      "flow": [
-        " ",
-        {
-          "key": "Root/14#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "375px",
-          "height": "65px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "768px",
-          "height": "65px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "1440px",
-          "height": "65px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 0,
@@ -282,11 +222,6 @@
         "1440": "sticky"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_13_0@375.png",
@@ -304,80 +239,12 @@
         "style": "max-width: 1440px; margin: 0px auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 10px 24px; transition: padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);"
       },
       "words": "",
-      "allText": "Sunglasses Brands Lenses Glasses SOON 0121 729 8233 About Eye Care Help Bag 0",
+      "allText": "Sunglasses Brands Lenses Glasses SOON EYE CARE BIRMINGHAM 0121 729 8233 About Eye Care Help Bag 0",
       "srcLine": 557,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap: {{ navGap }};padding: {{ navPad }};transition:padding .35s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"14\"> <nav style=\"display:flex;gap:24px;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase;align-items:center\" data-dc-tpl=\"15\"> <sc-if value=\"{{ navCompact }}\" hint-placeholde",
-      "flow": [
-        " ",
-        {
-          "key": "Root/15#0"
-        },
-        " ",
-        {
-          "key": "Root/28#0"
-        },
-        " ",
-        {
-          "key": "Root/31#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "375px",
-          "height": "64px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "24px",
-          "padding-bottom": "10px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "768px",
-          "height": "64px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "24px",
-          "padding-bottom": "10px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "1440px",
-          "height": "64px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "24px",
-          "padding-bottom": "10px",
-          "padding-left": "24px"
-        }
-      },
       "box": {
         "375": {
           "x": 0,
@@ -410,11 +277,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_14_0@375.png",
@@ -438,95 +300,23 @@
       "srcTag": "nav",
       "srcOwnText": "",
       "snippet": "<nav style=\"display:flex;gap:24px;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase;align-items:center\" data-dc-tpl=\"15\"> <sc-if value=\"{{ navCompact }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Menu\" style=\"background:none;border:0;padding:8px;margin-left:-8px;display:flex;align-items:center;gap:10px;min-height:44px",
-      "flow": [
-        "   ",
-        {
-          "key": "Root/23#0"
-        },
-        " ",
-        {
-          "key": "Root/24#0"
-        },
-        " ",
-        {
-          "key": "Root/25#0"
-        },
-        " ",
-        {
-          "key": "Root/26#0"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "73px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "272px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "608px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 24,
           "y": 50.8,
-          "w": 73,
+          "w": 74.6,
           "h": 44
         },
         "768": {
           "x": 24,
           "y": 50.8,
-          "w": 272,
+          "w": 272.8,
           "h": 44
         },
         "1440": {
           "x": 24,
           "y": 56.1,
-          "w": 608,
+          "w": 608.8,
           "h": 33.3
         }
       },
@@ -542,11 +332,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_15_0@375.png",
@@ -577,54 +362,6 @@
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Menu\" style=\"background:none;border:0;padding:8px;margin-left:-8px;display:flex;align-items:center;gap:10px;min-height:44px\" data-dc-tpl=\"17\"> <span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;wi",
-      "flow": [
-        " ",
-        {
-          "key": "Root/18#0"
-        },
-        " ",
-        {
-          "key": "Root/21#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "38px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "8px",
-          "padding-right": "8px",
-          "padding-bottom": "8px",
-          "padding-left": "8px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "83.5px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "8px",
-          "padding-right": "8px",
-          "padding-bottom": "8px",
-          "padding-left": "8px"
-        },
-        "1440": null
-      },
       "box": {
         "375": {
           "x": 16,
@@ -653,11 +390,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_17_0@375.png"
@@ -686,43 +418,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span> </span>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "8px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "8px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": null
-      },
       "box": {
         "375": {
           "x": 24,
@@ -751,11 +446,6 @@
       },
       "flexDirection": "column",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_18_0@375.png"
@@ -784,43 +474,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "1.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "1.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": null
-      },
       "box": {
         "375": {
           "x": 24,
@@ -849,11 +502,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_19_0@375.png"
@@ -882,43 +530,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "1.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "1.5px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": null
-      },
       "box": {
         "375": {
           "x": 24,
@@ -947,11 +558,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_20_0@375.png"
@@ -980,44 +586,6 @@
       "srcTag": "span",
       "srcOwnText": "Menu",
       "snippet": "<span style=\"display:{{ hideOnMobile }};font-size:12.5px;letter-spacing:.1em\" data-dc-tpl=\"21\">Menu</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1.25px",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1.25px",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "35.5px",
-          "height": "16px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": null
-      },
       "box": {
         "375": null,
         "768": {
@@ -1040,11 +608,6 @@
         "1440": null
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "none",
-        "768": "block",
-        "1440": "none"
-      },
       "layoutChanged375": null,
       "screenshots": {}
     },
@@ -1072,28 +635,6 @@
       "srcTag": "a",
       "srcOwnText": "Sunglasses",
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navSun }}\" sc-camel-on-mouse-enter=\"{{ openMegaSun }}\" sc-camel-on-focus=\"{{ openMegaSun }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 0;border-bottom:1px solid {{ ulSun }};transition:border-color .25s\" data-dc-tpl=\"23\">Sunglasses</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "91.1094px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "0px",
-          "padding-bottom": "6px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": null,
         "768": null,
@@ -1116,11 +657,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
         "1440": "shots/Root_23_0@1440.png"
@@ -1150,28 +686,6 @@
       "srcTag": "a",
       "srcOwnText": "Brands",
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" sc-camel-on-mouse-enter=\"{{ openMegaBrands }}\" sc-camel-on-focus=\"{{ openMegaBrands }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 0;border-bottom:1px solid {{ ulBrands }};transition:border-color .25s\" data-dc-tpl=\"24\">Brands</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "57.6562px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "0px",
-          "padding-bottom": "6px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": null,
         "768": null,
@@ -1194,11 +708,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
         "1440": "shots/Root_24_0@1440.png"
@@ -1228,28 +737,6 @@
       "srcTag": "a",
       "srcOwnText": "Lenses",
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navLenses }}\" sc-camel-on-mouse-enter=\"{{ openMegaLenses }}\" sc-camel-on-focus=\"{{ openMegaLenses }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 0;border-bottom:1px solid {{ ulLenses }};transition:border-color .25s\" data-dc-tpl=\"25\">Lenses</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "52.3906px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "0px",
-          "padding-bottom": "6px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": null,
         "768": null,
@@ -1272,11 +759,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
         "1440": "shots/Root_25_0@1440.png"
@@ -1305,34 +787,6 @@
       "srcTag": "span",
       "srcOwnText": "Glasses",
       "snippet": "<span sc-camel-on-mouse-enter=\"{{ closeMega }}\" style=\"padding:6px 0;display:flex;gap:7px;align-items:center;color:#8B8478\" data-dc-tpl=\"26\">Glasses <span style=\"font-size:9.5px;letter-spacing:.1em;background:var(--accSoft,#EFEAE2);color:var(--accInk,#6F6152);padding:3px 6px\" data-dc-tpl=\"27\">SOON</span></span>",
-      "flow": [
-        "Glasses ",
-        {
-          "key": "Root/27#0"
-        }
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "112.203px",
-          "height": "32.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "0px",
-          "padding-bottom": "6px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": null,
         "768": null,
@@ -1355,11 +809,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": null,
       "screenshots": {
         "1440": "shots/Root_26_0@1440.png"
@@ -1388,28 +837,6 @@
       "srcTag": "span",
       "srcOwnText": "SOON",
       "snippet": "<span style=\"font-size:9.5px;letter-spacing:.1em;background:var(--accSoft,#EFEAE2);color:var(--accInk,#6F6152);padding:3px 6px\" data-dc-tpl=\"27\">SOON</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "9.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.95px",
-          "text-transform": "uppercase",
-          "line-height": "14.25px",
-          "width": "42.9844px",
-          "height": "20.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "3px",
-          "padding-right": "6px",
-          "padding-bottom": "3px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": null,
         "768": null,
@@ -1432,11 +859,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
         "1440": "shots/Root_27_0@1440.png"
@@ -1455,83 +877,30 @@
         "style": "display: flex; align-items: center; gap: 12px; color: rgb(20, 20, 20);"
       },
       "words": "",
-      "allText": "",
+      "allText": "EYE CARE BIRMINGHAM",
       "srcLine": 575,
       "membership": [],
       "srcTag": "a",
       "srcOwnText": "",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHome }}\" aria-label=\"Eye Care Birmingham home\" style=\"display:flex;align-items:center;gap:12px;color:#141414\" data-dc-tpl=\"28\"> <img src=\"assets/ec-logo.png\" alt=\"Eye Care Birmingham\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\"> <img src=\"assets/eye-care-wordmark.png\" alt=\"\"",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "144px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "144px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "144px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHome }}\" aria-label=\"Eye Care Birmingham home\" style=\"display:flex;align-items:center;gap:12px;color:#141414\" data-dc-tpl=\"28\"> <img src=\"assets/ec-logo.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\"> <span style=\"display:flex;flex-direction:colum",
       "box": {
         "375": {
-          "x": 105,
-          "y": 59.8,
-          "w": 144,
-          "h": 26
+          "x": 106.6,
+          "y": 58.5,
+          "w": 142.4,
+          "h": 28.5
         },
         "768": {
-          "x": 312,
-          "y": 59.8,
-          "w": 144,
-          "h": 26
+          "x": 312.8,
+          "y": 58.5,
+          "w": 142.4,
+          "h": 28.5
         },
         "1440": {
-          "x": 648,
-          "y": 59.8,
-          "w": 144,
-          "h": 26
+          "x": 648.8,
+          "y": 58.5,
+          "w": 142.4,
+          "h": 28.5
         }
       },
       "visible": {
@@ -1546,11 +915,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_28_0@375.png",
@@ -1565,7 +929,7 @@
       "template": "Root",
       "tpl": 29,
       "attrs": {
-        "alt": "Eye Care Birmingham",
+        "aria-hidden": "true",
         "style": "display: block; object-fit: contain; transition: width 0.35s, height 0.35s;",
         "srcBasename": "ec-logo.png"
       },
@@ -1575,75 +939,22 @@
       "membership": [],
       "srcTag": "img",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/ec-logo.png\" alt=\"Eye Care Birmingham\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\">",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "40px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "40px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "40px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<img src=\"assets/ec-logo.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ logoW }}\" height=\"{{ logoH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"29\">",
       "box": {
         "375": {
-          "x": 105,
+          "x": 106.6,
           "y": 63.8,
           "w": 40,
           "h": 18
         },
         "768": {
-          "x": 312,
+          "x": 312.8,
           "y": 63.8,
           "w": 40,
           "h": 18
         },
         "1440": {
-          "x": 648,
+          "x": 648.8,
           "y": 63.8,
           "w": 40,
           "h": 18
@@ -1661,11 +972,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_29_0@1440.png"
@@ -1675,92 +981,91 @@
       "key": "Root/30#0",
       "parentKey": "Root/28#0",
       "depth": 3,
-      "tag": "img",
+      "tag": "span",
       "template": "Root",
       "tpl": 30,
       "attrs": {
-        "aria-hidden": "true",
-        "style": "display: block; object-fit: contain; transition: width 0.35s, height 0.35s;",
-        "srcBasename": "eye-care-wordmark.png"
+        "style": "display: flex; flex-direction: column; line-height: 1;"
       },
       "words": "",
-      "allText": "",
+      "allText": "EYE CARE BIRMINGHAM",
       "srcLine": 577,
       "membership": [],
-      "srcTag": "img",
+      "srcTag": "span",
       "srcOwnText": "",
-      "snippet": "<img src=\"assets/eye-care-wordmark.png\" alt=\"\" aria-hidden=\"true\" width=\"{{ wordmarkW }}\" height=\"{{ wordmarkH }}\" style=\"display:block;object-fit:contain;transition:width .35s,height .35s\" data-dc-tpl=\"30\">",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "92px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "92px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "24px",
-          "width": "92px",
-          "height": "26px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"display:flex;flex-direction:column;line-height:1\" data-dc-tpl=\"30\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:{{ wordmarkSize }};letter-spacing:.14em;transition:font-size .35s\" data-dc-tpl=\"31\">EYE CARE</span> <span style=\"font-size:9.5px;letter-spacing:.32em;color:#6B655E;margin-top:4px\" data-dc-tpl=\"32\">BIRMINGHAM</span> </span>",
       "box": {
         "375": {
-          "x": 157,
-          "y": 59.8,
-          "w": 92,
-          "h": 26
+          "x": 158.6,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 28.5
         },
         "768": {
-          "x": 364,
-          "y": 59.8,
-          "w": 92,
-          "h": 26
+          "x": 364.8,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 28.5
         },
         "1440": {
-          "x": 700,
-          "y": 59.8,
-          "w": 92,
-          "h": 26
+          "x": 700.8,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 28.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_30_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/31#0",
+      "parentKey": "Root/30#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 31,
+      "attrs": {
+        "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 15px; letter-spacing: 0.14em; transition: font-size 0.35s;"
+      },
+      "words": "EYE CARE",
+      "allText": "EYE CARE",
+      "srcLine": 578,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "EYE CARE",
+      "snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:{{ wordmarkSize }};letter-spacing:.14em;transition:font-size .35s\" data-dc-tpl=\"31\">EYE CARE</span>",
+      "box": {
+        "375": {
+          "x": 158.6,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 15
+        },
+        "768": {
+          "x": 364.8,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 15
+        },
+        "1440": {
+          "x": 700.8,
+          "y": 58.5,
+          "w": 90.4,
+          "h": 15
         }
       },
       "visible": {
@@ -1775,109 +1080,82 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_30_0@1440.png"
+        "1440": "shots/Root_31_0@1440.png"
       }
     },
     {
-      "key": "Root/31#0",
+      "key": "Root/32#0",
+      "parentKey": "Root/30#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 32,
+      "attrs": {
+        "style": "font-size: 9.5px; letter-spacing: 0.32em; color: rgb(107, 101, 94); margin-top: 4px;"
+      },
+      "words": "BIRMINGHAM",
+      "allText": "BIRMINGHAM",
+      "srcLine": 579,
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "BIRMINGHAM",
+      "snippet": "<span style=\"font-size:9.5px;letter-spacing:.32em;color:#6B655E;margin-top:4px\" data-dc-tpl=\"32\">BIRMINGHAM</span>",
+      "box": {
+        "375": {
+          "x": 158.6,
+          "y": 77.5,
+          "w": 90.4,
+          "h": 9.5
+        },
+        "768": {
+          "x": 364.8,
+          "y": 77.5,
+          "w": 90.4,
+          "h": 9.5
+        },
+        "1440": {
+          "x": 700.8,
+          "y": 77.5,
+          "w": 90.4,
+          "h": 9.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_32_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/33#0",
       "parentKey": "Root/14#0",
       "depth": 2,
       "tag": "div",
       "template": "Root",
-      "tpl": 31,
+      "tpl": 33,
       "attrs": {
         "style": "display: flex; justify-content: flex-end; gap: 6px; align-items: center; font-size: 13.5px; letter-spacing: 0.06em; text-transform: uppercase;"
       },
       "words": "",
       "allText": "0121 729 8233 About Eye Care Help Bag 0",
-      "srcLine": 579,
+      "srcLine": 582,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
-      "snippet": "<div style=\"display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"31\"> <sc-if value=\"{{ navFull }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"32\"> <a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;p",
-      "flow": [
-        "  ",
-        {
-          "key": "Root/33#0"
-        },
-        " ",
-        {
-          "key": "Root/36#0"
-        },
-        " ",
-        {
-          "key": "Root/37#0"
-        },
-        "  ",
-        {
-          "key": "Root/38#0"
-        },
-        " ",
-        {
-          "key": "Root/44#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "94px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "272px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "608px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<div style=\"display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"33\"> <sc-if value=\"{{ navFull }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"34\"> <a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;p",
       "box": {
         "375": {
           "x": 257,
@@ -1886,15 +1164,15 @@
           "h": 44
         },
         "768": {
-          "x": 472,
+          "x": 471.2,
           "y": 50.8,
-          "w": 272,
+          "w": 272.8,
           "h": 44
         },
         "1440": {
-          "x": 808,
+          "x": 807.2,
           "y": 50.8,
-          "w": 608,
+          "w": 608.8,
           "h": 44
         }
       },
@@ -1910,24 +1188,19 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_31_0@375.png",
-        "1440": "shots/Root_31_0@1440.png"
+        "375": "shots/Root_33_0@375.png",
+        "1440": "shots/Root_33_0@1440.png"
       }
     },
     {
-      "key": "Root/33#0",
-      "parentKey": "Root/31#0",
+      "key": "Root/35#0",
+      "parentKey": "Root/33#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 33,
+      "tpl": 35,
       "attrs": {
         "href": "tel:01217298233",
         "aria-label": "Call the clinic",
@@ -1936,46 +1209,17 @@
       },
       "words": "0121 729 8233",
       "allText": "0121 729 8233",
-      "srcLine": 581,
+      "srcLine": 584,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ navFull }}",
-          "tpl": "32"
+          "tpl": "34"
         }
       ],
       "srcTag": "a",
       "srcOwnText": "{{ phone }}",
-      "snippet": "<a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;padding:6px 10px;font-size:12.5px;letter-spacing:.04em;text-transform:none;color:#4A453E;white-space:nowrap\" style-hover=\"color:#141414\" data-dc-tpl=\"33\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC",
-      "flow": [
-        " ",
-        {
-          "key": "Root/34#0"
-        },
-        " 0121 729 8233 "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "125.562px",
-          "height": "30.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "10px",
-          "padding-bottom": "6px",
-          "padding-left": "10px"
-        }
-      },
+      "snippet": "<a href=\"{{ phoneHref }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" aria-label=\"Call the clinic\" style=\"display: {{ phoneDisplay }};align-items:center;gap:8px;padding:6px 10px;font-size:12.5px;letter-spacing:.04em;text-transform:none;color:#4A453E;white-space:nowrap\" style-hover=\"color:#141414\" data-dc-tpl=\"35\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC",
       "box": {
         "375": null,
         "768": null,
@@ -1998,61 +1242,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_33_0@1440.png"
+        "1440": "shots/Root_35_0@1440.png"
       }
     },
     {
-      "key": "Root/34#0",
-      "parentKey": "Root/33#0",
+      "key": "Root/36#0",
+      "parentKey": "Root/35#0",
       "depth": 4,
       "tag": "svg",
       "template": "Root",
-      "tpl": 34,
+      "tpl": 36,
       "attrs": {
         "aria-hidden": "true",
         "viewBox": "0 0 24 24"
       },
       "words": "",
       "allText": "",
-      "srcLine": 582,
+      "srcLine": 585,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ navFull }}",
-          "tpl": "32"
+          "tpl": "34"
         }
       ],
       "srcTag": "svg",
       "srcOwnText": "",
-      "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"34\"><path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z\" data-dc-tpl=\"35\"></path></svg>",
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"36\"><path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z\" data-dc-tpl=\"37\"></path></svg>",
       "box": {
         "375": null,
         "768": null,
@@ -2075,58 +1293,32 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_34_0@1440.png"
+        "1440": "shots/Root_36_0@1440.png"
       }
     },
     {
-      "key": "Root/35#0",
-      "parentKey": "Root/34#0",
+      "key": "Root/37#0",
+      "parentKey": "Root/36#0",
       "depth": 5,
       "tag": "path",
       "template": "Root",
-      "tpl": 35,
+      "tpl": 37,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 582,
+      "srcLine": 585,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ navFull }}",
-          "tpl": "32"
+          "tpl": "34"
         }
       ],
       "srcTag": "path",
       "srcOwnText": "",
-      "snippet": "<path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z\" data-dc-tpl=\"35\"></path>",
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 4 5.2 2 2 0 0 1 6 3z\" data-dc-tpl=\"37\"></path>",
       "box": {
         "375": null,
         "768": null,
@@ -2149,23 +1341,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_35_0@1440.png"
+        "1440": "shots/Root_37_0@1440.png"
       }
     },
     {
-      "key": "Root/36#0",
-      "parentKey": "Root/31#0",
+      "key": "Root/38#0",
+      "parentKey": "Root/33#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 36,
+      "tpl": 38,
       "attrs": {
         "href": "#",
         "class": "scp2",
@@ -2173,39 +1360,17 @@
       },
       "words": "About Eye Care",
       "allText": "About Eye Care",
-      "srcLine": 585,
+      "srcLine": 588,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ navFull }}",
-          "tpl": "32"
+          "tpl": "34"
         }
       ],
       "srcTag": "a",
       "srcOwnText": "About Eye Care",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" style=\"padding:6px 10px;border-bottom:1px solid transparent;white-space:nowrap\" style-hover=\"border-bottom:1px solid #141414\" data-dc-tpl=\"36\">About Eye Care</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "141.703px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "10px",
-          "padding-bottom": "6px",
-          "padding-left": "10px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" sc-camel-on-mouse-enter=\"{{ closeMega }}\" style=\"padding:6px 10px;border-bottom:1px solid transparent;white-space:nowrap\" style-hover=\"border-bottom:1px solid #141414\" data-dc-tpl=\"38\">About Eye Care</a>",
       "box": {
         "375": null,
         "768": null,
@@ -2228,62 +1393,35 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_36_0@1440.png"
+        "1440": "shots/Root_38_0@1440.png"
       }
     },
     {
-      "key": "Root/37#0",
-      "parentKey": "Root/31#0",
+      "key": "Root/39#0",
+      "parentKey": "Root/33#0",
       "depth": 3,
       "tag": "a",
       "template": "Root",
-      "tpl": 37,
+      "tpl": 39,
       "attrs": {
         "href": "#",
         "style": "padding: 6px 10px; border-bottom: 1px solid transparent; white-space: nowrap;"
       },
       "words": "Help",
       "allText": "Help",
-      "srcLine": 586,
+      "srcLine": 589,
       "membership": [
         {
           "kind": "sc-if",
           "value": "{{ navFull }}",
-          "tpl": "32"
+          "tpl": "34"
         }
       ],
       "srcTag": "a",
       "srcOwnText": "Help",
-      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navHelp }}\" sc-camel-on-mouse-enter=\"{{ openMegaHelp }}\" sc-camel-on-focus=\"{{ openMegaHelp }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 10px;border-bottom:1px solid {{ ulHelp }};white-space:nowrap\" data-dc-tpl=\"37\">Help</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": null,
-        "768": null,
-        "1440": {
-          "font-size": "13.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.81px",
-          "text-transform": "uppercase",
-          "line-height": "20.25px",
-          "width": "56.375px",
-          "height": "33.25px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "10px",
-          "padding-bottom": "6px",
-          "padding-left": "10px"
-        }
-      },
+      "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ navHelp }}\" sc-camel-on-mouse-enter=\"{{ openMegaHelp }}\" sc-camel-on-focus=\"{{ openMegaHelp }}\" sc-camel-on-mouse-leave=\"{{ cancelMega }}\" style=\"padding:6px 10px;border-bottom:1px solid {{ ulHelp }};white-space:nowrap\" data-dc-tpl=\"39\">Help</a>",
       "box": {
         "375": null,
         "768": null,
@@ -2306,23 +1444,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": null,
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_37_0@1440.png"
+        "1440": "shots/Root_39_0@1440.png"
       }
     },
     {
-      "key": "Root/38#0",
-      "parentKey": "Root/31#0",
+      "key": "Root/40#0",
+      "parentKey": "Root/33#0",
       "depth": 3,
       "tag": "button",
       "template": "Root",
-      "tpl": 38,
+      "tpl": 40,
       "attrs": {
         "aria-label": "Sign in",
         "title": "Sign in",
@@ -2331,64 +1464,11 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 588,
+      "srcLine": 591,
       "membership": [],
       "srcTag": "button",
       "srcOwnText": "",
-      "snippet": "<button sc-camel-on-click=\"{{ openAccount }}\" aria-label=\"{{ accountLabel }}\" title=\"{{ accountLabel }}\" style=\"position:relative;background:none;border:0;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#141414;transition:background .25s\" style-hover=\"background:#EFEAE2\" data-dc-tpl=\"38\"> <svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 ",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "44px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "44px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "44px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
+      "snippet": "<button sc-camel-on-click=\"{{ openAccount }}\" aria-label=\"{{ accountLabel }}\" title=\"{{ accountLabel }}\" style=\"position:relative;background:none;border:0;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#141414;transition:background .25s\" style-hover=\"background:#EFEAE2\" data-dc-tpl=\"40\"> <svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 ",
       "box": {
         "375": {
           "x": 257,
@@ -2421,88 +1501,30 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_38_0@375.png",
-        "1440": "shots/Root_38_0@1440.png"
+        "375": "shots/Root_40_0@375.png",
+        "1440": "shots/Root_40_0@1440.png"
       }
     },
     {
-      "key": "Root/39#0",
-      "parentKey": "Root/38#0",
+      "key": "Root/41#0",
+      "parentKey": "Root/40#0",
       "depth": 4,
       "tag": "svg",
       "template": "Root",
-      "tpl": 39,
+      "tpl": 41,
       "attrs": {
         "aria-hidden": "true",
         "viewBox": "0 0 24 24"
       },
       "words": "",
       "allText": "",
-      "srcLine": 589,
+      "srcLine": 592,
       "membership": [],
       "srcTag": "svg",
       "srcOwnText": "",
-      "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"39\"><circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"40\"></circle><path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\" data-dc-tpl=\"41\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "20px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "20px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "20px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"41\"><circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"42\"></circle><path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\" data-dc-tpl=\"43\"></path></svg>",
       "box": {
         "375": {
           "x": 269,
@@ -2535,84 +1557,26 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_39_0@1440.png"
+        "1440": "shots/Root_41_0@1440.png"
       }
     },
     {
-      "key": "Root/40#0",
-      "parentKey": "Root/39#0",
+      "key": "Root/42#0",
+      "parentKey": "Root/41#0",
       "depth": 5,
       "tag": "circle",
       "template": "Root",
-      "tpl": 40,
+      "tpl": 42,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 589,
+      "srcLine": 592,
       "membership": [],
       "srcTag": "circle",
       "srcOwnText": "",
-      "snippet": "<circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"40\"></circle>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"42\"></circle>",
       "box": {
         "375": {
           "x": 275.7,
@@ -2645,84 +1609,26 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_40_0@1440.png"
+        "1440": "shots/Root_42_0@1440.png"
       }
     },
     {
-      "key": "Root/41#0",
-      "parentKey": "Root/39#0",
+      "key": "Root/43#0",
+      "parentKey": "Root/41#0",
       "depth": 5,
       "tag": "path",
       "template": "Root",
-      "tpl": 41,
+      "tpl": 43,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 589,
+      "srcLine": 592,
       "membership": [],
       "srcTag": "path",
       "srcOwnText": "",
-      "snippet": "<path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\" data-dc-tpl=\"41\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<path d=\"M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8\" data-dc-tpl=\"43\"></path>",
       "box": {
         "375": {
           "x": 272.3,
@@ -2755,23 +1661,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
-        "1440": "shots/Root_41_0@1440.png"
+        "1440": "shots/Root_43_0@1440.png"
       }
     },
     {
-      "key": "Root/44#0",
-      "parentKey": "Root/31#0",
+      "key": "Root/46#0",
+      "parentKey": "Root/33#0",
       "depth": 3,
       "tag": "button",
       "template": "Root",
-      "tpl": 44,
+      "tpl": 46,
       "attrs": {
         "aria-label": "Bag",
         "class": "scp4",
@@ -2779,79 +1680,11 @@
       },
       "words": "",
       "allText": "Bag 0",
-      "srcLine": 592,
+      "srcLine": 595,
       "membership": [],
       "srcTag": "button",
       "srcOwnText": "",
       "snippet": "<button sc-camel-on-click=\"{{ openBag }}\" aria-label=\"Bag\" style=\"position:relative;background:none;border:1px solid #141414;border-radius:999px;padding: {{ bagPad }};min-height:38px;min-width:44px;justify-content:center;display:flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color",
-      "flow": [
-        " ",
-        {
-          "key": "Root/45#0"
-        },
-        " ",
-        {
-          "key": "Root/46#0"
-        },
-        " ",
-        {
-          "key": "Root/49#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "44px",
-          "height": "38px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "11px",
-          "padding-bottom": "0px",
-          "padding-left": "11px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "86.7188px",
-          "height": "38px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "14px",
-          "padding-bottom": "0px",
-          "padding-left": "14px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "86.7188px",
-          "height": "38px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "14px",
-          "padding-bottom": "0px",
-          "padding-left": "14px"
-        }
-      },
       "box": {
         "375": {
           "x": 307,
@@ -2884,88 +1717,29 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_44_0@375.png",
-        "1440": "shots/Root_44_0@1440.png"
+        "375": "shots/Root_46_0@375.png",
+        "1440": "shots/Root_46_0@1440.png"
       }
     },
     {
-      "key": "Root/45#0",
-      "parentKey": "Root/44#0",
+      "key": "Root/47#0",
+      "parentKey": "Root/46#0",
       "depth": 4,
       "tag": "span",
       "template": "Root",
-      "tpl": 45,
+      "tpl": 47,
       "attrs": {
         "style": "display: inline;"
       },
       "words": "Bag",
       "allText": "Bag",
-      "srcLine": 593,
+      "srcLine": 596,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Bag",
-      "snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"45\">Bag</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "28.5px",
-          "height": "16px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "28.5px",
-          "height": "16px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"47\">Bag</span>",
       "box": {
         "375": null,
         "768": {
@@ -2993,23 +1767,18 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "none",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": null,
       "screenshots": {
-        "1440": "shots/Root_45_0@1440.png"
+        "1440": "shots/Root_47_0@1440.png"
       }
     },
     {
-      "key": "Root/46#0",
-      "parentKey": "Root/44#0",
+      "key": "Root/48#0",
+      "parentKey": "Root/46#0",
       "depth": 4,
       "tag": "svg",
       "template": "Root",
-      "tpl": 46,
+      "tpl": 48,
       "attrs": {
         "aria-hidden": "true",
         "viewBox": "0 0 24 24",
@@ -3017,64 +1786,11 @@
       },
       "words": "",
       "allText": "",
-      "srcLine": 594,
+      "srcLine": 597,
       "membership": [],
       "srcTag": "svg",
       "srcOwnText": "",
-      "snippet": "<svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"display: {{ bagIconDisplay }}\" data-dc-tpl=\"46\"><path d=\"M5 8h14l-1 12H6z\" data-dc-tpl=\"47\"></path><path d=\"M9 8V6a3 3 0 0 1 6 0v2\" data-dc-tpl=\"48\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "18px",
-          "height": "18px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"display: {{ bagIconDisplay }}\" data-dc-tpl=\"48\"><path d=\"M5 8h14l-1 12H6z\" data-dc-tpl=\"49\"></path><path d=\"M9 8V6a3 3 0 0 1 6 0v2\" data-dc-tpl=\"50\"></path></svg>",
       "box": {
         "375": {
           "x": 320,
@@ -3097,84 +1813,26 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "none",
-        "1440": "none"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_46_0@375.png"
+        "375": "shots/Root_48_0@375.png"
       }
     },
     {
-      "key": "Root/47#0",
-      "parentKey": "Root/46#0",
+      "key": "Root/49#0",
+      "parentKey": "Root/48#0",
       "depth": 5,
       "tag": "path",
       "template": "Root",
-      "tpl": 47,
+      "tpl": 49,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 594,
+      "srcLine": 597,
       "membership": [],
       "srcTag": "path",
       "srcOwnText": "",
-      "snippet": "<path d=\"M5 8h14l-1 12H6z\" data-dc-tpl=\"47\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<path d=\"M5 8h14l-1 12H6z\" data-dc-tpl=\"49\"></path>",
       "box": {
         "375": {
           "x": 323.8,
@@ -3197,84 +1855,26 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_47_0@375.png"
+        "375": "shots/Root_49_0@375.png"
       }
     },
     {
-      "key": "Root/48#0",
-      "parentKey": "Root/46#0",
+      "key": "Root/50#0",
+      "parentKey": "Root/48#0",
       "depth": 5,
       "tag": "path",
       "template": "Root",
-      "tpl": 48,
+      "tpl": 50,
       "attrs": {},
       "words": "",
       "allText": "",
-      "srcLine": 594,
+      "srcLine": 597,
       "membership": [],
       "srcTag": "path",
       "srcOwnText": "",
-      "snippet": "<path d=\"M9 8V6a3 3 0 0 1 6 0v2\" data-dc-tpl=\"48\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
+      "snippet": "<path d=\"M9 8V6a3 3 0 0 1 6 0v2\" data-dc-tpl=\"50\"></path>",
       "box": {
         "375": {
           "x": 326.8,
@@ -3297,90 +1897,28 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_48_0@375.png"
+        "375": "shots/Root_50_0@375.png"
       }
     },
     {
-      "key": "Root/49#0",
-      "parentKey": "Root/44#0",
+      "key": "Root/51#0",
+      "parentKey": "Root/46#0",
       "depth": 4,
       "tag": "span",
       "template": "Root",
-      "tpl": 49,
+      "tpl": 51,
       "attrs": {
         "style": "position: static; top: -6px; right: -6px; display: inline-flex; min-width: 20px; height: 20px; border-radius: 999px; background: var(--acc,#9C8B78); color: rgb(255, 255, 255); font-size: 11px; align-items: center; justify-content: center; padding: 0px 6px; animation: 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0s 1 normal none running pop;"
       },
       "words": "0",
       "allText": "0",
-      "srcLine": 595,
+      "srcLine": 598,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "{{ bagCount }}",
-      "snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var(--acc,#9C8B78);color:#fff;font-size:11px;align-items:center;justify-content:center;padding:0 6px;animation:pop .5s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"49\">{{ bagCount }}</span>",
-      "flow": [
-        "0"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "11px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "20.2188px",
-          "height": "20px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "6px",
-          "padding-bottom": "0px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "11px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "20.2188px",
-          "height": "20px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "6px",
-          "padding-bottom": "0px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "11px",
-          "font-weight": "400",
-          "letter-spacing": "1px",
-          "text-transform": "uppercase",
-          "line-height": "normal",
-          "width": "20.2188px",
-          "height": "20px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "6px",
-          "padding-bottom": "0px",
-          "padding-left": "6px"
-        }
-      },
+      "snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var(--acc,#9C8B78);color:#fff;font-size:11px;align-items:center;justify-content:center;padding:0 6px;animation:pop .5s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"51\">{{ bagCount }}</span>",
       "box": {
         "375": {
           "x": 335.8,
@@ -3413,15 +1951,10 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
-        "375": "shots/Root_49_0@375.png",
-        "1440": "shots/Root_49_0@1440.png"
+        "375": "shots/Root_51_0@375.png",
+        "1440": "shots/Root_51_0@1440.png"
       }
     },
     {
@@ -3446,65 +1979,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div class=\"sgs-trust-ticker\" style=\"background:#141414;color:#FAF8F5;font-size:12.5px;letter-spacing:.04em;padding:11px 0;overflow:hidden\" data-dc-tpl=\"7\"> <div style=\"display: {{ tickerDisplay }};width: {{ tickerW }};animation: {{ tickerAnim }};max-width:1440px;margin:0 auto;justify-content: {{ tickerJustify }};flex-wrap: {{ tickerWrap }};gap: {{ tickerGap }};padding: {{ tickerPad }}\" style-hove",
-      "flow": [
-        " ",
-        {
-          "key": "Root/8#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "375px",
-          "height": "40.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "11px",
-          "padding-right": "0px",
-          "padding-bottom": "11px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "768px",
-          "height": "40.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "11px",
-          "padding-right": "0px",
-          "padding-bottom": "11px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "1440px",
-          "height": "40.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "11px",
-          "padding-right": "0px",
-          "padding-bottom": "11px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 0,
@@ -3537,11 +2011,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_7_0@375.png",
@@ -3566,81 +2035,9 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display: {{ tickerDisplay }};width: {{ tickerW }};animation: {{ tickerAnim }};max-width:1440px;margin:0 auto;justify-content: {{ tickerJustify }};flex-wrap: {{ tickerWrap }};gap: {{ tickerGap }};padding: {{ tickerPad }}\" style-hover=\"animation-play-state:paused\" data-dc-tpl=\"8\"> <sc-for list=\"{{ ticker }}\" as=\"t\" hint-placeholder-count=\"4\" data-dc-tpl=\"9\"> <span style=\"padding: {{ tick",
-      "flow": [
-        "  ",
-        {
-          "key": "Root/10#0"
-        },
-        "  ",
-        {
-          "key": "Root/10#1"
-        },
-        "  ",
-        {
-          "key": "Root/10#2"
-        },
-        "  ",
-        {
-          "key": "Root/10#3"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "1440px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "768px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "1440px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "24px",
-          "padding-bottom": "0px",
-          "padding-left": "24px"
-        }
-      },
       "box": {
         "375": {
-          "x": -136.8,
+          "x": -137.2,
           "y": 11,
           "w": 1440,
           "h": 18.8
@@ -3670,11 +2067,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_8_0@375.png",
@@ -3705,70 +2097,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#0"
-        },
-        " 100% genuine, supplied direct by the brands "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "325.703px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "285.703px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "285.703px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": -136.8,
+          "x": -137.2,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -3798,11 +2129,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_0@375.png",
@@ -3834,62 +2160,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": -116.8,
+          "x": -117.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3919,11 +2192,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_0@375.png",
@@ -3952,62 +2220,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": -114.3,
+          "x": -114.7,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -4037,11 +2252,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_12_0@1440.png"
@@ -4071,70 +2281,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#1"
-        },
-        " Free UK delivery over £75, or collect in Birmingham "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "370.672px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "330.672px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "330.672px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 188.9,
+          "x": 188.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -4164,11 +2313,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_1@375.png",
@@ -4200,62 +2344,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 208.9,
+          "x": 208.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -4285,11 +2376,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_1@375.png",
@@ -4318,62 +2404,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 209.5,
+          "x": 209.1,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -4403,11 +2436,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_12_1@1440.png"
@@ -4437,54 +2465,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#2"
-        },
-        " Prescription lenses glazed here in 7–10 days "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "325.594px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "285.594px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 559.6,
+          "x": 559.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -4509,11 +2492,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_2@375.png",
@@ -4545,46 +2523,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 579.6,
+          "x": 579.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -4609,11 +2550,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_2@375.png",
@@ -4642,46 +2578,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 580.8,
+          "x": 580.4,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -4706,11 +2605,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_12_2@1440.png"
@@ -4740,54 +2634,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#3"
-        },
-        " 30 days to return, free adjustments for life "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "319.062px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "279.062px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 885.2,
+          "x": 884.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -4812,11 +2661,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_3@375.png",
@@ -4848,46 +2692,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 905.2,
+          "x": 904.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -4912,11 +2719,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_3@375.png",
@@ -4945,46 +2747,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
-          "x": 907,
+          "x": 906.6,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3
@@ -5009,11 +2774,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_12_3@1440.png"
@@ -5043,38 +2803,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#4"
-        },
-        " 100% genuine, supplied direct by the brands "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "325.703px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1204.2,
+          "x": 1203.8,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -5095,11 +2826,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_4@375.png"
@@ -5130,30 +2856,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1224.2,
+          "x": 1223.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -5174,11 +2879,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_4@375.png"
@@ -5206,30 +2906,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1226.7,
+          "x": 1226.3,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -5250,11 +2929,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_4@375.png"
@@ -5284,38 +2958,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#5"
-        },
-        " Free UK delivery over £75, or collect in Birmingham "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "370.672px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1529.9,
+          "x": 1529.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -5336,11 +2981,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_5@375.png"
@@ -5371,30 +3011,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1549.9,
+          "x": 1549.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -5415,11 +3034,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_5@375.png"
@@ -5447,30 +3061,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1550.6,
+          "x": 1550.2,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -5491,11 +3084,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_5@375.png"
@@ -5525,38 +3113,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#6"
-        },
-        " Prescription lenses glazed here in 7–10 days "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "325.594px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1900.6,
+          "x": 1900.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -5577,11 +3136,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_6@375.png"
@@ -5612,30 +3166,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1920.6,
+          "x": 1920.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -5656,11 +3189,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_6@375.png"
@@ -5688,30 +3216,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 1921.9,
+          "x": 1921.5,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -5732,11 +3239,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_6@375.png"
@@ -5766,38 +3268,9 @@
       "srcTag": "span",
       "srcOwnText": "{{ t.text }}",
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
-      "flow": [
-        " ",
-        {
-          "key": "Root/11#7"
-        },
-        " 30 days to return, free adjustments for life "
-      ],
-      "textLeads": false,
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "319.062px",
-          "height": "18.75px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "20px",
-          "padding-bottom": "0px",
-          "padding-left": "20px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 2226.2,
+          "x": 2225.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -5818,11 +3291,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "flex",
-        "768": null,
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_7@375.png"
@@ -5853,30 +3321,9 @@
       "srcTag": "svg",
       "srcOwnText": "",
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "15px",
-          "height": "15px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 2246.2,
+          "x": 2245.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -5897,11 +3344,6 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "block",
-        "768": null,
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_7@375.png"
@@ -5929,30 +3371,9 @@
       "srcTag": "path",
       "srcOwnText": "",
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
-      "resolved": {
-        "375": {
-          "font-size": "12.5px",
-          "font-weight": "400",
-          "letter-spacing": "0.5px",
-          "text-transform": "none",
-          "line-height": "18.75px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": null,
-        "1440": null
-      },
       "box": {
         "375": {
-          "x": 2248.1,
+          "x": 2247.7,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3
@@ -5973,39 +3394,10 @@
       },
       "flexDirection": "row",
       "layoutChanged": true,
-      "displayAt": {
-        "375": "inline",
-        "768": null,
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_7@375.png"
       }
     }
-  ],
-  "sources": {
-    "files": {
-      "Eye Care Birmingham.dc.html": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d",
-      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
-      "README.md": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8",
-      "animations.json": "4d482eaddd75a737f7892b582c127792869a95addf11632ff77af05c2a5e7616",
-      "assets/ec-logo.png": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
-      "assets/eye-care-wordmark.png": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012",
-      "assets/google-g.svg": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875",
-      "assets/instagram.svg": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38",
-      "assets/whatsapp-deep.svg": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0",
-      "assets/whatsapp-green.svg": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a",
-      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
-      "assets/whatsapp-white.svg": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699",
-      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
-      "surfaces.json": "cafeb0dd42a0e3ebef175d71f3f599973c122d17ae33fd2c58eb684fadc99386",
-      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
-      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
-      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
-    },
-    "route": {
-      "commit": "5e08045ecee496f0204a71ed4bcf94973557144b"
-    }
-  }
+  ]
 }

@@ -2,8 +2,7 @@
 	{
 		"name": "sgs/form",
 		"attributes": {
-			"layout": "stack",
-			"anchor": "form-send"
+			"layout": "stack"
 		},
 		"draftRef": {
 			"tpl": "Root/44#0"
@@ -20,8 +19,7 @@
 			{
 				"name": "sgs/heading",
 				"attributes": {
-					"content": "Send a message",
-					"level": "h2"
+					"content": "Send a message"
 				},
 				"draftRef": {
 					"tpl": "Root/45#0"
@@ -76,25 +74,9 @@
 							"textHash": "1505",
 							"line": 50
 						},
-						"innerBlocks": [],
-						"draftSlots": {
-							".sgs-form-field__group > .sgs-container": {
-								"tpl": "Root/48#0"
-							},
-							".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(1) > .sgs-form-tile__label": {
-								"tpl": "Root/50#0"
-							},
-							".sgs-form-field__group > .sgs-container > .sgs-form-tile:nth-of-type(2) > .sgs-form-tile__label": {
-								"tpl": "Root/50#1"
-							}
-						}
+						"innerBlocks": []
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/48#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -172,15 +154,7 @@
 							}
 						}
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/53#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root/55#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/form-field-text",
@@ -207,22 +181,6 @@
 						"tpl": "Root/58#0"
 					}
 				}
-			},
-			{
-				"name": "sgs/form-field-text",
-				"attributes": {
-					"label": "How many cookies, roughly?"
-				},
-				"innerBlocks": [],
-				"hiddenControl": "Contact/62"
-			},
-			{
-				"name": "sgs/form-field-date",
-				"attributes": {
-					"label": "Date needed"
-				},
-				"innerBlocks": [],
-				"hiddenControl": "Contact/64"
 			},
 			{
 				"name": "sgs/form-field-textarea",
@@ -269,12 +227,7 @@
 					"textHash": "57421940",
 					"line": 59
 				},
-				"innerBlocks": [],
-				"draftSlots": {
-					".sgs-button__label": {
-						"tpl": "Root/67#0"
-					}
-				}
+				"innerBlocks": []
 			}
 		]
 	}

@@ -41,8 +41,7 @@ function recordedAt( catalogue, site, path ) {
 
 // For every product and product-category row of `rows`, each of its menu entries resolved:
 //   { links: { <row key>: [ { menu, position, parentItem, text, url } ] }, pending: [ { rowKey, menu, text, why } ] }.
-// `url` is the product's recorded permalink with the draft's query; `pending` entries have none yet, and one waiting for the
-// catalogue step carries `needs: 'catalogue'` (lib/site-build-menus.mjs::desiredMenus stops the plan on it). `ctx` is
+// `url` is the product's recorded permalink with the draft's query; `pending` entries have none yet. `ctx` is
 // lib/draft-link.mjs::draftLinksFor's answer (null: no page map, so every entry is pending).
 export function menuLinksFor( { rows, ctx, catalogue, site } ) {
 	const links = {};
@@ -52,7 +51,7 @@ export function menuLinksFor( { rows, ctx, catalogue, site } ) {
 		for ( const entry of row.menus ) {
 			const found = ctx ? draftItem( ctx, entry ) : null;
 			const text = found?.item.label || null;
-			const wait = ( why, needs = null ) => pending.push( { rowKey: key, menu: entry.menu, text, why, ...( needs ? { needs } : {} ) } );
+			const wait = ( why ) => pending.push( { rowKey: key, menu: entry.menu, text, why } );
 			if ( ! found ) {
 				wait( `the draft's ${ entry.menu } menu has no item at position ${ entry.position }; regenerate the page map (intake.mjs --page-map)` );
 				continue;
@@ -70,7 +69,7 @@ export function menuLinksFor( { rows, ctx, catalogue, site } ) {
 			const { path, search, fragment } = parts( hit.value, hit.dropped );
 			const product = recordedAt( catalogue, site, path );
 			if ( ! product ) {
-				wait( `the product at ${ path } is not recorded as built on ${ site } (catalogue.json sites.${ site }); run site-build.mjs --catalogue --apply first, then the menus`, 'catalogue' );
+				wait( `the product at ${ path } is not recorded as built on ${ site } (catalogue.json sites.${ site }); run site-build.mjs --catalogue --apply first, then the menus` );
 				continue;
 			}
 			links[ key ] = [ ...( links[ key ] || [] ), { menu: entry.menu, position: entry.position, parentItem: entry.parentItem || null, text, url: `${ product.permalink.replace( /[?#].*$/, '' ) }${ search }${ fragment }` } ];

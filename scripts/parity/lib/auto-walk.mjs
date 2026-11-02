@@ -126,30 +126,7 @@ export async function markClipped( ctx, shotPath, auto, fullPage ) {
 	}
 	const page = await ctx.newPage();
 	const uri = 'data:image/png;base64,' + fs.readFileSync( shotPath ).toString( 'base64' );
-	let cut;
-	try {
-		cut = await readCuts( page, uri, checks, auto, fullPage );
-	} catch ( e ) {
-		// A screenshot the browser cannot decode (a full page tens of thousands of pixels tall) leaves the clip check
-		// unread for this shot: its controls carry no `cut`, so the comparison skips them, and the reason is kept.
-		checks.forEach( ( c ) => delete auto.controls[ c.i ].cut );
-		auto.clipUnread = `${ shotPath }: ${ String( e.message || e ).split( /\r?\n/ )[ 0 ] }`;
-		console.warn( `clip check unread: ${ auto.clipUnread }` );
-		return;
-	} finally {
-		await page.close();
-	}
-	checks.forEach( ( c, k ) => {
-		if ( cut[ k ] ) {
-			auto.controls[ c.i ].cut = c.side;
-		}
-	} );
-}
-
-// The pixel reads markClipped needs, in a page that decodes the screenshot: true per check where the last column inside
-// the clipping edge holds ink over the control's rows.
-function readCuts( page, uri, checks, auto, fullPage ) {
-	return page.evaluate( async ( [ src, list, dpr, ox, oy ] ) => {
+	const cut = await page.evaluate( async ( [ src, list, dpr, ox, oy ] ) => {
 		const img = new Image();
 		img.src = src;
 		await img.decode();
@@ -181,6 +158,12 @@ function readCuts( page, uri, checks, auto, fullPage ) {
 			return ink >= 2 * dpr;
 		} );
 	}, [ uri, checks, auto.dpr, fullPage ? auto.scrollX : 0, fullPage ? auto.scrollY : 0 ] );
+	await page.close();
+	checks.forEach( ( c, k ) => {
+		if ( cut[ k ] ) {
+			auto.controls[ c.i ].cut = c.side;
+		}
+	} );
 }
 
 // The automatic differences of one state at one width, as a pseudo-pair "(auto)".

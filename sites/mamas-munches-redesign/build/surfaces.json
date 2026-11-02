@@ -114,13 +114,9 @@
     },
     "canvas": true,
     "copy": {
-      "from": "fill",
-      "row": "template:order-confirmation"
+      "from": "page",
+      "unplayed": "template:order-confirmation"
     },
-    "walker": "qa/parity/template-order-confirmation.fill-base.mjs",
-    "walkerFull": "qa/parity/template-order-confirmation.fill.mjs",
-    "draftDir": "sites/mamas-munches-redesign/handoff",
-    "draftIndex": "Confirmation.dc.html",
     "states": {
       "resting": null
     }

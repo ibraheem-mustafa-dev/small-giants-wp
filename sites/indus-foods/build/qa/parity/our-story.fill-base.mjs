@@ -9,7 +9,7 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"201\"]:not(.sc-host .sc-host *)","live":".cr-ref-our-story-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"201\"]:not(.sc-host .sc-host *)","live":".cr-ref-our-story-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:55035/#/our-story" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57270/#/our-story" },
 	live: { url: "http://localhost:8083/about/our-story/" },
 	states: [
 		{ name: "default", fullPage: true, draft: async ( h ) => {
@@ -24,38 +24,6 @@ export default {
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
 	const values = [];
 	let count = 0;
-	// A store call (`MM.cart.setGift({ on: true })`, lib/intake-store-calls.mjs) runs once, before any logic call, on a global the
-	// draft itself defines (a plain object, never a built-in such as Math, JSON, console or document), by plain property names only; the page's storage is kept first so
-	// `restore` puts it back. A call that cannot run reaches nothing.
-	if ( 'reach' === op && patch.calls.some( ( c ) => c.store ) ) {
-		window.__sgsStoreSnap ||= Object.fromEntries( Object.entries( localStorage ) );
-		for ( const c of patch.calls.filter( ( x ) => x.store ) ) {
-			const found = Object.getOwnPropertyDescriptor( window, c.ident )?.value;
-			const root = found && '[object Object]' === Object.prototype.toString.call( found ) && Object.getPrototypeOf( found ) === Object.prototype ? found : null;
-			let obj = root;
-			for ( const seg of c.path.slice( 0, -1 ) ) {
-				obj = obj && 'object' === typeof obj ? obj[ seg ] : null;
-			}
-			const fn = obj ? obj[ c.path.at( -1 ) ] : null;
-			if ( ! root || 'object' !== typeof root || 'function' !== typeof fn ) {
-				return 0;
-			}
-			try {
-				fn.apply( obj, c.args );
-			} catch {
-				return 0;
-			}
-		}
-		if ( ! patch.calls.some( ( c ) => ! c.store ) ) {
-			return 1;
-		}
-	}
-	if ( 'restore' === op && window.__sgsStoreSnap ) {
-		localStorage.clear();
-		Object.entries( window.__sgsStoreSnap ).forEach( ( [ k, v ] ) => localStorage.setItem( k, v ) );
-		window.dispatchEvent( new Event( 'storage' ) );
-		delete window.__sgsStoreSnap;
-	}
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
 		if ( comp && name !== comp ) {
@@ -77,7 +45,7 @@ export default {
 			const keep = patch.keep || [];
 			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.calls.filter( ( c ) => ! c.store && ( ! c.component || c.component === name ) ).forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
 				keep.length && logic.setState( was );
 				count++;
 			} catch {

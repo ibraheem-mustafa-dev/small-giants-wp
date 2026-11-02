@@ -5,40 +5,34 @@
 // The factory takes the writer's shared context (`ctx`: m, facts, overrides, rows, rowOf, base, w); the functions it
 // returns reach the other writer modules through `ctx.w` when they are called.
 import { isSiteInfoValue } from './skeleton-rules.mjs';
-import { inlineText } from './inline-text.mjs';
 
 export function makeRecorder( ctx ) {
-	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf, siteLink } = ctx;
+	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf } = ctx;
 	const record = ( e, r, extra = {} ) => {
 		const top = r.candidates?.[ 0 ];
 		const row = {
 			order: rows.length, key: e.key, tag: e.tag, depth: e.depth, words: m.words( e ), block: top?.block ?? null, action: r.action || null, reason: r.reason || null, source: r.source || null,
-			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ), ...( r.missingFeature ? { missingFeature: r.missingFeature } : {} ), ...( r.siteOptions ? { siteOptions: r.siteOptions } : {} ), ...( r.conflict ? { conflict: r.conflict } : {} ), ...( r.ruleWould ? { ruleWould: r.ruleWould } : {} ), ...( r.acceptedDecision ? { acceptedDecision: true } : {} ), ...( r.widthDependent ? { widthDependent: r.widthDependent } : {} ),
+			confidence: r.confidence, low: r.confidence < 0.7, stale: r.stale || null, rule: r.rule || null, ...( r.into ? { into: r.into } : {} ), ...( r.handover ? { handover: r.handover } : {} ),
 			candidates: ( r.candidates || [] ).slice( 0, 5 ).map( ( c ) => ( { block: c.block, score: c.score, share: c.share, evidence: c.evidence.map( ( ev ) => ev.text ) } ) ),
 			parts: m.kids( e ).filter( m.isPart ).map( ( k ) => k.key ), screenshots: e.screenshots, snippet: e.snippet, attributes: {}, ...extra,
 		};
-		// An element a structure draws (absorbed) that carries its own client decision: the row says the decision no longer applies,
-		// so the review shows it (absorbSubtree sets the same note for the children it walks).
-		const own = 'absorbed' === row.action && ! row.stale && ! r.acceptedDecision ? overrides( e, row.words ) : null;
-		'client decision' === own?.source && ( row.stale = `the client decision for ${ e.key } (${ own.block || 'remove' }) no longer applies: ${ r.reason || 'the element is absorbed' }` );
 		rows.push( row );
 		rowOf[ e.key ] = row;
 		return row;
 	};
-	// `source` is set when a saved decision on an ancestor removed the subtree (lib/skeleton-propose.mjs::savedSource).
-	const removeSubtree = ( e, why, source = null ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
-		record( k, { action: 'remove', reason: why, confidence: 1, candidates: [], ...( source ? { source } : {} ) } );
-		removeSubtree( k, why, source );
+	const removeSubtree = ( e, why ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) ).forEach( ( k ) => {
+		record( k, { action: 'remove', reason: why, confidence: 1, candidates: [] } );
+		removeSubtree( k, why );
 	} );
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
 	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
 	// longer applies, so the review shows it instead of dropping it.
-	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null, source = null ) => {
+	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null ) => {
 		m.blockKids( e ).forEach( ( k ) => {
 			const own = overrides( k, m.words( k ) );
 			const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
-			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale, ...( source ? { source } : {} ) } );
-			absorbSubtree( k, top, why, rule, node, parentBlock, source );
+			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
+			absorbSubtree( k, top, why, rule, node, parentBlock );
 		} );
 		absorbWidthKids( e, top, rule, node, parentBlock );
 	};
@@ -46,30 +40,22 @@ export function makeRecorder( ctx ) {
 	// beside the number shown above it) is a width variation no single setting holds: it becomes one block instance per
 	// variation (FR-48-50). A variation with words is the block's own node again with those words in its text setting; any
 	// other content (an icon, a different child count) is built as the sibling block it is. Fill's width gate hides each
-	// instance on the other's widths. An element shown beside its parent's own content at its widths (a phone-only toggle
-	// above a form shown at every width) is an addition, not an alternative: it is built as the sibling block it is and the
-	// block is not hidden. A block that draws itself from its own source (a commerce region's WooCommerce block, a linked
-	// form: `top.drawsItself`) draws what it shows at narrow widths too, so the element is absorbed into it. An element no
-	// instance can be made of is listed in the proposal's widthAlternatives and as a handover entry on the block's node, so
-	// the review shows it and it reaches Bean.
+	// instance on the other's widths. An element no instance can be made of is listed in the proposal's widthAlternatives
+	// and as a handover entry on the block's node, so the review shows it and it reaches Bean.
 	const takeVariants = ( node ) => {
 		const list = variantsOf.get( node ) || [];
 		variantsOf.delete( node );
 		return list;
 	};
 	function widthVariant( k, top, node, parentBlock ) {
-		const beside = m.blockKids( m.byKey[ k.parentKey ] ).some( ( c ) => m.shownAt( k ).some( ( w ) => c.visible?.[ w ] ) );
-		const textAttr = node && ! beside && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
+		const textAttr = node && m.words( k ) ? facts.firstAttrByRole( top.block, 'text-content' ) : null;
 		let made = null;
 		if ( textAttr && node.attributes?.[ textAttr ] ) {
 			// An attribute the block's verdict set because its words are a Site Info value (the label reading the phone
 			// number) is kept only when the variation's own words are that value too.
-			// The variant's words keep their inline markup as the setting holds it (lib/inline-text.mjs).
-			const rich = inlineText( { m, e: k, block: top.block, attr: textAttr, codeRepo: facts.codeRepo, siteLink } );
-			const own = { ...node.attributes, [ textAttr ]: rich ? rich.value : m.words( k ) };
+			const own = { ...node.attributes, [ textAttr ]: m.words( k ) };
 			Object.entries( top.wordBound || {} ).filter( ( [ , kind ] ) => ! isSiteInfoValue( m.words( k ), kind ) ).forEach( ( [ attr ] ) => delete own[ attr ] );
 			made = base( k, top.block, own );
-			rich?.handover.length && ( made.handover = [ ...( made.handover || [] ), ...rich.handover ] );
 			// Only the words vary: the variant is the same drawn element (the pill's link, its icon, its look), so Fill
 			// measures it where it measures the default; `variantKey` names the words element, whose widths gate it.
 			Object.assign( made, { draftRef: node.draftRef, draftFingerprint: node.draftFingerprint, variantKey: k.key }, node.draftSlots ? { draftSlots: node.draftSlots } : {} );
@@ -82,22 +68,16 @@ export function makeRecorder( ctx ) {
 			return false;
 		}
 		list[ 0 ].widthShown = m.shownAt( k );
-		beside || ( node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ] );
+		node.widthVariants = [ ...( node.widthVariants || [] ), { key: k.key, shown: m.shownAt( k ) } ];
 		variantsOf.set( node, [ ...( variantsOf.get( node ) || [] ), ...list ] );
 		return true;
 	}
 	function absorbWidthKids( e, top, rule, node, parentBlock = null ) {
 		m.widthKids( e ).forEach( ( k ) => {
-			const at = m.shownAt( k ).join( ' and ' );
-			if ( top.drawsItself ) {
-				const why = `an element shown only at ${ at }px inside a block that draws its content from its own source: the block draws it itself`;
-				record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );
-				absorbSubtree( k, top, why, rule, node, parentBlock );
-				return;
-			}
 			if ( widthVariant( k, top, node, parentBlock ) ) {
 				return;
 			}
+			const at = m.shownAt( k ).join( ' and ' );
 			const what = m.words( k ) ? `a label shown only at ${ at }px inside a block with one label: no setting holds a per-width label` : `an element shown only at ${ at }px inside a block that draws its own content: no setting holds a per-width alternative`;
 			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ what }`, confidence: 1, candidates: [], rule, into: top.key } );
 			widthAlternatives.push( { key: k.key, into: top.key, block: top.block, widths: m.shownAt( k ), words: m.words( k ), reason: what } );

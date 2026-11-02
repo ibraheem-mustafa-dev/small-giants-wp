@@ -306,6 +306,9 @@ export function readFacets( ctx, list, fields, { slugify, human } ) {
 			const distinct = uniq( each.flat().filter( ( v ) => v !== wildcard ) );
 			const vocab = vocabularyFor( ctx, distinct, list.array );
 			const entries = vocab ? vocab.entries : distinct.map( ( v ) => ( { value: v, name: v, swatch: null } ) );
+			if ( vocab?.missing.length ) {
+				gap( field, `meets ${ vocab.missing.map( ( v ) => `"${ v }"` ).join( ', ' ) } on products, which the filter's own list offers no choice for; ${ 1 === vocab.missing.length ? 'it is' : 'they are' } not written as terms` );
+			}
 			const nameOf = new Map( entries.map( ( e ) => [ e.value, e.name ] ) );
 			terms = entries.map( ( e ) => ( { name: e.name, swatch: e.swatch } ) );
 			names = each.map( ( vs ) => uniq( vs.flatMap( ( v ) => ( v === wildcard ? entries.map( ( e ) => e.value ) : [ v ] ) ).filter( ( v ) => nameOf.has( v ) ).map( ( v ) => nameOf.get( v ) ) ) );
@@ -326,8 +329,8 @@ export function readFacets( ctx, list, fields, { slugify, human } ) {
 	return { facets, gaps, termsOf: ( r ) => ( { ...( perRecord.get( r ) || {} ) } ) };
 }
 
-// Settles the facets' slugs against the catalogue's product attributes (readFacets already numbers two facets of one
-// slug): a facet whose slug a product attribute already takes is that axis when the attribute holds all its terms (it
+// Settles the facets' slugs against the catalogue's variation attributes (readFacets already numbers two facets of one
+// slug): a facet whose slug a variation attribute already takes is that axis when the attribute holds all its terms (it
 // is not written again), else it is renamed `<slug>-filter` (numbered when that is taken too). Products' facet keys
 // follow. Mutates `catalogue`.
 export function settleFacets( catalogue ) {

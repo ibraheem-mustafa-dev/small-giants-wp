@@ -11,7 +11,6 @@ import fs from 'fs';
 import path from 'path';
 import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { routeCacheDir } from './lib/cache-dir.mjs';
 import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
@@ -34,10 +33,8 @@ import { loadReasons, refusalsFor } from './lib/state-map-io.mjs';
 import { walkerLintFault } from './lib/walker-lint.mjs';
 import { hopCanvasSettable } from './lib/cite-emission.mjs';
 import { solveLoopBody } from './lib/solve-loop-body.mjs';
-import { solveInline } from './lib/inline-writer.mjs';
 import { solveLoop } from './lib/solve-loop.mjs';
 import { journalFile, readJournal, resumeFrom, writeJournal } from './lib/solve-journal.mjs';
-import { pruneRunsReport } from './lib/prune-runs.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -49,13 +46,13 @@ export const USED_VALUES = [ 'width', 'left', 'top' ];
 // The calibration for a block on a site, or null (the resolver then returns `uncalibrated`): the library-wide slot map
 // with the site's own default paint as `elements` (lib/cache.mjs::loadCalibration). A site with no paint file gets
 // `paintMissing` and no elements, never another site's paint.
-export function calibrationFor( block, site, dir = routeCacheDir() ) {
+export function calibrationFor( block, site, dir = path.join( HERE, 'cache' ) ) {
 	const cal = loadCalibration( dir, block, site );
 	return cal ? withInnerRootAliases( cal, block ) : null;
 }
 
 // The block-to-calibration function for one site, the shape every reader takes as `calFor`.
-export const calibrationForSite = ( site, dir = routeCacheDir() ) => ( block ) => calibrationFor( block, site, dir );
+export const calibrationForSite = ( site, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, site, dir );
 
 // A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
 // a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A
@@ -244,7 +241,7 @@ export function unpaintedBorder( report, g ) {
 	return { gap: 'not-painted', detail: `the draft has no ${ m[ 1 ] } border (${ measured.map( ( w ) => `${ widths[ w ] } ${ styles[ w ] || '' }`.trim() + '@' + w ).join( ', ' ) }): its ${ g.prop } is currentColor and paints nothing` };
 }
 
-export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [], loopBody = null, inlineOf = () => null } ) {
+export function writeRound( report, tree, { db, snapshot, round, log, blocked = new Map(), stateMap, calFor, refs = detectReferences(), canvas = false, ancestorHop = resolveViaAncestor, ownerOf = () => null, refused = [], loopBody = null } ) {
 	const { groups, stateConflict, content } = writableGroups( report, stateMap, refused );
 	const writes = [];
 	const gaps = {};
@@ -377,8 +374,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 	}
 	// Content rows: the draft's words, an element's presence, a link. Each resolves through the block's calibrated `text`,
 	// `presence` or `link` entry (lib/solve-rows.mjs::resolveContent); with none, the row is a gap, or a handover where
-	// ownerOf( node ) names the outside-the-tree owner of the block's content. Never a style value (R-47-4). inlineOf( node,
-	// ref ) gives the draft element's words as the markup a setting holds (lib/inline-writer.mjs), so a text repair keeps them.
+	// ownerOf( node ) names the outside-the-tree owner of the block's content. Never a style value (R-47-4).
 	for ( const g of content ) {
 		const node = nodeByRef( tree, g.ref );
 		if ( blocked.has( g.key ) ) {
@@ -394,7 +390,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 			gaps[ g.key ] = { gap: 'linked', detail: `${ node.name } renders ${ ref.key } "${ ref.value }" from its own post: solve that post's surface` };
 			continue;
 		}
-		const res = resolveContent( g, { calibration: calFor( node.name ), report, inline: inlineOf( node, g.ref ) } );
+		const res = resolveContent( g, { calibration: calFor( node.name ), report } );
 		if ( res.gap ) {
 			const owner = 'no-setting' === res.gap ? ownerOf( node, g ) : null;
 			gaps[ g.key ] = HANDOVER_OWNERS.includes( owner ) ? { gap: 'handover', owner, detail: `${ node.name } holds no setting for this ${ g.type }; its content is not in the tree` } : res;
@@ -405,7 +401,7 @@ export function writeRound( report, tree, { db, snapshot, round, log, blocked = 
 				continue;
 			}
 			const { before, after } = setAttr( node, w );
-			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ), ...( res.handover?.length ? { handover: res.handover } : {} ) } );
+			writes.push( { round, group: g.key, ref: g.ref, block: node.name, path: g.path, prop: g.rows[ 0 ].key, kind: g.type, state: null, attr: w.attr, before, after, rows: g.rows.map( ( x ) => ( { width: x.width, draft: x.draft, live: x.live } ) ) } );
 		}
 	}
 	return { writes, gaps, held: holds };
@@ -504,10 +500,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// FR-48-14: the fact record and origin map the ancestor hop's loop-body check reads (lib/solve-loop-body.mjs).
 	const { loopBody, note: loopNote } = solveLoopBody( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
 	console.log( `solve ${ surface }: ${ loopNote }` );
-	// A text repair writes the draft element's inline markup (bold, links) as the setting holds it (lib/inline-writer.mjs).
-	const { inlineOf, note: inlineNote } = solveInline( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
-	console.log( `solve ${ surface }: ${ inlineNote }` );
-	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody, inlineOf };
+	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody };
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
@@ -607,7 +600,5 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const cl = writeConfirmLive( outDir, path.resolve( flag( '--fill-report' ) ), report, { stateMap: s.states, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: s.site } } );
 		console.log( confirmLiveLine( cl ) );
 	}
-	// A default run folder replaces the surface's older ones, unless an unjudged-writes record still stands (it may name a base report in an older run).
-	flag( '--out' ) || fs.existsSync( jFile ) || pruneRunsReport( { parent: path.dirname( outDir ), keep: outDir } );
 	console.log( `solve ${ surface }: ${ allWrites.length } writes over ${ rounds } round(s); hardcode ${ classes.hardcode.length }, missing ${ classes.missing.length }, unresolved ${ classes.unresolved.length }, derived ${ classes.derived.length }, unmapped-state ${ unmappedState }, handover ${ handover.length }; wrong writes ${ wrong.length } (settings ${ settingRatio( wrong, allWrites ).wrong } of ${ settingRatio( wrong, allWrites ).total }). Report: ${ path.join( outDir, 'solve-report.md' ) }` );
 }

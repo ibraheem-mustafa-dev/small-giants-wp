@@ -98,7 +98,6 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 			out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: `${ r.id } ${ s.attr }`, attr: s.attr, before, after, widths: [], how: 'motion' } );
 		}
 		out.notes.push( { ...where, text: `${ r.id }: ${ b.notes.join( '; ' ) } (${ mine.map( ( s ) => s.attr ).join( ', ' ) })` } );
-		( b.unread || [] ).forEach( ( u ) => out.unmapped.push( { ...where, property: 'motion', value: r.id, reason: `${ n.name } ${ u.field } not written: ${ u.reason }` } ) );
 		if ( b.accepted ) {
 			out.notes.push( { ...where, text: `${ r.id }: accepted difference: ${ b.accepted }` } );
 		}
@@ -259,13 +258,11 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 	}
 }
 
-// The behaviours that belong to no element: the draft's route fade (a site option), the ones SGS already does (a
-// scroll reset on a route change, the page scroll lock of a modal drawer, a back-to-top press), and the writes another
-// record's setting or layer holds (a carousel's drag handlers, the writes that hide an element before its reveal) when the
-// inventory could not place them on a template element. Each is reported once.
+// The behaviours that belong to no element: the draft's route fade (a site option) and the ones SGS already does (a
+// scroll reset on a route change, the page scroll lock of a modal drawer, a back-to-top press). Each is reported once.
 export function applyGlobals( { found, out } ) {
 	const where = { node: 'site', block: '', slot: '' };
-	for ( const { r, b } of found.filter( ( x ) => [ 'site', 'native', 'covered' ].includes( x.b.kind ) && null === ( x.r.element?.template_tpl_id ?? null ) && ! x.b.host ) ) {
+	for ( const { r, b } of found.filter( ( x ) => [ 'site', 'native' ].includes( x.b.kind ) && null === ( x.r.element?.template_tpl_id ?? null ) && ! x.b.host ) ) {
 		if ( 'site' === b.kind ) {
 			out.site.push( { record: r.id, option: b.option, ...b.value } );
 		}

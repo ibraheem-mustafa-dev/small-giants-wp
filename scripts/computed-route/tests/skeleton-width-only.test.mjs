@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeFixture } from './fixtures/fixture-facts.mjs';
+import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -26,7 +26,7 @@ const el = ( id, parent, tag, words, x = {} ) => {
 	return { key: `Root/${ id }#0`, parentKey: parent ? `Root/${ parent }#0` : null, depth: x.depth ?? 1, tag, template: 'Root', tpl: id, attrs: x.attrs || {}, words, allText: x.allText ?? words, membership: [], srcTag: tag, srcOwnText: words, snippet: x.snippet || `<${ tag } data-dc-tpl="${ id }">${ words }</${ tag }>`, box, visible: vis, display: x.display || 'block', flexDirection: 'row', screenshots: {} };
 };
 const inv = ( elements ) => ( { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements } );
-const run = ( elements, o = {} ) => proposeFixture( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, ...o } );
+const run = ( elements, o = {} ) => proposeSkeleton( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, ...o } );
 
 // A pill group: [ 13 (renders below 768 only) ] [ 14 a pill link holding 16 (768 and up) and 18 (below 768) ] [ 20 ].
 const GROUP = [
@@ -79,8 +79,7 @@ test( 'MUST FAIL (a per-width label is one instance per variation): the "Call" l
 } );
 
 test( 'MUST FAIL (two or three variations): each width-only label is an instance; the default is hidden where any variant shows', () => {
-	// The default label renders at 1440 only, so each width-only label is the one shown at its own width.
-	const three = [ ...without( GROUP, 16, 18 ), el( 16, 14, 'span', 'Order now', { depth: 3, widths: [ 1440 ], box: at( 110, 0 ) } ), el( 18, 14, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 110, 0 ) } ), el( 19, 14, 'span', 'Phone us', { depth: 3, widths: [ 768 ], box: at( 110, 0 ) } ) ];
+	const three = [ ...without( GROUP, 18 ), el( 18, 14, 'span', 'Call', { depth: 3, widths: [ 375 ], box: at( 110, 0 ) } ), el( 19, 14, 'span', 'Phone us', { depth: 3, widths: [ 768 ], box: at( 110, 0 ) } ) ];
 	const r = run( three );
 	const group = nodeAt( r, 'Root/11#0' );
 	assert.deepEqual( group.innerBlocks.map( idOf ), [ 'Root/13#0', 'Root/14#0', 'Root/18#0', 'Root/19#0', 'Root/20#0', 'Root/21#0' ] );

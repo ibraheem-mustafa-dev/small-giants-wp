@@ -19,8 +19,7 @@ const BOX = { 375: { x: 0, y: 0, w: 300, h: 40 }, 768: { x: 0, y: 0, w: 300, h: 
 const SHOWN = { 375: true, 768: true, 1440: true };
 
 const tplOf = ( key ) => Number( /\/(\d+)#/.exec( key )[ 1 ] );
-const el = ( key, parentKey, tag, words, x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: tplOf( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ tplOf( key ) }">${ words }</${ tag }>`, box: x.box || BOX, visible: SHOWN, display: 'block', flexDirection: 'row', screenshots: {} } );
-const STACK = ( y ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: 0, y, w: 300, h: 40 } ] ) );
+const el = ( key, parentKey, tag, words, x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: tplOf( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ tplOf( key ) }">${ words }</${ tag }>`, box: BOX, visible: SHOWN, display: 'block', flexDirection: 'row', screenshots: {} } );
 const input = ( key, parentKey, type = 'text' ) => el( key, parentKey, 'input', '', { depth: 3, attrs: { type, name: key, required: '' } } );
 
 // The page: main > h1, div > (a condition) > form > two inputs and a button.
@@ -211,39 +210,4 @@ test( 'MUST FAIL: a choice flow the manifest provides is placed on its page as o
 	assert.equal( flows[ 0 ].draftRef, undefined );
 	assert.equal( nodes( r.skeleton ).filter( ( n ) => /^sgs\/form/.test( n.name ) ).length, 0, 'the flow\'s own elements are absorbed into the link' );
 	assert.deepEqual( r.problems, [] );
-} );
-
-// rules.heroInner: the contact form sits inside the page's hero section (main > section > h1 + div > form). The form root is
-// the form link's, never the hero's layout wrapper, so the page keeps its one linked form.
-test( 'a form inside the hero section is the linked sgs/form, never the inner of the hero; the plain wrapper above it still unwraps; MUST FAIL on the unfixed heroInner', () => {
-	const inv = inventory();
-	const sect = el( 'Root/10#0', 'Root/1#0', 'section', '', { depth: 1 } );
-	const els = [ inv.elements[ 0 ], sect, ...inv.elements.slice( 1 ).map( ( e ) => ( 'Root/1#0' === e.parentKey ? { ...e, parentKey: 'Root/10#0', depth: e.depth + 1 } : { ...e, depth: e.depth + 1 } ) ) ];
-	// The form holds a wrapper div around its fields (the shape that made it a layout wrapper to the hero rule).
-	els.push( el( 'Root/11#0', 'Root/6#0', 'h2', 'Or send me a message', { depth: 4, box: STACK( 0 ) } ), el( 'Root/12#0', 'Root/6#0', 'div', '', { depth: 4, box: STACK( 60 ) } ) );
-	els.filter( ( e ) => 'Root/6#0' === e.parentKey ).forEach( ( e, i ) => { e.box = STACK( i * 60 ); } );
-	const record = RECORD();
-	record.elements[ 'Site/11' ] = entry( 'h2', 'Site/6', 'Site/6', [ 'Site/6' ] );
-	record.elements[ 'Site/12' ] = entry( 'div', 'Site/6', 'Site/6', [ 'Site/6' ] );
-	record.elements[ 'Site/10' ] = entry( 'section', 'Site/1', 'Site/1', [ 'Site/1' ] );
-	const r = propose( { inventory: { ...inv, elements: els }, factRecord: record } );
-	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
-	assert.equal( row( 'Root/10#0' ).rule, 'hero' );
-	assert.deepEqual( [ row( 'Root/6#0' ).rule, row( 'Root/6#0' ).block ], [ 'formLink', 'sgs/form' ] );
-	assert.equal( nodes( r.skeleton ).filter( ( n ) => 'sgs/form' === n.name ).length, 1 );
-	assert.equal( r.proposal.rows.filter( ( x ) => 'heroInner' === x.rule && [ 'Root/6#0', 'Root/7#0', 'Root/8#0', 'Root/9#0', 'Root/11#0', 'Root/12#0' ].includes( x.key ) ).length, 0 );
-	assert.equal( row( 'Root/3#0' ).rule, 'heroInner', 'negative control: a plain layout wrapper inside the hero still unwraps' );
-} );
-
-// A form record whose root is the <form> element itself (Eye Care's contact form): the page's link stands on the <form>, never on
-// its first child, and every element under it is absorbed.
-test( 'a form record rooted on the <form> element links that element, not its first child; MUST FAIL on the first-child form', () => {
-	const rec = RECORD( { extra: { 'S-2': { id: 'S-2', kind: 'form', name: 'Enquiry', dc: 'Site', parent: 'S-1', roots: [ 'Site/6' ], parts: [] } } } );
-	const r = propose( { factRecord: rec } );
-	const row = ( key ) => r.proposal.rows.find( ( x ) => x.key === key );
-	assert.deepEqual( [ row( 'Root/6#0' ).rule, row( 'Root/6#0' ).block ], [ 'formLink', 'sgs/form' ] );
-	for ( const k of [ 'Root/7#0', 'Root/8#0', 'Root/9#0' ] ) {
-		assert.deepEqual( [ row( k ).rule, row( k ).action ], [ 'formLink', 'absorbed' ], k );
-	}
-	assert.equal( nodes( r.skeleton ).filter( ( n ) => 'sgs/form' === n.name ).length, 1 );
 } );

@@ -62,7 +62,7 @@ const resolver = ( { block, prop, draft, slots } ) => {
 	}
 	return { status: 'gap', gap: 'shape', detail: `${ vals[ 0 ] } cannot be held` };
 };
-const ladder = ( w, rows, cal ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => cal, keyScope: 'acme|surface', scope: 'header', resolver, date: '2026-10-23' } );
+const ladder = ( w, rows, cal ) => widthLadderWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => cal, scope: 'header', resolver, date: '2026-10-23' } );
 const dims = ( w, rows, cal ) => dimensionWrites( { nodes: w.nodes, flat: w.flat, refOf: w.refOf, reads: w.reads, db, unmapped: rows, calFor: () => cal, scope: 'header', resolver, date: '2026-10-23' } );
 
 test( 'calibration: two elements are one box when both axes match at every width; the same slot always does', () => {

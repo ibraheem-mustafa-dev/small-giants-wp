@@ -3,8 +3,8 @@
 import base from './flow-choice-flow-add-prescription-lenses.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-flow-choice-flow-add-prescription-lenses-0", text: false, structure: false, draft: {"tpl":"Root/1280#0"}, live: ".cr-ref-flow-choice-flow-add-prescription-lenses-0" },
-	{ name: "gen-flow-choice-flow-add-prescription-lenses-2", text: false, structure: false, draft: {"tpl":"Root/1319#0"}, live: ".cr-ref-flow-choice-flow-add-prescription-lenses-2" },
+	{ name: "gen-flow-choice-flow-add-prescription-lenses-0", text: false, structure: false, draft: {"tpl":"Root/1283#0"}, live: ".cr-ref-flow-choice-flow-add-prescription-lenses-0" },
+	{ name: "gen-flow-choice-flow-add-prescription-lenses-2", text: false, structure: false, draft: {"tpl":"Root/1322#0"}, live: ".cr-ref-flow-choice-flow-add-prescription-lenses-2" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

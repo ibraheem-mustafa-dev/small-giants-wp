@@ -1,6 +1,6 @@
 {
-  "generated": "2026-11-02T01:27:17.478Z",
-  "source": "http://127.0.0.1:58694/",
+  "generated": "2026-10-28T06:48:35.769Z",
+  "source": "http://127.0.0.1:60916/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -106,65 +106,6 @@
       "srcTag": "main",
       "srcOwnText": "",
       "snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"8\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your b",
-      "flow": [
-        " ",
-        {
-          "key": "Root/9#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "375px",
-          "height": "1254.17px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "24px",
-          "padding-right": "20px",
-          "padding-bottom": "64px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "768px",
-          "height": "1154.78px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "36px",
-          "padding-right": "32px",
-          "padding-bottom": "80px",
-          "padding-left": "32px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "1440px",
-          "height": "759px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "48px",
-          "padding-right": "40px",
-          "padding-bottom": "104px",
-          "padding-left": "40px"
-        }
-      },
       "box": {
         "375": {
           "x": 0,
@@ -197,11 +138,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_8_0@375.png",
@@ -225,74 +161,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"9\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div> <h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em",
-      "flow": [
-        " ",
-        {
-          "key": "Root/10#0"
-        },
-        " ",
-        {
-          "key": "Root/11#0"
-        },
-        "   ",
-        {
-          "key": "Root/22#0"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "1166.17px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "1038.78px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "1240px",
-          "height": "607px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -325,11 +193,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_9_0@375.png",
@@ -353,60 +216,6 @@
       "srcTag": "div",
       "srcOwnText": "nearly there",
       "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"10\">nearly there</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "28px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "28px",
-          "width": "335px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "28px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "28px",
-          "width": "704px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "28px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "28px",
-          "width": "1240px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -439,11 +248,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_10_0@375.png",
@@ -467,66 +271,6 @@
       "srcTag": "h1",
       "srcOwnText": "Your basket",
       "snippet": "<h1 style=\"margin:4px 0 24px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1;letter-spacing:-0.02em\" data-dc-tpl=\"11\">Your basket <span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span></h1>",
-      "flow": [
-        "Your basket ",
-        {
-          "key": "Root/12#0"
-        }
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "44px",
-          "font-weight": "400",
-          "letter-spacing": "-0.88px",
-          "text-transform": "none",
-          "line-height": "44px",
-          "width": "335px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "54px",
-          "font-weight": "400",
-          "letter-spacing": "-1.08px",
-          "text-transform": "none",
-          "line-height": "54px",
-          "width": "704px",
-          "height": "54px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "68px",
-          "font-weight": "400",
-          "letter-spacing": "-1.36px",
-          "text-transform": "none",
-          "line-height": "68px",
-          "width": "1240px",
-          "height": "68px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -559,11 +303,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_11_0@375.png",
@@ -587,70 +326,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ count }}",
       "snippet": "<span style=\"font-family:Karla;font-size:.4em;font-weight:700;vertical-align:middle;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:4px 12px\" data-dc-tpl=\"12\">{{ count }}</span>",
-      "flow": [
-        "2"
-      ],
-      "inlineDiff": {
-        "font-weight": "700",
-        "background-color": "rgb(249, 207, 110)",
-        "font-size": "27.2px",
-        "font-family": "Karla",
-        "vertical-align": "middle"
-      },
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17.6px",
-          "font-weight": "700",
-          "letter-spacing": "-0.88px",
-          "text-transform": "none",
-          "line-height": "17.6px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "4px",
-          "padding-right": "12px",
-          "padding-bottom": "4px",
-          "padding-left": "12px"
-        },
-        "768": {
-          "font-size": "21.6px",
-          "font-weight": "700",
-          "letter-spacing": "-1.08px",
-          "text-transform": "none",
-          "line-height": "21.6px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "4px",
-          "padding-right": "12px",
-          "padding-bottom": "4px",
-          "padding-left": "12px"
-        },
-        "1440": {
-          "font-size": "27.2px",
-          "font-weight": "700",
-          "letter-spacing": "-1.36px",
-          "text-transform": "none",
-          "line-height": "27.2px",
-          "width": "auto",
-          "height": "auto",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "4px",
-          "padding-right": "12px",
-          "padding-bottom": "4px",
-          "padding-left": "12px"
-        }
-      },
       "box": {
         "375": {
           "x": 279.5,
@@ -683,11 +358,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "inline",
-        "768": "inline",
-        "1440": "inline"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_12_0@375.png",
@@ -717,70 +387,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start\" data-dc-tpl=\"22\"> <div style=\"display:flex;flex-direction:column;gap:16px;min-width:0\" data-dc-tpl=\"23\"> <div style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:22px;padding:16px 20px\" data-dc-tpl=\"24\"> <div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"25\">{{ freeMsg }}</div> <div st",
-      "flow": [
-        " ",
-        {
-          "key": "Root/23#0"
-        },
-        " ",
-        {
-          "key": "Root/56#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "1066.17px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "928.781px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "1240px",
-          "height": "483px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -813,11 +419,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_22_0@375.png",
@@ -847,78 +448,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;flex-direction:column;gap:16px;min-width:0\" data-dc-tpl=\"23\"> <div style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:22px;padding:16px 20px\" data-dc-tpl=\"24\"> <div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"25\">{{ freeMsg }}</div> <div style=\"margin-top:10px;height:14px;border-radius:99px;border:2px solid #3A2A22;background:#FBF3DC;overflow:hidden\" ",
-      "flow": [
-        " ",
-        {
-          "key": "Root/24#0"
-        },
-        "  ",
-        {
-          "key": "Root/29#0"
-        },
-        "  ",
-        {
-          "key": "Root/29#1"
-        },
-        "  ",
-        {
-          "key": "Root/41#0"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "617.172px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "475.781px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "720px",
-          "height": "483px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -951,11 +480,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_23_0@375.png",
@@ -985,70 +509,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:22px;padding:16px 20px\" data-dc-tpl=\"24\"> <div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"25\">{{ freeMsg }}</div> <div style=\"margin-top:10px;height:14px;border-radius:99px;border:2px solid #3A2A22;background:#FBF3DC;overflow:hidden\" data-dc-tpl=\"26\"><div style=\"height:100%;width:{{ freePct }};background:#EE8088;transit",
-      "flow": [
-        " ",
-        {
-          "key": "Root/25#0"
-        },
-        " ",
-        {
-          "key": "Root/26#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "79px",
-          "border-top-left-radius": "22px",
-          "border-top-right-radius": "22px",
-          "border-bottom-right-radius": "22px",
-          "border-bottom-left-radius": "22px",
-          "padding-top": "16px",
-          "padding-right": "20px",
-          "padding-bottom": "16px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "79px",
-          "border-top-left-radius": "22px",
-          "border-top-right-radius": "22px",
-          "border-bottom-right-radius": "22px",
-          "border-bottom-left-radius": "22px",
-          "padding-top": "16px",
-          "padding-right": "20px",
-          "padding-bottom": "16px",
-          "padding-left": "20px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "720px",
-          "height": "79px",
-          "border-top-left-radius": "22px",
-          "border-top-right-radius": "22px",
-          "border-bottom-right-radius": "22px",
-          "border-bottom-left-radius": "22px",
-          "padding-top": "16px",
-          "padding-right": "20px",
-          "padding-bottom": "16px",
-          "padding-left": "20px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -1081,11 +541,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_24_0@375.png",
@@ -1115,63 +570,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ freeMsg }}",
       "snippet": "<div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"25\">{{ freeMsg }}</div>",
-      "flow": [
-        "Add £8.50 more for free UK delivery"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "291px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "660px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "676px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 42,
@@ -1204,11 +602,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_25_0@375.png",
@@ -1238,59 +631,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"margin-top:10px;height:14px;border-radius:99px;border:2px solid #3A2A22;background:#FBF3DC;overflow:hidden\" data-dc-tpl=\"26\"><div style=\"height:100%;width:{{ freePct }};background:#EE8088;transition:width .5s cubic-bezier(.2,.8,.2,1)\" data-dc-tpl=\"27\"></div></div>",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "291px",
-          "height": "14px",
-          "border-top-left-radius": "99px",
-          "border-top-right-radius": "99px",
-          "border-bottom-right-radius": "99px",
-          "border-bottom-left-radius": "99px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "660px",
-          "height": "14px",
-          "border-top-left-radius": "99px",
-          "border-top-right-radius": "99px",
-          "border-bottom-right-radius": "99px",
-          "border-bottom-left-radius": "99px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "676px",
-          "height": "14px",
-          "border-top-left-radius": "99px",
-          "border-top-right-radius": "99px",
-          "border-bottom-right-radius": "99px",
-          "border-bottom-left-radius": "99px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 42,
@@ -1323,11 +663,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_26_0@375.png",
@@ -1357,59 +692,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"height:100%;width:{{ freePct }};background:#EE8088;transition:width .5s cubic-bezier(.2,.8,.2,1)\" data-dc-tpl=\"27\"></div>",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "217.297px",
-          "height": "10px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "496.672px",
-          "height": "10px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "508.797px",
-          "height": "10px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 44,
@@ -1442,11 +724,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_27_0@375.png",
@@ -1483,74 +760,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.itemCols }};gap:16px;align-items:center;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:14px;transition:box-shadow .25s, transform .25s\" style-hover=\"box-shadow:6px 6px 0 #3A2A22;transform:translate(-2px,-2px)\" data-dc-tpl=\"29\"> <div style=\"width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22",
-      "flow": [
-        " ",
-        {
-          "key": "Root/30#0"
-        },
-        " ",
-        {
-          "key": "Root/31#0"
-        },
-        " ",
-        {
-          "key": "Root/40#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "223.781px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "132.391px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "720px",
-          "height": "136px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -1583,11 +792,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_29_0@375.png",
@@ -1623,59 +827,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ it.bg }};background-size:cover;background-position:center\" data-dc-tpl=\"30\"></div>",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "72px",
-          "height": "72px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "96px",
-          "height": "96px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "104px",
-          "height": "104px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 36,
@@ -1708,11 +859,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_30_0@375.png",
@@ -1748,74 +894,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"min-width:0;display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"31\"> <div style=\"font-family:'Young Serif',serif;font-size:19px;line-height:1.2\" data-dc-tpl=\"32\">{{ it.name }}</div> <div style=\"font-size:14px;color:#5E4A3D;line-height:1.4\" data-dc-tpl=\"33\">{{ it.variant }}</div> <div style=\"display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap\" data-dc-tpl=\"34\"> <",
-      "flow": [
-        " ",
-        {
-          "key": "Root/32#0"
-        },
-        " ",
-        {
-          "key": "Root/33#0"
-        },
-        " ",
-        {
-          "key": "Root/34#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "138.016px",
-          "height": "191.781px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "483.016px",
-          "height": "100.391px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "491.016px",
-          "height": "100.391px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -1848,11 +926,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_31_0@375.png",
@@ -1888,63 +961,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.name }}",
       "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:19px;line-height:1.2\" data-dc-tpl=\"32\">{{ it.name }}</div>",
-      "flow": [
-        "Zookies · 20 pack"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "138.016px",
-          "height": "45.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "483.016px",
-          "height": "22.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "491.016px",
-          "height": "22.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -1977,11 +993,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_32_0@375.png",
@@ -2017,63 +1028,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.variant }}",
       "snippet": "<div style=\"font-size:14px;color:#5E4A3D;line-height:1.4\" data-dc-tpl=\"33\">{{ it.variant }}</div>",
-      "flow": [
-        "Oat · Milk choc · Strawberry"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "138.016px",
-          "height": "39.1875px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "483.016px",
-          "height": "19.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "491.016px",
-          "height": "19.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -2106,11 +1060,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_33_0@375.png",
@@ -2146,70 +1095,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap\" data-dc-tpl=\"34\"> <div style=\"display:inline-flex;align-items:center;border:2px solid #3A2A22;border-radius:999px;height:44px;background:#FBF3DC\" data-dc-tpl=\"35\"> <button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:poin",
-      "flow": [
-        " ",
-        {
-          "key": "Root/35#0"
-        },
-        " ",
-        {
-          "key": "Root/39#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "138.016px",
-          "height": "93px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "483.016px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "491.016px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -2242,11 +1127,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_34_0@375.png",
@@ -2282,74 +1162,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:inline-flex;align-items:center;border:2px solid #3A2A22;border-radius:999px;height:44px;background:#FBF3DC\" data-dc-tpl=\"35\"> <button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button> <span style=\"min-width:22px;text-align:center;font-weight:700\" data-d",
-      "flow": [
-        " ",
-        {
-          "key": "Root/36#0"
-        },
-        " ",
-        {
-          "key": "Root/37#0"
-        },
-        " ",
-        {
-          "key": "Root/38#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -2382,11 +1194,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_35_0@1440.png"
@@ -2422,60 +1229,6 @@
       "srcTag": "button",
       "srcOwnText": "−",
       "snippet": "<button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 126,
@@ -2508,11 +1261,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_36_0@1440.png"
@@ -2547,63 +1295,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ it.qty }}",
       "snippet": "<span style=\"min-width:22px;text-align:center;font-weight:700\" data-dc-tpl=\"37\">{{ it.qty }}</span>",
-      "flow": [
-        "1"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 168,
@@ -2636,11 +1327,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_37_0@1440.png"
@@ -2676,60 +1362,6 @@
       "srcTag": "button",
       "srcOwnText": "+",
       "snippet": "<button sc-camel-on-click=\"{{ it.inc }}\" aria-label=\"One more\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"38\">+</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 190,
@@ -2762,11 +1394,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_38_0@1440.png"
@@ -2801,60 +1428,6 @@
       "srcTag": "button",
       "srcOwnText": "Remove",
       "snippet": "<button sc-camel-on-click=\"{{ it.rm }}\" style=\"border:0;background:none;font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;padding:10px 0\" data-dc-tpl=\"39\">Remove</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -2887,11 +1460,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_39_0@375.png",
@@ -2927,63 +1495,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.total }}",
       "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:20px;text-align:right;align-self:start\" data-dc-tpl=\"40\">{{ it.total }}</div>",
-      "flow": [
-        "£21.50"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "60.9844px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "60.9844px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "60.9844px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 278,
@@ -3016,11 +1527,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_40_0@375.png",
@@ -3057,74 +1563,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.itemCols }};gap:16px;align-items:center;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;padding:14px;transition:box-shadow .25s, transform .25s\" style-hover=\"box-shadow:6px 6px 0 #3A2A22;transform:translate(-2px,-2px)\" data-dc-tpl=\"29\"> <div style=\"width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22",
-      "flow": [
-        " ",
-        {
-          "key": "Root/30#1"
-        },
-        " ",
-        {
-          "key": "Root/31#1"
-        },
-        " ",
-        {
-          "key": "Root/40#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "181.391px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "132.391px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "720px",
-          "height": "136px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "14px",
-          "padding-bottom": "14px",
-          "padding-left": "14px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -3157,11 +1595,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_29_1@375.png",
@@ -3197,59 +1630,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ it.bg }};background-size:cover;background-position:center\" data-dc-tpl=\"30\"></div>",
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "72px",
-          "height": "72px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "96px",
-          "height": "96px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "104px",
-          "height": "104px",
-          "border-top-left-radius": "16px",
-          "border-top-right-radius": "16px",
-          "border-bottom-right-radius": "16px",
-          "border-bottom-left-radius": "16px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 36,
@@ -3282,11 +1662,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_30_1@375.png",
@@ -3322,74 +1697,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"min-width:0;display:flex;flex-direction:column;gap:4px\" data-dc-tpl=\"31\"> <div style=\"font-family:'Young Serif',serif;font-size:19px;line-height:1.2\" data-dc-tpl=\"32\">{{ it.name }}</div> <div style=\"font-size:14px;color:#5E4A3D;line-height:1.4\" data-dc-tpl=\"33\">{{ it.variant }}</div> <div style=\"display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap\" data-dc-tpl=\"34\"> <",
-      "flow": [
-        " ",
-        {
-          "key": "Root/32#1"
-        },
-        " ",
-        {
-          "key": "Root/33#1"
-        },
-        " ",
-        {
-          "key": "Root/34#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "144.578px",
-          "height": "149.391px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "489.578px",
-          "height": "100.391px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "497.578px",
-          "height": "100.391px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -3422,11 +1729,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_31_1@375.png",
@@ -3462,63 +1764,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.name }}",
       "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:19px;line-height:1.2\" data-dc-tpl=\"32\">{{ it.name }}</div>",
-      "flow": [
-        "Taster Trio"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "144.578px",
-          "height": "22.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "489.578px",
-          "height": "22.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "19px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "22.8px",
-          "width": "497.578px",
-          "height": "22.7969px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -3551,11 +1796,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_32_1@375.png",
@@ -3591,63 +1831,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.variant }}",
       "snippet": "<div style=\"font-size:14px;color:#5E4A3D;line-height:1.4\" data-dc-tpl=\"33\">{{ it.variant }}</div>",
-      "flow": [
-        "3 Classic Zookies"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "144.578px",
-          "height": "19.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "489.578px",
-          "height": "19.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "19.6px",
-          "width": "497.578px",
-          "height": "19.5938px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -3680,11 +1863,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_33_1@375.png",
@@ -3720,70 +1898,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap\" data-dc-tpl=\"34\"> <div style=\"display:inline-flex;align-items:center;border:2px solid #3A2A22;border-radius:999px;height:44px;background:#FBF3DC\" data-dc-tpl=\"35\"> <button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:poin",
-      "flow": [
-        " ",
-        {
-          "key": "Root/35#1"
-        },
-        " ",
-        {
-          "key": "Root/39#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "144.578px",
-          "height": "93px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "489.578px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "497.578px",
-          "height": "44px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -3816,11 +1930,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_34_1@375.png",
@@ -3856,74 +1965,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:inline-flex;align-items:center;border:2px solid #3A2A22;border-radius:999px;height:44px;background:#FBF3DC\" data-dc-tpl=\"35\"> <button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button> <span style=\"min-width:22px;text-align:center;font-weight:700\" data-d",
-      "flow": [
-        " ",
-        {
-          "key": "Root/36#1"
-        },
-        " ",
-        {
-          "key": "Root/37#1"
-        },
-        " ",
-        {
-          "key": "Root/38#1"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "110px",
-          "height": "44px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -3956,11 +1997,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_35_1@1440.png"
@@ -3996,60 +2032,6 @@
       "srcTag": "button",
       "srcOwnText": "−",
       "snippet": "<button sc-camel-on-click=\"{{ it.dec }}\" aria-label=\"One fewer\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"36\">−</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 126,
@@ -4082,11 +2064,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_36_1@1440.png"
@@ -4121,63 +2098,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ it.qty }}",
       "snippet": "<span style=\"min-width:22px;text-align:center;font-weight:700\" data-dc-tpl=\"37\">{{ it.qty }}</span>",
-      "flow": [
-        "1"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "22px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 168,
@@ -4210,11 +2130,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_37_1@1440.png"
@@ -4250,60 +2165,6 @@
       "srcTag": "button",
       "srcOwnText": "+",
       "snippet": "<button sc-camel-on-click=\"{{ it.inc }}\" aria-label=\"One more\" style=\"width:42px;height:40px;border:0;background:transparent;font-size:20px;cursor:pointer\" data-dc-tpl=\"38\">+</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42px",
-          "height": "40px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 190,
@@ -4336,11 +2197,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_38_1@1440.png"
@@ -4375,60 +2231,6 @@
       "srcTag": "button",
       "srcOwnText": "Remove",
       "snippet": "<button sc-camel-on-click=\"{{ it.rm }}\" style=\"border:0;background:none;font-size:14px;font-weight:700;text-decoration:underline;cursor:pointer;padding:10px 0\" data-dc-tpl=\"39\">Remove</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "52.3281px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "10px",
-          "padding-right": "0px",
-          "padding-bottom": "10px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 124,
@@ -4461,11 +2263,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_39_1@375.png",
@@ -4501,63 +2298,6 @@
       "srcTag": "div",
       "srcOwnText": "{{ it.total }}",
       "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:20px;text-align:right;align-self:start\" data-dc-tpl=\"40\">{{ it.total }}</div>",
-      "flow": [
-        "£5.00"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "54.4219px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "54.4219px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "20px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "54.4219px",
-          "height": "28px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 284.6,
@@ -4590,11 +2330,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_40_1@375.png",
@@ -4624,66 +2359,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"position:relative;background:#FFFAF0;border:2px dashed #3A2A22;border-radius:24px;padding:14px 20px\" data-dc-tpl=\"41\"> <label style=\"display:flex;align-items:center;gap:12px;cursor:pointer;min-height:52px\" data-dc-tpl=\"42\"> <input type=\"checkbox\" checked=\"{{ gift.on }}\" sc-camel-on-change=\"{{ toggleGift }}\" style=\"width:24px;height:24px;accent-color:#EE8088;flex:none\" data-dc-tpl=\"43\">",
-      "flow": [
-        " ",
-        {
-          "key": "Root/42#0"
-        },
-        "  "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "85px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "20px",
-          "padding-bottom": "14px",
-          "padding-left": "20px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "84px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "20px",
-          "padding-bottom": "14px",
-          "padding-left": "20px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "720px",
-          "height": "84px",
-          "border-top-left-radius": "24px",
-          "border-top-right-radius": "24px",
-          "border-bottom-right-radius": "24px",
-          "border-bottom-left-radius": "24px",
-          "padding-top": "14px",
-          "padding-right": "20px",
-          "padding-bottom": "14px",
-          "padding-left": "20px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -4716,11 +2391,6 @@
         "1440": "relative"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_41_0@375.png",
@@ -4750,70 +2420,6 @@
       "srcTag": "label",
       "srcOwnText": "",
       "snippet": "<label style=\"display:flex;align-items:center;gap:12px;cursor:pointer;min-height:52px\" data-dc-tpl=\"42\"> <input type=\"checkbox\" checked=\"{{ gift.on }}\" sc-camel-on-change=\"{{ toggleGift }}\" style=\"width:24px;height:24px;accent-color:#EE8088;flex:none\" data-dc-tpl=\"43\"> <span style=\"display:flex;flex-direction:column\" data-dc-tpl=\"44\"><span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"45\">Th",
-      "flow": [
-        " ",
-        {
-          "key": "Root/43#0"
-        },
-        " ",
-        {
-          "key": "Root/44#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "291px",
-          "height": "53px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "660px",
-          "height": "52px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "676px",
-          "height": "52px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 42,
@@ -4846,11 +2452,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_42_0@375.png",
@@ -4881,59 +2482,6 @@
       "srcTag": "input",
       "srcOwnText": "",
       "snippet": "<input type=\"checkbox\" checked=\"{{ gift.on }}\" sc-camel-on-change=\"{{ toggleGift }}\" style=\"width:24px;height:24px;accent-color:#EE8088;flex:none\" data-dc-tpl=\"43\">",
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "24px",
-          "height": "24px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "24px",
-          "height": "24px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "24px",
-          "height": "24px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -4966,11 +2514,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_43_0@1440.png"
@@ -4999,67 +2542,6 @@
       "srcTag": "span",
       "srcOwnText": "",
       "snippet": "<span style=\"display:flex;flex-direction:column\" data-dc-tpl=\"44\"><span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"45\">This is a gift</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"46\">Add a note. The prices stay off the packing slip.</span></span>",
-      "flow": [
-        {
-          "key": "Root/45#0"
-        },
-        {
-          "key": "Root/46#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "248px",
-          "height": "53px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "36px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "36px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 85,
@@ -5092,11 +2574,6 @@
         "1440": "static"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_44_0@375.png",
@@ -5126,60 +2603,6 @@
       "srcTag": "span",
       "srcOwnText": "This is a gift",
       "snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"45\">This is a gift</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "248px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 85,
@@ -5212,11 +2635,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_45_0@375.png",
@@ -5246,60 +2664,6 @@
       "srcTag": "span",
       "srcOwnText": "Add a note. The prices stay off the packing slip.",
       "snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"46\">Add a note. The prices stay off the packing slip.</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "248px",
-          "height": "34px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "17px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "297.797px",
-          "height": "17px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 85,
@@ -5332,11 +2696,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_46_0@375.png",
@@ -5366,94 +2725,6 @@
       "srcTag": "aside",
       "srcOwnText": "",
       "snippet": "<aside style=\"position:{{ L.sumPos }};top:{{ L.sumTop }};background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"56\"> <div style=\"font-family:'Young Serif',serif;font-size:26px\" data-dc-tpl=\"57\">Summary</div> <div style=\"display:flex;justify-content:space-between;font-size:16px\" data-dc-tpl=\"",
-      "flow": [
-        " ",
-        {
-          "key": "Root/57#0"
-        },
-        " ",
-        {
-          "key": "Root/58#0"
-        },
-        " ",
-        {
-          "key": "Root/61#0"
-        },
-        " ",
-        {
-          "key": "Root/64#0"
-        },
-        " ",
-        {
-          "key": "Root/67#0"
-        },
-        " ",
-        {
-          "key": "Root/68#0"
-        },
-        " ",
-        {
-          "key": "Root/71#0"
-        },
-        " ",
-        {
-          "key": "Root/72#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "335px",
-          "height": "429px",
-          "border-top-left-radius": "28px",
-          "border-top-right-radius": "28px",
-          "border-bottom-right-radius": "28px",
-          "border-bottom-left-radius": "28px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "704px",
-          "height": "429px",
-          "border-top-left-radius": "28px",
-          "border-top-right-radius": "28px",
-          "border-bottom-right-radius": "28px",
-          "border-bottom-left-radius": "28px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "480px",
-          "height": "429px",
-          "border-top-left-radius": "28px",
-          "border-top-right-radius": "28px",
-          "border-bottom-right-radius": "28px",
-          "border-bottom-left-radius": "28px",
-          "padding-top": "24px",
-          "padding-right": "24px",
-          "padding-bottom": "24px",
-          "padding-left": "24px"
-        }
-      },
       "box": {
         "375": {
           "x": 20,
@@ -5486,11 +2757,6 @@
         "1440": "sticky"
       },
       "flexDirection": "column",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_56_0@375.png",
@@ -5520,60 +2786,6 @@
       "srcTag": "div",
       "srcOwnText": "Summary",
       "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:26px\" data-dc-tpl=\"57\">Summary</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "26px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "26px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "26px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "37px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -5606,11 +2818,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_57_0@375.png",
@@ -5640,67 +2847,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;justify-content:space-between;font-size:16px\" data-dc-tpl=\"58\"><span data-dc-tpl=\"59\">Subtotal</span><b data-dc-tpl=\"60\">{{ subText }}</b></div>",
-      "flow": [
-        {
-          "key": "Root/59#0"
-        },
-        {
-          "key": "Root/60#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -5733,11 +2879,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_58_0@375.png",
@@ -5765,60 +2906,6 @@
       "srcTag": "span",
       "srcOwnText": "Subtotal",
       "snippet": "<span data-dc-tpl=\"59\">Subtotal</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "62.9062px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "62.9062px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "62.9062px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -5851,11 +2938,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_59_0@1440.png"
@@ -5882,63 +2964,6 @@
       "srcTag": "b",
       "srcOwnText": "{{ subText }}",
       "snippet": "<b data-dc-tpl=\"60\">{{ subText }}</b>",
-      "flow": [
-        "£26.50"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "51.8906px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "51.8906px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "51.8906px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 277.1,
@@ -5971,11 +2996,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_60_0@375.png",
@@ -6005,67 +3025,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;justify-content:space-between;font-size:16px\" data-dc-tpl=\"61\"><span data-dc-tpl=\"62\">Delivery</span><b data-dc-tpl=\"63\">{{ delText }}</b></div>",
-      "flow": [
-        {
-          "key": "Root/62#0"
-        },
-        {
-          "key": "Root/63#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6098,11 +3057,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_61_0@375.png",
@@ -6130,60 +3084,6 @@
       "srcTag": "span",
       "srcOwnText": "Delivery",
       "snippet": "<span data-dc-tpl=\"62\">Delivery</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "57.5156px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "57.5156px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "57.5156px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6216,11 +3116,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_62_0@1440.png"
@@ -6247,63 +3142,6 @@
       "srcTag": "b",
       "srcOwnText": "{{ delText }}",
       "snippet": "<b data-dc-tpl=\"63\">{{ delText }}</b>",
-      "flow": [
-        "£3.95"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42.0938px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42.0938px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "42.0938px",
-          "height": "19px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 286.9,
@@ -6336,11 +3174,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_63_0@375.png",
@@ -6370,67 +3203,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:2px dashed rgba(58,42,34,.3)\" data-dc-tpl=\"64\"><span style=\"font-weight:700;font-size:17px\" data-dc-tpl=\"65\">Total</span><span style=\"font-family:'Young Serif',serif;font-size:30px\" data-dc-tpl=\"66\">{{ totalText }}</span></div>",
-      "flow": [
-        {
-          "key": "Root/65#0"
-        },
-        {
-          "key": "Root/66#0"
-        }
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "56px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "12px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "56px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "12px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "56px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "12px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6463,11 +3235,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_64_0@375.png",
@@ -6497,60 +3264,6 @@
       "srcTag": "span",
       "srcOwnText": "Total",
       "snippet": "<span style=\"font-weight:700;font-size:17px\" data-dc-tpl=\"65\">Total</span>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "38.9531px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "38.9531px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "17px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "38.9531px",
-          "height": "20px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6583,11 +3296,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": false,
       "screenshots": {
         "1440": "shots/Root_65_0@1440.png"
@@ -6616,63 +3324,6 @@
       "srcTag": "span",
       "srcOwnText": "{{ totalText }}",
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:30px\" data-dc-tpl=\"66\">{{ totalText }}</span>",
-      "flow": [
-        "£30.45"
-      ],
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "30px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "95.7969px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "30px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "95.7969px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "30px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "95.7969px",
-          "height": "42px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 233.2,
@@ -6705,11 +3356,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_66_0@375.png",
@@ -6741,60 +3387,6 @@
       "srcTag": "a",
       "srcOwnText": "Checkout securely →",
       "snippet": "<a href=\"Checkout.dc.html\" style=\"height:62px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:trans",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "18px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "62px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "18px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "62px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "18px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "62px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6827,11 +3419,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "flex",
-        "768": "flex",
-        "1440": "flex"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_67_0@375.png",
@@ -6861,70 +3448,6 @@
       "srcTag": "div",
       "srcOwnText": "",
       "snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"68\"> <button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"69\">Apple Pay</button> <button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"70\">Googl",
-      "flow": [
-        " ",
-        {
-          "key": "Root/69#0"
-        },
-        " ",
-        {
-          "key": "Root/70#0"
-        },
-        " "
-      ],
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "48px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "48px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "48px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -6957,11 +3480,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "grid",
-        "768": "grid",
-        "1440": "grid"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_68_0@375.png",
@@ -6991,60 +3509,6 @@
       "srcTag": "button",
       "srcOwnText": "Apple Pay",
       "snippet": "<button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#000000;color:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"69\">Apple Pay</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "137.5px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "322px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "210px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -7077,11 +3541,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_69_0@375.png",
@@ -7111,60 +3570,6 @@
       "srcTag": "button",
       "srcOwnText": "Google Pay",
       "snippet": "<button style=\"height:48px;border-radius:999px;border:2px solid #3A2A22;background:#FFFFFF;font-weight:700;cursor:pointer\" data-dc-tpl=\"70\">Google Pay</button>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "137.5px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "322px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "13.3333px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "210px",
-          "height": "48px",
-          "border-top-left-radius": "999px",
-          "border-top-right-radius": "999px",
-          "border-bottom-right-radius": "999px",
-          "border-bottom-left-radius": "999px",
-          "padding-top": "1px",
-          "padding-right": "6px",
-          "padding-bottom": "1px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 191.5,
@@ -7197,11 +3602,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_70_0@375.png",
@@ -7231,60 +3631,6 @@
       "srcTag": "div",
       "srcOwnText": "Baked fresh for you · with you in 3–5 days",
       "snippet": "<div style=\"font-size:14px;line-height:1.5;text-align:center\" data-dc-tpl=\"71\">Baked fresh for you · with you in 3–5 days</div>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "283px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "768": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "652px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        },
-        "1440": {
-          "font-size": "14px",
-          "font-weight": "400",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "21px",
-          "width": "428px",
-          "height": "21px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "0px",
-          "padding-right": "0px",
-          "padding-bottom": "0px",
-          "padding-left": "0px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -7317,11 +3663,6 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_71_0@375.png",
@@ -7352,60 +3693,6 @@
       "srcTag": "a",
       "srcOwnText": "Keep shopping",
       "snippet": "<a href=\"Shop.dc.html\" style=\"text-align:center;font-weight:700;color:#3A2A22;padding:6px\" data-dc-tpl=\"72\">Keep shopping</a>",
-      "textLeads": true,
-      "resolved": {
-        "375": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "283px",
-          "height": "31px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "6px",
-          "padding-bottom": "6px",
-          "padding-left": "6px"
-        },
-        "768": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "652px",
-          "height": "31px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "6px",
-          "padding-bottom": "6px",
-          "padding-left": "6px"
-        },
-        "1440": {
-          "font-size": "16px",
-          "font-weight": "700",
-          "letter-spacing": "normal",
-          "text-transform": "none",
-          "line-height": "normal",
-          "width": "428px",
-          "height": "31px",
-          "border-top-left-radius": "0px",
-          "border-top-right-radius": "0px",
-          "border-bottom-right-radius": "0px",
-          "border-bottom-left-radius": "0px",
-          "padding-top": "6px",
-          "padding-right": "6px",
-          "padding-bottom": "6px",
-          "padding-left": "6px"
-        }
-      },
       "box": {
         "375": {
           "x": 46,
@@ -7438,53 +3725,11 @@
         "1440": "static"
       },
       "flexDirection": "row",
-      "displayAt": {
-        "375": "block",
-        "768": "block",
-        "1440": "block"
-      },
       "layoutChanged375": true,
       "screenshots": {
         "375": "shots/Root_72_0@375.png",
         "1440": "shots/Root_72_0@1440.png"
       }
     }
-  ],
-  "sources": {
-    "files": {
-      "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
-      "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
-      "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
-      "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
-      "Contact.dc.html": "bcb3e4bcc8e1fdddb9abf777afab9396c7d06f809ba7b9cbd64a722205607b85",
-      "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
-      "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
-      "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
-      "Product.dc.html": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960",
-      "ProductCard.dc.html": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30",
-      "README.md": "09a85b34b22187e5be6458af75461cbd11e0536d95d868812d4ef7b247cd5163",
-      "Shop.dc.html": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80",
-      "SignIn.dc.html": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926",
-      "SiteFooter.dc.html": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b",
-      "SiteHeader.dc.html": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2",
-      "animations.json": "10cff8410cac5c7ab9d50558203278fc1ea3acd0d47744b254b24024aac2743f",
-      "assets/logo-horizontal.png": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
-      "assets/logo-round.png": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
-      "assets/photo-bags-pink.jpg": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
-      "assets/photo-bun-case.jpg": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
-      "assets/photo-gift-heart.jpg": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
-      "assets/photo-hero-mug.jpg": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
-      "assets/photo-pair-love.jpg": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
-      "assets/photo-tray-love.jpg": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
-      "store.js": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179",
-      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
-      "surfaces.json": "4d7d9f56be27fc79b9e498b285a8e8304ec7068899f10e78f0264a6cf354e9ab",
-      "tokens/colors.css": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899",
-      "tokens/spacing.css": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa",
-      "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
-    },
-    "route": {
-      "commit": "c7b9372ff87779727f538697e5cac12afe50b1c8"
-    }
-  }
+  ]
 }

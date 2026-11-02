@@ -361,7 +361,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -462,7 +461,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -566,7 +564,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -665,7 +662,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -770,7 +766,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -872,7 +867,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -972,7 +966,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1074,7 +1067,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1173,7 +1165,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1271,7 +1262,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1371,7 +1361,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1469,7 +1458,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1571,7 +1559,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1670,7 +1657,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1769,7 +1755,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",
@@ -1871,7 +1856,6 @@
           "slug": "size",
           "packSize": false,
           "variesBy": "size",
-          "variation": true,
           "options": [
             {
               "value": "S",

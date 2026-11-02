@@ -204,8 +204,8 @@ function waySource( opener ) {
 }
 
 // In-page: opens the surface at `root` (a selector) through the control that owns it: the nearest of the root and its
-// ancestors with an id that a control outside it names: in aria-controls (a nav drawer's <dialog> and the header burger, a
-// mega panel and its trigger), in data-sgs-modal-open or as a `#<id>` link (an sgs/modal frame, whose id is its anchor). The shown control is clicked, else the first one (its own handler runs though the control
+// ancestors with an id that a control outside it names in aria-controls (a nav drawer's <dialog> and the header burger, a
+// mega panel and its trigger). The shown control is clicked, else the first one (its own handler runs though the control
 // is hidden at this width); a surface already open (a dialog's open, a control already expanded) is left as it is.
 // Returns { clicked, id, why } (why: null when clicked).
 export function openOwner( root ) {
@@ -214,11 +214,11 @@ export function openOwner( root ) {
 		return { clicked: false, id: null, why: `no ${ root } on the page` };
 	}
 	for ( let a = el; a && a !== document.documentElement; a = a.parentElement ) {
-		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls], [data-sgs-modal-open], a[href^="#"]' ) ].filter( ( b ) => ! a.contains( b ) && ( ( b.getAttribute( 'aria-controls' ) || '' ).split( /\s+/ ).includes( a.id ) || a.id === b.getAttribute( 'data-sgs-modal-open' ) || '#' + a.id === b.getAttribute( 'href' ) ) ) : [];
+		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls]' ) ].filter( ( b ) => ! a.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).includes( a.id ) ) : [];
 		if ( ! controls.length ) {
 			continue;
 		}
-		if ( a.open || a.querySelector( 'dialog[open]' ) || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
+		if ( a.open || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
 			return { clicked: false, id: a.id, why: `#${ a.id } is open already` };
 		}
 		( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();

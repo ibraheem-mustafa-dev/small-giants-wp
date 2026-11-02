@@ -63,31 +63,24 @@ export function readLinkTextReport( { repo, client, front = 'home' } ) {
 	const routes = labelRoutes( files.map( ( f ) => loadDraft( folder, f ) ), front );
 	const seen = {};
 	const clash = new Map();
-	const note = ( kind, route, label ) => {
-		seen[ kind ] ??= {};
-		const k = `${ kind }\u0000${ route }`;
-		if ( undefined !== seen[ kind ][ route ] && seen[ kind ][ route ] !== label ) {
-			clash.set( k, [ ...new Set( [ ...( clash.get( k ) || [ seen[ kind ][ route ] ] ), label ] ) ] );
-		}
-		seen[ kind ][ route ] ??= label;
-	};
 	for ( const e of Object.values( elements ) ) {
-		const t = e.template;
-		const kinds = [ ...new Set( ( e.surfaces || [] ).map( ( s ) => s.kind ) ) ];
-		if ( ! t?.inFor ) {
-			// A static link: its own words, over an address that is no binding (FR-48-55 part 3).
-			const words = String( t?.words ?? '' ).replace( /\s+/g, ' ' ).trim();
-			const href = String( t?.attrs?.href ?? '' );
-			const route = 'a' === t?.realTag && words && ! /\{\{/.test( `${ words }${ href }` ) ? routeOf( href, front ) : null;
-			route && kinds.forEach( ( kind ) => note( kind, route, words ) );
+		if ( ! e.template?.inFor ) {
 			continue;
 		}
-		const hole = t.holes?.find( ( h ) => 'text' === h.where && /\.label$/.test( h.path ) );
+		const hole = e.template.holes?.find( ( h ) => 'text' === h.where && /\.label$/.test( h.path ) );
 		const labels = hole ? stringValues( e.logic?.holes?.[ hole.id ] ) : [];
-		for ( const kind of kinds ) {
+		for ( const kind of new Set( ( e.surfaces || [] ).map( ( s ) => s.kind ) ) ) {
 			for ( const label of labels ) {
 				const route = routes.get( label );
-				route && note( kind, route, label );
+				if ( ! route ) {
+					continue;
+				}
+				seen[ kind ] ??= {};
+				const k = `${ kind }\u0000${ route }`;
+				if ( undefined !== seen[ kind ][ route ] && seen[ kind ][ route ] !== label ) {
+					clash.set( k, [ ...new Set( [ ...( clash.get( k ) || [ seen[ kind ][ route ] ] ), label ] ) ] );
+				}
+				seen[ kind ][ route ] ??= label;
 			}
 		}
 	}

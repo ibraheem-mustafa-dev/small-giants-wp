@@ -56,9 +56,7 @@
 					},
 					{
 						"name": "sgs/breadcrumbs",
-						"attributes": {
-							"homeLabel": ""
-						},
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/323#0"
 						},
@@ -98,12 +96,7 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-breadcrumbs__list > .sgs-breadcrumbs__item:nth-of-type(1) > a": {
-								"tpl": "Root/328#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/label",
@@ -130,8 +123,7 @@
 					{
 						"name": "sgs/heading",
 						"attributes": {
-							"content": "Grow with a family business.",
-							"level": "h1"
+							"content": "Grow with a family business."
 						},
 						"draftRef": {
 							"tpl": "Root/333#0"
@@ -183,21 +175,7 @@
 						"kind": "presence",
 						"detail": "the hero image: choose it in the hero's split media setting"
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/330#0"
-					},
-					".sgs-hero__video-bg": {
-						"tpl": "Root/318#0"
-					},
-					".sgs-hero__media > .sgs-hero__split-media": {
-						"tpl": "Root/341#0"
-					},
-					".sgs-hero__media": {
-						"tpl": "Root/340#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -307,8 +285,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "What you can expect.",
-													"level": "h2"
+													"content": "What you can expect."
 												},
 												"draftRef": {
 													"tpl": "Root/352#0"
@@ -329,22 +306,9 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/350#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/352#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/348#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/container",
@@ -466,12 +430,7 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/487#0"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
@@ -523,22 +482,9 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/486#0"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/490#0"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/485#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -638,12 +584,7 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/487#1"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
@@ -695,22 +636,9 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/486#1"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/490#1"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/485#1"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -810,12 +738,7 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/487#2"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
@@ -867,22 +790,9 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/486#2"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/490#2"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/485#2"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -982,12 +892,7 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/487#3"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
@@ -1039,49 +944,15 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/486#3"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/490#3"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/485#3"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/481#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/481#1"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/347#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/479#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -1191,8 +1062,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Current vacancies.",
-													"level": "h2"
+													"content": "Current vacancies."
 												},
 												"draftRef": {
 													"tpl": "Root/352#1"
@@ -1237,22 +1107,9 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/350#1"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/352#1"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/348#1"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/container",
@@ -1425,21 +1282,12 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/427#0"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/428#0"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
 														"attributes": {
-															"content": "Warehouse Operative",
-															"level": "h3"
+															"content": "Warehouse Operative"
 														},
 														"draftRef": {
 															"tpl": "Root/430#0"
@@ -1486,21 +1334,12 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/426#0"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/430#0"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/button",
 												"attributes": {
-													"label": "Apply for this role",
-													"url": "?role=Warehouse%20Operative&team=Warehouse%20%26%20logistics#careers"
+													"label": "Apply for this role"
 												},
 												"draftRef": {
 													"tpl": "Root/432#0"
@@ -1519,22 +1358,9 @@
 													"textHash": "3828ba38",
 													"line": 606
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/432#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/425#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/432#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1685,21 +1511,12 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/427#1"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/428#1"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
 														"attributes": {
-															"content": "Multi-drop Delivery Driver",
-															"level": "h3"
+															"content": "Multi-drop Delivery Driver"
 														},
 														"draftRef": {
 															"tpl": "Root/430#1"
@@ -1746,21 +1563,12 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/426#1"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/430#1"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/button",
 												"attributes": {
-													"label": "Apply for this role",
-													"url": "?role=Multi-drop%20Delivery%20Driver&team=Warehouse%20%26%20logistics#careers"
+													"label": "Apply for this role"
 												},
 												"draftRef": {
 													"tpl": "Root/432#1"
@@ -1779,22 +1587,9 @@
 													"textHash": "3828ba38",
 													"line": 606
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/432#1"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/425#1"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/432#1"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -1945,21 +1740,12 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/427#2"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/428#2"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/heading",
 														"attributes": {
-															"content": "Trade Sales Executive",
-															"level": "h3"
+															"content": "Trade Sales Executive"
 														},
 														"draftRef": {
 															"tpl": "Root/430#2"
@@ -2006,21 +1792,12 @@
 														},
 														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/426#2"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/430#2"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/button",
 												"attributes": {
-													"label": "Apply for this role",
-													"url": "?role=Trade%20Sales%20Executive&team=Sales%20%26%20account%20management#careers"
+													"label": "Apply for this role"
 												},
 												"draftRef": {
 													"tpl": "Root/432#2"
@@ -2039,49 +1816,15 @@
 													"textHash": "3828ba38",
 													"line": 606
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/432#2"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/425#2"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/432#2"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/424#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/424#1"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/347#1"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/422#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#1"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -2191,8 +1934,7 @@
 											{
 												"name": "sgs/heading",
 												"attributes": {
-													"content": "Where you could work.",
-													"level": "h2"
+													"content": "Where you could work."
 												},
 												"draftRef": {
 													"tpl": "Root/403#0"
@@ -2237,15 +1979,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/401#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/403#0"
-											}
-										}
+										]
 									},
 									{
 										"name": "sgs/container",
@@ -2423,13 +2157,6 @@
 																		},
 																		"innerBlocks": [
 																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "Register interest"
-																				},
-																				"innerBlocks": []
-																			},
-																			{
 																				"name": "sgs/icon",
 																				"attributes": {},
 																				"draftRef": {
@@ -2453,29 +2180,11 @@
 																					"textHash": "1505",
 																					"line": 582
 																				},
-																				"innerBlocks": [],
-																				"draftSlots": {
-																					".sgs-icon__shape": {
-																						"tpl": "Root/419#0"
-																					}
-																				}
+																				"innerBlocks": []
 																			}
-																		],
-																		"draftSlots": {
-																			".sgs-container__inner > p:nth-of-type(1)": {
-																				"tpl": "Root/419#0"
-																			}
-																		}
+																		]
 																	}
-																],
-																"draftSlots": {
-																	".sgs-container__inner > p:nth-of-type(1)": {
-																		"tpl": "Root/414#0"
-																	},
-																	".sgs-container__inner > p:nth-of-type(2)": {
-																		"tpl": "Root/418#0"
-																	}
-																}
+																]
 															},
 															{
 																"name": "sgs/text",
@@ -2503,25 +2212,9 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/413#0"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/420#0"
-															}
-														}
+														]
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/411#0"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/412#0"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -2677,13 +2370,6 @@
 																		},
 																		"innerBlocks": [
 																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "Register interest"
-																				},
-																				"innerBlocks": []
-																			},
-																			{
 																				"name": "sgs/icon",
 																				"attributes": {},
 																				"draftRef": {
@@ -2707,29 +2393,11 @@
 																					"textHash": "1505",
 																					"line": 582
 																				},
-																				"innerBlocks": [],
-																				"draftSlots": {
-																					".sgs-icon__shape": {
-																						"tpl": "Root/419#1"
-																					}
-																				}
+																				"innerBlocks": []
 																			}
-																		],
-																		"draftSlots": {
-																			".sgs-container__inner > p:nth-of-type(1)": {
-																				"tpl": "Root/419#1"
-																			}
-																		}
+																		]
 																	}
-																],
-																"draftSlots": {
-																	".sgs-container__inner > p:nth-of-type(1)": {
-																		"tpl": "Root/414#1"
-																	},
-																	".sgs-container__inner > p:nth-of-type(2)": {
-																		"tpl": "Root/418#1"
-																	}
-																}
+																]
 															},
 															{
 																"name": "sgs/text",
@@ -2757,25 +2425,9 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/413#1"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/420#1"
-															}
-														}
+														]
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/411#1"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/412#1"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -2931,13 +2583,6 @@
 																		},
 																		"innerBlocks": [
 																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "Register interest"
-																				},
-																				"innerBlocks": []
-																			},
-																			{
 																				"name": "sgs/icon",
 																				"attributes": {},
 																				"draftRef": {
@@ -2961,29 +2606,11 @@
 																					"textHash": "1505",
 																					"line": 582
 																				},
-																				"innerBlocks": [],
-																				"draftSlots": {
-																					".sgs-icon__shape": {
-																						"tpl": "Root/419#2"
-																					}
-																				}
+																				"innerBlocks": []
 																			}
-																		],
-																		"draftSlots": {
-																			".sgs-container__inner > p:nth-of-type(1)": {
-																				"tpl": "Root/419#2"
-																			}
-																		}
+																		]
 																	}
-																],
-																"draftSlots": {
-																	".sgs-container__inner > p:nth-of-type(1)": {
-																		"tpl": "Root/414#2"
-																	},
-																	".sgs-container__inner > p:nth-of-type(2)": {
-																		"tpl": "Root/418#2"
-																	}
-																}
+																]
 															},
 															{
 																"name": "sgs/text",
@@ -3011,25 +2638,9 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/413#2"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/420#2"
-															}
-														}
+														]
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/411#2"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/412#2"
-													}
-												}
+												]
 											},
 											{
 												"name": "sgs/container",
@@ -3185,13 +2796,6 @@
 																		},
 																		"innerBlocks": [
 																			{
-																				"name": "sgs/text",
-																				"attributes": {
-																					"text": "Register interest"
-																				},
-																				"innerBlocks": []
-																			},
-																			{
 																				"name": "sgs/icon",
 																				"attributes": {},
 																				"draftRef": {
@@ -3215,29 +2819,11 @@
 																					"textHash": "1505",
 																					"line": 582
 																				},
-																				"innerBlocks": [],
-																				"draftSlots": {
-																					".sgs-icon__shape": {
-																						"tpl": "Root/419#3"
-																					}
-																				}
+																				"innerBlocks": []
 																			}
-																		],
-																		"draftSlots": {
-																			".sgs-container__inner > p:nth-of-type(1)": {
-																				"tpl": "Root/419#3"
-																			}
-																		}
+																		]
 																	}
-																],
-																"draftSlots": {
-																	".sgs-container__inner > p:nth-of-type(1)": {
-																		"tpl": "Root/414#3"
-																	},
-																	".sgs-container__inner > p:nth-of-type(2)": {
-																		"tpl": "Root/418#3"
-																	}
-																}
+																]
 															},
 															{
 																"name": "sgs/text",
@@ -3265,59 +2851,17 @@
 																},
 																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/413#3"
-															},
-															".sgs-container__inner > p:nth-of-type(2)": {
-																"tpl": "Root/420#3"
-															}
-														}
+														]
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/411#3"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/412#3"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/410#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/410#1"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/399#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/408#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/398#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#2"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -3505,8 +3049,7 @@
 													{
 														"name": "sgs/heading",
 														"attributes": {
-															"content": "Prefer to talk first?",
-															"level": "h3"
+															"content": "Prefer to talk first?"
 														},
 														"draftRef": {
 															"tpl": "Root/577#0"
@@ -3554,20 +3097,10 @@
 														},
 														"innerBlocks": [
 															{
-																"name": "sgs/icon-list",
+																"name": "sgs/container",
 																"attributes": {
-																	"markerType": "bullet",
-																	"items": [
-																		{
-																			"text": "Call our office during working hours"
-																		},
-																		{
-																			"text": "Email your CV to our team"
-																		},
-																		{
-																			"text": "Visit us at 55–58 Stratford Street North, B11 1BU"
-																		}
-																	]
+																	"tagName": "div",
+																	"layout": "flex"
 																},
 																"draftRef": {
 																	"tpl": "Root/580#0"
@@ -3588,48 +3121,67 @@
 																	"textHash": "6923675e",
 																	"line": 828
 																},
-																"innerBlocks": [],
-																"draftSlots": {
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
-																		"tpl": "Root/581#0"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-																		"tpl": "Root/580#0"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-																		"tpl": "Root/580#0"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__text": {
-																		"tpl": "Root/580#1"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__text": {
-																		"tpl": "Root/580#2"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)": {
-																		"tpl": "Root/580#1"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)": {
-																		"tpl": "Root/580#2"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(2) > .sgs-icon-list__icon": {
-																		"tpl": "Root/581#1"
-																	},
-																	".sgs-icon-list > .sgs-icon-list__item:nth-of-type(3) > .sgs-icon-list__icon": {
-																		"tpl": "Root/581#2"
-																	}
-																}
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/580#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "b95f0e66",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"aside",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "6e1e2503",
+																	"line": 828
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/580#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "b95f0e66",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"aside",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "8b8fe9e0",
+																	"line": 828
+																},
+																"innerBlocks": []
 															}
-														],
-														"draftSlots": {
-															".sgs-container__inner > p:nth-of-type(1)": {
-																"tpl": "Root/580#0"
-															}
-														}
+														]
 													},
 													{
 														"name": "sgs/icon-list",
 														"attributes": {
-															"markerType": "none",
 															"items": [
 																{
 																	"text": "",
@@ -3660,71 +3212,18 @@
 															"textHash": "f3097ff2",
 															"line": 832
 														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon": {
-																"tpl": "Root/584#0"
-															},
-															".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__text": {
-																"tpl": "Root/583#0"
-															},
-															".sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)": {
-																"tpl": "Root/582#0"
-															}
-														}
+														"innerBlocks": []
 													}
-												],
-												"draftSlots": {
-													".sgs-container__inner > p:nth-of-type(1)": {
-														"tpl": "Root/575#0"
-													},
-													".sgs-container__inner > p:nth-of-type(2)": {
-														"tpl": "Root/577#0"
-													}
-												}
+												]
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/573#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/574#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/542#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/572#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/541#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/345#3"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/316#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/344#0"
-			}
-		}
+		]
 	}
 ]

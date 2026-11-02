@@ -6,7 +6,7 @@ const generated = [
 	{ name: "gen-form-careers-0", text: false, structure: false, draft: {"tpl":"Root/550#0"}, live: ".cr-ref-form-careers-0" },
 	{ name: "gen-form-careers-1", text: false, structure: false, draft: {"tpl":"Root/551#0"}, live: ".cr-ref-form-careers-1" },
 	{ name: "gen-form-careers-2", text: false, structure: false, draft: {"tpl":"Root/552#0"}, live: ".cr-ref-form-careers-2" },
-	{ name: "gen-form-careers-3", text: false, structure: false, draft: {"tpl":"Root/553#0"}, live: ".cr-ref-form-careers-3", liveAt: {"column-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
+	{ name: "gen-form-careers-3", text: false, structure: false, draft: {"tpl":"Root/553#0"}, live: ".cr-ref-form-careers-3" },
 	{ name: "gen-form-careers-4", text: false, structure: false, draft: {"tpl":"Root/560#0"}, live: ".cr-ref-form-careers-4" },
 	{ name: "gen-form-careers-5", text: false, structure: false, draft: {"tpl":"Root/560#1"}, live: ".cr-ref-form-careers-5" },
 	{ name: "gen-form-careers-6", text: false, structure: false, draft: {"tpl":"Root/560#2"}, live: ".cr-ref-form-careers-6" },

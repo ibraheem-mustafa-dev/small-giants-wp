@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import { recheckManifest } from '../lib/intake-sandbox.mjs';
 import { staticCensus } from '../lib/intake-census.mjs';
 import { surfaceRoots, proposeSkeletons } from '../lib/intake-skeletons.mjs';
-import { parseReview, isoDay, reviewRows, renderReview, ROW_TYPES } from '../lib/intake-review.mjs';
+import { parseReview, isoDay, reviewRows, renderReview } from '../lib/intake-review.mjs';
 import { recordProblems, parseArgs } from '../lib/intake-run.mjs';
 import { collapseSkeletonRows, collapseSkeletons, collapseFlags, collapseMissing, paletteUsage, templateOf } from '../lib/intake-run-collapse.mjs';
 import { pageMapProblems } from '../lib/intake-pagemap.mjs';
@@ -104,7 +104,7 @@ test( 'a full run writes a schema-valid intake.json, review.md and page-map.json
 	assert.ok( intake.census.length > 20 && intake.census.every( ( r ) => r.reader || r.gap ) );
 	assert.match( intake.tools.browser, /^chromium \d/ );
 	assert.equal( intake.harness.clock, '2026-01-05T10:00:00.000Z' );
-	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'facts', 'proposals', 'missing features', 'notices' ] ) {
+	for ( const s of [ 'replay', 'census', 'page map', 'tokens and palette', 'site info', 'flags', 'draft defects', 'skeletons', 'facts', 'missing features', 'notices' ] ) {
 		assert.match( first.out, new RegExp( `\\[intake\\] ${ s }: done in \\d+\\.\\ds` ), `no timing line for ${ s }` );
 	}
 	// FR-48-7: the facts stage writes a schema-valid fact record whose instance keys come from the skeleton inventories.
@@ -137,32 +137,6 @@ test( 'MUST FAIL: the drawer renders only when its state opens; the skeleton ope
 	assert.equal( viaTrigger.skeletons[ 0 ].opened.draftId, 'Home:6' );
 	const none = await proposeSkeletons( { folder, harPath, surfaces: drawerOnly.map( ( s ) => ( { ...s, states: [], openedBy: null } ) ), client: CLIENT, census } );
 	assert.match( none.gaps[ 0 ].error, /no opener/, 'a surface nothing opens is a gap row naming what was tried' );
-} );
-
-test( 'MUST FAIL: the browser stage reads and saves inventories without proposing: a proposer that would throw is never called', async () => {
-	const folder = handoff( CLIENT );
-	const harPath = at( CLIENT, 'intake', 'replay', `${ recheckManifest( folder ).manifestHash }.har` );
-	const census = await staticCensus( { folder, entry: 'Home.dc.html', harPath } );
-	const footerOnly = surfaceRoots( { folder, census } ).surfaces.filter( ( s ) => 'footer' === s.slug );
-	const inventoriesDir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-inv-' ) );
-	const stale = () => {
-		throw new Error( 'facts.json is stale: the export changed since it was written' );
-	};
-	// The proposing run fails the surface on the stale record (the fault register row E1 found) ...
-	const proposing = await proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: stale } );
-	assert.match( proposing.gaps[ 0 ].error, /facts\.json is stale/ );
-	assert.match( proposing.skeletons[ 0 ].gap, /facts\.json is stale/ );
-	// ... the reading run saves the inventory and records no gap.
-	const reading = await proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: null, inventoriesDir } );
-	assert.deepEqual( reading.gaps, [] );
-	assert.equal( reading.skeletons[ 0 ].gap, undefined );
-	assert.deepEqual( reading.skeletons[ 0 ].rows, [] );
-	assert.ok( reading.skeletons[ 0 ].inventory.elements > 0 );
-	const saved = JSON.parse( fs.readFileSync( path.join( inventoriesDir, 'footer.json' ), 'utf8' ) );
-	assert.equal( saved.elements.length, reading.skeletons[ 0 ].inventory.elements );
-	assert.ok( saved.sources?.files, 'the saved inventory names the export it describes' );
-	await assert.rejects( proposeSkeletons( { folder, harPath, surfaces: footerOnly, client: CLIENT, census, propose: null } ), /needs inventoriesDir/ );
-	fs.rmSync( inventoriesDir, { recursive: true, force: true } );
 } );
 
 test( 'MUST FAIL: loop copies collapse to one skeleton row and repeated flags to one row, every original key kept', () => {
@@ -311,68 +285,4 @@ test( 'usage errors exit 2', () => {
 	assert.equal( spawnSync( process.execPath, [ INTAKE, 'fx', '--widths', 'wide' ], { encoding: 'utf8' } ).status, 2 );
 	assert.match( parseArgs( [ '--apply-review', 'fx', '--record' ] ).error, /takes only the client/ );
 	assert.deepEqual( parseArgs( [ 'fx', '--surfaces', 'a,b', '--widths', '375,1440' ] ).surfaces, [ 'a', 'b' ] );
-} );
-
-// A client of its own: a full run, then the two commands that used to lose work (Spec 48 FR-48-17).
-const KEEP = 'fx-keep';
-let keep;
-const keepFull = () => {
-	if ( keep ) {
-		return keep;
-	}
-	const hash = makeClient( KEEP );
-	placeHar( KEEP, hash );
-	keep = run( KEEP );
-	return keep;
-};
-
-test( 'MUST FAIL: --surfaces re-reads the named surfaces only and every other surface keeps its skeleton and its review.md rows', () => {
-	assert.equal( keepFull().code, 0, keep.out );
-	const before = read( KEEP, 'intake', 'intake.json' );
-	const slugs = Object.keys( before.skeletons );
-	assert.ok( slugs.length > 1, `the fixture needs more than one surface: ${ slugs }` );
-	const rowIdsBefore = reviewRows( before ).filter( ( r ) => 'skeleton-block' === r.rowType ).map( ( r ) => r.rowId );
-	const r = run( KEEP, '--surfaces', 'footer' );
-	assert.equal( r.code, 0, r.out );
-	assert.match( r.out, /--surfaces footer: those surfaces are read again; the other \d+ keep their saved skeletons/ );
-	const after = read( KEEP, 'intake', 'intake.json' );
-	assert.deepEqual( Object.keys( after.skeletons ), slugs, 'no surface is dropped, and the order holds' );
-	assert.deepEqual( reviewRows( after ).filter( ( x ) => 'skeleton-block' === x.rowType ).map( ( x ) => x.rowId ), rowIdsBefore );
-	const md = parseReview( bytes( KEEP, 'intake', 'review.md' ) );
-	rowIdsBefore.forEach( ( id ) => assert.ok( id in md.rowSection, `review.md lost ${ id }` ) );
-} );
-
-test( 'negative control: --surfaces refuses up front, naming a full run, when the export changed since the other surfaces were saved', () => {
-	assert.equal( keepFull().code, 0, keep.out );
-	const folder = handoff( KEEP );
-	const file = path.join( folder, 'Home.dc.html' );
-	const was = fs.readFileSync( file, 'utf8' );
-	const before = bytes( KEEP, 'intake', 'intake.json' );
-	try {
-		fs.writeFileSync( file, `${ was }\n<!-- edited -->\n` );
-		placeHar( KEEP, writeManifest( folder ) );
-		const r = run( KEEP, '--surfaces', 'footer' );
-		assert.equal( r.code, 1, r.out );
-		assert.match( r.out, /--surfaces refused: .*missing or stale, so only a full run \(without --surfaces\) keeps them/ );
-		assert.equal( bytes( KEEP, 'intake', 'intake.json' ), before, 'nothing is rewritten' );
-	} finally {
-		fs.writeFileSync( file, was );
-		placeHar( KEEP, writeManifest( folder ) );
-	}
-} );
-
-test( 'MUST FAIL: --rerun-skeletons carries a mark written into review.md and not yet applied', () => {
-	assert.equal( keepFull().code, 0, keep.out );
-	const intake = read( KEEP, 'intake', 'intake.json' );
-	const row = reviewRows( intake ).find( ( r ) => 'skeleton-block' === r.rowType );
-	assert.ok( row, 'the fixture has a skeleton row' );
-	const md = bytes( KEEP, 'intake', 'review.md' );
-	const mark = 'accept';
-	const edited = marked( md, { except: ROW_TYPES, marks: { [ row.rowId ]: mark } } );
-	assert.notEqual( edited, md );
-	fs.writeFileSync( at( KEEP, 'intake', 'review.md' ), edited );
-	const r = run( '--rerun-skeletons', KEEP );
-	assert.equal( r.code, 0, r.out );
-	assert.match( r.out, /review\.md: \d+ mark\(s\) not yet applied are carried/ );
-	assert.equal( parseReview( bytes( KEEP, 'intake', 'review.md' ) ).rowMarks[ row.rowId ], mark, 'the mark is still in the rewritten review.md' );
 } );

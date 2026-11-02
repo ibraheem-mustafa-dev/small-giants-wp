@@ -15,7 +15,7 @@ const facts = () => ( { elements: Object.fromEntries( [ gate( 'Page/55', compact
 function run( specs, f = facts() ) {
 	const flat = specs.map( ( s, i ) => ( { name: s.name, attributes: {}, innerBlocks: [], ref: `r${ i }` } ) );
 	const nodes = specs.map( ( s, index ) => ( { index, name: s.name, parent: s.parent ?? null, node: { draftRef: null === s.n ? null : { tpl: `Page/${ s.n }#0` } }, children: [], targets: [] } ) );
-	return { flat, nodes, gate: placedChildWidening( nodes, f ), ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts: f, db, keyScope: 'acme|surface', scope: 'header', entries: [], date: '2026-10-23' } ) };
+	return { flat, nodes, gate: placedChildWidening( nodes, f ), ...widthGateWrites( { nodes, flat, refOf: ( n ) => n.ref, facts: f, db, scope: 'header', entries: [], date: '2026-10-23' } ) };
 }
 const SPECS = [ { name: 'sgs/container', n: 56 }, { name: 'sgs/nav-bar-menu', n: 45, parent: 0 }, { name: 'sgs/button', n: 57, parent: 0 }, { name: 'sgs/text', n: null, parent: 0 } ];
 

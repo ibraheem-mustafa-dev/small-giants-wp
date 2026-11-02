@@ -9,10 +9,7 @@
       "textHash": "1505",
       "line": 10
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/8#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-1": {
     "tpl": "Root/8#0",
@@ -26,11 +23,7 @@
       "textHash": "1505",
       "line": 11
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/9#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/15#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-2": {
     "tpl": "Root/9#0",
@@ -45,11 +38,7 @@
       "textHash": "1505",
       "line": 12
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/10#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/12#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-3": {
     "tpl": "Root/10#0",
@@ -65,10 +54,7 @@
       "textHash": "7c85fa4a",
       "line": 12
     },
-    "slots": {
-      ".sgs-button__label": "Root/10#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-4": {
     "tpl": "Root/12#0",
@@ -84,10 +70,7 @@
       "textHash": "7c8a2f61",
       "line": 12
     },
-    "slots": {
-      ".sgs-button__label": "Root/12#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-5": {
     "tpl": "Root/14#0",
@@ -103,7 +86,7 @@
       "textHash": "a97420cb",
       "line": 12
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-6": {
     "tpl": "Root/15#0",
@@ -118,7 +101,7 @@
       "textHash": "1505",
       "line": 13
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-7": {
     "tpl": "Root/19#0",
@@ -136,7 +119,7 @@
       "textHash": "7a501834",
       "line": 17
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-8": {
     "tpl": "Root/20#0",
@@ -154,7 +137,7 @@
       "textHash": "9d5d697e",
       "line": 18
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-9": {
     "tpl": "Root/21#0",
@@ -171,11 +154,7 @@
       "textHash": "1505",
       "line": 20
     },
-    "slots": {
-      ".sgs-button:nth-of-type(1)": "Root/23#0",
-      ".sgs-button:nth-of-type(2)": "Root/23#1"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-10": {
     "tpl": "Root/23#0",
@@ -193,7 +172,7 @@
       "textHash": "1505",
       "line": 22
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-11": {
     "tpl": "Root/23#1",
@@ -211,7 +190,7 @@
       "textHash": "1505",
       "line": 22
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-12": {
     "tpl": "Root/23#2",
@@ -229,7 +208,7 @@
       "textHash": "1505",
       "line": 22
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-13": {
     "tpl": "Root/23#3",
@@ -247,7 +226,25 @@
       "textHash": "1505",
       "line": 22
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-14": {
+    "tpl": "Root/26#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c99acba9",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "da49f8a1",
+      "line": 29
+    },
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-15": {
     "tpl": "Root/27#0",
@@ -265,9 +262,27 @@
       "textHash": "a97420cb",
       "line": 30
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-16": {
+    "tpl": "Root/28#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "fee28b27",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "87224e30",
+      "line": 31
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-17": {
     "tpl": "Root/30#0",
     "fingerprint": {
       "tag": "p",
@@ -283,9 +298,617 @@
       "textHash": "23d7703c",
       "line": 32
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
   "cr-ref-product-18": {
+    "tpl": "Root/34#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "8cc8af68",
+      "line": 37
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-19": {
+    "tpl": "Root/35#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d737b835",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 38
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-20": {
+    "tpl": "Root/44#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9d8276b5",
+      "line": 39
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-21": {
+    "tpl": "Root/45#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 40
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-22": {
+    "tpl": "Root/50#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ee66e0e0",
+      "line": 41
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-23": {
+    "tpl": "Root/51#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 42
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-24": {
+    "tpl": "Root/55#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "3ca36f58",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-25": {
+    "tpl": "Root/56#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4715e8f2",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e54c0200",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-26": {
+    "tpl": "Root/57#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "d1ce9cd1",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "979ef79b",
+      "line": 43
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-27": {
+    "tpl": "Root/58#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 44
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-28": {
+    "tpl": "Root/62#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7c22a4aa",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b113f0db",
+      "line": 45
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-29": {
+    "tpl": "Root/63#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "555b7ab8",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 47
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-30": {
+    "tpl": "Root/95#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "8ff7552a",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 74
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-31": {
+    "tpl": "Root/97#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "14f5fbb8",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "label",
+        "span"
+      ],
+      "textHash": "889e494b",
+      "line": 75
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-32": {
+    "tpl": "Root/98#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "d1ce9cd1",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "label",
+        "span"
+      ],
+      "textHash": "9d7d78cd",
+      "line": 75
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-33": {
+    "tpl": "Root/108#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp1 scp2",
+      "styleHash": "3dc42ff8",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "8be59bc9",
+      "line": 92
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-34": {
+    "tpl": "Root/109#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "38028851",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 95
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-35": {
+    "tpl": "Root/110#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "12d10dc4",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9b33b23f",
+      "line": 96
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-36": {
+    "tpl": "Root/111#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "c48d6f58",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "29283",
+      "line": 96
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-37": {
+    "tpl": "Root/112#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "12d10dc4",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "25807db9",
+      "line": 97
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-38": {
+    "tpl": "Root/113#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f32e8f7c",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "29437",
+      "line": 97
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-39": {
+    "tpl": "Root/114#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "12d10dc4",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "73ae89d8",
+      "line": 98
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-40": {
+    "tpl": "Root/115#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "6a5ed336",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "2b506",
+      "line": 98
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-41": {
+    "tpl": "Root/119#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "ee7c9410",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "779f7c5c",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-42": {
+    "tpl": "Root/120#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "147bceab",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-43": {
+    "tpl": "Root/122#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "ef332868",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "828a7495",
+      "line": 105
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-44": {
+    "tpl": "Root/119#1",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "ee7c9410",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "cfd6a179",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-45": {
+    "tpl": "Root/120#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e7f14bfa",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-46": {
+    "tpl": "Root/119#2",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "ee7c9410",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c4620420",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-47": {
+    "tpl": "Root/120#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e7f14bfa",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-48": {
+    "tpl": "Root/119#3",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "ee7c9410",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "62929a25",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-49": {
+    "tpl": "Root/120#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e7f14bfa",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "2b58e",
+      "line": 104
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-50": {
     "tpl": "Root/123#0",
     "fingerprint": {
       "tag": "section",
@@ -298,13 +921,9 @@
       "textHash": "1505",
       "line": 112
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/124#0",
-      ".sgs-container__inner > p:nth-of-type(2)": "Root/125#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-19": {
+  "cr-ref-product-51": {
     "tpl": "Root/124#0",
     "fingerprint": {
       "tag": "div",
@@ -318,9 +937,9 @@
       "textHash": "a3bf47f2",
       "line": 113
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-20": {
+  "cr-ref-product-52": {
     "tpl": "Root/125#0",
     "fingerprint": {
       "tag": "h2",
@@ -334,9 +953,9 @@
       "textHash": "8f55c771",
       "line": 114
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-21": {
+  "cr-ref-product-53": {
     "tpl": "Root/126#0",
     "fingerprint": {
       "tag": "div",
@@ -350,9 +969,9 @@
       "textHash": "1505",
       "line": 115
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-22": {
+  "cr-ref-product-54": {
     "tpl": "Root/128#0",
     "fingerprint": {
       "tag": "article",
@@ -367,14 +986,100 @@
       "textHash": "1505",
       "line": 117
     },
-    "slots": {
-      ".sgs-testimonial__rating-meta > .sgs-testimonial__date": "Root/132#0",
-      ".sgs-testimonial__quote": "Root/131#0",
-      ".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": "Root/133#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-23": {
+  "cr-ref-product-55": {
+    "tpl": "Root/129#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "35c74aac",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "af1300e0",
+      "line": 118
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-56": {
+    "tpl": "Root/130#0",
+    "fingerprint": {
+      "tag": "h3",
+      "cls": "",
+      "styleHash": "e3748a76",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "d0d87ed0",
+      "line": 119
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-57": {
+    "tpl": "Root/131#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "c676f983",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "61c35df3",
+      "line": 120
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-58": {
+    "tpl": "Root/132#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "25d16f6d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "e461fe20",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-59": {
+    "tpl": "Root/133#0",
+    "fingerprint": {
+      "tag": "b",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article",
+        "div"
+      ],
+      "textHash": "5973ef",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-60": {
     "tpl": "Root/128#1",
     "fingerprint": {
       "tag": "article",
@@ -389,14 +1094,100 @@
       "textHash": "1505",
       "line": 117
     },
-    "slots": {
-      ".sgs-testimonial__rating-meta > .sgs-testimonial__date": "Root/132#1",
-      ".sgs-testimonial__quote": "Root/131#1",
-      ".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": "Root/133#1"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-24": {
+  "cr-ref-product-61": {
+    "tpl": "Root/129#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "35c74aac",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "af1300e0",
+      "line": 118
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-62": {
+    "tpl": "Root/130#1",
+    "fingerprint": {
+      "tag": "h3",
+      "cls": "",
+      "styleHash": "e3748a76",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "be1e863e",
+      "line": 119
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-63": {
+    "tpl": "Root/131#1",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "c676f983",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "d717b754",
+      "line": 120
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-64": {
+    "tpl": "Root/132#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "25d16f6d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "badab0e",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-65": {
+    "tpl": "Root/133#1",
+    "fingerprint": {
+      "tag": "b",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article",
+        "div"
+      ],
+      "textHash": "df29822e",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-66": {
     "tpl": "Root/128#2",
     "fingerprint": {
       "tag": "article",
@@ -411,14 +1202,100 @@
       "textHash": "1505",
       "line": 117
     },
-    "slots": {
-      ".sgs-testimonial__rating-meta > .sgs-testimonial__date": "Root/132#2",
-      ".sgs-testimonial__quote": "Root/131#2",
-      ".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name": "Root/133#2"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-25": {
+  "cr-ref-product-67": {
+    "tpl": "Root/129#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "35c74aac",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "af1300e0",
+      "line": 118
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-68": {
+    "tpl": "Root/130#2",
+    "fingerprint": {
+      "tag": "h3",
+      "cls": "",
+      "styleHash": "e3748a76",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "764719c",
+      "line": 119
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-69": {
+    "tpl": "Root/131#2",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "c676f983",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "47f11829",
+      "line": 120
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-70": {
+    "tpl": "Root/132#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "25d16f6d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article"
+      ],
+      "textHash": "badab0e",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-71": {
+    "tpl": "Root/133#2",
+    "fingerprint": {
+      "tag": "b",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "article",
+        "div"
+      ],
+      "textHash": "6fe6f260",
+      "line": 121
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-72": {
     "tpl": "Root/134#0",
     "fingerprint": {
       "tag": "section",
@@ -431,12 +1308,9 @@
       "textHash": "1505",
       "line": 127
     },
-    "slots": {
-      ".sgs-container__inner > p:nth-of-type(1)": "Root/135#0"
-    },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-26": {
+  "cr-ref-product-73": {
     "tpl": "Root/135#0",
     "fingerprint": {
       "tag": "h2",
@@ -450,9 +1324,25 @@
       "textHash": "16d5a323",
       "line": 128
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
   },
-  "cr-ref-product-29": {
+  "cr-ref-product-74": {
+    "tpl": "Root/136#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f644b8d8",
+      "parentTags": [
+        "main",
+        "div",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 129
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-75": {
     "tpl": "Root/138#0",
     "fingerprint": {
       "tag": "div",
@@ -467,11 +1357,655 @@
       "textHash": "1505",
       "line": 131
     },
-    "slots": {
-      ".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title": "Root>ProductCard@139#0/1#0",
-      ".sgs-product-card__body": "Root/139#0",
-      ".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag": "Root>ProductCard@139#0/4#0"
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-76": {
+    "tpl": "Root/139#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 131
     },
-    "draft": "8a4e3beea02443ed"
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-77": {
+    "tpl": "Root>ProductCard@139#0/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpd",
+      "styleHash": "95a16264",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-78": {
+    "tpl": "Root>ProductCard@139#0/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "f32b036e",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-79": {
+    "tpl": "Root>ProductCard@139#0/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-80": {
+    "tpl": "Root>ProductCard@139#0/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "70e26b00",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-81": {
+    "tpl": "Root>ProductCard@139#0/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a17944b6",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-82": {
+    "tpl": "Root>ProductCard@139#0/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-83": {
+    "tpl": "Root>ProductCard@139#0/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5955f3",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-84": {
+    "tpl": "Root>ProductCard@139#0/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e29dd066",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-85": {
+    "tpl": "Root>ProductCard@139#0/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp8 scp9",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-86": {
+    "tpl": "Root/138#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 131
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-87": {
+    "tpl": "Root/139#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 131
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-88": {
+    "tpl": "Root>ProductCard@139#1/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpd",
+      "styleHash": "d0e900f0",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-89": {
+    "tpl": "Root>ProductCard@139#1/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "94105535",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-90": {
+    "tpl": "Root>ProductCard@139#1/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-91": {
+    "tpl": "Root>ProductCard@139#1/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "eacd19e8",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-92": {
+    "tpl": "Root>ProductCard@139#1/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ab7465a6",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-93": {
+    "tpl": "Root>ProductCard@139#1/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-94": {
+    "tpl": "Root>ProductCard@139#1/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b8414e2",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-95": {
+    "tpl": "Root>ProductCard@139#1/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f6ec68c0",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-96": {
+    "tpl": "Root>ProductCard@139#1/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp8 scp9",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-97": {
+    "tpl": "Root/138#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 131
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-98": {
+    "tpl": "Root/139#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sc-host",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 131
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-99": {
+    "tpl": "Root>ProductCard@139#2/0#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpd",
+      "styleHash": "4dccaa38",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-100": {
+    "tpl": "Root>ProductCard@139#2/1#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "7de396ec",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-101": {
+    "tpl": "Root>ProductCard@139#2/4#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2820ce14",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-102": {
+    "tpl": "Root>ProductCard@139#2/5#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "b5b0ab3d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "550b4971",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-103": {
+    "tpl": "Root>ProductCard@139#2/7#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "fd1cab74",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "8e5f5fef",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-104": {
+    "tpl": "Root>ProductCard@139#2/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "eb982417",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-105": {
+    "tpl": "Root>ProductCard@139#2/9#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "92425b87",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b841400",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-106": {
+    "tpl": "Root>ProductCard@139#2/10#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "57c181e9",
+      "line": 15
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-product-107": {
+    "tpl": "Root>ProductCard@139#2/11#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp8 scp9",
+      "styleHash": "5bd0084d",
+      "parentTags": [
+        "main",
+        "div",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "31c89e55",
+      "line": 17
+    },
+    "draft": "4cd995654ff1103b"
   }
 }

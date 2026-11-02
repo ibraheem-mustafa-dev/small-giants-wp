@@ -24,12 +24,10 @@ test( 'container padding-top: one side of a box inside a tier object', () => {
 	assert.deepEqual( r.writes, [ { attr: 'padding', value: { mobile: { top: '56px' }, desktop: { top: '104px' } }, merge: 'deep' } ] );
 } );
 
-// A background image is the uploaded attachment, found in the media map by the file it names (FR-48-39).
-const MEDIA = { map: { sites: { 'acme-test': { files: [ { asset: 'sites/acme/handoff/assets/a.jpg', id: 1, url: 'https://cdn.test/a.jpg' }, { asset: 'sites/acme/handoff/assets/b.jpg', id: 2, url: 'https://cdn.test/b.jpg' } ] } } }, site: 'acme-test', origin: 'https://x.test' };
 test( 'container background image: one flat_sibling attribute per tier', () => {
-	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/assets/a.jpg")', 375: 'url("https://x.test/assets/b.jpg")' } },
-		{ db, snapshot, calibration: cal( { backgroundImage: { slot: '', property: 'background-image' }, backgroundImageTablet: { slot: '', property: 'background-image' }, backgroundImageMobile: { slot: '', property: 'background-image' } } ), media: MEDIA } );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value.url ] ).sort(), [ [ 'backgroundImage', 'https://cdn.test/a.jpg' ], [ 'backgroundImageMobile', 'https://cdn.test/b.jpg' ] ] );
+	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/a.jpg")', 375: 'url("https://x.test/b.jpg")' } },
+		{ db, snapshot, calibration: cal( { backgroundImage: { slot: '', property: 'background-image' }, backgroundImageTablet: { slot: '', property: 'background-image' }, backgroundImageMobile: { slot: '', property: 'background-image' } } ) } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value.url ] ).sort(), [ [ 'backgroundImage', 'https://x.test/a.jpg' ], [ 'backgroundImageMobile', 'https://x.test/b.jpg' ] ] );
 } );
 
 test( 'a colour snaps to the palette slug', () => {
@@ -436,15 +434,4 @@ test( 'scrim blur: a measured backdrop-filter blur() writes the length the per-d
 	// A filter list the setting cannot hold (a second function) is a gap, never written as text.
 	const list = resolve( { block: 'sgs/nav-drawer', slot: '@scrim', prop: 'backdrop-filter', perWidth: { 1440: 'blur(2px) saturate(1.2)' } }, { db, snapshot, calibration } );
 	assert.ok( list.gap, `expected a gap, got ${ JSON.stringify( list ) }` );
-} );
-
-// A weight is written in the type the setting declares. MUST FAIL: writing every weight as a string made indus-foods'
-// header tree fail the builder's validation ("featuredFontWeight must be number, got \"600\"", 2026-11-01).
-test( 'font-weight: a number setting takes a number, a string setting a string', () => {
-	const slot = '.sgs-nav-bar-menu__link';
-	const at = { 375: '600', 768: '600', 1440: '600', 1920: '600' };
-	const num = resolve( { block: 'sgs/nav-bar-menu', slot, prop: 'font-weight', perWidth: at }, { db, snapshot, calibration: cal( { featuredFontWeight: { slot, property: 'font-weight' } } ) } );
-	assert.deepEqual( num.writes, [ { attr: 'featuredFontWeight', value: 600, merge: 'replace' } ] );
-	const str = resolve( { block: 'sgs/nav-bar-menu', slot, prop: 'font-weight', perWidth: at }, { db, snapshot, calibration: cal( { itemFontWeight: { slot, property: 'font-weight' } } ) } );
-	assert.deepEqual( str.writes, [ { attr: 'itemFontWeight', value: '600', merge: 'replace' } ] );
 } );

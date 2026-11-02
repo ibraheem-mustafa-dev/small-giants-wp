@@ -293,18 +293,3 @@ test( 'with no drawer menu in the page map the drawer binds the header menu', ()
 	assert.match( site.posts[ rows.find( ( r ) => 'sgs_drawer' === r.postType ).id ].content, new RegExp( `"sgs/nav-drawer-menu","attributes":\\{"ref":${ header }\\}` ) );
 	assert.deepEqual( tally( planOn( site, rows ).actions ), { creates: 0, changes: 0, adopts: 0 } );
 } );
-
-// WordPress stores a menu item title equal to its object's own title as empty and shows the object's title. MUST FAIL:
-// a strict compare planned the title again after every apply and the final read failed (mamas-munches-redesign menu
-// "header" item "Shop" on local-mamas, 2026-11-01: title "" -> "Shop" forever).
-test( 'a menu item whose stored title is empty but shows the wanted title plans no title change', () => {
-	const site = fakeSite();
-	const rows = run( site, tmpMap( ROWS() ) );
-	const titled = site.items.find( ( i ) => i.title );
-	const wanted = titled.title;
-	titled.title = '';
-	const before = planOn( site, rows ).actions.filter( ( a ) => 'item-update' === a.type && a.title === wanted );
-	assert.equal( before.length, 1, 'an empty stored title with no shown title is still planned' );
-	titled.shown = wanted;
-	assert.deepEqual( planOn( site, rows ).actions.filter( ( a ) => 'item-update' === a.type && a.title ), [] );
-} );

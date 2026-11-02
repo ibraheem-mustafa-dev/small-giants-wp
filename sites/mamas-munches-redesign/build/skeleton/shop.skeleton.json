@@ -55,7 +55,7 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/label",
+								"name": "sgs/text",
 								"attributes": {
 									"text": "fresh from Zainab’s kitchen"
 								},
@@ -80,8 +80,7 @@
 							{
 								"name": "sgs/heading",
 								"attributes": {
-									"content": "The shop",
-									"level": "h1"
+									"content": "The shop"
 								},
 								"draftRef": {
 									"tpl": "Root/13#0"
@@ -123,47 +122,64 @@
 									"line": 17
 								},
 								"innerBlocks": []
-							}
-						],
-						"draftSlots": {
-							".sgs-container__svg-bg": {
-								"tpl": "Root/15#0"
 							},
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/12#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/13#0"
+							{
+								"name": "sgs/form-field-select",
+								"attributes": {
+									"label": "Sort"
+								},
+								"draftRef": {
+									"tpl": "Root/17#0"
+								},
+								"draftFingerprint": {
+									"tag": "select",
+									"cls": "",
+									"styleHash": "fa7c65ff",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 21
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/17#0"
+									}
+								}
 							}
-						}
+						]
 					},
 					{
-						"name": "woocommerce/product-filters",
+						"name": "sgs/option-picker",
 						"attributes": {},
-						"innerBlocks": [
+						"draftRef": {
+							"tpl": "Root/21#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "bbda8358",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 28
+						},
+						"innerBlocks": [],
+						"handover": [
 							{
-								"name": "woocommerce/product-filter-taxonomy",
-								"attributes": {
-									"taxonomy": "product_cat",
-									"displayStyle": "woocommerce/product-filter-chips",
-									"showCounts": true
-								},
-								"innerBlocks": [
-									{
-										"name": "woocommerce/product-filter-chips",
-										"attributes": {},
-										"innerBlocks": []
-									}
-								]
+								"owner": "behaviour",
+								"kind": "behaviour",
+								"detail": "the choice narrows a list on this page: wire it to the list's filter"
 							}
 						]
 					}
-				],
-				"draftSlots": {
-					".sgs-hero__content": {
-						"tpl": "Root/9#0"
-					}
-				}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -186,6 +202,28 @@
 				},
 				"innerBlocks": [
 					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "5 treats to choose from"
+						},
+						"draftRef": {
+							"tpl": "Root/27#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "80cc02a7",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "dfdc8225",
+							"line": 37
+						},
+						"innerBlocks": []
+					},
+					{
 						"name": "woocommerce/product-collection",
 						"attributes": {
 							"queryId": 0,
@@ -205,25 +243,6 @@
 							]
 						},
 						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"className": "sgs-shop-toolbar"
-								},
-								"innerBlocks": [
-									{
-										"name": "woocommerce/catalog-sorting",
-										"attributes": {},
-										"innerBlocks": []
-									},
-									{
-										"name": "woocommerce/product-results-count",
-										"attributes": {},
-										"innerBlocks": []
-									}
-								]
-							},
 							{
 								"name": "woocommerce/product-template",
 								"attributes": {},
@@ -249,17 +268,6 @@
 											],
 											"textHash": "1505",
 											"line": 40
-										},
-										"draftSlots": {
-											".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__title": {
-												"tpl": "Root>ProductCard@31#0/1#0"
-											},
-											".sgs-product-card__body": {
-												"tpl": "Root/31#0"
-											},
-											".sgs-product-card__body > .sgs-product-card__title-row > .sgs-product-card__attribute-tag": {
-												"tpl": "Root>ProductCard@31#0/4#0"
-											}
 										}
 									}
 								]
@@ -312,7 +320,7 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/label",
+										"name": "sgs/text",
 										"attributes": {
 											"text": "your cookie, your way ✦"
 										},
@@ -336,9 +344,9 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Build your own box"
+											"text": "Build your own box"
 										},
 										"draftRef": {
 											"tpl": "Root/35#0"
@@ -408,13 +416,6 @@
 										},
 										"innerBlocks": [
 											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Start building"
-												},
-												"innerBlocks": []
-											},
-											{
 												"name": "sgs/button",
 												"attributes": {
 													"label": "→",
@@ -438,29 +439,11 @@
 													"textHash": "29437",
 													"line": 49
 												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-button__label": {
-														"tpl": "Root/38#0"
-													}
-												}
+												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/38#0"
-											}
-										}
+										]
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/34#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/35#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/container",
@@ -487,9 +470,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/label",
+										"name": "sgs/heading",
 										"attributes": {
-											"text": "never run out"
+											"content": "never run out"
 										},
 										"draftRef": {
 											"tpl": "Root/40#0"
@@ -511,9 +494,9 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Subscribe & save 10%"
+											"text": "Subscribe & save 10%"
 										},
 										"draftRef": {
 											"tpl": "Root/41#0"
@@ -584,7 +567,7 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/label",
+												"name": "sgs/text",
 												"attributes": {
 													"text": "Free delivery on 20 and 40 packs"
 												},
@@ -609,7 +592,7 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/label",
+												"name": "sgs/text",
 												"attributes": {
 													"text": "A guaranteed slot in every bake"
 												},
@@ -634,7 +617,7 @@
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/label",
+												"name": "sgs/text",
 												"attributes": {
 													"text": "Skip, swap flavours or cancel online"
 												},
@@ -658,15 +641,7 @@
 												},
 												"innerBlocks": []
 											}
-										],
-										"draftSlots": {
-											".sgs-container__inner > p:nth-of-type(1)": {
-												"tpl": "Root/44#0"
-											},
-											".sgs-container__inner > p:nth-of-type(2)": {
-												"tpl": "Root/44#1"
-											}
-										}
+										]
 									}
 								],
 								"handover": [
@@ -675,25 +650,9 @@
 										"kind": "link",
 										"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" opens /product/zookies/; its draft query ?sub=1 has no site address and is dropped"
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/40#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/41#0"
-									}
-								}
+								]
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/33#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/39#0"
-							}
-						}
+						]
 					},
 					{
 						"name": "sgs/container",
@@ -742,9 +701,9 @@
 								},
 								"innerBlocks": [
 									{
-										"name": "sgs/label",
+										"name": "sgs/heading",
 										"attributes": {
-											"text": "buying for someone?"
+											"content": "buying for someone?"
 										},
 										"draftRef": {
 											"tpl": "Root/47#0"
@@ -766,9 +725,9 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/heading",
+										"name": "sgs/text",
 										"attributes": {
-											"content": "Find a gift by moment or budget"
+											"text": "Find a gift by moment or budget"
 										},
 										"draftRef": {
 											"tpl": "Root/48#0"
@@ -813,15 +772,7 @@
 										},
 										"innerBlocks": []
 									}
-								],
-								"draftSlots": {
-									".sgs-container__inner > p:nth-of-type(1)": {
-										"tpl": "Root/47#0"
-									},
-									".sgs-container__inner > p:nth-of-type(2)": {
-										"tpl": "Root/48#0"
-									}
-								}
+								]
 							},
 							{
 								"name": "sgs/media",
@@ -844,37 +795,10 @@
 								},
 								"innerBlocks": []
 							}
-						],
-						"draftSlots": {
-							".sgs-container__inner > p:nth-of-type(1)": {
-								"tpl": "Root/46#0"
-							},
-							".sgs-container__inner > p:nth-of-type(2)": {
-								"tpl": "Root/50#0"
-							}
-						}
+						]
 					}
-				],
-				"draftSlots": {
-					".sgs-container__svg-bg": {
-						"tpl": "Root/27#0"
-					},
-					".sgs-container__inner > p:nth-of-type(1)": {
-						"tpl": "Root/32#0"
-					},
-					".sgs-container__inner > p:nth-of-type(2)": {
-						"tpl": "Root/45#0"
-					}
-				}
+				]
 			}
-		],
-		"draftSlots": {
-			".sgs-container__inner > p:nth-of-type(1)": {
-				"tpl": "Root/9#0"
-			},
-			".sgs-container__inner > p:nth-of-type(2)": {
-				"tpl": "Root/26#0"
-			}
-		}
+		]
 	}
 ]

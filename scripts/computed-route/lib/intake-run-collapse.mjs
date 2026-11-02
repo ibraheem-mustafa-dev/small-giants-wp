@@ -60,9 +60,7 @@ export function collapseSkeletonRows( surface, rows ) {
 // Every surface's rows collapsed, first within each surface (collapseSkeletonRows), then across surfaces: a template
 // element a single-file draft renders on many surfaces (a page section shared by every route) is one row in the first
 // surface that shows it, with `alsoIn` listing every other surface and its keys, and its `copies` counting them all.
-// Rows proposing another block or action for the same element stay apart, and so do rows whose rules now propose
-// different things (`ruleWould`): a saved choice applied to both copies hides that the rules want each surface otherwise
-// (a form's layout root kept on its page and unwrapped in the saved form), and one mark must not settle both. `skeletons` is proposeSkeletons' list;
+// Rows proposing another block or action for the same element stay apart. `skeletons` is proposeSkeletons' list;
 // returns { skeletons: { slug: entry }, before, after, withinSurfaces } (row counts summed over surfaces). A surface
 // whose every row moved to an earlier surface keeps its entry with `rowsIn` naming where they are. Screenshots are
 // dropped (intake takes none) and snippets cut to 160 characters.
@@ -79,7 +77,7 @@ export function collapseSkeletons( skeletons ) {
 			const { screenshots, ...keep } = r;
 			void screenshots;
 			const row = { ...keep, ...( 'string' === typeof keep.snippet ? { snippet: keep.snippet.slice( 0, 160 ) } : {} ) };
-			const k = `${ row.draftId }|${ row.block ?? '' }|${ row.action ?? '' }|${ row.ruleWould?.label ?? '' }`;
+			const k = `${ row.draftId }|${ row.block ?? '' }|${ row.action ?? '' }`;
 			const home = first.get( k );
 			if ( home && home.surface !== surface ) {
 				home.row.alsoIn = [ ...( home.row.alsoIn || [] ), { surface, keys: row.keys || [ row.key ] } ];
@@ -146,7 +144,7 @@ const LINE_LENGTH = {
 // (`channel: 'whatsapp'`). A background on an element at least nine tenths of the reading's width is a band (`band:
 // true`), and a painted line sums the pixels it draws (`length`: the box width for a top or bottom border, its height
 // for a side, its perimeter for an outline).
-export function paletteUsage( records, grounds = new Map(), texts = new Map(), channels = new Map(), words = null ) {
+export function paletteUsage( records, grounds = new Map(), texts = new Map(), channels = new Map() ) {
 	const counts = new Map();
 	for ( const r of records ) {
 		const c = r.computed || {};
@@ -161,10 +159,9 @@ export function paletteUsage( records, grounds = new Map(), texts = new Map(), c
 			const ground = 'color' === property ? colourHex( grounds.get( at ) ) : null;
 			const text = 'color' === property && texts.has( at );
 			const channel = channels.get( at ) ?? null;
-			const wordy = text && words ? words.has( at ) : null;
 			const band = 'background-color' === property && ( r.box?.w ?? 0 ) >= 0.9 * ( r.width || 1440 );
-			const k = [ hex, property, draftId, tag, ground, text, wordy, channel, band ].join( '\u0000' );
-			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ), ...( null !== wordy ? { words: wordy } : {} ),
+			const k = [ hex, property, draftId, tag, ground, text, channel, band ].join( '\u0000' );
+			const u = counts.get( k ) || { hex, property, draftId, count: 0, ...( tag ? { tag } : {} ), ...( ground ? { ground } : {} ), ...( text ? { text } : {} ),
 				...( channel ? { channel } : {} ), ...( band ? { band } : {} ) };
 			u.count++;
 			if ( text ) {

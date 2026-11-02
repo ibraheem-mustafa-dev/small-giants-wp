@@ -16,7 +16,6 @@
 // condition (`partial`) hides only where its width part is false.
 
 import { setAttr } from './tree.mjs';
-import { customCssPuts } from './custom-css-writer.mjs';
 import fs from 'node:fs';
 import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
@@ -138,10 +137,20 @@ export function mediaRule( [ lo, hi ], body = '& { display: none; }' ) {
 	return `@media ${ cond } { ${ body } }`;
 }
 
-// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label), through the one
-// Custom CSS writer (lib/custom-css-writer.mjs::customCssPuts) with the caller's counter `wgate<index>` (made unique by `keyScope`): [ { attr, value, prop } ]
-// to write, appending to what the node holds; empty when the node already holds the rule text or the scoper refuses it.
-export const scopedCssPuts = ( node, { css, label, index, why, keyScope } ) => customCssPuts( node, { css, label, why, scope: keyScope, key: `wgate${ index }` } );
+// The three settings that hold a scoped rule on a node (Additional CSS, its scope key and its label): [ { attr, value, prop } ]
+// to write, appending to what the node holds; empty when the node already holds the rule text. Every writer of a scoped
+// rule (the width gate, the width ladder) goes through this one function.
+export function scopedCssPuts( node, { css, label, index, why } ) {
+	const had = ( a ) => node.attributes?.[ a ] || '';
+	if ( had( 'sgsCustomCss' ).includes( css ) ) {
+		return [];
+	}
+	return [
+		{ attr: 'sgsCustomCss', value: [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ), prop: `${ why }: scoped @media rule` },
+		{ attr: 'sgsCustomCssId', value: had( 'sgsCustomCssId' ) || `wgate${ index }`.slice( 0, 16 ), prop: `${ why }: scope key` },
+		{ attr: 'sgsCustomCssNote', value: [ had( 'sgsCustomCssNote' ), label ].filter( Boolean ).join( '; ' ), prop: `${ why }: label` },
+	];
+}
 
 // The setting each block draws its own alternative below (the nav's burger under its collapse point), as the skeleton
 // rules name it: data/skeleton-decisions.json `rules.navigation.collapseAttribute`, { block: attr }.
@@ -268,7 +277,7 @@ export function placedChildWidening( nodes, facts, rootComponent = null ) {
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
-export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, keyScope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
+export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	if ( ! facts && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
@@ -315,7 +324,7 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, keyScop
 			continue;
 		}
 		const css = hidden.map( ( r ) => mediaRule( r ) ).join( ' ' );
-		const puts = scopedCssPuts( node, { css, keyScope, index: n.index, why: `width gate (${ via })`, label: `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` } );
+		const puts = scopedCssPuts( node, { css, index: n.index, why: `width gate (${ via })`, label: `Width gate ${ via }: hidden at ${ hidden.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }px` ).join( ', ' ) }` } );
 		if ( ! puts.length ) {
 			continue;
 		}

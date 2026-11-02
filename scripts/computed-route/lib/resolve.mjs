@@ -4,8 +4,6 @@
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
 import { nearestHome } from './resolve-nearest.mjs';
 import { sideEffectFree } from './resolve-side-effects.mjs';
-import { isBoxRow, boxTierValue, calibratedPaint, radiusCorners, CORNERS } from './box-tier.mjs';
-export { radiusCorners, CORNERS };
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -15,7 +13,6 @@ import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
 import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
-import { pictureEntry } from './fill-media.mjs';
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
 export const COVERAGE_WRITES = [
@@ -63,6 +60,7 @@ export const GAPS = [ 'no-setting', 'ambiguous', 'shape', 'uncalibrated' ];
 export const ONE_VALUE_EVERY_WIDTH = 'one-value-every-width';
 
 const TIER_OF = { 375: 'mobile', 768: 'tablet', 1440: 'desktop' };
+const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const COLOUR_PROPS = [ 'color', 'background-color', 'border-color' ];
 const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-duration', 'animation-delay' ];
 
@@ -196,12 +194,7 @@ export function timeToMs( raw ) {
 
 // One measured value in the setting's form. Returns { value } or { error }. layout: the draft element's display, flex-wrap
 // and flex-direction at the tier's width, for an enum value spelt as another alignment keyword of the same edge.
-function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {}, media = null, count = false } ) {
-	// A visible-item count (input.count: how many items sit side by side in a track): a whole number a number setting holds as it is.
-	if ( count ) {
-		const n = Number( raw );
-		return Number.isInteger( n ) && n >= 1 && [].concat( def?.type || [] ).includes( 'number' ) ? { value: n } : { error: `${ raw } is not a visible-item count a number setting holds` };
-	}
+function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, log, where, layout = {} } ) {
 	if ( COLOUR_PROPS.includes( prop ) ) {
 		const s = snapColour( raw, snapshot, { log, where, prefer } );
 		if ( ! s ) {
@@ -223,11 +216,7 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		return undefined !== hit ? { value: hit } : { error: `${ raw } is not one of ${ def.enum.join( ', ' ) }` };
 	}
 	if ( 'font-weight' === prop ) {
-		// A weight is written in the type the setting declares: a number setting (`{ type: 'number' }`) takes 600, every
-		// other weight setting the string "600"; a keyword weight (bold) stays a string.
-		const types = [].concat( def?.type || [] );
-		const n = Number( raw );
-		return { value: types.includes( 'number' ) && ! types.includes( 'string' ) && Number.isFinite( n ) ? n : String( raw ) };
+		return { value: String( raw ) };
 	}
 	if ( 'font-family' === prop && snapshot ) {
 		// A stack whose first family is a theme preset is written as that preset's slug, so it follows the client's theme.
@@ -236,19 +225,10 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 			return { value: slug };
 		}
 	}
-	if ( 'background-image' === prop && /\burl\(/.test( String( raw ) ) && ! [].concat( def?.type || [] ).includes( 'object' ) ) {
-		// A gradient setting holds a gradient: a picture in the value is never written to it (the draft's own address would be).
-		return { error: `${ raw } paints a picture and the setting holds a gradient` };
-	}
 	if ( 'background-image' === prop && [].concat( def?.type || [] ).includes( 'object' ) ) {
-		// An image setting holds the uploaded attachment { url, id } (FR-48-39): a measured url(...) is looked up in the media map
-		// by the file it names; an address the map does not hold, a gradient or several layers cannot be held.
-		const m = String( raw ).match( /^url\(\s*["']?([^"')]+)["']?\s*\)$/ );
-		if ( ! m ) {
-			return { error: `${ raw } is not one image` };
-		}
-		const hit = pictureEntry( m[ 1 ], media || {} );
-		return hit ? { value: { url: hit.url, id: hit.id } } : { error: `the picture ${ m[ 1 ] } is no file in the media map (run media-upload.mjs for the site), so no attachment can be written` };
+		// An image setting holds { url }: a measured url(...) maps to it; a gradient or several layers cannot.
+		const m = String( raw ).match( /^url\(["']?([^"')]+)["']?\)$/ );
+		return m ? { value: { url: m[ 1 ] } } : { error: `${ raw } is not one image` };
 	}
 	if ( 'backdrop-filter' === prop ) {
 		// A backdrop blur setting holds the radius (helpers-scrim.php paints blur(<length>)): one blur() is its length,
@@ -329,12 +309,6 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 	return out;
 }
 
-// Whether any value of a setting shows or hides the element at `slot` in calibration's presence readings
-// (calibration.presence: { 'attr=value': { shows, hides } }, `lp` the caller's path comparison).
-export function selectsPresence( calibration, attr, slot, lp = ( p ) => String( p ?? '' ) ) {
-	return Object.entries( calibration?.presence || {} ).some( ( [ key, p ] ) => key.startsWith( `${ attr }=` ) && [ ...( p?.shows || [] ), ...( p?.hides || [] ) ].some( ( path ) => lp( path ) === lp( slot ) ) );
-}
-
 // A setting with no css_property that calibration showed paints `prop` on `slot` (calibration.discovered): the enum
 // value whose paint equals the draft at every width the row states. Discovery records a width only where the value changed
 // the paint (lib/calibrate.mjs::discoverEffects), so at an unrecorded width the value paints the element's default, which
@@ -369,11 +343,6 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		const d = props[ prop ];
 		if ( ! d || ! ( d.slots || [] ).map( lp ).includes( lp( slot ) ) || ( d.state ?? null ) !== ( state || null ) ) {
-			continue;
-		}
-		// A value that shows or hides the very element being read selects what the block renders there (a business detail,
-		// a source), so the element's paint under each value compares different content, never one element's look.
-		if ( selectsPresence( calibration, attr, slot, lp ) ) {
 			continue;
 		}
 		if ( 'tier_object' === d.tier ) {
@@ -418,10 +387,23 @@ export function discoveredEffects( calibration, attr, value, slot, anyIndex = fa
 // siblings: the element's other draft properties, for settings found by calibration }.
 // ctx: { db, calibration: { settings: { attr: { slot, forms } } } | null, snapshot, log }.
 // Returns { writes: [{ attr, value, merge: 'deep'|'replace' }] } or { gap, detail }.
+// A border-radius box stores corners, never sides (helpers-box.php::sgs_border_radius_tiers reads topLeft, topRight,
+// bottomLeft, bottomRight and ignores any other key), per device when the attribute's default is a tier object.
+export const CORNERS = [ 'topLeft', 'topRight', 'bottomRight', 'bottomLeft' ];
 
 // A per-device size held as { width, height } in each tier (block.json describes it "{desktop:{width,height},…}";
 // icon/render.php reads `shapeSize[tier]['width']` and ignores a plain length). True for such a setting's schema entry.
 export const isSizeBox = ( def ) => /\{desktop:\{width,\s*height\}/.test( def?.description ?? '' );
+
+// The computed border-radius shorthand ("8px", "8px 4px", …) as corners, or null for an elliptical radius.
+export function radiusCorners( raw ) {
+	const v = String( raw ).trim().split( /\s+/ );
+	if ( ! v.length || v.length > 4 || v.some( ( x ) => '/' === x || ! parseLength( x ) ) ) {
+		return null;
+	}
+	const [ a, b = a, c = a, d = b ] = v;
+	return Object.fromEntries( CORNERS.map( ( k, i ) => [ k, [ a, b, c, d ][ i ] ] ) );
+}
 
 // A longhand that reached its setting through the shorthand family (a corner reaching `border-radius`, a side reaching a
 // single-colour `border-color`, an `overflow-x` reaching `overflow`) is one part of the shape the setting holds, so its value
@@ -434,7 +416,7 @@ function foldFamily( { prop, perWidth, siblings = {}, row, attr, tiers } ) {
 	const fam = familyOf( prop );
 	const own = physicalOf( prop );
 	const exact = listedProperties( row.css_property ).some( ( stored ) => storedKeys( stored ).some( ( k ) => k === prop || k === own ) );
-	const isBox = isBoxRow( row );
+	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
 	// The row and column gap pair is judged by Fill's spacing ownership (the parent's gap follows the rendered gaps between
 	// children, lib/fill-resolve-element.mjs), whose per-tier value is the prop's own, so it is not folded from the raw reads.
 	const owned = 'axis' === fam?.kind && /^(row|column)$/.test( fam.part );
@@ -499,7 +481,7 @@ const slotLookups = new WeakMap();
 // The DB slot a setting is tied to (`block_attributes.canonical_slot`: the named part of the block it paints), or null.
 // A database without the column (a test fixture), or no database at all, ties nothing to a part. The lookup statement is
 // prepared once per database.
-export function canonicalSlotOf( db, block, attr ) {
+function canonicalSlotOf( db, block, attr ) {
 	if ( ! db ) {
 		return null;
 	}
@@ -562,10 +544,9 @@ export function resolve( input, ctx ) {
 		return 'display' !== prop || ! ( 1 === type.length && 'boolean' === type[ 0 ] ) || Object.values( perWidth ).some( ( v ) => 'none' === v );
 	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
-	// A visible-item count names its setting by the database's `flex` row and the slot calibration measured (it measures the items' flex-basis, which no `flex` spelling reaches).
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( input.count || ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
@@ -641,7 +622,7 @@ export function resolve( input, ctx ) {
 		return [ p, pw[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] ?? ( 1 === all.length ? all[ 0 ] : undefined ) ];
 	} ) );
 	const fmt = ( t, raw, def ) => formatValue( { prop: short, raw, def, unit, fontPx: tierPx( t ), forms, prefer: typeof current[ attr ] === 'string' ? current[ attr ] : null,
-		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ), media: ctx.media || null, count: true === input.count } );
+		snapshot: ctx.snapshot, log: ctx.log || [], where: `${ block } ${ slot } ${ prop }@${ t }`, layout: layoutAt( t ) } );
 	const folded = foldFamily( { prop, perWidth, siblings: input.siblings, row, attr, tiers } );
 	if ( folded.gap ) {
 		return folded;
@@ -650,7 +631,7 @@ export function resolve( input, ctx ) {
 	if ( 'border-radius' === short && ( row.box_family || 'box_only' === row.tier_shape ) ) {
 		return done( radiusWrite( attr, tiers, schema[ attr ] ) );
 	}
-	const isBox = isBoxRow( row );
+	const isBox = !! row.box_family || 'box_only' === row.tier_shape;
 	// FR-48-36: a tier whose declared and rendered values agree (input.declaredForm) is written with the declared value
 	// in the setting's own form; a unit setting switches to the declared unit when every written tier states it
 	// (lib/resolve-declared.mjs). A declared form the setting cannot hold is formatted as the rendered value is (the two
@@ -678,16 +659,28 @@ export function resolve( input, ctx ) {
 		}
 		out[ t ] = f.value;
 	}
-	let unbuildable = null;
+	// Padding and margin boxes print only their set sides (sgs_box_object_longhands), so writing one side leaves the
+	// others to the stylesheet or a wider tier, and nothing is seeded. A border width prints 0 for every unset side
+	// (an unset width must be 0), so the first side written into an empty width box brings the other sides at their
+	// calibrated default paint.
+	const seedsUnsetSides = 'border-width' === short;
+	const seedSides = ( t, existing ) => {
+		if ( ! side || ! seedsUnsetSides || ( existing && Object.keys( existing ).length ) ) {
+			return {};
+		}
+		const elementKey = Object.keys( ctx.calibration.elements || {} ).find( ( k ) => loose( k ) === slot ) ?? slot;
+		const paint = ctx.calibration.elements?.[ elementKey ]?.[ { mobile: 375, tablet: 768, desktop: 1440 }[ t ] ] || {};
+		return Object.fromEntries( SIDES.filter( ( s ) => s !== side ).map( ( s ) => [ s, paint[ 'border-width' === short ? `border-${ s }-width` : `${ short }-${ s }` ] ] ).filter( ( [ , v ] ) => undefined !== v ) );
+	};
 	const boxed = ( v, t ) => {
 		if ( ! isBox ) {
 			return v;
 		}
-		const existing = side ? ( 'tier_object' === row.tier_shape ? current[ attr ]?.[ t ] : current[ attr ] ) : undefined;
-		const paint = side ? calibratedPaint( { calibration: ctx.calibration, slot, tier: t, loose } ) : {};
-		const built = boxTierValue( { row, short, side, value: v, existing, paint } );
-		null === built && ( unbuildable ??= `${ attr } cannot hold ${ v } as ${ prop }` );
-		return built;
+		if ( ! side ) {
+			return Object.fromEntries( SIDES.map( ( s ) => [ s, v ] ) );
+		}
+		const existing = 'tier_object' === row.tier_shape ? current[ attr ]?.[ t ] : current[ attr ];
+		return { ...seedSides( t, existing ), [ side ]: v };
 	};
 	const writes = [];
 	if ( 'flat_sibling' === row.tier_shape ) {
@@ -709,9 +702,6 @@ export function resolve( input, ctx ) {
 				: { gap: 'shape', detail: `no draft value for ${ prop }` };
 		}
 		writes.push( { attr, value: boxed( JSON.parse( vals[ 0 ] ), 'desktop' ), merge: isBox ? 'deep' : 'replace' } );
-	}
-	if ( unbuildable ) {
-		return { gap: 'shape', detail: unbuildable };
 	}
 	if ( null !== unitTo ) {
 		writes.push( { attr: unitAttr, value: unitTo, merge: 'replace', unit: true } );

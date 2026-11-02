@@ -3,16 +3,27 @@
 import base from './header.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/7#0"}, live: ".cr-ref-header-1", liveAt: {"padding-top":".sgs-container__inner","padding-bottom":".sgs-container__inner"} },
-	{ name: "gen-header-2", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-header-2" },
-	{ name: "gen-header-3", text: false, structure: false, draft: {"tpl":"Root/14#0"}, live: ".cr-ref-header-3", liveAt: {"padding-top":".sgs-container__inner","padding-right":".sgs-container__inner","padding-bottom":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-header-4", text: false, structure: false, draft: {"tpl":"Root/15#0"}, live: ".cr-ref-header-4", liveAt: {"justify-content":"@companion"} },
-	{ name: "gen-header-5", text: false, structure: false, draft: {"tpl":"Root/29#0"}, live: ".cr-ref-header-5", liveAt: {"width":".sgs-responsive-logo__link"} },
-	{ name: "gen-header-6", text: false, structure: false, draft: {"tpl":"Root/30#0"}, live: ".cr-ref-header-6", liveAt: {"width":".sgs-responsive-logo__link"} },
-	{ name: "gen-header-7", text: false, structure: false, draft: {"tpl":"Root/31#0"}, live: ".cr-ref-header-7", liveAt: {"column-gap":".sgs-container__inner","row-gap":".sgs-container__inner","padding-right":".sgs-container__inner","padding-left":".sgs-container__inner"} },
-	{ name: "gen-header-8", text: false, structure: false, draft: {"tpl":"Root/33#0"}, live: ".cr-ref-header-8" },
-	{ name: "gen-header-9", text: false, structure: false, draft: {"tpl":"Root/38#0"}, live: ".cr-ref-header-9", liveAt: {"background-image":".sgs-icon__link > .sgs-icon__shape"} },
-	{ name: "gen-header-10", text: false, structure: false, draft: {"tpl":"Root/44#0"}, live: ".cr-ref-header-10", liveAt: {"border-top-width":".sgs-cart__trigger","border-bottom-width":".sgs-cart__trigger","border-left-width":".sgs-cart__trigger","border-right-width":".sgs-cart__trigger"} },
+	{ name: "gen-header-1", text: false, structure: false, draft: {"tpl":"Root/7#0"}, live: ".cr-ref-header-1" },
+	{ name: "gen-header-2", text: false, structure: false, draft: {"tpl":"Root/10#0"}, live: ".cr-ref-header-2" },
+	{ name: "gen-header-3", text: false, structure: false, draft: {"tpl":"Root/10#1"}, live: ".cr-ref-header-3" },
+	{ name: "gen-header-4", text: false, structure: false, draft: {"tpl":"Root/10#2"}, live: ".cr-ref-header-4" },
+	{ name: "gen-header-5", text: false, structure: false, draft: {"tpl":"Root/10#3"}, live: ".cr-ref-header-5" },
+	{ name: "gen-header-6", text: false, structure: false, draft: {"tpl":"Root/10#4"}, live: ".cr-ref-header-6" },
+	{ name: "gen-header-7", text: false, structure: false, draft: {"tpl":"Root/10#5"}, live: ".cr-ref-header-7" },
+	{ name: "gen-header-8", text: false, structure: false, draft: {"tpl":"Root/10#6"}, live: ".cr-ref-header-8" },
+	{ name: "gen-header-9", text: false, structure: false, draft: {"tpl":"Root/10#7"}, live: ".cr-ref-header-9" },
+	{ name: "gen-header-10", text: false, structure: false, draft: {"tpl":"Root/14#0"}, live: ".cr-ref-header-10" },
+	{ name: "gen-header-11", text: false, structure: false, draft: {"tpl":"Root/15#0"}, live: ".cr-ref-header-11" },
+	{ name: "gen-header-12", text: false, structure: false, draft: {"tpl":"Root/28#0"}, live: ".cr-ref-header-12" },
+	{ name: "gen-header-13", text: false, structure: false, draft: {"tpl":"Root/29#0"}, live: ".cr-ref-header-13" },
+	{ name: "gen-header-14", text: false, structure: false, draft: {"tpl":"Root/30#0"}, live: ".cr-ref-header-14" },
+	{ name: "gen-header-15", text: false, structure: false, draft: {"tpl":"Root/31#0"}, live: ".cr-ref-header-15" },
+	{ name: "gen-header-16", text: false, structure: false, draft: {"tpl":"Root/33#0"}, live: ".cr-ref-header-16" },
+	{ name: "gen-header-17", text: false, structure: false, draft: {"tpl":"Root/35#0"}, live: ".cr-ref-header-17" },
+	{ name: "gen-header-18", text: false, structure: false, draft: {"tpl":"Root/38#0"}, live: ".cr-ref-header-18" },
+	{ name: "gen-header-19", text: false, structure: false, draft: {"tpl":"Root/39#0"}, live: ".cr-ref-header-19" },
+	{ name: "gen-header-20", text: false, structure: false, draft: {"tpl":"Root/40#0"}, live: ".cr-ref-header-20" },
+	{ name: "gen-header-21", text: false, structure: false, draft: {"tpl":"Root/46#0"}, live: ".cr-ref-header-21" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

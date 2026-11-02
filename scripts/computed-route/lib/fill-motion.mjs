@@ -18,15 +18,10 @@ import { openWords } from './motion-states.mjs';
 import { setRecord } from './motion-set.mjs';
 import { stateRows } from './state-vocab.mjs';
 import { setAttr } from './tree.mjs';
-import { customCssPuts } from './custom-css-writer.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
 import { staggerPlans, applyStagger } from './fill-motion-stagger.mjs';
 import { positionsByTemplate } from './motion-behaviour-settings.mjs';
-import { applyHeaderBehaviour } from './fill-header-behaviour.mjs';
-import { normaliseReveals } from './motion-reveal.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
-import { effectCssItems } from './effect-css-equivalent.mjs';
-import { splitPartRecords, writePartMotion, rehomeParts } from './fill-motion-parts.mjs';
 
 export { elementMotion, elementEffects, renderRefutes } from './fill-motion-element.mjs';
 
@@ -87,10 +82,7 @@ export function recordsByElement( records ) {
 	const out = new Map();
 	for ( const r of records || [] ) {
 		const tpl = r.element?.template_tpl_id;
-		// An endless animation of an element the code builds (a marquee strip inserted into a template element) is placed on the
-		// template element that holds it: the nearest one is the element a block can carry the loop on.
-		const near = ( null === tpl || undefined === tpl ) && 'infinite' === r.iterations && /^(?:css-animation|waapi)$/.test( r.mechanism ) ? r.element?.nearest_tpl_id : null;
-		for ( const id of null !== near && undefined !== near ? [ near ].flat() : null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
+		for ( const id of null === tpl || undefined === tpl ? [] : [ tpl ].flat() ) {
 			const key = templateKey( { dc: r.element.dc, tpl: id } );
 			if ( ! out.has( key ) ) {
 				out.set( key, [] );
@@ -211,24 +203,23 @@ export function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) 
 }
 
 // Writes a node's endless-loop CSS into its Additional CSS box (`sgsCustomCss`, scoped to the block instance by
-// includes/custom-css.php) through the one Custom CSS writer (lib/custom-css-writer.mjs::customCssPuts): appended to what
-// the box holds, with the scope key and a route-written label naming each record. A loop the scoper refuses is a row.
-function writeLoopCss( n, items, { flat, ref, out, keyScope } ) {
+// includes/custom-css.php): appended to what the box holds, with the scope key and the note naming each record.
+function writeLoopCss( n, items, { flat, ref, out } ) {
 	const node = flat[ n.index ];
+	const had = ( a ) => node.attributes?.[ a ] || '';
 	// A loop the box already holds (a re-run over a written tree) is not added again.
-	const fresh = items.filter( ( i ) => ! ( node.attributes?.sgsCustomCss || '' ).includes( i.css ) );
+	const fresh = items.filter( ( i ) => ! had( 'sgsCustomCss' ).includes( i.css ) );
 	if ( ! fresh.length ) {
 		return;
 	}
-	const ids = items.map( ( i ) => i.record.id ).join( ', ' );
-	const puts = customCssPuts( node, { css: fresh.map( ( i ) => i.css ).join( ' ' ), label: fresh.map( ( i ) => i.label ?? `Loop ${ i.record.id }: ${ i.record.name }` ).join( '; ' ), key: `loop${ fresh[ 0 ].record.id }`, scope: keyScope, why: `loop css ${ ids }` } );
-	if ( puts.refused ) {
-		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: ids, reason: `custom-css-refused: the Custom CSS scoper refuses the loop CSS: ${ puts.refused.join( '; ' ) }` } );
-		return;
-	}
-	for ( const { attr, value } of puts ) {
+	const css = [ had( 'sgsCustomCss' ), ...fresh.map( ( i ) => i.css ) ].filter( Boolean ).join( ' ' );
+	const note = [ had( 'sgsCustomCssNote' ), ...fresh.map( ( i ) => `Loop ${ i.record.id }: ${ i.record.name }` ) ].filter( Boolean ).join( '; ' );
+	// The scope key includes/custom-css.php::sgs_custom_css_uid accepts: 4 to 16 lowercase letters and digits.
+	const id = `loop${ String( fresh[ 0 ].record.id ).toLowerCase().replace( /[^a-z0-9]/g, '' ) }`.slice( 0, 16 );
+	const values = { sgsCustomCss: css, sgsCustomCssId: had( 'sgsCustomCssId' ) || id, sgsCustomCssNote: note };
+	for ( const [ attr, value ] of Object.entries( values ) ) {
 		const { before, after } = setAttr( node, { attr, value } );
-		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ ids }`, attr, before, after, widths: [], how: 'motion-css' } );
+		out.writes.push( { node: ref, block: n.name, slot: '', prop: `loop css ${ items.map( ( i ) => i.record.id ).join( ', ' ) }`, attr, before, after, widths: [], how: 'motion-css' } );
 	}
 }
 
@@ -258,25 +249,22 @@ export function sameTriggerResolved( records ) {
 // the entry draft's component (lib/fill-motion.mjs::elementKey); loops: sampleMotion()'s loops by target id; offers:
 // lib/motion-effects.mjs::loadEffectOffers; stateVocab: the `states` table rows that give the words meaning "open"
 // (default: the framework DB's). Returns { writes, unmapped, notes } in the shapes fill-resolve.mjs uses.
-export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null, clientMotion = null, keyScope, cssEffects = new Set() } ) {
+export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}, loops = {}, mdb, schema, rawSnapshot, rootComponent = null, offers = loadEffectOffers(), stateVocab = null, template = null, draftCss = [], hasAttr: givenHasAttr = undefined, db = null, reads = null, calFor = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], site: [], handover: [] };
 	// Every settings write is checked against the framework DB's attributes: the handle given, else the framework DB itself.
 	const hasAttr = givenHasAttr ?? ( db ? hasAttrOf( db ) : undefined );
-	const records = normaliseReveals( sameTriggerResolved( given ) );
-	// A part of content the draft's code injects is written on its holder's block as a custom target, never as the holder's own motion.
-	const split = splitPartRecords( records, template );
-	const byElement = recordsByElement( split.rest );
+	const records = sameTriggerResolved( given );
+	const byElement = recordsByElement( records );
 	// One classification context everywhere: an empty CSS list is no CSS given (a draft served from a URL), not CSS with no consumer.
 	const cls = { css: draftCss, template };
 	const unplaced = ( records || [] ).filter( ( r ) => null === ( r.element?.template_tpl_id ?? null ) );
 	const runtime = unplaced.filter( ( r ) => 'entrance' === classify( r, cls ).kind );
 	const runtimeLoops = unplaced.filter( ( r ) => 'effect' === classify( r, cls ).kind );
 	const used = [];
-	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss, records };
+	const ctx = { types: tokenTypes( schema ), tokens: clientTokens( rawSnapshot ), palette: clientPalette( rawSnapshot ), css: draftCss };
 	// The draft's computed position per template element and width, so a header pinned only at some widths is sticky only there.
 	const idx = behaviourIndex( { records, template, css: draftCss, positions: reads ? positionsByTemplate( { reads, nodes, rootComponent } ) : undefined } );
 	const targetKeys = new Set( nodes.flatMap( ( n ) => n.targets.map( ( t ) => elementKey( t.finder, rootComponent ) ) ).filter( Boolean ) );
-	rehomeParts( split.parts, { targetKeys, template } );
 	adoptDrawnBehaviours( byElement, { targetKeys, template, isBehaviour: ( r ) => idx.found.some( ( x ) => x.r === r ) } );
 	// A list entrance with a per-item delay is the stagger of the block holding the items, so the items do not also take it.
 	const staggers = staggerPlans( { records, template, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ) } );
@@ -302,15 +290,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			const key = elementKey( t.finder, rootComponent );
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
 			const where = { node: ref, block: n.name, slot: t.slot };
-			const partList = split.parts.get( key ) || [];
-			if ( partList.length ) {
-				const partWrites = writePartMotion( { n, list: partList, doc, pending, out, where, holder: key, mdb, ctx } );
-				used.push( ...partWrites.used );
-				boxes.push( ...partWrites.css );
-				split.parts.delete( key );
-			}
 			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );
-			applyHeaderBehaviour( { n, t, reads, flat, out, where, hasAttr } );
 			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.
 			const settings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
 			if ( settings.length ) {
@@ -375,7 +355,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				pending.push( target );
 			}
 			used.push( ...applyStagger( { plans: lists, doc, own: m.element, where, out, pending, emArgs: { mdb, ctx, offers: stateOffers } } ) );
-			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls, decided: clientMotion?.[ key ] || null } );
+			const fx = elementEffects( own, { mdb, loops: loops[ t.id ] || null, runtimeLoops, cls } );
 			used.push( ...fx.css.map( ( c ) => c.record.id ) );
 			out.notes.push( ...fx.notes.map( ( text ) => ( { ...where, text } ) ) );
 			out.unmapped.push( ...fx.unmapped.map( ( u ) => ( { ...where, property: 'motion', value: u.record, reason: u.reason } ) ) );
@@ -408,14 +388,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				applyBehaviours( { items: behaviours, n, target, doc, pending, written, controls, out, where, flat, finish: ( e, id ) => finishedEffect( e, { block: n.name, target, mdb, schema, offers, ctx, id } ), mdb, hasAttr } );
 			}
 		}
-		// Effect rows Bean marked custom-css (Spec 48 FR-48-17): the hover rule goes in the box that holds the loop's rule.
-		const hover = effectCssItems( { marked: cssEffects, records, items: boxes } );
-		if ( hover.items.length ) {
-			boxes.push( ...hover.items );
-			used.push( ...hover.used );
-		}
 		if ( boxes.length ) {
-			writeLoopCss( n, boxes, { flat, ref, out, keyScope } );
+			writeLoopCss( n, boxes, { flat, ref, out } );
 		}
 		if ( pending.length ) {
 			deferred.push( () => writeNode( n, doc, [ ...new Set( pending ) ], { flat, ref, schema, out, reads } ) );

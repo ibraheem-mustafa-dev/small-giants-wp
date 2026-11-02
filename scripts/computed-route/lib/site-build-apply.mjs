@@ -9,26 +9,19 @@ import { execFileSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { CONTENT_META, FIELDS_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
+import { CONTENT_META, MENU_META, ROW_META, SECTION_META, TEMPLATE_CONTENT_OPTION, TEMPLATE_OPTION, TREE_META } from './site-build-state.mjs';
 
 // How long each editor load and save may take: twice wp-build-page.js's 60 s default, since a shared host can stall an
 // admin page past it; a run stopped by a stall resumes from the posts already made.
 const EDITOR_TIMEOUT = 120000;
 
-// The secrets file and key of a site: its calibration-targets.json entry's `envFile` and `envKey` (as site-run.mjs reads
-// them), else the file and key named after the site itself (a site with no target entry).
-export const siteEnv = ( siteTarget, site ) => ( {
-	envFile: siteTarget?.envFile || path.join( '.claude', 'secrets', `${ site }.env` ),
-	envKey: siteTarget?.envKey || site.toUpperCase().replace( /[^A-Z0-9]/g, '' ),
-} );
-
 // A build runner over wp-build-page.js for one site's secrets file: ({ create, title, slug } | { postId }, tree) -> id.
-export function wpBuildPage( repo, site, siteTarget = {} ) {
-	const { envFile, envKey } = siteEnv( siteTarget, site );
+export function wpBuildPage( repo, site ) {
+	const envKey = site.toUpperCase().replace( /[^A-Z0-9]/g, '' );
 	return ( target, tree ) => {
 		const file = path.join( os.tmpdir(), `site-build-${ process.pid }-${ Date.now() }.tree.json` );
 		fs.writeFileSync( file, JSON.stringify( tree ) );
-		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.resolve( repo, envFile ), '--env-key', envKey, '--tree', file,
+		const args = [ path.join( repo, 'scripts', 'wp-build-page.js' ), '--env-file', path.join( repo, '.claude', 'secrets', `${ site }.env` ), '--env-key', envKey, '--tree', file,
 			...( target.template ? [ '--template', target.template ] : target.postId ? [ '--post-id', String( target.postId ) ] : [ '--create', target.create, '--title', target.title, '--slug', target.slug ] ), '--status', 'publish', '--editor-timeout', String( EDITOR_TIMEOUT ) ];
 		let out = '';
 		try {
@@ -73,40 +66,6 @@ if ( $t ) {
 	update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
 }
 `;
-}
-
-// The PHP dropping a template's content marker once its saved copy is deleted.
-export function templateForgetPhp( slug ) {
-	if ( ! /^[a-z0-9_-]+$/.test( slug ) ) {
-		throw new Error( `template slug "${ slug }" is not plain` );
-	}
-	return `<?php
-$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
-unset( $o['${ slug }'] );
-update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
-`;
-}
-
-// The PHP storing a post's content marker: the hash of the content as the site holds it now, read back on the site so
-// both sides hash the same text. The site build writes it after each save and the site run after each post it builds.
-export function contentMarkPhp( id ) {
-	const n = Number( id );
-	if ( ! Number.isInteger( n ) || n <= 0 ) {
-		throw new Error( `post id "${ id }" is not a post id` );
-	}
-	return `<?php
-update_post_meta( ${ n }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ n }, 'raw' ) ) );
-`;
-}
-
-// The site run's build of one post: `build` runs first (it throws on a failed build, so a failed build writes no marker),
-// then the post's content marker is stored through `runPhp` (lib/calibration-refs.mjs::wpEvalRunner) so the next site
-// build sees the clone's own build as its own and not as a person's edit. A surface with no post id (a template copy,
-// recorded by templateRecordPhp) is built and left unmarked. Returns what `build` returned.
-export async function buildThenMarkPost( { build, postId, runPhp } ) {
-	const said = await build();
-	Number( postId ) > 0 && runPhp( contentMarkPhp( postId ) );
-	return said;
 }
 
 // The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
@@ -180,8 +139,6 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 		return id;
 	};
 	// WordPress ignores an empty page_template, so clearing one sends `default` (get_page_template_slug reads it as '').
-	// The title, slug and parent the site build set, so a later run tells its own value from a person's change.
-	const recordFields = ( id, fields ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), FIELDS_META, JSON.stringify( Object.fromEntries( Object.entries( fields ).map( ( [ k, v ] ) => [ k, 'post_parent' === k ? Number( val( v ) ) || 0 : String( val( v ) ) ] ) ) ) ] ) );
 	const fieldArgs = ( fields ) => Object.entries( fields ).map( ( [ k, v ] ) => `--${ k }=${ 'page_template' === k && '' === v ? 'default' : val( v ) }` );
 	// A bookkeeping write after a save is tried three times: a dropped connection must not leave a saved post unrecorded.
 	const again = ( fn ) => {
@@ -197,7 +154,9 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 	};
 	const mark = ( id, key ) => again( () => wp( [ 'post', 'meta', 'update', String( id ), ROW_META, key ] ) );
 	// The hash of what a save produced, read and written on the site so the two sides hash the same text (a later difference is a person's edit).
-	const markContent = ( id ) => again( () => wp( [ 'eval-file', '-' ], contentMarkPhp( id ) ) );
+	const markContent = ( id ) => again( () => wp( [ 'eval-file', '-' ], `<?php
+update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ Number( id ) }, 'raw' ) ) );
+` ) );
 	const markTemplateContent = ( slug ) => {
 		const php = templateRecordPhp( slug );
 		again( () => wp( [ 'eval-file', '-' ], php ) );
@@ -234,7 +193,6 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 			if ( Object.keys( a.fields ).length ) {
 				wp( [ 'post', 'update', String( id ), ...fieldArgs( a.fields ) ] );
 			}
-			recordFields( id, { post_title: a.title, post_name: a.slug, post_parent: a.fields.post_parent ?? 0 } );
 		} else if ( 'build' === a.type ) {
 			try {
 				build( { postId: a.id }, a.tree );
@@ -264,19 +222,10 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 				throw e;
 			}
 			markTemplateContent( a.template );
-		} else if ( 'template-remove' === a.type ) {
-			// Only the saved wp_template post goes (the theme or plugin file stands); its recorded hash and content marker go with it.
-			if ( ! Number.isInteger( a.id ) || a.id < 1 ) {
-				throw new Error( `the saved ${ a.template } template has no post id in the site's state` );
-			}
-			again( () => wp( [ 'post', 'delete', String( a.id ), '--force' ] ) );
-			again( () => wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( a.hashes ), '--format=json' ] ) );
-			again( () => wp( [ 'eval-file', '-' ], templateForgetPhp( a.template ) ) );
 		} else if ( 'section' === a.type ) {
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {
 			wp( [ 'post', 'update', String( a.id ), ...fieldArgs( a.fields ) ] );
-			a.record && recordFields( a.id, a.record );
 		} else if ( 'menu' === a.type ) {
 			refs[ `menu:${ a.name }` ] = porcelain( wp( [ 'menu', 'create', a.name, '--porcelain' ] ) );
 			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );

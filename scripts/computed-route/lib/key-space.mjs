@@ -6,13 +6,11 @@ import { renameHost, renameRootHost, parseInstanceKey, templateKey } from './fac
 
 export const SERVED_ROOT = 'Root';
 
-// True when a draft inventory's keys are in the served space: an element of the root's own template (`Root/<n>#<copy>`)
-// or of a host it mounts (`Root><Child>@<n>#<copy>/...`, all a form surface's saved inventory holds).
-export const isServedInventory = ( inventory ) => ( inventory?.elements || [] ).some( ( e ) => String( e.key ).startsWith( `${ SERVED_ROOT }/` ) || String( e.key ).startsWith( `${ SERVED_ROOT }>` ) );
+// True when a draft inventory's keys are in the served space.
+export const isServedInventory = ( inventory ) => ( inventory?.elements || [] ).some( ( e ) => String( e.key ).startsWith( `${ SERVED_ROOT }/` ) );
 
-// The served-space key of an intake-space key: the root host at the head of the chain becomes `Root`, for the root's own
-// elements (`<rootComponent>/<n>#<copy>`) and for a mounted host's (`<rootComponent>><Child>@<n>#<copy>/<n>#<copy>`, which
-// the served runtime names `Root><Child>@<n>#<copy>/<n>#<copy>`).
+// The served-space key of an intake-space key: only a root-host key (`<rootComponent>/<n>#<copy>`) changes. A key with an
+// import chain (`<component>><Child>@<n>#<copy>/<n>#<copy>`) is another host's element and is returned as it is.
 export function servedKey( key, rootComponent ) {
 	return rootComponent ? renameRootHost( key, rootComponent, SERVED_ROOT ) : key;
 }
@@ -42,7 +40,7 @@ export function translateElement( e, rootComponent = null ) {
 		return { reason: `the key names tpl ${ parsed.tpl } and the element tpl ${ e.tpl }` };
 	}
 	const dc = served ? rootComponent : e.template;
-	return { templateKey: templateKey( { dc, tpl: e.tpl } ), instanceKey: rootComponent ? renameRootHost( e.key, SERVED_ROOT, rootComponent ) : e.key, copy: parsed ? parsed.copy : null };
+	return { templateKey: templateKey( { dc, tpl: e.tpl } ), instanceKey: served ? renameRootHost( e.key, SERVED_ROOT, rootComponent ) : e.key, copy: parsed ? parsed.copy : null };
 }
 
 // Every element of an inventory translated: { byKey: { <inventory key>: translation }, untranslated: [ { key, reason } ],
