@@ -192,6 +192,20 @@
 						}
 					}
 				},
+				"headings": {
+					"selector": ":where(h1,h2,h3,h4,h5,h6)",
+					"motion": false,
+					"label": "Headings",
+					"layer": "CONTENT",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "heading",
+					"attrMap": {
+						"css:color": "headingColour"
+					}
+				},
 				"decorative": {
 					"motion": false,
 					"label": "Decorative background",
@@ -787,6 +801,11 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the resting root text colour (background-clip: text) instead of a flat colour. Non-empty wins over textColour at render time, mirroring sgs/hero."
+		},
+		"headingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of every h1..h6 inside the section, printed as a (0,1,0) `:where()` rule that beats the theme's heading colour and the automatic on-dark heading colour; a heading block's own colour still wins."
 		},
 		"textColourHover": {
 			"type": "string",

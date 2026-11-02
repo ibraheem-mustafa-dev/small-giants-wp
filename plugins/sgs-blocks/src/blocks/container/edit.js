@@ -30,6 +30,7 @@ import {
 import ScrollSidewaysPanel from './components/ScrollSidewaysPanel';
 import PinEdgeControl from './components/PinEdgeControl';
 import OverflowControl from './components/OverflowControl';
+import { resolveColourToken } from '../../components/DesignTokenPicker';
 import { pinEdgeTopPreview } from './pin-edge-preview';
 import {
 	hasContentBand,
@@ -162,6 +163,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		textColourGradient,
 		textColourHover,
 		textColourHoverGradient,
+		headingColour,
 		gridAutoRows = '',
 		flexDirection = '',
 		flexWrap = 'wrap',
@@ -466,10 +468,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		previewTier
 	);
 
-	// Headings inherit a flat section text colour (render.php prints the same rule on
-	// the page); a text gradient is never inherited.
-	if ( textColour && ! textColourGradient ) {
-		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:inherit}`;
+	// "Heading colour" (render.php prints the same rule on the page).
+	if ( headingColour ) {
+		gridItemScopedCss += `#block-${ clientId } :where(h1,h2,h3,h4,h5,h6){color:${ resolveColourToken( headingColour, colourPalette ) }}`;
 	}
 
 	// "Scroll sideways" at the previewed device: the items' row (the band when one
@@ -722,6 +723,25 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 										setAttributes( {
 											textColourHoverGradient: val ?? '',
 										} ),
+								},
+							],
+						},
+						{
+							/* Heading colour: every h1..h6 inside the section, beating the theme's
+                 heading colour; a heading block's own colour still wins. Unset keeps the
+                 theme heading colour (and the automatic on-dark colour on a dark ground). */
+							key: 'headings',
+							label: __( 'Heading colour', 'sgs-blocks' ),
+							states: [
+								{
+									key: 'normal',
+									label: __( 'Normal', 'sgs-blocks' ),
+									value: headingColour,
+									onChange: ( val ) =>
+										setAttributes( {
+											headingColour: val ?? '',
+										} ),
+									linked: true,
 								},
 							],
 						},

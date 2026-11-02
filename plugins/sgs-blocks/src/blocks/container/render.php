@@ -174,7 +174,9 @@ if ( '' !== $sgs_container_hover_text ) {
 	}
 }
 
-if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
+$sgs_container_heading_value = sgs_colour_value( (string) ( $attributes['headingColour'] ?? '' ) );
+
+if ( $sgs_container_resting_decls || $sgs_container_hover_decls || '' !== $sgs_container_heading_value ) {
 	// The uid is normally minted by the style-engine branch above, but that
 	// branch does not run when the ONLY colour set is a gradient or a hover —
 	// mint it here in that case, using the identical derivation so a block that
@@ -191,16 +193,12 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls ) {
 		$sgs_container_hover_decls
 	);
 
-	// Headings inherit the section's FLAT text colour. The theme paints
-	// `h1..h6 { color: var(--wp--preset--color--heading) }` straight on the heading,
-	// which beats inheritance, so a dark section's headings stayed ink on ink.
-	// `:where()` keeps this rule at (0,1,0): it beats the theme's (0,0,1) element rule
-	// and loses to a heading's own scoped (0,2,0) colour. `inherit` (not the value)
-	// lets a nested container with its own text colour win whatever the print order.
-	// A text GRADIENT is never inherited (it paints with background-clip:text on the
-	// container only), so the rule prints for a flat colour alone.
-	if ( '' !== (string) ( $attributes['textColour'] ?? '' ) && '' === (string) ( $attributes['textColourGradient'] ?? '' ) ) {
-		$sgs_container_supports_css .= '.' . $sgs_container_supports_uid . ' :where(h1,h2,h3,h4,h5,h6){color:inherit}';
+	// "Heading colour": the headings inside this section take the chosen colour. `:where()`
+	// keeps the rule at (0,1,0): it beats the theme's `h1..h6 { color: heading }` (0,0,1),
+	// beats the automatic on-dark heading colour (0,0,1) and loses to a heading block's own
+	// scoped (0,2,0) colour.
+	if ( '' !== $sgs_container_heading_value ) {
+		$sgs_container_supports_css .= '.' . $sgs_container_supports_uid . ' :where(h1,h2,h3,h4,h5,h6){color:' . $sgs_container_heading_value . '}';
 	}
 }
 
