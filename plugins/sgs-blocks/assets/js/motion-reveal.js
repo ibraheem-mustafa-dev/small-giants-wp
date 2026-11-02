@@ -14,6 +14,8 @@
  * re-arms or releases them. Without IntersectionObserver neither script adds the class, so everything stays visible.
  * Elements printed after load (a post-grid's load more) are armed the same way when their block fires
  * `sgs-motion:scan` on the element holding them (Spec 38A §8): one in view is revealed at once, the rest are observed.
+ * An interactivity-router region (`data-wp-router-region`: a product collection's or query loop's pagination and
+ * filters) replaces its content without a page load, so each region fires that scan itself when its children change.
  */
 ( ( d, w ) => {
 	if ( ! w.IntersectionObserver ) {
@@ -72,6 +74,28 @@
 		show( rows );
 		arm( rows );
 	} );
+	const watchRegions = () => {
+		if ( ! w.MutationObserver ) {
+			return;
+		}
+		d.querySelectorAll( '[data-wp-router-region]' ).forEach( ( region ) => {
+			let queued = false;
+			new w.MutationObserver( () => {
+				if ( queued ) {
+					return;
+				}
+				queued = true;
+				w.requestAnimationFrame( () => {
+					queued = false;
+					region.dispatchEvent( new w.CustomEvent( 'sgs-motion:scan', { bubbles: true } ) );
+				} );
+			} ).observe( region, { childList: true, subtree: true } );
+		} );
+	};
+	const start = () => {
+		sync();
+		watchRegions();
+	};
 	mq.addEventListener( 'change', sync );
-	'loading' === d.readyState ? d.addEventListener( 'DOMContentLoaded', sync ) : sync();
+	'loading' === d.readyState ? d.addEventListener( 'DOMContentLoaded', start ) : start();
 } )( document, window );

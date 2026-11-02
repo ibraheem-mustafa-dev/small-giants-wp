@@ -111,7 +111,8 @@ function sgs_whatsapp_cta_floating_hide_label_css( string $root_sel, int $hide_b
 		return '';
 	}
 
-	return '@media(max-width:' . $hide_below . 'px){'
+	// "Below N" stops just under N, like every other below-N setting.
+	return '@media(max-width:' . ( $hide_below - 1 ) . 'px){'
 		. "{$root_sel} .sgs-whatsapp-cta__label--floating{display:none}"
 		. "{$root_sel}.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn{width:56px;height:56px;border-radius:50%;padding:0;justify-content:center}"
 		. '}';

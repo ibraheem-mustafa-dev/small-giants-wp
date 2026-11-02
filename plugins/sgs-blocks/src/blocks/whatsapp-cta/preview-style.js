@@ -106,7 +106,8 @@ export function floatingHideLabelPreviewCss( rootSelector, hideBelow, hasVisible
 	if ( below <= 0 || ! hasVisibleLabel ) {
 		return '';
 	}
-	return `@media(max-width:${ below }px){`
+	// "Below N" stops just under N, like every other below-N setting.
+	return `@media(max-width:${ below - 1 }px){`
 		+ `${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}`
 		+ `${ rootSelector }.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn{width:56px;height:56px;border-radius:50%;padding:0;justify-content:center}`
 		+ '}';
