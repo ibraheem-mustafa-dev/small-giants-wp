@@ -6773,16 +6773,6 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "headingColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_layer": "CONTENT",
-        "css_element": "headings"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -6897,16 +6887,6 @@
       "attr": "textAlign",
       "fields": {
         "css_property": "text-align",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "textColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -33030,6 +33010,25 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "headingColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "headings"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "headingColourGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "headings"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "pinEdge",
       "fields": {
         "css_property": "position",
@@ -33063,6 +33062,16 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {

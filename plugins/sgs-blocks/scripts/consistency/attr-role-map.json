@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9515,
+    "row_count": 9516,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2358,6 +2358,7 @@
     "sgs/container::gridTemplateRows": "layout",
     "sgs/container::ground": "enum-mode",
     "sgs/container::headingColour": "color",
+    "sgs/container::headingColourGradient": "colour-gradient",
     "sgs/container::justifyContent": "layout",
     "sgs/container::justifyItems": "layout",
     "sgs/container::layout": "layout",
