@@ -3,6 +3,7 @@
     "name": "core/template-part",
     "attributes": {
       "slug": "header",
+      "theme": "sgs-theme",
       "tagName": "header"
     }
   },
@@ -10,45 +11,266 @@
     "name": "sgs/container",
     "attributes": {
       "tagName": "main",
-      "className": "cr-ref-blog-0",
-      "textColour": "custom-ink",
       "minHeight": {
         "desktop": "0px"
       },
       "contentWidth": {
         "desktop": "full"
       },
-      "textColourHover": "custom-ink"
+      "textColour": "custom-ink",
+      "textColourHover": "custom-ink",
+      "className": "cr-ref-blog-0"
     },
     "innerBlocks": [
       {
-        "name": "core/template-part",
+        "name": "sgs/hero",
         "attributes": {
-          "slug": "sgs-archive-toolbar"
-        }
-      },
-      {
-        "name": "sgs/container",
-        "attributes": {
-          "tagName": "div",
-          "backgroundColour": "surface-alt",
+          "minHeight": {
+            "mobile": "0px"
+          },
+          "backgroundColourGradient": "linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%)",
+          "textColour": "accent-text",
+          "textColourHover": "accent-text",
+          "flexDirection": "row",
           "contentWidth": {
-            "desktop": "normal"
+            "desktop": "1320px"
           },
-          "padding": {
-            "top": "var:preset|spacing|60",
-            "bottom": "var:preset|spacing|40"
-          },
-          "flexWrap": "wrap",
-          "layout": "stack"
+          "className": "cr-ref-blog-1"
         },
         "innerBlocks": [
           {
+            "name": "sgs/decorative-image",
+            "attributes": {
+              "positionRight": {
+                "mobile": "-120px",
+                "tablet": "-120px",
+                "desktop": "-120px"
+              },
+              "positionBottom": {
+                "desktop": "-160px"
+              },
+              "width": {
+                "desktop": "460px"
+              },
+              "height": {
+                "desktop": "460px"
+              },
+              "borderWidth": {
+                "right": "2px",
+                "bottom": "2px",
+                "left": "2px",
+                "top": "2px"
+              },
+              "borderColour": "#FFFFFF38",
+              "borderRadius": {
+                "topLeft": "50%",
+                "topRight": "50%",
+                "bottomRight": "50%",
+                "bottomLeft": "50%"
+              },
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "effects": [
+                      {
+                        "id": "ambient-float-1",
+                        "effect": "ambient-float",
+                        "trigger": "load",
+                        "values": {
+                          "axis": "both",
+                          "travel": 5.3,
+                          "period": 11737.174164965461,
+                          "direction": "alternate",
+                          "easing": "token:easing.ease-in-out",
+                          "travelY": 6.8,
+                          "phase": 7403
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "className": "cr-ref-blog-2"
+            }
+          },
+          {
+            "name": "sgs/breadcrumbs",
+            "attributes": {
+              "itemGap": "8px",
+              "middleCrumbLabel": "About",
+              "middleCrumbUrl": "/about/",
+              "separatorColourHover": "accent-text",
+              "fontSize": {
+                "desktop": 15
+              },
+              "fontWeight": "600",
+              "className": "cr-ref-blog-3"
+            }
+          },
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Blog",
+              "textColour": "#0A6E93",
+              "textColourHover": "#0A6E93",
+              "fontFamily": "heading",
+              "fontSize": {
+                "desktop": 13
+              },
+              "fontWeight": "700",
+              "lineHeight": 1.55,
+              "letterSpacing": 0.12,
+              "padding": {
+                "desktop": {
+                  "top": "8px",
+                  "right": "16px",
+                  "bottom": "8px",
+                  "left": "16px"
+                }
+              },
+              "borderRadius": "999px",
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "load",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateY": "token:entrance.distance",
+                            "blur": 8
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "blur": 0,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "delay": 80,
+                          "easing": "token:entrance.easing"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "className": "cr-ref-blog-5"
+            }
+          },
+          {
             "name": "sgs/heading",
             "attributes": {
-              "content": "Blogs",
+              "margin": {
+                "desktop": {
+                  "top": "20px",
+                  "bottom": "0px"
+                }
+              },
+              "content": "News and insight from the trade.",
               "level": "h1",
-              "textColour": "text"
+              "fontSize": {
+                "desktop": "clamp(34px, 4.8vw, 60px)"
+              },
+              "fontWeight": "800",
+              "lineHeight": {
+                "desktop": 1.08,
+                "tablet": 1.08,
+                "mobile": 1.08
+              },
+              "lineHeightUnit": "",
+              "letterSpacing": {
+                "desktop": -0.02,
+                "tablet": -0.02,
+                "mobile": -0.02
+              },
+              "textColourHover": "accent-text",
+              "maxWidth": {
+                "desktop": "880px"
+              },
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "load",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateY": "token:entrance.distance",
+                            "blur": 8
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "blur": 0,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "delay": 190,
+                          "easing": "token:entrance.easing"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "className": "cr-ref-blog-6"
+            }
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "margin": {
+                "desktop": {
+                  "top": "22px"
+                }
+              },
+              "text": "Product news, seasonal ordering guides and stories from over 60 years in Indian food wholesale.",
+              "fontSize": {
+                "desktop": "clamp(16.5px, 1.4vw, 19px)"
+              },
+              "lineHeight": {
+                "tablet": 1.6,
+                "desktop": 1.6
+              },
+              "lineHeightUnit": "",
+              "textWrap": "pretty",
+              "textShadow": "rgba(255, 255, 255, 0.796) 0px 4px 12px",
+              "maxWidth": {
+                "desktop": "620px"
+              },
+              "textColourHover": "accent-text",
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "load",
+                        "values": {
+                          "from": {
+                            "opacity": 0,
+                            "translateY": "token:entrance.distance",
+                            "blur": 8
+                          },
+                          "to": {
+                            "opacity": 1,
+                            "blur": 0,
+                            "translateY": 0
+                          },
+                          "duration": "token:entrance.duration",
+                          "delay": 300,
+                          "easing": "token:entrance.easing"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "className": "cr-ref-blog-7"
             }
           }
         ]
@@ -56,168 +278,663 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "overflow": "clip",
           "contentWidth": {
-            "desktop": "normal"
+            "desktop": "full"
           },
           "padding": {
-            "top": "var:preset|spacing|50",
-            "bottom": "var:preset|spacing|60"
+            "desktop": {
+              "top": "64px",
+              "right": "40px",
+              "bottom": "64px",
+              "left": "40px"
+            },
+            "tablet": {
+              "top": "48px",
+              "right": "32px",
+              "bottom": "48px",
+              "left": "32px"
+            },
+            "mobile": {
+              "top": "40px",
+              "right": "20px",
+              "bottom": "40px",
+              "left": "20px"
+            }
           },
-          "flexWrap": "wrap"
+          "textColourHover": "ink",
+          "className": "cr-ref-blog-8"
         },
         "innerBlocks": [
           {
-            "name": "core/query",
+            "name": "sgs/container",
             "attributes": {
-              "queryId": 1,
-              "query": {
-                "perPage": 12,
-                "pages": 0,
-                "offset": 0,
-                "postType": "post",
-                "order": "desc",
-                "orderBy": "date",
-                "inherit": true
+              "tagName": "div",
+              "maxWidth": {
+                "desktop": "1240px"
               },
-              "layout": {
-                "type": "default"
-              }
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "textColourHover": "ink",
+              "className": "cr-ref-blog-9"
             },
             "innerBlocks": [
               {
-                "name": "core/query-total",
+                "name": "sgs/post-grid",
                 "attributes": {
-                  "style": {
-                    "spacing": {
-                      "margin": {
-                        "bottom": "var:preset|spacing|30"
-                      }
-                    }
-                  }
+                  "layout": "grid",
+                  "columns": {
+                    "desktop": 4,
+                    "tablet": 2,
+                    "mobile": 1
+                  },
+                  "gap": {
+                    "desktop": "22px"
+                  },
+                  "textColourHover": "ink",
+                  "className": "cr-ref-blog-10",
+                  "showFilters": true,
+                  "filterTaxonomy": "category",
+                  "cardBgColour": "#ffffff",
+                  "shadow": "none",
+                  "titleFontSize": {
+                    "desktop": 20
+                  },
+                  "titleFontSizeUnit": "px",
+                  "titleFontWeight": "700",
+                  "titleColour": "ink",
+                  "titleLetterSpacing": {
+                    "desktop": -0.02
+                  },
+                  "titleLetterSpacingUnit": "em",
+                  "metaFontSize": {
+                    "desktop": 13
+                  },
+                  "metaFontWeight": "700",
+                  "metaLetterSpacing": {
+                    "desktop": 0.06
+                  },
+                  "metaColour": "#5e6873",
+                  "categoryBadgeBgColour": "#d8c94c",
+                  "categoryBadgeColour": "ink",
+                  "cardStyle": "flat",
+                  "badgeFontSize": {
+                    "desktop": 10.5
+                  },
+                  "badgeFontSizeUnit": "px",
+                  "badgeFontWeight": "700",
+                  "badgeTextTransform": "uppercase",
+                  "badgeLetterSpacing": {
+                    "desktop": 0.05
+                  },
+                  "badgeLetterSpacingUnit": "em"
                 }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "overflow": "clip",
+          "contentWidth": {
+            "desktop": "full"
+          },
+          "padding": {
+            "desktop": {
+              "top": "0px",
+              "right": "40px",
+              "bottom": "64px",
+              "left": "40px"
+            },
+            "tablet": {
+              "top": "0px",
+              "right": "32px",
+              "bottom": "48px",
+              "left": "32px"
+            },
+            "mobile": {
+              "top": "0px",
+              "right": "20px",
+              "bottom": "40px",
+              "left": "20px"
+            }
+          },
+          "textColourHover": "ink",
+          "className": "cr-ref-blog-11"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "maxWidth": {
+                "desktop": "1240px"
               },
+              "contentWidth": {
+                "desktop": "full"
+              },
+              "textColourHover": "ink",
+              "className": "cr-ref-blog-12"
+            },
+            "innerBlocks": [
               {
-                "name": "core/post-template",
+                "name": "sgs/container",
                 "attributes": {
-                  "layout": {
-                    "type": "grid",
-                    "columnCount": 3
-                  }
+                  "layout": "grid",
+                  "tagName": "div",
+                  "gridTemplateColumns": {
+                    "tablet": "repeat(1, minmax(0, 1fr))",
+                    "desktop": "minmax(0, 1.4fr) minmax(0, 1fr)"
+                  },
+                  "gap": {
+                    "desktop": "30px"
+                  },
+                  "overflow": "hidden",
+                  "alignItems": "center",
+                  "contentWidth": {
+                    "desktop": "full"
+                  },
+                  "padding": {
+                    "desktop": "64px",
+                    "tablet": "44px",
+                    "mobile": "24px"
+                  },
+                  "borderRadius": {
+                    "desktop": {
+                      "topLeft": "26px",
+                      "topRight": "26px",
+                      "bottomRight": "26px",
+                      "bottomLeft": "26px"
+                    }
+                  },
+                  "backgroundColourGradient": "linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%)",
+                  "textColour": "primary-text",
+                  "textColourHover": "primary-text",
+                  "className": "cr-ref-blog-13"
                 },
                 "innerBlocks": [
                   {
+                    "name": "sgs/decorative-image",
+                    "attributes": {
+                      "positionTop": {
+                        "desktop": "-110px"
+                      },
+                      "positionRight": {
+                        "mobile": "-90px",
+                        "tablet": "-90px",
+                        "desktop": "-90px"
+                      },
+                      "width": {
+                        "desktop": "340px"
+                      },
+                      "height": {
+                        "desktop": "340px"
+                      },
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderColour": "#D8CA508C",
+                      "borderRadius": {
+                        "topLeft": "50%",
+                        "topRight": "50%",
+                        "bottomRight": "50%",
+                        "bottomLeft": "50%"
+                      },
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "effects": [
+                              {
+                                "id": "ambient-float-1",
+                                "effect": "ambient-float",
+                                "trigger": "load",
+                                "values": {
+                                  "axis": "both",
+                                  "travel": -17.7,
+                                  "period": 11561.820184544014,
+                                  "direction": "alternate",
+                                  "easing": "token:easing.ease-in-out",
+                                  "travelY": -18,
+                                  "phase": 1408
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "className": "cr-ref-blog-14"
+                    }
+                  },
+                  {
+                    "name": "sgs/decorative-image",
+                    "attributes": {
+                      "positionTop": {
+                        "desktop": "-40px"
+                      },
+                      "positionRight": {
+                        "mobile": "40px",
+                        "tablet": "40px",
+                        "desktop": "40px"
+                      },
+                      "width": {
+                        "desktop": "150px"
+                      },
+                      "height": {
+                        "desktop": "150px"
+                      },
+                      "borderWidth": {
+                        "right": "1.5px",
+                        "bottom": "1.5px",
+                        "left": "1.5px",
+                        "top": "1.5px"
+                      },
+                      "borderColour": "#FFFFFF33",
+                      "borderRadius": {
+                        "topLeft": "50%",
+                        "topRight": "50%",
+                        "bottomRight": "50%",
+                        "bottomLeft": "50%"
+                      },
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "effects": [
+                              {
+                                "id": "ambient-float-1",
+                                "effect": "ambient-float",
+                                "trigger": "load",
+                                "values": {
+                                  "axis": "both",
+                                  "travel": 11,
+                                  "period": 11498.360058968847,
+                                  "direction": "alternate",
+                                  "easing": "token:easing.ease-in-out",
+                                  "travelY": -15.8,
+                                  "phase": 10426
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "className": "cr-ref-blog-15"
+                    }
+                  },
+                  {
                     "name": "sgs/container",
                     "attributes": {
-                      "tagName": "article",
-                      "backgroundColour": "surface-alt",
-                      "className": "has-shadow-sm",
-                      "padding": {
-                        "top": "0",
-                        "bottom": "var:preset|spacing|40",
-                        "left": "0",
-                        "right": "0"
+                      "tagName": "div",
+                      "textColourHover": "primary-text",
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "entrance": {
+                              "base": {
+                                "trigger": "scroll",
+                                "values": {
+                                  "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:distance.xl",
+                                    "scale": 0.96
+                                  },
+                                  "to": {
+                                    "opacity": 1,
+                                    "translateY": 0,
+                                    "scale": 1
+                                  },
+                                  "duration": 800,
+                                  "delay": 240,
+                                  "easing": "token:entrance.easing"
+                                }
+                              }
+                            }
+                          }
+                        }
                       },
-                      "flexWrap": "wrap",
-                      "borderRadius": {
-                        "desktop": "8px"
-                      }
+                      "className": "cr-ref-blog-16"
                     },
                     "innerBlocks": [
                       {
-                        "name": "core/post-featured-image",
+                        "name": "sgs/label",
                         "attributes": {
-                          "isLink": true,
-                          "className": "sgs-u-media-16x9",
-                          "style": {
-                            "border": {
-                              "radius": {
-                                "topLeft": "8px",
-                                "topRight": "8px"
+                          "text": "Trade accounts",
+                          "textColourHover": "primary-text",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "desktop": 13
+                          },
+                          "fontWeight": "700",
+                          "lineHeight": 1.55,
+                          "letterSpacing": 0.14,
+                          "margin": {
+                            "desktop": {
+                              "bottom": "16px"
+                            }
+                          },
+                          "dot": true,
+                          "dotColour": "#D8CA50",
+                          "dotGap": "12px",
+                          "markerShape": "line",
+                          "className": "cr-ref-blog-17"
+                        }
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "margin": {
+                            "desktop": {
+                              "bottom": "0px"
+                            }
+                          },
+                          "content": "Open a trade account today.",
+                          "fontSize": {
+                            "desktop": "clamp(30px, 3.8vw, 48px)"
+                          },
+                          "fontWeight": "800",
+                          "lineHeight": {
+                            "tablet": 1.06,
+                            "desktop": 1.06
+                          },
+                          "lineHeightUnit": "",
+                          "letterSpacing": {
+                            "tablet": -0.015,
+                            "desktop": -0.015
+                          },
+                          "textColour": "primary-text",
+                          "textColourHover": "primary-text",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "entrance": {
+                                  "base": {
+                                    "trigger": "scroll",
+                                    "values": {
+                                      "from": {
+                                        "opacity": 0,
+                                        "translateY": "token:distance.lg",
+                                        "blur": 6
+                                      },
+                                      "to": {
+                                        "opacity": 1,
+                                        "blur": 0,
+                                        "translateY": 0
+                                      },
+                                      "duration": 850,
+                                      "easing": "token:entrance.easing"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "className": "cr-ref-blog-18"
+                        }
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "margin": {
+                            "desktop": {
+                              "top": "16px",
+                              "left": "0px",
+                              "right": "0px"
+                            }
+                          },
+                          "text": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+                          "textColour": "tint-on-blue",
+                          "fontSize": {
+                            "desktop": 17
+                          },
+                          "lineHeight": {
+                            "desktop": 1.6
+                          },
+                          "lineHeightUnit": "",
+                          "textWrap": "pretty",
+                          "maxWidth": {
+                            "desktop": "560px"
+                          },
+                          "textColourHover": "tint-on-blue",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "entrance": {
+                                  "base": {
+                                    "trigger": "scroll",
+                                    "values": {
+                                      "from": {
+                                        "opacity": 0,
+                                        "translateY": "token:distance.lg",
+                                        "blur": 6
+                                      },
+                                      "to": {
+                                        "opacity": 1,
+                                        "blur": 0,
+                                        "translateY": 0
+                                      },
+                                      "duration": 850,
+                                      "easing": "token:entrance.easing"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "className": "cr-ref-blog-19"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/multi-button",
+                    "attributes": {
+                      "flexDirection": {
+                        "desktop": "row",
+                        "mobile": "row"
+                      },
+                      "gap": {
+                        "mobile": "15px",
+                        "desktop": "22px"
+                      },
+                      "justifyContent": {
+                        "desktop": "flex-end",
+                        "tablet": "flex-start"
+                      },
+                      "flexWrap": {
+                        "desktop": "wrap",
+                        "tablet": "wrap",
+                        "mobile": "wrap"
+                      },
+                      "alignItems": {
+                        "desktop": "center",
+                        "mobile": "center"
+                      },
+                      "layout": "flex",
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "entrance": {
+                              "base": {
+                                "trigger": "scroll",
+                                "values": {
+                                  "from": {
+                                    "opacity": 0,
+                                    "translateY": "token:distance.xl",
+                                    "scale": 0.96
+                                  },
+                                  "to": {
+                                    "opacity": 1,
+                                    "translateY": 0,
+                                    "scale": 1
+                                  },
+                                  "duration": 800,
+                                  "delay": 320,
+                                  "easing": "token:entrance.easing"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "className": "cr-ref-blog-20"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "sgsFocusRests": true,
+                          "padding": {
+                            "desktop": {
+                              "top": "16px",
+                              "right": "24px",
+                              "bottom": "16px",
+                              "left": "24px"
+                            }
+                          },
+                          "label": "Become a Trade Customer",
+                          "url": "/apply/",
+                          "minHeight": {
+                            "desktop": "auto"
+                          },
+                          "fontWeight": "700",
+                          "fontSize": {
+                            "desktop": 16
+                          },
+                          "lineHeight": {
+                            "desktop": 1.55
+                          },
+                          "colourText": "ink",
+                          "colourTextHover": "ink",
+                          "colourBackground": "accent",
+                          "colourBackgroundHover": "#E6DA70",
+                          "borderStyle": "none",
+                          "boxShadow": "rgba(0, 0, 0, 0.45) 0px 10px 24px -12px",
+                          "boxShadowHover": "rgba(0, 0, 0, 0.5) 0px 16px 30px -12px",
+                          "iconGap": {
+                            "desktop": "10px"
+                          },
+                          "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><line x1=\"3\" y1=\"8\" x2=\"12\" y2=\"8\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></line><polyline points=\"8.5,4.5 12,8 8.5,11.5\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"></polyline></svg>",
+                          "className": "cr-ref-blog-21",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "hover": {
+                                  "state": {
+                                    "values": {
+                                      "translateY": "-token:distance.xs",
+                                      "duration": 200,
+                                      "easing": "token:easing.ease",
+                                      "paintDuration": 200,
+                                      "paintEasing": "token:easing.ease",
+                                      "shadowDuration": "token:duration.medium",
+                                      "shadowEasing": "token:easing.ease"
+                                    }
+                                  },
+                                  "effects": [
+                                    {
+                                      "id": "sheen-1",
+                                      "effect": "sheen",
+                                      "trigger": "hover",
+                                      "values": {
+                                        "angle": -18,
+                                        "bandWidth": 60,
+                                        "colour": "primary-text",
+                                        "opacity": 0.45,
+                                        "duration": 750,
+                                        "easing": "token:easing.emphasised"
+                                      }
+                                    },
+                                    {
+                                      "id": "magnet-1",
+                                      "effect": "magnet",
+                                      "trigger": "hover",
+                                      "values": {
+                                        "engage": "over",
+                                        "pullModel": "normalised",
+                                        "maxPullX": 10,
+                                        "maxPullY": 8
+                                      }
+                                    }
+                                  ]
+                                },
+                                "effects": [
+                                  {
+                                    "id": "ripple-1",
+                                    "effect": "ripple",
+                                    "trigger": "pointerdown",
+                                    "values": {
+                                      "duration": 650,
+                                      "easing": "token:easing.emphasised",
+                                      "sizeFactor": 2.2,
+                                      "peakOpacity": 0.35,
+                                      "colour": "primary-text"
+                                    },
+                                    "preset": "ripple-standard"
+                                  }
+                                ]
                               }
                             }
                           }
                         }
                       },
                       {
-                        "name": "sgs/container",
+                        "name": "sgs/button",
                         "attributes": {
-                          "tagName": "div",
+                          "sgsFocusRests": true,
                           "padding": {
-                            "left": "var:preset|spacing|30",
-                            "right": "var:preset|spacing|30",
-                            "top": "var:preset|spacing|30"
-                          },
-                          "flexWrap": "wrap"
-                        },
-                        "innerBlocks": [
-                          {
-                            "name": "core/post-title",
-                            "attributes": {
-                              "level": 2,
-                              "isLink": true,
-                              "fontSize": "x-large",
-                              "className": "sgs-u-tap-44 sgs-u-clamp-2"
+                            "desktop": {
+                              "top": "0px",
+                              "right": "0px",
+                              "bottom": "4px",
+                              "left": "0px"
                             }
                           },
-                          {
-                            "name": "core/post-date",
-                            "attributes": {
-                              "fontSize": "small",
-                              "textColor": "text-muted",
-                              "className": "sgs-u-meta-label"
+                          "label": "Call 0121 771 4330",
+                          "url": "tel:01217714330",
+                          "linkSource": "phone",
+                          "minHeight": {
+                            "desktop": "auto"
+                          },
+                          "fontWeight": "700",
+                          "lineHeight": {
+                            "desktop": 1.55
+                          },
+                          "colourTextHover": "accent",
+                          "colourBackground": "#00000000",
+                          "colourBackgroundHover": "#00000000",
+                          "borderColour": "accent",
+                          "borderColourHover": "accent",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "left": "0px",
+                            "bottom": "2px"
+                          },
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "0px",
+                              "topRight": "0px",
+                              "bottomRight": "0px",
+                              "bottomLeft": "0px"
                             }
                           },
-                          {
-                            "name": "core/post-excerpt",
-                            "attributes": {
-                              "excerptLength": 20,
-                              "className": "sgs-u-clamp-3"
-                            }
-                          }
-                        ]
+                          "className": "cr-ref-blog-22",
+                          "textWrap": "nowrap"
+                        }
                       }
                     ]
-                  }
-                ]
-              },
-              {
-                "name": "core/query-pagination",
-                "attributes": {
-                  "layout": {
-                    "type": "flex",
-                    "justifyContent": "center"
-                  },
-                  "style": {
-                    "spacing": {
-                      "margin": {
-                        "top": "var:preset|spacing|50"
-                      }
-                    }
-                  }
-                },
-                "innerBlocks": [
-                  {
-                    "name": "core/query-pagination-previous"
-                  },
-                  {
-                    "name": "core/query-pagination-numbers"
-                  },
-                  {
-                    "name": "core/query-pagination-next"
-                  }
-                ]
-              },
-              {
-                "name": "core/query-no-results",
-                "innerBlocks": [
-                  {
-                    "name": "sgs/text",
-                    "attributes": {
-                      "text": "No posts published yet.",
-                      "textAlign": "center",
-                      "textColour": "text-muted"
-                    }
                   }
                 ]
               }
@@ -231,6 +948,7 @@
     "name": "core/template-part",
     "attributes": {
       "slug": "footer",
+      "theme": "sgs-theme",
       "tagName": "footer"
     }
   }
