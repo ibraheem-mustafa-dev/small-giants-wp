@@ -1141,10 +1141,11 @@ dialog.sgs-shop-filters {
 /*
  * The sgs/trust-bar lives inside parts/sgs-pdp-content (template part, read-only).
  * This stylesheet loads on every page while WooCommerce is active, so the rule is
- * scoped to the product page's `single-product` body class: a trust-bar anywhere
- * else keeps its own settings.
+ * scoped to the product page's `single-product` body class and its `main`: the
+ * header's trust bar is outside `main` and keeps its own settings. `:where()` makes
+ * it a default, so a trust bar's own background or padding setting wins.
  */
-.single-product .wp-block-sgs-trust-bar {
+:where(.single-product main .wp-block-sgs-trust-bar) {
 	background-color: var(--wp--preset--color--surface, #FBF3DC);
 	padding-top: var(--wp--preset--spacing--50, 2rem);
 	padding-bottom: var(--wp--preset--spacing--50, 2rem);

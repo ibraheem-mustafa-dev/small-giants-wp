@@ -9,7 +9,8 @@
     "./src/blocks/extensions/**",
     "./src/bindings/**",
     "./src/shared/nav-interactivity/**",
-    "./src/shared/wishlist-store/**"
+    "./src/shared/wishlist-store/**",
+    "./src/blocks/trust-bar/overflow-drop.js"
   ],
   "description": "Custom Gutenberg block library for Small Giants Studio",
   "scripts": {

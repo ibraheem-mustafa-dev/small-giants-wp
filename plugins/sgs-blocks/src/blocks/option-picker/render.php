@@ -89,11 +89,11 @@ require_once __DIR__ . '/sub-label-support.php';
 // 1. Box-object interface contract §1 + security §D sanitisers.
 // ---------------------------------------------------------------------------
 
-// CSS-length sanitiser — strips everything except digits, dot, %, and unit
-// letters so an object-attr side/corner value can never break out of its
-// declaration. Mirrors sgs/button + sgs/quote + sgs/container.
-// CSS-keyword sanitiser — free-text attrs concatenated into raw CSS
-// declarations (border-style). Strips everything except letters + hyphen.
+// The sanitisers come from the shared helpers loaded above: sgs_css_length_value()
+// (includes/helpers-css-safety.php) keeps an object-attr side or corner value from
+// breaking out of its declaration, and sgs_css_keyword_sanitise() (includes/helpers-box.php)
+// keeps a free-text keyword (border-style) to letters and hyphens.
+
 // ---------------------------------------------------------------------------
 // 2. Attribute extraction.
 // ---------------------------------------------------------------------------
@@ -188,11 +188,18 @@ foreach ( $option_items as $item ) {
 		continue; // Skip duplicate keys — first occurrence wins.
 	}
 
-	$seen_keys[]   = $key;
-	$valid_items[] = array(
+	$seen_keys[] = $key;
+	$valid_item  = array(
 		'key'   => $key,
 		'label' => '' !== $label_text ? $label_text : $key,
 	);
+	// A caller's per-item image (sgs/buybox pickerVariationSwatch) survives validation; the pill
+	// loop below reads it ahead of the term-meta swatch.
+	$item_image = isset( $item['image'] ) ? esc_url_raw( trim( (string) $item['image'] ) ) : '';
+	if ( '' !== $item_image ) {
+		$valid_item['image'] = $item_image;
+	}
+	$valid_items[] = $valid_item;
 }
 
 /* After deduplication, bail if nothing remains. */

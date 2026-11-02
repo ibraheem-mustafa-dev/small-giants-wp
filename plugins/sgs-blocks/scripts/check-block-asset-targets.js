@@ -139,6 +139,19 @@ function checkBlock( blockDir, blockName ) {
 						`block.json declares "${ key }": "${ val }" but the compiled file does not ` +
 						'exist — WordPress will silently enqueue nothing for this handle (no error, no warning).',
 				} );
+			} else if ( /\.(js|css)$/.test( relPath ) && 0 === fs.statSync( resolvedPath ).size ) {
+				// An emitted but EMPTY bundle: webpack tree-shook a module imported only for its side
+				// effect (trust-bar's overflow-drop.js, not listed in package.json `sideEffects`), so the
+				// handle loads and does nothing.
+				findings.push( {
+					block: blockName,
+					key,
+					reference: val,
+					resolvedPath: path.relative( ROOT, resolvedPath ),
+					reason:
+						`block.json declares "${ key }": "${ val }" and the compiled file is 0 bytes — a module ` +
+						'imported only for its side effect was dropped; list it in package.json `sideEffects`.',
+				} );
 			}
 		}
 	}
