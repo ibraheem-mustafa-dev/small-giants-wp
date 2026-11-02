@@ -78,6 +78,21 @@
 					},
 					"_note": "The gallery thumbnail strip: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
+				"picker-option": {
+					"selector": ".sgs-buybox .sgs-option-picker__pill-label",
+					"label": "Option tile name",
+					"clusters": [ "text" ],
+					"prefix": "pickerOption",
+					"attrMap": {
+						"css:font-size": "pickerOptionFontSize",
+						"css:font-weight": "pickerOptionFontWeight",
+						"css:letter-spacing": "pickerOptionLetterSpacing",
+						"css:line-height": "pickerOptionLineHeight",
+						"css:text-transform": "pickerOptionTextTransform",
+						"css:color": "pickerOptionColour"
+					},
+					"_note": "The name under each colour or size tile; render.php scopes the pickerOption* rule to it."
+				},
 				"price-row": {
 					"selector": ".sgs-buybox .buybox__price-row",
 					"motion": false,
