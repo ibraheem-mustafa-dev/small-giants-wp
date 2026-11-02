@@ -2795,6 +2795,31 @@
    "file": "plugins/sgs-blocks/assets/css/gift-card.css",
    "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label::after",
    "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".wp-block-query-pagination-numbers[hidden]",
+   "reason": "Load more mode hides the page numbers it replaces (the links stay in the HTML for crawlers and no-JS)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".wp-block-query-pagination-next[hidden]",
+   "reason": "Load more mode hides the Next link it replaces (the no-JS fallback)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__button:hover",
+   "reason": "the Load more button brightens on hover (filter brightness 1.1); its colours follow the shop Filter button tokens, no own setting"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__button:disabled",
+   "reason": "the Load more button while a batch loads: progress cursor, 0.75 opacity"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__count[hidden]",
+   "reason": "the Showing N of M line is hidden when every product is shown"
   }
  ]
 }
