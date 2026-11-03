@@ -49,3 +49,23 @@ def test_merge_keeps_block_json_and_names_gaps():
     gaps.clear()
     _SEED._with_source_declarations({"transitionEasing": {"type": "string", "default": "ease"}}, "gallery", "sgs/gallery", source, gaps)
     assert gaps and gaps[0][:3] == ("sgs/gallery", "transitionEasing", "enum"), "a list built at run time is a named gap"
+
+
+def test_real_tier_objects_state_the_choices_of_one_tier():
+    """FW-F: a per-breakpoint object has no enum in block.json, so the seeder takes the choices of one tier from the source."""
+    source = block_source.BlockSource.read()
+    gaps: list = []
+    attrs = {
+        "alignItems": {"type": "object", "default": {"desktop": "stretch"}},  # feature-grid: AlignItemsTierControl options
+        "textAlign": {"type": "object", "default": {}},  # feature-grid reads no text alignment: neither
+    }
+    merged = _SEED._with_source_declarations(attrs, "feature-grid", "sgs/feature-grid", source, gaps)
+    assert merged["alignItems"]["enum"] == ["stretch", "start", "center", "end"]
+    assert "enum" not in merged["textAlign"] and not gaps
+    # Text alignment through the shared TypographyControls row (a target with showTextAlign) states the row's own list.
+    typo = _SEED._with_source_declarations({"textAlign": {"type": "object", "default": {}}}, "text", "sgs/text", source, gaps)
+    assert typo["textAlign"]["enum"] == ["left", "center", "right", "justify"]
+    # Negative control: a record object (not a tier object) never takes choices, and a declared enum still wins.
+    kept = _SEED._with_source_declarations({"orgLogo": {"type": "object", "default": {"id": 0}}}, "feature-grid", "sgs/feature-grid", source, gaps)
+    assert "enum" not in kept["orgLogo"]
+    assert block_source.is_tier_object({"type": "object", "default": {"mobile": "x"}}) and not block_source.is_tier_object({"type": "object", "default": {"id": 1}})

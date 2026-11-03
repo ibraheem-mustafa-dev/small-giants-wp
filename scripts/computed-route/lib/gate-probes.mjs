@@ -39,7 +39,9 @@ export function probeValues( property, attribute = {} ) {
 	} catch ( e ) {
 		listed = [];
 	}
-	const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ) : [] ) ];
+	// A per-breakpoint object holds the choices of ONE tier in enum_values, so each is probed as that tier's value.
+	const perTier = types.includes( 'object' );
+	const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ).map( ( v ) => ( perTier ? { desktop: v } : v ) ) : [] ) ];
 	takes( 'boolean' ) && out.push( true );
 	takes( 'number', 'integer' ) && out.push( 37, { desktop: 37 } );
 	if ( takes( 'string', 'object', 'rich-text', 'array' ) ) {

@@ -98,7 +98,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
-from block_source import BlockSource  # noqa: E402
+from block_source import BlockSource, is_tier_object  # noqa: E402
 
 # Shared object-attribute shape discriminator — see lib/object_attr_shape.py's
 # docstring for the full 5-shape doctrine. Aliased to the private names this
@@ -3224,10 +3224,17 @@ def _populate_setting_meanings(
     }
 
 
+def _is_tier_object(definition: dict) -> bool:
+    """A per-breakpoint setting (dbschema/block_source.py::is_tier_object)."""
+    return is_tier_object(definition)
+
+
 def _with_source_declarations(attrs: dict, folder: str, slug: str, source: "BlockSource", gaps: list) -> dict:
     """block.json's attributes plus what the block's own source declares (dbschema/block_source.py).
 
-    A string setting with no `enum` takes the allowed values its editor controls and PHP allow-lists state; an array setting
+    A string setting with no `enum` takes the allowed values its editor controls and PHP allow-lists state, and so does a
+    per-breakpoint object setting (a tier object: `{desktop, tablet, mobile}`), whose stored `enum_values` are the choices of ONE
+    tier (block.json declares none: WordPress would reject an object value against an enum). An array setting
     with no `items.properties` takes the item fields its default value and render.php state. A list the source declares but
     cannot be read statically is appended to `gaps` as (block, setting, kind, reason). block.json wins wherever it declares.
     """
@@ -3240,7 +3247,7 @@ def _with_source_declarations(attrs: dict, folder: str, slug: str, source: "Bloc
             fields = source.item_fields(folder, name, definition)
             if fields:
                 definition = {**definition, "items": {**(definition.get("items") or {}), "properties": {f: {} for f in fields}}}
-        elif definition.get("type", "string") == "string" and not definition.get("enum"):
+        elif (definition.get("type", "string") == "string" or _is_tier_object(definition)) and not definition.get("enum"):
             values, gap, _files = source.choices(folder, name, definition)
             if values:
                 definition = {**definition, "enum": values}

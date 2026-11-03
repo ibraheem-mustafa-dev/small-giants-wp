@@ -66,6 +66,12 @@ const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-durat
 
 let schemaIndex = null;
 // block.json attributes for a block slug, read from the plugin's block sources (not its scripts, R-47-1).
+// A per-breakpoint object declares no enum in block.json (WordPress would reject the object value): the seeder stores the
+// choices of ONE tier in the DB row's enum_values, and each tier's value is checked against them.
+export function tierEnumDef( def, row ) {
+	return def && 'object' === def.type && ! Array.isArray( def.enum ) && 'tier_object' === row?.tier_shape && row.enum_values ? { ...def, enum: JSON.parse( row.enum_values ) } : def;
+}
+
 export function blockSchema( slug ) {
 	if ( ! schemaIndex ) {
 		schemaIndex = {};
@@ -652,7 +658,7 @@ export function resolve( input, ctx ) {
 	};
 	const out = {};
 	for ( const [ t, raw ] of Object.entries( tiers ) ) {
-		const def = 'flat_sibling' === row.tier_shape ? schema[ attr + ( 'desktop' === t ? '' : t[ 0 ].toUpperCase() + t.slice( 1 ) ) ] : schema[ attr ];
+		const def = 'flat_sibling' === row.tier_shape ? schema[ attr + ( 'desktop' === t ? '' : t[ 0 ].toUpperCase() + t.slice( 1 ) ) ] : tierEnumDef( schema[ attr ], row );
 		const f = fmtTier( t, raw, def );
 		if ( f.error ) {
 			return { gap: 'shape', detail: f.error };

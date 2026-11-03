@@ -29,6 +29,10 @@ try {
 }
 
 const CONTROLS = new Set( [ 'SelectControl', 'RadioControl', 'ToggleGroupControl' ] );
+// SGS's own per-breakpoint controls: `value` is the `{desktop, tablet, mobile}` attribute and the options are the choices of ONE
+// tier. A control without an `options` prop (the text-alignment row) states its default list in its own module.
+const TIER_COMPONENTS = new Set( [ 'AlignItemsTierControl', 'TextAlignTierControl' ] );
+const TIER_DEFAULT_OPTIONS = { TextAlignTierControl: 'SGS_TEXT_ALIGN_OPTIONS' };
 const OPTION_ELEMENTS = new Set( [ 'ToggleGroupControlOption', 'ToggleGroupControlOptionIcon' ] );
 const PARSE_OPTIONS = { sourceType: 'module', plugins: [ 'jsx', 'classProperties', 'objectRestSpread', 'optionalChaining', 'nullishCoalescingOperator' ], errorRecovery: false };
 const MAX_DEPTH = 12;
@@ -334,7 +338,95 @@ function propLocalName( fn, prop ) {
 	return target && target.type === 'Identifier' ? target.name : null;
 }
 
-const isComponentElement = ( n ) => n.type === 'JSXElement' && /^[A-Z]/.test( jsxName( n ) || '' ) && ! CONTROLS.has( jsxName( n ) );
+const isComponentElement = ( n ) => n.type === 'JSXElement' && /^[A-Z]/.test( jsxName( n ) || '' ) && ! CONTROLS.has( jsxName( n ) ) && ! TIER_COMPONENTS.has( jsxName( n ) );
+
+let SRC_ROOT = '';
+
+// The text-alignment row's own list (components/TextAlignTierControl.js::SGS_TEXT_ALIGN_OPTIONS).
+function textAlignDefaults() {
+	const file = path.join( SRC_ROOT, 'components', 'TextAlignTierControl.js' );
+	const list = lookup( file, TIER_DEFAULT_OPTIONS.TextAlignTierControl );
+	if ( ! list ) {
+		throw new Unreadable( 'the text alignment row states no list' );
+	}
+	return optionValues( list.node, list.file );
+}
+
+const literalString = ( node ) => ( node && node.type === 'StringLiteral' ? node.value : null );
+const isTrue = ( node ) => node === null || ( node && ( node.type === 'BooleanLiteral' ? node.value : node.type === 'JSXExpressionContainer' && node.expression.type === 'BooleanLiteral' && node.expression.value ) );
+
+// The text-alignment attributes a TypographyControls mount offers: `<TypographyControls showTextAlign prefix="name" />` or a
+// `targets` array whose items carry `prefix` and `showTextAlign: true`.
+function typographyAlignAttrs( n, file ) {
+	const names = [];
+	const alignName = ( prefix ) => ( prefix ? `${ prefix }TextAlign` : 'textAlign' );
+	const targets = jsxProp( n, 'targets' );
+	let expr = targets ? propExpression( targets ) : null;
+	if ( expr && expr.type === 'Identifier' ) {
+		const found = lookup( file, expr.name );
+		expr = found ? found.node : null;
+	}
+	if ( expr ) {
+		// A target may be written `cond && { ... }` or `cond ? { ... } : { ... }`: every object in it is a target.
+		const objects = [];
+		( function collect( x ) {
+			if ( ! x ) {
+				return;
+			}
+			if ( x.type === 'ObjectExpression' ) {
+				objects.push( x );
+			} else if ( x.type === 'LogicalExpression' ) {
+				collect( x.right );
+			} else if ( x.type === 'ConditionalExpression' ) {
+				collect( x.consequent );
+				collect( x.alternate );
+			} else if ( x.type === 'SpreadElement' ) {
+				collect( x.argument );
+			} else if ( x.type === 'ArrayExpression' ) {
+				x.elements.forEach( collect );
+			} else if ( x.type === 'CallExpression' && x.callee.type === 'MemberExpression' ) {
+				// `[ ... ].filter( Boolean )` and the like: the list is the object the method is called on.
+				collect( x.callee.object );
+			} else if ( x.type === 'Identifier' ) {
+				const found = lookup( file, x.name );
+				found && found.node !== x && collect( found.node );
+			}
+		} )( expr );
+		for ( const el of objects ) {
+			if ( el ) {
+				const get = ( k ) => el.properties.find( ( p ) => p.type === 'ObjectProperty' && ! p.computed && ( p.key.name === k || p.key.value === k ) );
+				const show = get( 'showTextAlign' );
+				const prefix = get( 'prefix' );
+				if ( show && show.value.type === 'BooleanLiteral' && show.value.value ) {
+					names.push( alignName( prefix ? literalString( prefix.value ) : '' ) );
+				}
+			}
+		}
+		return names;
+	}
+	const show = n.openingElement.attributes.find( ( a ) => a.type === 'JSXAttribute' && a.name.name === 'showTextAlign' );
+	if ( show && isTrue( show.value ) ) {
+		const prefix = jsxProp( n, 'prefix' );
+		names.push( alignName( prefix ? literalString( prefix.value ) || literalString( propExpression( prefix ) ) || '' : '' ) );
+	}
+	return names;
+}
+
+// The options of one of SGS's per-breakpoint controls: its `options` prop, else the default list its module states.
+function tierComponentValues( n, file ) {
+	const opts = jsxProp( n, 'options' );
+	if ( opts ) {
+		return optionValues( propExpression( opts ), file );
+	}
+	const name = jsxName( n );
+	const constName = TIER_DEFAULT_OPTIONS[ name ];
+	const comp = constName ? componentFunction( file, name ) : null;
+	const list = comp ? lookup( comp.file, constName ) : null;
+	if ( ! list ) {
+		throw new Unreadable( `a ${ name } with no options prop` );
+	}
+	return optionValues( list.node, list.file );
+}
 
 // Each control inside a component that reads the prop `local`, following the prop into the components it passes it to.
 function controlsReading( fn, file, local, depth, out ) {
@@ -377,20 +469,56 @@ function controlsOf( file, attributes, found ) {
 		if ( n.type !== 'JSXElement' ) {
 			return;
 		}
-		if ( CONTROLS.has( jsxName( n ) ) ) {
+		if ( CONTROLS.has( jsxName( n ) ) || TIER_COMPONENTS.has( jsxName( n ) ) ) {
 			const valueProp = jsxProp( n, 'value' );
 			const attr = valueProp ? attributeOf( propExpression( valueProp ), attributes ) : null;
 			if ( attr ) {
 				const slot = slotOf( attr );
 				slot.files.add( path.basename( file ) );
 				try {
-					slot.values.push( ...controlValues( n, file ) );
+					slot.values.push( ...( TIER_COMPONENTS.has( jsxName( n ) ) ? tierComponentValues( n, file ) : controlValues( n, file ) ) );
 				} catch ( e ) {
 					if ( ! ( e instanceof Unreadable ) ) {
 						throw e;
 					}
 					slot.gap = slot.gap || e.message;
 				}
+			}
+		} else if ( jsxName( n ) === 'TypographyControls' ) {
+			for ( const attr of typographyAlignAttrs( n, file ) ) {
+				if ( attributes.has( attr ) ) {
+					const slot = slotOf( attr );
+					slot.files.add( 'TextAlignTierControl.js' );
+					try {
+						slot.values.push( ...textAlignDefaults() );
+					} catch ( e ) {
+						if ( ! ( e instanceof Unreadable ) ) {
+							throw e;
+						}
+						slot.gap = slot.gap || e.message;
+					}
+				}
+			}
+		} else if ( jsxName( n ) === 'ResponsiveOverride' ) {
+			// A per-breakpoint row drawn inline: the control inside its render prop reads `ownValue`, the active tier's value.
+			const valueProp = jsxProp( n, 'value' );
+			const attr = valueProp ? attributeOf( propExpression( valueProp ), attributes ) : null;
+			if ( attr ) {
+				walkNodes( n, ( m ) => {
+					const own = m.type === 'JSXElement' && CONTROLS.has( jsxName( m ) ) && jsxProp( m, 'value' ) && mentions( propExpression( jsxProp( m, 'value' ) ), 'ownValue' );
+					if ( own ) {
+						const slot = slotOf( attr );
+						slot.files.add( path.basename( file ) );
+						try {
+							slot.values.push( ...controlValues( m, file ) );
+						} catch ( e ) {
+							if ( ! ( e instanceof Unreadable ) ) {
+								throw e;
+							}
+							slot.gap = slot.gap || e.message;
+						}
+					}
+				} );
 			}
 		} else if ( isComponentElement( n ) ) {
 			// A shared component that draws the control: follow the attribute through the prop it is passed in.
@@ -445,6 +573,7 @@ function main() {
 		process.exit( 2 );
 	}
 	const srcRoot = path.dirname( blocksDir );
+	SRC_ROOT = srcRoot;
 	const result = {};
 	for ( const name of fs.readdirSync( blocksDir ).sort() ) {
 		const blockDir = path.join( blocksDir, name );

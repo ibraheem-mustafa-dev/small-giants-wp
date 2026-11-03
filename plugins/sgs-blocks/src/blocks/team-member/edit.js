@@ -646,6 +646,7 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 								key: 'card',
 								label: __( 'Card', 'sgs-blocks' ),
 								prefix: '',
+								showTextAlign: true,
 							},
 							{
 								key: 'name',

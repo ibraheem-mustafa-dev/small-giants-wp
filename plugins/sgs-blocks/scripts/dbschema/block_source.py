@@ -47,6 +47,17 @@ def _run(cmd: list[str], cwd: Path) -> Any:
         raise BlockSourceError(f"{cmd[0]} printed no JSON for {cmd}: {done.stdout[:200]!r} {done.stderr[-300:]}") from exc
 
 
+TIER_KEYS = ("desktop", "tablet", "mobile")
+
+
+def is_tier_object(attr_def: dict) -> bool:
+    """A per-breakpoint setting: an object whose default is empty or holds only tier keys."""
+    if attr_def.get("type") != "object":
+        return False
+    default = attr_def.get("default", {})
+    return isinstance(default, dict) and all(k in TIER_KEYS for k in default)
+
+
 class BlockSource:
     def __init__(self, js: dict, php: dict):
         self.js = js
@@ -60,7 +71,13 @@ class BlockSource:
 
     def choices(self, folder: str, attr: str, attr_def: dict) -> tuple[list | None, str | None, list[str]]:
         """(values, gap, files). values is the union of the editor list, the PHP allow-list and the default;
-        gap names why a list the source declares could not be read; both None when the source declares none."""
+        gap names why a list the source declares could not be read; both None when the source declares none.
+
+        A per-breakpoint object setting (``is_tier_object``) takes the values its source states for ONE tier: the control's
+        options or the allow-list for the same attribute, with its desktop default added when that is a string."""
+        if is_tier_object(attr_def):
+            desktop = (attr_def.get("default") or {}).get("desktop")
+            attr_def = {**attr_def, "type": "string", "default": desktop if isinstance(desktop, str) else None}
         if attr_def.get("type", "string") != "string":
             return None, None, []
         js = self.js.get(folder, {}).get(attr)
@@ -118,6 +135,9 @@ def _self_test() -> int:
             "tone": {"type": "string", "default": "x"},
             "dyn": {"type": "string", "default": "p"},
             "rows": {"type": "array", "default": [{"title": "T", "date": "D"}]},
+            "align": {"type": "object", "default": {}},
+            "inline": {"type": "object", "default": {}},
+            "record": {"type": "object", "default": {"x": 1}},
         }}), encoding="utf-8")
         (demo / "edit.js").write_text(
             "import { SelectControl, ToggleGroupControl, ToggleGroupControlOption } from '@wordpress/components';\n"
@@ -128,6 +148,9 @@ def _self_test() -> int:
             "    <SelectControl value={ shape } options={ SHAPES } onChange={ () => {} } />\n"
             "    <ToggleGroupControl value={ mode }><ToggleGroupControlOption value=\"a\" /><ToggleGroupControlOption value=\"b\" /></ToggleGroupControl>\n"
             "    <SelectControl value={ dyn } options={ buildOptions() } />\n"
+            "    <AlignItemsTierControl value={ align } options={ SHAPES } />\n"
+            "    <ResponsiveOverride value={ inline }>{ ( { ownValue } ) => <SelectControl value={ ownValue } options={ SHAPES } /> }</ResponsiveOverride>\n"
+            "    <SelectControl value={ record } options={ SHAPES } />\n"
             "  </> );\n}\n", encoding="utf-8")
         (demo / "render.php").write_text(
             "<?php\n$tone = $attributes['tone'] ?? 'x';\n$tone = in_array( $tone, array( 'y', 'z' ), true ) ? $tone : 'x';\n"
@@ -140,6 +163,9 @@ def _self_test() -> int:
         values, gap, _ = src.choices("demo", "dyn", defs["dyn"])
         check("a list built by a call is a named gap, not values", values is None and gap is not None and "call" in gap)
         check("a setting the source never lists is neither", src.choices("demo", "rows", defs["rows"]) == (None, None, []))
+        check("a per-breakpoint component's options are the choices of one tier", src.choices("demo", "align", defs["align"])[0] == ["round", "square"])
+        check("a ResponsiveOverride render-prop control reads the tier's choices", src.choices("demo", "inline", defs["inline"])[0] == ["round", "square"])
+        check("negative control: an object that is not a tier object takes no choices", src.choices("demo", "record", defs["record"]) == (None, None, []))
         check("item fields: default shape then keys render.php reads", src.item_fields("demo", "rows", defs["rows"]) == ["title", "date", "image"])
         edited = (demo / "edit.js").read_text(encoding="utf-8").replace("value: 'square'", "value: 'oval'")
         (demo / "edit.js").write_text(edited, encoding="utf-8")
