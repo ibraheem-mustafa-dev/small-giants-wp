@@ -214,6 +214,43 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_attributes' ) )
 	}
 }
 
+if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_answers' ) ) {
+	/**
+	 * The label/value pairs for one cart line's unpriced choice-flow answers.
+	 *
+	 * Reads the accepted list under Flow_Fields_Cart::KEY (sanitised at add
+	 * time). They follow the variation attributes in the same segment list,
+	 * because the per-answer display rows are removed in favour of the summary:
+	 * this is the one place the line says what the shopper chose.
+	 *
+	 * @param array $cart_item A WooCommerce cart item.
+	 * @return array<int,array{label:string,value:string}>
+	 */
+	function sgs_cart_line_summary_answers( array $cart_item ): array {
+		$entries = $cart_item[ Flow_Fields_Cart::KEY ] ?? array();
+		if ( ! \is_array( $entries ) ) {
+			return array();
+		}
+
+		$answers = array();
+		foreach ( $entries as $entry ) {
+			if ( ! \is_array( $entry ) || ! isset( $entry['value'] ) || ! \is_scalar( $entry['value'] ) ) {
+				continue;
+			}
+			$value = \trim( (string) $entry['value'] );
+			if ( '' === $value ) {
+				continue;
+			}
+			$label     = isset( $entry['label'] ) && \is_scalar( $entry['label'] ) ? \trim( (string) $entry['label'] ) : '';
+			$answers[] = array(
+				'label' => $label,
+				'value' => $value,
+			);
+		}
+		return $answers;
+	}
+}
+
 if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_band_map' ) ) {
 	/**
 	 * Term slug => band letter for one product's own terms on one axis.
@@ -308,6 +345,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_for_cart_item' 
 		$has_addons  = sgs_cart_line_summary_has_addons( $cart_item );
 		$addon_lines = $has_addons ? (array) $cart_item[ Addon_Price_List_Cart::LINES_KEY ] : array();
 		$attributes  = sgs_cart_line_summary_attributes( $cart_item );
+		$answers     = sgs_cart_line_summary_answers( $cart_item );
 
 		/*
 		 * The "without add-ons" lead names something the shopper DECLINED, so
@@ -336,9 +374,9 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_for_cart_item' 
 
 		return sgs_cart_line_summary_lines(
 			array(
-				'lead'       => $lead,
-				'addons'     => $has_addons ? sgs_addon_short_labels( $addon_lines ) : array(),
-				'attributes' => $attributes,
+				'lead'           => $lead,
+				'addons'         => $has_addons ? sgs_addon_short_labels( $addon_lines ) : array(),
+				'attributes'     => \array_merge( $attributes, $answers ),
 				'labelSeparator' => $wording['labelSeparator'],
 			)
 		);
