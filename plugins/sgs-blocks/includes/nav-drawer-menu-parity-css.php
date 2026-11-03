@@ -53,9 +53,13 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_parity_css' ) ) {
 
 		// Badge tones: an item set to tone A or B (itemBadgeTones) carries a modifier class; its colours paint that class
 		// only, after the block-level rule so they win at equal specificity.
-		foreach ( array( 'A', 'B' ) as $tone ) {
-			$tone_bg   = sgs_background_paint_decl( (string) ( $attributes[ 'badgeColour' . $tone ] ?? '' ), '' );
-			$tone_text = sgs_text_colour_decl( (string) ( $attributes[ 'badgeTextColour' . $tone ] ?? '' ) );
+		$tone_values = array(
+			'A' => array( (string) ( $attributes['badgeColourA'] ?? '' ), (string) ( $attributes['badgeTextColourA'] ?? '' ) ),
+			'B' => array( (string) ( $attributes['badgeColourB'] ?? '' ), (string) ( $attributes['badgeTextColourB'] ?? '' ) ),
+		);
+		foreach ( $tone_values as $tone => $tone_pair ) {
+			$tone_bg   = sgs_background_paint_decl( $tone_pair[0], '' );
+			$tone_text = sgs_text_colour_decl( $tone_pair[1] );
 			$tone_css  = ( '' !== $tone_bg ? $tone_bg . ';' : '' ) . ( '' !== $tone_text ? $tone_text . ';' : '' );
 			if ( '' !== $tone_css ) {
 				$css .= $scope . ' .sgs-nav-drawer-menu__badge--tone-' . strtolower( $tone ) . '{' . $tone_css . '}';

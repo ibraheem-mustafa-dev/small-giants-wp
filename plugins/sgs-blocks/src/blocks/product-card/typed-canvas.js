@@ -76,7 +76,7 @@ export function typedCardPreview( attrs, tier ) {
 			'--sgs-pc-swatch-size': swatchSize > 0 ? `${ swatchSize }px` : undefined,
 			'--sgs-pc-swatch-hover-scale': swatchGrow > 100 ? ( swatchGrow / 100 ).toFixed( 2 ) : undefined,
 		},
-		body: paddingOf( attrs.cardPadding ),
+		body: paddingOf( resolveTier( { ...( attrs.cardPaddingTier || {} ), desktop: attrs.cardPadding }, tier ).value ),
 		media: attrs.mediaBackgroundColour ? { background: colour( attrs.mediaBackgroundColour ) } : {},
 		title: { ...typographyPreviewStyle( attrs, 'title', tier ), ...textColour( attrs.titleColour, attrs.titleColourGradient ) },
 		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },

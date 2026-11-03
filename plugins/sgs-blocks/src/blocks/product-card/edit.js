@@ -978,6 +978,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			  }
 			: {} ),
 		width: 'full' === ctaWidthType ? '100%' : undefined,
+		...( false === attributes.showCtaShadow ? { boxShadow: 'none' } : {} ),
 		...typedParts.ctaGradients,
 	};
 
@@ -1015,6 +1016,9 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	}
 	if ( ctaBorderHoverResolved ) {
 		ctaHoverDecls.push( `border-color:${ ctaBorderHoverResolved };` );
+	}
+	if ( false === attributes.showCtaShadow ) {
+		ctaHoverDecls.push( 'box-shadow:none;' );
 	}
 	const ctaHoverSelector = `.${ ctaPreviewUid } .sgs-product-card__cta--primary`;
 	const ctaHoverCss = ctaHoverDecls.length
