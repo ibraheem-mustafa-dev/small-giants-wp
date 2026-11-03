@@ -562,6 +562,32 @@ if ( ! function_exists( 'sgs_emit_responsive_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_emit_tier_decls' ) ) {
+	/**
+	 * Print READY per-tier declaration lists on one selector.
+	 *
+	 * For callers that already hold `array( 'desktop' => string[], 'tablet' => string[], 'mobile' => string[] )`
+	 * from a shared helper (sgs_border_element_decls(), sgs_tiered_border_specs() and the like). Desktop is a plain
+	 * rule; tablet and mobile are wrapped in SGS_Breakpoints' queries. A missing or empty tier prints nothing.
+	 * Each declaration list is joined with `;` and closed with `;`.
+	 *
+	 * @param string $selector Fully-formed, already-safe CSS selector.
+	 * @param array  $tiers    Tier name => list of declarations (without the trailing `;`).
+	 * @return string CSS text; '' when no tier has a declaration.
+	 */
+	function sgs_emit_tier_decls( string $selector, array $tiers ): string {
+		$css = '';
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+			if ( empty( $tiers[ $tier ] ) ) {
+				continue;
+			}
+			$rule = $selector . '{' . implode( ';', (array) $tiers[ $tier ] ) . ';}';
+			$css .= 'desktop' === $tier ? $rule : SGS_Breakpoints::media( $tier ) . '{' . $rule . '}';
+		}
+		return $css;
+	}
+}
+
 if ( ! function_exists( 'sgs_canonicalise_responsive_attrs' ) ) {
 	/**
 	 * Canonicalisation ORACLE for object-model responsive attributes.

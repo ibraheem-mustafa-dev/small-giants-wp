@@ -39,6 +39,42 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		const CONTAINER_MOBILE_MAX = 479;
 
 		/**
+		 * The bare media condition for a named device range, built from the tier constants.
+		 *
+		 * Keys: 'tablet' (up to TABLET_MAX), 'mobile' (up to MOBILE_MAX), 'tablet-up' (from MOBILE_MAX + 1),
+		 * 'desktop' (from TABLET_MAX + 1), 'tablet-only' (MOBILE_MAX + 1 to TABLET_MAX).
+		 *
+		 * @param string $range Range key.
+		 * @return string e.g. '(max-width:1023px)'; '' for an unknown key.
+		 */
+		public static function query( $range ) {
+			switch ( $range ) {
+				case 'tablet':
+					return '(max-width:' . self::TABLET_MAX . 'px)';
+				case 'mobile':
+					return '(max-width:' . self::MOBILE_MAX . 'px)';
+				case 'tablet-up':
+					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px)';
+				case 'desktop':
+					return '(min-width:' . ( self::TABLET_MAX + 1 ) . 'px)';
+				case 'tablet-only':
+					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px) and (max-width:' . self::TABLET_MAX . 'px)';
+				default:
+					return '';
+			}
+		}
+
+		/**
+		 * The at-rule prefix (no opening brace) for a named device range: `@media` plus query().
+		 *
+		 * @param string $range Range key (see query()).
+		 * @return string e.g. '@media(max-width:1023px)'.
+		 */
+		public static function media( $range ) {
+			return '@media' . self::query( $range );
+		}
+
+		/**
 		 * Return the max-width (px, integer) for a named device tier.
 		 *
 		 * @param string $tier 'tablet' | 'mobile'.
