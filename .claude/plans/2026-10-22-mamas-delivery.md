@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 spec: .claude/specs/48-CLONING-SYSTEM.md
-status: open, starts after the Indus sign-off (`plans/2026-10-21-handoff-readers.md`, U18)
+status: open, starts after the Indus sign-off (`plans/2026-10-21-handoff-readers.md`, U18); the hand finishing stream runs ahead of it (`plans/2026-11-02-clone-finishing-streams.md`, Mama's stream: Rounds 1 to 3 live on mamas-test)
 ---
 
 # Mama's Munches delivery

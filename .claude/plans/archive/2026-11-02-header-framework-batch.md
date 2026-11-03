@@ -1,14 +1,14 @@
 ---
 doc_type: plan
 title: Header framework batch (Mama's Round 2): seven missing settings on sgs/nav-bar-menu and sgs/cart
-status: active
+status: complete
 created: 2026-11-02
 governs: sites/mamas-munches-redesign/build/qa/fix-catalogue.md rows R2-H1, R2-H4, R2-H5, R2-H7, R2-H8, R2-H11, R2-H12, R2-H13
 ---
 
 # Header framework batch
 
-**Status (2026-11-02):** built and committed (`cebd58310`, reseed `09a5de25e`, label fix `f62bf01a9`); all 204 build gates pass; deployed to mamas-test (`f62bf01a9`). Proven on local-mamas: default, icon, pill and mixed carts and nav justify unset/flex-start unchanged at 375/768/1440; 13 positive cases; editor round-trip clean. Mama's header (post 178) carries the new values on the mirror and matches the draft at 375/768/1440. Open: (1) push local-mamas to mamas-test (its stored header still has the old shapes until then; the push refuses while the mirror and mamas-test builds differ, so redeploy mamas-test from current HEAD first, after the Eye Care reseed and the Indus indus-test deploy); (2) the Indus session patches indus-test post 201's nav `justifyContent` to `{"desktop":"flex-start"}` itself (do not rebuild post 201 from its tree); (3) `/qc` of the header on mamas-test. Order step 4 below is where this resumes.
+**Status (2026-11-03): complete.** Built and committed (`cebd58310`, reseed `09a5de25e`, label fix `f62bf01a9`); live on mamas-test since the 2026-11-02 deploy and mirror push (re-deployed with the footer batch at `1dd2bdb17`); `/qc` of the header on mamas-test at 375/768/1440 passed every check (burger x 8/20, links from x 474, pill x 1155–1300 with the draft's bag icon, no "0" below 1024, pink circle and yellow pill with a 5px shadow on hover, strip collapses on scroll).
 
 **Why (Bean, 2026-11-02):** Mama's header differs from its draft in places no existing setting can express. Bean ruled no Custom CSS where a framework fix makes sense, so each becomes a setting every site gets. Each adds a missing member to an existing element or makes an existing setting per breakpoint; none adds a new mechanism. Revised after a three-persona adversarial council (spec-lawyer, regression red-teamer, editor-UX realist), verdict GO with the rules below.
 

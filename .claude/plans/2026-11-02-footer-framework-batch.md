@@ -8,9 +8,9 @@ governs: sites/mamas-munches-redesign/build/qa/fix-catalogue.md rows R3-FWA, R3-
 
 # Footer framework batch
 
-**Status (2026-11-02):** FW-A, FW-B, FW-C, FW-D, FW-E, FW-G and FW-H built, committed (through `16fa7612e`), reseeded and deployed to mamas-test (`397ab4ecc`); Mama's footer on them is live and checked at 375/768/1440. Open: the fresh-code review fixes (hover-parts identity fill, gallery sweep byte-identity, swipe-row inset per tier, six minor items), then FW-F as its own commit series in this round.
+**Status (2026-11-03):** FW-A to FW-H built and live on mamas-test (deploy `1dd2bdb17` plus mirror push); Mama's footer carries no Custom CSS and matches the draft at 375/768/1440 (`/qc` 2026-11-02/03). FW-A, FW-B, FW-C, FW-D, FW-E, FW-G: `f374ddc05` to `12e6c98bb`, review fixes `9206ee88a`. FW-H: `16fa7612e`. FW-F: `dc85c2c9a`, `e8adabcef`, `3b2f9d083`, `7900bf614`, `d612a56d9`, seeder per-tier choices `c7fe41079`, reseed `c7ce83476` (full build 205/205). Open: the FW-F rollout to the other sites (section below) and one seeder follow-up.
 
-**Why (Bean, 2026-11-02):** Mama's footer differs from its draft in six places no existing setting can express. Bean approved all six as framework items on the same ruling as the header batch: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), every existing block on every other site renders exactly as today. This plan follows `.claude/plans/2026-11-02-header-framework-batch.md` (its "Rules for every addition" apply here unchanged and are restated where they bite).
+**Why (Bean, 2026-11-02):** Mama's footer differs from its draft in six places no existing setting can express. Bean approved all six as framework items on the same ruling as the header batch: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), every existing block on every other site renders exactly as today. This plan follows `.claude/plans/archive/2026-11-02-header-framework-batch.md` (its "Rules for every addition" apply here unchanged and are restated where they bite).
 
 ## Rules for every addition
 
@@ -181,3 +181,16 @@ One builder agent, sequential, so no two items touch a shared file at once.
 4. FW-E (gallery, `helpers-responsive.php`).
 5. Before any reseed: `git status`, message the peer sessions (Indus, Eye Care) and serialise reseeds and deploys with them. Commit, reseed from HEAD for items 1 to 4, build once with all gates, sync local-mamas, run the named negative controls, then set Mama's footer (R3-FWA to FWE, FWG and its other rows) and check it against the draft at 375/768/1440.
 6. FW-F in its own later session, after Mama's footer is signed off, as the series above; tell the Indus and Eye Care sessions before the saved-content rewrite and the live sweep; deploy mamas-test first, then the others, with `build-deploy.py` and the push and site-check route in `.claude/dev-setup.md`.
+
+## FW-F rollout (open)
+
+FW-F changes the stored shape of 155 attributes on 53 blocks, so every site's saved content must be swept to the per-device object shape immediately before that site's first deploy at or after `c7ce83476`; the deploy's old-shape audit refuses an unswept site. The sweep is `plugins/sgs-blocks/scripts/migrate-scalar-tier-live.php` with rules from `python plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py --rules > rules.json` (the rules also cover the earlier gallery `layout`, nav-bar-menu `justifyContent` and cart `showZero` conversions): take a database backup (mysqldump as `scripts/local-wp/push-to-remote.sh` does), `wp eval-file migrate-scalar-tier-live.php dry-run rules.json`, then `apply rules.json undo.json` (it re-counts and errors if anything old-shape remains), then deploy straight after. On a server the script and rules are copied to the home folder first (the scripts folder is not in the deploy payload).
+- eye-care-test and sandybrown (the canary): the Eye Care session runs the sweep before its next deploys of each (told 2026-11-03). The canary's motion-QA fixture pages are swept like any page.
+- indus-test: one sequence agreed with the Indus session: this stream sweeps local-indus (dry run, then apply) when the Indus session asks → Indus runs `build-deploy.py --target indus-test` from a clean origin worktree → `push-to-remote.sh local-indus indus-test` → site-check. Do not touch local-indus until the Indus session asks. The Indus blog template tree (`sites/indus-foods/build/trees/template/home.json`, template 508) already holds the new shape; nobody rebuilds 508 from it before indus-test has FW-F.
+- local-eye-care and eye-care-clone-test (the clone stream's): swept by whichever session next pushes or deploys them.
+
+
+## Follow-up (seeder)
+
+18 of the 157 converted alignment attributes still have no per-tier choice list in the framework DB, because their typography targets are built by helper functions with computed prefixes that `plugins/sgs-blocks/scripts/dbschema/block-source-choices.js` cannot read statically: `sgs/google-reviews` (14), `sgs/google-rating-badge` (2), `sgs/cart` panel rows (2). Make those helpers' targets readable (or declare the choices where the reader can see them) so the cloning route can check their per-tier values; same blind spot the header batch's per-device settings had before `c7fe41079`.
+
