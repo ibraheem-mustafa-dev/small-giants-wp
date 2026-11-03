@@ -8161,6 +8161,35 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsStickyBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsStickyBleed",
+      "fields": {
+        "css_property": "margin-inline",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsStickyBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "alignContent",
       "fields": {
         "css_property": "align-content",
@@ -10593,6 +10622,24 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "stepNumberCompletedBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "step-number-completed"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberCompletedColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "step-number-completed"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepNumberFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -10812,14 +10859,6 @@
       "attr": "submitMinHeight",
       "fields": {
         "css_property": "min-height",
-        "css_element": "submit-button"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "submitPadding",
-      "fields": {
-        "css_property": "padding",
         "css_element": "submit-button"
       }
     },
@@ -14793,6 +14832,16 @@
       "attr": "splitMediaAspectRatio",
       "fields": {
         "css_property": "aspect-ratio",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
         "css_layer": "GRID_AREA",
         "css_element": "split-media"
       }
@@ -18777,6 +18826,16 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretColourOpen",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "caret-box-open",
+        "css_state": "open"
       }
     },
     {
@@ -34179,6 +34238,33 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsStickyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsStickyShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsStickyShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -34392,6 +34478,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -34405,6 +34499,65 @@
         "css_property": "box-shadow",
         "css_element": "submit-button",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-checkbox",
+      "attr": "rowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "option"
       }
     },
     {
@@ -34422,6 +34575,30 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "inputLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "inputMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "inputPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "input"
       }
     },
     {
@@ -36844,6 +37021,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardMediaRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardPadding",
       "fields": {
         "css_property": "padding",
@@ -36874,6 +37060,15 @@
       "attr": "drawerCardTagPadding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagRadius",
+      "fields": {
+        "css_property": "border-radius",
         "css_layer": "CONTENT",
         "css_element": "drawerCardTag"
       }
@@ -37051,6 +37246,16 @@
       "attr": "drawerLinkRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkTrailingColour",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "drawerLinks"
       }

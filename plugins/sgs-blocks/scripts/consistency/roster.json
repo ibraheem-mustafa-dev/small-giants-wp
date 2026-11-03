@@ -501,7 +501,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 61,
+        "paintDeclarations": 64,
         "replacedCoreSupports": [
           "anchor",
           "color",
@@ -538,7 +538,7 @@
       "has_render_php": true,
       "surfaces": {
         "styling": false,
-        "colour": false,
+        "colour": true,
         "link": false,
         "media": false,
         "animation": false

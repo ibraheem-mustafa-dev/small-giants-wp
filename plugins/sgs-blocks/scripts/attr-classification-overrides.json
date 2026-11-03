@@ -7697,6 +7697,8 @@
 		{"slug": "sgs/button", "attr": "iconTitle", "fields": {"role": "a11y-text"}, "_reason": "2026-10-30 (inline-text plain-settings review): the button icon's accessible title (render.php $icon_title, printed inside the icon's svg), a screen-reader string, not page text."},
 		{"slug": "sgs/breadcrumbs", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between crumbs, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
 		{"slug": "sgs/language-switch", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the language items, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
-		{"slug": "sgs/local-time", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the label and the time, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."}
+		{"slug": "sgs/local-time", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the label and the time, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
+		{"slug": "sgs/form-field-checkbox", "attr": "boxColourChecked", "fields": {"css_property": "background-color", "role": "color", "css_element": "option", "css_state": "current"}, "_reason": "2026-11-03: the fill of the card row's tick box once ticked; render.php prints it as a scoped :checked rule through sgs_fill_decls(), which the static extractor cannot trace to a property."},
+		{"slug": "sgs/form", "attr": "actionsSticky", "fields": {"role": "behaviour"}, "_reason": "2026-11-03: per-device on/off for pinning the buttons row to the bottom of the viewport; a behaviour switch, not a CSS value of its own."}
 	]
 }
