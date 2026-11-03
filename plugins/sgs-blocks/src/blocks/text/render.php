@@ -481,7 +481,7 @@ if ( null !== $padding_tab_val ) {
 }
 $tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 $css_tablet_box = $tablet_box_decls
-	? '@media (max-width:1023px){' . $scope . '{' . implode( ';', $tablet_box_decls ) . ';}}'
+	? sgs_emit_tier_decls( $scope, array( 'tablet' => $tablet_box_decls ) )
 	: '';
 
 $mobile_box_decls = array();
@@ -493,7 +493,7 @@ if ( null !== $padding_mob_val ) {
 }
 $mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 $css_mobile_box = $mobile_box_decls
-	? '@media (max-width:767px){' . $scope . '{' . implode( ';', $mobile_box_decls ) . ';}}'
+	? sgs_emit_tier_decls( $scope, array( 'mobile' => $mobile_box_decls ) )
 	: '';
 
 // Drop-cap ::first-letter CSS (scoped to instance id).

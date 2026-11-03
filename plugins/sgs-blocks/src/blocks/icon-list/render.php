@@ -566,7 +566,7 @@ if ( null !== $margin_tab_val ) {
 }
 $tablet_decls = array_merge( $tablet_decls, $border['tablet'] );
 if ( $tablet_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_decls ) );
 }
 
 $mobile_decls = array();
@@ -578,7 +578,7 @@ if ( null !== $margin_mob_val ) {
 }
 $mobile_decls = array_merge( $mobile_decls, $border['mobile'] );
 if ( $mobile_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_decls ) );
 }
 
 // --- Icon-to-text gap on each item row, per device: a spacing preset slug or a
@@ -586,8 +586,8 @@ if ( $mobile_decls ) {
 $item_gap_tiers = sgs_responsive_normalise_object( $attributes['itemGap'] ?? null );
 foreach ( array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 ) as $item_gap_tier => $item_gap_media ) {
 	$item_gap_val = sgs_css_length_value( $item_gap_tiers[ $item_gap_tier ] ?? '' );
 	if ( '' === $item_gap_val ) {

@@ -602,8 +602,8 @@ if ( 'hours' === $display_type ) {
 	$sgs_bi_hrp_tiers = sgs_responsive_normalise_object( $attributes['hoursRowPadding'] ?? null, true );
 	$sgs_bi_hrp_media = array(
 		'desktop' => '',
-		'tablet'  => '@media(max-width:1023px)',
-		'mobile'  => '@media(max-width:767px)',
+		'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+		'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 	);
 	foreach ( $sgs_bi_hrp_media as $sgs_bi_hrp_tier => $sgs_bi_hrp_query ) {
 		if ( ! is_array( $sgs_bi_hrp_tiers[ $sgs_bi_hrp_tier ] ?? null ) ) {
@@ -683,10 +683,10 @@ if ( $border['hover'] ) {
 }
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 if ( '' !== $sgs_bi_stroke_grad['css'] ) {
@@ -820,9 +820,9 @@ if ( $show_icon && 'none' !== $label_collapse ) {
 	if ( 'all' === $label_collapse ) {
 		$scoped_css[] = $label_clip_rule;
 	} elseif ( 'tablet' === $label_collapse ) {
-		$scoped_css[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
+		$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $label_clip_rule . '}';
 	} elseif ( 'mobile' === $label_collapse ) {
-		$scoped_css[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $label_clip_rule . '}';
 	}
 }
 
@@ -915,7 +915,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( $tablet_box_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_box_decls ) );
 }
 
 $mobile_box_decls = array();
@@ -926,7 +926,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( $mobile_box_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_box_decls ) );
 }
 
 // --- Root classes: existing wrap + variant modifier + the scoped uid class,

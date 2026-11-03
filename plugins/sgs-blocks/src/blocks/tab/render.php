@@ -198,10 +198,10 @@ if ( $border['base'] ) {
 }
 $tab_responsive_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$tab_responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$tab_responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$tab_responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$tab_responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // Every value reaching $tab_responsive_css is pre-sanitised (sgs_css_length_value() /

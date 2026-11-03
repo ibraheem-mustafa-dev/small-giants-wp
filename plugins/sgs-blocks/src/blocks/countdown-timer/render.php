@@ -314,11 +314,11 @@ if ( ! empty( $padding_tablet_obj ) || ! empty( $margin_tablet_obj ) ) {
 if ( ! empty( $tablet_args ) ) {
 	$tablet_out = wp_style_engine_get_styles( $tablet_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $tablet_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:1023px){' . $tablet_out['css'] . '}';
+		$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $tablet_out['css'] . '}';
 	}
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 
 $mobile_args = array();
@@ -335,11 +335,11 @@ if ( ! empty( $padding_mobile_obj ) || ! empty( $margin_mobile_obj ) ) {
 if ( ! empty( $mobile_args ) ) {
 	$mobile_out = wp_style_engine_get_styles( $mobile_args, array( 'selector' => $root_sel ) );
 	if ( ! empty( $mobile_out['css'] ) ) {
-		$scoped_css[] = '@media(max-width:767px){' . $mobile_out['css'] . '}';
+		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $mobile_out['css'] . '}';
 	}
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // ---------------------------------------------------------------------------

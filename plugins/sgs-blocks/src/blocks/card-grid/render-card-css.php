@@ -222,10 +222,10 @@ if ( $border['base'] ) {
 }
 $card_grid_native_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$card_grid_native_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$card_grid_native_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // ── cardPadding: tier-object box family {desktop,tablet,mobile} — base +
@@ -252,11 +252,11 @@ if ( null !== $card_pad_base ) {
 }
 $card_pad_tab = sgs_box_object_longhands( $card_padding_tablet_obj, 'padding' );
 if ( null !== $card_pad_tab ) {
-	$card_grid_native_css .= '@media(max-width:1023px){' . $root_sel . $card_pad_sel . '{' . $card_pad_tab . '}}';
+	$card_grid_native_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . $card_pad_sel . '{' . $card_pad_tab . '}}';
 }
 $card_pad_mob = sgs_box_object_longhands( $card_padding_mobile_obj, 'padding' );
 if ( null !== $card_pad_mob ) {
-	$card_grid_native_css .= '@media(max-width:767px){' . $root_sel . $card_pad_sel . '{' . $card_pad_mob . '}}';
+	$card_grid_native_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . $card_pad_sel . '{' . $card_pad_mob . '}}';
 }
 
 // Per-item glyph icon + image-fallback tile — one scoped custom-property

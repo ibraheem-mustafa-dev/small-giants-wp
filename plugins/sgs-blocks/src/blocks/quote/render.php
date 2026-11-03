@@ -431,11 +431,11 @@ if ( ! $inherit_style ) {
 if ( ! $inherit_style ) {
 	$mwt_safe = $max_width_tablet ? sgs_css_length_value( $max_width_tablet ) : '';
 	if ( '' !== $mwt_safe ) {
-		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{max-width:{$mwt_safe};}}";
+		$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{max-width:{$mwt_safe};}}";
 	}
 	$mwm_safe = $max_width_mobile ? sgs_css_length_value( $max_width_mobile ) : '';
 	if ( '' !== $mwm_safe ) {
-		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{max-width:{$mwm_safe};}}";
+		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{max-width:{$mwm_safe};}}";
 	}
 }
 
@@ -457,7 +457,7 @@ if ( ! $inherit_style ) {
 	}
 	$tablet_box_decls = array_merge( $tablet_box_decls, $border['tablet'] );
 	if ( $tablet_box_decls ) {
-		$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+		$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_box_decls ) );
 	}
 
 	$mobile_box_decls = array();
@@ -469,7 +469,7 @@ if ( ! $inherit_style ) {
 	}
 	$mobile_box_decls = array_merge( $mobile_box_decls, $border['mobile'] );
 	if ( $mobile_box_decls ) {
-		$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+		$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_box_decls ) );
 	}
 }
 

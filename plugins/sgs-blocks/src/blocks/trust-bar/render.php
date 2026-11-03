@@ -375,10 +375,10 @@ if ( $border['base'] ) {
 }
 $tb_extra_scoped_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$tb_extra_scoped_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$tb_extra_scoped_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$tb_extra_scoped_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$tb_extra_scoped_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // Colour is emitted into $tb_extra_scoped_css below (keyed on $uid_scope); the

@@ -391,10 +391,10 @@ if ( array() !== $border_base ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $border_base ) . ';}';
 }
 if ( array() !== $border_parts['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border_parts['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border_parts['tablet'] ) );
 }
 if ( array() !== $border_parts['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border_parts['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border_parts['mobile'] ) );
 }
 foreach ( $border_parts['rules'] as $border_rule ) {
 	$scoped_css[] = $border_rule;
@@ -421,10 +421,10 @@ if ( $has_end_shape ) {
 $margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$margin_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$margin_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{{$margin_mob_val};}}";
 }
 
 // --- WP colour support (skip-serialised) — custom hex/rgb emitted scoped via

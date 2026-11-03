@@ -191,8 +191,8 @@ if ( $header_open_decls ) {
 // stylesheet's values in force.
 $sgs_ai_var_tiers = array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 );
 $sgs_ai_box_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_ai_var_tiers ): string {
 	$tiers = sgs_responsive_normalise_object( $raw, true );
@@ -520,10 +520,10 @@ if ( $border['base'] ) {
 	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 $responsive_css .= implode( '', $border['rules'] );
 
@@ -551,10 +551,10 @@ if ( $sgs_ai_header_radius['base'] || $sgs_ai_header_radius['tablet'] || $sgs_ai
 		$responsive_css .= $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['base'] ) . ';}';
 	}
 	if ( $sgs_ai_header_radius['tablet'] ) {
-		$responsive_css .= '@media(max-width:1023px){' . $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['tablet'] ) . ';}}';
+		$responsive_css .= sgs_emit_tier_decls( $sgs_ai_header_radius_sel, array( 'tablet' => $sgs_ai_header_radius['tablet'] ) );
 	}
 	if ( $sgs_ai_header_radius['mobile'] ) {
-		$responsive_css .= '@media(max-width:767px){' . $sgs_ai_header_radius_sel . '{' . implode( ';', $sgs_ai_header_radius['mobile'] ) . ';}}';
+		$responsive_css .= sgs_emit_tier_decls( $sgs_ai_header_radius_sel, array( 'mobile' => $sgs_ai_header_radius['mobile'] ) );
 	}
 	$responsive_css .= $root_sel . '[open] > .sgs-accordion-item__header{border-bottom-left-radius:0;border-bottom-right-radius:0}';
 }

@@ -165,10 +165,10 @@ if ( $border['hover'] ) {
 }
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // --- Star/empty-star fill gradient (D636/D644 rollout) — reuses the shared
@@ -261,7 +261,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_box_decls[] = "{$margin_tab_val}";
 }
 if ( $tablet_box_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_box_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_box_decls ) );
 }
 
 $mobile_box_decls = array();
@@ -272,7 +272,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_box_decls[] = "{$margin_mob_val}";
 }
 if ( $mobile_box_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_box_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_box_decls ) );
 }
 
 // ---------------------------------------------------------------------------
