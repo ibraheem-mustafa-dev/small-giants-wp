@@ -2069,5 +2069,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 236
+  },
+  {
+    "id": "check-border-tiers-printed",
+    "cmd": "python scripts/check-border-tiers-printed.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 237
+  },
+  {
+    "id": "check-border-tiers-printed-selftest",
+    "cmd": "python scripts/check-border-tiers-printed.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 238
   }
 ]

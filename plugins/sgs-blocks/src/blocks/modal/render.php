@@ -243,6 +243,12 @@ $scoped_css_rules[] = sgs_emit_responsive_css(
 // Dialog border rules: the gradient ring and, for an explicit none style, the
 // none override.
 $scoped_css_rules = array_merge( $scoped_css_rules, $border['rules'] );
+if ( $border['tablet'] ) {
+	$scoped_css_rules[] = '@media(max-width:1023px){' . $root_sel . ' .sgs-modal__dialog{' . implode( ';', $border['tablet'] ) . ';}}';
+}
+if ( $border['mobile'] ) {
+	$scoped_css_rules[] = '@media(max-width:767px){' . $root_sel . ' .sgs-modal__dialog{' . implode( ';', $border['mobile'] ) . ';}}';
+}
 // Dialog shadow — only when the operator has set one; empty leaves
 // style.css's hardcoded box-shadow untouched
 // (dialogShadow="0 30px 70px", dialogShadowColour="site 30%").

@@ -116,6 +116,12 @@ if ( $aside_border['hover'] ) {
 	$css .= sgs_hover_state_rules( $root_sel, implode( ';', $aside_border['hover'] ), ':focus-within' );
 }
 $css .= implode( '', $aside_border['rules'] );
+if ( $aside_border['tablet'] ) {
+	$css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $aside_border['tablet'] ) . ';}}';
+}
+if ( $aside_border['mobile'] ) {
+	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $aside_border['mobile'] ) . ';}}';
+}
 
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {
 	$css .= sgs_emit_responsive_css(

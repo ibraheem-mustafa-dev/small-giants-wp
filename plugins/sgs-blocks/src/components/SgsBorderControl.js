@@ -19,11 +19,13 @@
  *     colour and style together; a separate style toggle beside the swatch
  *     was an SGS divergence. Style is one value for the whole border, so it
  *     sits OUTSIDE the Normal/Hover tabs — unlike colour, which is per-state.
- *  2. WIDTH IS A BOX OBJECT, BASE ONLY. Per-device widths were considered and
- *     dropped (Bean, 2026-08-29): a border that changes thickness by
- *     breakpoint has no real use case, and supporting it would have meant
- *     `borderWidthTablet`/`borderWidthMobile` attrs plus `@media` emission in
- *     every block for a control nobody would reach for.
+ *  2. WIDTH IS PER DEVICE. The width reads and writes through the device
+ *     switcher. A flat `{top,right,bottom,left}` box is the desktop width and
+ *     stays the stored value until a tablet or mobile box is set; then the value
+ *     becomes the tier object `{desktop,tablet,mobile}` that
+ *     `sgs_border_element_decls()` prints per device. Clearing the tablet and
+ *     mobile boxes collapses it back to the flat box. Style and colour stay
+ *     single values.
  *  3. RADIUS IS PART OF THE PAIR. The SGS-wrapped native border radius
  *     belongs with the border, not in a separate panel. Rendered only when
  *     the caller wires `onRadiusChange`, so an unmigrated block shows no
@@ -46,9 +48,10 @@ import BorderStyleControl from './BorderStyleControl';
  * @param {Object}   props
  * @param {string}   [props.label]              Row heading (rendered above the three
  *                                               controls) — omit for a bare row.
- * @param {Object}   [props.widthValues={}]      `{ top, right, bottom, left }` — the
- *                                               block's own border-width object attr.
- * @param {Function} props.onWidthChange         Receives the next full width object.
+ * @param {Object}   [props.widthValues={}]      The block's own border-width attr: a flat
+ *                                               `{ top, right, bottom, left }` box (desktop) or
+ *                                               a `{ desktop, tablet, mobile }` tier object.
+ * @param {Function} props.onWidthChange         Receives the next full width attr value (flat box or tier object).
  * @param {boolean|ReadonlyArray<string>} [props.widthPresets=false] Forwarded verbatim
  *                                               to `SgsBoxControl`'s own `presets` prop
  *                                               (opt-in theme spacing-scale dropdown).
@@ -148,14 +151,30 @@ export default function SgsBorderControl( {
 	contrastLabel,
 	contrastLargeText = true,
 } ) {
-	// Width is a BOX object, base only. Per-device border widths were considered
-	// and dropped (Bean, 2026-08-29) -- there is no real use case for a border
-	// that changes thickness by breakpoint, and adding the tiers would have meant
-	// borderWidthTablet/Mobile attrs plus @media emission in every block for a
-	// control nobody would reach for. `showResponsive={false}` keeps the device
-	// switcher off, which is exactly what every block did before this composite
-	// existed.
-	const widthTiers = { base: widthValues || {} };
+	// A flat box is the desktop width; a tier object carries one box per device.
+	const widthAttr = widthValues && 'object' === typeof widthValues ? widthValues : {};
+	const isTiered = [ 'desktop', 'tablet', 'mobile' ].some( ( key ) => key in widthAttr );
+	const widthTiers = {
+		base: ( isTiered ? widthAttr.desktop : widthAttr ) || {},
+		tablet: ( isTiered ? widthAttr.tablet : undefined ) || {},
+		mobile: ( isTiered ? widthAttr.mobile : undefined ) || {},
+	};
+	const writeWidth = ( tier, next ) => {
+		const merged = { ...widthTiers, [ tier ]: next || {} };
+		const filled = ( box ) => Object.values( box ).some( ( v ) => v !== undefined && v !== null && v !== '' );
+		if ( ! filled( merged.tablet ) && ! filled( merged.mobile ) ) {
+			onWidthChange( merged.base );
+			return;
+		}
+		const out = { desktop: merged.base };
+		if ( filled( merged.tablet ) ) {
+			out.tablet = merged.tablet;
+		}
+		if ( filled( merged.mobile ) ) {
+			out.mobile = merged.mobile;
+		}
+		onWidthChange( out );
+	};
 
 	return (
 		<div className="sgs-border-control">
@@ -164,8 +183,7 @@ export default function SgsBorderControl( {
 					<ResponsiveBoxControl
 						label={ label || __( 'Width', 'sgs-blocks' ) }
 						values={ widthTiers }
-						showResponsive={ false }
-						onChange={ ( _tier, next ) => onWidthChange( next ) }
+						onChange={ writeWidth }
 						presets={ widthPresets }
 					/>
 				</FlexItem>

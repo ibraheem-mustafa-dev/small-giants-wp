@@ -8,7 +8,7 @@
  */
 
 import { boxShorthand } from './spacing-preview';
-import { borderBoxPreview, resolveBorderStyle } from './border-style';
+import { borderBoxPreview, borderWidthBoxForTier, resolveBorderStyle } from './border-style';
 import { borderPaintPreview } from './background-preview';
 import { borderRadiusLonghands } from './radius-preview';
 
@@ -40,7 +40,7 @@ function radiusSource( radiusValues ) {
  * (sgs_corner_object_longhands()): an unset corner keeps the stylesheet's radius.
  *
  * @param {Object}  values
- * @param {Object}  [values.widthValues]         `{ top, right, bottom, left }` width box.
+ * @param {Object}  [values.widthValues]         `{ top, right, bottom, left }` width box, or a `{ desktop, tablet, mobile }` tier object of boxes.
  * @param {string}  [values.styleValue]          Stored border-style.
  * @param {string}  [values.colourValue]         Flat colour (slug or CSS colour).
  * @param {string}  [values.colourGradientValue] Gradient border colour.
@@ -61,11 +61,11 @@ export function sgsBorderPreview(
 	let style;
 	if ( defaultBorder ) {
 		style = {};
-		const width = boxShorthand( widthValues );
+		const width = boxShorthand( borderWidthBoxForTier( widthValues, tier ) );
 		if ( styleValue || width ) style.borderStyle = resolveBorderStyle( styleValue );
 		if ( width ) style.borderWidth = width;
 	} else {
-		style = borderBoxPreview( widthValues, styleValue );
+		style = borderBoxPreview( widthValues, styleValue, tier );
 	}
 	if ( style.borderStyle || defaultBorder ) {
 		Object.assign( style, borderPaintPreview( colourValue, colourGradientValue, palette ) );
