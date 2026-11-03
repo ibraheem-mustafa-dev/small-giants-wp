@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-11-02T23:18:25.004Z",
+	"generatedAt": "2026-11-03T03:31:57.322Z",
 	"total": 13,
 	"violations": 0,
 	"findings": [
@@ -30,7 +30,7 @@
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1187,
+			"line": 1164,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -87,7 +87,7 @@
 		{
 			"file": "src/blocks/nav-bar-menu/edit.js",
 			"block": "sgs/nav-bar-menu",
-			"line": 964,
+			"line": 967,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -120,7 +120,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3481,
+			"line": 3523,
 			"wrapped": true,
 			"ancestors": [
 				"",

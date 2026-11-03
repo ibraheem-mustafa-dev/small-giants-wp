@@ -9723,6 +9723,23 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "progressTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "progress-track"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "progressTrackHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "progress-track"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "reviewDetailFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -10224,6 +10241,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "statusRowGap",
+      "fields": {
+        "css_property": "row-gap",
+        "css_layer": "GRID",
+        "css_element": "status-row"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepCounterFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -10497,6 +10523,15 @@
       "attr": "stepNumberFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "step-number"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepNumberInactiveBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
         "css_element": "step-number"
       }
     },
@@ -20145,6 +20180,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "cardRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "categoryBadgeBgColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -20207,6 +20250,14 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "category"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "category-badge"
       }
     },
     {
@@ -33992,6 +34043,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsNoteHidden",
+      "fields": {
+        "css_property": "display",
+        "css_element": "actions-note"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -34133,11 +34192,47 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "statusRowWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "status-row"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepCounterColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "step-counter"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepCounterNameHidden",
+      "fields": {
+        "css_property": "display",
+        "css_element": "step-counter-name"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelColourActive",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "step-label-active",
+        "css_state": "active"
       }
     },
     {
@@ -34182,6 +34277,23 @@
         "css_property": "box-shadow",
         "css_element": "submit-button",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "counterColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "counter"
+      }
+    },
+    {
+      "slug": "sgs/form-field-textarea",
+      "attr": "counterFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "counter"
       }
     },
     {
@@ -39726,6 +39838,14 @@
       "attr": "categoryBadgeColourGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_element": "category-badge"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "categoryPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "category-badge"
       }
     },
