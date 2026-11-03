@@ -187,7 +187,7 @@ final class AccordionFilterTest extends TestCase {
 		// The harness stubs wp_kses_post() and esc_url() as pass-throughs, so the sanitising itself is pinned at the source.
 		$source = (string) file_get_contents( $root . '/includes/accordion-filter.php' );
 		$this->assertStringContainsString( 'wp_kses_post( $message )', $source );
-		$this->assertStringContainsString( "esc_url( (string) ( \$link['url'] ?? '' ) )", $source );
+		$this->assertStringContainsString( "esc_url( \$typed )", $source );
 	}
 
 	public function test_the_item_eyebrow_needs_the_filter_the_category_and_its_own_setting(): void {
