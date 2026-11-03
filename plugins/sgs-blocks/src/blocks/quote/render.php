@@ -291,6 +291,7 @@ $css_attrib_margin = sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['attributionMarginTop'] ?? null,
 			'css'   => 'margin-top',
+			'unit_default' => 'px',
 		),
 	)
 );

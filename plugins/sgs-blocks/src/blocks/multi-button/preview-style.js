@@ -11,7 +11,8 @@ import { resolveColourToken } from '../../components';
 /**
  * The flex row at a tier. render.php's base rule is the desktop tier; its tablet
  * rule falls back to desktop and its mobile rule to fixed defaults for direction
- * (column), wrap (nowrap), gap (8px) and alignment (stretch), as declared there.
+ * (column), wrap (nowrap) and alignment (stretch), as declared there. An unset mobile gap
+ * inherits tablet, then desktop, and prints the 8px stylesheet default only when all three are unset.
  *
  * @param {Object} attributes Block attributes.
  * @param {string} tier       Previewed tier from `usePreviewTier()`.
@@ -32,6 +33,10 @@ export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
 	};
 	const gapAt = ( raw, fallback ) => tierLengthPreview( raw ) ?? fallback;
 	const desktopGap = gapAt( gap?.desktop, '12px' );
+	const mobileGap = gapAt(
+		gap?.mobile,
+		gapAt( gap?.tablet, gapAt( gap?.desktop, '8px' ) )
+	);
 	return {
 		display: 'flex',
 		flexDirection: pick( flexDirection, 'row', 'column' ),
@@ -39,7 +44,7 @@ export function multiButtonFlexPreview( attributes, tier = 'desktop' ) {
 		gap: {
 			desktop: desktopGap,
 			tablet: gapAt( gap?.tablet, desktopGap ),
-			mobile: gapAt( gap?.mobile, '8px' ),
+			mobile: mobileGap,
 		}[ tier ] || desktopGap,
 		justifyContent: pick( justifyContent, 'flex-start' ),
 		alignItems: pick( alignItems, 'center', 'stretch' ),

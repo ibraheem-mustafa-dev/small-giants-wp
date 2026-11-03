@@ -618,8 +618,9 @@ $scoped_css_parts[] = sgs_emit_responsive_css(
 	".{$uid}.{$uid}.sgs-button",
 	array(
 		array(
-			'value' => $min_height_obj,
-			'css'   => 'min-height',
+			'value'        => $min_height_obj,
+			'css'          => 'min-height',
+			'unit_default' => 'px',
 		),
 	)
 );
@@ -658,7 +659,8 @@ if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ),
 					'tablet'  => $width_css_value( $width_type_tab, $custom_width_obj['tablet'] ),
 					'mobile'  => $width_css_value( $width_type_mob, $custom_width_obj['mobile'] ),
 				),
-				'css'   => 'width',
+				'css'          => 'width',
+				'unit_default' => 'px',
 			),
 		)
 	);

@@ -577,10 +577,12 @@ $css_widths = sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['maxWidth'] ?? null,
 			'css'   => 'max-width',
+			'unit_default' => 'px',
 		),
 		array(
 			'value' => $attributes['customWidth'] ?? null,
 			'css'   => 'width',
+			'unit_default' => 'px',
 		),
 	)
 );

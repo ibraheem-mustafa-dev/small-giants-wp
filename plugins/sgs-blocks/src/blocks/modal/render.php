@@ -232,6 +232,7 @@ $scoped_css_rules[] = sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['dialogWidth'] ?? null,
 			'css'   => 'width',
+			'unit_default' => 'px',
 		),
 		array(
 			'value' => $dialog_width_clamp,

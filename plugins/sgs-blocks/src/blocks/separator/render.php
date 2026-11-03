@@ -189,6 +189,7 @@ $width_css = sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['width'] ?? null,
 			'css'   => 'width',
+			'unit_default' => 'px',
 		),
 	)
 );

@@ -395,6 +395,7 @@ $scoped_css[] = sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['maxWidth'] ?? null,
 			'css'   => 'max-width',
+			'unit_default' => 'px',
 		),
 	)
 );
@@ -439,6 +440,7 @@ if ( $rl_has_max_height ) {
 			array(
 				'value' => $attributes['maxHeight'] ?? null,
 				'css'   => 'max-height',
+				'unit_default' => 'px',
 			),
 		)
 	);

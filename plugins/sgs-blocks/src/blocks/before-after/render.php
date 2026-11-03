@@ -262,8 +262,9 @@ $scoped_css[] = sgs_emit_responsive_css(
 	$stage_sel,
 	array(
 		array(
-			'value' => $height_tiers,
-			'css'   => 'height',
+			'value'        => $height_tiers,
+			'css'          => 'height',
+			'unit_default' => 'px',
 		),
 	)
 );

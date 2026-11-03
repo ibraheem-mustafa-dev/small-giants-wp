@@ -354,10 +354,12 @@ if ( ! $inherit_style ) {
 			array(
 				'value' => $attributes['customWidth'] ?? null,
 				'css'   => 'width',
+				'unit_default' => 'px',
 			),
 			array(
 				'value' => $attributes['maxWidth'] ?? null,
 				'css'   => 'max-width',
+				'unit_default' => 'px',
 			),
 		)
 	);

@@ -516,19 +516,22 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 			}
 		}
 
-		// Device-tier padding. 767/1023 is the locked 768/1024 device standard (the
-		// same breakpoints SGS_Container_Wrapper uses for these attributes), NOT an
-		// arbitrary visual breakpoint.
+		// Device-tier padding and margin, both on the root <nav> beside the desktop box above.
+		// 767/1023 is the locked 768/1024 device standard (the same breakpoints
+		// SGS_Container_Wrapper uses for these attributes), NOT an arbitrary visual breakpoint.
+		$sgs_tor_margin_tiers = sgs_responsive_normalise_object( $attributes['margin'] ?? null, true );
 		foreach ( array(
-			array( $sgs_tor_padding_tiers['tablet'] ?? null, '(max-width:1023px)' ),
-			array( $sgs_tor_padding_tiers['mobile'] ?? null, '(max-width:767px)' ),
+			array( $sgs_tor_padding_tiers['tablet'] ?? null, 'padding', '(max-width:1023px)' ),
+			array( $sgs_tor_margin_tiers['tablet'] ?? null, 'margin', '(max-width:1023px)' ),
+			array( $sgs_tor_padding_tiers['mobile'] ?? null, 'padding', '(max-width:767px)' ),
+			array( $sgs_tor_margin_tiers['mobile'] ?? null, 'margin', '(max-width:767px)' ),
 		) as $nav_tier ) {
-			list( $tier_box_raw, $tier_mq ) = $nav_tier;
-			$tier_box                       = is_array( $tier_box_raw ) ? $tier_box_raw : array();
+			list( $tier_box_raw, $tier_prop, $tier_mq ) = $nav_tier;
+			$tier_box                                   = is_array( $tier_box_raw ) ? $tier_box_raw : array();
 			if ( ! $tier_box ) {
 				continue;
 			}
-			$tier_longhands = sgs_box_object_longhands( $tier_box, 'padding' );
+			$tier_longhands = sgs_box_object_longhands( $tier_box, $tier_prop );
 			if ( null !== $tier_longhands ) {
 				$root_box_css .= '@media ' . $tier_mq . '{' . $uid_sel . '{' . $tier_longhands . ';}}';
 			}

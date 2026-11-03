@@ -60,20 +60,24 @@ if ( '' !== $gap_tab_raw ) {
 } else {
 	$gap_tab_css = $gap_css;
 }
-$gap_mob_raw = (string) ( $gap_obj['mobile'] ?? '' );
-if ( '' === $gap_mob_raw ) {
-	$gap_mob_raw = '8px';
+// An unset mobile gap inherits tablet, then desktop; the 8px stylesheet default applies only
+// when all three tiers are unset.
+$gap_mob_raw = '';
+foreach ( array( 'mobile', 'tablet', 'desktop' ) as $gap_mob_tier ) {
+	$gap_mob_raw = (string) ( $gap_obj[ $gap_mob_tier ] ?? '' );
+	if ( '' !== $gap_mob_raw ) {
+		break;
+	}
 }
+$gap_mob_css = '8px';
 if ( '' !== $gap_mob_raw ) {
 	if ( preg_match( '/^\d+$/', $gap_mob_raw ) ) {
 		$gap_mob_raw = $gap_mob_raw . 'px';
 	}
-	$gap_mob_css = sgs_container_gap_value( $gap_mob_raw );
-	if ( '' === $gap_mob_css ) {
-		$gap_mob_css = '8px';
+	$gap_mob_resolved = sgs_container_gap_value( $gap_mob_raw );
+	if ( '' !== $gap_mob_resolved ) {
+		$gap_mob_css = $gap_mob_resolved;
 	}
-} else {
-	$gap_mob_css = '8px';
 }
 
 // An unset device tier inherits from the tier above: mobile reads tablet, tablet reads desktop.

@@ -839,6 +839,7 @@ if ( 'custom' === $image_object_fit ) {
 			array(
 				'value' => $attributes['splitMediaWidth'] ?? null,
 				'css'   => 'width',
+				'unit_default' => 'px',
 			),
 		)
 	);
@@ -882,6 +883,7 @@ $responsive_css .= sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['splitMediaHeight'] ?? null,
 			'css'   => 'height',
+			'unit_default' => 'px',
 		),
 	)
 );
@@ -941,10 +943,12 @@ $responsive_css .= sgs_emit_responsive_css(
 		array(
 			'value' => $attributes['splitMediaMaxWidth'] ?? null,
 			'css'   => 'max-width',
+			'unit_default' => 'px',
 		),
 		array(
 			'value' => $attributes['splitMediaMaxHeight'] ?? null,
 			'css'   => 'max-height',
+			'unit_default' => 'px',
 		),
 	)
 );
