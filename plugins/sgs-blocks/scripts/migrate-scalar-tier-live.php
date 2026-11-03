@@ -40,6 +40,17 @@ $conv  = is_array( $spec ) && isset( $spec['conversions'] ) && is_array( $spec['
 if ( array() === $rules ) {
 	WP_CLI::error( 'The rules file has no rules.' );
 }
+// The box-string rule (a string where a per-device box needs top/right/bottom/left): `box.attrs` {block: {attr: shape}} and
+// `box.expansions` {"40px": {top,right,bottom,left}|null}, written by find-scalar-tier-attrs.py --rules --box-values. Python
+// expands, this file only substitutes; null = refused (left as stored).
+$box_spec   = is_array( $spec ) && isset( $spec['box'] ) && is_array( $spec['box'] ) ? $spec['box'] : array();
+$box_attrs  = isset( $box_spec['attrs'] ) && is_array( $box_spec['attrs'] ) ? $box_spec['attrs'] : array();
+$box_exp    = isset( $box_spec['expansions'] ) && is_array( $box_spec['expansions'] ) ? $box_spec['expansions'] : array();
+$box_values = array();
+$box_state  = array(
+	'refused'    => 0,
+	'unexpanded' => 0,
+);
 $backup_file = isset( $args[2] ) ? (string) $args[2] : '';
 
 /**
@@ -169,6 +180,173 @@ $sgs_rewrite = static function ( string $content, array &$found ) use ( $rules, 
 	);
 };
 
+/**
+ * The defects in one saved box attribute value: a list of [ tier|null, raw ].
+ *
+ * @param mixed $value Decoded value.
+ * @return array
+ */
+$sgs_box_issues = static function ( $value ): array {
+	$sides = array( 'top', 'right', 'bottom', 'left' );
+	$tiers = array( 'desktop', 'tablet', 'mobile' );
+	if ( null === $value ) {
+		return array();
+	}
+	if ( ! is_array( $value ) ) {
+		return array( array( null, $value ) );
+	}
+	if ( array() === $value || array_is_list( $value ) ) {
+		return array();
+	}
+	if ( array() !== array_intersect( $tiers, array_keys( $value ) ) ) {
+		$out = array();
+		foreach ( $tiers as $t ) {
+			if ( ! array_key_exists( $t, $value ) || null === $value[ $t ] ) {
+				continue;
+			}
+			$v = $value[ $t ];
+			if ( is_array( $v ) ) {
+				if ( array() !== $v && ! array_is_list( $v ) && array() === array_intersect( $sides, array_keys( $v ) ) ) {
+					$out[] = array( $t, $v );
+				}
+			} else {
+				$out[] = array( $t, $v );
+			}
+		}
+		return $out;
+	}
+	return array() === array_intersect( $sides, array_keys( $value ) ) ? array( array( null, $value ) ) : array();
+};
+
+/**
+ * The end offset of the JSON value that starts at $j.
+ *
+ * @param string $json JSON text.
+ * @param int    $j    Start offset.
+ * @return int
+ */
+$sgs_value_end = static function ( string $json, int $j ): int {
+	$len   = strlen( $json );
+	$depth = 0;
+	for ( $k = $j; $k < $len; $k++ ) {
+		$ch = $json[ $k ];
+		if ( '"' === $ch ) {
+			for ( ++$k; $k < $len && '"' !== $json[ $k ]; $k++ ) {
+				if ( '\\' === $json[ $k ] ) {
+					++$k;
+				}
+			}
+			if ( 0 === $depth ) {
+				return $k + 1;
+			}
+		} elseif ( '{' === $ch || '[' === $ch ) {
+			++$depth;
+		} elseif ( '}' === $ch || ']' === $ch ) {
+			--$depth;
+			if ( 0 === $depth ) {
+				return $k + 1;
+			}
+		} elseif ( 0 === $depth && false !== strpos( ",} \t\r\n", $ch ) ) {
+			return $k;
+		}
+	}
+	return $len;
+};
+
+/**
+ * Rewrite the box-string defects of every included attribute in one content string, as text. A raw value whose expansion
+ * is an object is substituted; a null expansion is counted as refused and kept; a value with no expansion is counted as
+ * unexpanded and kept (the apply run then errors).
+ *
+ * @param string $content Post content.
+ * @param array  $found   Receives "box:block.attr" per defect (by reference).
+ * @return string
+ */
+$sgs_box_rewrite = static function ( string $content, array &$found ) use ( $box_attrs, $box_exp, $sgs_box_issues, $sgs_value_end, &$box_values, &$box_state ): string {
+	if ( array() === $box_attrs ) {
+		return $content;
+	}
+	return (string) preg_replace_callback(
+		'/<!--\s+wp:(sgs\/[a-z0-9-]+)\s+(\{.*?\})(\s+\/?-->)/s',
+		static function ( array $m ) use ( &$found, $box_attrs, $box_exp, $sgs_box_issues, $sgs_value_end, &$box_values, &$box_state ): string {
+			if ( ! isset( $box_attrs[ $m[1] ] ) ) {
+				return $m[0];
+			}
+			$json  = $m[2];
+			$len   = strlen( $json );
+			$depth = 0;
+			$out   = '';
+			$last  = 0;
+			for ( $i = 0; $i < $len; $i++ ) {
+				$ch = $json[ $i ];
+				if ( '{' === $ch || '[' === $ch ) {
+					++$depth;
+				} elseif ( '}' === $ch || ']' === $ch ) {
+					--$depth;
+				} elseif ( '"' === $ch ) {
+					$start = $i;
+					for ( ++$i; $i < $len && '"' !== $json[ $i ]; $i++ ) {
+						if ( '\\' === $json[ $i ] ) {
+							++$i;
+						}
+					}
+					$key = substr( $json, $start + 1, $i - $start - 1 );
+					if ( 1 !== $depth || ! isset( $box_attrs[ $m[1] ][ $key ] ) ) {
+						continue;
+					}
+					$j = $i + 1;
+					while ( $j < $len && ctype_space( $json[ $j ] ) ) {
+						++$j;
+					}
+					if ( ':' !== ( $json[ $j ] ?? '' ) ) {
+						continue;
+					}
+					++$j;
+					while ( $j < $len && ctype_space( $json[ $j ] ) ) {
+						++$j;
+					}
+					$k      = $sgs_value_end( $json, $j );
+					$value  = json_decode( substr( $json, $j, $k - $j ), true );
+					$issues = $sgs_box_issues( $value );
+					$i      = $k - 1;
+					if ( array() === $issues ) {
+						continue;
+					}
+					$new = $value;
+					foreach ( $issues as $issue ) {
+						list( $tier, $raw ) = $issue;
+						$found[]            = 'box:' . $m[1] . '.' . $key;
+						$id                 = is_array( $raw ) ? '' : (string) $raw;
+						if ( '' !== $id ) {
+							$box_values[ $id ] = true;
+						}
+						if ( is_array( $raw ) || ! array_key_exists( $id, $box_exp ) ) {
+							++$box_state['unexpanded'];
+							continue;
+						}
+						if ( null === $box_exp[ $id ] ) {
+							++$box_state['refused'];
+							continue;
+						}
+						$box = array() === $box_exp[ $id ] ? new stdClass() : $box_exp[ $id ];
+						if ( null === $tier ) {
+							$new = 'tiered' === $box_attrs[ $m[1] ][ $key ] ? array( 'desktop' => $box ) : $box;
+						} else {
+							$new[ $tier ] = $box;
+						}
+					}
+					if ( $new !== $value ) {
+						$out .= substr( $json, $last, $j - $last ) . wp_json_encode( $new, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+						$last = $k;
+					}
+				}
+			}
+			return '<!-- wp:' . $m[1] . ' ' . $out . substr( $json, $last ) . $m[3];
+		},
+		$content
+	);
+};
+
 $types = array_values( array_unique( array_merge( get_post_types(), array( 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation', 'sgs_header', 'sgs_footer', 'sgs_drawer' ) ) ) );
 $types = array_values( array_diff( $types, array( 'attachment', 'revision', 'nav_menu_item' ) ) );
 
@@ -185,6 +363,7 @@ foreach ( $rows as $row ) {
 	}
 	$found = array();
 	$new   = $sgs_rewrite( (string) $row->post_content, $found );
+	$new   = $sgs_box_rewrite( $new, $found );
 	if ( array() === $found ) {
 		continue;
 	}
@@ -212,8 +391,14 @@ if ( array() === $per_type ) {
 	WP_CLI::log( '  none' );
 }
 WP_CLI::log( 'TOTAL_VALUES=' . array_sum( $per_type ) . ' POSTS=' . $changed );
+WP_CLI::log( 'BOX_STRING: refused=' . $box_state['refused'] . ' unexpanded=' . $box_state['unexpanded'] . ' distinct_values=' . count( $box_values ) );
 
 if ( 'apply' !== $mode ) {
+	if ( '' !== $backup_file && array() !== $box_values ) {
+		// Dry run: the third argument names a file for the distinct box-string values, input of find-scalar-tier-attrs.py --rules --box-values.
+		file_put_contents( $backup_file, wp_json_encode( array_keys( $box_values ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a CLI file the operator names.
+		WP_CLI::log( 'Distinct box-string values saved to ' . $backup_file );
+	}
 	WP_CLI::success( 'Dry run: nothing written.' );
 	return;
 }
@@ -222,11 +407,22 @@ if ( '' !== $backup_file && array() !== $backup ) {
 	WP_CLI::log( 'Old content of the changed posts saved to ' . $backup_file );
 }
 $remaining = 0;
+$box_state = array(
+	'refused'    => 0,
+	'unexpanded' => 0,
+);
 foreach ( $wpdb->get_results( $sql ) as $row ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL
 	$left = array();
 	$sgs_rewrite( (string) $row->post_content, $left );
 	$remaining += count( $left );
+	$box_left = array();
+	$sgs_box_rewrite( (string) $row->post_content, $box_left );
 }
+// A box-string value the rules file refused stays (listed in the refused file); any other that remains is an error.
+if ( 0 !== $box_state['unexpanded'] ) {
+	WP_CLI::error( $box_state['unexpanded'] . ' box-string value(s) have no expansion in the rules file: regenerate it from a fresh dry run (--box-values).' );
+}
+WP_CLI::log( 'Box-string values left because the rules refused them: ' . $box_state['refused'] );
 if ( 0 !== $remaining ) {
 	WP_CLI::error( $remaining . ' old-shape value(s) remain after the sweep.' );
 }
