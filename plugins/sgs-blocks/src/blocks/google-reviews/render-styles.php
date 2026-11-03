@@ -206,10 +206,10 @@ if ( $gr_card_border['base'] ) {
 	$gr_responsive_css .= $gr_card_sel . '{' . implode( ';', $gr_card_border['base'] ) . ';}';
 }
 if ( $gr_card_border['tablet'] ) {
-	$gr_responsive_css .= '@media (max-width:1023px){' . $gr_card_sel . '{' . implode( ';', $gr_card_border['tablet'] ) . ';}}';
+	$gr_responsive_css .= sgs_emit_tier_decls( $gr_card_sel, array( 'tablet' => $gr_card_border['tablet'] ) );
 }
 if ( $gr_card_border['mobile'] ) {
-	$gr_responsive_css .= '@media (max-width:767px){' . $gr_card_sel . '{' . implode( ';', $gr_card_border['mobile'] ) . ';}}';
+	$gr_responsive_css .= sgs_emit_tier_decls( $gr_card_sel, array( 'mobile' => $gr_card_border['mobile'] ) );
 }
 $gr_responsive_css .= implode( '', $gr_card_border['rules'] );
 $gr_responsive_css .= $gr_colour_rule( $gr_card_sel, 'background-color', $attributes['cardBackground'] ?? '' );

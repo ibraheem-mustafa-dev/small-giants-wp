@@ -730,10 +730,10 @@ if ( $border['base'] ) {
 }
 $tp_responsive_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$tp_responsive_css .= '@media(max-width:1023px){' . $tp_root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$tp_responsive_css .= sgs_emit_tier_decls( $tp_root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$tp_responsive_css .= '@media(max-width:767px){' . $tp_root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$tp_responsive_css .= sgs_emit_tier_decls( $tp_root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // $tp_responsive_css is pre-sanitised via sgs_css_length_value() / sgs_css_keyword_sanitise()

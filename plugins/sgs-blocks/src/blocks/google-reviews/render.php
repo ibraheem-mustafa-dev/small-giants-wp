@@ -235,10 +235,10 @@ if ( $border['base'] ) {
 	$gr_responsive_css .= $gr_root_hi . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$gr_responsive_css .= '@media(max-width:1023px){' . $gr_root_hi . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$gr_responsive_css .= sgs_emit_tier_decls( $gr_root_hi, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$gr_responsive_css .= '@media(max-width:767px){' . $gr_root_hi . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$gr_responsive_css .= sgs_emit_tier_decls( $gr_root_hi, array( 'mobile' => $border['mobile'] ) );
 }
 $gr_responsive_css .= implode( '', $border['rules'] );
 

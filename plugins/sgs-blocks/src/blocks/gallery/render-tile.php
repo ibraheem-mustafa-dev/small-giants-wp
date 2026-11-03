@@ -108,10 +108,10 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 		}
 		$css .= implode( '', $border['rules'] );
 		if ( $border['tablet'] ) {
-			$css .= '@media(max-width:1023px){' . $item . '{' . implode( ';', $border['tablet'] ) . ';}}';
+			$css .= sgs_emit_tier_decls( $item, array( 'tablet' => $border['tablet'] ) );
 		}
 		if ( $border['mobile'] ) {
-			$css .= '@media(max-width:767px){' . $item . '{' . implode( ';', $border['mobile'] ) . ';}}';
+			$css .= sgs_emit_tier_decls( $item, array( 'mobile' => $border['mobile'] ) );
 		}
 
 		$box_css = sgs_emit_responsive_css(

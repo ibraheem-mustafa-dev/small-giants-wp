@@ -333,10 +333,10 @@ if ( $border['hover'] ) {
 	$scoped_css[] = sgs_hover_state_rules( $sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // --- Background colour — gradient wins over flat
@@ -494,7 +494,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_decls[] = "{$margin_tab_val}";
 }
 if ( $tablet_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{" . implode( ';', $tablet_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sel, array( 'tablet' => $tablet_decls ) );
 }
 
 $mobile_decls = array();
@@ -505,7 +505,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_decls[] = "{$margin_mob_val}";
 }
 if ( $mobile_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{" . implode( ';', $mobile_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sel, array( 'mobile' => $mobile_decls ) );
 }
 
 // ── Wrapper attributes via get_block_wrapper_attributes() ────────────────────
@@ -573,8 +573,8 @@ if ( $has_svg_animation && $svg_html ) {
 	// Hidden static images for tablet and mobile (displayed by CSS media queries).
 	printf(
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
-		'<source media="(max-width: 767px)" srcset="%1$s">' .
-		'<source media="(max-width: 1023px)" srcset="%2$s">' .
+		'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s">' .
+		'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s">' .
 		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
@@ -632,7 +632,7 @@ if ( $has_svg_animation && $svg_html ) {
 		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="(max-width: 1023px)" srcset="%1$s">' .
+			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%1$s">' .
 			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
@@ -646,8 +646,8 @@ if ( $has_svg_animation && $svg_html ) {
 		// the 768-1023 band. Empty slots fall back to desktop (no switch = one logo).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="(max-width: 767px)" srcset="%1$s">' .
-			'<source media="(max-width: 1023px)" srcset="%2$s">' .
+			'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s">' .
+			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s">' .
 			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $effective_mobile_url ),

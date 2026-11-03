@@ -552,13 +552,13 @@ if ( ! empty( $tier_imgs ) ) {
 	};
 	$tier_css = '';
 	if ( isset( $tier_imgs['mobile'] ) ) {
-		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
 	}
 	if ( isset( $tier_imgs['tablet'] ) ) {
-		$tier_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-		$tier_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
 	}
 	// Re-assemble the <style> tag with the tier rules appended, through the same
 	// wp_strip_all_tags </style>-breakout guard the base rule uses (contract §D).

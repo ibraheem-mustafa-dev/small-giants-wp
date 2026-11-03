@@ -333,10 +333,10 @@ $gap_tablet = $sgs_gallery_gap_tier( $gap_obj['tablet'] ?? '' );
 $gap_mobile = $sgs_gallery_gap_tier( $gap_obj['mobile'] ?? '' );
 
 if ( '' !== $gap_tablet ) {
-	$gallery_responsive_css .= '@media (max-width:1023px){' . $root_sel . '{--sgs-gap:' . $gap_tablet . '}}';
+	$gallery_responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . '{--sgs-gap:' . $gap_tablet . '}}';
 }
 if ( '' !== $gap_mobile ) {
-	$gallery_responsive_css .= '@media (max-width:767px){' . $root_sel . '{--sgs-gap:' . $gap_mobile . '}}';
+	$gallery_responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{--sgs-gap:' . $gap_mobile . '}}';
 }
 
 // -------------------------------------------------------------------------
@@ -839,10 +839,10 @@ if ( $border['base'] ) {
 }
 $gallery_responsive_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$gallery_responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$gallery_responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$gallery_responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$gallery_responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // Lightbox scrim (U-2 Addendum A, 2026-09-24) — the shared viewport scrim

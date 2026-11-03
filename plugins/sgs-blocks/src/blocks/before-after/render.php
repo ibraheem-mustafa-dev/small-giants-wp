@@ -247,11 +247,11 @@ if ( ! empty( $base_style_engine_args ) ) {
 // Max-width tiers.
 $mwt_safe = $max_width_tablet ? sgs_css_length_value( $max_width_tablet ) : '';
 if ( '' !== $mwt_safe ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{max-width:{$mwt_safe};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{max-width:{$mwt_safe};}}";
 }
 $mwm_safe = $max_width_mobile ? sgs_css_length_value( $max_width_mobile ) : '';
 if ( '' !== $mwm_safe ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{max-width:{$mwm_safe};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{max-width:{$mwm_safe};}}";
 }
 
 // Border-radius tiers (box family).
@@ -592,13 +592,13 @@ foreach ( array(
 		return $root_sel . ' .wp-block-sgs-before-after__img--' . $sgs_slot . '-' . $tier;
 	};
 	if ( in_array( 'mobile', $sgs_slot_tiers, true ) ) {
-		$scoped_css[] = '@media(max-width:767px){' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = '@media(min-width:768px){' . $sgs_ba_tier_sel( 'mobile' ) . '{display:none}}';
+		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_ba_tier_sel( 'mobile' ) . '{display:none}}';
 	}
 	if ( in_array( 'tablet', $sgs_slot_tiers, true ) ) {
-		$scoped_css[] = '@media(min-width:768px) and (max-width:1023px){' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
-		$scoped_css[] = '@media(max-width:767px){' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
-		$scoped_css[] = '@media(min-width:1024px){' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
+		$scoped_css[] = SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_ba_tier_sel( 'desktop' ) . '{display:none}}';
+		$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
+		$scoped_css[] = SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_ba_tier_sel( 'tablet' ) . '{display:none}}';
 	}
 }
 
@@ -699,10 +699,10 @@ if ( $border['base'] ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 ?>

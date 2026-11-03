@@ -267,7 +267,7 @@ if ( null !== $margin_tab_val ) {
 	$tablet_decls[] = "{$margin_tab_val}";
 }
 if ( $tablet_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_decls ) );
 }
 
 $mobile_decls = array();
@@ -278,7 +278,7 @@ if ( null !== $margin_mob_val ) {
 	$mobile_decls[] = "{$margin_mob_val}";
 }
 if ( $mobile_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_decls ) );
 }
 
 // --- Brand accent/spectrum custom properties (FR-32-4 as amended D345:
@@ -317,10 +317,10 @@ if ( $border['hover'] ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // Wrapper: SGS-BEM root + uid + style modifier + data hooks. Zero inline

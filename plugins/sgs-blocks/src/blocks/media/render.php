@@ -278,8 +278,8 @@ $responsive_css  = $media_base_css . $wrap_base_css . $sgs_media_atom_css;
 // (ruling 11). The flag prints in the tier that sets the size, so it cascades like the size.
 foreach ( array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 ) as $sgs_media_tap_tier => $sgs_media_tap_query ) {
 	$sgs_media_tap_sized = false;
 	foreach ( array( 'height', 'maxHeight', 'maxWidth' ) as $sgs_media_tap_attr ) {
@@ -344,9 +344,9 @@ $sgs_tier_visibility_css = static function ( $modifier_base, array $tiers_presen
 		'desktop' => 'desktop',
 	);
 	$queries  = array(
-		'mobile'  => '@media(max-width:767px)',
-		'tablet'  => '@media(min-width:768px) and (max-width:1023px)',
-		'desktop' => '@media(min-width:1024px)',
+		'mobile'  => SGS_Breakpoints::media( 'mobile' ),
+		'tablet'  => SGS_Breakpoints::media( 'tablet-only' ),
+		'desktop' => SGS_Breakpoints::media( 'desktop' ),
 	);
 	$rendered = array_merge( array( 'desktop' ), $tiers_present );
 	$css      = '';
@@ -373,10 +373,10 @@ if ( null !== $css_order ) {
 	$responsive_css .= $id_wrap . '{order:' . intval( $css_order ) . ';}';
 }
 if ( null !== $css_order_tablet ) {
-	$responsive_css .= '@media(max-width:1023px){' . $id_wrap . '{order:' . intval( $css_order_tablet ) . ';}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $id_wrap . '{order:' . intval( $css_order_tablet ) . ';}}';
 }
 if ( null !== $css_order_mobile ) {
-	$responsive_css .= '@media(max-width:767px){' . $id_wrap . '{order:' . intval( $css_order_mobile ) . ';}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $id_wrap . '{order:' . intval( $css_order_mobile ) . ';}}';
 }
 
 // ---------------------------------------------------------------------------

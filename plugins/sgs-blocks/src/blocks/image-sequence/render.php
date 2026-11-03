@@ -195,13 +195,13 @@ if ( ! empty( $sgs_tier_thumbs ) ) {
 	};
 	$tier_css     = '';
 	if ( isset( $sgs_tier_thumbs['mobile'] ) ) {
-		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= '@media(min-width:768px){' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'tablet-up' ) . '{' . $sgs_tier_sel( 'mobile' ) . '{display:none}}';
 	}
 	if ( isset( $sgs_tier_thumbs['tablet'] ) ) {
-		$tier_css .= '@media(min-width:768px) and (max-width:1023px){' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
-		$tier_css .= '@media(max-width:767px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
-		$tier_css .= '@media(min-width:1024px){' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'tablet-only' ) . '{' . $sgs_tier_sel( 'desktop' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
+		$tier_css .= SGS_Breakpoints::media( 'desktop' ) . '{' . $sgs_tier_sel( 'tablet' ) . '{display:none}}';
 	}
 	$scoped_css[] = $tier_css;
 	$thumb_class .= ' sgs-image-sequence__thumbnail--desktop';
