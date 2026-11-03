@@ -91,6 +91,10 @@ $order_by       = sanitize_key( $attributes['orderBy'] ?? 'date' );
 $order          = strtoupper( sanitize_key( $attributes['order'] ?? 'desc' ) );
 $offset         = absint( $attributes['offset'] ?? 0 );
 $exclude        = (bool) ( $attributes['excludeCurrent'] ?? true );
+// "Current" is the post a single view is showing. On a listing (the posts page, an
+// archive, a search) get_the_ID() returns the first post of the main loop, so
+// excluding it would hide the newest post: nothing is excluded there.
+$exclude_id = ( $exclude && is_singular() ) ? (int) get_queried_object_id() : 0;
 
 $categories = array_map( 'absint', (array) ( $attributes['categories'] ?? array() ) );
 $tags       = array_map( 'absint', (array) ( $attributes['tags'] ?? array() ) );
@@ -234,11 +238,8 @@ if ( ! empty( $tags ) ) {
 	$query_args['tag__in'] = $tags;
 }
 
-if ( $exclude ) {
-	$current_post_id = get_the_ID();
-	if ( $current_post_id ) {
-		$query_args['post__not_in'] = array( $current_post_id );
-	}
+if ( $exclude_id ) {
+	$query_args['post__not_in'] = array( $exclude_id );
 }
 
 $query       = new WP_Query( $query_args );
@@ -329,7 +330,7 @@ $sgs_query_data     = wp_json_encode(
 			'tags'                  => implode( ',', $tags ),
 			'offset'                => $offset,
 			'excludeCurrent'        => $exclude,
-			'excludePost'           => $exclude ? (int) get_the_ID() : 0,
+			'excludePost'           => $exclude_id,
 			'layout'                => $layout,
 			'cardStyle'             => $card_style,
 			'imageSize'             => $card_params['imageSize'],
