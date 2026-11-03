@@ -1,0 +1,187 @@
+{
+ "name": "sgs/accordion",
+ "attributes": {
+  "accordionStyle": "flush",
+  "iconPosition": "right",
+  "openIcon": "plus",
+  "closeIcon": "plus",
+  "iconRotation": 45,
+  "iconSize": {
+   "desktop": 16,
+   "tablet": 16,
+   "mobile": 16
+  },
+  "headerPadding": {
+   "desktop": {
+    "top": "22px",
+    "right": "0px",
+    "bottom": "22px",
+    "left": "0px"
+   },
+   "tablet": {
+    "top": "22px",
+    "right": "0px",
+    "bottom": "22px",
+    "left": "0px"
+   },
+   "mobile": {
+    "top": "22px",
+    "right": "0px",
+    "bottom": "22px",
+    "left": "0px"
+   }
+  },
+  "headerGap": {
+   "desktop": "20px"
+  },
+  "contentPadding": {
+   "desktop": {
+    "top": "0px",
+    "right": "52px",
+    "bottom": "24px",
+    "left": "0px"
+   },
+   "mobile": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "24px",
+    "left": "0px"
+   }
+  },
+  "fontSize": {
+   "desktop": 17.5
+  },
+  "headerFontWeight": "700",
+  "headerFontWeightOpen": "700",
+  "letterSpacing": {
+   "desktop": -0.01
+  },
+  "headerColour": "ink",
+  "headerColourHover": "primary",
+  "headerColourOpen": "primary",
+  "iconColour": "ink",
+  "headerBackground": "transparent",
+  "borderWidth": {
+   "top": "1px",
+   "right": "0px",
+   "bottom": "0px",
+   "left": "0px"
+  },
+  "borderColour": "#1E2A3C29",
+  "className": "cr-ref-faqs-16",
+  "headerMinHeight": {
+   "desktop": 76,
+   "tablet": 76,
+   "mobile": 76
+  },
+  "iconCircleSize": {
+   "desktop": 32,
+   "tablet": 32,
+   "mobile": 32
+  },
+  "iconCircleBorderWidth": {
+   "top": "1.5px",
+   "right": "1.5px",
+   "bottom": "1.5px",
+   "left": "1.5px"
+  },
+  "iconCircleBorderColour": "rgba(30,42,60,.2)",
+  "iconCircleBorderColourOpen": "#0A7EA8",
+  "iconCircleBackgroundOpen": "rgba(10,126,168,.08)"
+ },
+ "innerBlocks": [
+  {
+   "name": "sgs/accordion-item",
+   "attributes": {
+    "title": "Who can open a trade account?",
+    "borderWidth": {
+     "top": "0px",
+     "right": "0px",
+     "bottom": "1px",
+     "left": "0px"
+    },
+    "borderColour": "#1E2A3C1F",
+    "className": "cr-ref-faqs-a16-0"
+   },
+   "innerBlocks": [
+    {
+     "name": "sgs/text",
+     "attributes": {
+      "text": "Any registered business buying for foodservice, manufacturing, retail or wholesale. Apply online and our team will review your details.",
+      "fontSize": {
+       "desktop": 16
+      },
+      "textColour": "#4A5563",
+      "lineHeight": {
+       "desktop": 1.65
+      },
+      "textWrap": "pretty",
+      "className": "cr-ref-faqs-t16-0"
+     }
+    }
+   ]
+  },
+  {
+   "name": "sgs/accordion-item",
+   "attributes": {
+    "title": "How do I see prices?",
+    "borderWidth": {
+     "top": "0px",
+     "right": "0px",
+     "bottom": "1px",
+     "left": "0px"
+    },
+    "borderColour": "#1E2A3C1F",
+    "className": "cr-ref-faqs-a16-1"
+   },
+   "innerBlocks": [
+    {
+     "name": "sgs/text",
+     "attributes": {
+      "text": "Once your account is open, your account manager will share pricing for the ranges you buy.",
+      "fontSize": {
+       "desktop": 16
+      },
+      "textColour": "#4A5563",
+      "lineHeight": {
+       "desktop": 1.65
+      },
+      "textWrap": "pretty",
+      "className": "cr-ref-faqs-t16-1"
+     }
+    }
+   ]
+  },
+  {
+   "name": "sgs/accordion-item",
+   "attributes": {
+    "title": "Can I use my own branding?",
+    "borderWidth": {
+     "top": "0px",
+     "right": "0px",
+     "bottom": "1px",
+     "left": "0px"
+    },
+    "borderColour": "#1E2A3C1F",
+    "className": "cr-ref-faqs-a16-2"
+   },
+   "innerBlocks": [
+    {
+     "name": "sgs/text",
+     "attributes": {
+      "text": "Yes. We offer custom packaging and white label options for retail and food service customers.",
+      "fontSize": {
+       "desktop": 16
+      },
+      "textColour": "#4A5563",
+      "lineHeight": {
+       "desktop": 1.65
+      },
+      "textWrap": "pretty",
+      "className": "cr-ref-faqs-t16-2"
+     }
+    }
+   ]
+  }
+ ]
+}

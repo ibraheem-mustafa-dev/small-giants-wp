@@ -236,6 +236,7 @@ class SGS_QA_Stub_Inner_Block {
 	public string $name;
 	public array $attributes;
 	public array $inner_blocks = array();
+	public array $parsed_block = array();
 	private string $html;
 	public function __construct( string $name, array $attributes, string $html ) {
 		$this->name       = $name;
@@ -315,16 +316,26 @@ if ( isset( $args['inner-blocks-file'] ) ) {
 	if ( ! is_array( $inner_rows ) ) {
 		harness_fail( 'invalid JSON for inner-blocks-file: ' . json_last_error_msg() );
 	}
+	// A row may carry `innerBlocks` (rows again): a composite parent that reads its children's children, such as an accordion's FAQ JSON-LD, finds them on `inner_blocks`, each with the `parsed_block` a `new WP_Block( ... )` renders from (its `html` as `innerHTML`).
+	$sgs_qa_stub_row = static function ( array $row ) use ( &$sgs_qa_stub_row ): SGS_QA_Stub_Inner_Block {
+		$attrs = is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array();
+		$stub  = new SGS_QA_Stub_Inner_Block( (string) ( $row['name'] ?? '' ), $attrs, (string) ( $row['html'] ?? '' ) );
+		$stub->parsed_block = array(
+			'blockName' => (string) ( $row['name'] ?? '' ),
+			'attrs'     => $attrs,
+			'innerHTML' => (string) ( $row['html'] ?? '' ),
+		);
+		foreach ( is_array( $row['innerBlocks'] ?? null ) ? $row['innerBlocks'] : array() as $child ) {
+			$stub->inner_blocks[] = $sgs_qa_stub_row( $child );
+		}
+		return $stub;
+	};
 	foreach ( $inner_rows as $row ) {
 		$block->parsed_block['innerBlocks'][] = array(
 			'blockName' => (string) ( $row['name'] ?? '' ),
 			'attrs'     => is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array(),
 		);
-		$block->inner_blocks[] = new SGS_QA_Stub_Inner_Block(
-			(string) ( $row['name'] ?? '' ),
-			is_array( $row['attributes'] ?? null ) ? $row['attributes'] : array(),
-			(string) ( $row['html'] ?? '' )
-		);
+		$block->inner_blocks[] = $sgs_qa_stub_row( $row );
 	}
 }
 
@@ -500,6 +511,9 @@ if ( isset( $args['stub-woocommerce'] ) && ! class_exists( 'WC_Shortcode_Order_T
 // --content stands in for rendered InnerBlocks (a composite block with no inner
 // content renders nothing, so its colours are never emitted).
 $content = isset( $args['content'] ) ? (string) $args['content'] : '';
+if ( isset( $args['content-file'] ) && is_file( $args['content-file'] ) ) {
+	$content = (string) file_get_contents( $args['content-file'] ); // A long content (a rendered accordion's items) does not fit a command line.
+}
 
 // What the targets step below reads, taken before the render: render.php runs in this scope, so a variable it assigns
 // (sgs/business-info's hours loop writes `$slug`) must not reach the resolver.

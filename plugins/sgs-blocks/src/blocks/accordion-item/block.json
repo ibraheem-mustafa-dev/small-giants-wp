@@ -129,6 +129,7 @@
 		"sgs/accordionIconCircleBackground",
 		"sgs/accordionIconCircleBorderColourOpen",
 		"sgs/accordionIconCircleBackgroundOpen",
+		"sgs/accordionFilterEnabled",
 		"sgs/accordionMotion"
 	],
 	"attributes": {
@@ -140,6 +141,16 @@
 		"isOpen": {
 			"type": "boolean",
 			"default": false
+		},
+		"category": {
+			"type": "string",
+			"default": "",
+			"description": "The topic this item belongs to. The accordion's filter chips are the distinct categories, in first-seen order."
+		},
+		"showCategoryEyebrow": {
+			"type": "boolean",
+			"default": false,
+			"description": "Print the category as a small line above the heading. Only prints while the accordion's filter is on."
 		},
 		"contentWidth": {
 			"type": "object",

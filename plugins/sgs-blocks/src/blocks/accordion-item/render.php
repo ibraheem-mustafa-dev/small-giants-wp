@@ -72,7 +72,16 @@ $close_icon              = sanitize_key( $block->context['sgs/accordionCloseIcon
 // covers the parent accordion's context as well as the item's own attributes:
 // the scoped rules below paint that context, so two identical items inside two
 // differently styled accordions must not share one scope.
-$uid      = 'sgs-accordion-item-' . substr( md5( wp_json_encode( $attributes ) . wp_json_encode( $block->context ?? array() ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$filter_on = ! empty( $block->context['sgs/accordionFilterEnabled'] );
+$category = trim( (string) ( $attributes['category'] ?? '' ) );
+
+// With the parent's filter off the category settings carry no meaning, so they stay out of the scope hash and the class suffix is the one the item had before the filter existed.
+$hash_attrs   = $attributes;
+$hash_context = $block->context ?? array();
+if ( ! $filter_on ) {
+	unset( $hash_context['sgs/accordionFilterEnabled'], $hash_attrs['category'], $hash_attrs['showCategoryEyebrow'] );
+}
+$uid      = 'sgs-accordion-item-' . substr( md5( wp_json_encode( $hash_attrs ) . wp_json_encode( $hash_context ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion-item';
 
 $responsive_css = '';
@@ -434,6 +443,10 @@ $summary_open  = sprintf(
 );
 $summary_left  = 'left' === $icon_pos ? $icon_html : '';
 $summary_title = sprintf( '<span class="sgs-accordion-item__title">%s</span>', sgs_rich_text_kses( $sgs_title, true, 'body' ) );
+// The category eyebrow stacks over the heading; it prints only with the parent's filter on and the item's own setting on.
+if ( $filter_on && '' !== $category && ! empty( $attributes['showCategoryEyebrow'] ) ) {
+	$summary_title = '<span class="sgs-accordion-item__heading"><span class="sgs-accordion-item__eyebrow">' . esc_html( $category ) . '</span>' . $summary_title . '</span>';
+}
 $summary_right = 'right' === $icon_pos ? $icon_html : '';
 $summary_close = '</summary>';
 $content_panel = sprintf(
@@ -480,6 +493,9 @@ if ( '' !== $preset_bg_slug ) {
 $extra_attrs = array();
 if ( $is_open ) {
 	$extra_attrs['open'] = '';
+}
+if ( $filter_on && '' !== $category ) {
+	$extra_attrs['data-category'] = $category;
 }
 
 // Own scoped <style> (composite caveat — printed BEFORE the wrapper call, which

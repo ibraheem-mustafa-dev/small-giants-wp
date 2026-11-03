@@ -26,6 +26,12 @@ if ( ! class_exists( 'WP_Block' ) ) {
 		public $parsed_block = array();
 		public $inner_blocks = array();
 		public $block_type   = null;
+		public function __construct( array $parsed_block = array() ) {
+			$this->parsed_block = $parsed_block;
+		}
+		public function render(): string {
+			return (string) ( $this->parsed_block['innerHTML'] ?? '' );
+		}
 	}
 }
 

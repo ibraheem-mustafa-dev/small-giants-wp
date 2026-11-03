@@ -1,0 +1,61 @@
+{
+ "name": "sgs/accordion",
+ "attributes": {
+  "defaultOpen": 0,
+  "accordionStyle": "flush",
+  "borderRadius": {
+   "desktop": {
+    "topLeft": "11px",
+    "topRight": "13px",
+    "bottomRight": "17px",
+    "bottomLeft": "19px"
+   },
+   "tablet": {
+    "topLeft": "21px",
+    "topRight": "23px",
+    "bottomRight": "25px",
+    "bottomLeft": "27px"
+   },
+   "mobile": {
+    "topLeft": "3px",
+    "topRight": "5px",
+    "bottomRight": "7px",
+    "bottomLeft": "9px"
+   }
+  },
+  "openIcon": "plus",
+  "closeIcon": "x",
+  "className": "cr-ref-cal-148"
+ },
+ "innerBlocks": [
+  {
+   "name": "sgs/accordion-item",
+   "attributes": {
+    "title": "Open question",
+    "isOpen": true
+   },
+   "innerBlocks": [
+    {
+     "name": "sgs/text",
+     "attributes": {
+      "text": "Open answer."
+     }
+    }
+   ]
+  },
+  {
+   "name": "sgs/accordion-item",
+   "attributes": {
+    "title": "Closed question"
+   },
+   "innerBlocks": [
+    {
+     "name": "sgs/text",
+     "attributes": {
+      "text": "Closed answer."
+     }
+    }
+   ]
+  }
+ ]
+}

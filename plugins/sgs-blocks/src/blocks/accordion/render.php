@@ -38,7 +38,18 @@ $faq_schema    = ! empty( $attributes['faqSchema'] );
 
 // Unique scoped-CSS hook. CLASS (not id) — matches the container/hero/quote
 // convention; the root also carries the WP `anchor` id (ToC target).
-$uid      = 'sgs-accordion-' . substr( md5( wp_json_encode( $attributes ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
+$filter_on = ! empty( $attributes['filterEnabled'] );
+
+// With the filter off its settings carry no meaning, so they stay out of the scope hash and the class suffix is the one the accordion had before the filter existed.
+$hash_attrs = $attributes;
+if ( ! $filter_on ) {
+	foreach ( array_keys( $hash_attrs ) as $hash_key ) {
+		if ( 0 === strpos( (string) $hash_key, 'filter' ) ) {
+			unset( $hash_attrs[ $hash_key ] );
+		}
+	}
+}
+$uid      = 'sgs-accordion-' . substr( md5( wp_json_encode( $hash_attrs ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion';
 
 // ── WP-native color / typography / border supports — no-inline contract (§A). ──
@@ -139,6 +150,20 @@ if ( ! empty( $attributes['scrollToOpened'] ) ) {
 	}
 }
 
+// The filter bar, its scoped CSS and its assets, only with the filter on (includes/accordion-filter.php).
+if ( $filter_on ) {
+	require_once dirname( __DIR__, 3 ) . '/includes/accordion-filter.php';
+	$extra_attrs['data-filter'] = 'true';
+	$responsive_css            .= sgs_accordion_filter_css( $attributes, $root_sel );
+	$content                    = sgs_accordion_filter_bar_html(
+		$attributes,
+		sgs_accordion_filter_categories( $block->inner_blocks ),
+		count( $block->inner_blocks ),
+		$uid
+	) . $content . sgs_accordion_filter_empty_html( $attributes );
+	sgs_accordion_filter_enqueue();
+}
+
 // Own scoped <style> (composite caveat — printed BEFORE the wrapper call, which
 // emits its own separate <style id="{uid}"> for the layers it owns: base
 // spacing/border-radius/max-width/contentWidth/band/grid — same uid, two tags,
@@ -149,8 +174,9 @@ if ( $responsive_css ) {
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+// The wrapper hashes the attributes into its own class too, so it gets the same filter-free set while the filter is off.
 echo SGS_Container_Wrapper::render(
-	$attributes,
+	$hash_attrs,
 	$block,
 	$content,
 	'layout',

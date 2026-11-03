@@ -243,6 +243,59 @@
           "order": 6,
           "clusters": [],
           "_note": "Each item's title + body content is rendered by the child `sgs/accordion-item` block, which owns its own typography controls — this element documents that ownership, mirroring sgs/quote's quote-body."
+        },
+        "filterbar": {
+          "selector": ".sgs-accordion__filter",
+          "motion": false,
+          "label": "Filter bar",
+          "order": 7,
+          "clusters": [],
+          "_note": "The search box and chip wrapper. It has no setting of its own; the chips, count and empty message inside it carry the settings."
+        },
+        "chip": {
+          "selector": ".sgs-accordion__chip",
+          "motion": false,
+          "label": "Filter chip",
+          "order": 7.1,
+          "clusters": [
+            "text",
+            "fill"
+          ],
+          "attrMap": {
+            "css:color": "filterChipColour",
+            "css:background-color": "filterChipBackground",
+            "css:border-color": "filterChipBorderColour",
+            "css:border-radius": "filterChipRadius"
+          },
+          "states": {
+            "pressed": {
+              "attrMap": {
+                "css:color": "filterChipColourPressed",
+                "css:background-color": "filterChipBackgroundPressed"
+              }
+            }
+          },
+          "_note": "A chip never takes motion. Chip typography follows the accordion's own Typography panel; a separate chip font size is a gap."
+        },
+        "count": {
+          "selector": ".sgs-accordion__count",
+          "motion": false,
+          "label": "Filter count",
+          "order": 7.2,
+          "clusters": [
+            "text"
+          ],
+          "attrMap": {
+            "css:color": "filterCountColour"
+          }
+        },
+        "empty": {
+          "selector": ".sgs-accordion__empty",
+          "motion": false,
+          "label": "Filter empty message",
+          "order": 7.3,
+          "clusters": [],
+          "_note": "Inherits the accordion's text colour and typography; the message and link are content (filterEmptyMessage, filterEmptyLink)."
         }
       }
     }
@@ -315,6 +368,96 @@
     "faqSchema": {
       "type": "boolean",
       "default": false
+    },
+    "filterEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Show a search box and topic chips above the items, with a live count and an empty message. Items carry a Category."
+    },
+    "filterSearch": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show the search box in the filter bar. It matches the item heading and its answer."
+    },
+    "filterSearchLabel": {
+      "type": "string",
+      "default": "Search",
+      "description": "The search box's label (read by screen readers, not painted)."
+    },
+    "filterSearchPlaceholder": {
+      "type": "string",
+      "default": "Search",
+      "description": "The placeholder shown in the empty search box."
+    },
+    "filterChips": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show one chip per item Category, first-seen order, after the All chip."
+    },
+    "filterChipsLabel": {
+      "type": "string",
+      "default": "Filter by topic",
+      "description": "The chip group's accessible name (read by screen readers, not painted)."
+    },
+    "filterAllLabel": {
+      "type": "string",
+      "default": "All",
+      "description": "The label on the chip that shows every item."
+    },
+    "filterCountTemplate": {
+      "type": "string",
+      "default": "{count} answers",
+      "description": "The count line when the count is not one. {count} is replaced by the number shown."
+    },
+    "filterCountSingular": {
+      "type": "string",
+      "default": "{count} answer",
+      "description": "The count line when exactly one item is shown. {count} is replaced by the number shown."
+    },
+    "filterEmptyMessage": {
+      "type": "string",
+      "default": "",
+      "description": "The message shown when nothing matches. Empty prints a neutral message."
+    },
+    "filterEmptyLink": {
+      "type": "object",
+      "default": {},
+      "description": "An optional link after the empty message: {url, label}."
+    },
+    "filterChipColour": {
+      "type": "string",
+      "default": "",
+      "description": "Chip text colour (palette slug or CSS colour). Empty keeps the theme default."
+    },
+    "filterChipBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Chip background (palette slug or CSS colour). Empty keeps the theme default."
+    },
+    "filterChipBorderColour": {
+      "type": "string",
+      "default": "",
+      "description": "Chip border colour (palette slug or CSS colour). Empty keeps the theme default."
+    },
+    "filterChipRadius": {
+      "type": "string",
+      "default": "",
+      "description": "Chip corner radius (a CSS length). Empty keeps the pill shape."
+    },
+    "filterChipColourPressed": {
+      "type": "string",
+      "default": "",
+      "description": "Text colour of the selected chip. Empty keeps the theme default."
+    },
+    "filterChipBackgroundPressed": {
+      "type": "string",
+      "default": "",
+      "description": "Background of the selected chip. Empty keeps the theme default."
+    },
+    "filterCountColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of the count line. Empty inherits the text colour."
     },
     "borderWidth": {
       "type": "object",
@@ -728,7 +871,8 @@
     "sgs/accordionIconCircleBackground": "iconCircleBackground",
     "sgs/accordionIconCircleBorderColourOpen": "iconCircleBorderColourOpen",
     "sgs/accordionIconCircleBackgroundOpen": "iconCircleBackgroundOpen",
-    "sgs/accordionMotion": "sgsMotion"
+    "sgs/accordionMotion": "sgsMotion",
+    "sgs/accordionFilterEnabled": "filterEnabled"
   },
   "allowedBlocks": [
     "sgs/accordion-item"
