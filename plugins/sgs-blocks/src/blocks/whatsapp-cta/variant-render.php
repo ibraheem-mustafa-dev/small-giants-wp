@@ -58,10 +58,10 @@ function sgs_whatsapp_cta_card_css( array $attributes, string $uid, string $root
 	}
 	$css = array_merge( $css, $border['rules'] );
 	if ( $border['tablet'] ) {
-		$css[] = '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+		$css[] = '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 	}
 	if ( $border['mobile'] ) {
-		$css[] = '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+		$css[] = '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 	}
 
 	return array_filter(
