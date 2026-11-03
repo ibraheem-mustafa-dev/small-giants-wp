@@ -3751,8 +3751,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
-        "css_element": "pick-option",
-        "css_state": "selected"
+        "css_element": "pick-option"
       }
     },
     {
@@ -3761,8 +3760,7 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
-        "css_element": "pick-option",
-        "css_state": "selected"
+        "css_element": "pick-option"
       }
     },
     {
