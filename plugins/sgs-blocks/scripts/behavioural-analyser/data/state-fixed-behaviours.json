@@ -2825,6 +2825,21 @@
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ".sgs-form-field--option-card .sgs-form-field__option input[type=\"checkbox\"]:checked",
    "reason": "the ticked-box default (theme primary); the boxColourChecked setting overrides it through the field's own scoped :checked rule printed by form-field-checkbox/render.php, so the stylesheet rule is the resting default, not a missing setting."
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion__chip[aria-pressed=\"true\"]",
+   "reason": "the pressed chip's resting paint is the primary preset pair; the pressed colour and background are the filterChipColourPressed and filterChipBackgroundPressed settings (includes/accordion-filter.php::sgs_accordion_filter_css, state current)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion__chip:hover",
+   "reason": "the chip lifts 2px on hover as fixed behaviour; it carries no colour, and reduced motion removes it"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion-item[hidden]",
+   "reason": "an item the filter has hidden leaves layout (display none); the hidden attribute is behaviour set by the filter script, not a look"
   }
  ]
 }

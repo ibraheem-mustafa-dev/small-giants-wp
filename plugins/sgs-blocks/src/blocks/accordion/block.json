@@ -268,7 +268,7 @@
             "css:border-radius": "filterChipRadius"
           },
           "states": {
-            "pressed": {
+            "current": {
               "attrMap": {
                 "css:color": "filterChipColourPressed",
                 "css:background-color": "filterChipBackgroundPressed"
