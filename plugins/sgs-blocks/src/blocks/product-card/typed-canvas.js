@@ -28,6 +28,9 @@ import { resolveColourToken } from '../../components';
 const CSS_LENGTH = /^(?:[\d.]+(?:%|px|em|rem|vw|vh|ch|ex|fr|cm|mm|in|pt|pc)|calc\([\d.\s+\-*/%a-z()]+\))$/i;
 const ASPECTS = [ '16 / 9', '21 / 9', '4 / 3', '1 / 1', '4 / 5', '3 / 4', '9 / 16' ];
 
+// Stacked price group (render.php): the RRP under the price.
+const PRICE_GROUP_PREVIEW = { stacked: { flexDirection: 'column', alignItems: 'flex-start', gap: 0 } };
+
 const colour = ( value ) => resolveColourToken( value ) || undefined;
 const paddingOf = ( box ) => boxLonghands( box, 'padding' );
 
@@ -79,6 +82,7 @@ export function typedCardPreview( attrs, tier ) {
 		desc: { ...typographyPreviewStyle( attrs, 'desc', tier ), ...textColour( attrs.descColour, attrs.descColourGradient ) },
 		price: { ...typographyPreviewStyle( attrs, 'price', tier ), ...textColour( attrs.priceColour, attrs.priceColourGradient ) },
 		priceNote: { ...typographyPreviewStyle( attrs, 'priceNote', tier ), ...textColour( attrs.priceNoteColour, attrs.priceNoteColourGradient ) },
+		priceGroup: PRICE_GROUP_PREVIEW[ resolveTier( attrs.priceGroupLayout, tier, '' ).value ] || {},
 		priceRow: /^\d+(\.\d+)?(px|em|rem)$/.test( rowSpace ) ? { paddingTop: rowSpace } : {},
 		pill: typographyPreviewStyle( attrs, 'pill', tier ),
 		tag: {

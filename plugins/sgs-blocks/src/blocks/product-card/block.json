@@ -141,6 +141,20 @@
 					},
 					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
+				"price-group": {
+					"selector": ".sgs-product-card__price-group",
+					"motion": false,
+					"label": "Price group",
+					"order": 29,
+					"clusters": [
+						"layout"
+					],
+					"layer": "OUTER",
+					"attrMap": {
+						"css:flex-direction": "priceGroupLayout"
+					},
+					"_note": "The price and the struck RRP: inline keeps them on one line when they fit, stacked puts the RRP under the price (flex-direction column, align-items flex-start, gap 0), per device."
+				},
 				"box": {
 					"restingShadow": true,
 					"label": "Card",
@@ -847,6 +861,11 @@
 				"wrap"
 			],
 			"description": "Whether the card buttons wrap onto further rows when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"priceGroupLayout": {
+			"type": "object",
+			"default": {},
+			"description": "Per device, how the price and the struck RRP sit: inline (beside each other while they fit; the stylesheet's own behaviour) or stacked (the RRP under the price). Unset = inline."
 		},
 		"priceRowFlexWrap": {
 			"type": "string",

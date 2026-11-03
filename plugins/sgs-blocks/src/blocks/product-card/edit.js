@@ -19,7 +19,7 @@ import {
 	ResponsiveLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	SsrPreviewGuard, SgsBoxControl, LinkUnderlineControl } from '../../components';
+	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
@@ -1779,6 +1779,27 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+<ResponsiveOverride
+							label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+							value={ attributes.priceGroupLayout }
+							onChange={ ( obj ) => setAttributes( { priceGroupLayout: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SelectControl
+									label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue || '' }
+									options={ [
+										{ value: '', label: __( 'Default (inline)', 'sgs-blocks' ) },
+										{ value: 'inline', label: __( 'Inline: RRP beside the price while it fits', 'sgs-blocks' ) },
+										{ value: 'stacked', label: __( 'Stacked: RRP under the price', 'sgs-blocks' ) },
+									] }
+									onChange={ ( v ) => setOwnValue( v || '' ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 						<SgsFreeTextField type="rich" noLink
 							label={ __( 'Price note', 'sgs-blocks' ) }
 							help={ __(
@@ -1830,6 +1851,27 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								'sgs-blocks'
 							) }
 						</Notice>
+<ResponsiveOverride
+							label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+							value={ attributes.priceGroupLayout }
+							onChange={ ( obj ) => setAttributes( { priceGroupLayout: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SelectControl
+									label={ __( 'Price and RRP layout', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue || '' }
+									options={ [
+										{ value: '', label: __( 'Default (inline)', 'sgs-blocks' ) },
+										{ value: 'inline', label: __( 'Inline: RRP beside the price while it fits', 'sgs-blocks' ) },
+										{ value: 'stacked', label: __( 'Stacked: RRP under the price', 'sgs-blocks' ) },
+									] }
+									onChange={ ( v ) => setOwnValue( v || '' ) }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
 					</PanelBody>
 				) }
 
@@ -3693,7 +3735,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						{ ( ( priceLarge || '' ) !== '' ||
 							( priceNote || '' ) !== '' ) && (
 							<div className="sgs-product-card__price-row" style={ attributes.priceRowFlexWrap ? { ...typedParts.priceRow, flexWrap: attributes.priceRowFlexWrap } : typedParts.priceRow }>
-								<div className="sgs-product-card__price-group">
+								<div className="sgs-product-card__price-group" style={ typedParts.priceGroup }>
 									{ ( priceLarge || '' ) !== '' && (
 										<span
 											className="sgs-product-card__price"

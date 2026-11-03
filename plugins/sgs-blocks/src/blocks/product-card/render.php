@@ -297,6 +297,35 @@ $sgs_card_typo_css .= sgs_flex_wrap_css(
 		'priceRowFlexWrap' => '.sgs-product-card__price-row',
 	)
 );
+// Price group layout per device: stacked puts the RRP under the price, inline restores the stylesheet's row.
+$sgs_price_group_tiers = array(
+	'value' => $attributes['priceGroupLayout'] ?? array(),
+);
+$sgs_price_group_map   = static function ( string $stacked, string $inline ): callable {
+	return static function ( $raw ) use ( $stacked, $inline ) {
+		return array(
+			'stacked' => $stacked,
+			'inline'  => $inline,
+		)[ is_string( $raw ) ? $raw : '' ] ?? '';
+	};
+};
+$sgs_card_typo_css    .= sgs_emit_responsive_css(
+	'.' . $sgs_card_uid . ' .sgs-product-card__price-group',
+	array(
+		$sgs_price_group_tiers + array(
+			'css'       => 'flex-direction',
+			'transform' => $sgs_price_group_map( 'column', 'row' ),
+		),
+		$sgs_price_group_tiers + array(
+			'css'       => 'align-items',
+			'transform' => $sgs_price_group_map( 'flex-start', 'baseline' ),
+		),
+		$sgs_price_group_tiers + array(
+			'css'       => 'gap',
+			'transform' => $sgs_price_group_map( '0', 'inherit' ),
+		),
+	)
+);
 
 // ── Frame Card component colours: rating stars/text, brand overlay ───────
 // Both attrs resolve css:color via the default {prefix}Colour convention
