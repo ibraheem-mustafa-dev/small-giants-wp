@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`chips mode: visible chips, status and empty message per query 1`] = `
+[
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      false,
+      false,
+      false,
+      false,
+    ],
+    "q": "",
+    "status": "",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      true,
+      true,
+      false,
+      false,
+    ],
+    "q": "ap",
+    "status": "3 of 5 options shown",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      true,
+      true,
+      false,
+      false,
+    ],
+    "q": "  AP  ",
+    "status": "3 of 5 options shown",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+      true,
+      true,
+    ],
+    "q": "zzz",
+    "status": "No matching options",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      true,
+      true,
+      false,
+      true,
+      true,
+    ],
+    "q": "berry",
+    "status": "1 of 5 options shown",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      true,
+      false,
+      true,
+      true,
+      true,
+    ],
+    "q": "Ban",
+    "status": "1 of 5 options shown",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      false,
+      false,
+      false,
+      false,
+    ],
+    "q": " ",
+    "status": "",
+  },
+]
+`;
+
+exports[`terms mode: visible terms, status and empty message per query 1`] = `
+[
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      false,
+      false,
+    ],
+    "q": "",
+    "status": "",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+    ],
+    "q": "ap",
+    "status": "No matching options",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+    ],
+    "q": "  AP  ",
+    "status": "No matching options",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+    ],
+    "q": "zzz",
+    "status": "No matching options",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+    ],
+    "q": "berry",
+    "status": "No matching options",
+  },
+  {
+    "empty": false,
+    "hidden": [
+      true,
+      true,
+      true,
+    ],
+    "q": "Ban",
+    "status": "No matching options",
+  },
+  {
+    "empty": true,
+    "hidden": [
+      false,
+      false,
+      false,
+    ],
+    "q": " ",
+    "status": "",
+  },
+]
+`;

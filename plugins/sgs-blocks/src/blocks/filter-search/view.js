@@ -32,6 +32,8 @@
  * @package SGS\Blocks
  */
 
+import { matches } from '../../utils/filter-text';
+
 const GROUP_SELECTOR = '.wp-block-woocommerce-product-filter-attribute, .wp-block-woocommerce-product-filter-taxonomy';
 const CHIP_ITEM_SELECTOR = '.wc-block-product-filter-chips__item, .wc-block-product-filter-checkbox-list__item';
 const HIDDEN_ATTR = 'data-sgs-fs-hidden';
@@ -71,11 +73,11 @@ function expandGroup( root ) {
  * textContent (defensive — handles future WC markup changes).
  *
  * @param {HTMLElement} chip
- * @return {string} Lowercased, trimmed label text.
+ * @return {string} The label text (matching normalises it).
  */
 function chipLabel( chip ) {
 	const labelEl = chip.querySelector( '.wc-block-product-filter-chips__text, .wc-block-product-filter-checkbox-list__text' );
-	return ( labelEl ? labelEl.textContent : chip.textContent ).trim().toLowerCase();
+	return ( labelEl ? labelEl.textContent : chip.textContent );
 }
 
 /**
@@ -93,10 +95,10 @@ function getTermItems( root ) {
  * it into data-term-label, so no per-keystroke work is needed here.
  *
  * @param {HTMLElement} item
- * @return {string} Lowercased term name.
+ * @return {string} The term name (matching normalises it).
  */
 function termLabel( item ) {
-	return item.dataset.termLabel || item.textContent.trim().toLowerCase();
+	return item.dataset.termLabel || item.textContent;
 }
 
 /**
@@ -141,7 +143,7 @@ function initInstance( root ) {
 	 * Empty query shows all items.
 	 */
 	function filterItems() {
-		const query = input.value.trim().toLowerCase();
+		const query = input.value.trim();
 
 		if ( ! expanded && '' !== query ) {
 			expandGroup( root );
@@ -151,9 +153,9 @@ function initInstance( root ) {
 		let shown = 0;
 
 		getItems( root ).forEach( ( item ) => {
-			const matches = '' === query || getLabel( item ).includes( query );
-			item.toggleAttribute( HIDDEN_ATTR, ! matches );
-			if ( matches ) {
+			const isMatch = matches( getLabel( item ), query );
+			item.toggleAttribute( HIDDEN_ATTR, ! isMatch );
+			if ( isMatch ) {
 				shown++;
 			}
 		} );
