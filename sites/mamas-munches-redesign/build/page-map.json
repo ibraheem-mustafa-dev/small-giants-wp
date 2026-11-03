@@ -334,18 +334,6 @@
     "draftId": "surfaces.json S-34"
   },
   {
-    "slug": "choice-flow-build-your-zookie",
-    "title": "Build your Zookie",
-    "parent": null,
-    "template": null,
-    "menus": [],
-    "postType": "sgs_choice_flow",
-    "collection": "static",
-    "flags": [],
-    "id": 161,
-    "draftId": "surfaces.json S-08"
-  },
-  {
     "slug": "footer",
     "title": "Footer",
     "parent": null,
