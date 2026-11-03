@@ -8504,6 +8504,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsTopPadding",
+      "fields": {
+        "css_property": "padding-top",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "alignContent",
       "fields": {
         "css_property": "align-content",
@@ -34806,15 +34815,6 @@
       "fields": {
         "css_property": "display",
         "css_element": "actions-note"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "actionsSpaceAbove",
-      "fields": {
-        "css_property": "padding-top",
-        "css_layer": "OUTER",
-        "css_element": "actions"
       }
     },
     {
