@@ -411,7 +411,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
 	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
-	const actionsSpaceValue = tierLengthPreview( attributes.actionsSpaceAbove, previewTier );
+	const actionsSpaceValue = tierLengthPreview( attributes.actionsTopPadding, previewTier );
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 

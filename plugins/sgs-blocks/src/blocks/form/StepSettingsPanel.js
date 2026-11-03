@@ -35,7 +35,7 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsSpaceAbove, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
@@ -61,7 +61,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				stepCounterNameHidden: undefined,
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
-				actionsSpaceAbove: undefined,
+				actionsTopPadding: undefined,
 				progressTrackHeight: undefined,
 				progressFill: undefined,
 				stepCompletedIcon: undefined,
@@ -156,11 +156,11 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 					</ResponsiveOverride>
 				</>
 			), true ) }
-			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsSpaceAbove' ], (
+			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsTopPadding' ], (
 				<ResponsiveOverride
 					label={ __( 'Space above buttons', 'sgs-blocks' ) }
-					value={ actionsSpaceAbove }
-					onChange={ ( obj ) => setAttributes( { actionsSpaceAbove: obj } ) }
+					value={ actionsTopPadding }
+					onChange={ ( obj ) => setAttributes( { actionsTopPadding: obj } ) }
 				>
 					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
 						<SgsLengthControl

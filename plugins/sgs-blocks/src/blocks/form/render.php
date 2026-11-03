@@ -668,12 +668,18 @@ if ( is_array( $sgs_status_gap ) && array() !== $sgs_status_gap ) {
 		)
 	);
 }
-$sgs_actions_space = $attributes['actionsSpaceAbove'] ?? null;
+$sgs_actions_space = $attributes['actionsTopPadding'] ?? null;
 if ( is_array( $sgs_actions_space ) && array() !== $sgs_actions_space ) {
-	// A custom property, so the sticky row's "off" reset reads the same value.
+	// padding-top itself, plus the same value as a custom property so the sticky
+	// row's "off" reset (below) reads it too.
 	$sgs_field_css .= sgs_emit_responsive_css(
 		'.' . $sgs_form_uid . ' .sgs-form__actions',
 		array(
+			array(
+				'value'     => $sgs_actions_space,
+				'css'       => 'padding-top',
+				'transform' => $sgs_form_length,
+			),
 			array(
 				'value'     => $sgs_actions_space,
 				'css'       => '--sgs-form-actions-space',
