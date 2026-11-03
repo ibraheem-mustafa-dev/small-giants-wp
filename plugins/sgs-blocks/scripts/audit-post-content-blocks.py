@@ -70,6 +70,17 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / 'lib'))
 from block_source_files import render_source  # noqa: E402
+import scalar_tier_rules as TIER_RULES  # noqa: E402
+
+_BOX_ATTRS = None
+
+
+def box_attrs():
+    """{block: {attr: shape}} of the included box attributes (framework DB, read-only); {} when the DB is absent."""
+    global _BOX_ATTRS
+    if _BOX_ATTRS is None:
+        _BOX_ATTRS = TIER_RULES.box_attrs_from_db() or {}
+    return _BOX_ATTRS
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
@@ -453,6 +464,14 @@ def scan_text(label, markup, schemas):
                 spec = schema['attrs'].get(key)
                 if spec:
                     findings.extend(check_attr_type_and_enum(key, val, spec, label, line, slug))
+        # A string stored where a per-device box needs top/right/bottom/left renders no rule (valid object, wrong shape).
+        # HIGH only when scalar_tier_rules.BOX_STRING_ENFORCED is on and SGS_BOX_STRING_RULE is not 'report'.
+        for attr, _shape in box_attrs().get(slug, {}).items():
+            for tier, raw in TIER_RULES.box_string_issues(attrs.get(attr)):
+                findings.append({'post': label, 'line': line, 'block': slug, 'type': 'box-string',
+                                 'severity': 'HIGH' if TIER_RULES.box_string_enforced() else 'INFO',
+                                 'detail': f'"{attr}" {tier or "whole value"} is {raw!r}: the renderer needs top, right, '
+                                           'bottom and left sides, so no rule is emitted (find-scalar-tier-attrs.py --write)'})
         if self_closing and schema['innerblocks_save']:
             stranded = populated_content(attrs, schema)
             if stranded:
@@ -484,7 +503,7 @@ def collect_inputs(args):
 def finding_key(x):
     """Stable identity for baselining: post|block|type|attr (line numbers drift)."""
     attr = ''
-    if x['type'] in ('undeclared-attr', 'type-mismatch', 'enum-violation'):
+    if x['type'] in ('undeclared-attr', 'type-mismatch', 'enum-violation', 'box-string'):
         attr = x['detail'].split('"')[1]
     elif x['type'] == 'stranded-content':
         attr = x['detail'].split('stranded: ')[-1]

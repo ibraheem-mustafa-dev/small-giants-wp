@@ -185,6 +185,9 @@ def parse_args() -> argparse.Namespace:
                    help="Skip the pre-deploy stored-content compatibility gate "
                         "(NOT recommended — it is the only check that catches a "
                         "deploy whose schemas strand or delete stored content).")
+    p.add_argument("--box-string-report-only", action="store_true",
+                   help="Kill switch: the oldshape audit reports a string stored where a per-device box needs "
+                        "four sides instead of refusing (same as SGS_BOX_STRING_RULE=report).")
     p.add_argument("--skip-motion-qa", action="store_true",
                    help="skip the post-deploy live motion probes. Doing so is "
                         "the D338 mistake: it makes the probes unreachable again.")
@@ -357,7 +360,7 @@ def main() -> int:
         log("[oldshape-audit] SKIPPED (--skip-oldshape-audit)")
     else:
         rc = timed("oldshape-audit", step_oldshape_audit, args.dry_run, use_alias, target_key,
-                   target["wp_content"])
+                   target["wp_content"], args.box_string_report_only)
         if rc != 0:
             print("[ABORTED] reason: oldshape-audit-failed (stored content would "
                   "silently lose render or attrs under the schemas being deployed)",

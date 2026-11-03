@@ -279,7 +279,7 @@ def should_isolate(args: "argparse.Namespace", dirty_files: list[str]) -> bool:
 
 
 def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
-                        wp_content: str) -> int:
+                        wp_content: str, box_string_report_only: bool = False) -> int:
     """Pre-deploy content-compat gate. Scans the TARGET site's stored post_content against
     the LOCAL block.json schemas (i.e. the code about to be deployed) for:
       * stranded content — old scalar shapes an InnerBlocks render no longer reads
@@ -352,7 +352,10 @@ def step_oldshape_audit(dry_run: bool, use_alias: bool, target_key: str,
         cmd = [sys.executable, str(audit), str(site_dir), "--check"]
         if baseline.exists():
             cmd += ["--baseline", str(baseline)]
-        rc = subprocess.call(cmd)
+        env = dict(os.environ)
+        if box_string_report_only:
+            env["SGS_BOX_STRING_RULE"] = "report"  # kill switch: the box-string rule reports, never refuses
+        rc = subprocess.call(cmd, env=env)
     if rc != 0:
         log("[oldshape-audit] FAIL: deploying these schemas would strand or delete "
             "stored content: migrate it in the block editor (or make the schema change backwards-compatible) first")
