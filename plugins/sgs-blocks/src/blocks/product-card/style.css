@@ -753,6 +753,11 @@
 	display: block;
 }
 
+/* imageFill: the photo link takes the media box's full height, so a photo shorter than the box fills it. */
+.product-card--image-fill .product-card__img-link {
+	height: 100%;
+}
+
 /* The photo link duplicates the title link (tabindex -1, aria-hidden), so it sits below the block-link overlay, which
    takes the same click. Raised above the overlay (extensions.css gives every link in a block-link card z-index 2) it
    would paint over the overlay's focus ring along the photo edge. */

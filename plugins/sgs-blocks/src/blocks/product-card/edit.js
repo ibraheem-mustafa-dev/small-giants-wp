@@ -2041,6 +2041,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					showContentBand={ false }
 				/>
 				<ListingShapePanel
+					name={ name }
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

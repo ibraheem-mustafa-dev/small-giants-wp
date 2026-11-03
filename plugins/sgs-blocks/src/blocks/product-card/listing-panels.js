@@ -41,7 +41,22 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 		ctaChoicesToPage,
 		priceFromLowest,
 		priceTrimZeros,
+		showCtaIcon,
+		showCtaShadow,
+		showSwatches,
+		showDescriptionTier,
+		imageSize,
 	} = attributes;
+	const tierValue = ( tier ) => ( showDescriptionTier && showDescriptionTier[ tier ] ) || '';
+	const setTier = ( tier, v ) => {
+		const next = { ...( showDescriptionTier || {} ) };
+		if ( v ) {
+			next[ tier ] = v;
+		} else {
+			delete next[ tier ];
+		}
+		setAttributes( { showDescriptionTier: next } );
+	};
 	const fromProduct = 'product' === cardContentSource;
 	const metaKeyFields = [
 		[ 'badgeMetaKey', badgeMetaKey, __( 'Badge field (meta key)', 'sgs-blocks' ), '_sgs_card_badge' ],
@@ -123,6 +138,26 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 				onChange={ ( v ) => setAttributes( { showDescription: v } ) }
 				__nextHasNoMarginBottom
 			/>
+			{ showDescription !== false &&
+				[
+					[ 'desktop', __( 'Description on desktop', 'sgs-blocks' ) ],
+					[ 'tablet', __( 'Description on tablet', 'sgs-blocks' ) ],
+					[ 'mobile', __( 'Description on mobile', 'sgs-blocks' ) ],
+				].map( ( [ tier, label ] ) => (
+					<SelectControl
+						key={ tier }
+						label={ label }
+						value={ tierValue( tier ) }
+						options={ [
+							{ label: __( 'As the tier above', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Show', 'sgs-blocks' ), value: 'on' },
+							{ label: __( 'Hide', 'sgs-blocks' ), value: 'off' },
+						] }
+						onChange={ ( v ) => setTier( tier, v ) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				) ) }
 			<ToggleControl
 				label={ __( 'Show button', 'sgs-blocks' ) }
 				help={ __(
@@ -133,6 +168,22 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 				onChange={ ( v ) => setAttributes( { showCta: v } ) }
 				__nextHasNoMarginBottom
 			/>
+			{ showCta !== false && (
+				<>
+					<ToggleControl
+						label={ __( 'Show basket icon on the button', 'sgs-blocks' ) }
+						checked={ showCtaIcon !== false }
+						onChange={ ( v ) => setAttributes( { showCtaIcon: v } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ToggleControl
+						label={ __( 'Show button shadow', 'sgs-blocks' ) }
+						checked={ showCtaShadow !== false }
+						onChange={ ( v ) => setAttributes( { showCtaShadow: v } ) }
+						__nextHasNoMarginBottom
+					/>
+				</>
+			) }
 			<ToggleControl
 				label={ __( 'Show wishlist heart', 'sgs-blocks' ) }
 				help={ __(
@@ -173,6 +224,29 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 				/>
 			) }
+			<SelectControl
+				label={ __( 'Photo size', 'sgs-blocks' ) }
+				help={ __( 'A larger size stops a small thumbnail looking soft on a wide card. Default = the shop\u2019s thumbnail size.', 'sgs-blocks' ) }
+				value={ imageSize || '' }
+				options={ [
+					{ label: __( 'Shop thumbnail (default)', 'sgs-blocks' ), value: '' },
+					{ label: __( 'Thumbnail', 'sgs-blocks' ), value: 'thumbnail' },
+					{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+					{ label: __( 'Medium large', 'sgs-blocks' ), value: 'medium_large' },
+					{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
+					{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
+				] }
+				onChange={ ( v ) => setAttributes( { imageSize: v } ) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
+			<ToggleControl
+				label={ __( 'Show colour dots', 'sgs-blocks' ) }
+				checked={ showSwatches !== false }
+				onChange={ ( v ) => setAttributes( { showSwatches: v } ) }
+				__nextHasNoMarginBottom
+			/>
+			{ showSwatches !== false && (
 			<TextControl
 				label={ __( 'Colour dots from attribute', 'sgs-blocks' ) }
 				help={ __(
@@ -184,6 +258,7 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
 			/>
+			) }
 		</PanelBody>
 	);
 }
@@ -196,8 +271,9 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
  * @param {Function} props.setAttributes Attribute setter.
  * @return {Element} The panel.
  */
-export function ListingShapePanel( { attributes, setAttributes } ) {
-	const { imageAspectRatio, showShadow, noImageLabel, priceRowSpaceAbove } = attributes;
+export function ListingShapePanel( { name, attributes, setAttributes } ) {
+	const { imageAspectRatio, showShadow, noImageLabel, priceRowSpaceAbove, imageFill, cardPaddingTier, cardPadding } = attributes;
+	const setPaddingTier = ( tier, box ) => setAttributes( { cardPaddingTier: { ...( cardPaddingTier || {} ), [ tier ]: box } } );
 
 	return (
 		<PanelBody
@@ -218,6 +294,29 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
 				onChange={ ( v ) => setAttributes( { imageAspectRatio: v } ) }
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
+			/>
+			{ '' !== ( imageAspectRatio || '' ) && (
+				<ToggleControl
+					label={ __( 'Photo fills its box', 'sgs-blocks' ) }
+					help={ __( 'Stretches the photo link to the box\u2019s full height so a short photo fills it.', 'sgs-blocks' ) }
+					checked={ !! imageFill }
+					onChange={ ( v ) => setAttributes( { imageFill: v } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			<SgsBoxControl
+				label={ __( 'Card padding on tablet', 'sgs-blocks' ) }
+				values={ ( cardPaddingTier && cardPaddingTier.tablet ) || cardPadding || {} }
+				presets
+				defaults={ spacingDefaultsFor( name, 'cardPaddingTier' ) }
+				onChange={ ( next ) => setPaddingTier( 'tablet', next ) }
+			/>
+			<SgsBoxControl
+				label={ __( 'Card padding on mobile', 'sgs-blocks' ) }
+				values={ ( cardPaddingTier && cardPaddingTier.mobile ) || ( cardPaddingTier && cardPaddingTier.tablet ) || cardPadding || {} }
+				presets
+				defaults={ spacingDefaultsFor( name, 'cardPaddingTier' ) }
+				onChange={ ( next ) => setPaddingTier( 'mobile', next ) }
 			/>
 			<ToggleControl
 				label={ __( 'Resting shadow', 'sgs-blocks' ) }
@@ -260,7 +359,10 @@ export function ListingShapePanel( { attributes, setAttributes } ) {
  * @return {Element} The panel.
  */
 export function ListingDotsPanel( { attributes, setAttributes } ) {
-	const { swatchSize, swatchHoverGrow } = attributes;
+	const { swatchSize, swatchHoverGrow, showSwatches } = attributes;
+	if ( false === showSwatches ) {
+		return null;
+	}
 
 	return (
 		<PanelBody title={ __( 'Colour dots', 'sgs-blocks' ) } initialOpen={ false }>

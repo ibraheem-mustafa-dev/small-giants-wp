@@ -3200,6 +3200,49 @@
 			"default": false,
 			"description": "Trailing zero decimals are dropped from every price a connected card prints from the product: 5.00 reads 5, 9.50 stays 9.50. includes/product-card-price-display.php::sgs_product_card_trim_price_zeros."
 		},
+		"imageSize": {
+			"type": "string",
+			"default": "",
+			"enum": [
+				"",
+				"thumbnail",
+				"medium",
+				"medium_large",
+				"large",
+				"full"
+			],
+			"description": "Which WordPress image size a connected card loads for the product photo. Empty = WooCommerce's own thumbnail size (today's output). A larger size stops a small thumbnail being stretched across a wide card. includes/product-card-image-size.php::sgs_product_card_image_size_apply."
+		},
+		"imageFill": {
+			"type": "boolean",
+			"default": false,
+			"description": "The product photo fills the card's image box (no strip of empty box under a photo that is shorter than the box). Adds the product-card--image-fill modifier; style.css owns the rule."
+		},
+		"showCtaIcon": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the basket icon inside the card's add-to-basket button. Off hides it with a scoped rule (render.php)."
+		},
+		"showCtaShadow": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the button's shadow (at rest and on hover). Off emits box-shadow:none on the card's primary button (render.php)."
+		},
+		"showSwatches": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the colour dots on the card. Off prints no dots at all, typed or from the product (includes/product-card-swatches.php::sgs_product_card_swatches_markup)."
+		},
+		"showDescriptionTier": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device show or hide of the short description: {desktop, tablet, mobile} each 'on' or 'off'; an empty tier inherits the tier above (sgs_resolve_tier). Empty = the description shows as showDescription says. Rendered by sgs_emit_tier_rules_map in render.php."
+		},
+		"cardPaddingTier": {
+			"type": "object",
+			"default": {},
+			"description": "Card body padding on tablet and mobile: {tablet, mobile} each a box {top, right, bottom, left}; an empty tier inherits the tier above. The desktop padding stays cardPadding. Rendered by sgs_emit_responsive_css in render.php."
+		},
 		"swatchAttribute": {
 			"type": "string",
 			"default": "",

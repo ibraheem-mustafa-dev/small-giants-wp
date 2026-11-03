@@ -61,6 +61,7 @@ require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-per-product.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-price-display.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-image-size.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 
@@ -158,6 +159,9 @@ if ( 'featured' === $variant_style ) {
 }
 if ( isset( $attributes['showShadow'] ) && false === $attributes['showShadow'] ) {
 	$classes[] = 'product-card--flat';
+}
+if ( ! empty( $attributes['imageFill'] ) ) {
+	$classes[] = 'product-card--image-fill';
 }
 
 /* ── Build inline styles for per-block CSS-var overrides (cardMaxWidth, imageHeight) ── */
@@ -528,6 +532,41 @@ $sgs_card_padding_obj       = is_array( $attributes['cardPadding'] ?? null ) ? $
 $sgs_card_padding_shorthand = sgs_box_object_longhands( $sgs_card_padding_obj, 'padding' );
 if ( null !== $sgs_card_padding_shorthand ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body{' . $sgs_card_padding_shorthand . ';}';
+}
+
+// Display switches and per-device settings. Every one defaults to "nothing emitted".
+// Button icon and button shadow: scoped rules, never inline.
+if ( false === ( $attributes['showCtaIcon'] ?? true ) ) {
+	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__cart-icon{display:none;}';
+}
+if ( false === ( $attributes['showCtaShadow'] ?? true ) ) {
+	$sgs_cta_sel        = '.' . $sgs_card_uid . ' .product-card__add-to-cart,.' . $sgs_card_uid . ' .sgs-product-card__cta--primary';
+	$sgs_card_typo_css .= $sgs_cta_sel . ',' . str_replace( ',', ':hover,', $sgs_cta_sel ) . ':hover{box-shadow:none;}';
+}
+// Description per device ('on' / 'off' by tier; an empty tier inherits the one above).
+if ( is_array( $attributes['showDescriptionTier'] ?? null ) && array() !== $attributes['showDescriptionTier'] ) {
+	$sgs_card_typo_css .= sgs_emit_tier_rules_map(
+		'.' . $sgs_card_uid . ' .sgs-product-card__description,.' . $sgs_card_uid . ' .product-desc',
+		$attributes['showDescriptionTier'],
+		array( 'off' => 'display:none;' ),
+		'',
+		'on'
+	);
+}
+// Card padding on tablet and mobile (desktop stays cardPadding).
+if ( is_array( $attributes['cardPaddingTier'] ?? null ) && array() !== $attributes['cardPaddingTier'] ) {
+	$sgs_card_padding_tiers = array_merge( array( 'desktop' => $sgs_card_padding_obj ), array_intersect_key( $attributes['cardPaddingTier'], array_flip( array( 'tablet', 'mobile' ) ) ) );
+	$sgs_card_typo_css     .= sgs_emit_responsive_css(
+		'.' . $sgs_card_uid . ' .product-card-body,.' . $sgs_card_uid . ' .sgs-product-card__body',
+		array(
+			array(
+				'value'        => $sgs_card_padding_tiers,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
 }
 
 // Brand logo box (brandLogoHeight / -Width / -MaxHeight / -MaxWidth): each a
@@ -987,6 +1026,8 @@ $sgs_bound_htag             = in_array( $attributes['headingLevel'] ?? '', $sgs_
 $attributes = sgs_product_card_per_product_fill( $attributes, (int) $product_id, (string) $source_mode );
 // priceTrimZeros: 5.00 reads 5 in every price this card prints from the product. Off = no change.
 $data = sgs_product_card_price_data_apply( $data, $attributes );
+// imageSize: the chosen WordPress image size for the photo. Empty = WooCommerce's thumbnail, as before.
+$data = sgs_product_card_image_size_apply( $data, $attributes );
 
 // FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
 // markup share this value so label and behaviour always agree).
@@ -1286,6 +1327,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		}
 		$stock_text = $def['inStock'] ? '' : __( 'Out of stock', 'sgs-blocks' );
 		$image_src  = '' !== $def['imageUrl'] ? $def['imageUrl'] : $data['image_url'];
+		$image_src  = sgs_product_card_image_url_at_size( (string) $image_src, sgs_product_card_image_size( $attributes ) );
 
 		/*
 		 * FP-H (Bean FINAL-FORM ruling): an image override sets the card's

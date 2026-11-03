@@ -66,6 +66,9 @@ if ( ! function_exists( 'sgs_product_card_swatches_markup' ) ) {
 	 * @return string Safe HTML, or '' when colourSwatches is empty.
 	 */
 	function sgs_product_card_swatches_markup( array $attributes, string $card_uid = '' ) {
+		if ( false === ( $attributes['showSwatches'] ?? true ) ) {
+			return '';
+		}
 		$items = isset( $attributes['colourSwatches'] ) && is_array( $attributes['colourSwatches'] ) ? $attributes['colourSwatches'] : array();
 		if ( empty( $items ) ) {
 			return '';
