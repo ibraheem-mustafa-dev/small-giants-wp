@@ -20,7 +20,7 @@ Every page is over on both. No gate measures either budget (the only budget gate
 3. `media-element.css`, `motion.css`, `motion-triggers.css` (about 27 KB) load on every page. Fix: enqueue them from the blocks or features that use them (the SGS CSS registry), with a fail-safe for blocks that render media or motion.
 4. A possible second collected `uploads/sgs-css/sgs-<page>-*.css` on /shop/ (about 20 KB), seen by Playwright but not by a plain curl. Prove the cause first (router prefetch, the Load more fetch, or a real double enqueue).
 5. `wp-polyfill` (10.7 KB), a core dependency of `wp-url` / `wp-api-fetch`; drop only if the dependants are not needed on the page.
-6. Order attribution (`sourcebuster-js`, `wc-order-attribution`, about 5 KB): a WooCommerce feature (orders' "origin" column). Bean decides per client; not an SGS change.
+6. Order attribution (`sourcebuster-js`, `wc-order-attribution`, about 5 KB): a WooCommerce feature (orders' "origin" column). Kept on (Bean, 2026-11-03: the channel behind each sale is worth more than 5 KB); not an SGS change, never dequeued by the budget work.
 
 ## Gate
 
