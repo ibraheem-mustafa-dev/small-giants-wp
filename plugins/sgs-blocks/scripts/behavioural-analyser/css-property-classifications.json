@@ -937,7 +937,8 @@
       "slug": "sgs/account",
       "attr": "menuTextAlign",
       "fields": {
-        "css_property": "text-align",
+        "css_property": "justify-content,text-align",
+        "css_layer": "GRID",
         "css_element": "menuLink"
       }
     },
@@ -3043,7 +3044,6 @@
       "attr": "guidedMeterTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_layer": "GRID",
         "css_element": "guidedMeter"
       }
     },
@@ -4046,7 +4046,6 @@
       "attr": "stockTextAlign",
       "fields": {
         "css_property": "text-align",
-        "css_layer": "GRID",
         "css_element": "stock"
       }
     },
@@ -23528,7 +23527,7 @@
       "slug": "sgs/product-card",
       "attr": "productId",
       "fields": {
-        "css_property": "grid-template-columns,text-align",
+        "css_property": "grid-template-columns",
         "css_layer": "GRID"
       }
     },
