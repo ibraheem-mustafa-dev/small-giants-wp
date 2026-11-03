@@ -37,6 +37,13 @@ if ( ! class_exists( 'WooCommerce', false ) ) {
 
 if ( ! function_exists( 'get_post_status' ) ) {
 	function get_post_status( $post = null ) {
+		// A --product-file product's `status` for its own ID (default publish), as core answers for that product.
+		$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array( $GLOBALS['sgs_qa_product'] ?? null ) as $data ) {
+			if ( is_array( $data ) && (int) ( $data['id'] ?? 0 ) === $id ) {
+				return (string) ( $data['status'] ?? 'publish' );
+			}
+		}
 		return 'publish';
 	}
 }

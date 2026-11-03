@@ -448,6 +448,15 @@ if ( ! function_exists( 'get_the_date' ) ) {
 
 if ( ! function_exists( 'get_post_field' ) ) {
 	function get_post_field( $field, $post = null, $context = 'display' ) {
+		// A --product-file product's `password` answers `post_password` for its own ID.
+		if ( 'post_password' === $field ) {
+			$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+			foreach ( $GLOBALS['sgs_qa_products'] ?? array( $GLOBALS['sgs_qa_product'] ?? null ) as $data ) {
+				if ( is_array( $data ) && (int) ( $data['id'] ?? 0 ) === $id ) {
+					return (string) ( $data['password'] ?? '' );
+				}
+			}
+		}
 		$found = sgs_qa_find_post( $post );
 		return is_object( $found ) && isset( $found->$field ) ? $found->$field : '';
 	}
@@ -633,6 +642,13 @@ if ( ! function_exists( 'admin_url' ) ) {
 if ( ! function_exists( 'home_url' ) ) {
 	function home_url( string $path = '' ): string {
 		return 'https://example.test/' . ltrim( $path, '/' );
+	}
+}
+
+if ( ! function_exists( 'current_user_can' ) ) {
+	// The harness request has no user, so no capability is held.
+	function current_user_can( $capability, ...$args ): bool {
+		return false;
 	}
 }
 
