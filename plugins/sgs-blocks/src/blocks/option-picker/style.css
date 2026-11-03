@@ -198,6 +198,9 @@
 	background-color: var(--sgs-op-bg, transparent);
 	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
+}
+/* The border is this look's identity; zero specificity so the pill border width setting always wins. */
+:where(.sgs-option-picker--outlined .sgs-option-picker__pill) {
 	border: var(--sgs-op-border-width, 2px) solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
 }
 
@@ -274,6 +277,9 @@
 	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #e5e7eb));
 	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
+}
+/* The border is this look's identity; zero specificity so the pill border width setting always wins. */
+:where(.sgs-option-picker--filled .sgs-option-picker__pill) {
 	border: var(--sgs-op-border-width, 2px) solid transparent;
 }
 
@@ -309,6 +315,9 @@
 .sgs-option-picker--ghost .sgs-option-picker__pill {
 	background-color: transparent;
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
+}
+/* The border is this look's identity; zero specificity so the pill border width setting always wins. */
+:where(.sgs-option-picker--ghost .sgs-option-picker__pill) {
 	border: var(--sgs-op-border-width, 2px) solid transparent;
 }
 
@@ -714,6 +723,9 @@
 	/* The width is the same in every state so selecting a tile cannot change
 	   its box size; only the colour changes on :checked below. The non-colour
 	   selection signal is the shared ::before tick (WCAG 1.4.1). */
+}
+/* The border is this look's identity; zero specificity so the pill border width setting always wins. */
+:where(.sgs-option-picker--tile .sgs-option-picker__pill) {
 	border: var(--sgs-op-border-width, 2px) solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
 }
 

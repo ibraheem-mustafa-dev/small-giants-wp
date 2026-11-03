@@ -107,6 +107,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					cardBorderStyle,
 					iconGap: attributes.iconGap,
 					minHeight: attributes.minHeight,
+					boxShadow: attributes.boxShadow,
+					boxShadowColour: attributes.boxShadowColour,
 				},
 				colourVar,
 				resolveTextColourPreviewStyle

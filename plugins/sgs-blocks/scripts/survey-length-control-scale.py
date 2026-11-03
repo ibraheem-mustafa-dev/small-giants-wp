@@ -72,6 +72,7 @@ ROLE_EXCEPTIONS = {
     'sgs/google-reviews/arrowSize': ('spacing', 'the arrow button is a tap target (a box), not a glyph'),
     # Attributes a filter registers (not in block.json, so not in the DB), named by the extension that owns them.
     'extension/sgsChildWidth': ('spacing', 'extension attribute: a child width'),
+    'extension/sgsCardMinWidth': ('spacing', 'extension attribute: a product grid card minimum width per device'),
     'extension/sgsChipGap': ('spacing', 'extension attribute: a gap between chips'),
     'extension/sgsHeight': ('spacing', 'extension attribute: an image height per device'),
 }

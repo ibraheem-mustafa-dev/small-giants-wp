@@ -9,6 +9,7 @@
  */
 import { isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 import { brandBySlug } from '../../utils/brand-registry';
+import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
 /**
  * Root-element preview style (contract §B3: the button element IS the block
@@ -42,6 +43,8 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 		cardBorderStyle,
 		iconGap,
 		minHeight,
+		boxShadow,
+		boxShadowColour,
 	} = previewAttrs;
 
 	// D636 — sibling gradient attribute preview (mirrors sgs/counter's
@@ -57,6 +60,8 @@ export function buildRootStyle( previewAttrs, colourVar, resolveTextColourPrevie
 		gap: iconGap || undefined,
 		minHeight: minHeight || undefined,
 		'--sgs-wa-min-height': minHeight || undefined,
+		// The resting shadow, composed as render.php composes it (shape plus colour).
+		boxShadow: resolveShadowPreviewComposed( boxShadow, boxShadowColour ),
 		...( isCssGradient( backgroundColourGradient )
 			? { backgroundImage: backgroundColourGradient }
 			: {} ),
