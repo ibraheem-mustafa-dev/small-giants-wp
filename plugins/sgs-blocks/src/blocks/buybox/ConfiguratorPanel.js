@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl, Button, Notice } from '@wordpress/components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
@@ -82,6 +83,31 @@ function Checklist( { productId, list, failed } ) {
 }
 
 /**
+ * One ToolsPanel item: shows a reset dot when the value differs from the block.json default and resets to it.
+ *
+ * @param {Object}   props               Props.
+ * @param {string}   props.label         Item label.
+ * @param {string}   props.name          Attribute name.
+ * @param {*}        props.fallback      The block.json default.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @param {Element}  props.children      The control.
+ * @return {Element} The item.
+ */
+function Item( { label, name, fallback, attributes, setAttributes, children } ) {
+	return (
+		<ToolsPanelItem
+			label={ label }
+			hasValue={ () => JSON.stringify( attributes[ name ] ?? fallback ) !== JSON.stringify( fallback ) }
+			onDeselect={ () => setAttributes( { [ name ]: fallback } ) }
+			isShownByDefault
+		>
+			{ children }
+		</ToolsPanelItem>
+	);
+}
+
+/**
  * A per-device inner-spacing control for a `{desktop, tablet, mobile}` attribute.
  *
  * @param {Object}   props               Props.
@@ -138,116 +164,156 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
-					<SelectControl
-						key={ group.key }
-						label={ sprintf( /* translators: %s: option group name. */ __( '%s look', 'sgs-blocks' ), group.label ) }
-						value={ styles[ group.key ] || '' }
-						options={ STYLE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { groupStyles: { ...styles, [ group.key ]: val } } ) }
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, showPriceRow: true } ) }>
+				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
+						<SelectControl
+							key={ group.key }
+							label={ sprintf( /* translators: %s: option group name. */ __( '%s look', 'sgs-blocks' ), group.label ) }
+							value={ styles[ group.key ] || '' }
+							options={ STYLE_OPTIONS }
+							onChange={ ( val ) => setAttributes( { groupStyles: { ...styles, [ group.key ]: val } } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) ) }
+				</Item>
+				<Item label={ __( 'Summary text (use {pack} and {split})', 'sgs-blocks' ) } name="summaryText" fallback={ 'Your {pack}: {split}' } attributes={ attributes } setAttributes={ setAttributes }>
+					<TextControl
+						label={ __( 'Summary text (use {pack} and {split})', 'sgs-blocks' ) }
+						value={ attributes.summaryText ?? 'Your {pack}: {split}' }
+						onChange={ ( val ) => setAttributes( { summaryText: val } ) }
+						help={ __( 'Also {pack_label}, {variation}, {picks} and {count}. Unknown words in braces are removed.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-				) ) }
-				<TextControl
-					label={ __( 'Summary text (use {pack} and {split})', 'sgs-blocks' ) }
-					value={ attributes.summaryText ?? 'Your {pack}: {split}' }
-					onChange={ ( val ) => setAttributes( { summaryText: val } ) }
-					help={ __( 'Also {pack_label}, {variation}, {picks} and {count}. Unknown words in braces are removed.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				<MediaUploadCheck>
-					<MediaUpload
-						onSelect={ ( media ) => setAttributes( { previewImageId: media && media.id ? media.id : 0 } ) }
-						allowedTypes={ [ 'image' ] }
-						value={ attributes.previewImageId || 0 }
-						render={ ( { open } ) => (
-							<div>
-								<Button variant="secondary" onClick={ open } __next40pxDefaultSize>
-									{ attributes.previewImageId ? __( 'Change the preview image', 'sgs-blocks' ) : __( 'Choose the preview image', 'sgs-blocks' ) }
-								</Button>
-								{ attributes.previewImageId > 0 && (
-									<Button variant="link" isDestructive onClick={ () => setAttributes( { previewImageId: 0 } ) }>
-										{ __( 'Remove', 'sgs-blocks' ) }
+				</Item>
+				<Item label={ __( 'Preview image', 'sgs-blocks' ) } name="previewImageId" fallback={ 0 } attributes={ attributes } setAttributes={ setAttributes }>
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={ ( media ) => setAttributes( { previewImageId: media && media.id ? media.id : 0 } ) }
+							allowedTypes={ [ 'image' ] }
+							value={ attributes.previewImageId || 0 }
+							render={ ( { open } ) => (
+								<div>
+									<Button variant="secondary" onClick={ open } __next40pxDefaultSize>
+										{ attributes.previewImageId ? __( 'Change the preview image', 'sgs-blocks' ) : __( 'Choose the preview image', 'sgs-blocks' ) }
 									</Button>
-								) }
-							</div>
-						) }
+									{ attributes.previewImageId > 0 && (
+										<Button variant="link" isDestructive onClick={ () => setAttributes( { previewImageId: 0 } ) }>
+											{ __( 'Remove', 'sgs-blocks' ) }
+										</Button>
+									) }
+								</div>
+							) }
+						/>
+					</MediaUploadCheck>
+				</Item>
+				<Item label={ __( 'Preview: scatter this attribute’s colour', 'sgs-blocks' ) } name="previewLayerAxis" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<TextControl
+						label={ __( 'Preview: scatter this attribute’s colour', 'sgs-blocks' ) }
+						value={ attributes.previewLayerAxis || '' }
+						onChange={ ( val ) => setAttributes( { previewLayerAxis: val.trim() } ) }
+						help={ __( 'The attribute key of a variation attribute whose option colour is scattered over the preview as small squares (for example pa_chip). Empty = none.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
-				</MediaUploadCheck>
-				<TextControl
-					label={ __( 'Preview: scatter this attribute’s colour', 'sgs-blocks' ) }
-					value={ attributes.previewLayerAxis || '' }
-					onChange={ ( val ) => setAttributes( { previewLayerAxis: val.trim() } ) }
-					help={ __( 'The attribute key of a variation attribute whose option colour is scattered over the preview as small squares (for example pa_chip). Empty = none.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
-				<ToggleControl
-					label={ __( 'Hide the product photos', 'sgs-blocks' ) }
-					checked={ true === attributes.pickHideGallery }
-					onChange={ ( val ) => setAttributes( { pickHideGallery: val } ) }
-					help={ __( 'The picker, preview and summary then fill the width.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-				/>
-				<ToggleControl
-					label={ __( 'Show the price row', 'sgs-blocks' ) }
-					checked={ false !== attributes.showPriceRow }
-					onChange={ ( val ) => setAttributes( { showPriceRow: val } ) }
-					__nextHasNoMarginBottom
-				/>
+				</Item>
+				<Item label={ __( 'Hide the product photos', 'sgs-blocks' ) } name="pickHideGallery" fallback={ false } attributes={ attributes } setAttributes={ setAttributes }>
+					<ToggleControl
+						label={ __( 'Hide the product photos', 'sgs-blocks' ) }
+						checked={ true === attributes.pickHideGallery }
+						onChange={ ( val ) => setAttributes( { pickHideGallery: val } ) }
+						help={ __( 'The picker, preview and summary then fill the width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</Item>
+				<Item label={ __( 'Show the price row', 'sgs-blocks' ) } name="showPriceRow" fallback={ true } attributes={ attributes } setAttributes={ setAttributes }>
+					<ToggleControl
+						label={ __( 'Show the price row', 'sgs-blocks' ) }
+						checked={ false !== attributes.showPriceRow }
+						onChange={ ( val ) => setAttributes( { showPriceRow: val } ) }
+						__nextHasNoMarginBottom
+					/>
+				</Item>
+				</ToolsPanel>
 			</PanelBody>
 			<PanelBody title={ __( 'Preview box', 'sgs-blocks' ) } initialOpen={ false }>
-				<SgsLengthControl
-					presets
-					label={ __( 'Border width', 'sgs-blocks' ) }
-					value={ attributes.previewBorderWidth || '' }
-					onChange={ ( val ) => setAttributes( { previewBorderWidth: val ?? '' } ) }
-				/>
-				<SgsLengthControl
-					presets
-					label={ __( 'Corner radius', 'sgs-blocks' ) }
-					value={ attributes.previewRadius || '' }
-					onChange={ ( val ) => setAttributes( { previewRadius: val ?? '' } ) }
-				/>
-				<TierBox label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" attributes={ attributes } setAttributes={ setAttributes } />
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { previewBorderWidth: '', previewRadius: '', previewPadding: {} } ) }>
+				<Item label={ __( 'Border width', 'sgs-blocks' ) } name="previewBorderWidth" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						value={ attributes.previewBorderWidth || '' }
+						onChange={ ( val ) => setAttributes( { previewBorderWidth: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Corner radius', 'sgs-blocks' ) } name="previewRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ attributes.previewRadius || '' }
+						onChange={ ( val ) => setAttributes( { previewRadius: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<TierBox label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" attributes={ attributes } setAttributes={ setAttributes } />
+				</Item>
+				</ToolsPanel>
 			</PanelBody>
 			<PanelBody title={ __( 'Options and tiles', 'sgs-blocks' ) } initialOpen={ false }>
-				<SgsLengthControl
-					presets
-					label={ __( 'Option pill corner radius', 'sgs-blocks' ) }
-					value={ attributes.pickOptionRadius || '' }
-					onChange={ ( val ) => setAttributes( { pickOptionRadius: val ?? '' } ) }
-				/>
-				<TierBox label={ __( 'Option pill inner spacing', 'sgs-blocks' ) } name="pickOptionPadding" attributes={ attributes } setAttributes={ setAttributes } />
-				<SgsLengthControl
-					presets
-					label={ __( 'Space between option pills', 'sgs-blocks' ) }
-					value={ attributes.pickOptionGap || '' }
-					onChange={ ( val ) => setAttributes( { pickOptionGap: val ?? '' } ) }
-				/>
-				<TierBox label={ __( 'Priced tile inner spacing', 'sgs-blocks' ) } name="pickTilePadding" attributes={ attributes } setAttributes={ setAttributes } />
-				<SgsLengthControl
-					presets
-					label={ __( 'Space between priced tiles', 'sgs-blocks' ) }
-					value={ attributes.pickTileGap || '' }
-					onChange={ ( val ) => setAttributes( { pickTileGap: val ?? '' } ) }
-				/>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { pickOptionRadius: '', pickOptionPadding: {}, pickOptionGap: '', pickTilePadding: {}, pickTileGap: '' } ) }>
+				<Item label={ __( 'Option pill corner radius', 'sgs-blocks' ) } name="pickOptionRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Option pill corner radius', 'sgs-blocks' ) }
+						value={ attributes.pickOptionRadius || '' }
+						onChange={ ( val ) => setAttributes( { pickOptionRadius: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Option pill inner spacing', 'sgs-blocks' ) } name="pickOptionPadding" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<TierBox label={ __( 'Option pill inner spacing', 'sgs-blocks' ) } name="pickOptionPadding" attributes={ attributes } setAttributes={ setAttributes } />
+				</Item>
+				<Item label={ __( 'Space between option pills', 'sgs-blocks' ) } name="pickOptionGap" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Space between option pills', 'sgs-blocks' ) }
+						value={ attributes.pickOptionGap || '' }
+						onChange={ ( val ) => setAttributes( { pickOptionGap: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Priced tile inner spacing', 'sgs-blocks' ) } name="pickTilePadding" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<TierBox label={ __( 'Priced tile inner spacing', 'sgs-blocks' ) } name="pickTilePadding" attributes={ attributes } setAttributes={ setAttributes } />
+				</Item>
+				<Item label={ __( 'Space between priced tiles', 'sgs-blocks' ) } name="pickTileGap" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Space between priced tiles', 'sgs-blocks' ) }
+						value={ attributes.pickTileGap || '' }
+						onChange={ ( val ) => setAttributes( { pickTileGap: val ?? '' } ) }
+					/>
+				</Item>
+				</ToolsPanel>
 			</PanelBody>
 			<PanelBody title={ __( 'Picker box', 'sgs-blocks' ) } initialOpen={ false }>
-				<SgsLengthControl
-					presets
-					label={ __( 'Border width', 'sgs-blocks' ) }
-					value={ attributes.pickerBoxBorderWidth || '' }
-					onChange={ ( val ) => setAttributes( { pickerBoxBorderWidth: val ?? '' } ) }
-				/>
-				<SgsLengthControl
-					presets
-					label={ __( 'Corner radius', 'sgs-blocks' ) }
-					value={ attributes.pickerBoxRadius || '' }
-					onChange={ ( val ) => setAttributes( { pickerBoxRadius: val ?? '' } ) }
-				/>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { pickerBoxBorderWidth: '', pickerBoxRadius: '' } ) }>
+				<Item label={ __( 'Border width', 'sgs-blocks' ) } name="pickerBoxBorderWidth" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Border width', 'sgs-blocks' ) }
+						value={ attributes.pickerBoxBorderWidth || '' }
+						onChange={ ( val ) => setAttributes( { pickerBoxBorderWidth: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Corner radius', 'sgs-blocks' ) } name="pickerBoxRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ attributes.pickerBoxRadius || '' }
+						onChange={ ( val ) => setAttributes( { pickerBoxRadius: val ?? '' } ) }
+					/>
+				</Item>
+				</ToolsPanel>
 			</PanelBody>
 		</InspectorControls>
 	);
