@@ -60,7 +60,26 @@ function signature() {
 }
 
 function region() {
-	return document.querySelector( REGION );
+	return document.querySelector( REGION + '[data-sgs-total]' ) || document.querySelector( REGION );
+}
+
+/** One place for the busy state: the flag, the button's disabled / aria-busy / label and the busy class. */
+function setBusy( on ) {
+	busy = on;
+	document.querySelectorAll( '.' + ROOT_CLASS ).forEach( ( box ) => {
+		box.classList.toggle( ROOT_CLASS + '--busy', on );
+		const button = box.querySelector( '.sgs-shop-load-more__button' );
+		if ( ! button ) {
+			return;
+		}
+		button.disabled = on;
+		button.textContent = on ? settings.labels.loading : settings.labels.button;
+		if ( on ) {
+			button.setAttribute( 'aria-busy', 'true' );
+		} else {
+			button.removeAttribute( 'aria-busy' );
+		}
+	} );
 }
 
 function items() {
@@ -108,7 +127,7 @@ function buildBox( loaded, total, more ) {
 		button.type = 'button';
 		button.className = 'sgs-shop-load-more__button';
 		button.textContent = settings.labels.button;
-		button.addEventListener( 'click', () => loadMore( button ) );
+		button.addEventListener( 'click', () => loadMore() );
 		box.appendChild( button );
 	}
 	const count = document.createElement( 'p' );
@@ -119,6 +138,15 @@ function buildBox( loaded, total, more ) {
 		count.hidden = true;
 	}
 	box.appendChild( count );
+	if ( busy ) {
+		box.classList.add( ROOT_CLASS + '--busy' );
+		const pending = box.querySelector( '.sgs-shop-load-more__button' );
+		if ( pending ) {
+			pending.disabled = true;
+			pending.setAttribute( 'aria-busy', 'true' );
+			pending.textContent = settings.labels.loading;
+		}
+	}
 	return box;
 }
 
@@ -181,35 +209,20 @@ async function navigate( url ) {
 	await actions.navigate( url, { replace: true, screenReaderAnnouncement: false } );
 }
 
-async function loadMore( button ) {
+async function loadMore() {
 	if ( busy ) {
 		return;
 	}
-	busy = true;
 	const before = items().length;
-	const box = button.closest( '.' + ROOT_CLASS );
-	button.disabled = true;
-	button.setAttribute( 'aria-busy', 'true' );
-	button.textContent = settings.labels.loading;
-	if ( box ) {
-		box.classList.add( ROOT_CLASS + '--busy' );
-	}
+	setBusy( true );
 	const url = withBatches( window.location.href, readBatches( window.location.href ) + 1 );
 	try {
 		await navigate( url );
-		busy = false;
+		setBusy( false );
 		sync();
 		afterLoad( before );
 	} catch ( error ) {
-		busy = false;
-		if ( button.isConnected ) {
-			button.disabled = false;
-			button.removeAttribute( 'aria-busy' );
-			button.textContent = settings.labels.button;
-			if ( box ) {
-				box.classList.remove( ROOT_CLASS + '--busy' );
-			}
-		}
+		setBusy( false );
 		speak( settings.messages.failed );
 	}
 }
@@ -253,13 +266,13 @@ function scheduleTopUp() {
 		if ( wanted < 2 || busy ) {
 			return;
 		}
-		busy = true;
+		setBusy( true );
 		try {
 			await navigate( withBatches( window.location.href, wanted ) );
 		} catch ( error ) {
 			// The button still works; the top-up is only a convenience.
 		}
-		busy = false;
+		setBusy( false );
 		sync();
 	};
 	if ( 'requestIdleCallback' in window ) {
@@ -284,11 +297,11 @@ function checkFilterReset() {
 	if ( busy || readBatches( window.location.href ) < 2 ) {
 		return;
 	}
-	busy = true;
+	setBusy( true );
 	navigate( withBatches( window.location.href, 1 ) )
 		.catch( () => {} )
 		.finally( () => {
-			busy = false;
+			setBusy( false );
 			lastSignature = signature();
 			sync();
 		} );

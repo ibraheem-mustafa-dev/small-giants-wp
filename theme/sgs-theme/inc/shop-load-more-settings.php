@@ -217,7 +217,7 @@ add_action( 'pre_get_posts', __NAMESPACE__ . '\apply_shop_load_more_batches', 20
  * @return mixed
  */
 function restore_shop_load_more_page_count( $posts, $query ) {
-	$batch = $query instanceof \WP_Query ? absint( $query->get( 'sgs_load_more_size' ) ) : 0;
+	$batch = $query instanceof \WP_Query && $query->is_main_query() ? absint( $query->get( 'sgs_load_more_size' ) ) : 0;
 	if ( $batch > 0 ) {
 		$query->max_num_pages = (int) ceil( $query->found_posts / $batch );
 	}
@@ -240,12 +240,15 @@ add_filter( 'get_canonical_url', __NAMESPACE__ . '\strip_shop_load_more_canonica
  * The list total on the collection's outer element. The router swaps that element on every navigation, so the
  * client module always reads the total of the list on screen (the results-count block sits outside the region).
  *
- * @param mixed $content Rendered block HTML.
+ * Only the collection that inherits the main query carries the total; other collections are left alone.
+ *
+ * @param mixed $content      Rendered block HTML.
+ * @param array $parsed_block Parsed block.
  * @return mixed
  */
-function add_shop_load_more_total( $content ) {
+function add_shop_load_more_total( $content, $parsed_block = array() ) {
 	global $wp_query;
-	if ( ! is_string( $content ) || '' === $content || ! shop_load_more_enabled() || ! $wp_query instanceof \WP_Query ) {
+	if ( empty( $parsed_block['attrs']['query']['inherit'] ) || ! is_string( $content ) || '' === $content || ! shop_load_more_enabled() || ! $wp_query instanceof \WP_Query ) {
 		return $content;
 	}
 	$tags = new \WP_HTML_Tag_Processor( $content );
@@ -255,7 +258,7 @@ function add_shop_load_more_total( $content ) {
 	$tags->set_attribute( 'data-sgs-total', (string) absint( $wp_query->found_posts ) );
 	return $tags->get_updated_html();
 }
-add_filter( 'render_block_woocommerce/product-collection', __NAMESPACE__ . '\add_shop_load_more_total', 20 );
+add_filter( 'render_block_woocommerce/product-collection', __NAMESPACE__ . '\add_shop_load_more_total', 20, 3 );
 
 /**
  * The settings the client module reads.

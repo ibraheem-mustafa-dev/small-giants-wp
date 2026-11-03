@@ -70,13 +70,16 @@ export function announce( region, text ) {
 }
 
 /**
- * Storage key for a page's scroll anchor: path plus the query string with its keys sorted.
+ * Storage key for a page's scroll anchor: path plus the query string with its keys sorted and the paging keys
+ * (`sgs_batches`, `paged`) removed, so the remembered item is found whatever the batch count.
  *
  * @param {{pathname: string, search: string}} location Location-like object.
  * @return {string} Key.
  */
 export function anchorKey( location ) {
 	const params = new URLSearchParams( location.search );
+	params.delete( BATCHES_PARAM );
+	params.delete( 'paged' );
 	params.sort();
 	return 'sgs-lm:' + location.pathname + '?' + params.toString();
 }

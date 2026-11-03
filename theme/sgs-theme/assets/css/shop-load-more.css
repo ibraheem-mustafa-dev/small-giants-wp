@@ -22,16 +22,16 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 44px;
+	min-height: max(44px, var(--wp--custom--button-presets--primary--min-height, 44px));
 	min-width: 44px;
-	padding: 0.5em 1.75em;
-	border: 2px solid var(--wp--preset--color--primary, #E68A95);
-	border-radius: var(--wp--custom--border-radius--pill, 9999px);
-	background: var(--wp--preset--color--primary, #E68A95);
-	color: var(--wp--preset--color--primary-text, #fffaf5);
+	padding: var(--wp--custom--button-presets--primary--padding, 0.5em 1.75em);
+	border: var(--wp--custom--button-presets--primary--border-width, 2px) solid var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #E68A95));
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, var(--wp--custom--border-radius--pill, 9999px));
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #E68A95));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fffaf5));
 	font: inherit;
-	font-size: 0.9375rem;
-	font-weight: 600;
+	font-size: var(--wp--custom--button-presets--primary--font-size, 0.9375rem);
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
 	cursor: pointer;
 	transition: filter 0.15s ease, opacity 0.15s ease;
 }

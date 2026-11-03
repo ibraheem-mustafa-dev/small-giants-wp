@@ -77,6 +77,11 @@ describe( 'anchors', () => {
 	it( 'builds a key with sorted query keys', () => {
 		expect( anchorKey( { pathname: '/shop/', search: '?b=2&a=1' } ) ).toBe( 'sgs-lm:/shop/?a=1&b=2' );
 	} );
+	it( 'ignores sgs_batches and paged in the key', () => {
+		const plain = anchorKey( { pathname: '/shop/', search: '?brands=ray-ban' } );
+		expect( anchorKey( { pathname: '/shop/', search: '?sgs_batches=3&brands=ray-ban&paged=2' } ) ).toBe( plain );
+		expect( anchorKey( { pathname: '/shop/', search: '?sgs_batches=2' } ) ).toBe( 'sgs-lm:/shop/?' );
+	} );
 	it( 'round-trips once, then clears', () => {
 		const storage = fakeStorage();
 		rememberAnchor( storage, 'k', 71, 120.6 );
