@@ -32,6 +32,9 @@ require_once __DIR__ . '/class-configurator-meta.php';
 require_once __DIR__ . '/class-sgs-configurator-compat.php';
 require_once __DIR__ . '/class-product-authoring-security.php';
 require_once __DIR__ . '/configurator-seed.php';
+require_once __DIR__ . '/configurator-picks/functions.php';
+require_once __DIR__ . '/configurator-picks/class-configurator-groups.php';
+require_once __DIR__ . '/configurator-picks/preflight.php';
 
 /**
  * Class Product_Preflight
@@ -516,6 +519,11 @@ final class Product_Preflight {
 				}
 			}
 		}
+
+		// ── Check 8: "Pick a set" setup (pick-several groups and the pack number) ─────
+		$checked[]   = 'pick_groups';
+		$pick_groups = Configurator_Groups::for_product( $product_id );
+		$issues      = \array_merge( $issues, sgs_picks_preflight_issues( $pick_groups, Configurator_Groups::pack( $product_id, $pick_groups ) ) );
 
 		return self::result( $issues, $checked );
 	}
