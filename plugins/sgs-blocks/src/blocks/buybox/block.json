@@ -829,7 +829,6 @@
 					}
 				},
 				"rrp-price": {
-					"text": true,
 					"selector": ".buybox__rrp-price",
 					"label": "Struck RRP price",
 					"order": 17,
