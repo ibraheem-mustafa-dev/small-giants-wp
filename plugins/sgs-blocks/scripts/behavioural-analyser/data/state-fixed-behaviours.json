@@ -2809,7 +2809,7 @@
   {
    "file": "theme/sgs-theme/assets/css/shop-load-more.css",
    "selector": ".sgs-shop-load-more__button:hover",
-   "reason": "the Load more button brightens on hover (filter brightness 1.1); its colours follow the shop Filter button tokens, no own setting"
+   "reason": "the Load more button takes the primary button preset's hover colours (--wp--custom--button-presets--primary--hover-*), no own setting"
   },
   {
    "file": "theme/sgs-theme/assets/css/shop-load-more.css",

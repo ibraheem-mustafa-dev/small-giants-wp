@@ -33,11 +33,13 @@
 	font-size: var(--wp--custom--button-presets--primary--font-size, 0.9375rem);
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
 	cursor: pointer;
-	transition: filter 0.15s ease, opacity 0.15s ease;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
 .sgs-shop-load-more__button:hover {
-	filter: brightness(1.1);
+	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #E68A95)));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #E68A95)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fffaf5)));
 }
 
 .sgs-shop-load-more__button:disabled {
