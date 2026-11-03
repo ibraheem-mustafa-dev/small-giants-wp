@@ -84,16 +84,13 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 			}
 		}
 		$box = array();
-		foreach (
-			array(
-				'pickerBoxBackgroundColour' => 'background-color',
-				'pickerBoxBorderColour'     => 'border-color',
-			) as $attr => $prop
-		) {
-			$value = sgs_colour_value( (string) ( $attributes[ $attr ] ?? '' ) );
-			if ( '' !== $value ) {
-				$box[] = $prop . ':' . $value;
-			}
+		$box_fill   = sgs_colour_value( (string) ( $attributes['pickerBoxBackgroundColour'] ?? '' ) );
+		$box_border = sgs_colour_value( (string) ( $attributes['pickerBoxBorderColour'] ?? '' ) );
+		if ( '' !== $box_fill ) {
+			$box[] = 'background-color:' . $box_fill;
+		}
+		if ( '' !== $box_border ) {
+			$box[] = 'border-color:' . $box_border;
 		}
 		$width  = sgs_css_length_value( (string) ( $attributes['pickerBoxBorderWidth'] ?? '' ) );
 		$radius = sgs_css_length_value( (string) ( $attributes['pickerBoxRadius'] ?? '' ) );
