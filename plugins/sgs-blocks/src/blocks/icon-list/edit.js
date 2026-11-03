@@ -383,6 +383,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemPaddingBlock,
 		textColour,
 		gap,
+		itemGap,
 		borderWidth,
 		borderColour,
 		borderColourGradient,
@@ -545,8 +546,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// the link instead, which paints nothing and so has no canvas twin.
 	const linkFillsRow =
 		!! itemPaddingBlock && [ 'icon', 'emoji' ].includes( markerType || 'icon' );
+	// The narrowest tier with a value wins, falling outwards, as the front end's media queries do.
+	const itemGapValue = [ previewTier, 'tablet', 'desktop' ]
+		.slice( 'mobile' === previewTier ? 0 : 'tablet' === previewTier ? 1 : 2 )
+		.map( ( t ) => ( itemGap || {} )[ t ] )
+		.find( ( v ) => 'string' === typeof v && '' !== v );
 	const itemStyle = {
 		...elementPreview.item,
+		...( itemGapValue ? { gap: gapVar( itemGapValue ) } : {} ),
 		...( itemPaddingBlock ? { paddingBlock: itemPaddingBlock } : {} ),
 	};
 
@@ -1190,6 +1197,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						value={ gap }
 						onChange={ ( val ) => setAttributes( { gap: val } ) }
 					/>
+					<ResponsiveOverride
+						value={ itemGap }
+						onChange={ ( obj ) => setAttributes( { itemGap: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsLengthControl
+								presets
+								label={ __( 'Icon to text gap', 'sgs-blocks' ) }
+								value={
+									'string' === typeof ownValue ? ownValue : ''
+								}
+								onChange={ ( val ) => setOwnValue( val ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<SgsSeparatorControl
 						label={ __( 'Lines between items', 'sgs-blocks' ) }
 						value={ separators }

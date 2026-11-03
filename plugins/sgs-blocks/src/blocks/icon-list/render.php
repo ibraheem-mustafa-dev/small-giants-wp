@@ -581,6 +581,22 @@ if ( $mobile_decls ) {
 	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_decls ) . ';}}';
 }
 
+// --- Icon-to-text gap on each item row, per device: a spacing preset slug or a
+// custom length per tier. The root's own `gap` is the space BETWEEN items. ---
+$item_gap_tiers = sgs_responsive_normalise_object( $attributes['itemGap'] ?? null );
+foreach ( array(
+	'desktop' => '',
+	'tablet'  => '@media(max-width:1023px)',
+	'mobile'  => '@media(max-width:767px)',
+) as $item_gap_tier => $item_gap_media ) {
+	$item_gap_val = sgs_css_length_value( $item_gap_tiers[ $item_gap_tier ] ?? '' );
+	if ( '' === $item_gap_val ) {
+		continue;
+	}
+	$item_gap_rule = "{$item_row_sel}{gap:{$item_gap_val};}";
+	$scoped_css[]  = '' === $item_gap_media ? $item_gap_rule : $item_gap_media . '{' . $item_gap_rule . '}';
+}
+
 // ---------------------------------------------------------------------------
 // 6. Build the root element's classes + attributes.
 //
