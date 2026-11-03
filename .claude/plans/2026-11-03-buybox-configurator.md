@@ -1,6 +1,6 @@
 # Buybox configurator: a universal "Pick a set" mode for `sgs/buybox` (Mama's batch item B8)
 
-Status: design, council-revised 2026-11-03. Replaces the earlier "third choice-flow layout" plan. Research: `.claude/plans/2026-11-03-buybox-configurator-research.md`. Home spec: Spec 27, new group FR-27-PS (Pick-a-set); Spec 43 FR-43-7 is re-pointed to it.
+Status: built (`f9490d358`) and live on mamas-test 2026-11-03; four items open ("Status and open after the live check"). Replaces the earlier "third choice-flow layout" plan. Research: `.claude/plans/2026-11-03-buybox-configurator-research.md`. Home spec: Spec 27, new group FR-27-PS (Pick-a-set); Spec 43 FR-43-7 is re-pointed to it.
 
 ## In plain English
 
@@ -94,7 +94,7 @@ Status: design, council-revised 2026-11-03. Replaces the earlier "third choice-f
 ## 10. Relationship to other blocks
 
 - `sgs/choice-flow` keeps branching, quizzes, add-on price lists and its own `answersMin` / `answersMax` (FR-43-27). Importing `parseLimits` must leave the lens flow unchanged (proven in commit 0).
-- Flow 161 is unlinked from Home and Product and set to draft once both pass on the mirror; it stays as a fixture.
+- Flow 161 is unlinked from Home and Product, set to draft and dropped from the page map (2026-11-03); it stays as a fixture.
 - `sgs/product-card`: no.
 
 ## 11. Worked examples
@@ -121,6 +121,16 @@ Status: design, council-revised 2026-11-03. Replaces the earlier "third choice-f
 - **Tests, red before green:** PHP `ConfiguratorPicksTest` (fourth pick rejected, unknown slug, variation attribute, product without flags, least unmet on the Store API route, total not equal pack, tampered client row replaced, error text with a hostile slug is escaped, same variation with different picks gives two lines, cart-load re-validation); Jest for `applyPick` (order survives, returns removed), summary (7·7·6, single-pick, unknown token, more picks than pack), per-unit pence (£1.19 each, zero pack hidden). Negative controls: Phase 0 snapshots stay byte-identical; a lens flow unchanged; a product without flags refuses picks.
 - **Spec:** confirm FR-27-PS1 to PS5 in Spec 27 (flags and panel, distribution and summary, layout and preview, cart and validation, accessibility); add roster and status-table rows and Status lines; re-point FR-43-7's paragraph and its summary-table row; the `buyboxLayout` enum change is reseeded with `/sgs-update` (`block_attributes`). Then both gate tiers via `build-deploy.py`, `audit-inline-styling.js --check`, `check-md-wrap.py`.
 - **Done when, on the Mama's mirror:** compare computed `background-color`, `border`, `border-radius`, `font-size`, `padding`, `gap` of the pack tiles, flavour tiles, preview box, summary and Add button against the draft at 375, 768 and 1440 (FP-11); axe clean on Home and Product at default, three flavours picked, an error shown, and 375 with the sticky bar; the Store API cart line carries Pack size, Base and Chip as variation attributes plus a "Flavour" row, with different picks giving two lines; an order email and the admin order screen read with the row shown; a 375 check that the sticky bar covers neither the live region nor the keyboard; keyboard-only completion; the no-JS form adds; the Phase 0 snapshots stay byte-identical; pack terms edited to 2 and 4 change the page with no code. Bean's eye co-signs (FP-13).
+
+## Status and open after the live check (2026-11-03)
+
+- Built, on main (`f9490d358`), deployed to mamas-test, set up on local-mamas and pushed: Home (page 154, buy box `cr-ref-home-41b`, pinned to product 257, gallery hidden) and the Product template (wp_template 202, `cr-ref-product-18`). Live-checked at 375/768/1440: every group at once; Vanilla pre-selected; a 4th flavour swaps the oldest with the announcement and Undo; "Your 20: 7 Vanilla · 7 Mango · 6 Strawberry"; the right variation and the server-built Flavour text in the cart; two lines for different picks; the 375 sticky bar; keyboard-only; the no-JS form; content audit 0 HIGH. Flavour pills, preview box, summary, Add button, page box and pack tiles match the draft's computed styles.
+- Open, in order:
+  1. Flavour option order is alphabetical: `includes/configurator-picks/class-configurator-groups.php::terms` reads `wc_get_product_terms`, which returns this attribute's terms alphabetically, so `sgs_picks_order_terms` has nothing to reorder; sort by the term's `order_pa_*` meta (WooCommerce's custom ordering) or the product's own option order. `configurator-data.php` already writes `order_pa_flavour` in the draft's order.
+  2. Base and chip pills (priced groups) take the pack tiles' `pickTile*` and `pickSelected*` settings; the draft gives them pill looks (radius 999px, padding 0 18px 0 12px, gap 8px, 16px text). Give priced groups their own pill style settings.
+  3. Pack tile text: the draft splits number 26px, price 14px, each-line 12px; `pickerPillFontSize` scales one label (9.9px live).
+  4. Accessibility: axe colour-contrast (serious) on the selected pack tile's small label (yellow fill); fix with the label colour or size, re-run axe at 375 and 1440.
+- The main-photo frame (ground, border, radius, shadow) is the Eye Care session's Round 6 change to `sgs/buybox`, shared with Mama's.
 
 ## Parked (named)
 

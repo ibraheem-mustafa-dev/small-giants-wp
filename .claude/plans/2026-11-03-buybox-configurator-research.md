@@ -1,5 +1,7 @@
 # Buybox configurator research (2026-11-03)
 
+Dated research record (2026-11-03). Outcome: the buy box Pick a set configurator, Spec 27 FR-27-PS1 to PS5 and `.claude/plans/2026-11-03-buybox-configurator.md`.
+
 Scope: a universal "build a box / pick N" extension of `sgs/buybox`. Read-only research. Evidence strength is flagged per row: "doc" means a vendor or platform document was returned by search; "secondhand" means a news, retailer or forum snippet; "not verified" means the search did not surface the page and the row is a design inference, not a finding.
 
 ## Gaps in the evidence (read first)

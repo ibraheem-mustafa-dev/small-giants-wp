@@ -1,14 +1,26 @@
 ---
 doc_type: plan
-title: Mama's framework batch: string-in-box detector, four small fixes, a spin-and-pulse loop effect, an accordion filter and a show-every-question choice-flow layout
-status: proposed
+title: Mama's framework batch: string-in-box detector, four small fixes, an accordion filter and per-product card content
+status: built (2026-11-03); B5's flip and B11's tilt list open
 created: 2026-11-03
-governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md section B (B2, B4, B5, B8) plus the small fixes below
+governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md section B (B4, B5, B10, B11) plus the small fixes below; B8 moved to plans/2026-11-03-buybox-configurator.md
 ---
 
 # Mama's framework batch
 
 **Why (Bean, 2026-11-03):** gaps no existing setting can express, built after Round 4 ("rounds first"). Same ruling as `.claude/plans/2026-11-02-footer-framework-batch.md`: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), no client name in code, every other site renders as today. B6 and B7 run in their own rounds. Which Mama's pages each item serves: B5 every page; B2 Home (and shop, gifts, contact where the sparkle sits); B4 Help; B8 Home (the Zookie builder) and Product; small fixes the header, drawer and footer.
+
+## Status (2026-11-03, end of session)
+
+| Item | State |
+|---|---|
+| B5 box-string rule | built, on main, deployed; report-only. Flip to refusing (`BOX_STRING_ENFORCED`) once each site's live sweep is done: local-mamas swept and pushed; local-indus patched by the Indus session; eye-care-test surveyed by the Eye Care session in its Round 5. |
+| Small fixes | built, on main, deployed (cart pill name R1-20, icon brand slug colour, nav-drawer `chromeRowBorder`, nav-drawer-menu badge tones and opacity). |
+| B2 | closed: Custom CSS on Home's ✦ (below). |
+| B4 accordion filter | built, on main, deployed (Spec 02 FR-2-15); on for Help (page 152). |
+| B8 | replaced by the buy box configurator (below). |
+| B10 fluid font sizes | done by the Eye Care session (`84b58c55f`); stale `wp_global_styles` fluid objects set false on every test site; Mama's body text measured 16px at 375, 768 and 1440. |
+| B11 per-product card content | built, on main, deployed (Spec 27 FR-27-K1 to K6); on for Shop, Gifts and the related row. Open: the per-item tilt list inside a product template (FR-27-K6, `includes/motion/class-sgs-motion-rotation.php::nth_rules`), and soft thumbnails where a card's stored URL is the 300px size (the image-size swap misses it). |
 
 ## Read first (builder)
 
@@ -59,25 +71,9 @@ Sanctioned diffs, not byte-identical: the cart pill name and the icon background
 
 **Commits.** One per item (four), each with its test and the live count.
 
-## B2: a loop effect that rotates and scales, aimed at a part of a block (Home, and every page with the sparkle)
+## B2: closed (Bean 2026-11-03: Custom CSS, not a framework effect)
 
-**Findings.** `svg-loop` already loops `scale` and `rotate` on a part, but only the named `pulse` and `wave` motions with an amplitude (`src/shared/effects/fx-svg-loop.js::readSvgLoop`), only on `x-part-kinds: ["svg"]`, and it runs through `@sgs/loop-control` with a pause button labelled for graphics. The rotate and scale channels are composed from owner custom properties (`x-sgs-channels` formulas: rotate sums `--sgs-svl-rot` with the rest, entrance and hover owners; scale multiplies `--sgs-svl-s` with its siblings; `--sgs-sp-x` and `--sgs-sp-y` are already the scale-pointer owners, so `--sgs-sp-*` is taken).
-
-**Decision: a new effect `spin-pulse`, not an extension of `svg-loop`.** Reason: widening `svg-loop` to text would break its svg-only part-kind contract, its `pulse`/`wave` vocabulary and its graphic wording, and would change a shipped schema every saved graphic depends on; a new effect leaves it untouched. `spin-pulse` adds its own unique owner properties `--sgs-spp-rot` (`<angle>`, initial `0deg`) and `--sgs-spp-s` (`<number>`, initial `1`), registered as `@property` (`class-sgs-motion-effect-properties.php`, `assets/css/motion.css`) and added to the rotate sum and the scale product in `x-sgs-channels` (owner `spin-pulse`, channels `rotate` and `scale`). The keyframes animate only those two owner properties; the `rotate` and `scale` properties are never animated directly, so entrance, hover and other loops compose. Prefix uniqueness: `grep -rn "sgs-spp-" plugins/sgs-blocks` returns nothing today (builder re-checks).
-
-**Schema.** `x-sgs-effects["spin-pulse"]`: `label` "Spin and pulse", `panels ["effects"]`, `x-target-level ["block","part"]`, `x-part-kinds ["text","svg","image"]` if the part-kind vocabulary admits `text` (builder reads `x-part-kinds` uses; if `text` is not a kind it is added in this change with its registrations), `values $defs/SpinPulseValues`, `devices $defs/SpinPulseDeviceSet`. Fields (each with `x-sgs-field`, per device, default shown): `turn` (`<angle>` degrees, default 180, -720 to 720, data attr `data-sgs-fx-spin-pulse-turn`), `grow` (number, default 1.35, 0.5 to 3), `period` (duration ms, default 2400, 500 to 60000), `easing` (enum `ease-in-out|ease|linear|ease-out`, default `ease-in-out`). The keyframes are 0% rot 0 scale 1, 50% rot turn/2 scale grow, 100% rot turn scale 1. Plain-English controls: "Turn by (degrees)", "Grow to (× size)", "One cycle (seconds)" (a seconds control stored in ms), "Easing".
-
-**Registrations (every one, none skipped).** `scripts/seed_motion_fx_data.py` (effect row, fields), `scripts/seed-motion-fx-registry.py` if it lists effects, `scripts/lib/motion_spec_pins.py` (pins for the new effect, channels and owner properties), `includes/motion/class-sgs-motion-limits.php` (the numeric ranges), `includes/motion/class-sgs-motion-effect-properties.php` (the two `@property` definitions), `includes/motion/class-sgs-motion-fx-emitter.php` and `class-sgs-motion-fx-grammar.php` (emit tokens and custom properties), `class-sgs-motion-keyframes.php` (`@keyframes`), motion presets (`generate-motion-presets-json.py`, `validate-motion-presets.mjs`) only if an effects preset list names effects, and the generated editor defs (`node plugins/sgs-blocks/scripts/run-motion-fx-generators.js`, which runs `generate-motion-editor-defs.py`).
-
-**CSS-only versus the loop asset (decision).** CSS-only: a looping `animation` on the owner properties inside `@media (prefers-reduced-motion: no-preference)` in `assets/css/motion.css`, with an explicit `animation:none` under `reduce`. Reason: the loop-asset path (`Sgs_Motion_Loop_Assets`, `@sgs/loop-control`) exists to give a pause button, off-screen pause and focus pause to loops that move content; this loop is decorative, tiny and ends nowhere, and Bean's standing rule (memory: autoplay-pause-button-off-by-default) is a pause option on sliders and marquees, not on a glyph. The effect still honours the Motion panel's per-device off switch through `data-sgs-fx-off-<tier>`. If the builder finds the registry requires a JS module for every effect, the module is a no-op boot that only reads the off switch (`bootGated`).
-
-**A named part inside text: the inline format.** `Sgs_Motion_Targets::parts` and `::part_class` resolve only `supports.sgs.elements` keys and `custom:<n>`; no inline marker exists. Add a rich-text format `sgs/motion-part`, UI name "Animate this word", in `src/blocks/extensions/inline-formats/index.js` (registered beside `sgs/highlight`, popover in `popovers.js`): it wraps the selection in `<span class="sgs-motion-part" data-sgs-part="<slug>">`, the popover asks for a name (default `accent`). Works on a single glyph at the start of a heading (the draft's `data-twinkle` span is exactly this) because the format wraps any selection, including a lone first character. Offered by `sgs/heading` and `sgs/text` through the shared lists in `src/utils/rich-text-formats.js` (the survey `scripts/survey-rich-text-formats.js --check` must stay green). Name sanitiser: lower-case, `[a-z0-9-]` only, 1 to 32 characters, applied in the editor on input and again in PHP (`includes/helpers-inline-formats.php`) where the span's attributes are filtered: the `kses` allow-list admits only `span` with `class` limited to `sgs-motion-part` plus existing SGS classes and `data-sgs-part` matching `^[a-z0-9-]{1,32}$`, anything else is stripped. Resolver: `Sgs_Motion_Targets::resolve` gains a case for target `text:<slug>` (before the `parts` lookup) returning `shape( $root . ' [data-sgs-part="<slug>"]', false, array(), null )` with the slug re-sanitised; the Motion panel's target dropdown (`class-sgs-motion-field-types.php` and the panel's target list in `src/blocks/extensions/motion`) offers every distinct `data-sgs-part` name found in the block's rich-text attributes as "Word: <name>" for blocks that allow the format. Only the declared blocks (`sgs/heading`, `sgs/text`) list it. The span is made `display:inline-block` only when it is a target: `[data-sgs-fx~="spin-pulse"] [data-sgs-part]{display:inline-block}` is wrong for a block-level target, so the rule is printed per target selector by the emitter (`class-sgs-motion-fx-emitter.php`).
-
-**Tests.** Red before: PHP test that a block with `spin-pulse` targeted at `text:accent` emits the token, the custom properties and the selector (fails today: unknown effect). Schema test: `turn: 9999` refused; `check-motion-schema.py` green. Injection test: a part name `"><script>` or `a b` is sanitised to nothing or `a-b` and never reaches the selector or markup; `kses` strips a `data-sgs-part` that fails the pattern. Conflict test: `spin-pulse` and `ambient-float` on the same part both run (translate from float, rotate and scale from spin; computed `transform` composes both). Reduced-motion tests: with `reduce` emulated, `getAnimations()` on the part is empty and rotate and scale rest at identity; positive control: with `no-preference` the animation runs. Negative controls: every existing motion fixture, `svg-loop` and `ambient-float` blocks render byte-identical; `run-motion-gates.py` is run before commit and nothing is baselined.
-
-**Done when (live, local mirror then canary).** A heading with its first glyph marked "Animate this word" and the effect targeted at it: sampled through `el.getAnimations()` and `currentTime` set to 0, 1200 and 2400 ms, scale and rotate read from the computed owner properties or the composed `rotate`/`scale`: at 0 scale 1 and rotate 0; at 1200 scale 1.35 plus or minus 0.03 and rotate 90 plus or minus 5 degrees; at 2400 scale 1 and rotate 180. The rest of the heading does not move. Emulated reduced motion shows no animation. `python plugins/sgs-blocks/scripts/run-motion-gates.py` passes, and `--motion-qa-tier full` on the canary before release.
-
-**Commits.** (1) schema, seeders, pins, limits, properties, generated defs, schema and pins tests. (2) emitter, keyframes, CSS, reduced-motion and conflict tests. (3) inline format, kses, sanitiser, resolver, dropdown, injection test. (4) Spec 38A FR and Spec 02 FR-2-6 (next free number after FR-2-5, builder confirms), `lint-spec-drift.py`.
+- The draft's only twinkle is animation A-02 on Home's greeting ✦ (`sites/mamas-munches-redesign/handoff/animations.json`). Home's ✦ is its own `sgs/text` block (`cr-ref-home-3`) carrying the twinkle as Custom CSS (`loopa02`). Nothing to build.
 
 ## B4: filter an accordion by category chips and a search box (Help)
 
@@ -101,56 +97,9 @@ Sanctioned diffs, not byte-identical: the cart pill name and the icon background
 
 **Commits.** (1) `filter-text.js` extraction and the `filter-search` negative control. (2) attributes, manifest elements, render, escaping, tests. (3) `filter.js`, `filter.css`, editor panel, canvas. (4) spec FR and `lint-spec-drift.py`.
 
-## B8: a third `sgs/choice-flow` layout, every question at once (Home Zookie builder, Product)
+## B8: replaced by the buy box Pick a set configurator (Bean 2026-11-03)
 
-**Layout branches today (every `flowLayout`/`$is_showcase` use, and what `all-at-once` does).** `render.php::$layout` collapses any value other than `'showcase'` to `'compact'` (`isset(...) && 'showcase' === ... ? 'showcase' : 'compact'`): replace with a three-way allow-list `in_array( $v, array('compact','showcase','all-at-once'), true ) ? $v : 'compact'`, and `$is_showcase` stays `'showcase' === $layout`. `$chrome_attrs` header forcing: unchanged (showcase only). `max_width` and the three padding blocks guarded by `! $is_showcase`: unchanged (the compact box rules apply to `all-at-once`, which is an inline layout). The root class `sgs-choice-flow--layout-<layout>` carries the new value. `$render_stage = $show_price_panel || $is_showcase` and the two `if ( $is_showcase )` stage blocks: `all-at-once` renders the stage through the existing price panel path (`$show_price_panel`), forced on in this layout; no showcase header or full-screen behaviour. `includes/choice-flow-showcase.php` (showcase-only CSS and data): unchanged; `all-at-once` adds `includes/choice-flow-all.php::sgs_choice_flow_all_css`. `edit.js` (`hasHeader`), `ChromePreview.js` (`showcase` branches), `preview-style.js` (`'showcase' !== flowLayout` early return), `FlowLayoutPanel.js`: unchanged for showcase; the third value selects the all-at-once canvas (every question stacked, summary beside). The builder greps `flowLayout|is_showcase` once more across `src/` and `includes/` and lists any further hit here. Byte-identical tests: compact and showcase output for Eye Care's lens-flow fixture, a Mama's flow fixture and the Indus flow (uid suffix normalised).
-
-### B8a: layout, validation and the branching notice
-
-- **Attribute.** `flowLayout` enum `["compact","showcase","all-at-once"]`, default `"compact"`.
-- **Step reads, every one enumerated, and what each does when every step is visible.** `flow-steps.js::showStepByIndex` (hides every other step) is not called; `flow-reached.js::markStepReached` is called for every step at init so `isStepReached` is true and the summary lists every answered line; `flow-steps.js::updateContinueState`, Continue, Back and `flow-progress.js` are skipped and their elements not printed; `flow-routing.js::commitStepRouting` and `::stepIndexAfter` do not route (branching off, below) but still record answers through `recordOptionAnswer`; `pricing.js::recordAddonAnswer` keeps `stepIndex` from the DOM position so `getAddonSummary` still sorts lines in page order; `flow-multi.js` is layout-independent (limits are per question); `flow-fields.js::collectFlowFields` collects every visible step's fields; the PHP summary `includes/choice-flow-summary.php` lists lines in step order with no reached filter in this layout; `flow-persistence.js` stores answers as today. Server proof: a test that a cart row built from an all-at-once submission validates exactly as the same answers submitted from a compact flow (same rows, same price).
-- **Validation.** Extend `add-to-bag.js` (the shared footer-button implementation that calls `flow-fields.js::validateTerminalFields`) with `validateAllQuestions( flowRoot )`, called first only when `data-flow-layout="all-at-once"`: each required question must meet `answersMin` (`flow-multi.js::meetsLeast`). On failure: `aria-invalid="true"` on the question's option group element (`role="radiogroup"` or `role="group"`, never the heading), focus moves to that group's first option, and "Please choose an option for: <question>" is written to the existing step live region used by `flow-a11y.js::announceStep` (same node, same clear-then-set pattern as `flow-multi.js::toggleMultiOption`). `aria-invalid` clears on the next pick.
-- **Branching disabled.** `nextStepId` routes and `showNextStepInline` (FR-43-26) are ignored in this layout; `FlowLayoutPanel.js` shows "Branching is not used in this layout" and disables those controls; a saved route survives a switch back to compact.
-- **Tests.** Red before: JS test that with `data-flow-layout="all-at-once"` no step is hidden after init (fails today); Add to bag with an unanswered question focuses it, sets `aria-invalid` on the group and announces. PHP test: the three-way allow-list (`flowLayout: "bogus"` renders compact); the server equivalence test above. Negative controls: compact and showcase byte-identical as listed.
-- **Commits.** (1) allow-list, root class, byte-identical tests. (2) view and validation. (3) editor panel, notice, canvas twin, Spec 43 FR-43-28.
-
-### B8b: swatch, quantity and the overflow setting
-
-There is no `sgs/choice-flow-option` block and no `includes/choice-flow-pricing*.php`: an option is an item of the `options` array in `src/blocks/choice-flow-question/block.json`, printed by `src/blocks/choice-flow-question/render.php`.
-- **Swatch.** Option item field `swatch` string, default `""` (hex or palette slug resolved by `includes/choice-flow-colour.php`). Reconciled with `includes/choice-flow-chrome.php::sgs_choice_flow_term_swatch_image` (a term's swatch IMAGE for product-attribute steps) by precedence, not a second channel: an image (own `image`, else the term swatch image) wins and prints as today; `swatch` prints only when there is no image. `render.php` prints `<span class="sgs-choice-flow__swatch" aria-hidden="true">` as the first child of the option button, painted by the generated per-instance rule (a custom property per option from `sgs_choice_flow_colour_rules_css`), no inline style. One-off colours are hex. Every layout.
-- **Quantity.** Option item field `quantity` number, default empty (non-numeric is dropped on save in `render.php`), used only by stage line templates.
-- **On a pick past the limit (Bean).** `sgs/choice-flow-question` `answersOverflow`: enum `refuse|replace-oldest`, default `refuse`, shown only when `answersMax` is above 1 (beside "Answers to pick", `AnswersPanel.js`), emitted as `data-answers-overflow` only when not `refuse`. In `flow-multi.js::toggleMultiOption`: `refuse` is today's path unchanged; `replace-oldest` drops the earliest chosen option (selection order tracked on the wrapper), selects the new one and writes "Swapped <old> for <new>" to the existing polite live region (same clear-then-set pattern); Continue gating at `answersMin` is unchanged. Spec: FR-43-27 gains the setting. Test: default refuses as today (negative control); `answersMax` 3 with picks A, B, C then D gives B, C, D and the announcement.
-- **Tests.** Red before: `swatch` prints a dot when no image, none when an image exists, none when empty; `quantity` non-numeric dropped. Negative control: every existing option renders byte-identical.
-- **Commits.** (1) swatch and quantity with tests. (2) `answersOverflow`. (3) editor controls and Spec 43 FR-43-29.
-
-### B8c: stage lines from a template (the split line)
-
-- **Attribute.** `sgs/choice-flow` `stageLineTemplates`: array, default `[]`, not per device. Item `{ questionId: string, packQuestionId: string, templateOne: string, templateMany: string }` (block.json `items` schema with those four string properties, all `role: text-content`). Two templates cover one pick ("All {pack} {picks}" prints "All 20 strawberry") and several ("Your {pack}: {split}" prints "Your 20: 10 strawberry · 10 mango"). Only the tokens `{pack}`, `{split}` and `{picks}` are substituted; any other brace text is printed literally; the result is `esc_html` in PHP and `textContent` in JS.
-- **Tokens.** `{pack}`: the chosen pack option's `quantity`. `{picks}`: the chosen labels, lower-cased as written, joined with " · ". `{split}`: shares `floor(pack / n)` with the remainder added one each to the earliest picks in the order chosen, so the shares sum to the pack, each shown "<share> <label>" joined with " · ".
-
-| Inputs | Output |
-|---|---|
-| pack 20, picks strawberry and mango | `templateMany`: "Your 20: 10 strawberry · 10 mango" |
-| pack 20, picks A, B, C | shares 7, 7, 6 |
-| pack 20, one pick | `templateOne` with `{pack}` 20 |
-| pack not chosen or `quantity` empty | line hidden |
-| `quantity` non-numeric or below 1 | line hidden |
-| zero picks | line hidden |
-| picks more than pack | line hidden |
-
-- **Code.** Computed in `src/blocks/choice-flow/summary-lines.js` (display only, never touches price or the FR-43-21 cart row) and mirrored for the server-rendered summary in `includes/choice-flow-summary.php`; a JS/PHP parity test runs the table through both and compares strings. Editor: SummaryPanel "Stage lines" repeater (question, pack question, one pick text, several picks text, each with help listing the three tokens).
-- **Tests.** Red before: the table (no such line exists today). Negative control: `stageLineTemplates: []` prints no line and every existing summary is byte-identical.
-- **Commits.** (1) JS and PHP computation with parity test. (2) attribute, render, editor. (3) Spec 43 FR-43-30.
-
-### B8d: exact pack prices once other choices are made (optional; cut first if time is short, ships last)
-
-- **Attribute.** `showLivePackPrices` boolean, default `false`.
-- **Code.** Wraps `pricing.js::refreshPricePanel` (the existing resolver of base plus add-ons): a new exported `priceForOption( flowRoot, optionEl )` evaluates the same resolver with that option substituted for the current answer in its question, one code path, no second price logic. The result fills the option's existing price slot; where the resolver lacks the inputs (an unanswered question that changes the price, a variation not yet resolved, no coverage for the combination) the chip keeps its "from £x" text and never shows a guessed price. Display only: the cart price is the server's (FR-43-18).
-- **Tests.** Red before: with all other answers set, a pack chip shows the exact price; negative control: flag off leaves "from £x" untouched, and a combination with missing coverage keeps "from £x".
-- **Commits.** (1) `priceForOption` and test. (2) flag, render and editor control. (3) Spec 43 FR-43-31.
-- Spec 43's highest FR today is FR-43-27 (checked with `grep -o "FR-43-[0-9]*"`), so new FRs run FR-43-28 to FR-43-31; the subscribe plan stays out (needs WooCommerce Subscriptions).
-
-**Done when (B8, live, local mirror).** A flow set to the new layout: every question visible in page order at 375 and 1440, the stage beside at 1440 and below at 375; two flavours and a 20-pack print "Your 20: 10 strawberry · 10 mango"; the swatch dot shows per flavour; with `replace-oldest` and a limit of 3 a fourth pick swaps the oldest and announces it; Add to bag with a question missing focuses its group and announces, with everything answered it adds one cart line with the FR-43-21 row and the server price; the same flow set back to compact is unchanged.
+- Bean judged the one-page Zookie builder a product-card-like buy box with more function, not a choice-flow layout. Design, council, decisions and status: `.claude/plans/2026-11-03-buybox-configurator.md`; spec Spec 27 FR-27-PS1 to PS5. The 4th flavour pick replacing the oldest (Bean) is the product flag "If they pick one too many: Swap out the oldest pick".
 
 ## B10: extracted snapshots made every font size fluid (done by the Eye Care session)
 
@@ -186,7 +135,7 @@ There is no `sgs/choice-flow-option` block and no `includes/choice-flow-pricing*
 
 ## Shared: ship order, commits, reseed, gates, proof
 
-**Ship order and numbered commits (FP-5, three or more per phase).** B5 (1 to 4 above), small fixes (4 commits), B2 (4), B4 (4), B8a (3), B8b (3), B8c (3), B8d (3). Straight to `main`, explicit pathspecs, `git branch --show-current` in the commit command, push after each phase.
+**Ship order (as shipped 2026-11-03).** B5 (4 commits), small fixes (4), B4 (4), B11 (5), then the gate fixes up to `c05f8b456`; one reseed and the mamas-test deploy. The configurator shipped separately (its own plan).
 
 **Reseed checklist (new attributes and a schema change).** Serialise with other sessions (the DB is shared). In a clean worktree of the pushed commit, never this dirty tree (memory: reseed-the-shared-db-from-head): (1) `python plugins/sgs-blocks/scripts/sgs-update-v2.py` (it rebuilds `block_attributes` including `tier_shape`, and the `roles` rows); (2) `python plugins/sgs-blocks/scripts/dbschema/seed_reference_data.py` if reference tables changed; (3) `python plugins/sgs-blocks/scripts/generate-attr-role-map.py`; (4) `python plugins/sgs-blocks/scripts/seed_motion_fx_data.py` and `run-motion-fx-generators.js` (motion defs), then `lib/motion_spec_pins.py` pins re-checked; (5) `/sgs-update` for the per-block references; (6) verify with `sgs-db.py sql` that each new attribute row exists with the intended `tier_shape` and role. **Mid-batch gates before the reseed:** gates that read only source (`audit-inline-styling.js`, `check-md-wrap.py`, PHP and JS unit tests, `check-motion-schema.py`) run on every commit; gates that read the DB (`check-wiring-fingerprint.py`, `check-dead-controls.js`, `find-scalar-tier-attrs.py --check`, `check-tier-storage-shape.py`) run after the reseed of that phase's commit; never push new attributes before both gate tiers pass (memory: run-both-gate-tiers-before-pushing-new-attributes).
 
@@ -198,6 +147,4 @@ There is no `sgs/choice-flow-option` block and no `includes/choice-flow-pricing*
 
 ## Open questions for Bean
 
-1. **Pack quantity and flavour split rounding (B8c).** What it is: 20 across three flavours cannot split evenly. Option A (recommended): whole numbers, the remainder given one each to the earliest picks ("7 · 7 · 6"), always adding up to the pack. Option B: wording such as "about a third each". Option C: no numbers, just the list. Recommendation: A, because "Your 20" must add up.
-2. **Live pack prices (B8d).** What it is: showing each pack's exact price once the other choices are made, instead of "from £9.50". It is extra code on a price path, so it ships last and can be dropped. Option A (recommended): build it after B8a to B8c, behind a setting off by default. Option B: drop it and keep "from £x". Recommendation: A, only if Round 4 still needs it.
-3. **Refusal switch-on for the string-in-box check (B5).** What it is: once every site is swept, the deploy starts refusing this mistake. Option A (recommended): refuse, with the kill switch documented. Option B: report only. Recommendation: A, since a report nobody reads is how six pages went wrong.
+None open. B5's switch to refusing is Next in the streams plan, Mama's section.
