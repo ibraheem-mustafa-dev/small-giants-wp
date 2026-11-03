@@ -3516,6 +3516,11 @@
 			"default": {},
 			"description": "Space above the buttons row, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's spacing-30 (1rem). Applies when the row is not sticky; a sticky row uses its own padding setting."
 		},
+		"statusRowMarginBottom": {
+			"type": "string",
+			"default": "",
+			"description": "Space below the counter row (the step counter and saved-progress notice). Empty = the stylesheet's 1rem."
+		},
 		"actionsNoteFirstStepOnly": {
 			"type": "boolean",
 			"default": true,

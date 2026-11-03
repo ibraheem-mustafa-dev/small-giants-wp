@@ -688,6 +688,10 @@ if ( is_array( $sgs_actions_space ) && array() !== $sgs_actions_space ) {
 		)
 	);
 }
+$sgs_status_margin = sgs_css_single_length_value( $attributes['statusRowMarginBottom'] ?? '' );
+if ( '' !== $sgs_status_margin ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__status-row{margin-bottom:' . $sgs_status_margin . ';}';
+}
 $sgs_field_css .= sgs_flex_wrap_css( $attributes, '.' . $sgs_form_uid, array( 'statusRowWrap' => '.sgs-form__status-row' ) );
 
 // Icon on the step buttons: its size and the gap to the label. Printed only when an icon is set.

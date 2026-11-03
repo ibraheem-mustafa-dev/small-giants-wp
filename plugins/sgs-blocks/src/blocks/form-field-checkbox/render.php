@@ -109,6 +109,14 @@ if ( 'card' === ( $attributes['optionPresentation'] ?? 'plain' ) ) {
 	}
 }
 
+// optionRowMinHeight: the option row's minimum height; the stylesheet's 44px touch-target floor applies until a clone sets the draft's size.
+$sgs_cb_min = sgs_css_single_length_value( (string) ( $attributes['optionRowMinHeight'] ?? '' ) );
+if ( '' !== $sgs_cb_min ) {
+	$sgs_cb_min_uid = 'sgs-cbmh-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_cb_class  .= ( '' === $sgs_cb_class ? '' : ' ' ) . $sgs_cb_min_uid;
+	echo '<style>' . wp_strip_all_tags( '.' . $sgs_cb_min_uid . ' .sgs-form-field__option{min-height:' . $sgs_cb_min . ';}' ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a sanitised length.
+}
+
 echo field_open( $attributes, 'checkbox', $sgs_cb_class );
 
 echo '<fieldset class="sgs-form-field__group">';

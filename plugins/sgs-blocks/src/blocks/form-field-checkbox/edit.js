@@ -242,6 +242,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					label={ __( 'Option rows', 'sgs-blocks' ) }
 					resetAll={ () =>
 						setAttributes( {
+							optionRowMinHeight: '',
 							optionPresentation: 'plain',
 							rowBackground: '',
 							rowBorderWidth: {},
@@ -256,6 +257,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						} )
 					}
 				>
+					<ToolsPanelItem
+						label={ __( 'Row minimum height', 'sgs-blocks' ) }
+						hasValue={ () => !! attributes.optionRowMinHeight }
+						onDeselect={ () => setAttributes( { optionRowMinHeight: '' } ) }
+					>
+						<SgsLengthControl
+							presets={ false }
+							label={ __( 'Row minimum height', 'sgs-blocks' ) }
+							help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
+							value={ attributes.optionRowMinHeight ?? '' }
+							onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
+						/>
+					</ToolsPanelItem>
 					<ToolsPanelItem
 						label={ __( 'Option presentation', 'sgs-blocks' ) }
 						hasValue={ () => 'card' === attributes.optionPresentation }

@@ -43,6 +43,8 @@
 .sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside .sgs-form-field__label {
 	top: 1.25rem;
 	left: 1rem;
+	/* The textarea's positioned .sgs-form-field__control wrapper follows the label in the DOM and would paint over it. */
+	z-index: 1;
 }
 
 .sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--textarea .sgs-form-field__label {

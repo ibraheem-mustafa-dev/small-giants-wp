@@ -35,7 +35,7 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
@@ -62,6 +62,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
 				actionsTopPadding: undefined,
+				statusRowMarginBottom: undefined,
 				progressTrackHeight: undefined,
 				progressFill: undefined,
 				stepCompletedIcon: undefined,
@@ -130,7 +131,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 					) }
 				</>
 			), true ) }
-			{ stepCounter && item( __( 'Counter row wrap and gap', 'sgs-blocks' ), [ 'statusRowWrap', 'statusRowGap' ], (
+			{ stepCounter && item( __( 'Counter row wrap and gap', 'sgs-blocks' ), [ 'statusRowWrap', 'statusRowGap', 'statusRowMarginBottom' ], (
 				<>
 					<FlexWrapControl
 						label={ __( 'Wrap the counter row', 'sgs-blocks' ) }
@@ -154,6 +155,14 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Counter row space below', 'sgs-blocks' ) }
+						help={ __( 'Space under the counter row. Empty keeps 1rem.', 'sgs-blocks' ) }
+						value={ statusRowMarginBottom ?? '' }
+						placeholder="1rem"
+						onChange={ ( val ) => setAttributes( { statusRowMarginBottom: val || undefined } ) }
+					/>
 				</>
 			), true ) }
 			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsTopPadding' ], (

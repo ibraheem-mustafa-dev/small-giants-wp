@@ -26,6 +26,10 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.5rem;
+}
+
+/* Zero specificity so statusRowMarginBottom (scoped rule) wins. */
+:where(.sgs-form__status-row) {
 	margin: 0 0 1rem;
 }
 

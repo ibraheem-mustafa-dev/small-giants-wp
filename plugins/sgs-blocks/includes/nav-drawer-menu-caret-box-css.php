@@ -62,7 +62,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 			)
 		);
 		$glyph_open = sgs_colour_value( (string) ( $attributes['caretColourOpen'] ?? '' ) );
-		$glyph_css  = '' !== $glyph_open ? $open . '{color:' . $glyph_open . ';}' : '';
+		// The item-colour rule paints the caret's svg directly (nav-menu-css.php::$caret_svg_sel), so the open colour must reach the svg too.
+		$glyph_css  = '' !== $glyph_open ? $open . ',' . $open . ' svg{color:' . $glyph_open . ';}' : '';
 		$size      = is_array( $attributes['caretBoxSize'] ?? null ) ? $attributes['caretBoxSize'] : array();
 		$has_size  = '' !== (string) sgs_resolve_tier( $size, 'desktop', '' )['value']
 			|| '' !== (string) sgs_resolve_tier( $size, 'tablet', '' )['value']

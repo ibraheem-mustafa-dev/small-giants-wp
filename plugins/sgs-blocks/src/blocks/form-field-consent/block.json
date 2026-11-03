@@ -60,6 +60,11 @@
 			"default": "",
 			"role": "content"
 		},
+		"optionRowMinHeight": {
+		    "type": "string",
+		    "default": "",
+		    "description": "Minimum height of the option row (the tap area). Empty keeps the stylesheet's 44px touch-target minimum."
+		},
 		"required": {
 			"type": "boolean",
 			"default": false

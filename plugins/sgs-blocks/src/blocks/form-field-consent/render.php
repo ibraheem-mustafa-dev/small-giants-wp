@@ -25,7 +25,16 @@ $text        = $attributes['consentText'] ?? '';
 $sub_name    = field_submission_name( $fid, $attributes + array( 'label' => 'consent' ) );
 $is_required = in_array( $type, array( 'terms', 'gdpr' ), true ) || ( $attributes['required'] ?? false );
 
-echo field_open( $attributes, 'consent' );
+// optionRowMinHeight: the consent row's minimum height; the stylesheet's 44px touch-target floor applies until a clone sets the draft's size.
+$sgs_cn_min   = sgs_css_single_length_value( (string) ( $attributes['optionRowMinHeight'] ?? '' ) );
+$sgs_cn_class = '';
+if ( '' !== $sgs_cn_min ) {
+	$sgs_cn_uid   = 'sgs-cnmh-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_cn_class = $sgs_cn_uid;
+	echo '<style>' . wp_strip_all_tags( '.' . $sgs_cn_uid . ' .sgs-form-field__consent{min-height:' . $sgs_cn_min . ';}' ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a sanitised length.
+}
+
+echo field_open( $attributes, 'consent', $sgs_cn_class );
 
 echo '<label class="sgs-form-field__consent" for="' . esc_attr( $fid ) . '">';
 echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $sub_name ) . '" value="yes"';

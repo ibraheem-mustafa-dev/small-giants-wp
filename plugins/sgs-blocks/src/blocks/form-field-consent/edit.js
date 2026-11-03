@@ -6,6 +6,7 @@ import {
 	TextareaControl,
 	SelectControl,
 } from '@wordpress/components';
+import { SgsLengthControl } from '../../components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses } from '../../components/form-field-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
@@ -101,6 +102,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { width: val } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
+					/>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Row minimum height', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
+						value={ attributes.optionRowMinHeight ?? '' }
+						onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
 					/>
 				</PanelBody>
 				<FormFieldAdvancedPanel
