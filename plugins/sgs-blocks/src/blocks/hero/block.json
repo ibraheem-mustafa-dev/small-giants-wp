@@ -1112,8 +1112,8 @@
 			"default": false
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"padding": {
 			"type": "object",

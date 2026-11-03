@@ -82,7 +82,9 @@
                         "name": "sgs/container",
                         "attributes": {
                             "layout": "grid",
-                            "alignItems": "center",
+                            "alignItems": {
+                                "desktop": "center"
+                            },
                             "backgroundColour": "mm-yellow",
                             "contentWidth": {
                                 "desktop": "full"
@@ -108,7 +110,9 @@
                                 "name": "sgs/container",
                                 "attributes": {
                                     "layout": "flex",
-                                    "alignItems": "center",
+                                    "alignItems": {
+                                        "desktop": "center"
+                                    },
                                     "justifyContent": "center",
                                     "gap": {
                                         "desktop": "10px"
@@ -274,7 +278,9 @@
                 "attributes": {
                     "rowSlot": "middle",
                     "layout": "grid",
-                    "alignItems": "center",
+                    "alignItems": {
+                        "desktop": "center"
+                    },
                     "contentWidth": {
                         "desktop": "1240px"
                     },
@@ -432,7 +438,9 @@
                         "name": "sgs/container",
                         "attributes": {
                             "layout": "flex",
-                            "alignItems": "center",
+                            "alignItems": {
+                                "desktop": "center"
+                            },
                             "justifyContent": "flex-end",
                             "gap": {
                                 "desktop": "6px",

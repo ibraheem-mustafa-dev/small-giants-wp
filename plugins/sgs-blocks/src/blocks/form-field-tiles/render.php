@@ -210,12 +210,12 @@ if ( $border['mobile'] ) {
 $sgs_ft_supports_css .= implode( '', $border['rules'] );
 
 // ── Tile text: the label and the description line each take their typography and colour from the panel. ──
-$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_ft_uid . ' .sgs-form-tile__label' );
+$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_ft_uid . ' .sgs-form-tile__label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_ft_label_colour  = sgs_colour_value( (string) ( $attributes['tileLabelColour'] ?? '' ) );
 if ( '' !== $sgs_ft_label_colour ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__label{color:' . $sgs_ft_label_colour . ';}';
 }
-$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileDescription', '.' . $sgs_ft_uid . ' .sgs-form-tile__description' );
+$sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileDescription', '.' . $sgs_ft_uid . ' .sgs-form-tile__description', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_ft_description_colour = sgs_colour_value( (string) ( $attributes['tileDescriptionColour'] ?? '' ) );
 if ( '' !== $sgs_ft_description_colour ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__description{color:' . $sgs_ft_description_colour . ';}';

@@ -57,7 +57,9 @@
                 "tablet": "63.86px",
                 "desktop": "497px"
               },
-              "alignItems": "end",
+              "alignItems": {
+                "desktop": "end"
+              },
               "maxWidth": {
                 "desktop": "1240px"
               },
@@ -495,7 +497,9 @@
                       "gap": {
                         "desktop": "8px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "margin": {
                         "desktop": {
                           "top": "6px"
@@ -844,7 +848,9 @@
                 "tablet": "minmax(0, 1.4fr) minmax(0, 1fr)",
                 "desktop": "minmax(0, 1.6fr) minmax(0, 1fr)"
               },
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "margin": {
                 "desktop": {
                   "top": "20px"

@@ -48,7 +48,9 @@
               "className": "sgs-shop-toolbar cr-ref-shop-3",
               "layout": "flex",
               "justifyContent": "space-between",
-              "alignItems": "flex-end",
+              "alignItems": {
+                "desktop": "flex-end"
+              },
               "flexWrap": "wrap",
               "gap": {
                 "desktop": "16px"
@@ -127,7 +129,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "12px"
                   },

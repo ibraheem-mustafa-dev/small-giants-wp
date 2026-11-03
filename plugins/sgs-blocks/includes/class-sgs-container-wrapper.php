@@ -642,7 +642,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// default was the cause of unequal product/gift cards + the brand button
 			// not stretching full-width. Blast-radius verified: on page 8 every
 			// container relying on the old `start` default wants `stretch`.
-			$vertical_align = $attributes['alignItems'] ?? '';
+			// alignItems is a `{desktop, tablet, mobile}` object. Desktop is printed with the layout declarations below (byte for
+			// byte as the scalar was); tablet and mobile print as overrides at the grid/flex element further down.
+			$sgs_align_tiers = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
+			$vertical_align  = is_string( $sgs_align_tiers['desktop'] ?? null ) ? $sgs_align_tiers['desktop'] : '';
+			$sgs_text_align_set = is_array( $attributes['textAlign'] ?? null ) && array() !== $attributes['textAlign'];
 
 			// CSS-length sanitiser for min-height (inline + injected <style> contexts).
 			// Strips everything except digits, dot, %, and unit letters so a value can
@@ -1863,20 +1867,6 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// faithfully-transferred template is a cheat, and this was the last one.
 
 			// ----------------------------------------------------------------
-			// Native content-alignment (typography.textAlign support). WP core does
-			// NOT reliably merge has-text-align-* into get_block_wrapper_attributes()
-			// for this dynamic composite wrapper (verified live on WP 7.0 — the class
-			// was absent), so emit it explicitly. This lands the cloned band's
-			// text-align (folded to the textAlign attr by the converter) — it cascades
-			// to the container's content and a child block that sets its own alignment
-			// still overrides it. Universal: every container-equivalent that declares
-			// supports.typography.textAlign.
-			$text_align = $attributes['textAlign'] ?? '';
-			if ( in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
-				$classes[] = 'has-text-align-' . $text_align;
-			}
-
-			// ----------------------------------------------------------------
 			// First call to get_block_wrapper_attributes() — before shapes/uid.
 			// This mirrors the original render.php ~line 398 first-pass call.
 			// ----------------------------------------------------------------
@@ -2306,7 +2296,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// always a `.$uid`-scoped rule, so a block that opts in must always mint
 				// a uid, even when it has no OTHER reason to (a minimal split-media hero
 				// with no background/overlay/shape-divider would otherwise never get one).
-				|| $hover_spill_scale;
+				|| $hover_spill_scale
+				// The block's own per-breakpoint text alignment is a `.$uid` rule.
+				|| $sgs_text_align_set;
 
 			$uid = '';
 			if ( $needs_uid ) {
@@ -2324,6 +2316,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// guaranteed set here whenever $styles is non-empty (see $needs_uid above).
 			if ( ! empty( $styles ) && $uid ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $styles ) . ';}';
+			}
+
+			// Text alignment per breakpoint on the block's own root: it cascades to the content, and a child block that sets its
+			// own alignment still overrides it. Also sets `--sgs-text-justify` for flex rows inside (a notice message).
+			if ( $uid && $sgs_text_align_set ) {
+				$responsive_css .= sgs_text_align_tier_css( '.' . $uid, $attributes['textAlign'], array( 'container' => $container_queries ) );
 			}
 
 			// Hover-spill-scale capability (2026-09-10, Bean-directed) — universal,
@@ -2586,6 +2584,28 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// built above.
 			if ( $base_grid_real_decls && $uid ) {
 				$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
+			}
+
+			// Cross-axis alignment at tablet and mobile (the desktop value is already in the declarations above). An empty tier
+			// inherits the one above, and a tier that equals its parent prints nothing.
+			if ( $uid && ( $is_section || $is_layout ) && ( isset( $sgs_align_tiers['tablet'] ) || isset( $sgs_align_tiers['mobile'] ) ) ) {
+				$responsive_css .= sgs_emit_responsive_css(
+					$grid_sel,
+					array(
+						array(
+							'value'     => array(
+								'desktop' => $vertical_align,
+								'tablet'  => $sgs_align_tiers['tablet'] ?? null,
+								'mobile'  => $sgs_align_tiers['mobile'] ?? null,
+							),
+							'css'       => 'align-items',
+							'transform' => static function ( $raw ) {
+								return ( is_string( $raw ) && 1 === preg_match( '/^[a-z]+(?:-[a-z]+)*(?: [a-z]+(?:-[a-z]+)*)?$/', $raw ) ) ? $raw : '';
+							},
+						),
+					),
+					array( 'container' => $container_queries )
+				);
 			}
 
 			// No-inline contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01) —

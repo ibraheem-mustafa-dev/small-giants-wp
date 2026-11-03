@@ -872,8 +872,8 @@
       "default": ""
     },
     "alignItems": {
-      "type": "string",
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "borderWidth": {
       "type": "object",
@@ -1148,15 +1148,8 @@
       "default": "em"
     },
     "glyphInitialTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "glyphInitialTextWrap": {
       "type": "string",
@@ -1253,15 +1246,8 @@
       "default": "em"
     },
     "badgeTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "badgeTextWrap": {
       "type": "string",

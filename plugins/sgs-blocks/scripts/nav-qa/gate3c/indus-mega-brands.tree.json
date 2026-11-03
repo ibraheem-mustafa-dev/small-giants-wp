@@ -127,7 +127,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -160,7 +162,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -193,7 +197,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -226,7 +232,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -259,7 +267,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -292,7 +302,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -325,7 +337,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -358,7 +372,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -391,7 +407,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -424,7 +442,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "justifyContent": "center",
                   "gap": {
                     "desktop": "8px"
@@ -502,7 +522,9 @@
                 }
               },
               "justifyContent": "flex-start",
-              "alignItems": "flex-start"
+              "alignItems": {
+                "desktop": "flex-start"
+              }
             },
             "innerBlocks": [
               {
@@ -572,7 +594,9 @@
                 }
               },
               "justifyContent": "flex-start",
-              "alignItems": "flex-start",
+              "alignItems": {
+                "desktop": "flex-start"
+              },
               "margin": {
                 "desktop": {
                   "top": "18px"

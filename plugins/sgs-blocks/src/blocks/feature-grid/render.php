@@ -92,9 +92,9 @@ if ( '' === $gap_mobile_css ) {
 	$gap_mobile_css = '16px';
 }
 
-$align_items   = isset( $attributes['alignItems'] ) && in_array( $attributes['alignItems'], array( 'stretch', 'start', 'center', 'end' ), true )
-	? $attributes['alignItems']
-	: 'stretch';
+$align_tiers   = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
+$align_allowed = array( 'stretch', 'start', 'center', 'end' );
+$align_items   = in_array( $align_tiers['desktop'] ?? null, $align_allowed, true ) ? $align_tiers['desktop'] : 'stretch';
 $justify_items = isset( $attributes['justifyItems'] ) && in_array( $attributes['justifyItems'], array( 'stretch', 'start', 'center', 'end' ), true )
 	? $attributes['justifyItems']
 	: 'stretch';
@@ -142,7 +142,6 @@ if ( $use_auto_flex ) {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax({$min_item_css['desktop']}, 1fr));
 	gap: $gap_css;
-	align-items: $align_items;
 	justify-items: $justify_items;
 }";
 	if ( '' !== $min_item_css['tablet'] && $min_item_css['tablet'] !== $min_item_css['desktop'] ) {
@@ -182,7 +181,6 @@ if ( $use_auto_flex ) {
 	display: grid;
 	grid-template-columns: repeat($columns_desktop, 1fr);
 	gap: $gap_css;
-	align-items: $align_items;
 	justify-items: $justify_items;
 }
 @media (max-width: 1023px) {
@@ -309,6 +307,24 @@ if ( $border['tablet'] ) {
 if ( $border['mobile'] ) {
 	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
+
+// Cross-axis alignment per breakpoint: the desktop tier always prints (default stretch), tablet and mobile only where they differ.
+$css .= sgs_emit_responsive_css(
+	".$uid.sgs-feature-grid",
+	array(
+		array(
+			'value'     => array(
+				'desktop' => $align_items,
+				'tablet'  => $align_tiers['tablet'] ?? null,
+				'mobile'  => $align_tiers['mobile'] ?? null,
+			),
+			'css'       => 'align-items',
+			'transform' => static function ( $raw ) use ( $align_allowed ) {
+				return ( is_string( $raw ) && in_array( $raw, $align_allowed, true ) ) ? $raw : '';
+			},
+		),
+	)
+);
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $css built from pre-sanitised values only (grid engine literals + wp_style_engine_get_styles()).

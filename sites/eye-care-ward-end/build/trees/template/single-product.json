@@ -149,7 +149,9 @@
           "gap": {
             "tablet": "28px"
           },
-          "alignItems": "start",
+          "alignItems": {
+            "desktop": "start"
+          },
           "minHeight": {
             "mobile": "0px"
           },
@@ -515,7 +517,9 @@
               "gap": {
                 "desktop": "10px"
               },
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -575,7 +579,9 @@
               "gap": {
                 "desktop": "14px"
               },
-              "alignItems": "baseline",
+              "alignItems": {
+                "desktop": "baseline"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -672,7 +678,9 @@
               "gap": {
                 "desktop": "9px"
               },
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -1115,14 +1123,18 @@
                 "desktop": 0.12
               },
               "textTransform": "uppercase",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "textColour": "primary-text",
               "backgroundColour": "primary",
               "gap": {
                 "desktop": "12px"
               },
               "justifyContent": "space-between",
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "minHeight": {
                 "desktop": "56px"
               },
@@ -1194,7 +1206,9 @@
                 "desktop": 0.12
               },
               "textTransform": "uppercase",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "backgroundColour": "surface-alt",
               "borderWidth": {
                 "right": "1px",
@@ -1207,7 +1221,9 @@
                 "desktop": "12px"
               },
               "justifyContent": "space-between",
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "minHeight": {
                 "desktop": "56px"
               },
@@ -1279,7 +1295,9 @@
                 "mobile": "10px",
                 "desktop": "21.62px"
               },
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "margin": {
                 "desktop": {
                   "top": "4px"
@@ -1373,7 +1391,9 @@
               "gap": {
                 "desktop": "14px"
               },
-              "alignItems": "flex-start",
+              "alignItems": {
+                "desktop": "flex-start"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -1454,7 +1474,9 @@
               "gap": {
                 "desktop": "14px"
               },
-              "alignItems": "flex-start",
+              "alignItems": {
+                "desktop": "flex-start"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -1535,7 +1557,9 @@
               "gap": {
                 "desktop": "14px"
               },
-              "alignItems": "flex-start",
+              "alignItems": {
+                "desktop": "flex-start"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -1942,7 +1966,9 @@
                         "desktop": "16px"
                       },
                       "justifyContent": "space-between",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "minHeight": {
                         "desktop": "56px"
                       },
@@ -2023,7 +2049,9 @@
                         "desktop": "16px"
                       },
                       "justifyContent": "space-between",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "minHeight": {
                         "desktop": "56px"
                       },
@@ -2104,7 +2132,9 @@
                         "desktop": "16px"
                       },
                       "justifyContent": "space-between",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "minHeight": {
                         "desktop": "56px"
                       },
@@ -2185,7 +2215,9 @@
                         "desktop": "16px"
                       },
                       "justifyContent": "space-between",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "minHeight": {
                         "desktop": "56px"
                       },
@@ -2270,7 +2302,9 @@
                 "desktop": "16px"
               },
               "justifyContent": "space-between",
-              "alignItems": "flex-end",
+              "alignItems": {
+                "desktop": "flex-end"
+              },
               "flexWrap": "wrap",
               "textColourHover": "primary"
             },
@@ -2556,7 +2590,9 @@
                                   "layout": "flex",
                                   "className": "cr-ref-product-111",
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -2601,7 +2637,9 @@
                                   "gap": {
                                     "desktop": "8px"
                                   },
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -2647,7 +2685,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "textColourHover": "primary",
                                   "padding": {
                                     "desktop": {
@@ -2665,7 +2705,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },
@@ -3191,7 +3233,9 @@
                                   "layout": "flex",
                                   "className": "cr-ref-product-134",
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -3236,7 +3280,9 @@
                                   "gap": {
                                     "desktop": "8px"
                                   },
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -3282,7 +3328,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "margin": {
                                     "mobile": {
                                       "top": "20px"
@@ -3308,7 +3356,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },
@@ -3666,10 +3716,14 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-154",
-                                  "textAlign": "center",
+                                  "textAlign": {
+                                    "desktop": "center"
+                                  },
                                   "textColour": "custom-text-faint",
                                   "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "textColourHover": "custom-text-faint",
                                   "padding": {
                                     "desktop": {
@@ -3830,7 +3884,9 @@
                                   "layout": "flex",
                                   "className": "cr-ref-product-160",
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -3875,7 +3931,9 @@
                                   "gap": {
                                     "desktop": "8px"
                                   },
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -3921,7 +3979,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "margin": {
                                     "tablet": {
                                       "top": "0px"
@@ -3950,7 +4010,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },
@@ -4250,10 +4312,14 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-177",
-                                  "textAlign": "center",
+                                  "textAlign": {
+                                    "desktop": "center"
+                                  },
                                   "textColour": "custom-text-faint",
                                   "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "textColourHover": "custom-text-faint",
                                   "padding": {
                                     "desktop": {
@@ -4414,7 +4480,9 @@
                                   "layout": "flex",
                                   "className": "cr-ref-product-183",
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -4456,7 +4524,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-185",
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -4488,7 +4558,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "margin": {
                                     "mobile": {
                                       "top": "27.5px"
@@ -4520,7 +4592,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },
@@ -4767,10 +4841,14 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-198",
-                                  "textAlign": "center",
+                                  "textAlign": {
+                                    "desktop": "center"
+                                  },
                                   "textColour": "custom-text-faint",
                                   "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "textColourHover": "custom-text-faint",
                                   "padding": {
                                     "desktop": {
@@ -4934,7 +5012,9 @@
                                     "desktop": "10px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -5012,7 +5092,9 @@
                                   "gap": {
                                     "desktop": "8px"
                                   },
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -5058,7 +5140,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "textColourHover": "primary",
                                   "padding": {
                                     "desktop": {
@@ -5076,7 +5160,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },
@@ -5376,10 +5462,14 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-222",
-                                  "textAlign": "center",
+                                  "textAlign": {
+                                    "desktop": "center"
+                                  },
                                   "textColour": "custom-text-faint",
                                   "justifyContent": "center",
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "textColourHover": "custom-text-faint",
                                   "padding": {
                                     "desktop": {
@@ -5540,7 +5630,9 @@
                                   "layout": "flex",
                                   "className": "cr-ref-product-228",
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-start",
+                                  "alignItems": {
+                                    "desktop": "flex-start"
+                                  },
                                   "textColourHover": "primary"
                                 },
                                 "innerBlocks": [
@@ -5585,7 +5677,9 @@
                                   "gap": {
                                     "desktop": "8px"
                                   },
-                                  "alignItems": "center",
+                                  "alignItems": {
+                                    "desktop": "center"
+                                  },
                                   "minHeight": {
                                     "desktop": "18px"
                                   },
@@ -5631,7 +5725,9 @@
                                     "desktop": "12px"
                                   },
                                   "justifyContent": "space-between",
-                                  "alignItems": "flex-end",
+                                  "alignItems": {
+                                    "desktop": "flex-end"
+                                  },
                                   "margin": {
                                     "mobile": {
                                       "top": "20px"
@@ -5660,7 +5756,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary"
                                     },

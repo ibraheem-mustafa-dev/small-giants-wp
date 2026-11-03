@@ -108,7 +108,9 @@
           "backgroundColour": "transparent",
           "layout": "flex",
           "flexDirection": "row",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "gap": {
             "desktop": "10px"
           },

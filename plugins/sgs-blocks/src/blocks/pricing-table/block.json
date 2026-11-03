@@ -640,8 +640,8 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gap": {
 			"type": "object",
@@ -807,15 +807,8 @@
 			"default": "em"
 		},
 		"titleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"titleTextWrap": {
 			"type": "string",
@@ -917,15 +910,8 @@
 			"default": "em"
 		},
 		"priceTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"priceTextWrap": {
 			"type": "string",
@@ -1027,15 +1013,8 @@
 			"default": "em"
 		},
 		"ctaTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"ctaTextWrap": {
 			"type": "string",
@@ -1137,15 +1116,8 @@
 			"default": "em"
 		},
 		"featureTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"featureTextWrap": {
 			"type": "string",

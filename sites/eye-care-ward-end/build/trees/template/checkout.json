@@ -62,7 +62,9 @@
           "gap": {
             "desktop": "48px"
           },
-          "alignItems": "start",
+          "alignItems": {
+            "desktop": "start"
+          },
           "textColourHover": "primary"
         },
         "innerBlocks": [
@@ -346,7 +348,9 @@
                       "gap": {
                         "desktop": "12px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "margin": {
                         "desktop": {
                           "bottom": "16px"
@@ -532,7 +536,9 @@
                       "gap": {
                         "desktop": "12px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "margin": {
                         "desktop": {
                           "bottom": "16px"
@@ -893,7 +899,9 @@
                       "gap": {
                         "desktop": "12px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "margin": {
                         "desktop": {
                           "bottom": "16px"
@@ -976,7 +984,9 @@
                         "desktop": 0.12
                       },
                       "textTransform": "uppercase",
-                      "textAlign": "center",
+                      "textAlign": {
+                        "desktop": "center"
+                      },
                       "textColour": "primary-text",
                       "backgroundColour": "primary",
                       "gap": {
@@ -985,7 +995,9 @@
                         "desktop": "515.8px"
                       },
                       "justifyContent": "space-between",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "minHeight": {
                         "desktop": "56px"
                       },

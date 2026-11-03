@@ -319,7 +319,9 @@
         "attributes": {
           "layout": "flex",
           "justifyContent": "space-between",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "flexWrap": "wrap",
           "gap": {
             "desktop": "16px"
@@ -584,7 +586,9 @@
         "attributes": {
           "layout": "flex",
           "justifyContent": "space-between",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "flexWrap": "wrap",
           "gap": {
             "desktop": "20px"
@@ -636,7 +640,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "baseline",
+                  "alignItems": {
+                    "desktop": "baseline"
+                  },
                   "flexWrap": "wrap",
                   "gap": {
                     "desktop": "4px"

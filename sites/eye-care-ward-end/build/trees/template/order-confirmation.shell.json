@@ -5,7 +5,9 @@
       "attributes": {
         "tagName": "main",
         "className": "cr-ref-template-order-confirmation-0",
-        "textAlign": "center",
+        "textAlign": {
+          "desktop": "center"
+        },
         "minHeight": {
           "desktop": "0px"
         },

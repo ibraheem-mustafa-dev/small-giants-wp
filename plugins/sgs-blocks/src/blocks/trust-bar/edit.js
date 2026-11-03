@@ -613,7 +613,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				// applyGridLayoutPreview()'s grid branch (src/utils/grid-layout-preview.js)
 				// so behaviour still matches class-sgs-container-wrapper.php exactly.
 				...( gridAutoRows ? { gridAutoRows } : {} ),
-				alignItems,
+				alignItems: resolveResponsiveTier( alignItems, previewTier )?.value || undefined,
 				...( justifyItems && justifyItems !== 'stretch' ? { justifyItems } : {} ),
 				...( alignContent && alignContent !== 'stretch' ? { alignContent } : {} ),
 			} : {} ),

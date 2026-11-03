@@ -65,7 +65,9 @@
         "attributes": {
           "rowSlot": "middle",
           "justifyContent": "space-between",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "padding": {
             "desktop": {
               "top": "0",

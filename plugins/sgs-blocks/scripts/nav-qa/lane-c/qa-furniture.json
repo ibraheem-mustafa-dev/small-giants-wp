@@ -8,7 +8,7 @@
 				"attributes": {
 					"rowSlot": "bar",
 					"justifyContent": "space-between",
-					"alignItems": "center"
+					"alignItems": {"desktop":"center"}
 				},
 				"innerBlocks": [
 					{
@@ -243,7 +243,7 @@
 		"attributes": {
 			"tagName": "footer",
 			"justifyContent": "space-between",
-			"alignItems": "center"
+			"alignItems": {"desktop":"center"}
 		},
 		"innerBlocks": [
 			{

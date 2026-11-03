@@ -352,7 +352,7 @@
 							"layout": "flex",
 							"flexDirection": "row",
 							"flexWrap": "nowrap",
-							"alignItems": "baseline",
+							"alignItems": {"desktop":"baseline"},
 							"gap": {
 								"desktop": "9px"
 							},

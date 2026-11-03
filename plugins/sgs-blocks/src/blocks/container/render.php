@@ -241,20 +241,7 @@ if ( $sgs_container_border['base'] || $sgs_container_border['hover'] || $sgs_con
 	}
 }
 
-// ── Text align — allows inheritance when empty, so child blocks can pick up
-// this value and override per-instance. Emitted only when set (non-empty).
-$sgs_container_text_align_raw      = $attributes['textAlign'] ?? '';
-$sgs_container_allowed_text_aligns = array( '', 'left', 'center', 'right', 'justify' );
-$sgs_container_text_align          = in_array( $sgs_container_text_align_raw, $sgs_container_allowed_text_aligns, true ) ? $sgs_container_text_align_raw : '';
-
-if ( '' !== $sgs_container_text_align ) {
-	if ( empty( $sgs_container_supports_uid ) ) {
-		$sgs_container_supports_uid       = 'sgs-cst-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-		$sgs_container_supports_classes[] = $sgs_container_supports_uid;
-	}
-	$sgs_container_text_align_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
-	$sgs_container_supports_css  .= $sgs_container_text_align_sel . '{text-align:' . esc_attr( $sgs_container_text_align ) . ';}';
-}
+// Text alignment per breakpoint is emitted by SGS_Container_Wrapper (a `.$uid` rule on the root).
 
 // ⛔ REMOVED 2026-08-20 (base-background-colour build, this session): the
 // $attributes['backgroundColor'] / ['textColor'] / ['gradient'] reads that used

@@ -45,7 +45,9 @@
             "desktop": "16px"
           },
           "justifyContent": "space-between",
-          "alignItems": "flex-end",
+          "alignItems": {
+            "desktop": "flex-end"
+          },
           "minHeight": {
             "mobile": "0px"
           },
@@ -130,7 +132,9 @@
               "gap": {
                 "desktop": "10px"
               },
-              "alignItems": "center",
+              "alignItems": {
+                "desktop": "center"
+              },
               "flexWrap": "wrap",
               "textColourHover": "primary"
             },
@@ -219,7 +223,9 @@
           "gap": {
             "desktop": "40px"
           },
-          "alignItems": "start",
+          "alignItems": {
+            "desktop": "start"
+          },
           "textColourHover": "primary",
           "padding": {
             "desktop": {

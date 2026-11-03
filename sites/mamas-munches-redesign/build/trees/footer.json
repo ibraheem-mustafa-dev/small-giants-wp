@@ -18,7 +18,9 @@
                     "rowSlot": "top",
                     "layout": "flex",
                     "flexDirection": "column",
-                    "alignItems": "stretch",
+                    "alignItems": {
+                        "desktop": "stretch"
+                    },
                     "contentWidth": {
                         "desktop": "full"
                     },
@@ -85,7 +87,9 @@
                                         "desktop": "full"
                                     },
                                     "flexWrap": "wrap",
-                                    "alignItems": "flex-end",
+                                    "alignItems": {
+                                        "desktop": "flex-end"
+                                    },
                                     "justifyContent": "space-between",
                                     "gap": {
                                         "desktop": "12px 24px"
@@ -434,7 +438,9 @@
                             "shadowLiftOnHover": false,
                             "layout": "flex",
                             "flexWrap": "nowrap",
-                            "alignItems": "center",
+                            "alignItems": {
+                                "desktop": "center"
+                            },
                             "gap": {
                                 "desktop": "28px"
                             },
@@ -538,7 +544,9 @@
                                     "contentWidth": {
                                         "desktop": "full"
                                     },
-                                    "alignItems": "center",
+                                    "alignItems": {
+                                        "desktop": "center"
+                                    },
                                     "gridTemplateColumns": {
                                         "desktop": "1fr 190px",
                                         "tablet": "1fr 150px",
@@ -769,7 +777,9 @@
                             "left": "20px"
                         }
                     },
-                    "alignItems": "start",
+                    "alignItems": {
+                        "desktop": "start"
+                    },
                     "borderStyle": "none"
                 },
                 "innerBlocks": [
@@ -1212,8 +1222,12 @@
                             "contentWidth": {
                                 "desktop": "full"
                             },
-                            "alignItems": "center",
-                            "textAlign": "center",
+                            "alignItems": {
+                                "desktop": "center"
+                            },
+                            "textAlign": {
+                                "desktop": "center"
+                            },
                             "fontSize": {
                                 "desktop": 14
                             },

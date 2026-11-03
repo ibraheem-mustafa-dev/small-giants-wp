@@ -553,8 +553,8 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"dragToScroll": {
 			"type": "boolean",

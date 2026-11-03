@@ -47,15 +47,15 @@ final class GalleryGridWrapperTest extends TestCase {
 					'mobile'  => '1fr',
 				),
 				'gridAutoRows'        => '200px',
-				'alignItems'          => 'center',
+				'alignItems'          => array( 'desktop' => 'center' ),
 				'justifyItems'        => 'start',
 			)
 		);
 		$grid = '/\.sgs-gallery-[0-9a-f]+\.wp-block-sgs-gallery \.sgs-gallery__grid\{';
 
-		$this->assertMatchesRegularExpression( $grid . 'grid-template-columns:2fr 1fr;\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( $grid . 'grid-template-columns:2fr 1fr;align-items:center;\}/', $out['css'], 'cross-axis alignment prints through the per-breakpoint emitter, with the other tiered grid settings' );
 		$this->assertMatchesRegularExpression( '/max-width:767px\)\{\.sgs-gallery-[0-9a-f]+\.wp-block-sgs-gallery \.sgs-gallery__grid\{grid-template-columns:1fr;\}/', $out['css'] );
-		$this->assertMatchesRegularExpression( $grid . 'grid-auto-rows:200px;align-items:center;justify-items:start\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( $grid . 'grid-auto-rows:200px;justify-items:start\}/', $out['css'] );
 		$this->assertDoesNotMatchRegularExpression( self::WRAPPER_GRID, $out['css'] );
 	}
 

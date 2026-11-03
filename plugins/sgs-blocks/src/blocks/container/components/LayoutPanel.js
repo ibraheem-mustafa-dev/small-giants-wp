@@ -17,6 +17,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import {
+	AlignItemsTierControl,
 	ColumnShapePicker,
 	ResponsiveOverride,
 	SgsGapControl,
@@ -119,7 +120,7 @@ export function LayoutPanel( {
 		// non-empty fallback here would make the control display a layout the
 		// block does not actually have, on every caller that leaves it unset.
 		layout = '',
-		alignItems = 'start',
+		alignItems,
 		justifyItems = 'stretch',
 		alignContent = 'stretch',
 		// columns, gridTemplateColumns, gridTemplateRows and minColumnWidth are
@@ -235,13 +236,10 @@ export function LayoutPanel( {
 			{ ( layout === 'flex' ||
 				layout === 'stack' ||
 				layout === 'grid' ) && (
-				<SelectControl
-					label={ __( 'Align items', 'sgs-blocks' ) }
+				<AlignItemsTierControl
 					value={ alignItems }
 					options={ ALIGN_OPTIONS }
-					onChange={ ( val ) => setAttributes( { alignItems: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
 				/>
 			) }
 

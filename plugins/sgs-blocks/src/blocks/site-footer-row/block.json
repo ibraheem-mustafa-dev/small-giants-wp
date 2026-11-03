@@ -204,8 +204,10 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": "top"
+			"type": "object",
+			"default": {
+				"desktop": "top"
+			}
 		},
 		"gap": {
 			"type": "object",

@@ -110,7 +110,7 @@ if ( ! empty( $cg_typography_args ) ) {
 // Pagination page buttons (built by Grid_Pagination, shared with sgs/post-grid). Only the
 // cpt-collection branch paginates and it returns before the typography built further down, so
 // the rule rides with the early native CSS that every branch echoes.
-$card_grid_native_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-card-grid__page-btn' );
+$card_grid_native_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-card-grid__page-btn', '', false, false, sgs_object_attr_keys( $block ) );
 if ( isset( $attributes['style']['typography']['textAlign'] ) && in_array( $attributes['style']['typography']['textAlign'], array( 'left', 'center', 'right' ), true ) ) {
 	$card_grid_native_css .= $root_sel . ' .sgs-card-grid__title{text-align:' . $attributes['style']['typography']['textAlign'] . '}';
 	// The overlay caption is a flex column: align its items with the title, so

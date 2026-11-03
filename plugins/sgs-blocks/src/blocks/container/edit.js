@@ -335,6 +335,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// (`src/utils/grid-layout-preview.js`, extracted 2026-09-05 from this block, the
 	// only one that had built it). Mutates `style` in place.
 	applyGridLayoutPreview( style, {
+		tier: previewTier,
 		layout,
 		alignItems,
 		justifyItems,

@@ -408,8 +408,8 @@
 			"default": "stretch"
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gap": {
 			"type": "object",

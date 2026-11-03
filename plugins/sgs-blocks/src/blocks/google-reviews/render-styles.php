@@ -155,7 +155,7 @@ if ( '' !== $gr_bg_decl ) {
 	$gr_responsive_css .= $gr_root_hi . '{' . $gr_bg_decl . ';}';
 }
 $gr_responsive_css .= $gr_box_rule( $gr_root_hi, $attributes['padding'] ?? null, 'padding', $gr_sides );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, '', $gr_root_hi );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, '', $gr_root_hi, '', false, false, sgs_object_attr_keys( $block ) );
 
 // ── Header row: gap, padding and the divider under it. ──
 $gr_header_sel      = $gr_root_sel . ' .sgs-google-reviews__aggregate';
@@ -298,20 +298,20 @@ $gr_responsive_css .= $gr_len_rule( $gr_root_sel . ' .sgs-google-reviews__slider
 
 // ── One type rule per text element, each read from its own prefix by the shared typography helper. ──
 // Each call names its prefix as a literal so the attribute census can see which typography families are consumed.
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'sourceLabel', $gr_root_sel . ' .sgs-google-reviews__source-label' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'score', $gr_root_sel . ' .sgs-google-reviews__score' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'count', $gr_root_sel . ' .sgs-google-reviews__count' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'author', $gr_root_sel . ' .sgs-google-reviews__author' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $gr_root_sel . ' .sgs-google-reviews__meta' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'date', $gr_root_sel . ' .sgs-google-reviews__date' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'text', $gr_root_sel . ' .sgs-google-reviews__text' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'avatar', $gr_root_sel . ' .sgs-google-reviews__avatar-initials' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'footnote', $gr_root_sel . ' .sgs-google-reviews__footnote' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'reviewLink', $gr_root_sel . ' .sgs-google-reviews__review-link' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'seeAll', $gr_root_sel . ' .sgs-google-reviews__see-all' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'mapsLink', $gr_root_sel . ' .sgs-google-reviews__maps-link' );
-$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'breakdownRow', $gr_root_sel . ' .sgs-google-reviews__breakdown-row' );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'sourceLabel', $gr_root_sel . ' .sgs-google-reviews__source-label', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'score', $gr_root_sel . ' .sgs-google-reviews__score', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'count', $gr_root_sel . ' .sgs-google-reviews__count', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'author', $gr_root_sel . ' .sgs-google-reviews__author', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $gr_root_sel . ' .sgs-google-reviews__meta', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'date', $gr_root_sel . ' .sgs-google-reviews__date', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'text', $gr_root_sel . ' .sgs-google-reviews__text', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'avatar', $gr_root_sel . ' .sgs-google-reviews__avatar-initials', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'footnote', $gr_root_sel . ' .sgs-google-reviews__footnote', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'reviewLink', $gr_root_sel . ' .sgs-google-reviews__review-link', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'writeReview', $gr_root_sel . ' .sgs-google-reviews__write-review', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'seeAll', $gr_root_sel . ' .sgs-google-reviews__see-all', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'mapsLink', $gr_root_sel . ' .sgs-google-reviews__maps-link', '', false, false, sgs_object_attr_keys( $block ) );
+$gr_responsive_css .= sgs_typography_css_rule( $attributes, 'breakdownRow', $gr_root_sel . ' .sgs-google-reviews__breakdown-row', '', false, false, sgs_object_attr_keys( $block ) );
 
 $gr_style_engine_args = array();
 

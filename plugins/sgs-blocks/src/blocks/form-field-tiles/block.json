@@ -273,8 +273,8 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gap": {
 			"type": "object",
@@ -474,15 +474,8 @@
 			"default": ""
 		},
 		"tileLabelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tileLabelTextWrap": {
 			"type": "string",
@@ -571,15 +564,8 @@
 			"default": ""
 		},
 		"tileDescriptionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tileDescriptionTextWrap": {
 			"type": "string",

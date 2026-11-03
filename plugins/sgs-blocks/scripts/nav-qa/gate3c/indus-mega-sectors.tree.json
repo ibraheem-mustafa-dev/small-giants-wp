@@ -126,7 +126,9 @@
                       "tagName": "div",
                       "layout": "flex",
                       "flexDirection": "column",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "justifyContent": "center",
                       "gap": {
                         "desktop": "6px"
@@ -209,7 +211,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "flex-start"
+                  "alignItems": {
+                    "desktop": "flex-start"
+                  }
                 },
                 "innerBlocks": [
                   {
@@ -312,7 +316,9 @@
                       "tagName": "div",
                       "layout": "flex",
                       "flexDirection": "column",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "justifyContent": "center",
                       "gap": {
                         "desktop": "6px"
@@ -395,7 +401,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "flex-start"
+                  "alignItems": {
+                    "desktop": "flex-start"
+                  }
                 },
                 "innerBlocks": [
                   {
@@ -498,7 +506,9 @@
                       "tagName": "div",
                       "layout": "flex",
                       "flexDirection": "column",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "justifyContent": "center",
                       "gap": {
                         "desktop": "6px"
@@ -581,7 +591,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "flex-start"
+                  "alignItems": {
+                    "desktop": "flex-start"
+                  }
                 },
                 "innerBlocks": [
                   {
@@ -684,7 +696,9 @@
                       "tagName": "div",
                       "layout": "flex",
                       "flexDirection": "column",
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "justifyContent": "center",
                       "gap": {
                         "desktop": "6px"
@@ -767,7 +781,9 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "flex",
-                  "alignItems": "flex-start"
+                  "alignItems": {
+                    "desktop": "flex-start"
+                  }
                 },
                 "innerBlocks": [
                   {

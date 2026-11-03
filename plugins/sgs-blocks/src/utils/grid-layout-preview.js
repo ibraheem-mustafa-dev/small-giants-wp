@@ -29,7 +29,8 @@ import { resolveResponsiveTier } from './responsive';
  * @param {Object} style Mutable style object to write layout declarations onto.
  * @param {Object} params
  * @param {string} params.layout               'grid'|'flex'|'stack'|other.
- * @param {string} [params.alignItems]         Cross-axis alignment (grid/flex/stack).
+ * @param {string} [params.tier]               Previewed device ('desktop' | 'tablet' | 'mobile').
+ * @param {Object} [params.alignItems]         Cross-axis alignment (grid/flex/stack): the `{desktop, tablet, mobile}` object.
  * @param {string} [params.justifyItems='stretch']  Grid-only; applied only when not the default.
  * @param {string} [params.alignContent='stretch']  Grid-only; applied only when not the default.
  * @param {string} [params.gridAutoRows='']    Grid-only; applied unconditionally when set.
@@ -44,8 +45,9 @@ import { resolveResponsiveTier } from './responsive';
  * @return {Object} The same `style` object, mutated, for convenient chaining.
  */
 export function applyGridLayoutPreview( style, {
+	tier = 'desktop',
 	layout,
-	alignItems,
+	alignItems: alignItemsObject,
 	justifyItems = 'stretch',
 	alignContent = 'stretch',
 	gridAutoRows = '',
@@ -55,6 +57,7 @@ export function applyGridLayoutPreview( style, {
 	flexWrap = 'wrap',
 	justifyContent = '',
 } ) {
+	const alignItems = resolveResponsiveTier( alignItemsObject, tier )?.value || undefined;
 	if ( layout === 'grid' ) {
 		style.display = 'grid';
 		// gridTemplateColumns is a TIER OBJECT — calling .trim() on it bare throws

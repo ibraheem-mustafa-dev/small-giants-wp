@@ -402,8 +402,8 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridTemplateColumns": {
 			"type": "object",

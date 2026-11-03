@@ -70,6 +70,7 @@ export {
 } from './ShadowControl';
 export { IconPicker, IconPreview } from './IconPicker';
 export { default as TextAlignTierControl } from './TextAlignTierControl';
+export { default as AlignItemsTierControl } from './AlignItemsTierControl';
 export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';
 export { default as RowScrollBehaviourControls } from './RowScrollBehaviourControls';
 export {

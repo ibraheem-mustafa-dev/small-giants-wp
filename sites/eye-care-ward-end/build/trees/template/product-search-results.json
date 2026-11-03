@@ -107,7 +107,9 @@
                   "className": "sgs-shop-toolbar",
                   "layout": "flex",
                   "justifyContent": "space-between",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "flexWrap": "wrap",
                   "contentWidth": {
                     "desktop": "full"

@@ -20,7 +20,9 @@
         "mobile": "48px",
         "tablet": "48px"
       },
-      "alignItems": "start",
+      "alignItems": {
+        "desktop": "start"
+      },
       "maxWidth": {
         "desktop": "1100px"
       },

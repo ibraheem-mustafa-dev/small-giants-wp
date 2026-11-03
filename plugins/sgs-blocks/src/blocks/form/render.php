@@ -281,7 +281,7 @@ if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
 }
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel, $sgs_form_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$sgs_form_supports_css .= sgs_typography_css_rule( $attributes, '', $sgs_form_sel, $sgs_form_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
 
 $sgs_form_preset_text = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $sgs_form_preset_bg   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
@@ -525,23 +525,23 @@ foreach ( $sgs_field_tier_specs as $sgs_field_spec ) {
 // prefix governs, and a call carrying only the prefix literal registers no
 // governance at all — the gate then falls back to an attr-name heuristic that
 // flags every selector sharing a BEM token. Matches product-card's call shape.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'field', '.' . $sgs_form_uid . ' .sgs-form-field__input' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'label', '.' . $sgs_form_uid . ' .sgs-form-field__label' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'field', '.' . $sgs_form_uid . ' .sgs-form-field__input', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'label', '.' . $sgs_form_uid . ' .sgs-form-field__label', '', false, false, sgs_object_attr_keys( $block ) );
 // The remaining surfaces sit on elements emitted by child blocks (tile icon and
 // label, consent text), by view.js (review term) or by this file (the submit
 // button). The uid class is an ancestor of every one, and the stylesheet's own
 // typography for each is a :where() default, so an unset control leaves the look
 // unchanged. Selectors are built inline for the same governance reason as above.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileIcon', '.' . $sgs_form_uid . ' .sgs-form-tile__icon' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_form_uid . ' .sgs-form-tile__label' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewTerm', '.' . $sgs_form_uid . ' .sgs-form-review__term' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'consent', '.' . $sgs_form_uid . ' .sgs-form-field__consent-text' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileIcon', '.' . $sgs_form_uid . ' .sgs-form-tile__icon', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_form_uid . ' .sgs-form-tile__label', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewTerm', '.' . $sgs_form_uid . ' .sgs-form-review__term', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'consent', '.' . $sgs_form_uid . ' .sgs-form-field__consent-text', '', false, false, sgs_object_attr_keys( $block ) );
 // A blank family needs no fifth argument: .sgs-form__button declares
 // font-family:inherit in style.css, so the button follows the form's own font.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'submit', '.' . $sgs_form_uid . ' .sgs-form__button--submit' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'submit', '.' . $sgs_form_uid . ' .sgs-form__button--submit', '', false, false, sgs_object_attr_keys( $block ) );
 // The multi-step Previous and Next buttons share one surface, separate from the
 // submit button's, so step navigation can be styled without restyling the submit.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_form_uid . ' .sgs-form__button--prev, .' . $sgs_form_uid . ' .sgs-form__button--next' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_form_uid . ' .sgs-form__button--prev, .' . $sgs_form_uid . ' .sgs-form__button--next', '', false, false, sgs_object_attr_keys( $block ) );
 // Help, error, file status, review heading and answer, and step label text. Each
 // element is emitted by a child block, by field-render-helpers.php or by view.js
 // inside the uid root, and the stylesheet's own size for each is a :where()
@@ -549,17 +549,17 @@ $sgs_field_css .= sgs_typography_css_rule( $attributes, 'navButton', '.' . $sgs_
 // styles cannot beat it), so an unset control leaves the look unchanged.
 $sgs_actions_note = trim( (string) ( $attributes['actionsNote'] ?? '' ) );
 // The actions note reuses the help-text typography; its selector joins the rule only when a note exists.
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'helpText', '.' . $sgs_form_uid . ' .sgs-form-field__help, .' . $sgs_form_uid . ' .sgs-form-field__file-hint' . ( '' !== $sgs_actions_note ? ', .' . $sgs_form_uid . ' .sgs-form__actions-note' : '' ) );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'errorText', '.' . $sgs_form_uid . ' .sgs-form-field__error, .' . $sgs_form_uid . ' .sgs-form-field__error-message' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileStatus', '.' . $sgs_form_uid . ' .sgs-form-file__preview, .' . $sgs_form_uid . ' .sgs-form-file__progress' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileButton', '.' . $sgs_form_uid . ' .sgs-form-field__file-button' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'filePrompt', '.' . $sgs_form_uid . ' .sgs-form-field__file-label' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'gridColHeading', '.' . $sgs_form_uid . ' .sgs-form-field__column-heading' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'gridRowHeading', '.' . $sgs_form_uid . ' .sgs-form-field__row-heading' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepNumber', '.' . $sgs_form_uid . ' .sgs-form__progress-step-number' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewHeading', '.' . $sgs_form_uid . ' .sgs-form-review__heading' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewDetail', '.' . $sgs_form_uid . ' .sgs-form-review__detail' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepLabel', '.' . $sgs_form_uid . ' .sgs-form__progress-step-label' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'helpText', '.' . $sgs_form_uid . ' .sgs-form-field__help, .' . $sgs_form_uid . ' .sgs-form-field__file-hint' . ( '' !== $sgs_actions_note ? ', .' . $sgs_form_uid . ' .sgs-form__actions-note' : '' ), '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'errorText', '.' . $sgs_form_uid . ' .sgs-form-field__error, .' . $sgs_form_uid . ' .sgs-form-field__error-message', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileStatus', '.' . $sgs_form_uid . ' .sgs-form-file__preview, .' . $sgs_form_uid . ' .sgs-form-file__progress', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'fileButton', '.' . $sgs_form_uid . ' .sgs-form-field__file-button', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'filePrompt', '.' . $sgs_form_uid . ' .sgs-form-field__file-label', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'gridColHeading', '.' . $sgs_form_uid . ' .sgs-form-field__column-heading', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'gridRowHeading', '.' . $sgs_form_uid . ' .sgs-form-field__row-heading', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepNumber', '.' . $sgs_form_uid . ' .sgs-form__progress-step-number', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewHeading', '.' . $sgs_form_uid . ' .sgs-form-review__heading', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewDetail', '.' . $sgs_form_uid . ' .sgs-form-review__detail', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepLabel', '.' . $sgs_form_uid . ' .sgs-form__progress-step-label', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Required-mark colour, field-label colour (every label and the checkbox, radio and tiles
 // legends), the step counter and the saved-progress notice. Each is opt-in: unset prints nothing.
@@ -577,8 +577,8 @@ $sgs_counter_text = sgs_text_decls( $attributes, array( 'base' => 'stepCounterCo
 if ( ! empty( $sgs_counter_text['normal'] ) ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__step-counter{' . implode( ';', $sgs_counter_text['normal'] ) . ';}';
 }
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepCounter', '.' . $sgs_form_uid . ' .sgs-form__step-counter' );
-$sgs_field_css .= sgs_typography_css_rule( $attributes, 'savedNotice', '.' . $sgs_form_uid . ' .sgs-form__saved-notice' );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepCounter', '.' . $sgs_form_uid . ' .sgs-form__step-counter', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'savedNotice', '.' . $sgs_form_uid . ' .sgs-form__saved-notice', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Icon on the step buttons: its size and the gap to the label. Printed only when an icon is set.
 $sgs_nav_icon_name = sanitize_key( (string) ( $attributes['navIcon'] ?? '' ) );

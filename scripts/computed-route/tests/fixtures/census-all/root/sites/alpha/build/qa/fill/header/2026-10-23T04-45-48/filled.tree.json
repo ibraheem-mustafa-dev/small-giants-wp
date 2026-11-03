@@ -611,7 +611,7 @@
               "gap": {
                 "tablet": "10px"
               },
-              "alignItems": "center",
+              "alignItems": {"desktop":"center"},
               "sgsHideOnDesktop": true
             },
             "innerBlocks": [

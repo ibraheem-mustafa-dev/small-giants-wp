@@ -882,8 +882,10 @@
 			"default": {}
 		},
 		"alignItems": {
-			"type": "string",
-			"default": "start"
+			"type": "object",
+			"default": {
+				"desktop": "start"
+			}
 		},
 		"shapeDividerTop": {
 			"type": "string",
@@ -1134,15 +1136,8 @@
 			"default": "em"
 		},
 		"labelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"labelTextWrap": {
 			"type": "string",
@@ -1215,15 +1210,8 @@
 			"default": "em"
 		},
 		"titleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"titleTextWrap": {
 			"type": "string",

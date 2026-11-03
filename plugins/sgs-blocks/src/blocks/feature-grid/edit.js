@@ -11,7 +11,7 @@ import {
 	SelectControl,
 	RangeControl,
 } from '@wordpress/components';
-import { ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
+import { AlignItemsTierControl, ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -103,7 +103,7 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 			display: 'grid',
 			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItem }, 1fr))`,
 			gap: gapCss,
-			alignItems,
+			alignItems: resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
 			justifyItems,
 		};
 	}
@@ -126,7 +126,7 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 		display: 'grid',
 		gridTemplateColumns: templateCols,
 		gap: gapCss,
-		alignItems,
+		alignItems: resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
 		justifyItems,
 	};
 }
@@ -355,19 +355,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Alignment', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
+					<AlignItemsTierControl
 						label={ __( 'Align items (cross-axis)', 'sgs-blocks' ) }
 						value={ alignItems }
 						options={ ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { alignItems: val } )
-						}
-						help={ __(
-							'Controls vertical alignment of items within each row.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
+						help={ __( 'Controls vertical alignment of items within each row.', 'sgs-blocks' ) }
 					/>
 					<SelectControl
 						label={ __(

@@ -79,6 +79,16 @@ if ( ! function_exists( 'sgs_gallery_grid_layout_css' ) ) {
 				);
 			}
 		}
+		// Cross-axis alignment is a `{desktop, tablet, mobile}` object.
+		if ( is_array( $attributes['alignItems'] ?? null ) ) {
+			$specs[] = array(
+				'value'     => $attributes['alignItems'],
+				'css'       => 'align-items',
+				'transform' => static function ( $raw ) {
+					return is_string( $raw ) ? (string) preg_replace( '/[^a-z-]/', '', strtolower( $raw ) ) : '';
+				},
+			);
+		}
 		$css = $specs ? sgs_emit_responsive_css( $grid_sel, $specs ) : '';
 
 		$decls     = array();
@@ -87,13 +97,12 @@ if ( ! function_exists( 'sgs_gallery_grid_layout_css' ) ) {
 			$decls[] = 'grid-auto-rows:' . $auto_rows;
 		}
 		foreach ( array(
-			'alignItems'   => 'align-items',
 			'justifyItems' => 'justify-items',
 			'alignContent' => 'align-content',
 		) as $attr => $prop ) {
 			$value = (string) preg_replace( '/[^a-z-]/', '', strtolower( (string) ( $attributes[ $attr ] ?? '' ) ) );
 			// `stretch` is the grid's own default for justify-items and align-content.
-			if ( '' !== $value && ! ( 'stretch' === $value && 'align-items' !== $prop ) ) {
+			if ( '' !== $value && 'stretch' !== $value ) {
 				$decls[] = $prop . ':' . $value;
 			}
 		}

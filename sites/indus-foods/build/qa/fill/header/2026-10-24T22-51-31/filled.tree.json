@@ -49,7 +49,7 @@
           },
           "textColourHover": "surface",
           "backgroundColourHover": "primary",
-          "alignItems": "center",
+          "alignItems": {"desktop":"center"},
           "minHeight": {
             "desktop": "46px"
           },
@@ -677,7 +677,7 @@
               "gap": {
                 "tablet": "10px"
               },
-              "alignItems": "center",
+              "alignItems": {"desktop":"center"},
               "textColourHover": "custom-ink"
             },
             "innerBlocks": [

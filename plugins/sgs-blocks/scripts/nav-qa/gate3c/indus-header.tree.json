@@ -20,7 +20,7 @@
           "rowSlot": "middle",
           "layout": "flex",
           "justifyContent": "space-between",
-          "alignItems": "center",
+          "alignItems": {"desktop":"center"},
           "contentWidth": {
             "desktop": "1184px"
           },
@@ -39,7 +39,7 @@
             "attributes": {
               "tagName": "div",
               "layout": "flex",
-              "alignItems": "center",
+              "alignItems": {"desktop":"center"},
               "gap": {
                 "desktop": "10px"
               },

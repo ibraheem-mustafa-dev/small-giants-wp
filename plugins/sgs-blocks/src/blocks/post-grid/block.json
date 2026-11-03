@@ -432,8 +432,8 @@
       ]
     },
     "alignItems": {
-      "type": "string",
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "cardStyle": {
       "type": "string",
@@ -849,15 +849,8 @@
       "default": "em"
     },
     "titleTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "titleTextWrap": {
       "type": "string",
@@ -1142,15 +1135,8 @@
       "default": "em"
     },
     "metaTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "metaTextWrap": {
       "type": "string",
@@ -1247,15 +1233,8 @@
       "default": "em"
     },
     "badgeTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "badgeTextWrap": {
       "type": "string",
@@ -1352,15 +1331,8 @@
       "default": "em"
     },
     "categoryTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "categoryTextWrap": {
       "type": "string",
@@ -1457,15 +1429,8 @@
       "default": "em"
     },
     "excerptTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "excerptTextWrap": {
       "type": "string",
@@ -1562,15 +1527,8 @@
       "default": "em"
     },
     "readMoreTextAlign": {
-      "type": "string",
-      "enum": [
-        "",
-        "left",
-        "center",
-        "right",
-        "justify"
-      ],
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "readMoreTextWrap": {
       "type": "string",

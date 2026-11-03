@@ -21,7 +21,9 @@
         "tablet": "28px",
         "desktop": "40px"
       },
-      "alignItems": "start",
+      "alignItems": {
+        "desktop": "start"
+      },
       "minHeight": {
         "desktop": "0px"
       },
@@ -58,7 +60,9 @@
           "layout": "flex",
           "className": "cr-ref-template-checkout-2",
           "fontWeight": "700",
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "backgroundColour": "section",
           "borderWidth": {
             "right": "2px",
@@ -79,7 +83,9 @@
             "mobile": "60.17px"
           },
           "justifyContent": "space-between",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "minHeight": {
             "mobile": "60px"
           },

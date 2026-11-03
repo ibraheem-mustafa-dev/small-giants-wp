@@ -75,7 +75,9 @@
                 "name": "sgs/container",
                 "attributes": {
                   "tagName": "div",
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "backgroundColour": "border",
                   "borderStyle": "solid",
                   "borderWidth": {

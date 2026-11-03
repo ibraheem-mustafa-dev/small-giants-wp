@@ -426,7 +426,7 @@ if ( ! empty( $pt_style_engine_args ) ) {
 $responsive_css .= sgs_typography_css_rule(
 	$attributes,
 	'title',
-	$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title'
+	$root_sel . ' .sgs-pricing-table__name, ' . $root_sel . ' .sgs-pricing-table__title', '', false, false, sgs_object_attr_keys( $block )
 );
 
 // Price typography — prefix 'price'. Targets both monthly and yearly prices
@@ -434,21 +434,21 @@ $responsive_css .= sgs_typography_css_rule(
 $responsive_css .= sgs_typography_css_rule(
 	$attributes,
 	'price',
-	$root_sel . ' .sgs-pricing-table__price'
+	$root_sel . ' .sgs-pricing-table__price', '', false, false, sgs_object_attr_keys( $block )
 );
 
 // CTA button text typography — prefix 'cta'. Targets the button/link element.
 $responsive_css .= sgs_typography_css_rule(
 	$attributes,
 	'cta',
-	$root_sel . ' .sgs-pricing-table__cta'
+	$root_sel . ' .sgs-pricing-table__cta', '', false, false, sgs_object_attr_keys( $block )
 );
 
 // Feature list typography — prefix 'feature'. Targets all feature list items.
 $responsive_css .= sgs_typography_css_rule(
 	$attributes,
 	'feature',
-	$root_sel . ' .sgs-pricing-table__feature'
+	$root_sel . ' .sgs-pricing-table__feature', '', false, false, sgs_object_attr_keys( $block )
 );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard

@@ -172,7 +172,9 @@
                 "tablet": "repeat(2, minmax(0, 1fr))",
                 "desktop": "minmax(0, 1.05fr) minmax(0, 1fr)"
               },
-              "alignItems": "start",
+              "alignItems": {
+                "desktop": "start"
+              },
               "minHeight": {
                 "mobile": "0px"
               },
@@ -859,7 +861,9 @@
                   "gap": {
                     "desktop": "10px"
                   },
-                  "alignItems": "baseline",
+                  "alignItems": {
+                    "desktop": "baseline"
+                  },
                   "minHeight": {
                     "desktop": "0px"
                   },
@@ -1140,7 +1144,9 @@
                       "gap": {
                         "desktop": "10px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "textColourHover": "primary-text"
                     },
                     "innerBlocks": [
@@ -1202,7 +1208,9 @@
                       "gap": {
                         "desktop": "10px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "textColourHover": "primary-text"
                     },
                     "innerBlocks": [
@@ -1264,7 +1272,9 @@
                       "gap": {
                         "desktop": "10px"
                       },
-                      "alignItems": "center",
+                      "alignItems": {
+                        "desktop": "center"
+                      },
                       "textColourHover": "primary-text"
                     },
                     "innerBlocks": [
@@ -1329,7 +1339,9 @@
                     "desktop": "14px"
                   },
                   "justifyContent": "space-between",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "minHeight": {
                     "desktop": "60px"
                   },
@@ -1446,7 +1458,9 @@
                     "desktop": "14px"
                   },
                   "justifyContent": "space-between",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "minHeight": {
                     "desktop": "60px"
                   },
@@ -1523,7 +1537,9 @@
                     "desktop": "14px"
                   },
                   "justifyContent": "space-between",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "minHeight": {
                     "desktop": "60px"
                   },
@@ -1600,7 +1616,9 @@
                     "desktop": "14px"
                   },
                   "justifyContent": "space-between",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "minHeight": {
                     "desktop": "60px"
                   },
@@ -2501,7 +2519,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary-text",
                                       "padding": {
@@ -2805,7 +2825,9 @@
                                       "gap": {
                                         "desktop": "8px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary-text",
                                       "padding": {
@@ -3114,7 +3136,9 @@
                                       "gap": {
                                         "desktop": "7.48px"
                                       },
-                                      "alignItems": "baseline",
+                                      "alignItems": {
+                                        "desktop": "baseline"
+                                      },
                                       "flexWrap": "wrap",
                                       "textColourHover": "primary-text",
                                       "padding": {

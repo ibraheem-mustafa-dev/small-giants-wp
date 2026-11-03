@@ -449,8 +449,8 @@
 			"default": false
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"borderWidth": {
 			"type": "object",

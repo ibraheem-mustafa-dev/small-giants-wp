@@ -66,21 +66,21 @@ if ( ! empty( $post_grid_style_engine_args ) ) {
 // to declare selectors.typography for it, not the block root), so this reads
 // the 'title'-prefixed attrs and scopes the rule at the same selector the
 // native support used.
-$responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' .sgs-post-grid__title' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'title', $root_sel . ' .sgs-post-grid__title', '', false, false, sgs_object_attr_keys( $block ) );
 // Pagination page buttons (built by Grid_Pagination) and the load-more button
 // (Grid_Pagination in the page, rebuilt by view.js after a filter): each has its
 // own typography surface; style.css keeps the 0.875rem/600 and 1rem/600
 // defaults inside :where() so these scoped rules win.
-$responsive_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-post-grid__page-btn' );
-$responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'pageButton', $root_sel . ' .sgs-post-grid__page-btn', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'loadMore', $root_sel . ' .sgs-post-grid__load-more', '', false, false, sgs_object_attr_keys( $block ) );
 // Card text elements (built by \SGS\Blocks\Post_Grid_REST::render_card, and by the editor
 // preview): meta line, image badge, plain category label, excerpt, read-more link.
 // Each type default in style.css sits in :where() so these scoped rules win.
-$responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $root_sel . ' .sgs-post-grid__meta' );
-$responsive_css .= sgs_typography_css_rule( $attributes, 'badge', $root_sel . ' .sgs-post-grid__badge' );
-$responsive_css .= sgs_typography_css_rule( $attributes, 'category', $root_sel . ' .sgs-post-grid__category' );
-$responsive_css .= sgs_typography_css_rule( $attributes, 'excerpt', $root_sel . ' .sgs-post-grid__excerpt' );
-$responsive_css .= sgs_typography_css_rule( $attributes, 'readMore', $root_sel . ' .sgs-post-grid__readmore' );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'meta', $root_sel . ' .sgs-post-grid__meta', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'badge', $root_sel . ' .sgs-post-grid__badge', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'category', $root_sel . ' .sgs-post-grid__category', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'excerpt', $root_sel . ' .sgs-post-grid__excerpt', '', false, false, sgs_object_attr_keys( $block ) );
+$responsive_css .= sgs_typography_css_rule( $attributes, 'readMore', $root_sel . ' .sgs-post-grid__readmore', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

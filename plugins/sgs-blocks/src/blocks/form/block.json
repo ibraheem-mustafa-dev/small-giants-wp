@@ -1322,15 +1322,8 @@
 			"default": "em"
 		},
 		"labelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"labelTextWrap": {
 			"type": "string",
@@ -1428,15 +1421,8 @@
 			"default": "em"
 		},
 		"fieldTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"fieldTextWrap": {
 			"type": "string",
@@ -1637,8 +1623,8 @@
 			"description": "composite wrapper review (P2-2, container's layout-default fix): sgs/form routes through SGS_Container_Wrapper::render() the same way sgs/container does, so an untouched form would otherwise inherit container's new 'flex'/row default and lay its fields out side-by-side. Form fields are unambiguously vertical, so this block declares its own explicit 'stack' default rather than sharing the primitive's."
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"columns": {
 			"type": "object",
@@ -1820,15 +1806,8 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"textWrap": {
 			"type": "string",
@@ -1918,9 +1897,8 @@
 			"default": "em"
 		},
 		"tileIconTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tileIconTextWrap": {
 			"type": "string",
@@ -1994,9 +1972,8 @@
 			"default": "em"
 		},
 		"tileLabelTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tileLabelTextWrap": {
 			"type": "string",
@@ -2070,9 +2047,8 @@
 			"default": "em"
 		},
 		"reviewTermTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"reviewTermTextWrap": {
 			"type": "string",
@@ -2146,9 +2122,8 @@
 			"default": "em"
 		},
 		"consentTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"consentTextWrap": {
 			"type": "string",
@@ -2222,9 +2197,8 @@
 			"default": "em"
 		},
 		"navButtonTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"navButtonTextWrap": {
 			"type": "string",
@@ -2298,9 +2272,8 @@
 			"default": "em"
 		},
 		"helpTextTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"helpTextTextWrap": {
 			"type": "string",
@@ -2374,9 +2347,8 @@
 			"default": "em"
 		},
 		"errorTextTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"errorTextTextWrap": {
 			"type": "string",
@@ -2450,9 +2422,8 @@
 			"default": "em"
 		},
 		"fileStatusTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"fileStatusTextWrap": {
 			"type": "string",
@@ -2526,9 +2497,8 @@
 			"default": "em"
 		},
 		"fileButtonTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"fileButtonTextWrap": {
 			"type": "string",
@@ -2602,9 +2572,8 @@
 			"default": "em"
 		},
 		"filePromptTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"filePromptTextWrap": {
 			"type": "string",
@@ -2678,9 +2647,8 @@
 			"default": "em"
 		},
 		"gridColHeadingTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridColHeadingTextWrap": {
 			"type": "string",
@@ -2754,9 +2722,8 @@
 			"default": "em"
 		},
 		"gridRowHeadingTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gridRowHeadingTextWrap": {
 			"type": "string",
@@ -2830,9 +2797,8 @@
 			"default": "em"
 		},
 		"stepNumberTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"stepNumberTextWrap": {
 			"type": "string",
@@ -2906,9 +2872,8 @@
 			"default": "em"
 		},
 		"reviewHeadingTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"reviewHeadingTextWrap": {
 			"type": "string",
@@ -2982,9 +2947,8 @@
 			"default": "em"
 		},
 		"reviewDetailTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"reviewDetailTextWrap": {
 			"type": "string",
@@ -3058,9 +3022,8 @@
 			"default": "em"
 		},
 		"stepLabelTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"stepLabelTextWrap": {
 			"type": "string",
@@ -3170,15 +3133,8 @@
 			"default": "em"
 		},
 		"stepCounterTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"stepCounterTextWrap": {
 			"type": "string",
@@ -3275,15 +3231,8 @@
 			"default": "em"
 		},
 		"savedNoticeTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"savedNoticeTextWrap": {
 			"type": "string",
@@ -3388,9 +3337,8 @@
 			"default": "em"
 		},
 		"submitTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"submitTextWrap": {
 			"type": "string",

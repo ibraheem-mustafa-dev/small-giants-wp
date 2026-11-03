@@ -38,7 +38,9 @@
             "attributes": {
               "tagName": "div",
               "layout": "flex",
-              "alignItems": "baseline",
+              "alignItems": {
+                "desktop": "baseline"
+              },
               "gap": {
                 "desktop": "16px"
               },
@@ -131,7 +133,9 @@
             "attributes": {
               "tagName": "div",
               "layout": "flex",
-              "alignItems": "baseline",
+              "alignItems": {
+                "desktop": "baseline"
+              },
               "gap": {
                 "desktop": "16px"
               },

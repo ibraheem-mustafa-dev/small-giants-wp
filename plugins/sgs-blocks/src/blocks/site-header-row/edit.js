@@ -30,6 +30,7 @@ import {
 	SgsBoxControl,
 	SgsGapControl,
 	SgsLengthControl,
+	AlignItemsTierControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -365,7 +366,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// Blank alignItems/justifyItems/alignContent fall to the
 				// CSS-initial `stretch` — mirrors SGS_Container_Wrapper::render()'s
 				// own defaults, not a hardcoded editor-only fallback.
-				alignItems: alignItems || 'stretch',
+				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
 				justifyItems: justifyItems || 'stretch',
 				alignContent: alignContent || 'stretch',
 				gap: gapPreview,
@@ -378,7 +379,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// Blank alignItems falls to the CSS-initial `stretch` — mirrors
 				// SGS_Container_Wrapper::render()'s own default, not a
 				// hardcoded editor-only fallback.
-				alignItems: alignItems || 'stretch',
+				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				// Matches block.json's gap default.
 				gap: gapPreview,
@@ -628,7 +629,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								alignItems: 'center',
+								alignItems: {},
 								flexDirection: '',
 								justifyItems: 'stretch',
 								alignContent: 'stretch',
@@ -640,25 +641,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						<ToolsPanelItem
 							label={ __( 'Align items', 'sgs-blocks' ) }
-							hasValue={ () => alignItems !== 'center' }
+							hasValue={ () =>
+								JSON.stringify( alignItems ?? {} ) !== JSON.stringify( { desktop: 'center' } )
+							}
 							onDeselect={ () =>
-								setAttributes( { alignItems: 'center' } )
+								setAttributes( { alignItems: { desktop: 'center' } } )
 							}
 							isShownByDefault
 						>
-							<SelectControl
-								label={ __( 'Align items', 'sgs-blocks' ) }
-								value={ alignItems || 'center' }
+							<AlignItemsTierControl
+								value={ alignItems }
 								options={ VERTICAL_ALIGN_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { alignItems: val } )
-								}
+								onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
 								help={ __(
-									'How elements of different heights (e.g. a logo next to a shorter nav) line up across the row.',
+									'How elements of different heights line up across the row.',
 									'sgs-blocks'
 								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						{ ! isGrid && (

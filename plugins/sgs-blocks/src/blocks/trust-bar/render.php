@@ -756,8 +756,8 @@ $badges_html   = $tb_marquee_track
 // $uid_scope already declared above (color/border scoped-emit block).
 $label_sel = $uid_scope . ' .sgs-trust-bar__label,' . $uid_scope . ' .sgs-trust-bar__badge-label';
 $title_sel = $uid_scope . ' .sgs-trust-bar__title';
-$typo_css  = sgs_typography_css_rule( $attributes, 'label', $label_sel );
-$typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel );
+$typo_css  = sgs_typography_css_rule( $attributes, 'label', $label_sel, '', false, false, sgs_object_attr_keys( $block ) );
+$typo_css .= sgs_typography_css_rule( $attributes, 'title', $title_sel, '', false, false, sgs_object_attr_keys( $block ) );
 // No-inline contract: combine the color/border scoped rules ($tb_extra_scoped_css,
 // built above — includes title/label colour), typography, and the per-item
 // image-badge object-fit overrides ($tb_per_item_css) into ONE <style> tag.

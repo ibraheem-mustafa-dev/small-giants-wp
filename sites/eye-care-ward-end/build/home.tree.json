@@ -440,7 +440,9 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "alignItems": "flex-end",
+          "alignItems": {
+            "desktop": "flex-end"
+          },
           "flexWrap": "wrap",
           "gap": {
             "desktop": "20px"
@@ -2281,7 +2283,9 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "alignItems": "flex-end",
+          "alignItems": {
+            "desktop": "flex-end"
+          },
           "flexWrap": "wrap",
           "gap": {
             "desktop": "20px"
@@ -3500,7 +3504,9 @@
   {
     "name": "sgs/container",
     "attributes": {
-      "alignItems": "center",
+      "alignItems": {
+        "desktop": "center"
+      },
       "backgroundColour": "accent-light",
       "contentWidth": {
         "desktop": "1440px"
@@ -3570,12 +3576,16 @@
           },
           "layout": "flex",
           "flexDirection": "column",
-          "alignItems": "center",
+          "alignItems": {
+            "desktop": "center"
+          },
           "justifyContent": "center",
           "gap": {
             "desktop": "10px"
           },
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "textWrap": "wrap",
           "boxAspectRatio": "4 / 5",
           "className": "cr-ref-home-68",

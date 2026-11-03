@@ -293,6 +293,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 	if ( 'grid' === tierLayout ) {
 		applyGridLayoutPreview( previewGridStyle, {
+			tier: previewTier,
 			layout: tierLayout,
 			alignItems: attributes.alignItems,
 			justifyItems: attributes.justifyItems,

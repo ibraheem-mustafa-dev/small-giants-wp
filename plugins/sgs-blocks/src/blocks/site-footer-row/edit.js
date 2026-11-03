@@ -30,6 +30,7 @@ import {
 	SgsBoxControl,
 	SgsGapControl,
 	SgsLengthControl,
+	AlignItemsTierControl,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
@@ -362,7 +363,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					? { gridTemplateRows: gridTemplateRowsDesktop }
 					: {} ),
 				...( gridAutoRows ? { gridAutoRows } : {} ),
-				alignItems: alignItems || 'stretch',
+				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
 				justifyItems: justifyItems || 'stretch',
 				alignContent: alignContent || 'stretch',
 				gap: ( gap && gap.desktop ) || '48px',
@@ -371,7 +372,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				display: 'flex',
 				flexWrap: 'wrap',
 				// Blank alignItems falls to the wrapper's own `stretch` default.
-				alignItems: alignItems || 'stretch',
+				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
 				...( flexDirection ? { flexDirection } : {} ),
 				gap: ( gap && gap.desktop ) || 'clamp(0.5rem, 2vw, 1.5rem)',
 				justifyContent: justifyContent || 'flex-start',
@@ -603,7 +604,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						label={ __( 'Alignment & grid', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								alignItems: 'start',
+								alignItems: {},
 								flexDirection: '',
 								justifyItems: 'stretch',
 								alignContent: 'stretch',
@@ -616,26 +617,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Align items', 'sgs-blocks' ) }
 							hasValue={ () =>
-								( alignItems || 'start' ) !== 'start'
+								JSON.stringify( alignItems ?? {} ) !== JSON.stringify( { desktop: 'start' } )
 							}
 							onDeselect={ () =>
-								setAttributes( { alignItems: 'start' } )
+								setAttributes( { alignItems: { desktop: 'start' } } )
 							}
 							isShownByDefault
 						>
-							<SelectControl
-								label={ __( 'Align items', 'sgs-blocks' ) }
-								value={ alignItems || 'start' }
+							<AlignItemsTierControl
+								value={ alignItems }
 								options={ VERTICAL_ALIGN_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { alignItems: val } )
-								}
+								onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
 								help={ __(
 									'How elements of different heights line up across the row.',
 									'sgs-blocks'
 								) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</ToolsPanelItem>
 						{ ! isGrid && (

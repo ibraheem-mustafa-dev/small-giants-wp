@@ -200,8 +200,10 @@
 			"default": ""
 		},
 		"alignItems": {
-			"type": "string",
-			"default": "center"
+			"type": "object",
+			"default": {
+				"desktop": "center"
+			}
 		},
 		"gap": {
 			"type": "object",

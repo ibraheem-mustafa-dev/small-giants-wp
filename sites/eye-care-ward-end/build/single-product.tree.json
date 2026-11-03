@@ -1553,7 +1553,9 @@
                         "attributes": {
                           "layout": "flex",
                           "justifyContent": "space-between",
-                          "alignItems": "baseline",
+                          "alignItems": {
+                            "desktop": "baseline"
+                          },
                           "flexWrap": "wrap",
                           "gap": {
                             "desktop": "14px"
@@ -1962,7 +1964,9 @@
                               "gap": {
                                 "desktop": "4px 18px"
                               },
-                              "alignItems": "baseline",
+                              "alignItems": {
+                                "desktop": "baseline"
+                              },
                               "padding": {
                                 "desktop": {
                                   "top": "16px",
@@ -1986,7 +1990,9 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline",
+                                  "alignItems": {
+                                    "desktop": "baseline"
+                                  },
                                   "className": "cr-ref-product-129"
                                 },
                                 "innerBlocks": [
@@ -2060,7 +2066,9 @@
                               "gap": {
                                 "desktop": "4px 18px"
                               },
-                              "alignItems": "baseline",
+                              "alignItems": {
+                                "desktop": "baseline"
+                              },
                               "padding": {
                                 "desktop": {
                                   "top": "16px",
@@ -2084,7 +2092,9 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline",
+                                  "alignItems": {
+                                    "desktop": "baseline"
+                                  },
                                   "className": "cr-ref-product-130"
                                 },
                                 "innerBlocks": [
@@ -2158,7 +2168,9 @@
                               "gap": {
                                 "desktop": "4px 18px"
                               },
-                              "alignItems": "baseline",
+                              "alignItems": {
+                                "desktop": "baseline"
+                              },
                               "padding": {
                                 "desktop": {
                                   "top": "16px",
@@ -2182,7 +2194,9 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline",
+                                  "alignItems": {
+                                    "desktop": "baseline"
+                                  },
                                   "className": "cr-ref-product-132"
                                 },
                                 "innerBlocks": [
@@ -2258,7 +2272,9 @@
                               "gap": {
                                 "desktop": "4px 18px"
                               },
-                              "alignItems": "baseline",
+                              "alignItems": {
+                                "desktop": "baseline"
+                              },
                               "padding": {
                                 "desktop": {
                                   "top": "16px",
@@ -2282,7 +2298,9 @@
                                   "gap": {
                                     "desktop": "18px"
                                   },
-                                  "alignItems": "baseline",
+                                  "alignItems": {
+                                    "desktop": "baseline"
+                                  },
                                   "className": "cr-ref-product-136"
                                 },
                                 "innerBlocks": [

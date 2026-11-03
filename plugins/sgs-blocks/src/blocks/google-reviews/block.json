@@ -1029,8 +1029,8 @@
 			"default": "stretch"
 		},
 		"alignItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"gap": {
 			"type": "object",
@@ -1678,15 +1678,8 @@
 			"default": ""
 		},
 		"sourceLabelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"sourceLabelTextWrap": {
 			"type": "string",
@@ -1775,15 +1768,8 @@
 			"default": ""
 		},
 		"scoreTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"scoreTextWrap": {
 			"type": "string",
@@ -1872,15 +1858,8 @@
 			"default": ""
 		},
 		"countTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"countTextWrap": {
 			"type": "string",
@@ -1969,15 +1948,8 @@
 			"default": ""
 		},
 		"authorTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"authorTextWrap": {
 			"type": "string",
@@ -2066,15 +2038,8 @@
 			"default": ""
 		},
 		"metaTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"metaTextWrap": {
 			"type": "string",
@@ -2163,15 +2128,8 @@
 			"default": ""
 		},
 		"dateTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"dateTextWrap": {
 			"type": "string",
@@ -2260,15 +2218,8 @@
 			"default": ""
 		},
 		"textTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"textTextWrap": {
 			"type": "string",
@@ -2357,15 +2308,8 @@
 			"default": ""
 		},
 		"avatarTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"avatarTextWrap": {
 			"type": "string",
@@ -2454,15 +2398,8 @@
 			"default": ""
 		},
 		"footnoteTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"footnoteTextWrap": {
 			"type": "string",
@@ -2551,15 +2488,8 @@
 			"default": ""
 		},
 		"reviewLinkTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"reviewLinkTextWrap": {
 			"type": "string",
@@ -2648,15 +2578,8 @@
 			"default": ""
 		},
 		"writeReviewTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"writeReviewTextWrap": {
 			"type": "string",
@@ -2745,15 +2668,8 @@
 			"default": ""
 		},
 		"seeAllTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"seeAllTextWrap": {
 			"type": "string",
@@ -2844,15 +2760,8 @@
 			"default": ""
 		},
 		"mapsLinkTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"mapsLinkTextWrap": {
 			"type": "string",
@@ -2943,15 +2852,8 @@
 			"default": ""
 		},
 		"breakdownRowTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"breakdownRowTextWrap": {
 			"type": "string",

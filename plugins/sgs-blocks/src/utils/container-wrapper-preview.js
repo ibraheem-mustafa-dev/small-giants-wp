@@ -55,6 +55,7 @@ export function containerWrapperPreview( attributes, tier = 'desktop', palette =
 	Object.assign( style, wrapperBorderPreview( attrs, tier, palette ) );
 
 	applyGridLayoutPreview( style, {
+		tier,
 		layout,
 		alignItems: attrs.alignItems,
 		justifyItems: attrs.justifyItems,

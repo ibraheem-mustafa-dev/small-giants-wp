@@ -245,8 +245,8 @@ $class_names  = array_merge(
 // Title/subtitle font-size (CG-9): block-wide typography via the shared
 // TypographyControls attr shape, scoped to this grid instance's uid so
 // multiple grids on one page can differ. Only set values are emitted.
-$sgs_grid_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_grid_uid . ' .sgs-card-grid__title' );
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle' );
+$sgs_grid_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_grid_uid . ' .sgs-card-grid__title', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'subtitle', '.' . $sgs_grid_uid . ' .sgs-card-grid__subtitle', '', false, false, sgs_object_attr_keys( $block ) );
 // Space below the title (titleMarginBottom). Only a title followed by something
 // (a subtitle) takes it; a lone title keeps style.css's :last-child reset.
 // Space inside the image area, around the image (imagePadding), per device.
@@ -287,11 +287,11 @@ $sgs_grid_title_mb = sgs_css_length_value( (string) ( $attributes['titleMarginBo
 if ( '' !== $sgs_grid_title_mb ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__title:not(:last-child){margin-bottom:' . $sgs_grid_title_mb . ';}';
 }
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label' );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label', '', false, false, sgs_object_attr_keys( $block ) );
 // Fallback-tile initial letter and the card badge: own typography surfaces; the
 // style.css defaults sit in :where() so these scoped rules win.
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'glyphInitial', '.' . $sgs_grid_uid . ' .sgs-card-grid__glyph-initial' );
-$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'badge', '.' . $sgs_grid_uid . ' .sgs-card-grid__badge' );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'glyphInitial', '.' . $sgs_grid_uid . ' .sgs-card-grid__glyph-initial', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_grid_typo_css .= sgs_typography_css_rule( $attributes, 'badge', '.' . $sgs_grid_uid . ' .sgs-card-grid__badge', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== (string) ( $attributes['noImageLabelColour'] ?? '' ) ) {
 	$sgs_grid_typo_css .= '.' . $sgs_grid_uid . ' .sgs-card-grid__no-image-label{color:' . sgs_colour_value( (string) $attributes['noImageLabelColour'] ) . ';}';
 }
