@@ -440,5 +440,17 @@
     },
     "reason": "The draft's magnet engages only while the pointer is over the button (about 5px travel, then a quick return), which Bean saw as broken. The live buttons use the framework's proximity mode: the pull starts about 100px away (radius 120, factor 0.35, up to 14px x 10px) and eases back over a 600ms return.",
     "decided": "2026-11-03 Bean ruling (Indus round 5)"
+  },
+  {
+    "id": "D-28",
+    "scope": "mega menus (About, Sectors, Brands, Trade), 1440",
+    "node": "mega panel promo titles and Sectors card names",
+    "state": "*",
+    "property": "font-family",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft's desktop mega panel sets no font on these titles, so they fall back to the body font; its mobile drawer sets the same titles in Montserrat, as it does every other title on the site (about 66). Treated as a draft slip: the titles use the heading font on every screen size.",
+    "decided": "2026-11-03 Bean ruling (Indus round 5)"
   }
 ]
