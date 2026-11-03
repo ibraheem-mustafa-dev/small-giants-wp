@@ -120,10 +120,7 @@
       "defaultDuotone": false
     },
     "typography": {
-      "fluid": {
-        "minViewportWidth": "375px",
-        "maxViewportWidth": "1200px"
-      },
+      "fluid": false,
       "fontFamilies": [
         {
           "fontFamily": "\"Source Sans 3\", \"Source Sans Pro\", system-ui, sans-serif",

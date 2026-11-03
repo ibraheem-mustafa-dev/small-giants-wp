@@ -2060,5 +2060,14 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 235
+  },
+  {
+    "id": "check-no-fluid-typography",
+    "cmd": "python scripts/check-no-fluid-typography.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 236
   }
 ]

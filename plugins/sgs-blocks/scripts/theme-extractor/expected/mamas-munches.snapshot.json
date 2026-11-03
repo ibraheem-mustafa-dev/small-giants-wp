@@ -139,10 +139,7 @@
       "customDuotone": true
     },
     "typography": {
-      "fluid": {
-        "minViewportWidth": "375px",
-        "maxViewportWidth": "1200px"
-      },
+      "fluid": false,
       "fontFamilies": [
         {
           "fontFamily": "Inter, sans-serif",
