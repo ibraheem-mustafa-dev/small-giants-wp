@@ -14,6 +14,7 @@ sgs-theme/
 ├── theme.json                # Design tokens, settings, styles (v3)
 ├── functions.php             # Theme setup, font preloading, enqueuing, pattern categories
 ├── inc/                      # PHP modules required by functions.php (colour helpers, colour-role pointers, font preloading, core block styles, shop filter and toolbar settings)
+│   │                         #   shop-load-more-settings.php — shop Load more mode: Customizer settings, the `sgs_batches` query parameter, `data-sgs-total`
 ├── templates/                # Block templates:
 │   │                         #   index, page, single, archive, home, front-page, 404, search
 │   │                         #   archive-product, single-product, product-search-results,

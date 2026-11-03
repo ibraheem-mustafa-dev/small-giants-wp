@@ -111,7 +111,7 @@ Proof: all of `grep -n "FR-30-3b" .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGUR
 | FR | Statement | Status now | Becomes |
 |---|---|---|---|
 | FR-30-3 | Shop archive UX shell | built | built (Done-when amended) |
-| FR-30-3b | Shop Load more mode (this plan) | not built | built after B3 proof |
+| FR-30-3b | Shop Load more mode (this plan) | built | built (Batch 3 done) |
 | FR-30-3b-post-grid | Same mode reusing `@sgs/load-more-core` in post-grid / card-grid | not built | stays not built; section 8 |
 
 ## 7. Gates
@@ -143,3 +143,4 @@ Each batch is one dispatch to `wp-sgs-developer`-style Sonnet work via `/subagen
 - **P4 (installed source, `wp-includes/js/dist/script-modules/interactivity-router/index.js` on eye-care-test).** `navigate(href, options)` takes `force`, `html`, `replace` (history `replaceState` instead of `pushState`), `timeout` (default 10000 ms), `loadingAnimation` (default true) and `screenReaderAnnouncement` (default true). The module exports `actions` (and `state`) from `store("core/router")`, so import it as `const { actions } = await import('@wordpress/interactivity-router'); await actions.navigate(url, { replace: true });` (WooCommerce does exactly this: `yield Promise.resolve().then(r.bind(r,438))` then `c.navigate(t.href)`); the import map on the page maps `@wordpress/interactivity-router`. It also sets `state.url`, swaps router regions, imports script modules, and calls `a11ySpeak` for "loading"/"loaded" (suppress with `screenReaderAnnouncement:false` to avoid doubling D10's own announcement). It does nothing on a hash except scroll.
 - **WooCommerce version:** 11.2.1 (`wp plugin get woocommerce --field=version` on eye-care-test).
 - **Pagination navigation:** the product-collection region uses its own client-side navigation. `plugins/woocommerce/src/Blocks/BlockTypes/ProductCollection/Renderer.php` sets `data-wp-on--click="woocommerce/product-collection::actions.navigate"` on the pagination links (lines near 302 and 312; the `viewProduct` click action is set in `Controller.php`); that action calls `preventDefault`, then router `navigate(href)` (a push, no `replace`), then focuses the first product link in the region. Consequence: the JS-built Load more button must call the router itself with `{ replace: true }` and must not rely on or fire the Woo link click; the hidden Next link keeps its Woo handler but is never clicked by the module. Also note the router `navigate` target region is `data-wp-router-region` of the collection.
+- 2026-11-03: all nine check-script cases pass on eye-care-test (batch 4, desktop first load 8).
