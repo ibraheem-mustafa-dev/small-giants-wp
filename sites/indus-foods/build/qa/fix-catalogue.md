@@ -266,3 +266,45 @@ QC (three design reviewers on indus-test after round 4; captures E:/sgs-tmp/visi
 | R5-12 | blog | eyebrow pill shown as plain text; posts have no images, excerpts or categories and "Hello world!" shows; grid-to-CTA gap | medium; content items need Bean's call (write six posts from the draft) |
 | R5-13 | site-check | one form a run fails "Clicking the checkbox did not change its state" | open, cause unproven |
 | R5-14 | lows | drawer X weight, social glyph size, WhatsApp pill width, food-service hero crop at 375, brands tile strips, testimonial avatar, heritage spacing, CTA band and footer heights | low |
+
+## Round 5 register (Bean approved 2026-11-03: "use the patched versions", proximity magnets, six posts, the post template carries the article styling; review pairs: E:/sgs-tmp/r5-pairs, E:/sgs-tmp/r5-mega, E:/sgs-tmp/r5-fix-drawer, E:/sgs-tmp/r5-post)
+
+Mega menus: the cloned panels were measured against the draft and against Bean's hand-built canary panels (sandybrown sgs_mega_menu 4426, 4443, 4440, 4430, built for the v1 draft). At 1440 the shells are the same (1px border, 12px radius, two-layer shadow); the clones carry v2's content and keep Sectors' four cards in one row (canary wraps to 3 + 1), so the clones stay and the drawer copies the canary's drawer mechanism.
+
+Site settings (existing settings, applied on local-indus):
+
+| Id | Pages | Wrong compared with the draft | Proven cause | Fix | Stage | Status |
+|---|---|---|---|---|---|---|
+| R5-01 | mega About, Trade, Brands (155, 161, 159) | promo wraps under the list; panel 937px tall | the panel's 24px default padding left a 572px row for a 200px group + 44px gap + 340px aside | panelPadding 0, groupGap 0, asideWidth 300px, groupPadding 24/22/10/26, 1px #1E2A3C1A border, radius 12, asideSeparator none, shadow | Fill | done: 620x518 (draft 530), 620x438 (448), 1080x283 (299) |
+| R5-03 | mega panels, header 201 | Sectors square and flush; links not at card bottom; Brands tiles unframed; tags without chips | Sectors is a plain container with no border; card bands only flex-fill with minHeight set; submenuTopOffset empty; label/tile settings unset | Sectors border, radius 12, two-layer shadow; card text containers minHeight 0; submenuTopOffset 12px; gallery tile border, radius 12, #FAFAF8; tag backgroundColour gold | Fill | done; Sectors 1080x360 (draft 360); tag width waits on F-L |
+| R5-04 | header 201 | labels shift on hover; open item underlined | itemMagnetEnabled true (default false); itemBorderColourHover defaults to accent | itemMagnetEnabled false; itemBorderColourHover transparent (current item keeps its underline) | Fill | done; chevron outside the pill and child-page current are F-N1/F-N2 |
+| R5-16 | drawer 203 + panels | mega items open an empty white bar; label turns invisible blue | the panels carry sgsHideOnMobile/Tablet (cloned from the draft's desktop panel), and the drawer reuses the same posts; itemColourHover unset | flags unset on the four panels; drawer card presentation (yellow shell, radius 22, aside order, link rows, 2x2 sector cards, 3-column brand tiles); submenuBg transparent; itemColourHover primary-text, itemColourOpen accent-light | Fill | done; promo photo, row arrows, tag overlay and gold open chevron wait on F-D1 to F-D4 |
+| R5-02 | delivery 127 | FAQ with no questions | clone gap: icon-only rows | sgs/accordion with the draft's three questions (faqs page's settings) | Fill | done |
+| R5-05 | about 92, our-story 95 | pin 151px short; hint indent; tablet title 24px | panelPinTail 0; hint padding 40 at every width | panelPinTail 17; hint padding 40/32/20 with icon + text; titleFontSize 28/21/21 | Fill | done: 3858 vs 3856, 3904 vs 3902 |
+| R5-09 | shan, green-leaf, lemon-tree | no eyebrow dash; feature rows 75px pitch | round 3's sanam fix not copied | marker line 28x2 on the three eyebrows; feature grid gap 0 24px | Fill | done |
+| R5-11 | delivery, food-service | eyebrow gap, rows short | label has no bottom margin; row text no top margin | label margin bottom 16px; row text margin top 6px | Fill | done; food-service rows 4px short, delivery 5px short at 768 (open, low) |
+| R5-12 | blog 508; posts | pill plain text; grid-to-CTA gap at 768; no post content | label background unset; tablet padding 48; posts empty | label background #FFFFFF80 + margin top 40; CTA padding 64/52/40; six posts filled from the draft (excerpt, category, Unsplash photo, body), Hello world deleted | Fill + content | done; pill width waits on F-L |
+| R5-15 | single post (template 432) | default theme layout, comments | template 432 is the theme default with a full-width main | template rebuilt from the draft (hero, 740px article, meta row, keep-reading cards, CTA); article text styling on the template's article container (Bean: the template sets the default styling); comments closed | template | done; pill radius, card tag colour and date row, breadcrumb last crumb, read-time wording open |
+| R5-06 | apply 163, 123 | heading and intro gaps; panel short | form gap stacks on the heading and intro margins | heading margin 7/0, intro margin -13/7; panel list margin top 14 | Fill | done (within 1px); progress, completed step, sticky bar, checkbox row wait on F-F1 to F-F4 |
+| R5-07 | contact 133, 149 | icons 32px; lines tight; pills touch; tiles 95px | iconSize default; no line margins; pill gap mobile only; tile line-height 26px | iconSize 20; lines margin top 4; pill gap 12; tileLabelLineHeight 1.2 + tile gap 4; textarea rows 4 | Fill | done; textarea 172 vs 166 waits on F-F5 |
+| R5-08 | careers 103 | ring overflows; sublines tight | card overflow visible; no subline margin | overflow hidden; subline margin top 17 | Fill | done |
+| R5-17 | every page (56 buttons) | magnet only engages on the button and snaps back | the clone copied the draft's over-only magnet (5px pull, quick return) | proximity mode: radius 120, factor 0.35, up to 14x10px, return 600ms (Bean ruling, divergence D-27) | Fill | done |
+| R5-13 | site-check | one form a run fails "did not change its state" | probable: the filler clicks a computed point with force while smooth scroll and the entrance motion still move the checkbox (pointerdown landed 73px below it in a captured failure); not reproduced on demand | script click plus isChecked assertion, disabled controls skipped (form-submit-page.mjs::fillVisible), a cause-agnostic mitigation | gate | coded |
+
+Framework items (built in this round):
+
+| Id | Block | Gap | Fix |
+|---|---|---|---|
+| F-N1 | nav-bar-menu, nav-drawer-menu | mega items never current on child pages | markCurrentPage scans panel links and flags the item root (data-sgs-nav-has-current); ancestor selector covers __mega |
+| F-N2 | nav-bar-menu | split item pill stops before the chevron | the pill paints across label and toggle for hover, open and current |
+| F-H | hero | no background behind contained split media | splitMediaBackground |
+| F-L | label (childSizing) | a pill label stretches across a flex column | label opts into childSizing; fit adds width:fit-content |
+| F-F1 | form | track fills at step 1 | progressFill current/completed |
+| F-F2 | form | completed step looks active | stepNumberCompletedBackground/Colour, stepCompletedIcon tick |
+| F-F3 | form | no sticky actions on mobile | actionsSticky (per device) with background, border, padding, bleed, shadow |
+| F-F4 | form-field-checkbox | no card row style | optionPresentation card with row and box settings |
+| F-F5 | form-field-textarea | no height or padding | inputMinHeight, inputPadding, inputLineHeight |
+| F-D1 | mega-panel | a fill photo collapses to 0px in the drawer (no definite height up the chain) | drawer aside fill media takes an aspect ratio (drawerCardMediaRatio, default 2/1) |
+| F-D2 | mega-panel | no drawer row arrow | drawerLinkTrailingIcon, drawerLinkTrailingColour |
+| F-D3 | mega-panel | stacked-overlay needs flat aside children; tag radius not per presentation | slot detection reads one wrapping container level; drawerCardTagRadius |
+| F-D4 | nav-drawer-menu | open caret colour | caretColourOpen (caretBoxBgOpen already existed) |

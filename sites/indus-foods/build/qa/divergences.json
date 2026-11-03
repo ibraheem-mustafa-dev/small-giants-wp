@@ -428,5 +428,17 @@
     },
     "reason": "At 375 the draft wraps the secondary CTA link under the button (its 22px column gap and 15.5px link text overflow the 287px row by a few pixels); the live row fits both side by side. Bean prefers the live layout.",
     "decided": "2026-11-02 Bean ruling (Indus round 3, R3-05)"
+  },
+  {
+    "id": "D-27",
+    "scope": "every page, header, footer, drawer",
+    "node": "every sgs/button with the magnet hover effect (56 instances)",
+    "state": "hover",
+    "property": "translate (magnet pull)",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft's magnet engages only while the pointer is over the button (about 5px travel, then a quick return), which Bean saw as broken. The live buttons use the framework's proximity mode: the pull starts about 100px away (radius 120, factor 0.35, up to 14px x 10px) and eases back over a 600ms return.",
+    "decided": "2026-11-03 Bean ruling (Indus round 5)"
   }
 ]
