@@ -290,7 +290,7 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		// on a page with no sticky header at all. ---
 		if ( $sticky['enabled'] ) {
 			$offset_len = '' !== $sticky['offset'] ? $sticky['offset'] : '0px';
-			$css[]      = '@media(min-width:768px){' . $root_sel . ' .sgs-buybox__config-col{position:sticky;top:calc(var(--sgs-header-height, 0px) + ' . $offset_len . ');}}';
+			$css[]      = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $root_sel . ' .sgs-buybox__config-col{position:sticky;top:calc(var(--sgs-header-height, 0px) + ' . $offset_len . ');}}';
 		}
 
 		// --- RRP saving pill colours. ---

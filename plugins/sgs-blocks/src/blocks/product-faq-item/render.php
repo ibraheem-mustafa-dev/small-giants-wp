@@ -216,10 +216,10 @@ if ( $border['base'] ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 // ── Border rules: the gradient ring and the explicit `none` override. ──
 $scoped_css = array_merge( $scoped_css, $border['rules'] );

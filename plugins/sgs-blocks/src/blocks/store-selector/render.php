@@ -162,10 +162,10 @@ if ( ! empty( $panel_padding_desktop ) ) {
 $panel_padding_tab_val = sgs_box_object_longhands( is_array( $panel_padding_tiers['tablet'] ?? null ) ? $panel_padding_tiers['tablet'] : array(), 'padding' );
 $panel_padding_mob_val = sgs_box_object_longhands( is_array( $panel_padding_tiers['mobile'] ?? null ) ? $panel_padding_tiers['mobile'] : array(), 'padding' );
 if ( null !== $panel_padding_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{{$panel_padding_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$list_sel}{{$panel_padding_tab_val};}}";
 }
 if ( null !== $panel_padding_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{{$panel_padding_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$list_sel}{{$panel_padding_mob_val};}}";
 }
 
 // --- Gap (tiered scalar — items and the trigger's own internal gap). ---
@@ -177,10 +177,10 @@ if ( '' !== $gap_desktop_val ) {
 $gap_tab_val = sgs_css_length_value( is_scalar( $gap_tiers['tablet'] ?? null ) ? (string) $gap_tiers['tablet'] : '' );
 $gap_mob_val = sgs_css_length_value( is_scalar( $gap_tiers['mobile'] ?? null ) ? (string) $gap_tiers['mobile'] : '' );
 if ( '' !== $gap_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$list_sel}{gap:{$gap_tab_val};}{$trigger_sel}{gap:{$gap_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$list_sel}{gap:{$gap_tab_val};}{$trigger_sel}{gap:{$gap_tab_val};}}";
 }
 if ( '' !== $gap_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$list_sel}{gap:{$gap_mob_val};}{$trigger_sel}{gap:{$gap_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$list_sel}{gap:{$gap_mob_val};}{$trigger_sel}{gap:{$gap_mob_val};}}";
 }
 
 // --- Border (width, style, colour flat or gradient, base and hover, radius at
@@ -208,10 +208,10 @@ if ( $border['hover'] ) {
 	$scoped_css[] = sgs_hover_state_rules( $list_sel, implode( ';', $border['hover'] ), ':focus-within' );
 }
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $list_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $list_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $list_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $list_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // --- Flag size (tiered {w,h}, helpers.php::sgs_store_selector_flag_size()). ---
@@ -224,8 +224,8 @@ $flag_img_sel = $root_sel . ' .sgs-store-selector__flag';
 // A flag size set at a tier is the trigger's and each item's tap area there; a tier with none keeps style.css's 44px floor.
 $flag_tap_tiers = array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px){',
-	'mobile'  => '@media(max-width:767px){',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ) . '{',
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ) . '{',
 );
 foreach ( $flag_tap_tiers as $flag_tap_tier => $flag_tap_open ) {
 	$flag_tap_own = $flag_size_tiers[ $flag_tap_tier ] ?? null;
@@ -235,10 +235,10 @@ foreach ( $flag_tap_tiers as $flag_tap_tier => $flag_tap_open ) {
 }
 $scoped_css[] = "{$flag_img_sel}{width:{$flag_desktop['w']}px;height:{$flag_desktop['h']}px;}";
 if ( $flag_tablet !== $flag_desktop ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$flag_img_sel}{width:{$flag_tablet['w']}px;height:{$flag_tablet['h']}px;}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$flag_img_sel}{width:{$flag_tablet['w']}px;height:{$flag_tablet['h']}px;}}";
 }
 if ( $flag_mobile !== $flag_tablet ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$flag_img_sel}{width:{$flag_mobile['w']}px;height:{$flag_mobile['h']}px;}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$flag_img_sel}{width:{$flag_mobile['w']}px;height:{$flag_mobile['h']}px;}}";
 }
 
 // ---------------------------------------------------------------------------

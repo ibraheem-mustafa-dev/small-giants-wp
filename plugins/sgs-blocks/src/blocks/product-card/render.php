@@ -425,10 +425,10 @@ if ( $sgs_attribute_tag_decls ) {
 	$sgs_attribute_tag_box_css .= $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_decls ) . ';}';
 }
 if ( $sgs_attribute_tag_border['tablet'] ) {
-	$sgs_attribute_tag_box_css .= '@media(max-width:1023px){' . $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_border['tablet'] ) . ';}}';
+	$sgs_attribute_tag_box_css .= sgs_emit_tier_decls( $sgs_attribute_tag_sel, array( 'tablet' => $sgs_attribute_tag_border['tablet'] ) );
 }
 if ( $sgs_attribute_tag_border['mobile'] ) {
-	$sgs_attribute_tag_box_css .= '@media(max-width:767px){' . $sgs_attribute_tag_sel . '{' . implode( ';', $sgs_attribute_tag_border['mobile'] ) . ';}}';
+	$sgs_attribute_tag_box_css .= sgs_emit_tier_decls( $sgs_attribute_tag_sel, array( 'mobile' => $sgs_attribute_tag_border['mobile'] ) );
 }
 $sgs_attribute_tag_box_css .= implode( '', $sgs_attribute_tag_border['rules'] );
 $sgs_card_typo_css         .= $sgs_attribute_tag_box_css;
@@ -744,10 +744,10 @@ $sgs_card_typo_css .= implode( '', $sgs_pc_border['rules'] );
 $sgs_card_typo_css .= sgs_product_card_parts_css( $sgs_pc_root_sel, $attributes );
 
 if ( $sgs_pc_border['tablet'] ) {
-	$sgs_card_typo_css .= '@media(max-width:1023px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border['tablet'] ) . ';}}';
+	$sgs_card_typo_css .= sgs_emit_tier_decls( $sgs_pc_root_sel, array( 'tablet' => $sgs_pc_border['tablet'] ) );
 }
 if ( $sgs_pc_border['mobile'] ) {
-	$sgs_card_typo_css .= '@media(max-width:767px){' . $sgs_pc_root_sel . '{' . implode( ';', $sgs_pc_border['mobile'] ) . ';}}';
+	$sgs_card_typo_css .= sgs_emit_tier_decls( $sgs_pc_root_sel, array( 'mobile' => $sgs_pc_border['mobile'] ) );
 }
 // Skip-serialised color/border supports also stop WP auto-adding the standard
 // has-*-color / has-*-background-color / has-*-border-color classes onto the

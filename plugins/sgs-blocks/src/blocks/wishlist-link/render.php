@@ -120,8 +120,8 @@ $scoped_css[] = sgs_text_states_css(
 $icon_size_tiers = sgs_responsive_normalise_object( $attributes['iconSize'] ?? null, false );
 foreach ( array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 ) as $tier => $media ) {
 	$size = $icon_size_tiers[ $tier ] ?? null;
 	if ( null === $size || '' === $size ) {
@@ -166,11 +166,11 @@ foreach (
 			'effective' => $show_label_base,
 		),
 		'tablet'  => array(
-			'media'     => '@media(max-width:1023px)',
+			'media'     => SGS_Breakpoints::media( 'tablet' ),
 			'effective' => $show_label_tablet_effective,
 		),
 		'mobile'  => array(
-			'media'     => '@media(max-width:767px)',
+			'media'     => SGS_Breakpoints::media( 'mobile' ),
 			'effective' => $show_label_mobile_effective,
 		),
 	) as $sgs_wl_tier_data

@@ -143,8 +143,8 @@ $columns_tiers = sgs_responsive_normalise_object( $attributes['columns'] ?? null
 $gap_tiers     = sgs_responsive_normalise_object( $attributes['gap'] ?? null, false );
 foreach ( array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 ) as $tier => $media ) {
 	$decls = array();
 	$cols  = $columns_tiers[ $tier ] ?? null;

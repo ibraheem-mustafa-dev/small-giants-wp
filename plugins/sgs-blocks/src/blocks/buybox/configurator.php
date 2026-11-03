@@ -121,8 +121,8 @@ if ( ! function_exists( 'sgs_buybox_configurator_tier_css' ) ) {
 		$tiers = sgs_responsive_normalise_object( $value, true );
 		$wrap  = array(
 			'desktop' => '%s',
-			'tablet'  => '@media(max-width:1023px){%s}',
-			'mobile'  => '@media(max-width:767px){%s}',
+			'tablet'  => SGS_Breakpoints::media( 'tablet' ) . '{%s}',
+			'mobile'  => SGS_Breakpoints::media( 'mobile' ) . '{%s}',
 		);
 		$out   = array();
 		foreach ( $wrap as $tier => $media ) {

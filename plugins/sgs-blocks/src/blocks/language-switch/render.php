@@ -159,10 +159,10 @@ if ( '' !== $gap_desktop ) {
 	$scoped_css[] = $root_sel . ' .sgs-language-switch__list{gap:' . $gap_desktop . ';}';
 }
 if ( '' !== $gap_tablet ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . ' .sgs-language-switch__list{gap:' . $gap_tablet . ';}}';
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . ' .sgs-language-switch__list{gap:' . $gap_tablet . ';}}';
 }
 if ( '' !== $gap_mobile ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . ' .sgs-language-switch__list{gap:' . $gap_mobile . ';}}';
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . ' .sgs-language-switch__list{gap:' . $gap_mobile . ';}}';
 }
 
 $sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
@@ -182,10 +182,10 @@ if ( null !== $panel_padding_desktop_val ) {
 	$scoped_css[] = $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_desktop_val . ';}';
 }
 if ( null !== $panel_padding_tablet_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_tablet_val . ';}}';
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_tablet_val . ';}}';
 }
 if ( null !== $panel_padding_mobile_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_mobile_val . ';}}';
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . ' .sgs-language-switch__panel{' . $panel_padding_mobile_val . ';}}';
 }
 
 // ---------------------------------------------------------------------------

@@ -182,10 +182,10 @@ if ( $trigger_has_pill ) {
 		$scoped_css[] = $pill_sel . '{' . implode( ';', $pill_border['base'] ) . ';}';
 	}
 	if ( $pill_border['tablet'] ) {
-		$scoped_css[] = '@media(max-width:1023px){' . $pill_sel . '{' . implode( ';', $pill_border['tablet'] ) . ';}}';
+		$scoped_css[] = sgs_emit_tier_decls( $pill_sel, array( 'tablet' => $pill_border['tablet'] ) );
 	}
 	if ( $pill_border['mobile'] ) {
-		$scoped_css[] = '@media(max-width:767px){' . $pill_sel . '{' . implode( ';', $pill_border['mobile'] ) . ';}}';
+		$scoped_css[] = sgs_emit_tier_decls( $pill_sel, array( 'mobile' => $pill_border['mobile'] ) );
 	}
 	$scoped_css = array_merge( $scoped_css, $pill_border['rules'] );
 
@@ -389,8 +389,8 @@ if ( $has_panel ) {
 	$sgs_cart_close_tiers = sgs_responsive_normalise_object( $attributes['panelCloseSize'] ?? null, false );
 	foreach ( array(
 		'desktop' => '',
-		'tablet'  => '@media(max-width:1023px)',
-		'mobile'  => '@media(max-width:767px)',
+		'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+		'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 	) as $sgs_cart_close_tier => $sgs_cart_close_media ) {
 		$sgs_cart_close_size = $sgs_cart_close_tiers[ $sgs_cart_close_tier ] ?? null;
 		if ( null === $sgs_cart_close_size || '' === $sgs_cart_close_size || '' === sgs_css_length_value( is_numeric( $sgs_cart_close_size ) ? $sgs_cart_close_size . 'px' : (string) $sgs_cart_close_size ) ) {

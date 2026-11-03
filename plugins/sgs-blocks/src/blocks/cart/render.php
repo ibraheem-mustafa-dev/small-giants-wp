@@ -69,13 +69,13 @@ $icon_name             = preg_replace( '/[^a-z0-9-]/', '', strtolower( $attribut
 $sgs_cart_tier_keys    = array( 'desktop', 'tablet', 'mobile' );
 $sgs_cart_tier_media   = array(
 	'desktop' => '',
-	'tablet'  => '@media(max-width:1023px)',
-	'mobile'  => '@media(max-width:767px)',
+	'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+	'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 );
 $sgs_cart_tier_ranges  = array(
-	'desktop' => '(min-width:1024px)',
-	'tablet'  => '(min-width:768px) and (max-width:1023px)',
-	'mobile'  => '(max-width:767px)',
+	'desktop' => SGS_Breakpoints::query( 'desktop' ),
+	'tablet'  => SGS_Breakpoints::query( 'tablet-only' ),
+	'mobile'  => SGS_Breakpoints::query( 'mobile' ),
 );
 $icon_size_obj         = is_array( $attributes['iconSize'] ?? null ) ? $attributes['iconSize'] : array();
 $icon_size_own         = array();
@@ -139,23 +139,23 @@ if ( $trigger_mixed ) {
 		$md_on = $range_style === $trigger_tiers['md'];
 		$sm_on = $range_style === $trigger_tiers['sm'];
 		if ( $lg_on && $md_on ) {
-			$trigger_ranges[ $range_style ][] = '(min-width:768px)';
+			$trigger_ranges[ $range_style ][] = SGS_Breakpoints::query( 'tablet-up' );
 			$lg_on                            = false;
 			$md_on                            = false;
 		}
 		if ( $md_on && $sm_on ) {
-			$trigger_ranges[ $range_style ][] = '(max-width:1023px)';
+			$trigger_ranges[ $range_style ][] = SGS_Breakpoints::query( 'tablet' );
 			$md_on                            = false;
 			$sm_on                            = false;
 		}
 		if ( $lg_on ) {
-			$trigger_ranges[ $range_style ][] = '(min-width:1024px)';
+			$trigger_ranges[ $range_style ][] = SGS_Breakpoints::query( 'desktop' );
 		}
 		if ( $md_on ) {
-			$trigger_ranges[ $range_style ][] = '(min-width:768px) and (max-width:1023px)';
+			$trigger_ranges[ $range_style ][] = SGS_Breakpoints::query( 'tablet-only' );
 		}
 		if ( $sm_on ) {
-			$trigger_ranges[ $range_style ][] = '(max-width:767px)';
+			$trigger_ranges[ $range_style ][] = SGS_Breakpoints::query( 'mobile' );
 		}
 	}
 }
@@ -313,10 +313,10 @@ $margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel}{{$margin_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel}{{$margin_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$sel}{{$margin_mob_val};}}";
 }
 
 // ── Cart custom-property VALUES (icon size/colour) — scoped rule on the

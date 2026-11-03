@@ -230,10 +230,10 @@ if ( $sgs_ps_border['hover'] ) {
 }
 $sgs_scoped_css = array_merge( $sgs_scoped_css, $sgs_ps_border['rules'] );
 if ( $sgs_ps_border['tablet'] ) {
-	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border['tablet'] ) . ';}}';
+	$sgs_scoped_css[] = sgs_emit_tier_decls( $sgs_ps_border_sel, array( 'tablet' => $sgs_ps_border['tablet'] ) );
 }
 if ( $sgs_ps_border['mobile'] ) {
-	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_ps_border_sel}{" . implode( ';', $sgs_ps_border['mobile'] ) . ';}}';
+	$sgs_scoped_css[] = sgs_emit_tier_decls( $sgs_ps_border_sel, array( 'mobile' => $sgs_ps_border['mobile'] ) );
 }
 
 // --- Colour overrides (input border / focus ring / listbox background /
@@ -311,7 +311,7 @@ if ( null !== $sgs_margin_tab_val ) {
 	$sgs_tablet_decls[] = "{$sgs_margin_tab_val}";
 }
 if ( $sgs_tablet_decls ) {
-	$sgs_scoped_css[] = '@media(max-width:1023px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_tablet_decls ) . ';}}';
+	$sgs_scoped_css[] = sgs_emit_tier_decls( $sgs_style_sel, array( 'tablet' => $sgs_tablet_decls ) );
 }
 
 $sgs_mobile_decls = array();
@@ -322,7 +322,7 @@ if ( null !== $sgs_margin_mob_val ) {
 	$sgs_mobile_decls[] = "{$sgs_margin_mob_val}";
 }
 if ( $sgs_mobile_decls ) {
-	$sgs_scoped_css[] = '@media(max-width:767px){' . "{$sgs_style_sel}{" . implode( ';', $sgs_mobile_decls ) . ';}}';
+	$sgs_scoped_css[] = sgs_emit_tier_decls( $sgs_style_sel, array( 'mobile' => $sgs_mobile_decls ) );
 }
 
 // -------------------------------------------------------------------------
