@@ -789,10 +789,10 @@ if ( ! empty( $sgs_bb_photo_decls ) ) {
 }
 $scoped_css[] = implode( '', $sgs_bb_photo_border['rules'] );
 if ( $sgs_bb_photo_border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['tablet'] ) . ';}}';
+	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['tablet'] ) . ';}}';
 }
 if ( $sgs_bb_photo_border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['mobile'] ) . ';}}';
+	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['mobile'] ) . ';}}';
 }
 $sgs_bb_photo_radius = sgs_css_length_value( (string) ( $attributes['mainPhotoRadius'] ?? '' ) );
 if ( '' !== $sgs_bb_photo_radius ) {
