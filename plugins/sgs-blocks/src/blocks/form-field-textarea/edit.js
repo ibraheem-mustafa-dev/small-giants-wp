@@ -8,8 +8,8 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
-import { DesignTokenPicker, ResponsiveOverride, SgsLengthControl, resolveColourToken } from '../../components';
-import { usePreviewTier, tierLengthPreview } from '../../utils';
+import { DesignTokenPicker, ResponsiveOverride, SgsLengthControl, SgsBoxControl, BOX_UNITS, normaliseResponsiveBox, resolveColourToken } from '../../components';
+import { usePreviewTier, tierLengthPreview, tierBoxLonghands } from '../../utils';
 import { fieldLabelClasses, fieldDefaultValue, FieldCounterPreview } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
@@ -36,7 +36,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const counterColour = resolveColourToken( attributes.counterColour, palette );
 	const previewTier = usePreviewTier();
 	const counterSize = tierLengthPreview( attributes.counterFontSize, previewTier );
+	const inputMinHeight = tierLengthPreview( attributes.inputMinHeight, previewTier );
+	const inputPaddingCss = Object.entries( tierBoxLonghands( attributes.inputPadding, previewTier, 'padding' ) )
+		.map( ( [ prop, val ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val }` )
+		.join( ';' );
 	const counterPreviewCss = [
+		inputPaddingCss && `.${ counterScope } textarea.sgs-form-field__input{${ inputPaddingCss };}`,
+		inputMinHeight && `.${ counterScope } textarea.sgs-form-field__input{min-height:${ inputMinHeight };}`,
+		attributes.inputLineHeight && `.${ counterScope } textarea.sgs-form-field__input{line-height:${ attributes.inputLineHeight };}`,
 		counterColour && `.${ counterScope } .sgs-form-field__counter{color:${ counterColour };}`,
 		counterSize && `.${ counterScope } .sgs-form-field__counter{font-size:${ counterSize };}`,
 	].filter( Boolean ).join( '' );
@@ -175,6 +182,53 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								value={ width }
 								options={ WIDTH_OPTIONS }
 								onChange={ ( val ) => setAttributes( { width: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Box size and spacing', 'sgs-blocks' ) }
+							hasValue={ () => [ 'inputMinHeight', 'inputPadding', 'inputLineHeight' ].some( ( key ) => {
+								const value = attributes[ key ];
+								return value && 'object' === typeof value ? Object.keys( value ).length > 0 : !! value;
+							} ) }
+							onDeselect={ () => setAttributes( { inputMinHeight: undefined, inputPadding: undefined, inputLineHeight: undefined } ) }
+						>
+							<ResponsiveOverride
+								label={ __( 'Minimum height', 'sgs-blocks' ) }
+								value={ attributes.inputMinHeight }
+								onChange={ ( obj ) => setAttributes( { inputMinHeight: obj } ) }
+							>
+								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+									<SgsLengthControl
+										presets={ false }
+										hideLabelFromVision
+										label={ __( 'Minimum height', 'sgs-blocks' ) }
+										value={ ownValue ?? '' }
+										placeholder={ inherited ? effectiveValue : '' }
+										onChange={ ( val ) => setOwnValue( val || undefined ) }
+									/>
+								) }
+							</ResponsiveOverride>
+							<ResponsiveOverride
+								value={ attributes.inputPadding }
+								onChange={ ( obj ) => setAttributes( { inputPadding: obj } ) }
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SgsBoxControl
+										label={ __( 'Padding', 'sgs-blocks' ) }
+										values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+										units={ BOX_UNITS }
+										presets
+										onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+									/>
+								) }
+							</ResponsiveOverride>
+							<TextControl
+								label={ __( 'Line height', 'sgs-blocks' ) }
+								value={ attributes.inputLineHeight ?? '' }
+								onChange={ ( val ) => setAttributes( { inputLineHeight: val } ) }
+								help={ __( 'A number such as 1.5, a length, or normal. Empty inherits. With the counter inside the box, the bottom padding stays as set by the counter.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

@@ -41,6 +41,7 @@ const controlInfo = ( el ) => {
 		name: el.name || el.id || '',
 		options: 'SELECT' === el.tagName ? [ ...el.options ].map( ( o ) => o.value ) : [],
 		trap: /^sgs_hp_/.test( el.name || '' ) || !! el.closest( '[aria-hidden="true"]' ),
+		disabled: !! el.disabled,
 		label: [ ...( el.labels || [] ) ].some( seen ),
 		checked: !! el.checked,
 		value: 'SELECT' === el.tagName || 'checkbox' === el.type || 'radio' === el.type ? '' : el.value,
@@ -59,7 +60,7 @@ export async function fillVisible( page, skip = 0, { marker = null, form = FORM_
 		const c = controls.nth( i );
 		const info = await c.evaluate( controlInfo );
 		const shows = await c.isVisible();
-		if ( info.trap || ( ! shows && ! info.label ) ) {
+		if ( info.trap || info.disabled || ( ! shows && ! info.label ) ) {
 			continue;
 		}
 		if ( left > 0 ) {
@@ -75,7 +76,15 @@ export async function fillVisible( page, skip = 0, { marker = null, form = FORM_
 			// A radio group's controls are all required: the first ticked stands for the group.
 			const group = info.name && 'radio' === info.type ? await page.locator( `${ form } input[type="radio"][name="${ info.name }"]:checked` ).count() : 0;
 			if ( ! info.checked && ! group ) {
-				shows ? await c.check( { force: true } ) : await c.evaluate( ( el ) => [ ...el.labels ].find( ( l ) => l.getBoundingClientRect().width > 0 ).click() );
+				if ( shows ) {
+					// A script click, not Playwright's: entrance motion and smooth scroll move the box after the point is computed, and force skips the stability wait.
+					await c.evaluate( ( el ) => el.click() );
+					if ( ! await c.isChecked() ) {
+						throw new Error( `Form filler: clicking the ${ info.type } "${ info.name }" did not change its state` );
+					}
+				} else {
+					await c.evaluate( ( el ) => [ ...el.labels ].find( ( l ) => l.getBoundingClientRect().width > 0 ).click() );
+				}
 			}
 		} else if ( 'select' === info.tag ) {
 			await c.selectOption( v, { force: ! shows } );
@@ -90,7 +99,7 @@ export async function fillVisible( page, skip = 0, { marker = null, form = FORM_
 	for ( let i = 0; i < await extra.count(); i++ ) {
 		const c = extra.nth( i );
 		const info = await c.evaluate( controlInfo );
-		if ( ! info.trap && await c.isVisible() && '' === info.value ) {
+		if ( ! info.trap && ! info.disabled && await c.isVisible() && '' === info.value ) {
 			await c.fill( markedValueFor( info, marker ) );
 		}
 	}

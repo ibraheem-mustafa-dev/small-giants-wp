@@ -25,6 +25,8 @@ import {
 	wrapperPreview,
 	isCssGradient,
 	tierBoxLonghands,
+	resolveShadowPreviewComposed,
+	sgsLengthPreview,
 	tierLengthPreview,
 	tierValueOf,
 } from '../../utils';
@@ -331,6 +333,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const stepCounterColourValue = resolveColourToken( attributes.stepCounterColour, palette );
 	const trackColourValue = resolveColourToken( attributes.progressTrackColour, palette );
 	const stepNumberInactiveValue = resolveColourToken( attributes.stepNumberInactiveBackground, palette );
+	const stepNumberDoneBg = resolveColourToken( attributes.stepNumberCompletedBackground, palette );
+	const stepNumberDoneColour = resolveColourToken( attributes.stepNumberCompletedColour, palette );
+	// The sticky buttons row at the previewed device, as render.php prints it where sticky is on.
+	const stickyOn = !! tierValueOf( attributes.actionsSticky, previewTier );
+	const stickyBg = resolveColourToken( attributes.actionsStickyBackground, palette );
+	const stickyBorder = resolveColourToken( attributes.actionsStickyBorderColour, palette );
+	const stickyBleed = sgsLengthPreview( attributes.actionsStickyBleed );
+	const stickyShadow = resolveShadowPreviewComposed( attributes.actionsStickyShadow, attributes.actionsStickyShadowColour );
+	const stickyPadding = Object.entries( tierBoxLonghands( attributes.actionsStickyPadding, previewTier, 'padding' ) )
+		.map( ( [ prop, val ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val };` )
+		.join( '' );
+	const stickyDecls = stickyOn
+		? `position:sticky;bottom:0;z-index:5;background-color:${ stickyBg || 'transparent' };${ stickyBorder ? `border-top:1px solid ${ stickyBorder };` : '' }${ stickyBleed ? `margin-inline:calc(-1 * ${ stickyBleed });` : '' }${ stickyShadow ? `box-shadow:${ stickyShadow };` : '' }${ stickyPadding }`
+		: '';
 	const fieldEdgeValue = resolveColourToken( fieldBorderColour, palette );
 	const fieldHolderValue = resolveColourToken( fieldPlaceholderColour, palette );
 	const fieldVars = [
@@ -447,6 +463,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		( trackColourValue || trackHeightValue ) && `.${ formPreviewScope } .sgs-form__progress{border-radius:999px;overflow:hidden;}`,
 		trackHeightValue && `.${ formPreviewScope } .sgs-form__progress{height:${ trackHeightValue };}.${ formPreviewScope } .sgs-form__progress-bar{height:100%;}`,
 		stepNumberInactiveValue && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
+		( stepNumberDoneBg || stepNumberDoneColour ) && `.${ formPreviewScope } .sgs-form__progress-step--completed .sgs-form__progress-step-number{${ stepNumberDoneBg ? `background-color:${ stepNumberDoneBg };border-color:${ stepNumberDoneBg };` : '' }${ stepNumberDoneColour ? `color:${ stepNumberDoneColour };` : '' }}`,
+		stickyDecls && `.${ formPreviewScope } .sgs-form__actions{${ stickyDecls }}`,
 		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
 		tierValueOf( attributes.stepCounterNameHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
 		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
@@ -782,6 +800,34 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'step-number-inactive',
 						label: __( 'Inactive step number background', 'sgs-blocks' ),
 						attrs: { base: 'stepNumberInactiveBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'step-number-completed-bg',
+						label: __( 'Completed step number background', 'sgs-blocks' ),
+						attrs: { base: 'stepNumberCompletedBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'step-number-completed-colour',
+						label: __( 'Completed step number colour', 'sgs-blocks' ),
+						attrs: { base: 'stepNumberCompletedColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'actions-sticky-bg',
+						label: __( 'Sticky buttons row background', 'sgs-blocks' ),
+						attrs: { base: 'actionsStickyBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'actions-sticky-border',
+						label: __( 'Sticky buttons row top line', 'sgs-blocks' ),
+						attrs: { base: 'actionsStickyBorderColour' },
 						attributes,
 						setAttributes,
 					} ),

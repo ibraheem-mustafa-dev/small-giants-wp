@@ -196,6 +196,11 @@ $context = array(
 	'successRedirect' => $success_redirect,
 );
 
+// "completed" progress fill: only finished steps count. The default ("current") adds nothing to the context.
+if ( 'completed' === (string) ( $attributes['progressFill'] ?? '' ) ) {
+	$context['progressFill'] = 'completed';
+}
+
 // The step counter's wording travels in the context only when the counter is on, so view.js can
 // keep the text in step with currentStep; an untouched form's context is unchanged.
 $sgs_form_counter_on    = ! empty( $attributes['stepCounter'] ) && $is_multi_step;
@@ -625,6 +630,13 @@ $sgs_number_off = sgs_colour_value( (string) ( $attributes['stepNumberInactiveBa
 if ( '' !== $sgs_number_off ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:' . $sgs_number_off . ';}';
 }
+$sgs_done_bg     = sgs_colour_value( (string) ( $attributes['stepNumberCompletedBackground'] ?? '' ) );
+$sgs_done_colour = sgs_colour_value( (string) ( $attributes['stepNumberCompletedColour'] ?? '' ) );
+if ( '' !== $sgs_done_bg || '' !== $sgs_done_colour ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step--completed .sgs-form__progress-step-number{'
+		. ( '' !== $sgs_done_bg ? 'background-color:' . $sgs_done_bg . ';border-color:' . $sgs_done_bg . ';' : '' )
+		. ( '' !== $sgs_done_colour ? 'color:' . $sgs_done_colour . ';' : '' ) . '}';
+}
 foreach ( array(
 	'stepCounterNameHidden' => '.sgs-form__step-counter-name',
 	'actionsNoteHidden'     => '.sgs-form__actions-note',
@@ -699,6 +711,69 @@ if ( '' !== $sgs_submit_align ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__actions{justify-content:' . $sgs_submit_align . ';}';
 }
 $sgs_field_css .= sgs_flex_wrap_css( $attributes, '.' . $sgs_form_uid, array( 'actionsFlexWrap' => '.sgs-form__actions' ) );
+
+// Sticky buttons row. Each device is on or off (a blank device follows the one above it); a tier that
+// differs from the tier above prints either the sticky block or a reset to the stylesheet's own look.
+$sgs_sticky_raw = is_array( $attributes['actionsSticky'] ?? null ) ? $attributes['actionsSticky'] : array();
+if ( array() !== $sgs_sticky_raw ) {
+	$sgs_sticky_bool  = static fn( $v ): ?bool => is_bool( $v ) || is_numeric( $v ) ? (bool) $v : null;
+	$sgs_sticky_on    = array();
+	$sgs_sticky_prev  = false;
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_tier ) {
+		$sgs_tier_value           = $sgs_sticky_bool( $sgs_sticky_raw[ $sgs_tier ] ?? null );
+		$sgs_sticky_prev            = $sgs_tier_value ?? $sgs_sticky_prev;
+		$sgs_sticky_on[ $sgs_tier ] = $sgs_sticky_prev;
+	}
+	$sgs_sticky_bg     = sgs_colour_value( (string) ( $attributes['actionsStickyBackground'] ?? '' ) );
+	$sgs_sticky_border = sgs_colour_value( (string) ( $attributes['actionsStickyBorderColour'] ?? '' ) );
+	$sgs_sticky_bleed  = sgs_css_single_length_value( (string) ( $attributes['actionsStickyBleed'] ?? '' ) );
+	$sgs_sticky_shadow = sgs_shadow_decls( $attributes, array( 'base' => 'actionsStickyShadow', 'colour' => 'actionsStickyShadowColour' ), $block->name ?? '' );
+	$sgs_sticky_pad    = is_array( $attributes['actionsStickyPadding'] ?? null ) ? $attributes['actionsStickyPadding'] : array();
+	$sgs_sticky_box    = static function ( string $tier ) use ( $sgs_sticky_pad ): string {
+		$order = array( 'desktop', 'tablet', 'mobile' );
+		$box   = array();
+		foreach ( array_slice( $order, 0, array_search( $tier, $order, true ) + 1 ) as $t ) {
+			if ( is_array( $sgs_sticky_pad[ $t ] ?? null ) ) {
+				$box = array_merge( $box, array_filter( $sgs_sticky_pad[ $t ], static fn( $x ) => '' !== (string) $x && null !== $x ) );
+			}
+		}
+		return $box ? (string) sgs_box_object_longhands( $box, 'padding' ) : '';
+	};
+	$sgs_sticky_sel = '.' . $sgs_form_uid . ' .sgs-form__actions';
+	$sgs_sticky_on_decls = static function ( string $tier ) use ( $sgs_sticky_bg, $sgs_sticky_border, $sgs_sticky_bleed, $sgs_sticky_shadow, $sgs_sticky_box ): string {
+		$d  = 'position:sticky;bottom:0;z-index:5;';
+		$d .= 'background-color:' . ( '' !== $sgs_sticky_bg ? $sgs_sticky_bg : 'transparent' ) . ';';
+		$d .= '' !== $sgs_sticky_border ? 'border-top:1px solid ' . $sgs_sticky_border . ';' : '';
+		$d .= '' !== $sgs_sticky_bleed ? 'margin-inline:calc(-1 * ' . $sgs_sticky_bleed . ');' : '';
+		$d .= $sgs_sticky_shadow['normal'] ? implode( ';', $sgs_sticky_shadow['normal'] ) . ';' : '';
+		$box = $sgs_sticky_box( $tier );
+		$d  .= '' !== $box ? $box . ';' : '';
+		return $d;
+	};
+	$sgs_sticky_off_decls = 'position:static;bottom:auto;z-index:auto;background-color:transparent;border-top:0;margin-inline:0;box-shadow:none;padding:0;padding-top:var(--wp--preset--spacing--30,1rem);';
+	$sgs_prev_decls       = '';
+	foreach ( array( 'desktop' => null, 'tablet' => SGS_Breakpoints::TABLET_MAX, 'mobile' => SGS_Breakpoints::MOBILE_MAX ) as $sgs_tier => $sgs_max ) {
+		$sgs_decls = $sgs_sticky_on[ $sgs_tier ] ? $sgs_sticky_on_decls( $sgs_tier ) : $sgs_sticky_off_decls;
+		// Print a tier only where it differs from the one above; desktop prints only when sticky.
+		if ( $sgs_decls === $sgs_prev_decls || ( 'desktop' === $sgs_tier && ! $sgs_sticky_on['desktop'] ) ) {
+			$sgs_prev_decls = $sgs_decls;
+			continue;
+		}
+		$sgs_prev_decls = $sgs_decls;
+		$sgs_rule       = $sgs_sticky_sel . '{' . $sgs_decls . '}';
+		if ( null === $sgs_max ) {
+			$sgs_field_css .= $sgs_rule;
+		} else {
+			foreach ( SGS_Breakpoints::tier_at_rules( $sgs_max, false ) as $sgs_prefix ) {
+				$sgs_field_css .= $sgs_prefix . $sgs_rule . '}';
+			}
+		}
+	}
+	// Keep a focused field clear of the pinned row.
+	if ( in_array( true, $sgs_sticky_on, true ) ) {
+		$sgs_field_css .= '.' . $sgs_form_uid . '{scroll-padding-bottom:6rem;}';
+	}
+}
 
 if ( '' !== $sgs_field_css ) {
 	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
@@ -940,7 +1015,7 @@ if ( $is_multi_step ) :
 		>
 			<div class="sgs-form__progress-bar" data-wp-style--width="state.progressWidth" aria-hidden="true"></div>
 		</div>
-		<nav class="sgs-form__progress-steps" aria-label="<?php esc_attr_e( 'Form steps', 'sgs-blocks' ); ?>">
+		<nav class="sgs-form__progress-steps<?php echo 'tick' === (string) ( $attributes['stepCompletedIcon'] ?? '' ) ? ' sgs-form__progress-steps--tick' : ''; ?>" aria-label="<?php esc_attr_e( 'Form steps', 'sgs-blocks' ); ?>">
 			<?php foreach ( $steps as $index => $step ) : ?>
 				<?php
 				$step_context = wp_json_encode( array( 'stepIndex' => $index ) );
@@ -955,7 +1030,7 @@ if ( $is_multi_step ) :
 					aria-label="<?php echo esc_attr( sprintf( 'Go to %s', sgs_authored_text_plain( $step['label'] ) ) ); ?>"
 					data-wp-bind--aria-current="state.isStepActive"
 				>
-					<span class="sgs-form__progress-step-number"><?php echo absint( $index + 1 ); ?></span>
+					<span class="sgs-form__progress-step-number"><span class="sgs-form__progress-step-numeral"><?php echo absint( $index + 1 ); ?></span><?php if ( 'tick' === (string) ( $attributes['stepCompletedIcon'] ?? '' ) ) : ?><svg class="sgs-form__progress-step-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><?php endif; ?></span>
 					<span class="sgs-form__progress-step-label"><?php echo sgs_rich_text_kses( $step['label'], false ); ?></span>
 				</button>
 			<?php endforeach; ?>

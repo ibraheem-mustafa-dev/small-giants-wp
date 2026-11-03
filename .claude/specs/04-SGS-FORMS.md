@@ -118,6 +118,9 @@ When the form contains `sgs/form-step` inner blocks:
 - Validation runs per-step before advancing (don't surprise users with errors on submit)
 - Step state persisted in `sessionStorage` (survives page refresh)
 - Review step (if present) shows all entered data with "Edit" buttons per section
+- Progress fill: `progressFill` `current` (default) fills by the step being shown, `(currentStep + 1) / totalSteps`, so step 1 of 5 shows 20%; `completed` fills by finished steps, `currentStep / (totalSteps - 1)`, 0% on step 1 and 100% on the last (`src/blocks/form/view.js::progressFraction`; the same fraction feeds `aria-valuenow`).
+- Completed step marker: completed steps take the active step's look by default. `stepNumberCompletedBackground` and `stepNumberCompletedColour` (empty = same as active) restyle the bubble of a passed step; `stepCompletedIcon` `number` (default) or `tick` swaps the numeral for a check mark (an `aria-hidden` inline SVG, shown by `style.css::.sgs-form__progress-steps--tick`), the step name staying in the button's `aria-label`.
+- Sticky buttons row: `actionsSticky` (per device, empty = off everywhere) makes `.sgs-form__actions` `position: sticky; bottom: 0; z-index: 5` on the devices where it is true; `actionsStickyBackground`, `actionsStickyBorderColour` (1px top line), `actionsStickyPadding` (per-device box), `actionsStickyShadow` / `actionsStickyShadowColour` and `actionsStickyBleed` (negative side margin so the row spans a padded card) style it. A device that turns it off resets to the stylesheet's look. While any device is sticky the form gets `scroll-padding-bottom: 6rem` so a focused field is not hidden under the row. All of it is a scoped rule from `src/blocks/form/render.php`, never an inline style.
 
 ---
 
@@ -173,6 +176,8 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 - `uploadText` — drag-and-drop area label
 - `zoneStyle` — dashed (default) | panel: a 1px dashed panel holding the prompt, the help line and a Choose file cue, the size limit kept for screen readers | native: the browser's own file input, styled by the form's field settings, with `fileLabelBorderColour` / `fileLabelBackgroundColour` painting it
 - `sgs/form-field-textarea` `counterPlacement` — below (default) | inside: the character counter sits at the box's bottom right, with room reserved under the text; `counterFontSize` (per device) and `counterColour` style it
+- `sgs/form-field-textarea` `inputMinHeight` (per device, a length or bare px), `inputPadding` (per-device box) and `inputLineHeight` (a number, length or `normal`) style the text box itself as a scoped rule on the field's uid class; all empty by default, so the form-level field settings decide. With the counter inside the box the stylesheet keeps its own bottom padding for the counter, so a custom bottom padding does not apply there.
+- `sgs/form-field-checkbox` `optionPresentation` — `plain` (default, the bare row) | `card`: each option row becomes a box with `rowBackground`, `rowBorderWidth` / `rowBorderStyle` / `rowBorderColour` / `rowBorderRadius`, `rowPadding` (per-device box) and `rowGap`, and the native checkbox is drawn as a custom box (`appearance: none`, visible focus ring) sized by `boxSize`, rounded by `boxRadius` and filled by `boxColourChecked` when ticked. The input stays the real, accessible control. Scoped rule from `src/blocks/form-field-checkbox/render.php`; box styles in `src/blocks/form/style.css::.sgs-form-field--option-card`.
 - `buttonLabel` — the panel look's button text (empty reads "Choose file")
 
 **Processing:** Files uploaded via REST endpoint (`POST /sgs-forms/v1/upload`) to WordPress media library (or configurable private directory). Returns attachment IDs stored with the submission.

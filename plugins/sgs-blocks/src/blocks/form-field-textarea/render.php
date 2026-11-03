@@ -50,6 +50,42 @@ if ( '' !== $sgs_ta_counter && is_array( $sgs_ta_counter_size ) && array() !== $
 	);
 }
 
+// The box itself: per-device minimum height and padding, and the line height. Each is opt-in; the chained
+// field class lifts the rule above the form-level field rules. With the counter inside, the stylesheet keeps the
+// bottom padding that leaves room under the typed text, so a custom bottom padding does not apply there.
+$sgs_ta_sel    = '.' . $sgs_ta_uid . '.sgs-form-field textarea.sgs-form-field__input';
+$sgs_ta_height = $attributes['inputMinHeight'] ?? null;
+if ( is_array( $sgs_ta_height ) && array() !== $sgs_ta_height ) {
+	$sgs_ta_css .= sgs_emit_responsive_css(
+		$sgs_ta_sel,
+		array(
+			array(
+				'value'     => $sgs_ta_height,
+				'css'       => 'min-height',
+				'transform' => static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw ),
+			),
+		)
+	);
+}
+$sgs_ta_padding = $attributes['inputPadding'] ?? null;
+if ( is_array( $sgs_ta_padding ) && array() !== $sgs_ta_padding ) {
+	$sgs_ta_css .= sgs_emit_responsive_css(
+		$sgs_ta_sel,
+		array(
+			array(
+				'value'        => $sgs_ta_padding,
+				'css'          => 'padding',
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+$sgs_ta_line_height = sgs_css_single_length_value( (string) ( $attributes['inputLineHeight'] ?? '' ) );
+if ( '' !== $sgs_ta_line_height ) {
+	$sgs_ta_css .= $sgs_ta_sel . '{line-height:' . $sgs_ta_line_height . ';}';
+}
+
 $sgs_ta_classes = array();
 if ( '' !== $sgs_ta_css ) {
 	$sgs_ta_classes[] = $sgs_ta_uid;

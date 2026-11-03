@@ -451,6 +451,27 @@ select.sgs-form-field__input {
 	cursor: pointer;
 }
 
+/* Card option rows (optionPresentation "card" on the checkbox field): the native input stays the real control, drawn
+   as a custom box. Size and radius arrive as custom properties from the field's scoped rule; the ticked fill is the field's own scoped :checked rule. */
+.sgs-form-field--option-card .sgs-form-field__option input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	flex: none;
+	width: var(--sgs-option-box-size, 24px);
+	height: var(--sgs-option-box-size, 24px);
+	min-width: var(--sgs-option-box-size, 24px);
+	margin: 0;
+	border: 2px solid currentColor;
+	border-radius: var(--sgs-option-box-radius, 7px);
+	background: transparent no-repeat center / 70%;
+}
+
+.sgs-form-field--option-card .sgs-form-field__option input[type="checkbox"]:checked {
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--primary, #0f7e80);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+}
+
 /* ----------------------------------------------------------------
    7. Tile selector
    ---------------------------------------------------------------- */
@@ -906,6 +927,21 @@ select.sgs-form-field__input {
 
 :where(.sgs-form__progress-step-label) {
 	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
+}
+
+/* Completed-step check mark (stepCompletedIcon=tick): the numeral swaps for the tick once the step is passed. */
+.sgs-form__progress-step-tick {
+	display: none;
+	width: var(--sgs-step-tick-size, 60%);
+	height: var(--sgs-step-tick-size, 60%);
+}
+
+.sgs-form__progress-steps--tick .sgs-form__progress-step--completed .sgs-form__progress-step-numeral {
+	display: none;
+}
+
+.sgs-form__progress-steps--tick .sgs-form__progress-step--completed .sgs-form__progress-step-tick {
+	display: block;
 }
 
 .sgs-form__progress-step-label {

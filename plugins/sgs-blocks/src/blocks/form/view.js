@@ -20,6 +20,20 @@ import { applyLinkValues } from './field-from-link.js';
 import { populateReview } from './review-cards.js';
 import { initSavedProgress, saveStep, clearProgress } from './saved-progress.js';
 
+/**
+ * The progress fill as a 0 to 1 fraction. "current" counts the step being shown (step 1 of 5 is 0.2);
+ * "completed" counts only finished steps (0 on step 1, 1 on the last step).
+ *
+ * @param {Object} ctx Form context.
+ * @return {number} Fraction.
+ */
+function progressFraction( ctx ) {
+	if ( 'completed' === ctx.progressFill ) {
+		return ctx.totalSteps > 1 ? ctx.currentStep / ( ctx.totalSteps - 1 ) : 0;
+	}
+	return ( ctx.currentStep + 1 ) / ctx.totalSteps;
+}
+
 const { state } = store( 'sgs/form', {
 	state: {
 		/**
@@ -32,7 +46,7 @@ const { state } = store( 'sgs/form', {
 			if ( ! ctx.isMultiStep || ctx.totalSteps === 0 ) {
 				return '0%';
 			}
-			const percent = ( ( ctx.currentStep + 1 ) / ctx.totalSteps ) * 100;
+			const percent = progressFraction( ctx ) * 100;
 			return `${ Math.round( percent ) }%`;
 		},
 
@@ -46,7 +60,7 @@ const { state } = store( 'sgs/form', {
 			if ( ! ctx.isMultiStep || ctx.totalSteps === 0 ) {
 				return 0;
 			}
-			return Math.round( ( ( ctx.currentStep + 1 ) / ctx.totalSteps ) * 100 );
+			return Math.round( progressFraction( ctx ) * 100 );
 		},
 
 		/**

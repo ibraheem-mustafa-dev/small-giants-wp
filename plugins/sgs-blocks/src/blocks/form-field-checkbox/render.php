@@ -11,6 +11,9 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
+
 use function SGS\Blocks\Forms\field_open;
 use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
@@ -35,7 +38,78 @@ $described_by_attr = 'aria-describedby="' . esc_attr( implode( ' ', $described_b
 
 $msg_attrs = field_message_attrs( $attributes );
 
-echo field_open( $attributes, 'checkbox' );
+// Card presentation (optionPresentation "card"): a boxed row and a custom tick box, as one scoped rule set on the
+// field's uid class; never an inline style. Plain keeps the stylesheet's bare row and prints nothing.
+$sgs_cb_class = '';
+if ( 'card' === ( $attributes['optionPresentation'] ?? 'plain' ) ) {
+	$sgs_cb_uid   = 'sgs-cb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_cb_class = 'sgs-form-field--option-card ' . $sgs_cb_uid;
+	$sgs_cb_row   = '.' . $sgs_cb_uid . ' .sgs-form-field__option';
+	$sgs_cb_len   = static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( (string) $raw );
+	$sgs_cb_css   = '';
+
+	$sgs_cb_decls = array();
+	$sgs_cb_bg    = sgs_fill_decls( $attributes, array( 'base' => 'rowBackground' ) );
+	$sgs_cb_decls = array_merge( $sgs_cb_decls, $sgs_cb_bg['normal'] );
+	$sgs_cb_gap = $sgs_cb_len( $attributes['rowGap'] ?? '' );
+	if ( '' !== $sgs_cb_gap ) {
+		$sgs_cb_decls[] = 'gap:' . $sgs_cb_gap;
+	}
+	$sgs_cb_border = sgs_border_element_decls(
+		$attributes,
+		'row',
+		$sgs_cb_row,
+		array(
+			'colour'         => array( 'base' => 'rowBorderColour' ),
+			'colour_default' => 'currentColor',
+		)
+	);
+	$sgs_cb_decls  = array_merge( $sgs_cb_decls, $sgs_cb_border['base'] );
+	if ( $sgs_cb_decls ) {
+		$sgs_cb_css .= $sgs_cb_row . '{' . implode( ';', $sgs_cb_decls ) . ';}';
+	}
+	if ( $sgs_cb_border['tablet'] ) {
+		$sgs_cb_css .= '@media(max-width:1023px){' . $sgs_cb_row . '{' . implode( ';', $sgs_cb_border['tablet'] ) . ';}}';
+	}
+	if ( $sgs_cb_border['mobile'] ) {
+		$sgs_cb_css .= '@media(max-width:767px){' . $sgs_cb_row . '{' . implode( ';', $sgs_cb_border['mobile'] ) . ';}}';
+	}
+	$sgs_cb_css .= implode( '', $sgs_cb_border['rules'] );
+	if ( is_array( $attributes['rowPadding'] ?? null ) && array() !== $attributes['rowPadding'] ) {
+		$sgs_cb_css .= sgs_emit_responsive_css(
+			$sgs_cb_row,
+			array(
+				array(
+					'value'        => $attributes['rowPadding'],
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+	}
+	$sgs_cb_vars = array();
+	$sgs_cb_size = $sgs_cb_len( $attributes['boxSize'] ?? '' );
+	if ( '' !== $sgs_cb_size ) {
+		$sgs_cb_vars[] = '--sgs-option-box-size:' . $sgs_cb_size;
+	}
+	$sgs_cb_rad = $sgs_cb_len( $attributes['boxRadius'] ?? '' );
+	if ( '' !== $sgs_cb_rad ) {
+		$sgs_cb_vars[] = '--sgs-option-box-radius:' . $sgs_cb_rad;
+	}
+	$sgs_cb_on = sgs_fill_decls( $attributes, array( 'base' => 'boxColourChecked' ) );
+	if ( $sgs_cb_on['normal'] ) {
+		$sgs_cb_css .= $sgs_cb_row . ' input[type="checkbox"]:checked{' . implode( ';', $sgs_cb_on['normal'] ) . ';border-color:' . sgs_colour_value( (string) ( $attributes['boxColourChecked'] ?? '' ) ) . ';}';
+	}
+	if ( $sgs_cb_vars ) {
+		$sgs_cb_css .= '.' . $sgs_cb_uid . '{' . implode( ';', $sgs_cb_vars ) . ';}';
+	}
+	if ( '' !== $sgs_cb_css ) {
+		echo '<style>' . wp_strip_all_tags( $sgs_cb_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from sanitised colour and length values.
+	}
+}
+
+echo field_open( $attributes, 'checkbox', $sgs_cb_class );
 
 echo '<fieldset class="sgs-form-field__group">';
 

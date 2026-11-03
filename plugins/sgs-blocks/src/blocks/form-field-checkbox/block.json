@@ -22,6 +22,17 @@
         "html": false,
         "anchor": false,
         "sgs": {
+            "boxFamilies": {
+                "rowPadding": [
+                    "rowPadding"
+                ],
+                "rowBorderWidth": [
+                    "rowBorderWidth"
+                ],
+                "rowBorderRadius": [
+                    "rowBorderRadius"
+                ]
+            },
             "elements": {
                 "label": {
                     "label": "Group label",
@@ -31,9 +42,20 @@
                 },
                 "option": {
                     "label": "Each option (box and label)",
+                    "selector": ".sgs-form-field__option",
                     "order": 0.5,
-                    "clusters": [],
-                    "_note": "Each entry in `options` renders as a repeated <label class=\"sgs-form-field__option\"><input type=\"checkbox\"><span> row — the repeater replaces the single 'input' element the text/email/textarea/select siblings have, since checkbox is inherently multi-node. No per-instance style attribute exists for the option row; styling is shared framework CSS. clusters: [] is a genuine gap."
+                    "clusters": [ "layout", "fill", "border" ],
+                    "prefix": "row",
+                    "attrMap": {
+                        "css:background-color": "rowBackground",
+                        "css:border-width": "rowBorderWidth",
+                        "css:border-style": "rowBorderStyle",
+                        "css:border-color": "rowBorderColour",
+                        "css:border-radius": "rowBorderRadius",
+                        "css:padding": "rowPadding",
+                        "css:gap": "rowGap"
+                    },
+                    "_note": "Each entry in `options` renders as a repeated <label class=\"sgs-form-field__option\"><input type=\"checkbox\"><span> row. optionPresentation=card turns the row into a box (render.php prints a scoped rule on the field's uid class): background, border, radius, padding and gap on the row; boxSize, boxRadius and boxColourChecked on the custom tick box, which stays the real native input (appearance:none) with a visible focus ring. plain keeps the bare row."
                 },
                 "help": {
                     "label": "Help text",
@@ -98,6 +120,62 @@
                     "label": "Option 1"
                 }
             ]
+        },
+        "optionPresentation": {
+            "type": "string",
+            "default": "plain",
+            "enum": [ "plain", "card" ],
+            "description": "How each option row looks. plain = the stylesheet's bare row. card = a boxed row with its own background, border, padding and a custom tick box (the row settings below apply only to card)."
+        },
+        "rowBackground": {
+            "type": "string",
+            "default": "",
+            "description": "Card row background: a palette slug or a custom colour. Empty = transparent."
+        },
+        "rowBorderWidth": {
+            "type": "object",
+            "default": {},
+            "description": "Card row border width as a box {top,right,bottom,left}, or one box per device. Empty = no border."
+        },
+        "rowBorderStyle": {
+            "type": "string",
+            "default": "",
+            "description": "Card row border style (solid, dashed, none...). Empty = solid."
+        },
+        "rowBorderColour": {
+            "type": "string",
+            "default": "",
+            "description": "Card row border colour: a palette slug or a custom colour. Empty = the text colour."
+        },
+        "rowBorderRadius": {
+            "type": "object",
+            "default": {},
+            "description": "Card row corner radius, per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Empty = square."
+        },
+        "rowPadding": {
+            "type": "object",
+            "default": {},
+            "description": "Card row padding, per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Empty = the stylesheet's row padding."
+        },
+        "rowGap": {
+            "type": "string",
+            "default": "",
+            "description": "Space between the tick box and the label in a card row: a CSS length. Empty = the stylesheet's 0.5rem."
+        },
+        "boxSize": {
+            "type": "string",
+            "default": "",
+            "description": "Width and height of the card row's tick box: a CSS length. Empty = 24px."
+        },
+        "boxRadius": {
+            "type": "string",
+            "default": "",
+            "description": "Corner radius of the card row's tick box: a CSS length. Empty = 7px."
+        },
+        "boxColourChecked": {
+            "type": "string",
+            "default": "",
+            "description": "Fill of the tick box when ticked: a palette slug or a custom colour. Empty = the theme's primary colour."
         },
         "conditionalField": {
             "type": "string",

@@ -2820,6 +2820,11 @@
    "file": "theme/sgs-theme/assets/css/shop-load-more.css",
    "selector": ".sgs-shop-load-more__count[hidden]",
    "reason": "the Showing N of M line is hidden when every product is shown"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--option-card .sgs-form-field__option input[type=\"checkbox\"]:checked",
+   "reason": "the ticked-box default (theme primary); the boxColourChecked setting overrides it through the field's own scoped :checked rule printed by form-field-checkbox/render.php, so the stylesheet rule is the resting default, not a missing setting."
   }
  ]
 }

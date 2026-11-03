@@ -64,7 +64,15 @@
 				],
 				"submitPadding": [
 					"submitPadding"
+				],
+				"actionsStickyPadding": [
+					"actionsStickyPadding"
 				]
+			},
+			"spacingDefaults": {
+				"actionsStickyPadding": {
+					"top": "var(--wp--preset--spacing--30)"
+				}
 			},
 			"elements": {
 				"step-label-active": {
@@ -141,13 +149,34 @@
 					"label": "Form buttons row",
 					"order": 31,
 					"clusters": [
+						"fill",
 						"layout"
 					],
 					"layer": "OUTER",
 					"attrMap": {
-						"css:flex-wrap": "actionsFlexWrap"
+						"css:flex-wrap": "actionsFlexWrap",
+						"css:background-color": "actionsStickyBackground",
+						"css:border-color": "actionsStickyBorderColour",
+						"css:padding": "actionsStickyPadding",
+						"css:box-shadow": "actionsStickyShadow",
+						"css:box-shadow-color": "actionsStickyShadowColour",
+						"css:margin-inline": "actionsStickyBleed"
 					},
-					"_note": "The form buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
+					"_note": "The form buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows. actionsSticky (per device, off by default) pins the row to the bottom of the viewport while the form is on screen; actionsStickyBackground, actionsStickyBorderColour (1px top line), actionsStickyPadding (box), actionsStickyShadow (+Colour) and actionsStickyBleed (negative side margin, so the row spans a padded card) style it. render.php prints them only on the devices where sticky is on."
+				},
+				"step-number-completed": {
+					"selector": ".sgs-form__progress-step--completed .sgs-form__progress-step-number",
+					"motion": false,
+					"label": "Completed step number",
+					"order": 39,
+					"clusters": [ "text", "fill" ],
+					"attrMap": {
+						"css:background-color": "stepNumberCompletedBackground",
+						"css:color": "stepNumberCompletedColour"
+					},
+					"_note": "The bubble of a step the visitor has passed. Unset keeps it the same as the active step. stepCompletedIcon=tick swaps its number for a check mark.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation prints only for a multi-step form (more than one sgs/form-step)."
 				},
 				"formField": {
 					"label": "Each field",
@@ -1079,6 +1108,63 @@
 		}
 	},
 	"attributes": {
+		"progressFill": {
+			"type": "string",
+			"default": "current",
+			"enum": [ "current", "completed" ],
+			"description": "How far the progress fill runs. current = the step being shown counts (step 1 of 5 shows 20%). completed = only finished steps count (0% on step 1, 100% on the last step)."
+		},
+		"stepNumberCompletedBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background of the number bubble of a step already passed: a palette slug or a custom colour. Empty = the same as the active step."
+		},
+		"stepNumberCompletedColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the number or check mark inside the bubble of a step already passed: a palette slug or a custom colour. Empty = the same as the active step."
+		},
+		"stepCompletedIcon": {
+			"type": "string",
+			"default": "number",
+			"enum": [ "number", "tick" ],
+			"description": "What a completed step's bubble shows: its number, or a check mark. The step name stays in the button's accessible name either way."
+		},
+		"actionsSticky": {
+			"type": "object",
+			"default": {},
+			"description": "Pins the buttons row to the bottom of the viewport while the form is on screen, per device: {desktop,tablet,mobile}, each true (sticky) or false. A blank device follows the one above it. Empty = not sticky anywhere."
+		},
+		"actionsStickyBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background of the sticky buttons row: a palette slug or a custom colour. Empty = transparent."
+		},
+		"actionsStickyBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the 1px line along the top of the sticky buttons row: a palette slug or a custom colour. Empty = no line."
+		},
+		"actionsStickyPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the sticky buttons row, per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Empty = the stylesheet's top padding only."
+		},
+		"actionsStickyShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow shape of the sticky buttons row (a preset slug or layers). Empty = none."
+		},
+		"actionsStickyShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow colour of the sticky buttons row. Empty = the shadow's own colour."
+		},
+		"actionsStickyBleed": {
+			"type": "string",
+			"default": "",
+			"description": "A CSS length (for example 22px): the sticky row gets that much negative side margin so it spans a padded form card edge to edge. Set it to the card's side padding. Empty = no bleed."
+		},
 		"actionsFlexWrap": {
 			"type": "string",
 			"default": "",

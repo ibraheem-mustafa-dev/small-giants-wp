@@ -22,6 +22,11 @@
         "html": false,
         "anchor": false,
         "sgs": {
+            "boxFamilies": {
+                "inputPadding": [
+                    "inputPadding"
+                ]
+            },
             "elements": {
                 "label": {
                     "label": "Field label",
@@ -30,10 +35,16 @@
                     "_note": "Renders as <label class=\"sgs-form-field__label\"> — no per-instance colour/font-size/weight attribute exists on this block; the label is styled entirely by shared framework CSS across all six form-field siblings. clusters: [] is a genuine gap, not hidden — building per-field label typography/colour controls is future per-block work, not this manifest."
                 },
                 "input": {
+                    "selector": "textarea.sgs-form-field__input",
                     "label": "Textarea input",
                     "order": 2,
-                    "clusters": [],
-                    "_note": "Renders as <textarea class=\"sgs-form-field__input\"> — border/background/typography come entirely from shared framework CSS; no per-instance style attribute exists. `rows` is a behavioural sizing config (row count), not a style property, and stays outside any cluster. clusters: [] is a genuine gap."
+                    "clusters": [ "layout", "text" ],
+                    "attrMap": {
+                        "css:min-height": "inputMinHeight",
+                        "css:padding": "inputPadding",
+                        "css:line-height": "inputLineHeight"
+                    },
+                    "_note": "Renders as <textarea class=\"sgs-form-field__input\">. Border, background and typography come from the form-level field settings; minimum height, padding and line height are per field (render.php prints a scoped rule on the field's uid class). `rows` is a behavioural sizing config, not a style property."
                 },
                 "help": {
                     "label": "Help text",
@@ -180,6 +191,21 @@
             "type": "string",
             "default": "",
             "description": "Colour of the character counter: a palette slug or a custom colour. Empty = the muted text token."
+        },
+        "inputMinHeight": {
+            "type": "object",
+            "default": {},
+            "description": "Minimum height of the text box, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the rows setting and the form's textarea height decide."
+        },
+        "inputPadding": {
+            "type": "object",
+            "default": {},
+            "description": "Padding inside the text box, per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Empty = the form's field padding. With the counter inside the box the stylesheet keeps its own bottom padding."
+        },
+        "inputLineHeight": {
+            "type": "string",
+            "default": "",
+            "description": "Line height of the typed text: a unitless number (1.5), a length or the word normal. Empty = inherited."
         }
     },
     "render": "file:./render.php",
