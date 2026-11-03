@@ -938,6 +938,7 @@ if ( $sgs_mm_in_drawer ) {
 	// The drawer copy's card shell (radius, padding, shadow) and the link-row
 	// hover fill and radius (includes/mega-panel-drawer-extras-css.php).
 	$css .= sgs_mega_panel_drawer_shell_css( $attributes, $root_sel, $sgs_dv_row );
+	$css .= sgs_mega_panel_drawer_trailing_css( $attributes, $sgs_dv_row );
 
 	// Link number / label / description: colour (flat or text-clip gradient)
 	// and size, one rule per part. Keyed by the colour attribute, the way
@@ -993,6 +994,7 @@ if ( $sgs_mm_in_drawer ) {
 	if ( 'stacked-overlay' === ( $attributes['drawerCardLayout'] ?? '' ) ) {
 		// Full-width card, tag over the image, link as an arrow circle.
 		$css .= sgs_mega_panel_drawer_stacked_css( $attributes, $sgs_dv_aside, $sgs_dv_card_decls );
+		$css .= sgs_mega_panel_drawer_media_css( $attributes, $sgs_dv_aside );
 	} elseif ( ! empty( $attributes['drawerCardCompact'] ) ) {
 		$sgs_dv_thumb  = $sgs_dv_len( 'drawerCardThumbSize' );
 		$sgs_dv_thumb  = '' !== $sgs_dv_thumb ? $sgs_dv_thumb : '64px';
@@ -1045,6 +1047,7 @@ if ( $sgs_mm_in_drawer ) {
 	} else {
 		// Outside compact mode the card's radius and padding print here.
 		$sgs_dv_card_decls .= sgs_mega_panel_drawer_card_box_decls( $attributes );
+		$css               .= sgs_mega_panel_drawer_media_css( $attributes, $sgs_dv_aside );
 		if ( '' !== $sgs_dv_card_decls ) {
 			$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
 		}

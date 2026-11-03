@@ -278,6 +278,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardSpacing,
 		drawerCardThumbSize,
 		drawerCardTagSize,
+		drawerCardMediaRatio,
+		drawerCardTagRadius,
+		drawerLinkTrailingIcon,
+		drawerLinkTrailingColour,
 		drawerCardTagPadding,
 		drawerCardTitleSize,
 		drawerCardTitleLineHeight,
@@ -583,6 +587,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerLinkHoverBgGradient,
 				drawerLinkRadius,
 				drawerCardLayout,
+				drawerCardMediaRatio,
+				drawerCardTagRadius,
+				drawerLinkTrailingIcon,
+				drawerLinkTrailingColour,
 		  } )
 		: '';
 

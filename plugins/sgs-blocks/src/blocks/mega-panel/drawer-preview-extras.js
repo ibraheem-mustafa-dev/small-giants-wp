@@ -91,11 +91,32 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 	css += `${ aside } > :nth-child(5) .sgs-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}`;
 	css += `${ aside } > :nth-child(5) .sgs-button__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}`;
 	const tagPad = padBox( v.drawerCardTagPadding );
-	if ( v.drawerCardTagSize || tagPad ) {
-		css += `${ aside } > :nth-child(2) .wp-block-sgs-label{${ v.drawerCardTagSize ? `font-size:${ v.drawerCardTagSize };line-height:1.5;` : '' }${ tagPad }}`;
+	const tagRadius = v.drawerCardTagRadius && SAFE_LENGTH_RE.test( v.drawerCardTagRadius ) ? `border-radius:${ v.drawerCardTagRadius };` : '';
+	if ( v.drawerCardTagSize || tagPad || tagRadius ) {
+		css += `${ aside } > :nth-child(2) .wp-block-sgs-label{${ tagRadius }${ v.drawerCardTagSize ? `font-size:${ v.drawerCardTagSize };line-height:1.5;` : '' }${ tagPad }}`;
 	}
+	// A fill photo in the stacked card has no definite height: it takes its width and the chosen ratio (render.php: sgs_mega_panel_drawer_media_css()).
+	const ratio = String( v.drawerCardMediaRatio || '' ).trim();
+	css += `${ aside } .sgs-media-box--fill{height:auto;aspect-ratio:${ /^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/.test( ratio ) ? ratio : '2 / 1' };}`;
 	if ( v.drawerCardTitleSize || v.drawerCardTitleLineHeight ) {
 		css += `${ aside } > :nth-child(3){${ v.drawerCardTitleSize ? `font-size:${ v.drawerCardTitleSize };` : '' }${ v.drawerCardTitleLineHeight ? `line-height:${ v.drawerCardTitleLineHeight };` : '' }}`;
 	}
 	return css;
+}
+
+/**
+ * The link rows' trailing arrow (`drawerLinkTrailingIcon` = arrow), twin of
+ * `sgs_mega_panel_drawer_trailing_css()`.
+ *
+ * @param {string} row Link-row selector.
+ * @param {Object} v   Enumerated drawer attributes.
+ * @return {string} CSS, or ''.
+ */
+export function drawerTrailingPreviewCss( row, v ) {
+	if ( 'arrow' !== v.drawerLinkTrailingIcon ) {
+		return '';
+	}
+	const colour = v.drawerLinkTrailingColour ? colourVar( v.drawerLinkTrailingColour ) || v.drawerLinkTrailingColour : '';
+	const mask = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E\")";
+	return `${ row } > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;background-color:${ colour || 'currentColor' };${ colour ? '' : 'opacity:.6;' }-webkit-mask:${ mask } center/contain no-repeat;mask:${ mask } center/contain no-repeat;}`;
 }

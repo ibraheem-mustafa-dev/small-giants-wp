@@ -121,6 +121,7 @@
 						"css:border-color": "drawerLinkDivider",
 						"css:border-color-gradient": "drawerLinkDividerGradient",
 						"css:min-height": "drawerLinkMinHeight",
+						"css:stroke": "drawerLinkTrailingColour",
 						"css:padding-block": "drawerLinkPaddingY"
 					},
 					"states": {
@@ -195,6 +196,7 @@
 						"css:border-radius": "drawerCardRadius",
 						"css:padding": "drawerCardPadding",
 						"css:gap": "drawerCardGap",
+						"css:aspect-ratio": "drawerCardMediaRatio",
 						"css:margin-block": "drawerCardSpacing"
 					},
 					"_note": "The aside as a compact horizontal card in the drawer (drawerCardCompact). drawerCardSpacing is margin-bottom when drawerAsideOrder is 'first', margin-top otherwise."
@@ -223,6 +225,7 @@
 					],
 					"attrMap": {
 						"css:font-size": "drawerCardTagSize",
+						"css:border-radius": "drawerCardTagRadius",
 						"css:padding": "drawerCardTagPadding",
 						"css:margin": "drawerCardTagMargin"
 					},
@@ -699,6 +702,26 @@
 				"stacked-overlay"
 			],
 			"description": "In the drawer: the aside card's layout. '' keeps the layout drawerCardCompact chooses; `stacked-overlay` is a full-width card with the tag over the image's top-left corner, the title and description below it and the link drawn as a 40px circle holding only its icon (the label stays the link's accessible name), from the mega-aside's five-slot order. It wins over drawerCardCompact."
+		},
+		"drawerCardMediaRatio": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the aspect ratio ('2 / 1', '16 / 9') of a fill photo in the aside card, which has no definite height to fill there. '' uses 2 / 1. Not read in compact card mode, where drawerCardThumbSize sizes the thumbnail."
+		},
+		"drawerCardTagRadius": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer, with the stacked card layout: the corner radius of the tag over the photo (for example 999px for a pill). '' keeps the tag's own radius."
+		},
+		"drawerLinkTrailingIcon": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: '' draws nothing, 'arrow' draws a small arrow at the inline end of every link row."
+		},
+		"drawerLinkTrailingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the link rows' trailing arrow. '' uses the row's text colour at 60% opacity."
 		},
 		"drawerCardBg": {
 			"type": "string",

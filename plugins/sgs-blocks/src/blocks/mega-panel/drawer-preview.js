@@ -20,7 +20,7 @@
  */
 
 import { colourVar, isCssGradient } from '../../utils';
-import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss } from './drawer-preview-extras';
+import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -122,6 +122,7 @@ export default function drawerPreviewCss( scope, v ) {
 
 	// Card shell and link-row hover (drawer-preview-extras.js).
 	css += drawerShellPreviewCss( scope, row, v );
+	css += drawerTrailingPreviewCss( row, v );
 
 	// Aside position and card.
 	const orderFirst = 'first' === v.drawerAsideOrder;

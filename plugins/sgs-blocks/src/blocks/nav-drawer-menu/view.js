@@ -70,6 +70,25 @@ function markCurrentPage( root ) {
 			}
 		}
 	);
+
+	// A mega item's panel links are container-block links without a
+	// `data-sgs-nav-path`. When one of them points at the current page, the
+	// item's accordion row takes `data-sgs-nav-has-current`, which the
+	// ancestor-current rule in includes/nav-menu-css.php reads.
+	root.querySelectorAll( '.sgs-nav-drawer-menu__mega-body' ).forEach( ( body ) => {
+		const row = body.closest( '.sgs-nav-drawer-menu__accordion-row' );
+		if ( ! row ) {
+			return;
+		}
+		const hasCurrent = Array.from( body.querySelectorAll( 'a[href]' ) ).some( ( anchor ) => {
+			if ( anchor.origin !== window.location.origin ) {
+				return false;
+			}
+			const path = normalisePath( anchor.pathname );
+			return path !== '' && path === current;
+		} );
+		row.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
+	} );
 }
 
 // Cleanup functions for every currently-active opt-in effect instance

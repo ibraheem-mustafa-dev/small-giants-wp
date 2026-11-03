@@ -81,6 +81,25 @@ function markCurrentPage( root ) {
 			}
 		}
 	);
+
+	// A mega item is an ancestor of the current page when one of its panel
+	// links points at it: the panel links are container-block links that carry
+	// no `data-sgs-nav-path`, so their resolved pathname is compared instead.
+	// The item root takes the same `data-sgs-nav-has-current` flag
+	// mega-disclosure.js sets for a reparented panel, and the ancestor rule in
+	// includes/nav-menu-css.php paints the top-level link from it.
+	root.querySelectorAll( '.sgs-nav-bar-menu__mega' ).forEach( ( mega ) => {
+		const hasCurrent = Array.from(
+			mega.querySelectorAll( '[data-sgs-mega-panel] a[href]' )
+		).some( ( anchor ) => {
+			if ( anchor.origin !== window.location.origin ) {
+				return false;
+			}
+			const path = normalisePath( anchor.pathname );
+			return path !== '' && path === current;
+		} );
+		mega.toggleAttribute( 'data-sgs-nav-has-current', hasCurrent );
+	} );
 }
 
 // Cleanup functions for every currently-active opt-in effect instance

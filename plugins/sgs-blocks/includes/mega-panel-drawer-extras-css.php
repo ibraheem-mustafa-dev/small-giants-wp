@@ -142,32 +142,89 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 				'width'    => '1px',
 			)
 		);
+		// The aside's slots are its five children (media, tag, title, description,
+		// link), or, when the clone wraps them, an image wrapper followed by one
+		// wrapper holding the tag, title, description and link. The wrapper
+		// dissolves (display:contents) so those four sit in the card's grid.
+		$wrap = $aside_sel . ' > .wp-block-sgs-container:nth-child(n+2)';
+		$css .= $wrap . ',' . $wrap . ' > .sgs-container__inner{display:contents;}';
+		$slot = static function ( int $n, string $tail = '' ) use ( $aside_sel ): string {
+			if ( 1 === $n ) {
+				return $aside_sel . ' > :nth-child(1)' . $tail;
+			}
+			return $aside_sel . ' > :nth-child(' . $n . '):not(.wp-block-sgs-container)' . $tail
+				. ',' . $aside_sel . ' > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(' . ( $n - 1 ) . ')' . $tail;
+		};
 		// Slot 1, the media frame, spans the card's full width at the top.
-		$css .= $aside_sel . ' > :nth-child(1){grid-column:1 / -1;grid-row:1;width:100%;margin:0;}';
+		$css .= $slot( 1 ) . '{grid-column:1 / -1;grid-row:1;width:100%;margin:0;}';
 		// Slot 2, the tag, sits over the image's top-left corner.
-		$css .= $aside_sel . ' > :nth-child(2){position:absolute;inset-block-start:12px;inset-inline-start:12px;z-index:1;margin:0;pointer-events:none;}';
+		$css .= $slot( 2 ) . '{position:absolute;inset-block-start:12px;inset-inline-start:12px;z-index:1;margin:0;pointer-events:none;}';
 		// Slots 3 and 4, the title and description, fill the first column below the image.
-		$css .= $aside_sel . ' > :nth-child(3){grid-column:1;grid-row:2;margin:0;padding-block-start:' . $pad . ';padding-inline-start:' . $pad . ';}';
-		$css .= $aside_sel . ' > :nth-child(4){grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:' . $pad . ';padding-inline-start:' . $pad . ';}';
+		$css .= $slot( 3 ) . '{grid-column:1;grid-row:2;margin:0;padding-block-start:' . $pad . ';padding-inline-start:' . $pad . ';}';
+		$css .= $slot( 4 ) . '{grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:' . $pad . ';padding-inline-start:' . $pad . ';}';
 		// Slot 5, the link, is a 40px circle beside them holding only its icon.
-		$css .= $aside_sel . ' > :nth-child(5){grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:' . $pad . ';}';
-		$css .= $aside_sel . ' > :nth-child(5) .sgs-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
-		$css .= $aside_sel . ' > :nth-child(5) .sgs-button__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}';
+		$css .= $slot( 5 ) . '{grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:' . $pad . ';}';
+		$css .= $slot( 5, ' .sgs-button' ) . '{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
+		$css .= $slot( 5, ' .sgs-button__label' ) . '{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}';
 
 		$tag_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTagSize' );
 		$tag_pad  = sgs_box_object_longhand_list( $attributes['drawerCardTagPadding'] ?? null, 'padding' );
-		if ( '' !== $tag_size || $tag_pad ) {
-			$css .= $aside_sel . ' > :nth-child(2) .wp-block-sgs-label{'
+		$tag_rad  = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTagRadius' );
+		if ( '' !== $tag_size || $tag_pad || '' !== $tag_rad ) {
+			$css .= $slot( 2, '.wp-block-sgs-label' ) . ',' . $slot( 2, ' .wp-block-sgs-label' ) . '{'
 				. ( '' !== $tag_size ? 'font-size:' . $tag_size . ';line-height:1.5;' : '' )
+				. ( '' !== $tag_rad ? 'border-radius:' . $tag_rad . ';' : '' )
 				. ( $tag_pad ? implode( ';', $tag_pad ) . ';' : '' ) . '}';
 		}
 		$title_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTitleSize' );
 		$title_lh   = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTitleLineHeight' );
 		if ( '' !== $title_size || '' !== $title_lh ) {
-			$css .= $aside_sel . ' > :nth-child(3){'
+			$css .= $slot( 3 ) . '{'
 				. ( '' !== $title_size ? 'font-size:' . $title_size . ';' : '' )
 				. ( '' !== $title_lh ? 'line-height:' . $title_lh . ';' : '' ) . '}';
 		}
 		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
+	/**
+	 * Gives a fill media box in the drawer's aside card a height. A fill box is
+	 * `height:100%` of its parent, which is 0 when the parent's own height is
+	 * only auto (the drawer stacks the aside as a column), so the box takes its
+	 * width and `drawerCardMediaRatio` instead.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $aside_sel  The in-drawer aside selector.
+	 * @return string CSS.
+	 */
+	function sgs_mega_panel_drawer_media_css( array $attributes, string $aside_sel ): string {
+		$ratio = isset( $attributes['drawerCardMediaRatio'] ) && is_string( $attributes['drawerCardMediaRatio'] ) ? trim( $attributes['drawerCardMediaRatio'] ) : '';
+		if ( 1 !== preg_match( '/^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/', $ratio ) ) {
+			$ratio = '2 / 1';
+		}
+		return $aside_sel . ' .sgs-media-box--fill{height:auto;aspect-ratio:' . $ratio . ';}';
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_trailing_css' ) ) {
+	/**
+	 * The link rows' trailing arrow (`drawerLinkTrailingIcon` = arrow): a
+	 * masked arrow at the row's inline end, coloured `drawerLinkTrailingColour`
+	 * (default: the row's text colour at 60% opacity).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $row_sel    The link-row selector.
+	 * @return string CSS, or ''.
+	 */
+	function sgs_mega_panel_drawer_trailing_css( array $attributes, string $row_sel ): string {
+		if ( 'arrow' !== ( $attributes['drawerLinkTrailingIcon'] ?? '' ) ) {
+			return '';
+		}
+		$colour = sgs_colour_value( (string) ( $attributes['drawerLinkTrailingColour'] ?? '' ) );
+		$mask   = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E\")";
+		return $row_sel . ' > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;'
+			. 'background-color:' . ( '' !== $colour ? $colour : 'currentColor' ) . ';' . ( '' !== $colour ? '' : 'opacity:.6;' )
+			. '-webkit-mask:' . $mask . ' center/contain no-repeat;mask:' . $mask . ' center/contain no-repeat;}';
 	}
 }

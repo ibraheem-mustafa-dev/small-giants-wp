@@ -11,7 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, fillRow } from '../../components';
+import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, fillRow, textRow } from '../../components';
 
 /**
  * @param {Object}   root0               Props.
@@ -42,6 +42,13 @@ export default function CaretBoxControls( { attributes, setAttributes } ) {
 						key: 'caretBoxBgOpen',
 						label: __( 'Expander circle fill (open)', 'sgs-blocks' ),
 						attrs: { base: 'caretBoxBgOpen', gradient: 'caretBoxBgOpenGradient' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'caretColourOpen',
+						label: __( 'Expander glyph colour (open)', 'sgs-blocks' ),
+						attrs: { base: 'caretColourOpen' },
 						attributes,
 						setAttributes,
 					} ),

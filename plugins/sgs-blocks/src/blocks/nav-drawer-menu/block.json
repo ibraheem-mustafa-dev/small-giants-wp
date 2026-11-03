@@ -401,13 +401,15 @@
 					"order": 12.2,
 					"clusters": [
 						"fill",
-						"border"
+						"border",
+						"text"
 					],
 					"prefix": "",
 					"attrMap": {
 						"css:background-color": "caretBoxBgOpen",
 						"css:background-image": "caretBoxBgOpenGradient",
-						"css:border-color": "caretBoxBorderColourOpen"
+						"css:border-color": "caretBoxBorderColourOpen",
+						"css:color": "caretColourOpen"
 					},
 					"_note": "The expander circle while its row's <details> is open. Its own element, like item-open: `open` is not in the state vocabulary (hover/current/scrolled)."
 				},
@@ -951,6 +953,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Gradient fill of the expander circle while its row is open; wins over caretBoxBgOpen."
+		},
+		"caretColourOpen": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the expander glyph while its row is open (for example a dark chevron on a gold circle). '' keeps the glyph's inherited colour. Works with or without the circle."
 		},
 		"caretBoxOnTrailingIcon": {
 			"type": "boolean",

@@ -61,12 +61,14 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 				'gradient' => 'caretBoxBgOpenGradient',
 			)
 		);
+		$glyph_open = sgs_colour_value( (string) ( $attributes['caretColourOpen'] ?? '' ) );
+		$glyph_css  = '' !== $glyph_open ? $open . '{color:' . $glyph_open . ';}' : '';
 		$size      = is_array( $attributes['caretBoxSize'] ?? null ) ? $attributes['caretBoxSize'] : array();
 		$has_size  = '' !== (string) sgs_resolve_tier( $size, 'desktop', '' )['value']
 			|| '' !== (string) sgs_resolve_tier( $size, 'tablet', '' )['value']
 			|| '' !== (string) sgs_resolve_tier( $size, 'mobile', '' )['value'];
 		if ( ! $has_size && ! $fill['normal'] && ! $border['base'] ) {
-			return '';
+			return $glyph_css;
 		}
 
 		$boxes  = array( $caret );
@@ -128,6 +130,6 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 		if ( $open_decls ) {
 			$css .= $open . '{' . implode( ';', $open_decls ) . ';}';
 		}
-		return $css;
+		return $css . $glyph_css;
 	}
 }

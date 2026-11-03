@@ -637,14 +637,50 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * fallback.
 	 */
 	$sgs_nm_submenu_has_current = 'ul.' . $bem_root . '__submenu a[aria-current="page"]';
-	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' .' . $bem_root . '__submenu-root:is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
-	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .' . $bem_root . '__accordion-row:has(' . $sgs_nm_submenu_has_current . ') > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
+	// A mega item (`__mega`) is covered through the flag alone: its panel links carry no
+	// `aria-current`; view.js flags the item root when one of them is the current page.
+	$sgs_nm_ancestor_bar_sel    = $uid_sel . ' :is(.' . $bem_root . '__submenu-root, .' . $bem_root . '__mega):is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
+	$sgs_nm_ancestor_drawer_sel = $uid_sel . ' .' . $bem_root . '__accordion-row:is(:has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current]) > .' . $bem_root . '__link:not(:hover):not(:focus-visible)';
 
 	if ( '' !== $sgs_nm_ancestor_current_decl_str ) {
 		$css .= $sgs_nm_ancestor_bar_sel . ',' . $sgs_nm_ancestor_drawer_sel . '{' . $sgs_nm_ancestor_current_decl_str . ';}';
 	}
 	if ( '' !== $item_bg_current_decl ) {
 		$css .= $sgs_nm_ancestor_bar_sel . '::before,' . $sgs_nm_ancestor_drawer_sel . '::before{' . $item_bg_current_decl . ';}';
+	}
+
+	/*
+	 * Split item (a link plus its own chevron button, `__mega--split` or a dropdown root
+	 * holding `__link + __subtoggle`): the pill spans label and chevron. The link's
+	 * `::before` paints the label half and the toggle's `::after` the chevron half, with the
+	 * inner corners squared so the two read as one pill. Every state is keyed on the
+	 * wrapper, so pointing at either half, opening the panel, or being on the page (or in
+	 * its panel) paints both. The toggle has no `::after` of its own.
+	 */
+	if ( '' !== $item_bg_normal_decl || '' !== $item_bg_hover_decl || '' !== $item_bg_current_decl || '' !== $item_bg_open_decl ) {
+		$sgs_nm_split_root   = $uid_sel . ' :is(.' . $bem_root . '__mega--split, .' . $bem_root . '__submenu-root:has(> .' . $bem_root . '__link + .' . $bem_root . '__subtoggle))';
+		$sgs_nm_split_link   = $sgs_nm_split_root . ' > .' . $bem_root . '__link';
+		$sgs_nm_split_toggle = $sgs_nm_split_root . ' > .' . $bem_root . '__subtoggle:not(.' . $bem_root . '__link)';
+		$sgs_nm_split_both   = static function ( string $wrapper_state, string $decl ) use ( $sgs_nm_split_root, $bem_root ): string {
+			return $sgs_nm_split_root . $wrapper_state . ' > .' . $bem_root . '__link::before,'
+				. $sgs_nm_split_root . $wrapper_state . ' > .' . $bem_root . '__subtoggle:not(.' . $bem_root . '__link)::after{' . $decl . ';}';
+		};
+		$css .= $sgs_nm_split_link . '::before{border-start-end-radius:0;border-end-end-radius:0;}';
+		$css .= $sgs_nm_split_toggle . '{isolation:isolate;' . ( null !== $item_radius_shorthand && '' !== $item_radius_shorthand ? $item_radius_shorthand . ';' : '' ) . 'border-start-start-radius:0;border-end-start-radius:0;}';
+		$css .= $sgs_nm_split_toggle . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $item_bg_normal_decl . ';}';
+		$sgs_nm_split_current = ':is(:has(> .' . $bem_root . '__link[aria-current="page"]), :has(' . $sgs_nm_submenu_has_current . '), [data-sgs-nav-has-current])';
+		if ( '' !== $item_bg_current_decl ) {
+			$css .= $sgs_nm_split_both( $sgs_nm_split_current, $item_bg_current_decl );
+		}
+		if ( '' !== $item_bg_hover_decl ) {
+			$css .= sgs_hover_guarded_rule(
+				$sgs_nm_split_root . ':hover > .' . $bem_root . '__link::before,' . $sgs_nm_split_root . ':hover > .' . $bem_root . '__subtoggle:not(.' . $bem_root . '__link)::after',
+				$item_bg_hover_decl
+			);
+		}
+		if ( '' !== $item_bg_open_decl ) {
+			$css .= $sgs_nm_split_both( ':has(> [data-sgs-mega-trigger][aria-expanded="true"])', $item_bg_open_decl );
+		}
 	}
 
 	// Item BORDER (three states + Sweep band) and item SEPARATOR — emitted by
