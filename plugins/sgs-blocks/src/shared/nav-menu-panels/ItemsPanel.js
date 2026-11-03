@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl } from '@wordpress/components';
+import { PanelBody, RangeControl, SelectControl } from '@wordpress/components';
 import { SgsBorderControl, SgsLengthControl } from '../../components';
 
 /**
@@ -31,6 +31,8 @@ import { SgsBorderControl, SgsLengthControl } from '../../components';
  * @param {Object}   root0.itemBorderWidth     `itemBorderWidth`  — box object, base only.
  * @param {string}   root0.itemBorderStyle     `itemBorderStyle`  — solid | dashed | dotted | ''.
  * @param {Object}   root0.itemBorderRadius    `itemBorderRadius`.
+ * @param {string}   [root0.itemBorderScope]   `itemBorderScope` — item | label. The control renders only when `showBorderScope` is true (the bar menu; the drawer menu has no such attribute).
+ * @param {boolean}  [root0.showBorderScope]   Whether to offer the underline-width control.
  * @param {number}   [root0.itemOpacity]       `itemOpacity` — resting opacity, 0 to 1, no default.
  * @param {number}   [root0.itemOpacityHover]  `itemOpacityHover` — hover/focus-visible opacity, 0 to 1, no default.
  * @param {string}   [root0.itemPaddingShiftHover] `itemPaddingShiftHover` — hover-only inline-start padding growth, no default.
@@ -42,6 +44,8 @@ export default function ItemsPanel( {
 	itemBorderWidth,
 	itemBorderStyle,
 	itemBorderRadius,
+	itemBorderScope,
+	showBorderScope = false,
 	itemOpacity,
 	itemOpacityHover,
 	itemPaddingShiftHover,
@@ -62,6 +66,23 @@ export default function ItemsPanel( {
 				radiusValues={ itemBorderRadius || {} }
 				onRadiusChange={ ( next ) => setAttributes( { itemBorderRadius: next || {} } ) }
 			/>
+			{ showBorderScope && (
+				<SelectControl
+					label={ __( 'Underline spans', 'sgs-blocks' ) }
+					value={ itemBorderScope || 'item' }
+					options={ [
+						{ label: __( 'The whole item', 'sgs-blocks' ), value: 'item' },
+						{ label: __( 'The label only (flat, square ends)', 'sgs-blocks' ), value: 'label' },
+					] }
+					onChange={ ( value ) => setAttributes( { itemBorderScope: value || 'item' } ) }
+					help={ __(
+						'The label-only underline is as wide as the text, sits on the item’s bottom edge and ignores the corner radius.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			<p className="components-base-control__help">
 				{ __(
 					'The colour of this border — resting, on hover and on the current page — is in the Colour panel above, so you can match it against the item’s text and background.',

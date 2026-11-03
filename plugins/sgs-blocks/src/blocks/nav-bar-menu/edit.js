@@ -136,6 +136,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		itemBorderWidth,
 		itemBorderStyle,
 		itemBorderRadius,
+		itemBorderScope,
 		itemOpacity,
 		itemOpacityHover,
 		itemPaddingShiftHover,
@@ -798,6 +799,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					itemBorderWidth={ itemBorderWidth }
 					itemBorderStyle={ itemBorderStyle }
 					itemBorderRadius={ itemBorderRadius }
+					itemBorderScope={ itemBorderScope }
+					showBorderScope
 					itemOpacity={ itemOpacity }
 					itemOpacityHover={ itemOpacityHover }
 					itemPaddingShiftHover={ itemPaddingShiftHover }

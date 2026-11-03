@@ -1315,6 +1315,12 @@
 			},
 			"description": "A FLAT corner object of CSS length STRINGS, read by sgs_corner_object_longhands(), which looks for exactly topLeft / topRight / bottomRight / bottomLeft. NOT the {\"desktop\":{}} tier envelope — that shape belongs to BLOCK-ROOT radii read by sgs_border_radius_tiers(); used here it would carry no corner keys, the helper would return null, and the radius would silently vanish. Per-element precedent: sgs/product-card::ctaBorderRadius."
 		},
+		"itemBorderScope": {
+			"type": "string",
+			"enum": [ "item", "label" ],
+			"default": "item",
+			"description": "Where the item bottom border (the underline: itemBorderWidth bottom, with itemBorderColour / Hover / Current and the Sweep treatment) is drawn. 'item' (default): the link's own border-bottom, spanning the whole link including its padding and following itemBorderRadius. 'label': a flat band on the link's ::after at the link's bottom edge, as wide as the label (the link's inline padding is left out) with square ends, unaffected by itemBorderRadius; the link itself paints no border. Bar-only (the drawer menu has no such attribute). includes/nav-menu-item-border-featured-css.php."
+		},
 		"itemBorderColour": {
 			"type": "string",
 			"default": "border-light",

@@ -14,7 +14,7 @@
  * @package
  */
 import { __ } from '@wordpress/i18n';
-import { Button, PanelBody } from '@wordpress/components';
+import { Button, PanelBody, SelectControl } from '@wordpress/components';
 import {
 	IconPicker,
 	ResponsiveOverride,
@@ -106,6 +106,31 @@ export default function TrailingIconPanel( {
 					) }
 				</div>
 			) ) }
+			{ topLevelItems.length > 0 && (
+				<SelectControl
+					label={ __( 'Icon position', 'sgs-blocks' ) }
+					help={ __(
+						'Row end lines the icon up with the accordion expander at the right edge of the row.',
+						'sgs-blocks'
+					) }
+					value={ attributes.itemTrailingIconPosition || 'after-label' }
+					options={ [
+						{
+							label: __( 'After the label', 'sgs-blocks' ),
+							value: 'after-label',
+						},
+						{
+							label: __( 'Row end, level with the expander', 'sgs-blocks' ),
+							value: 'row-end',
+						},
+					] }
+					onChange={ ( val ) =>
+						setAttributes( { itemTrailingIconPosition: val } )
+					}
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			{ topLevelItems.length > 0 && (
 				<ResponsiveOverride
 					label={ __( 'Icon size', 'sgs-blocks' ) }

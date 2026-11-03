@@ -74,6 +74,87 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_parity_css' ) ) {
 			);
 		}
 
+		$css .= sgs_nav_drawer_menu_trailing_position_css( $attributes, $scope );
+		$css .= sgs_nav_drawer_menu_expander_height_css( $attributes, $scope );
+
 		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_menu_trailing_position_css' ) ) {
+	/**
+	 * `itemTrailingIconPosition` 'row-end': a leaf row's trailing icon moves to
+	 * the inline end of the row, centred on the line the accordion expander
+	 * uses. The expander is a `--sgs-ndm-caret-tap-min` (44px) wide box with its
+	 * glyph centred; a client circle size sets that floor to 0 and the circle
+	 * itself is the box. The icon's own width is `--sgs-ndm-trail-w` (the
+	 * trailing circle, when drawn) or 1em, so its end margin is half the
+	 * difference, never negative. Accordion-parent rows (the `--has-submenu`
+	 * list items) are untouched: their link already reserves the expander gutter.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $scope      The instance scope selector.
+	 * @return string CSS; '' unless the position is 'row-end'.
+	 */
+	function sgs_nav_drawer_menu_trailing_position_css( array $attributes, string $scope ): string {
+		if ( 'row-end' !== (string) ( $attributes['itemTrailingIconPosition'] ?? '' ) ) {
+			return '';
+		}
+		$css = '';
+		$size = is_array( $attributes['caretBoxSize'] ?? null ) ? $attributes['caretBoxSize'] : array();
+		$ring = array() !== $size;
+		foreach ( array( 'caretBoxBg', 'caretBoxBgGradient', 'caretBoxBorderColour', 'caretBoxBorderWidth' ) as $key ) {
+			$ring = $ring || ! empty( $attributes[ $key ] );
+		}
+		if ( ! empty( $attributes['caretBoxOnTrailingIcon'] ) && $ring ) {
+			// The trailing circle's width follows the caret circle size (40px default), per tier.
+			$css .= $scope . '{--sgs-ndm-trail-w:40px;}';
+			$css .= sgs_emit_responsive_css(
+				$scope,
+				array(
+					array(
+						'value'        => $size,
+						'css'          => '--sgs-ndm-trail-w',
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+		$icon = $scope . ' .sgs-nav-drawer-menu__trailing-icon';
+		$css .= $scope . ' .sgs-nav-drawer-menu__item--drawer:not(.sgs-nav-drawer-menu__item--has-submenu) > .sgs-nav-drawer-menu__link:has(> .sgs-nav-drawer-menu__trailing-icon){padding-inline-end:0;}';
+		$css .= $icon . '{margin-inline-start:auto;}';
+		$css .= $scope . ' .sgs-nav-drawer-menu__item--drawer:not(.sgs-nav-drawer-menu__item--has-submenu) > .sgs-nav-drawer-menu__link > .sgs-nav-drawer-menu__trailing-icon{margin-inline-end:max(0px,calc((var(--sgs-ndm-caret-tap-min,44px) - var(--sgs-ndm-trail-w,1em)) / 2));}';
+		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_menu_expander_height_css' ) ) {
+	/**
+	 * The accordion expander is overlaid on its row from the top. With
+	 * `itemMinHeight` set the row is taller than the expander's 44px floor, so
+	 * the expander takes the link's height per tier and its centred glyph (or
+	 * circle) sits level with the link, not at the row top. The submenu opens
+	 * below the link, so the expander stays level with the link. The whole-row
+	 * toggle (no URL) is the row itself and is left alone. Unset: no rule.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $scope      The instance scope selector.
+	 * @return string CSS; '' when itemMinHeight is unset.
+	 */
+	function sgs_nav_drawer_menu_expander_height_css( array $attributes, string $scope ): string {
+		$min_height = $attributes['itemMinHeight'] ?? null;
+		if ( ! is_array( $min_height ) || array() === $min_height ) {
+			return '';
+		}
+		return sgs_emit_responsive_css(
+			$scope . ' .sgs-nav-drawer-menu__accordion-summary:not(.sgs-nav-drawer-menu__accordion-summary--row)',
+			array(
+				array(
+					'value'        => $min_height,
+					'css'          => 'height',
+					'unit_default' => 'px',
+				),
+			)
+		);
 	}
 }

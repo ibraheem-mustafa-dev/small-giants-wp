@@ -61,4 +61,35 @@ final class AccordionItemHeaderRingTest extends TestCase {
 		$this->assertStringContainsString( '__icons{width:32px;height:32px;}', $out['css'] );
 		$this->assertMatchesRegularExpression( '/\[open\] > \.sgs-accordion-item__header \.sgs-accordion-item__icons\{border-color:#0A7EA8;background-color:#0A7EA814;\}/', $out['css'] );
 	}
+
+	public function test_no_header_paint_prints_no_tone_marker(): void {
+		$out = $this->render_block( 'sgs/accordion-item', self::ITEM );
+
+		$this->assertStringContainsString( '<summary class="sgs-accordion-item__header"', $out['html'] );
+		$this->assertStringNotContainsString( 'sgs-on-dark', $out['html'] );
+	}
+
+	public function test_dark_header_background_marks_the_summary_on_dark(): void {
+		$out = $this->render_block( 'sgs/accordion-item', self::ITEM, array( 'sgs/accordionHeaderBackground' => '#0b1f3a' ) );
+
+		$this->assertStringContainsString( '<summary class="sgs-accordion-item__header sgs-on-dark"', $out['html'] );
+	}
+
+	public function test_light_header_background_marks_the_summary_on_light(): void {
+		$out = $this->render_block( 'sgs/accordion-item', self::ITEM, array( 'sgs/accordionHeaderBackground' => '#ffffff' ) );
+
+		$this->assertStringContainsString( '<summary class="sgs-accordion-item__header sgs-on-light"', $out['html'] );
+	}
+
+	public function test_dark_header_gradient_marks_the_summary_on_dark(): void {
+		$out = $this->render_block( 'sgs/accordion-item', self::ITEM, array( 'sgs/accordionHeaderBackgroundGradient' => 'linear-gradient(90deg,#0b1f3a,#14325c)' ) );
+
+		$this->assertStringContainsString( 'sgs-accordion-item__header sgs-on-dark"', $out['html'] );
+	}
+
+	public function test_open_background_decides_when_there_is_no_resting_paint(): void {
+		$out = $this->render_block( 'sgs/accordion-item', self::ITEM, array( 'sgs/accordionHeaderBackgroundOpen' => '#0b1f3a' ) );
+
+		$this->assertStringContainsString( 'sgs-accordion-item__header sgs-on-dark"', $out['html'] );
+	}
 }

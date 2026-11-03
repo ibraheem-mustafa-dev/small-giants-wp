@@ -67,7 +67,25 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		$item_border_box   = is_array( $attributes['itemBorderWidth'] ?? null ) ? $attributes['itemBorderWidth'] : array();
 		$item_border_width = $item_border_box ? sgs_box_object_shorthand( $item_border_box ) : null;
 		$item_border_style = sgs_border_style_keyword( $attributes['itemBorderStyle'] ?? '' );
-		if ( null !== $item_border_width && '' !== $item_border_width ) {
+		/*
+		 * `itemBorderScope` 'label' (sgs/nav-bar-menu only; the drawer menu declares no
+		 * such attribute, so it always reads 'item'): the bottom edge is drawn as a flat
+		 * band on the link's `::after`, as wide as the label (the link's own padding is
+		 * left out), instead of as the link's own border-bottom. The link keeps its
+		 * border COLOUR declarations (resting, hover, current, ancestor-current,
+		 * parent-keeps-hover): the band reads them through `border-bottom-color:inherit`,
+		 * so no second colour channel exists. No width/style is put on the link, so
+		 * `itemBorderRadius` never bends the band.
+		 */
+		$label_scope = 'label' === (string) ( $attributes['itemBorderScope'] ?? 'item' );
+		if ( $label_scope ) {
+			$label_edge = isset( $item_border_box['bottom'] ) ? sgs_css_length_value( (string) $item_border_box['bottom'] ) : '';
+			if ( '' !== $label_edge && 'sweep' !== $t_border ) {
+				$css .= $link_sel . '{position:relative;}';
+				$css .= $link_sel . '::after{' . sgs_nav_label_band_geometry() . 'border-bottom:' . $label_edge . ' ' . $item_border_style . ' currentColor;border-bottom-color:inherit;pointer-events:none;}';
+				$css .= $link_sel . ':has(+ .' . $bem_root . '__subtoggle)::after{inset-inline-end:0;}';
+			}
+		} elseif ( null !== $item_border_width && '' !== $item_border_width ) {
 			// A width with no style paints nothing at all, so `solid` is the shape
 			// the control's own storage implies rather than a design default — an
 			// operator who wants no border clears the WIDTH (or picks style `none`).
@@ -166,11 +184,16 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 				}
 				$sweep = sgs_directional_sweep_css( $sweep_angle, $sweep_normal, $sweep_hover );
 
-				$css .= $link_sel . '::after{content:"";position:absolute;inset-inline:0;'
-					. 'bottom:calc(-1 * ' . $sweep_edge . ');height:' . $sweep_edge . ';'
+				$sweep_geometry = $label_scope
+					? sgs_nav_label_band_geometry()
+					: 'content:"";position:absolute;inset-inline:0;bottom:calc(-1 * ' . $sweep_edge . ');';
+				$css           .= $link_sel . '::after{' . $sweep_geometry . 'height:' . $sweep_edge . ';'
 					. 'background-image:' . $sweep['gradient'] . ';'
 					. 'background-size:' . $sweep['background_size'] . ';background-position:' . $sweep['rest_position'] . ';background-repeat:no-repeat;'
 					. 'transition:background-position var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);pointer-events:none;}';
+				if ( $label_scope ) {
+					$css .= $link_sel . ':has(+ .' . $bem_root . '__subtoggle)::after{inset-inline-end:0;}';
+				}
 				$css .= sgs_hover_state_rules( $link_sel, 'background-position:' . $sweep['hover_position'], ':focus-visible', '::after' );
 				// MANDATORY companion: keep both end states, drop only the travel.
 				$css .= '@media (prefers-reduced-motion:reduce){' . $link_sel . '::after{transition:none;}}';
@@ -182,6 +205,21 @@ if ( ! function_exists( 'sgs_nav_shared_item_border_css' ) ) {
 		$css .= sgs_nav_menu_separators_css( $attributes, $uid_sel, $bem_root );
 
 		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_label_band_geometry' ) ) {
+	/**
+	 * Position declarations of the label-wide bottom band (`itemBorderScope` 'label'):
+	 * flush with the link's bottom edge, spanning the link minus its inline padding
+	 * (the resting start side and the root-published end side, with the style.css
+	 * defaults as fallbacks), so its width is the label's.
+	 *
+	 * @return string Declarations ending in a semicolon.
+	 */
+	function sgs_nav_label_band_geometry(): string {
+		return 'content:"";position:absolute;bottom:0;'
+			. 'inset-inline-start:var(--sgs-nav-link-pad-start,12px);inset-inline-end:var(--sgs-nav-link-pad-end,12px);';
 	}
 }
 

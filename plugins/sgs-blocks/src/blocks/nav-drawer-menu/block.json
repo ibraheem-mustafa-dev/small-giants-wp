@@ -1720,6 +1720,15 @@
 			"default": {},
 			"description": "G-7. Per-tier icon box size ({desktop,tablet,mobile}), same shape as itemOrnamentSize. Empty keeps the 10px default."
 		},
+		"itemTrailingIconPosition": {
+			"type": "string",
+			"default": "after-label",
+			"enum": [
+				"after-label",
+				"row-end"
+			],
+			"description": "Where a leaf row's trailing icon sits. 'after-label' keeps it right after the label. 'row-end' pushes it to the inline end of the row, centred where the accordion expander sits (the expander's tap width, itemTrailingIconSize or the caret circle size), so ringed arrows and chevron circles share one vertical line; the row's inline-end padding is dropped so the icon can reach that line. Accordion-parent rows keep the icon before the expander gutter. includes/nav-drawer-menu-parity-css.php."
+		},
 		"itemBadgeColour": {
 			"type": "string",
 			"default": "accent-light",

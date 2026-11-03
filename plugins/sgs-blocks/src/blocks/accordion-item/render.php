@@ -403,8 +403,32 @@ $aria_expanded = $is_open ? 'true' : 'false';
 // The <details> open attribute travels via extra_attrs on the OUTER wrapper.
 // ---------------------------------------------------------------------------
 $panel_id      = wp_unique_id( 'sgs-accordion-panel-' );
+// The header's own painted surface decides the tone marker the focus ring follows
+// (theme focus.css switches to the on-dark ring under `.sgs-on-dark`), judged the way the
+// container judges its fill: gradient over colour. The resting paint decides; a header with
+// no resting paint falls back to its open, then hover, paint. No header paint, no marker.
+$sgs_ai_tone_class = '';
+if ( function_exists( 'sgs_surface_tone_class' ) ) {
+	foreach ( array( array( $header_bg_gradient, $header_bg ), array( '', $header_bg_open ), array( $header_bg_hover_gradient, $header_bg_hover ) ) as $sgs_ai_paint ) {
+		$sgs_ai_tone_layers = array();
+		$sgs_ai_gradient    = function_exists( 'sgs_css_gradient_value' ) ? sgs_css_gradient_value( (string) $sgs_ai_paint[0] ) : '';
+		if ( '' !== $sgs_ai_gradient ) {
+			$sgs_ai_tone_layers[] = array( 'gradient' => $sgs_ai_gradient, 'opacity' => 1.0 );
+		}
+		if ( '' !== trim( (string) $sgs_ai_paint[1] ) ) {
+			$sgs_ai_tone_layers[] = array( 'colour' => (string) $sgs_ai_paint[1], 'opacity' => 1.0 );
+		}
+		if ( $sgs_ai_tone_layers ) {
+			$sgs_ai_tone_class = sgs_surface_tone_class( $sgs_ai_tone_layers );
+			break;
+		}
+	}
+}
+$sgs_ai_header_class = 'sgs-accordion-item__header' . ( '' !== $sgs_ai_tone_class ? ' ' . $sgs_ai_tone_class : '' );
+
 $summary_open  = sprintf(
-	'<summary class="sgs-accordion-item__header" aria-expanded="%s" aria-controls="%s">',
+	'<summary class="%s" aria-expanded="%s" aria-controls="%s">',
+	esc_attr( $sgs_ai_header_class ),
 	esc_attr( $aria_expanded ),
 	esc_attr( $panel_id )
 );
