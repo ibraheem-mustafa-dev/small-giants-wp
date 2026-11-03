@@ -749,6 +749,7 @@
 					}
 				},
 				"pick-summary": {
+					"text": true,
 					"selector": ".sgs-buybox__pick-summary",
 					"label": "Pick a set summary",
 					"order": 20,

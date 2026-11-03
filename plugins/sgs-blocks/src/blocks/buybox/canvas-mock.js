@@ -933,8 +933,12 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 		  attributes.guidedMeterColour
 		: '';
 
+	// Pick a set can drop the photo column (pickHideGallery), as render.php does.
+	const hideGallery = 'configurator' === attributes.buyboxLayout && true === attributes.pickHideGallery;
+
 	return (
 		<>
+			{ ! hideGallery && (
 			<div className="sgs-buybox__gallery-col">
 				<div
 					className="product-card__media sgs-buybox__mock-image"
@@ -979,6 +983,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 					</span>
 				) }
 			</div>
+			) }
 			<div className="sgs-buybox__config-col">
 				{ stockAbove && stockLine }
 				{ stockAbove && attributes.stockLineHairline && (
