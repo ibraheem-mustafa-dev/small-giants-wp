@@ -199,31 +199,26 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Preview box', 'sgs-blocks' ) } initialOpen={ false }>
-				<TextControl
+				<SgsLengthControl
+					presets
 					label={ __( 'Border width', 'sgs-blocks' ) }
 					value={ attributes.previewBorderWidth || '' }
-					onChange={ ( val ) => setAttributes( { previewBorderWidth: val } ) }
-					help={ __( 'A CSS length such as 2px.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) => setAttributes( { previewBorderWidth: val ?? '' } ) }
 				/>
-				<TextControl
+				<SgsLengthControl
+					presets
 					label={ __( 'Corner radius', 'sgs-blocks' ) }
 					value={ attributes.previewRadius || '' }
-					onChange={ ( val ) => setAttributes( { previewRadius: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) => setAttributes( { previewRadius: val ?? '' } ) }
 				/>
 				<TierBox label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" attributes={ attributes } setAttributes={ setAttributes } />
 			</PanelBody>
 			<PanelBody title={ __( 'Options and tiles', 'sgs-blocks' ) } initialOpen={ false }>
-				<TextControl
+				<SgsLengthControl
+					presets
 					label={ __( 'Option pill corner radius', 'sgs-blocks' ) }
 					value={ attributes.pickOptionRadius || '' }
-					onChange={ ( val ) => setAttributes( { pickOptionRadius: val } ) }
-					help={ __( 'For the pick-several options, for example 999px.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) => setAttributes( { pickOptionRadius: val ?? '' } ) }
 				/>
 				<TierBox label={ __( 'Option pill inner spacing', 'sgs-blocks' ) } name="pickOptionPadding" attributes={ attributes } setAttributes={ setAttributes } />
 				<SgsLengthControl
@@ -241,20 +236,17 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Picker box', 'sgs-blocks' ) } initialOpen={ false }>
-				<TextControl
+				<SgsLengthControl
+					presets
 					label={ __( 'Border width', 'sgs-blocks' ) }
 					value={ attributes.pickerBoxBorderWidth || '' }
-					onChange={ ( val ) => setAttributes( { pickerBoxBorderWidth: val } ) }
-					help={ __( 'A CSS length such as 2px. Empty = no border.', 'sgs-blocks' ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) => setAttributes( { pickerBoxBorderWidth: val ?? '' } ) }
 				/>
-				<TextControl
+				<SgsLengthControl
+					presets
 					label={ __( 'Corner radius', 'sgs-blocks' ) }
 					value={ attributes.pickerBoxRadius || '' }
-					onChange={ ( val ) => setAttributes( { pickerBoxRadius: val } ) }
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
+					onChange={ ( val ) => setAttributes( { pickerBoxRadius: val ?? '' } ) }
 				/>
 			</PanelBody>
 		</InspectorControls>

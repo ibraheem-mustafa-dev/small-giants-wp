@@ -118,26 +118,18 @@ if ( ! function_exists( 'sgs_buybox_configurator_tier_css' ) ) {
 	 * @return string[] CSS rules (desktop, then the tablet and mobile media rules).
 	 */
 	function sgs_buybox_configurator_tier_css( $value, string $selector ): array {
-		$tiers = sgs_responsive_normalise_object( $value, true );
-		$wrap  = array(
-			'desktop' => '%s',
-			'tablet'  => SGS_Breakpoints::media( 'tablet' ) . '{%s}',
-			'mobile'  => SGS_Breakpoints::media( 'mobile' ) . '{%s}',
+		$css = sgs_emit_responsive_css(
+			$selector,
+			array(
+				array(
+					'value'        => is_array( $value ) ? $value : array(),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
 		);
-		$out   = array();
-		foreach ( $wrap as $tier => $media ) {
-			$decls = array();
-			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
-				$length = isset( $tiers[ $tier ][ $side ] ) && is_string( $tiers[ $tier ][ $side ] ) ? sgs_css_length_value( $tiers[ $tier ][ $side ] ) : '';
-				if ( '' !== $length ) {
-					$decls[] = 'padding-' . $side . ':' . $length;
-				}
-			}
-			if ( $decls ) {
-				$out[] = sprintf( $media, $selector . '{' . implode( ';', $decls ) . ';}' );
-			}
-		}
-		return $out;
+		return '' === $css ? array() : array( $css );
 	}
 }
 
