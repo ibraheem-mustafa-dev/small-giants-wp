@@ -7661,6 +7661,38 @@
 			"_reason": "2026-10-28 (content coverage check): The post-meta key that holds the recommended retail price (block.json::attributes.rrpMetaKey description); a data key, not printed words."
 		},
 		{
+			"slug": "sgs/product-card",
+			"attr": "priceNoteMetaKey",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-11-03 (per-product content): The post-meta key holding the product's own price note (product-card render); a data key, not printed words."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "ctaLabelMetaKey",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-11-03 (per-product content): The post-meta key holding the product's own button label (product-card render); a data key, not printed words."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "ctaActionMetaKey",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-11-03 (per-product content): The post-meta key holding the product's own button action (product-card render); a data key, not printed words."
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "itemBadgeTones",
+			"fields": {
+				"role": "identity"
+			},
+			"_reason": "2026-11-03 (badge tones): A per-item map from the item identifier to tone a or b, the same shape as itemTrailingIcons; it selects a class variant, it is not itself a colour."
+		},
+		{
 			"slug": "sgs/choice-flow-question",
 			"attr": "priceGroup",
 			"fields": {
