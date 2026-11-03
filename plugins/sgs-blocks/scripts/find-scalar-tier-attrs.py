@@ -149,18 +149,104 @@ def scan_text(rel, text, rules, conv, fix):
     return hits, new
 
 
-def scan_file(rel, rules, conv, fix, root=ROOT):
+def _box_bag(name, bag, box_rules, scalar_rules, hits, refused, fix):
+    """One attribute bag of block `name`: record (and with fix, convert) each included box attribute defect."""
+    for attr, shape in box_rules[name].items():
+        if attr not in bag:
+            continue
+        issues = R.box_string_issues(bag[attr])
+        # A bare scalar for an attribute the scalar-tier rule already covers is reported there (still enforced).
+        if issues and issues[0][0] is None and not isinstance(bag[attr], dict) and attr in scalar_rules.get(name, {}):
+            continue
+        for tier, raw in issues:
+            hits.append((name, attr, f'{tier or "whole"}: {raw!r}', 'box-string'))
+        if fix and issues:
+            new, ref = R.convert_box(shape, bag[attr])
+            bag[attr] = new
+            refused.extend((name, attr, t or 'whole', raw) for t, raw in ref)
+        elif issues:
+            refused.extend((name, attr, t or 'whole', raw) for t, raw in issues if R.expand_box(raw) is None)
+
+
+def walk_json_box(node, box_rules, scalar_rules, hits, refused, fix):
+    if isinstance(node, dict):
+        name = node.get('name', node.get('blockName'))
+        if isinstance(name, str) and name in box_rules:
+            for bag_key in ('attributes', 'attrs', 'props'):
+                if isinstance(node.get(bag_key), dict):
+                    _box_bag(name, node[bag_key], box_rules, scalar_rules, hits, refused, fix)
+        for key, v in node.items():
+            if key in box_rules and isinstance(v, dict) and isinstance(v.get('attributes'), dict):
+                _box_bag(key, v['attributes'], box_rules, scalar_rules, hits, refused, fix)
+            walk_json_box(v, box_rules, scalar_rules, hits, refused, fix)
+    elif isinstance(node, list):
+        for v in node:
+            walk_json_box(v, box_rules, scalar_rules, hits, refused, fix)
+
+
+def scan_box_text(rel, text, box_rules, scalar_rules, fix):
+    """The box-string rule over one file. Returns (hits, refused, new_text). JSON trees are walked as data (rewritten
+    in the file's own formatting when it round-trips); block-comment markup has the attribute member replaced as text."""
+    hits, refused, new = [], [], text
+    if rel.endswith('.json'):
+        try:
+            data = json.loads(text)
+        except ValueError:
+            data = None
+        if data is not None:
+            walk_json_box(data, box_rules, scalar_rules, hits, refused, False)
+            if hits and fix:
+                style = dump_like(text, data)
+                if style:
+                    kw, tail, crlf = style
+                    hits, refused = [], []
+                    walk_json_box(data, box_rules, scalar_rules, hits, refused, True)
+                    out = json.dumps(data, ensure_ascii=False, **kw) + tail
+                    return hits, refused, out.replace('\n', '\r\n') if crlf else out
+            else:
+                return hits, refused, text
+            hits, refused = [], []
+
+    def markup_sub(m):
+        name = m.group(1)
+        if name not in box_rules:
+            return m.group(0)
+        attrs_text = m.group(3)
+        edits = []
+        for attr, a, b in R.member_spans(attrs_text, set(box_rules[name])):
+            value = json.loads(attrs_text[a:b])
+            bag = {attr: value}
+            before = len(hits)
+            _box_bag(name, bag, {name: {attr: box_rules[name][attr]}}, scalar_rules, hits, refused, fix)
+            if fix and len(hits) > before and bag[attr] != value:
+                edits.append((a, b, json.dumps(bag[attr], separators=(',', ':'), ensure_ascii=False)))
+        if not edits:
+            return m.group(0)
+        for a, b, rep in sorted(edits, reverse=True):
+            attrs_text = attrs_text[:a] + rep + attrs_text[b:]
+        return '<!-- wp:' + name + m.group(2) + attrs_text + m.group(4)
+
+    new = MARKUP_RE.sub(markup_sub, new)
+    return hits, refused, new
+
+
+def scan_file(rel, rules, conv, fix, root=ROOT, box_rules=None):
+    """Returns (hits, box_hits, box_refused); a box hit is (rel, block, attr, description, 'box-string')."""
     path = Path(root) / rel
     try:
         text = path.read_bytes().decode('utf8')
     except (UnicodeDecodeError, OSError):
-        return []
-    if not any(b in text for b in rules):
-        return []
-    hits, new = scan_text(rel, text, rules, conv, fix)
+        return [], [], []
+    hits, new = [], text
+    if any(b in text for b in rules):
+        hits, new = scan_text(rel, text, rules, conv, fix)
+    bhits, refused = [], []
+    if box_rules and any(b in new for b in box_rules):
+        bhits, refused, new2 = scan_box_text(rel, new, box_rules, rules, fix)
+        new = new2 if fix else new
     if fix and new != text:
         path.write_bytes(new.encode('utf8'))
-    return [(rel, *h) for h in hits]
+    return [(rel, *h) for h in hits], [(rel, *h) for h in bhits], [(rel, *r) for r in refused]
 
 
 def run(mode):
@@ -169,10 +255,38 @@ def run(mode):
     if mode == '--survey':
         for b, a, _f, _t, d in pending:
             rules.setdefault(b, {})[a] = d
-    all_hits = []
+    box_rules = R.box_attrs_from_db() or {}
+    all_hits, box_hits, box_refused = [], [], []
     for rel in tracked_files():
-        all_hits.extend(scan_file(rel, rules, conv, mode == '--write'))
-    return all_hits, object_rules, pending
+        h, bh, br = scan_file(rel, rules, conv, mode == '--write', box_rules=box_rules)
+        all_hits.extend(h)
+        box_hits.extend(bh)
+        box_refused.extend(br)
+    return all_hits, object_rules, pending, box_hits, box_refused
+
+
+def write_refused(refused):
+    """sites/<client>/build/box-string-refused.json per client; refused values elsewhere are only listed."""
+    by_site = collections.defaultdict(list)
+    for rel, block, attr, tier, raw in refused:
+        parts = rel.split('/')
+        if parts[0] == 'sites' and len(parts) > 2:
+            by_site[parts[1]].append({'path': rel, 'block': block, 'attribute': attr, 'tier': tier, 'value': raw})
+    for site, items in by_site.items():
+        out = ROOT / 'sites' / site / 'build' / 'box-string-refused.json'
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(items, indent=1, ensure_ascii=False) + '\n', encoding='utf8')
+        print(f'wrote {len(items)} refused value(s): {out.relative_to(ROOT).as_posix()}')
+
+
+def box_rules_payload(values_file=None):
+    """The box part of rules.json: the included attributes with their shape and, when a values file (the live dry run's
+    distinct strings) is given, the Python-expanded boxes (null = refused). PHP only substitutes."""
+    payload = {'attrs': R.box_attrs_from_db() or {}}
+    if values_file:
+        values = json.loads(Path(values_file).read_text(encoding='utf8'))
+        payload['expansions'] = {str(v): R.expand_box(v) for v in values if isinstance(v, (str, int, float))}
+    return payload
 
 
 def survey(hits, object_rules, pending):
@@ -251,18 +365,23 @@ def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else '--check'
     if mode == '--self-test':
         return self_test()
+    argv = sys.argv[1:]
+    if mode == '--fix':
+        mode = '--write'
     if mode in ('--rules', '--rules-all'):
         object_rules, pending, conv = R.derive()
         merged = {b: set(a) for b, a in object_rules.items()}
         if mode == '--rules-all':
             for b, a, *_ in pending:
                 merged.setdefault(b, set()).add(a)
-        print(json.dumps({'rules': {b: sorted(a) for b, a in sorted(merged.items())}, 'conversions': conv}, indent=1))
+        values = argv[argv.index('--box-values') + 1] if '--box-values' in argv else None
+        print(json.dumps({'rules': {b: sorted(a) for b, a in sorted(merged.items())}, 'conversions': conv,
+                          'box': box_rules_payload(values)}, indent=1))
         return 0
     if mode not in ('--check', '--write', '--survey'):
         print(__doc__)
         return 2
-    hits, object_rules, pending = run(mode)
+    hits, object_rules, pending, box_hits, box_refused = run(mode)
     if mode == '--survey':
         survey(hits, object_rules, pending)
         return 0
@@ -270,9 +389,17 @@ def main():
         print(f"{'rewrote' if mode == '--write' else 'HIT'} [{kind}]: {rel}: {name}.{attr} = {val!r}")
     manual = [h for h in hits if h[4] == 'MANUAL']
     print(f"{len(hits)} scalar value(s) {'rewritten' if mode == '--write' else 'found'}")
+    enforced = R.box_string_enforced()
+    print(f"\n== box-string: a string where a per-device box needs top/right/bottom/left ({'ENFORCED' if enforced else 'report-only'}) ==")
+    for rel, name, attr, desc, _k in box_hits:
+        print(f"{'converted' if mode == '--write' else 'BOX'}: {rel}: {name}.{attr} {desc}")
+    for rel, name, attr, tier, raw in box_refused:
+        print(f'REFUSED (not certain, left as stored): {rel}: {name}.{attr} [{tier}] = {raw!r}')
+    print(f'{len(box_hits)} box-string value(s), {len(box_refused)} refused')
     if mode == '--write':
+        write_refused(box_refused)
         return 1 if manual else 0
-    return 1 if hits else 0
+    return 1 if hits or (enforced and box_hits) else 0
 
 
 if __name__ == '__main__':

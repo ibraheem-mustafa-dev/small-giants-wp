@@ -7,6 +7,9 @@ being migrated come from scripts/data/scalar-tier-families.json.
   object rule   a block.json attribute of type object that is a tier object (DB tier_shape = tier_object) or matches a
                 family pattern: a saved SCALAR value of it is an old-shape defect and is rewritten to {"desktop": value}.
   pending       a block.json attribute that matches a family pattern and is still a scalar: the migration target list.
+  box-string    a per-device box attribute (data/box-string-rules.json, derived from the framework DB) saved with a string
+                or number where the renderer needs {top, right, bottom, left}; box_string_issues() finds it, expand_box()
+                converts only what is certain and refuses the rest.
 """
 import json
 import os
@@ -20,6 +23,13 @@ BLOCKS_DIR = ROOT / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 FAMILIES_FILE = HERE.parent / 'data' / 'scalar-tier-families.json'
 DB_PATH = Path(os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db'))
 SCALAR_TYPES = ('string', 'boolean', 'number', 'integer')
+BOX_RULES_FILE = HERE.parent / 'data' / 'box-string-rules.json'
+TIER_KEYS = ('desktop', 'tablet', 'mobile')
+SIDE_KEYS = ('top', 'right', 'bottom', 'left')
+
+# The refusal flip: False = the box-string rule only reports. Changed to True in the final commit, after every target's
+# sweep reports zero. SGS_BOX_STRING_RULE=report (or build-deploy.py --box-string-report-only) downgrades it back.
+BOX_STRING_ENFORCED = False
 
 
 def load_families(path=FAMILIES_FILE):
@@ -146,3 +156,189 @@ def rewrite_members(json_text, wanted, conv):
         i += 1
     out.append(json_text[last:])
     return ''.join(out), hits
+
+
+# ---------------------------------------------------------------- box-string rule
+def box_string_enforced():
+    """True when a box-string defect must refuse (flip constant on, kill switch off)."""
+    return BOX_STRING_ENFORCED and os.environ.get('SGS_BOX_STRING_RULE', '') != 'report'
+
+
+def load_box_rules(path=BOX_RULES_FILE):
+    d = json.loads(Path(path).read_text(encoding='utf8'))
+    return set(d.get('include', {})), set(d.get('exclude', {}))
+
+
+def _db_box_rows(db_path):
+    con = sqlite3.connect(f'file:{db_path}?mode=ro', uri=True)
+    try:
+        return list(con.execute(
+            "SELECT block_slug, attr_name, tier_shape FROM block_attributes WHERE tier_shape = 'box_only' "
+            "OR (tier_shape = 'tier_object' AND box_family IS NOT NULL)"))
+    finally:
+        con.close()
+
+
+def unclassified_box_names(db_path=DB_PATH, rules_file=BOX_RULES_FILE):
+    """Attribute names of box rows (DB box_only, or tier_object with a box_family) that the rules file neither
+    includes nor excludes. None when the DB is absent."""
+    if not Path(db_path).exists():
+        return None
+    inc, exc = load_box_rules(rules_file)
+    return sorted({a for _b, a, _t in _db_box_rows(db_path)} - inc - exc)
+
+
+def box_attrs_from_db(db_path=DB_PATH, blocks_dir=BLOCKS_DIR, rules_file=BOX_RULES_FILE):
+    """{block: {attr: 'tiered' | 'box'}} for the included box attributes (read-only, FP-1). 'tiered' = a tier of boxes
+    (DB tier_object, or a block.json default with device keys); 'box' = one box. An attribute block.json declares with a
+    non-object type is skipped. None when the DB is absent."""
+    if not Path(db_path).exists():
+        return None
+    inc, _exc = load_box_rules(rules_file)
+    blocks = read_blocks(blocks_dir)
+    out = {}
+    for block, attr, shape in _db_box_rows(db_path):
+        if attr not in inc:
+            continue
+        spec = blocks.get(block, (None, {}))[1].get(attr)
+        if isinstance(spec, dict) and spec.get('type') not in ('object', None):
+            continue
+        default = spec.get('default') if isinstance(spec, dict) else None
+        tiered = shape == 'tier_object' or (isinstance(default, dict) and any(k in default for k in TIER_KEYS))
+        out.setdefault(block, {})[attr] = 'tiered' if tiered else 'box'
+    return out
+
+
+def box_string_issues(value):
+    """[(tier, raw)] for each defect in a saved box attribute value; tier is None when the whole value is wrong.
+    A tier or box may be empty (unset). Both a tier of boxes and one box are accepted for every included attribute."""
+    if value is None or isinstance(value, list):
+        return []
+    if not isinstance(value, dict):
+        return [(None, value)]
+    if any(k in value for k in TIER_KEYS):
+        out = []
+        for t in TIER_KEYS:
+            v = value.get(t)
+            if v is None or isinstance(v, list):
+                continue
+            if isinstance(v, dict):
+                if v and not any(k in v for k in SIDE_KEYS):
+                    out.append((t, v))
+            else:
+                out.append((t, v))
+        return out
+    if value and not any(k in value for k in SIDE_KEYS):
+        return [(None, value)]
+    return []
+
+
+_UNIT = r'(?:px|rem|em|vw|vh|vmin|vmax|svh|dvh|lvh|svw|dvw|ch|ex|pt|cm|mm|in)'
+_LEN_RX = re.compile(r'^-?(?:\d+\.?\d*|\.\d+)' + _UNIT + r'$')
+_PCT_RX = re.compile(r'^-?(?:\d+\.?\d*|\.\d+)%$')
+_ZERO_RX = re.compile(r'^-?0*\.?0+$')
+_PRESET_RX = re.compile(r'^var:preset\|spacing\|[a-z0-9-]+$')
+
+
+def _split_tokens(text):
+    """Whitespace split at parenthesis depth 0; None when the parentheses do not balance."""
+    out, cur, depth = [], '', 0
+    for ch in text.strip():
+        if ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+            if depth < 0:
+                return None
+        if ch.isspace() and depth == 0:
+            if cur:
+                out.append(cur)
+            cur = ''
+        else:
+            cur += ch
+    if depth != 0:
+        return None
+    if cur:
+        out.append(cur)
+    return out
+
+
+def _is_length_token(tok, allow_percent):
+    if _ZERO_RX.match(tok) or _LEN_RX.match(tok) or _PRESET_RX.match(tok):
+        return True
+    if _PCT_RX.match(tok):
+        return allow_percent
+    return tok.startswith('var(') and tok.endswith(')') and _split_tokens(tok) == [tok]
+
+
+def expand_box(value):
+    """The four-side box for one old value, or None when it is not certain. '' is unset ({}). One token gives four
+    equal sides; 2, 3 and 4 tokens follow the CSS shorthand order (a b: top and bottom a, right and left b; a b c:
+    right and left b, bottom c)."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return {s: '0' for s in SIDE_KEYS} if value == 0 else None
+    if not isinstance(value, str):
+        return None
+    toks = _split_tokens(value)
+    if toks is None:
+        return None
+    if not toks:
+        return {}
+    if len(toks) > 4 or not all(_is_length_token(t, len(toks) == 1) for t in toks):
+        return None
+    top = toks[0]
+    right = toks[1] if len(toks) > 1 else top
+    bottom = toks[2] if len(toks) > 2 else top
+    left = toks[3] if len(toks) > 3 else right
+    return {'top': top, 'right': right, 'bottom': bottom, 'left': left}
+
+
+def convert_box(shape, value):
+    """(new_value, refused) for one saved box attribute. `refused` is [(tier, raw)] left as stored: a value that is not
+    certain is never guessed. A whole-value scalar becomes one box, or {"desktop": box} for a 'tiered' attribute."""
+    issues = box_string_issues(value)
+    if not issues:
+        return value, []
+    if issues[0][0] is None:
+        box = expand_box(value)
+        if box is None:
+            return value, [(None, value)]
+        return ({'desktop': box} if shape == 'tiered' else box), []
+    new, refused = dict(value), []
+    for tier, raw in issues:
+        box = expand_box(raw)
+        if box is None:
+            refused.append((tier, raw))
+        else:
+            new[tier] = box
+    return new, refused
+
+
+def member_spans(json_text, wanted):
+    """[(attr, value_start, value_end)] of the wanted top-level members of one JSON object string, any value type."""
+    dec = json.JSONDecoder()
+    n, i, spans = len(json_text), 0, []
+    while i < n and json_text[i] != '{':
+        i += 1
+    i += 1
+    while i < n:
+        while i < n and json_text[i] in ' \t\r\n,':
+            i += 1
+        if i >= n or json_text[i] == '}':
+            break
+        try:
+            key, i = dec.raw_decode(json_text, i)
+            while json_text[i] in ' \t\r\n':
+                i += 1
+            i += 1
+            while json_text[i] in ' \t\r\n':
+                i += 1
+            _val, end = dec.raw_decode(json_text, i)
+        except (ValueError, IndexError):
+            break
+        if key in wanted:
+            spans.append((key, i, end))
+        i = end
+    return spans
