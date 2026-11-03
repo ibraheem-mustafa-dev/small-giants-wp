@@ -1,0 +1,33 @@
+{
+  "_doc": "Attribute families that move from one scalar to a {desktop, tablet, mobile} object (footer framework batch, FW-F). A block.json attribute whose name matches a pattern and whose type is still a scalar is a migration target (migrate-scalar-tier.py); once it is type object it is an old-shape rule: any saved scalar value of it is a defect (find-scalar-tier-attrs.py). Rules cover an object-typed block.json attribute that matches a family or is listed in `migrated` (attributes moved from scalar by earlier batches, with their block).",
+  "families": [
+    {
+      "id": "alignItems",
+      "match": "^alignItems$"
+    },
+    {
+      "id": "textAlign",
+      "match": "^textAlign$"
+    },
+    {
+      "id": "prefixedTextAlign",
+      "match": "^[a-z][A-Za-z0-9]*TextAlign$"
+    }
+  ],
+  "valueConversions": {
+    "sgs/gallery.layout": {
+      "grid": {},
+      "carousel": {
+        "desktop": "carousel",
+        "tablet": "carousel",
+        "mobile": "carousel"
+      }
+    }
+  },
+  "migrated": [
+    "sgs/nav-bar-menu.justifyContent",
+    "sgs/cart.showZero",
+    "sgs/cart.iconSize",
+    "sgs/gallery.layout"
+  ]
+}

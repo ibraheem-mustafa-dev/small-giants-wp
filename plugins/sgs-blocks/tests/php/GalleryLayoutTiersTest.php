@@ -118,7 +118,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 	}
 
 	public function test_an_old_scalar_layout_is_not_read(): void {
-		$old = $this->render_block( 'sgs/gallery', array( 'layout' => 'carousel', 'mediaItems' => array() ) );
+		$old = $this->render_block( 'sgs/gallery', array( 'layout' => 'carousel', 'mediaItems' => array() ) ); // scalar-tier-allow: the old shape on purpose.
 		$this->assertStringContainsString( 'sgs-gallery--grid', $old['html'], 'FP-14: no scalar fallback, an old shape renders the default until re-saved' );
 		$this->assertStringNotContainsString( 'sgs-gallery__carousel-prev', $old['html'] );
 	}
