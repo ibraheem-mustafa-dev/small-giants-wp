@@ -67,7 +67,7 @@
 	font: inherit;
 	font-weight: 700;
 	cursor: pointer;
-	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+	transition: background-color var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease), color var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease), transform var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--ease, ease);
 }
 
 .sgs-accordion__chip:hover {
