@@ -8,31 +8,22 @@
  * @package SGS\Blocks\Tests
  */
 
-namespace {
-	if ( ! defined( 'ABSPATH' ) ) {
-		define( 'ABSPATH', __DIR__ . '/' );
-	}
-	if ( ! function_exists( 'wc_clean' ) ) {
-		function wc_clean( $s ) {
-			return trim( strip_tags( (string) $s ) );
-		}
-	}
-	if ( ! function_exists( 'taxonomy_exists' ) ) {
-		function taxonomy_exists( $t ) {
-			return 0 === strpos( (string) $t, 'pa_' );
-		}
-	}
-}
-
 namespace SGS\Blocks\Tests {
 
+	use PHPUnit\Framework\Attributes\PreserveGlobalState;
+	use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 	use PHPUnit\Framework\TestCase;
 	use SGS\Blocks\Configurator_Picks_Admin;
 
-	require_once __DIR__ . '/ConfiguratorPicksTest.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/class-configurator-picks-admin.php';
 
+	#[RunTestsInSeparateProcesses]
+	#[PreserveGlobalState( false )]
 	final class ConfiguratorPicksAdminTest extends TestCase {
+
+		public static function setUpBeforeClass(): void {
+			require_once __DIR__ . '/support/picks-stubs.php';
+			require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/class-configurator-picks-admin.php';
+		}
 
 		public function test_posted_rows_become_flags_keyed_by_attribute_key(): void {
 			$flags = Configurator_Picks_Admin::flags_from_request(

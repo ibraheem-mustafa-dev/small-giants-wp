@@ -12,15 +12,21 @@ declare( strict_types=1 );
 // PHPUnit test, not shipped code.
 // phpcs:disable
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use SGS\Blocks\Cart_Proxy;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
-}
-require_once dirname( __DIR__, 2 ) . '/includes/class-cart-proxy.php';
-
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState( false )]
 final class CartProxyPicksShapeTest extends TestCase {
+
+	public static function setUpBeforeClass(): void {
+		if ( ! defined( 'ABSPATH' ) ) {
+			define( 'ABSPATH', __DIR__ . '/' );
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/class-cart-proxy.php';
+	}
 
 	private static function entry( string $slug = 'mango', $count = 0 ): array {
 		return array( 'slug' => $slug, 'count' => $count );

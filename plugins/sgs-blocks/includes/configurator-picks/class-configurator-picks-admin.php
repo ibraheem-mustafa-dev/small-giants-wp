@@ -24,9 +24,9 @@ final class Configurator_Picks_Admin {
 
 	/** Wire the hooks. */
 	public static function register(): void {
-		\add_action( 'woocommerce_after_product_attribute_settings', array( __CLASS__, 'render_row' ), 10, 2 );
-		\add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save' ), 20 );
-		\add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+		add_action( 'woocommerce_after_product_attribute_settings', array( __CLASS__, 'render_row' ), 10, 2 );
+		add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save' ), 20 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 	}
 
 	/**
@@ -55,7 +55,7 @@ final class Configurator_Picks_Admin {
 			return (int) $GLOBALS['post']->ID;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- read-only, only picks which product the panel describes.
-		return isset( $_POST['post_id'] ) ? \absint( \wp_unslash( $_POST['post_id'] ) ) : 0;
+		return isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
 	}
 
 	/**
@@ -75,34 +75,34 @@ final class Configurator_Picks_Admin {
 		$flags      = $stored[ $key ] ?? array();
 		$field      = self::FIELD . '[' . (int) $i . ']';
 		$options    = self::option_choices( $attribute );
-		$is_pack    = $product_id > 0 && \sanitize_key( (string) \get_post_meta( $product_id, '_sgs_pack_size_axis', true ) ) === $key;
+		$is_pack    = $product_id > 0 && sanitize_key( (string) get_post_meta( $product_id, '_sgs_pack_size_axis', true ) ) === $key;
 
 		echo '<div class="sgs-attr-flags" data-sgs-attr-flags>';
 
 		// Variation attribute: one plain line.
 		echo '<div class="sgs-attr-flags__priced" data-sgs-attr-flags-priced' . ( $attribute->get_variation() ? '' : ' hidden' ) . '>';
-		echo '<p class="description">' . \esc_html__( "This attribute makes variations, so shoppers pick exactly one. To allow several, untick 'Used for variations'.", 'sgs-blocks' ) . '</p>';
+		echo '<p class="description">' . esc_html__( "This attribute makes variations, so shoppers pick exactly one. To allow several, untick 'Used for variations'.", 'sgs-blocks' ) . '</p>';
 		if ( $is_pack ) {
-			echo '<p class="description">' . \esc_html( self::pack_readback( $product_id ) ) . '</p>';
+			echo '<p class="description">' . esc_html( self::pack_readback( $product_id ) ) . '</p>';
 		}
 		echo '</div>';
 
 		// Non-variation attribute: the pick-several controls.
 		echo '<div class="sgs-attr-flags__answer" data-sgs-attr-flags-answer' . ( $attribute->get_variation() ? ' hidden' : '' ) . '>';
-		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[multi]" value="1"' . \checked( ! empty( $flags['multi'] ), true, false ) . ' /> ' . \esc_html__( 'Shopper can pick more than one', 'sgs-blocks' ) . '</label></p>';
-		echo '<p><label>' . \esc_html__( 'At least', 'sgs-blocks' ) . ' <input type="number" min="1" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[least]" value="' . \esc_attr( (string) ( $flags['least'] ?? 1 ) ) . '" /></label> ';
-		echo '<label>' . \esc_html__( 'No more than', 'sgs-blocks' ) . ' <input type="number" min="2" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[most]" value="' . \esc_attr( (string) ( $flags['most'] ?? 3 ) ) . '" /></label></p>';
-		echo '<p><label>' . \esc_html__( 'If they pick one too many', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[overflow]">';
-		echo '<option value="refuse"' . \selected( $flags['overflow'] ?? 'refuse', 'refuse', false ) . '>' . \esc_html__( 'Tell them', 'sgs-blocks' ) . '</option>';
-		echo '<option value="replace"' . \selected( $flags['overflow'] ?? '', 'replace', false ) . '>' . \esc_html__( 'Swap out the oldest pick', 'sgs-blocks' ) . '</option>';
+		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[multi]" value="1"' . \checked( ! empty( $flags['multi'] ), true, false ) . ' /> ' . esc_html__( 'Shopper can pick more than one', 'sgs-blocks' ) . '</label></p>';
+		echo '<p><label>' . esc_html__( 'At least', 'sgs-blocks' ) . ' <input type="number" min="1" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[least]" value="' . \esc_attr( (string) ( $flags['least'] ?? 1 ) ) . '" /></label> ';
+		echo '<label>' . esc_html__( 'No more than', 'sgs-blocks' ) . ' <input type="number" min="2" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[most]" value="' . \esc_attr( (string) ( $flags['most'] ?? 3 ) ) . '" /></label></p>';
+		echo '<p><label>' . esc_html__( 'If they pick one too many', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[overflow]">';
+		echo '<option value="refuse"' . \selected( $flags['overflow'] ?? 'refuse', 'refuse', false ) . '>' . esc_html__( 'Tell them', 'sgs-blocks' ) . '</option>';
+		echo '<option value="replace"' . \selected( $flags['overflow'] ?? '', 'replace', false ) . '>' . esc_html__( 'Swap out the oldest pick', 'sgs-blocks' ) . '</option>';
 		echo '</select></label></p>';
-		echo '<p><label>' . \esc_html__( 'Start with', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[startWith]"><option value="">' . \esc_html__( 'Nothing picked', 'sgs-blocks' ) . '</option>';
+		echo '<p><label>' . esc_html__( 'Start with', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[startWith]"><option value="">' . esc_html__( 'Nothing picked', 'sgs-blocks' ) . '</option>';
 		foreach ( $options as $slug => $label ) {
-			echo '<option value="' . \esc_attr( $slug ) . '"' . \selected( $flags['startWith'] ?? '', $slug, false ) . '>' . \esc_html( $label ) . '</option>';
+			echo '<option value="' . \esc_attr( $slug ) . '"' . \selected( $flags['startWith'] ?? '', $slug, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></label></p>';
-		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[share]" value="1"' . \checked( ! empty( $flags['share'] ), true, false ) . ' /> ' . \esc_html__( 'Share the pack between these', 'sgs-blocks' ) . '</label></p>';
-		echo '<p class="description">' . \esc_html__( 'Groups show on the product page in the order you drag the attributes into. Each option is not counted in stock, so an option can be oversold. Click Update to save these choices.', 'sgs-blocks' ) . '</p>';
+		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[share]" value="1"' . \checked( ! empty( $flags['share'] ), true, false ) . ' /> ' . esc_html__( 'Share the pack between these', 'sgs-blocks' ) . '</label></p>';
+		echo '<p class="description">' . esc_html__( 'Groups show on the product page in the order you drag the attributes into. Each option is not counted in stock, so an option can be oversold. Click Update to save these choices.', 'sgs-blocks' ) . '</p>';
 		echo '</div>';
 		echo '</div>';
 	}
@@ -125,7 +125,7 @@ final class Configurator_Picks_Admin {
 			}
 			$text = \trim( (string) $option );
 			if ( '' !== $text ) {
-				$out[ \sanitize_title( $text ) ] = $text;
+				$out[ sanitize_title( $text ) ] = $text;
 			}
 		}
 		return $out;
@@ -162,7 +162,7 @@ final class Configurator_Picks_Admin {
 		$variation = \is_array( $variation ) ? $variation : array();
 		$map       = array();
 		foreach ( $rows as $i => $fields ) {
-			$name = isset( $names[ $i ] ) ? \wc_clean( (string) $names[ $i ] ) : '';
+			$name = isset( $names[ $i ] ) ? wc_clean( (string) $names[ $i ] ) : '';
 			if ( '' === $name || ! \is_array( $fields ) || ! empty( $variation[ $i ] ) ) {
 				continue;
 			}
@@ -185,9 +185,9 @@ final class Configurator_Picks_Admin {
 			return; // A save that did not come from the product screen (quick edit, REST, import) leaves the flags alone.
 		}
 		$flags = self::flags_from_request(
-			\wp_unslash( $_POST[ self::FIELD ] ),
-			\wp_unslash( $_POST['attribute_names'] ?? array() ),
-			\wp_unslash( $_POST['attribute_variation'] ?? array() )
+			wp_unslash( $_POST[ self::FIELD ] ),
+			wp_unslash( $_POST['attribute_names'] ?? array() ),
+			wp_unslash( $_POST['attribute_variation'] ?? array() )
 		);
 		// phpcs:enable
 		if ( array() === $flags ) {

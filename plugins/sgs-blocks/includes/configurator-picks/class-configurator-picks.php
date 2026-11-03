@@ -28,9 +28,9 @@ final class Configurator_Picks {
 	/** Wire WooCommerce hooks. */
 	public static function register(): void {
 		// After Flow_Fields_Cart::add_cart_item_data (11), whose accepted rows this replaces for the pick groups' labels.
-		\add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 12, 3 );
-		\add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'restore_from_session' ), 11, 2 );
-		\add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'block_stale_lines' ) );
+		add_filter( 'woocommerce_add_cart_item_data', array( __CLASS__, 'add_cart_item_data' ), 12, 3 );
+		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'restore_from_session' ), 11, 2 );
+		add_action( 'woocommerce_check_cart_items', array( __CLASS__, 'block_stale_lines' ) );
 	}
 
 	/**
@@ -49,7 +49,7 @@ final class Configurator_Picks {
 		}
 		$slug = (string) ( $variations[ 'attribute_' . $pack['key'] ] ?? '' );
 		if ( '' === $slug && $variation_id > 0 && \function_exists( 'wc_get_product' ) ) {
-			$variation = \wc_get_product( $variation_id );
+			$variation = wc_get_product( $variation_id );
 			$attrs     = $variation instanceof \WC_Product ? (array) $variation->get_attributes() : array();
 			$slug      = (string) ( $attrs[ $pack['key'] ] ?? '' );
 		}
@@ -76,7 +76,7 @@ final class Configurator_Picks {
 		$variations = isset( $cart_item_data['variation'] ) && \is_array( $cart_item_data['variation'] ) ? $cart_item_data['variation'] : array();
 		$result     = sgs_picks_check( $groups, $raw, self::pack_for( $product_id, $variation_id, $variations, $groups ) );
 		if ( '' !== $result['error'] ) {
-			throw new \Exception( \esc_html( $result['error'] ) );
+			throw new \Exception( esc_html( $result['error'] ) );
 		}
 		if ( array() === $result['picks'] ) {
 			return $cart_item_data;
@@ -94,7 +94,7 @@ final class Configurator_Picks {
 			$rows[] = $row;
 		}
 		if ( \count( $rows ) > SGS_FLOW_FIELDS_MAX ) {
-			throw new \Exception( \esc_html__( 'Too many answers were sent with this item.', 'sgs-blocks' ) );
+			throw new \Exception( esc_html__( 'Too many answers were sent with this item.', 'sgs-blocks' ) );
 		}
 		$cart_item_data[ Flow_Fields_Cart::KEY ] = $rows;
 		// The picks sit in the cart item data, so the same variation with different picks hashes to a different cart line.
@@ -148,7 +148,7 @@ final class Configurator_Picks {
 			}
 			$check = sgs_picks_check( array( $group ), array( $key => $list ), null );
 			if ( '' !== $check['error'] ) {
-				$stale[] = \wp_strip_all_tags( (string) $group['label'] );
+				$stale[] = wp_strip_all_tags( (string) $group['label'] );
 			}
 		}
 		return \array_values( \array_unique( $stale ) );

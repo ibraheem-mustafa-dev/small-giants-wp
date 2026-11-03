@@ -31,7 +31,7 @@ final class Configurator_Groups {
 	 * @return string
 	 */
 	public static function attribute_key( string $name ): string {
-		return \function_exists( 'taxonomy_exists' ) && \taxonomy_exists( $name ) ? $name : \sanitize_title( $name );
+		return \function_exists( 'taxonomy_exists' ) && taxonomy_exists( $name ) ? $name : sanitize_title( $name );
 	}
 
 	/**
@@ -41,7 +41,7 @@ final class Configurator_Groups {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public static function flags_for_product( int $product_id ): array {
-		return sgs_picks_sanitise_flags( \get_post_meta( $product_id, self::FLAGS_META, true ) );
+		return sgs_picks_sanitise_flags( get_post_meta( $product_id, self::FLAGS_META, true ) );
 	}
 
 	/**
@@ -53,11 +53,11 @@ final class Configurator_Groups {
 	 * @return array<int,array<string,mixed>> Each: key, label, role (priced|answer), terms (id, slug, label, colour, image, badge, description), flags.
 	 */
 	public static function for_product( int $product_id ): array {
-		$preset = \apply_filters( 'sgs_configurator_groups', null, $product_id );
+		$preset = apply_filters( 'sgs_configurator_groups', null, $product_id );
 		if ( \is_array( $preset ) ) {
 			return $preset;
 		}
-		$product = \function_exists( 'wc_get_product' ) ? \wc_get_product( $product_id ) : null;
+		$product = \function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : null;
 		if ( ! $product instanceof \WC_Product ) {
 			return array();
 		}
@@ -98,10 +98,10 @@ final class Configurator_Groups {
 					'id'          => $id,
 					'slug'        => (string) $term->slug,
 					'label'       => (string) $term->name,
-					'colour'      => (string) \sanitize_hex_color( (string) \get_term_meta( $id, '_sgs_swatch_color', true ) ),
-					'image'       => \absint( \get_term_meta( $id, '_sgs_swatch_image_id', true ) ),
-					'badge'       => (string) \get_term_meta( $id, '_sgs_term_badge', true ),
-					'description' => (string) \get_term_meta( $id, '_sgs_term_description', true ),
+					'colour'      => (string) \sanitize_hex_color( (string) get_term_meta( $id, '_sgs_swatch_color', true ) ),
+					'image'       => absint( get_term_meta( $id, '_sgs_swatch_image_id', true ) ),
+					'badge'       => (string) get_term_meta( $id, '_sgs_term_badge', true ),
+					'description' => (string) get_term_meta( $id, '_sgs_term_description', true ),
 				);
 			}
 			return $out;
@@ -113,7 +113,7 @@ final class Configurator_Groups {
 			}
 			$out[] = array(
 				'id'          => 0,
-				'slug'        => \sanitize_title( $text ),
+				'slug'        => sanitize_title( $text ),
 				'label'       => $text,
 				'colour'      => '',
 				'image'       => 0,
@@ -140,7 +140,7 @@ final class Configurator_Groups {
 			'units'       => array(),
 			'unparseable' => array(),
 		);
-		$axis = \sanitize_key( (string) \get_post_meta( $product_id, '_sgs_pack_size_axis', true ) );
+		$axis = sanitize_key( (string) get_post_meta( $product_id, '_sgs_pack_size_axis', true ) );
 		if ( '' === $axis ) {
 			return $none;
 		}
@@ -151,7 +151,7 @@ final class Configurator_Groups {
 			$units = array();
 			$bad   = array();
 			foreach ( $group['terms'] as $term ) {
-				$explicit = ! empty( $term['id'] ) ? \absint( \get_term_meta( (int) $term['id'], self::PACK_UNITS_META, true ) ) : 0;
+				$explicit = ! empty( $term['id'] ) ? absint( get_term_meta( (int) $term['id'], self::PACK_UNITS_META, true ) ) : 0;
 				$number   = $explicit > 0 ? $explicit : sgs_picks_parse_pack_number( (string) $term['label'] );
 				if ( null === $number ) {
 					$bad[] = (string) $term['label'];

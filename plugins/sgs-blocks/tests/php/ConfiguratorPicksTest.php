@@ -8,86 +8,11 @@
  * @package SGS\Blocks\Tests
  */
 
-namespace {
-	// WordPress stand-ins, defined only when absent.
-	if ( ! defined( 'ABSPATH' ) ) {
-		define( 'ABSPATH', __DIR__ . '/' );
-	}
-	$GLOBALS['sgs_t_groups'] = array();
-	$GLOBALS['sgs_t_meta']   = array();
-	if ( ! function_exists( '__' ) ) {
-		function __( $s ) {
-			return $s;
-		}
-	}
-	if ( ! function_exists( 'esc_html__' ) ) {
-		function esc_html__( $s ) {
-			return $s;
-		}
-	}
-	if ( ! function_exists( 'esc_html' ) ) {
-		function esc_html( $s ) {
-			return htmlspecialchars( (string) $s, ENT_QUOTES );
-		}
-	}
-	if ( ! function_exists( 'sanitize_title' ) ) {
-		function sanitize_title( $s ) {
-			return trim( (string) preg_replace( '/[^a-z0-9_-]+/', '-', strtolower( (string) $s ) ), '-' );
-		}
-	}
-	if ( ! function_exists( 'sanitize_key' ) ) {
-		function sanitize_key( $s ) {
-			return (string) preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $s ) );
-		}
-	}
-	if ( ! function_exists( 'wp_strip_all_tags' ) ) {
-		function wp_strip_all_tags( $s ) {
-			return trim( strip_tags( (string) $s ) );
-		}
-	}
-	if ( ! function_exists( 'absint' ) ) {
-		function absint( $s ) {
-			return abs( (int) $s );
-		}
-	}
-	if ( ! function_exists( 'add_filter' ) ) {
-		function add_filter( ...$args ) {
-			return true;
-		}
-	}
-	if ( ! function_exists( 'add_action' ) ) {
-		function add_action( ...$args ) {
-			return true;
-		}
-	}
-	if ( ! function_exists( 'apply_filters' ) ) {
-		function apply_filters( $hook, $value, ...$args ) {
-			return 'sgs_configurator_groups' === $hook && $GLOBALS['sgs_t_groups'] ? $GLOBALS['sgs_t_groups'] : $value;
-		}
-	}
-	if ( ! function_exists( 'get_post_meta' ) ) {
-		function get_post_meta( $id, $key = '', $single = false ) {
-			return $GLOBALS['sgs_t_meta'][ $id ][ $key ] ?? '';
-		}
-	}
-	if ( ! function_exists( 'get_term_meta' ) ) {
-		function get_term_meta( $id, $key = '', $single = false ) {
-			return $GLOBALS['sgs_t_meta'][ 't' . $id ][ $key ] ?? '';
-		}
-	}
-}
-
-namespace SGS\Blocks {
-	// Same stand-in CartLineSummaryAnswersTest uses: only the key the picks hook writes.
-	if ( ! class_exists( __NAMESPACE__ . '\Flow_Fields_Cart' ) ) {
-		class Flow_Fields_Cart {
-			const KEY = 'sgs_flow_fields';
-		}
-	}
-}
 
 namespace SGS\Blocks\Tests {
 
+	use PHPUnit\Framework\Attributes\PreserveGlobalState;
+	use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 	use PHPUnit\Framework\TestCase;
 	use SGS\Blocks\Configurator_Groups;
 	use SGS\Blocks\Configurator_Picks;
@@ -98,12 +23,14 @@ namespace SGS\Blocks\Tests {
 	use function SGS\Blocks\sgs_picks_per_unit_pence;
 	use function SGS\Blocks\sgs_picks_sanitise_flags;
 
-	require_once dirname( __DIR__, 2 ) . '/includes/flow-fields/functions.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/functions.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/class-configurator-groups.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/class-configurator-picks.php';
 
+	#[RunTestsInSeparateProcesses]
+	#[PreserveGlobalState( false )]
 	final class ConfiguratorPicksTest extends TestCase {
+
+		public static function setUpBeforeClass(): void {
+			require_once __DIR__ . '/support/picks-stubs.php';
+		}
 
 		private const FLAVOURS = array(
 			array( 'id' => 1, 'slug' => 'vanilla', 'label' => 'Vanilla' ),

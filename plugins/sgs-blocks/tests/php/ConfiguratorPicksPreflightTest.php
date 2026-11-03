@@ -9,13 +9,20 @@
 
 namespace SGS\Blocks\Tests {
 
+	use PHPUnit\Framework\Attributes\PreserveGlobalState;
+	use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 	use PHPUnit\Framework\TestCase;
 	use function SGS\Blocks\sgs_picks_preflight_issues;
 
-	require_once __DIR__ . '/ConfiguratorPicksTest.php';
-	require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/preflight.php';
 
+	#[RunTestsInSeparateProcesses]
+	#[PreserveGlobalState( false )]
 	final class ConfiguratorPicksPreflightTest extends TestCase {
+
+		public static function setUpBeforeClass(): void {
+			require_once __DIR__ . '/support/picks-stubs.php';
+			require_once dirname( __DIR__, 2 ) . '/includes/configurator-picks/preflight.php';
+		}
 
 		private static function group( int $terms, array $flags = array() ): array {
 			$list = array();

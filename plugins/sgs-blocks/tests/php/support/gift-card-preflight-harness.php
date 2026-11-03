@@ -44,6 +44,12 @@ namespace {
 	function get_term_by( $f, $slug, $tax ) { return (object) array( 'term_id' => 7 ); }
 	function get_term_meta( $id, $key, $single ) { return ''; }
 	function get_the_title( $id ) { return 'Test product'; }
+	// Check 8 (Pick a set setup) reads the product's own meta and sanitises keys.
+	function get_post_meta( $id, $key = '', $single = false ) { return ''; }
+	function sanitize_key( $s ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( (string) $s ) ); }
+	function sanitize_title( $s ) { return trim( preg_replace( '/[^a-z0-9_-]+/', '-', strtolower( (string) $s ) ), '-' ); }
+	function absint( $s ) { return abs( (int) $s ); }
+	function wp_strip_all_tags( $s ) { return trim( strip_tags( (string) $s ) ); }
 	function is_wp_error( $x ) { return false; }
 	function apply_filters( $tag, $value ) { return $value; }
 	function add_action() {}
