@@ -3741,14 +3741,16 @@
       "slug": "sgs/buybox",
       "attr": "pickerBoxBorderWidth",
       "fields": {
-        "css_property": "border-width"
+        "css_property": "border-width",
+        "css_element": "picker-box"
       }
     },
     {
       "slug": "sgs/buybox",
       "attr": "pickerBoxRadius",
       "fields": {
-        "css_property": "border-radius"
+        "css_property": "border-radius",
+        "css_element": "picker-box"
       }
     },
     {
@@ -3964,15 +3966,6 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "rrpChip"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "rrpPillBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "rrp-pill"
       }
     },
     {
@@ -32947,6 +32940,24 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerBoxBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelLinkPadding",
       "fields": {
         "css_property": "padding",
@@ -32960,6 +32971,15 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "rrp-pill"
       }
     },
     {
