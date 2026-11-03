@@ -177,6 +177,7 @@
             "css:color": "iconColour",
             "css:stroke": "iconColourGradient",
             "css:width": "iconSize",
+            "css:stroke-width": "iconStrokeWidth",
             "css:transform": "iconRotation"
           },
           "states": {
@@ -647,6 +648,13 @@
       "default": {},
       "description": "Toggle icon width and height in px, per device {desktop,tablet,mobile}. Empty = 24px."
     },
+    "iconStrokeWidth": {
+      "type": "number",
+      "default": 2,
+      "minimum": 0.25,
+      "maximum": 4,
+      "description": "Stroke width of the toggle icon's lines. 2 is the Lucide default; lower is finer, higher is bolder. Clamped to 0.25 to 4."
+    },
     "iconRotation": {
       "type": "number",
       "default": 0,
@@ -712,6 +720,7 @@
     "sgs/accordionHeaderMinHeight": "headerMinHeight",
     "sgs/accordionContentPadding": "contentPadding",
     "sgs/accordionIconSize": "iconSize",
+    "sgs/accordionIconStrokeWidth": "iconStrokeWidth",
     "sgs/accordionIconRotation": "iconRotation",
     "sgs/accordionIconCircleSize": "iconCircleSize",
     "sgs/accordionIconCircleBorderWidth": "iconCircleBorderWidth",

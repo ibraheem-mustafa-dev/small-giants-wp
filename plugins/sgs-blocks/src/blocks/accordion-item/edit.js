@@ -103,6 +103,11 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				( v ) =>
 					typeof v === 'number' && ( allowZero ? v >= 0 : v > 0 )
 			);
+	const strokeRaw = Number( context[ 'sgs/accordionIconStrokeWidth' ] );
+	const iconStrokeWidth =
+		Number.isFinite( strokeRaw ) && strokeRaw > 0
+			? Math.min( 4, Math.max( 0.25, strokeRaw ) )
+			: 2;
 	const iconSizeTier = pxTier( context[ 'sgs/accordionIconSize' ], false );
 	// Gap tiers hold a preset slug or a length; the narrowest tier with a value wins.
 	const headerGapTier = [ tier, 'tablet', 'desktop' ]
@@ -123,6 +128,8 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				? `${ headerMinHeightTier }px`
 				: undefined,
 		'--sgs-accordion-icon-size': iconSizeTier ? `${ iconSizeTier }px` : undefined,
+		'--sgs-accordion-icon-stroke-width':
+			iconStrokeWidth !== 2 ? iconStrokeWidth : undefined,
 		'--sgs-accordion-icon-rotate': iconRotation > 0 ? `${ iconRotation }deg` : undefined,
 	};
 

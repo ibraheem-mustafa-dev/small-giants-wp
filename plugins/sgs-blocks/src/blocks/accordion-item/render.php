@@ -56,6 +56,8 @@ $header_gap_raw           = $block->context['sgs/accordionHeaderGap'] ?? array()
 $header_min_height_raw    = $block->context['sgs/accordionHeaderMinHeight'] ?? array();
 $content_padding_raw      = $block->context['sgs/accordionContentPadding'] ?? array();
 $icon_size_raw            = $block->context['sgs/accordionIconSize'] ?? array();
+$icon_stroke_raw          = $block->context['sgs/accordionIconStrokeWidth'] ?? 2;
+$icon_stroke_width        = is_numeric( $icon_stroke_raw ) && (float) $icon_stroke_raw > 0 ? min( 4.0, max( 0.25, (float) $icon_stroke_raw ) ) : 2.0;
 $icon_rotation            = max( 0.0, min( 360.0, (float) ( $block->context['sgs/accordionIconRotation'] ?? 0 ) ) );
 // Spec 38A FR-38A-53: a turning-icon layer on `expanded` turns the single icon and `iconRotation` is ignored; no layer, no change.
 $sgs_ai_turn_model = sgs_accordion_icon_turn_on_model( $block->context['sgs/accordionMotion'] ?? null );
@@ -239,6 +241,9 @@ $sgs_ai_len_tiers = static function ( $raw, string $var ) use ( $root_sel, $sgs_
 };
 $responsive_css .= $sgs_ai_len_tiers( $header_gap_raw, '--sgs-accordion-header-gap' );
 $responsive_css .= $sgs_ai_px_tiers( $header_min_height_raw, '--sgs-accordion-header-min-h', true );
+if ( abs( $icon_stroke_width - 2.0 ) > 0.001 ) {
+	$responsive_css .= $root_sel . '{--sgs-accordion-icon-stroke-width:' . rtrim( rtrim( number_format( $icon_stroke_width, 3, '.', '' ), '0' ), '.' ) . ';}';
+}
 if ( $icon_rotation > 0 && ! $sgs_ai_turn_model ) {
 	$responsive_css .= $root_sel . '{--sgs-accordion-icon-rotate:' . $icon_rotation . 'deg;}';
 }

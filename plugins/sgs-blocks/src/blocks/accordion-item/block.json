@@ -121,6 +121,7 @@
 		"sgs/accordionHeaderMinHeight",
 		"sgs/accordionContentPadding",
 		"sgs/accordionIconSize",
+		"sgs/accordionIconStrokeWidth",
 		"sgs/accordionIconRotation",
 		"sgs/accordionIconCircleSize",
 		"sgs/accordionIconCircleBorderWidth",

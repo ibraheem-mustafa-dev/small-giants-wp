@@ -624,6 +624,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<RangeControl
+						label={ __( 'Icon line thickness', 'sgs-blocks' ) }
+						help={ __(
+							'How thick the icon lines are. 2 is the standard; lower is finer, higher is bolder.',
+							'sgs-blocks'
+						) }
+						value={ attributes.iconStrokeWidth ?? 2 }
+						onChange={ ( val ) =>
+							setAttributes( { iconStrokeWidth: val ?? 2 } )
+						}
+						min={ 0.25 }
+						max={ 4 }
+						step={ 0.05 }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<ResponsiveOverride
 						value={ attributes.iconCircleSize }
 						onChange={ ( obj ) =>

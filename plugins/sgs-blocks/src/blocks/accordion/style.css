@@ -110,6 +110,16 @@
 	height: 100%;
 }
 
+/* iconStrokeWidth: the variable is printed only when it differs from the
+ * Lucide default of 2; the shapes carry their own stroke-width attribute, so
+ * the rule reaches them as well. */
+.sgs-accordion-item__icon-open > svg,
+.sgs-accordion-item__icon-open > svg *,
+.sgs-accordion-item__icon-close > svg,
+.sgs-accordion-item__icon-close > svg * {
+	stroke-width: var(--sgs-accordion-icon-stroke-width, 2);
+}
+
 /* This value is PAINTED (not inherited), so it is kept, de-specified via
  * :where() so the operator's own scoped `.{uid}` rule always wins. */
 :where(.sgs-accordion-item__icon-open),
