@@ -2087,5 +2087,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 238
+  },
+  {
+    "id": "check-breakpoint-literals",
+    "cmd": "python scripts/check-breakpoint-literals.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 239
+  },
+  {
+    "id": "check-breakpoint-literals-selftest",
+    "cmd": "python scripts/check-breakpoint-literals.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 240
   }
 ]
