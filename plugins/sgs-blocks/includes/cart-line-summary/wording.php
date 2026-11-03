@@ -98,7 +98,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 				? \sanitize_text_field( (string) $raw['leadWithoutAddons'] )
 				: '',
 			'labelSeparator'    => '' !== $separator ? $separator : ': ',
-			'addedToBag'        => isset( $raw['addedToBag'] ) && \is_scalar( $raw['addedToBag'] ) && '' !== 	rim( (string) $raw['addedToBag'] )
+			'addedToBag'        => isset( $raw['addedToBag'] ) && \is_scalar( $raw['addedToBag'] ) && '' !== \trim( (string) $raw['addedToBag'] )
 				? \sanitize_text_field( (string) $raw['addedToBag'] )
 				: 'Added to your basket.',
 			'addedWithAddons'   => isset( $raw['addedWithAddons'] ) && \is_scalar( $raw['addedWithAddons'] )

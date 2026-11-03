@@ -8,6 +8,7 @@ import {
 import { SgsLengthControl, SgsBoxControl } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 /**
  * Settings-tab (default InspectorControls group) extra panels for
  * sgs/buybox, size-band tiles (F1), a picker-label link
@@ -133,6 +134,7 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 				<SgsBoxControl
 					label={ __( 'Link padding', 'sgs-blocks' ) }
 					values={ pickerLabelLinkPadding ?? {} }
+					defaults={ spacingDefaultsFor( 'sgs/buybox', 'pickerLabelLinkPadding' ) }
 					presets
 					onChange={ ( next ) =>
 						setAttributes( { pickerLabelLinkPadding: next } )
