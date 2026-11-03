@@ -184,12 +184,12 @@ if ( null !== $padding_base_val && ! $is_showcase ) {
 
 $padding_tablet_val = sgs_box_object_longhands( $padding_tablet, 'padding' );
 if ( null !== $padding_tablet_val && ! $is_showcase ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$padding_tablet_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{{$padding_tablet_val};}}";
 }
 
 $padding_mobile_val = sgs_box_object_longhands( $padding_mobile, 'padding' );
 if ( null !== $padding_mobile_val && ! $is_showcase ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$padding_mobile_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{{$padding_mobile_val};}}";
 }
 
 // Back button — shared button-style emitter (mirrors sgs/product-card's

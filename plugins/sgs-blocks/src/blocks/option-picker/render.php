@@ -521,7 +521,7 @@ if ( null !== $radius_tab_val ) {
 	$tablet_root_decls[] = "{$radius_tab_val}";
 }
 if ( $tablet_root_decls ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $tablet_root_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $tablet_root_decls ) );
 }
 
 $mobile_root_decls = array();
@@ -535,7 +535,7 @@ if ( null !== $radius_mob_val ) {
 	$mobile_root_decls[] = "{$radius_mob_val}";
 }
 if ( $mobile_root_decls ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $mobile_root_decls ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_root_decls ) );
 }
 
 // Wrap setting of the option pills (tile mode lays the options on a grid, where it has no effect).
@@ -553,10 +553,10 @@ if ( null !== $pill_padding_val ) {
 	$scoped_css[] = "{$sel_pill}{{$pill_padding_val};}";
 }
 if ( null !== $pill_padding_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$sel_pill}{{$pill_padding_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$sel_pill}{{$pill_padding_tab_val};}}";
 }
 if ( null !== $pill_padding_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$sel_pill}{{$pill_padding_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$sel_pill}{{$pill_padding_mob_val};}}";
 }
 
 // --- Legend typography (font-size/tablet/mobile) via the shared responsive

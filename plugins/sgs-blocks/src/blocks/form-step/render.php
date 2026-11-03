@@ -189,10 +189,10 @@ if ( $border['base'] ) {
 	$sgs_fs_supports_css .= $sgs_fs_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$sgs_fs_supports_css .= '@media(max-width:1023px){' . $sgs_fs_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$sgs_fs_supports_css .= sgs_emit_tier_decls( $sgs_fs_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$sgs_fs_supports_css .= '@media(max-width:767px){' . $sgs_fs_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$sgs_fs_supports_css .= sgs_emit_tier_decls( $sgs_fs_sel, array( 'mobile' => $border['mobile'] ) );
 }
 $sgs_fs_supports_css .= implode( '', $border['rules'] );
 

@@ -30,6 +30,7 @@ require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-box.php';
+require_once __DIR__ . '/helpers-responsive.php';
 
 if ( ! function_exists( 'sgs_border_style_allowed' ) ) {
 	/**

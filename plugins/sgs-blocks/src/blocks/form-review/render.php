@@ -47,10 +47,10 @@ if ( $sgs_fr_card_decls ) {
 }
 $sgs_fr_css .= implode( '', $sgs_fr_border['rules'] );
 if ( $sgs_fr_border['tablet'] ) {
-	$sgs_fr_css .= '@media(max-width:1023px){' . $sgs_fr_card_sel . '{' . implode( ';', $sgs_fr_border['tablet'] ) . ';}}';
+	$sgs_fr_css .= sgs_emit_tier_decls( $sgs_fr_card_sel, array( 'tablet' => $sgs_fr_border['tablet'] ) );
 }
 if ( $sgs_fr_border['mobile'] ) {
-	$sgs_fr_css .= '@media(max-width:767px){' . $sgs_fr_card_sel . '{' . implode( ';', $sgs_fr_border['mobile'] ) . ';}}';
+	$sgs_fr_css .= sgs_emit_tier_decls( $sgs_fr_card_sel, array( 'mobile' => $sgs_fr_border['mobile'] ) );
 }
 
 $sgs_fr_css .= sgs_typography_css_rule( $attributes, 'cardTitle', $sgs_fr_scope . ' .sgs-form-review__card-title' );
