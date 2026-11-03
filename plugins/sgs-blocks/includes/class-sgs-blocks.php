@@ -239,6 +239,8 @@ final class SGS_Blocks {
 		// Choice-flow answers and fields carried to the cart line, with a
 		// session-stamped upload for file fields (Spec 43 FR-43-21).
 		require_once SGS_BLOCKS_PATH . 'includes/flow-fields/load.php';
+		// Buy box "Pick a set" mode: pick groups, the pick rules and the cart row they produce.
+		require_once SGS_BLOCKS_PATH . 'includes/configurator-picks/load.php';
 		// ONE server-built summary per cart line, replacing the two row
 		// families above on every customer-facing surface — the bag drawer,
 		// the cart page, the checkout and the order email all read the same
