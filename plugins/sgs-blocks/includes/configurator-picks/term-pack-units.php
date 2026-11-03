@@ -116,9 +116,6 @@ function sgs_save_pack_units_field( int $term_id, int $tt_id ): void { // phpcs:
 	$units = isset( $_POST['sgs_pack_units'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
 		? absint( wp_unslash( $_POST['sgs_pack_units'] ) )
 		: 0;
-	if ( $units > 0 ) {
-		update_term_meta( $term_id, Configurator_Groups::PACK_UNITS_META, min( $units, 9999 ) );
-	} else {
-		delete_term_meta( $term_id, Configurator_Groups::PACK_UNITS_META );
-	}
+	// Zero means "read the number from the name" (Configurator_Groups::pack()).
+	update_term_meta( $term_id, Configurator_Groups::PACK_UNITS_META, min( $units, 9999 ) );
 }

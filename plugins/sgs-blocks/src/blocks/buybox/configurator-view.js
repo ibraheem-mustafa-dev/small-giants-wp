@@ -154,15 +154,14 @@ function initRoot( root ) {
 		const s = dot.style;
 		s.left = `${ x }%`;
 		s.top = `${ y }%`;
-		s.width = `${ size }px`;
-		s.height = `${ size }px`;
+		s.setProperty( '--sgs-pick-dot-size', `${ size }px` );
 		s.borderRadius = radius;
 		s.background = colour || 'currentColor';
 		if ( image && 'none' !== image ) {
 			s.backgroundImage = image;
 			s.backgroundSize = 'cover';
 		}
-		s.rotate = `${ rotate }deg`;
+		s.setProperty( '--sgs-pick-dot-rotate', `${ rotate }deg` );
 		dots.appendChild( dot );
 	}
 

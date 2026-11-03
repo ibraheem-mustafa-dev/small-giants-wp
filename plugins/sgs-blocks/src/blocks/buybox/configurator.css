@@ -260,6 +260,9 @@
 
 .sgs-buybox-pick__dot {
 	position: absolute;
+	width: var(--sgs-pick-dot-size, 17px);
+	height: var(--sgs-pick-dot-size, 17px);
+	rotate: var(--sgs-pick-dot-rotate, 0deg);
 	transform: translate(-50%, -50%);
 	box-shadow: inset -2px -2px 0 color-mix(in srgb, black 15%, transparent);
 	transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
