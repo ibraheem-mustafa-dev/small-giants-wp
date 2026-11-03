@@ -119,7 +119,13 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		$message = trim( (string) ( $attributes['filterEmptyMessage'] ?? '' ) );
 		$body    = '' !== $message ? wp_kses_post( $message ) : esc_html__( 'Nothing matches that yet.', 'sgs-blocks' );
 		$link    = is_array( $attributes['filterEmptyLink'] ?? null ) ? $attributes['filterEmptyLink'] : array();
-		$url     = esc_url( (string) ( $link['url'] ?? '' ) );
+		$source  = (string) ( $link['source'] ?? '' );
+		$typed   = (string) ( $link['url'] ?? '' );
+		if ( '' !== $source && 'url' !== $source ) {
+			require_once __DIR__ . '/helpers-link-source.php';
+			$typed = sgs_resolve_link_source( $source, $typed )['url'];
+		}
+		$url     = esc_url( $typed );
 		$text    = trim( (string) ( $link['label'] ?? '' ) );
 		$anchor  = '' !== $url && '' !== $text ? ' <a class="sgs-accordion__empty-link" href="' . $url . '">' . esc_html( $text ) . '</a>' : '';
 		return '<div class="sgs-accordion__empty" data-sgs-accordion-empty hidden>' . $body . $anchor . '</div>';

@@ -11,6 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
 import { DesignTokenPicker, LinkPopoverField, SgsLengthControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 
 /** Defaults mirror block.json; the reset of a field writes its default back. */
 export const FILTER_DEFAULTS = {
@@ -212,7 +213,9 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 							searchOnly
 							label={ __( 'Link address', 'sgs-blocks' ) }
 							value={ link.url ?? '' }
-							onChange={ ( val ) => setAttributes( { filterEmptyLink: { ...link, url: val ?? '' } } ) }
+							onChange={ ( val, extra ) => setAttributes( { filterEmptyLink: { ...link, url: val ?? '', ...( extra ? { source: extra.linkSource } : {} ) } } ) }
+							linkSource={ link.source ?? '' }
+							linkSources={ LINK_SOURCES_NO_TOP }
 						/>
 					</Field>
 				</ToolsPanel>
