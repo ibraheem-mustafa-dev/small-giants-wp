@@ -113,6 +113,10 @@ function initStickyBar( root ) {
 	}
 
 	function refreshVariantLine() {
+		// Pick a set: configurator-view.js writes the one summary into this line.
+		if ( root.hasAttribute( 'data-sgs-pick-summary' ) ) {
+			return;
+		}
 		const text = chosenOptionsText( root );
 		if ( variantEl && text ) {
 			variantEl.textContent = text;

@@ -976,6 +976,20 @@ store( 'sgs/product-card', {
 					}
 				}
 
+				// Buy box "Pick a set": configurator-view.js keeps the picks as JSON on the card root; the server checks
+				// every slug and builds the cart row (Configurator_Picks), so only slugs and counts travel.
+				const extraPicksRaw = cardRefForFields ? cardRefForFields.dataset.extraPicks : '';
+				if ( extraPicksRaw ) {
+					try {
+						const extraPicks = JSON.parse( extraPicksRaw );
+						if ( extraPicks && 'object' === typeof extraPicks ) {
+							body.picks = extraPicks;
+						}
+					} catch {
+						// Malformed JSON: add without picks; the server refuses a product that needs them.
+					}
+				}
+
 				const response = yield fetch(
 					getStoreApiBase() + '/sgs/v1/cart/add-item',
 					{
