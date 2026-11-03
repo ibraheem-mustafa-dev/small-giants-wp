@@ -22,14 +22,16 @@
  * @package
  */
 
+import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+
 /**
  * The device-tier queries: mobile <=767, tablet 768-1023, desktop >=1024. Never design breakpoints. The fractional edges
  * match the stylesheet gates (`@media ( max-width: 767.98px )`), so a fractional viewport width reads as the same tier in
  * script and in CSS.
  */
 export const TIER_QUERIES = {
-	mobile: '(max-width: 767.98px)',
-	tablet: '(min-width: 768px) and (max-width: 1023.98px)',
+	mobile: SGS_BREAKPOINT_QUERIES.mobileFractional,
+	tablet: SGS_BREAKPOINT_QUERIES.tabletOnlyFractional,
 };
 
 /**

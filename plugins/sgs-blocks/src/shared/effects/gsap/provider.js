@@ -48,6 +48,7 @@ export {
 	resolveStart,
 	resolveTrigger,
 } from './provider-resolvers.js';
+import { SGS_BREAKPOINT_QUERIES } from '../../../utils/responsive';
 
 /**
  * Register Tier G plugins and return the shared GSAP instance.
@@ -202,11 +203,11 @@ function currentTier() {
 	if ( typeof window.matchMedia !== 'function' ) {
 		return null;
 	}
-	if ( window.matchMedia( '(max-width: 767.98px)' ).matches ) {
+	if ( window.matchMedia( SGS_BREAKPOINT_QUERIES.mobileFractional ).matches ) {
 		return 'mobile';
 	}
 	if (
-		window.matchMedia( '(min-width: 768px) and (max-width: 1023.98px)' )
+		window.matchMedia( SGS_BREAKPOINT_QUERIES.tabletOnlyFractional )
 			.matches
 	) {
 		return 'tablet';
@@ -314,8 +315,8 @@ export function bootEffect( effect, init ) {
 	// matchMedia, or a returned object without addEventListener, gets no
 	// listener: the boot-time decision then stands.
 	const tierQueries = [
-		'(max-width: 767.98px)',
-		'(min-width: 768px) and (max-width: 1023.98px)',
+		SGS_BREAKPOINT_QUERIES.mobileFractional,
+		SGS_BREAKPOINT_QUERIES.tabletOnlyFractional,
 	];
 	const queries =
 		typeof window.matchMedia === 'function'

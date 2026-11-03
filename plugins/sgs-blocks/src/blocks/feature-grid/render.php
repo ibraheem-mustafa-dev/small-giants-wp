@@ -145,21 +145,11 @@ if ( $use_auto_flex ) {
 	justify-items: $justify_items;
 }";
 	if ( '' !== $min_item_css['tablet'] && $min_item_css['tablet'] !== $min_item_css['desktop'] ) {
-		$css .= "
-@media (max-width: 1023px) {
-	.$uid.sgs-feature-grid {
-		grid-template-columns: repeat(auto-fill, minmax({$min_item_css['tablet']}, 1fr));
-	}
-}";
+		$css .= sgs_emit_tier_decls( ".$uid.sgs-feature-grid", array( 'tablet' => array( "grid-template-columns:repeat(auto-fill, minmax({$min_item_css['tablet']}, 1fr))" ) ) );
 	}
 	$min_item_mobile_from = '' !== $min_item_css['tablet'] ? $min_item_css['tablet'] : $min_item_css['desktop'];
 	if ( '' !== $min_item_css['mobile'] && $min_item_css['mobile'] !== $min_item_mobile_from ) {
-		$css .= "
-@media (max-width: 767px) {
-	.$uid.sgs-feature-grid {
-		grid-template-columns: repeat(auto-fill, minmax({$min_item_css['mobile']}, 1fr));
-	}
-}";
+		$css .= sgs_emit_tier_decls( ".$uid.sgs-feature-grid", array( 'mobile' => array( "grid-template-columns:repeat(auto-fill, minmax({$min_item_css['mobile']}, 1fr))" ) ) );
 	}
 } elseif ( $has_explicit_grid ) {
 	/*
@@ -182,19 +172,14 @@ if ( $use_auto_flex ) {
 	grid-template-columns: repeat($columns_desktop, 1fr);
 	gap: $gap_css;
 	justify-items: $justify_items;
-}
-@media (max-width: 1023px) {
-	.$uid.sgs-feature-grid {
-		grid-template-columns: repeat($columns_tablet, 1fr);
-		gap: $gap_tablet_css;
-	}
-}
-@media (max-width: 767px) {
-	.$uid.sgs-feature-grid {
-		grid-template-columns: repeat($columns_mobile, 1fr);
-		gap: $gap_mobile_css;
-	}
 }";
+	$css .= sgs_emit_tier_decls(
+		".$uid.sgs-feature-grid",
+		array(
+			'tablet' => array( "grid-template-columns:repeat($columns_tablet, 1fr)", "gap:$gap_tablet_css" ),
+			'mobile' => array( "grid-template-columns:repeat($columns_mobile, 1fr)", "gap:$gap_mobile_css" ),
+		)
+	);
 }
 
 // NO-INLINE: this block emits zero inline style property declarations.

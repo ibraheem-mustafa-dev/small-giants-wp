@@ -16,6 +16,8 @@
  * @package
  */
 
+import { SGS_BREAKPOINT_QUERIES } from '../../../utils/responsive';
+
 const LENGTH = /^-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|em|rem|%|vh|vw|svh|dvh)$/;
 const ANGLE = /^(-?(?:\d+(?:\.\d+)?|\.\d+))(deg|turn)$/;
 const HEX = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
@@ -338,7 +340,7 @@ export function readSmoothing( el, attr, customProperty, fallback = 1 ) {
 	return seconds > 0 ? seconds : true;
 }
 
-const TIER_QUERIES = [ '(max-width: 1023px)', '(max-width: 767px)' ];
+const TIER_QUERIES = [ SGS_BREAKPOINT_QUERIES.tablet, SGS_BREAKPOINT_QUERIES.mobile ];
 
 /**
  * Build an effect now, and rebuild it whenever the breakpoint tier changes

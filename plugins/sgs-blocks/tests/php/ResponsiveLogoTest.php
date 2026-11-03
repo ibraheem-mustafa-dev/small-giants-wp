@@ -325,13 +325,13 @@ class ResponsiveLogoTest extends TestCase {
 		$mobile_url  = 'https://example.com/wp-content/uploads/logo-30.png';
 
 		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width: 767px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
+			'#<source media="\(max-width:767px\)" srcset="' . preg_quote( $mobile_url, '#' ) . '">#',
 			$html,
 			'Mobile source must use logoIdMobile URL.'
 		);
 
 		$this->assertMatchesRegularExpression(
-			'#<source media="\(max-width: 1023px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
+			'#<source media="\(max-width:1023px\)" srcset="' . preg_quote( $tablet_url, '#' ) . '">#',
 			$html,
 			'Tablet source must use logoIdTablet URL.'
 		);

@@ -34,6 +34,7 @@
 // own header comment) — bundling a second copy here is the documented and
 // safe pattern, not a duplicate utility.
 import '../../shared/nav-interactivity/store.js';
+import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
 
 /**
  * Wire one product-search instance.
@@ -71,7 +72,7 @@ function initInstance( root ) {
 	// (mobile max-width:767px — see .claude/rules/cloning-pipeline.md's breakpoint-discipline rule).
 	const mobileMedia =
 		typeof window.matchMedia === 'function'
-			? window.matchMedia( '(max-width: 767px)' )
+			? window.matchMedia( SGS_BREAKPOINT_QUERIES.mobile )
 			: null;
 
 	function getEffectiveMaxResults() {
