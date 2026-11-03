@@ -27,7 +27,7 @@ for any key under `settings.custom` ending in `Presets` and asserts:
    `{component}` stem maps to a real block: a block exists if
    `plugins/sgs-blocks/src/blocks/<kebab-of-stem>/block.json` exists.
 2. Variant slugs are semantic — lowercase kebab-case (`^[a-z][a-z0-9-]*$`).
-3. Role keys are in the fixed 19-entry vocabulary (6 colour + 6 geometry + 7 motion).
+3. Role keys are in the fixed vocabulary (`_ROLE_VOCABULARY`: colour, geometry, typography, motion).
 
 Usage
 -----
@@ -59,7 +59,7 @@ _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 _SITES_DIR = _REPO_ROOT / "sites"
 
 # ---------------------------------------------------------------------------
-# Fixed vocabulary (Spec 32 FR-32-9) — 6 colour + 6 geometry + 10 motion = 22
+# Fixed vocabulary (Spec 32 FR-32-9): colour, geometry, typography and motion roles
 # ---------------------------------------------------------------------------
 _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # colour roles
@@ -68,6 +68,9 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # geometry roles
     "border-width", "border-radius", "padding",
     "font-size", "font-weight", "min-height",
+    # typography roles (button/style.css reads them with an empty fallback, so an
+    # unset role leaves the button inheriting its surroundings' case and spacing)
+    "letter-spacing", "text-transform",
     # motion roles (button/style.css reads hover-transform as
     # --sgs-btn-transform-hover and hover-transition / hover-easing as
     # --sgs-btn-transition-duration / --sgs-btn-transition-easing;
@@ -216,7 +219,7 @@ def _scan_custom_settings(
                         role=role_key, kind="role",
                         detail=(
                             f"role key '{role_key}' is outside the fixed "
-                            f"19-entry vocabulary (6 colour + 6 geometry + 7 motion)"
+                            f"{len(_ROLE_VOCABULARY)}-entry vocabulary (colour, geometry, typography, motion)"
                         ),
                     ))
 

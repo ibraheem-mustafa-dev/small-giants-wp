@@ -762,6 +762,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
 								label={ __( 'Max width position', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue || '' }
