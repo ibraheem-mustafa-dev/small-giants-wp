@@ -668,6 +668,20 @@ if ( is_array( $sgs_status_gap ) && array() !== $sgs_status_gap ) {
 		)
 	);
 }
+$sgs_actions_space = $attributes['actionsSpaceAbove'] ?? null;
+if ( is_array( $sgs_actions_space ) && array() !== $sgs_actions_space ) {
+	// A custom property, so the sticky row's "off" reset reads the same value.
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__actions',
+		array(
+			array(
+				'value'     => $sgs_actions_space,
+				'css'       => '--sgs-form-actions-space',
+				'transform' => $sgs_form_length,
+			),
+		)
+	);
+}
 $sgs_field_css .= sgs_flex_wrap_css( $attributes, '.' . $sgs_form_uid, array( 'statusRowWrap' => '.sgs-form__status-row' ) );
 
 // Icon on the step buttons: its size and the gap to the label. Printed only when an icon is set.
@@ -750,7 +764,7 @@ if ( array() !== $sgs_sticky_raw ) {
 		$d  .= '' !== $box ? $box . ';' : '';
 		return $d;
 	};
-	$sgs_sticky_off_decls = 'position:static;bottom:auto;z-index:auto;background-color:transparent;border-top:0;margin-inline:0;box-shadow:none;padding:0;padding-top:var(--wp--preset--spacing--30,1rem);';
+	$sgs_sticky_off_decls = 'position:static;bottom:auto;z-index:auto;background-color:transparent;border-top:0;margin-inline:0;box-shadow:none;padding:0;padding-top:var(--sgs-form-actions-space,var(--wp--preset--spacing--30,1rem));';
 	$sgs_prev_decls       = '';
 	foreach ( array( 'desktop' => null, 'tablet' => SGS_Breakpoints::TABLET_MAX, 'mobile' => SGS_Breakpoints::MOBILE_MAX ) as $sgs_tier => $sgs_max ) {
 		$sgs_decls = $sgs_sticky_on[ $sgs_tier ] ? $sgs_sticky_on_decls( $sgs_tier ) : $sgs_sticky_off_decls;

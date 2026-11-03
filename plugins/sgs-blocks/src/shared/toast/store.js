@@ -21,6 +21,13 @@
  * it closes. That includes the auto-close timer handle: a close from one
  * bundle must be able to clear a timer started by another.
  *
+ * A SUCCESS toast closes when any SGS drawer opens (the drawer shows the
+ * bag, so "Added · View bag" is redundant). The wiring is the DOM event the
+ * drawer already dispatches (`sgs-nav-drawer-phase`, detail.phase 'open',
+ * which does not bubble, so it is heard in the capture phase on `document`).
+ * A DOM event crosses bundles; importing the nav store's state would not. An
+ * error toast is left alone: it STAYS until closed.
+ *
  * ─────────────────────────────────────────────────────────────────────────
  * PUBLIC API CONTRACT — consumers code against THIS.
  * ─────────────────────────────────────────────────────────────────────────
@@ -50,6 +57,7 @@
 
 import { store } from '@wordpress/interactivity';
 import { prefersReducedMotion } from '../effects/motion-utils.js';
+import { DRAWER_PHASE_EVENT } from '../nav-interactivity/drawer-lifecycle.js';
 
 /** Auto-close delay for a success toast, in milliseconds. */
 const AUTO_CLOSE_MS = 5000;
@@ -337,6 +345,23 @@ const { state, actions } = store( 'sgs/toast', {
 		},
 	},
 } );
+
+/**
+ * Close a showing success toast when a drawer opens. Every bundle that
+ * imports this module registers the listener; closing is idempotent, so the
+ * repeats are harmless.
+ *
+ * @param {CustomEvent} event The drawer's lifecycle event.
+ */
+function closeOnDrawerOpen( event ) {
+	if ( 'open' === event?.detail?.phase && state.isSuccess ) {
+		actions.close();
+	}
+}
+
+if ( 'undefined' !== typeof document ) {
+	document.addEventListener( DRAWER_PHASE_EVENT, closeOnDrawerOpen, true );
+}
 
 /**
  * Start (or restart) the auto-close timer.

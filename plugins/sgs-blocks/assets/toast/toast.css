@@ -193,21 +193,12 @@
 }
 
 /* ===== Narrow viewports =====
- * Full-width bar with the message on its own line, so a long sentence never
- * squeezes the 44px action and close targets.
+ * Stays one compact row at its natural width, like the wider screens. A long
+ * message wraps inside its own text box, and the toast never runs past the
+ * screen (the base max-width keeps the 1rem edge inset).
  */
 @media (max-width: 480px) {
-	.sgs-toast {
-		width: auto;
-		max-width: none;
-		flex-wrap: wrap;
-	}
-
 	.sgs-toast__message {
-		flex-basis: 100%;
-	}
-
-	.sgs-toast__action {
-		margin-inline-start: auto;
+		min-width: 0;
 	}
 }

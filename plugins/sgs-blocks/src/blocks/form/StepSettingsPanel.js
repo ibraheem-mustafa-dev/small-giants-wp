@@ -35,7 +35,7 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsSpaceAbove, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
@@ -61,6 +61,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				stepCounterNameHidden: undefined,
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
+				actionsSpaceAbove: undefined,
 				progressTrackHeight: undefined,
 				progressFill: undefined,
 				stepCompletedIcon: undefined,
@@ -154,6 +155,25 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 						) }
 					</ResponsiveOverride>
 				</>
+			), true ) }
+			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsSpaceAbove' ], (
+				<ResponsiveOverride
+					label={ __( 'Space above buttons', 'sgs-blocks' ) }
+					value={ actionsSpaceAbove }
+					onChange={ ( obj ) => setAttributes( { actionsSpaceAbove: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							presets={ false }
+							label={ __( 'Space above buttons', 'sgs-blocks' ) }
+							hideLabelFromVision
+							help={ __( 'Gap between the last field and the buttons row. A sticky row uses its own padding setting.', 'sgs-blocks' ) }
+							value={ ownValue ?? '' }
+							placeholder={ inherited ? effectiveValue : '1rem' }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+						/>
+					) }
+				</ResponsiveOverride>
 			), true ) }
 			{ item( __( 'Progress fill', 'sgs-blocks' ), [ 'progressFill' ], (
 				<SelectControl

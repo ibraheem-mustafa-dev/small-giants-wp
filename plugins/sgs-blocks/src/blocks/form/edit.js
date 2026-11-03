@@ -411,6 +411,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const previewTier = usePreviewTier();
 	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
 	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
+	const actionsSpaceValue = tierLengthPreview( attributes.actionsSpaceAbove, previewTier );
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 
@@ -465,6 +466,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		stepNumberInactiveValue && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
 		( stepNumberDoneBg || stepNumberDoneColour ) && `.${ formPreviewScope } .sgs-form__progress-step--completed .sgs-form__progress-step-number{${ stepNumberDoneBg ? `background-color:${ stepNumberDoneBg };border-color:${ stepNumberDoneBg };` : '' }${ stepNumberDoneColour ? `color:${ stepNumberDoneColour };` : '' }}`,
 		stickyDecls && `.${ formPreviewScope } .sgs-form__actions{${ stickyDecls }}`,
+		actionsSpaceValue && `.${ formPreviewScope } .sgs-form__actions{--sgs-form-actions-space:${ actionsSpaceValue };}`,
 		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
 		tierValueOf( attributes.stepCounterNameHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
 		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,

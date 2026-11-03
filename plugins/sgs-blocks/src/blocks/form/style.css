@@ -1016,7 +1016,7 @@ select.sgs-form-field__input {
 	display: flex;
 	gap: var(--wp--preset--spacing--20, 0.75rem);
 	justify-content: flex-end;
-	padding-top: var(--wp--preset--spacing--30, 1rem);
+	padding-top: var(--sgs-form-actions-space, var(--wp--preset--spacing--30, 1rem));
 }
 
 /* Step-button icon (navIcon): the buttons become inline flex rows; Previous mirrors the same icon. */
