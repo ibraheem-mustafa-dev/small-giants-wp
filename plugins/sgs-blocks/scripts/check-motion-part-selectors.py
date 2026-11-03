@@ -82,10 +82,14 @@ CONFIRMED = {
 # template the helper prints, the root the block passes, a regex finding the block's call with that root). `helper_built`
 # proves each one: the helper is defined with that template and the call is present.
 BUILT = {
-    "sgs-nav-bar-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"', "sgs-nav-bar-menu",
+    "sgs-nav-bar-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge%3$s"', "sgs-nav-bar-menu",
                                 r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-bar-menu'"),
-    "sgs-nav-drawer-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge"', "sgs-nav-drawer-menu",
+    "sgs-nav-drawer-menu__badge": ("sgs_nav_shared_badge_html", 'class="%1$s__badge%3$s"', "sgs-nav-drawer-menu",
                                    r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-drawer-menu'"),
+    "sgs-nav-drawer-menu__badge--tone-a": ("sgs_nav_shared_badge_html", "$bem_root . '__badge--tone-'", "sgs-nav-drawer-menu",
+                                           r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-drawer-menu'"),
+    "sgs-nav-drawer-menu__badge--tone-b": ("sgs_nav_shared_badge_html", "$bem_root . '__badge--tone-'", "sgs-nav-drawer-menu",
+                                           r"sgs_nav_shared_badge_html\([^\n]*'sgs-nav-drawer-menu'"),
     "sgs-google-reviews__arrow": ("sgs_slider_nav_arrow_html", "$block . '__arrow',", "sgs-google-reviews",
                                   r"sgs_slider_nav_render\(\s*array\([^;]*?'block'\s*=>\s*'sgs-google-reviews'"),
     "buybox__value-ladder__saving": ("sgs_value_ladder_markup", ". '__saving\">'", "buybox__value-ladder",

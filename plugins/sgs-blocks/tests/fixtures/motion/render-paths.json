@@ -1512,7 +1512,7 @@
       {
        "ID": 7,
        "post_type": "wp_navigation",
-       "post_content": "<!-- wp:core/navigation-link {\"label\": \"About\", \"url\": \"https://example.test/about\", \"kind\": \"post-type\", \"type\": \"page\", \"id\": 21} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\": \"Closed\", \"url\": \"https://example.test/closed\", \"kind\": \"custom\"} /-->"
+       "post_content": "<!-- wp:core/navigation-link {\"label\": \"About\", \"url\": \"https://example.test/about\", \"kind\": \"post-type\", \"type\": \"page\", \"id\": 21} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\": \"Closed\", \"url\": \"https://example.test/closed\", \"kind\": \"custom\", \"description\": \"Soon\"} /-->"
       },
       {
        "ID": 21,
@@ -1540,6 +1540,10 @@
         "source": "lucide",
         "name": "star"
        }
+      },
+      "itemBadgeTones": {
+       "label:Sale": "a",
+       "label:Closed": "b"
       },
       "disabledItemIds": [
        "label:Closed"
