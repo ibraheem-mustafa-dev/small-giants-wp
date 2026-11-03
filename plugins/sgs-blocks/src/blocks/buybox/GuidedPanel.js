@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { fillRow } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -30,22 +31,23 @@ export default function GuidedPanel( { attributes, setAttributes } ) {
 
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Guided layout', 'sgs-blocks' ) } initialOpen={ false }>
-				<SelectControl
-					label={ __( 'Layout', 'sgs-blocks' ) }
+			<PanelBody title={ __( 'Buy box type', 'sgs-blocks' ) } initialOpen={ false }>
+				<ToggleGroupControl
+					label={ __( 'Buy box type', 'sgs-blocks' ) }
 					value={ buyboxLayout || 'standard' }
-					options={ [
-						{ value: 'standard', label: __( 'Standard', 'sgs-blocks' ) },
-						{ value: 'guided', label: __( 'Guided — one choice at a time', 'sgs-blocks' ) },
-					] }
+					isBlock
 					onChange={ ( val ) => setAttributes( { buyboxLayout: val } ) }
 					help={ __(
-						'Guided walks the shopper through one attribute per screen behind a progress meter, instead of showing every option picker at once.',
+						'Step by step walks the shopper through one attribute per screen behind a progress meter. Pick a set shows every picker at once, plus pick-several groups, a live preview and one summary.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
+				>
+					<ToggleGroupControlOption value="standard" label={ __( 'Standard', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="guided" label={ __( 'Step by step', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="configurator" label={ __( 'Pick a set', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
 				{ isGuided && (
 					<>
 						<ToggleControl

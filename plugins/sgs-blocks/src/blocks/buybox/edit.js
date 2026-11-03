@@ -16,6 +16,7 @@ import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
+import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
@@ -71,6 +72,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		} ),
 		...getBuyboxExtraColourRows( { attributes, setAttributes } ),
 		...guidedColourRows( { attributes, setAttributes } ),
+		...configuratorColourRows( { attributes, setAttributes } ),
 	];
 
 	// Contrast check for border colour against the buybox's own background.
@@ -89,6 +91,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			mockScope,
 			'tablet' === attributes.stackBelow ? 'sgs-buybox--stack-tablet' : '',
 			'guided' === attributes.buyboxLayout ? 'sgs-buybox--guided' : '',
+			'configurator' === attributes.buyboxLayout ? 'sgs-buybox--configurator' : '',
 		].filter( Boolean ).join( ' ' ),
 		style: buyboxRootStyle( attributes, previewTier, palette ),
 	} );
@@ -109,14 +112,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<SgsColourPanel rows={ colourRows } />
 			<ButtonActionPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ConfiguratorPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ProductPinPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<RowWrapPanel
 					rows={ [
 						{ label: __( 'Wrap thumbnails (default: one scrolling row)', 'sgs-blocks' ), value: attributes.thumbsFlexWrap, onChange: ( val ) => setAttributes( { thumbsFlexWrap: val } ) },
 						{ label: __( 'Wrap price row', 'sgs-blocks' ), value: attributes.priceRowFlexWrap, onChange: ( val ) => setAttributes( { priceRowFlexWrap: val } ) },
-						{ label: __( 'Wrap guided step meter', 'sgs-blocks' ), value: attributes.meterFlexWrap, onChange: ( val ) => setAttributes( { meterFlexWrap: val } ) },
-						{ label: __( 'Wrap guided Back and Next', 'sgs-blocks' ), value: attributes.navFlexWrap, onChange: ( val ) => setAttributes( { navFlexWrap: val } ) },
+						...( 'guided' === attributes.buyboxLayout
+							? [
+								{ label: __( 'Wrap guided step meter', 'sgs-blocks' ), value: attributes.meterFlexWrap, onChange: ( val ) => setAttributes( { meterFlexWrap: val } ) },
+								{ label: __( 'Wrap guided Back and Next', 'sgs-blocks' ), value: attributes.navFlexWrap, onChange: ( val ) => setAttributes( { navFlexWrap: val } ) },
+							]
+							: [] ),
 					] }
 				/>
 			</InspectorControls>
