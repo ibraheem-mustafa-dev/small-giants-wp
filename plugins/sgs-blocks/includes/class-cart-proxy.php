@@ -176,9 +176,50 @@ final class Cart_Proxy {
 						'description'       => \__( 'Array of {label, value} or {label, file_id} answers carried to the cart line.', 'sgs-blocks' ),
 						'items'             => array( 'type' => 'object' ),
 					),
+					// Buy box "Pick a set" mode — {attributeKey: [{slug, count}]}. Checked against the
+					// product's own groups in SGS\Blocks\Configurator_Picks::add_cart_item_data(); the
+					// server builds the cart row, so no label or value comes from the browser.
+					'picks'     => array(
+						'required'          => false,
+						'type'              => 'object',
+						'default'           => array(),
+						'description'       => \__( 'Picks per option group: {attributeKey: [{slug, count}]}, checked and turned into a cart row server-side.', 'sgs-blocks' ),
+						'validate_callback' => array( __CLASS__, 'validate_picks_shape' ),
+					),
 				),
 			)
 		);
+	}
+
+	/**
+	 * `validate_callback` for the `picks` REST arg: at most 8 groups, each an array of at most 12 `{slug, count}` with a
+	 * slug matching [a-z0-9_-]{1,64} and an integer count 0..999.
+	 *
+	 * @param mixed $value The raw `picks` param.
+	 * @return bool
+	 */
+	public static function validate_picks_shape( $value ): bool {
+		if ( null === $value || array() === $value ) {
+			return true;
+		}
+		if ( ! \is_array( $value ) || \count( $value ) > 8 ) {
+			return false;
+		}
+		foreach ( $value as $key => $list ) {
+			if ( ! \is_string( $key ) || 1 !== \preg_match( '/^[a-z0-9_-]{1,64}$/', $key ) || ! \is_array( $list ) || \count( $list ) > 12 ) {
+				return false;
+			}
+			foreach ( $list as $entry ) {
+				if ( ! \is_array( $entry ) || ! \is_string( $entry['slug'] ?? null ) || 1 !== \preg_match( '/^[a-z0-9_-]{1,64}$/', $entry['slug'] ) ) {
+					return false;
+				}
+				$count = $entry['count'] ?? 0;
+				if ( ! \is_int( $count ) || $count < 0 || $count > 999 ) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -760,6 +801,10 @@ final class Cart_Proxy {
 		$flow_fields = $request->get_param( 'fields' );
 		if ( ! empty( $flow_fields ) ) {
 			$cart_item_data['sgs_flow_fields_raw'] = $flow_fields;
+		}
+		$picks = $request->get_param( 'picks' );
+		if ( ! empty( $picks ) ) {
+			$cart_item_data['sgs_picks_raw'] = $picks;
 		}
 
 		// ── Step 7: Add to cart ───────────────────────────────────────────────
