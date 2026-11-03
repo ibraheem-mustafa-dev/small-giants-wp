@@ -1,7 +1,7 @@
 /* ===================================================================
    sgs/buybox, "Pick a set" mode (buyboxLayout configurator).
    Tokens only: colours, spacing, radius and motion come from the theme.
-   Hover brightens; focus is always visible; nothing animates under
+   Hover brightens; keyboard focus is drawn by the unified focus system (theme focus.css), the checkbox input covers its whole tile so the ring surrounds the tile; nothing animates under
    prefers-reduced-motion.
    ================================================================= */
 
@@ -120,11 +120,6 @@
 	background: color-mix(in srgb, var(--wp--preset--color--accent) 80%, white);
 }
 
-.sgs-buybox-pick__option:has(.sgs-buybox-pick__input:focus-visible) {
-	outline: 3px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-}
-
 .sgs-buybox-pick__option-body {
 	display: inline-flex;
 	align-items: center;
@@ -220,11 +215,6 @@
 	background: color-mix(in srgb, currentcolor 15%, transparent);
 }
 
-.sgs-buybox-pick__step:focus-visible {
-	outline: 3px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
-}
-
 .sgs-buybox-pick__count {
 	min-width: 2ch;
 	text-align: center;
@@ -305,11 +295,6 @@
 
 .sgs-buybox-pick__undo:hover {
 	background: color-mix(in srgb, var(--wp--preset--color--surface) 70%, white);
-}
-
-.sgs-buybox-pick__undo:focus-visible {
-	outline: 3px solid var(--wp--preset--color--primary);
-	outline-offset: 2px;
 }
 
 /* Add stays pressable (the reason shows when it is pressed) but reads as not ready. */
