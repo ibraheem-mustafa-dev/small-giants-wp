@@ -57,7 +57,8 @@
 	left: 1rem;
 }
 
-.sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside .sgs-form-field__input {
+/* Default padding: two classes, so it outranks the form's one-class field padding but sits under an author's scoped padding rule. */
+.sgs-form-field--label-inside .sgs-form-field__input {
 	padding-top: 1.5rem;
 	padding-bottom: 0.375rem;
 }
@@ -74,8 +75,8 @@
 
 /* Counter inside the box (counterPlacement "inside"): render.php wraps the box and the counter in one positioned
    element and puts the modifier on the field. The counter rests at the bottom right of the box; the box keeps
-   room under the typed text so it never runs beneath the counter. The chained modifier lifts the padding above the
-   label-inside rule's chained specificity and the form's field padding. */
+   room under the typed text so it never runs beneath the counter. The element-qualified selector sits above the
+   label-inside default and the form's field padding, and under an author's scoped padding rule. */
 .sgs-form-field__control {
 	position: relative;
 }
@@ -88,6 +89,6 @@
 	pointer-events: none;
 }
 
-.sgs-form-field.sgs-form-field--counter-inside.sgs-form-field--counter-inside.sgs-form-field--counter-inside.sgs-form-field--counter-inside textarea.sgs-form-field__input {
+.sgs-form-field--counter-inside textarea.sgs-form-field__input {
 	padding-bottom: 2.75rem;
 }

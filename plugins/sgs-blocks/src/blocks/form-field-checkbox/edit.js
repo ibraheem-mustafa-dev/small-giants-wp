@@ -46,7 +46,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const isCard = 'card' === attributes.optionPresentation;
-	const rowStyle = isCard
+	const cardRowStyle = isCard
 		? {
 			...backgroundPaintPreview( attributes.rowBackground, '', colourPalette ),
 			...sgsBorderPreview(
@@ -63,6 +63,11 @@ export default function Edit( { attributes, setAttributes } ) {
 			...tierBoxLonghands( attributes.rowPadding, previewTier, 'padding' ),
 			gap: sgsLengthPreview( attributes.rowGap ),
 		}
+		: undefined;
+	// optionRowMinHeight: the tap-area height of each option row, plain or card.
+	const rowMinHeight = sgsLengthPreview( attributes.optionRowMinHeight );
+	const rowStyle = cardRowStyle || rowMinHeight
+		? { ...cardRowStyle, ...( rowMinHeight ? { minHeight: rowMinHeight } : {} ) }
 		: undefined;
 	const boxVars = isCard
 		? {

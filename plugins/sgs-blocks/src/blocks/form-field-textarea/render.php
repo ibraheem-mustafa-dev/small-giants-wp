@@ -53,7 +53,7 @@ if ( '' !== $sgs_ta_counter && is_array( $sgs_ta_counter_size ) && array() !== $
 // The box itself: per-device minimum height and padding, and the line height. Each is opt-in; the chained
 // scope class is repeated so the rule outranks the label-inside and counter-inside padding defaults. With the
 // counter inside, the bottom padding is the larger of the counter clearance and the author's bottom.
-$sgs_ta_sel    = '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.sgs-form-field textarea.sgs-form-field__input';
+$sgs_ta_sel    = '.' . $sgs_ta_uid . '.sgs-form-field textarea.sgs-form-field__input';
 $sgs_ta_height = $attributes['inputMinHeight'] ?? null;
 if ( is_array( $sgs_ta_height ) && array() !== $sgs_ta_height ) {
 	$sgs_ta_css .= sgs_emit_responsive_css(
@@ -102,12 +102,20 @@ if ( $sgs_ta_inside && is_array( $sgs_ta_padding ) ) {
 		);
 	}
 }
-$sgs_ta_line_height = sgs_button_element_line_height( $attributes['inputLineHeight'] ?? '' );
-if ( '' === $sgs_ta_line_height && 'normal' === strtolower( trim( (string) ( $attributes['inputLineHeight'] ?? '' ) ) ) ) {
-	$sgs_ta_line_height = 'normal';
-}
-if ( '' !== $sgs_ta_line_height ) {
-	$sgs_ta_css .= $sgs_ta_sel . '{line-height:' . $sgs_ta_line_height . ';}';
+// inputLineHeight: a unitless number or the keyword normal, through the same responsive rule builder the typography controls use.
+$sgs_ta_line_raw = trim( (string) ( $attributes['inputLineHeight'] ?? '' ) );
+if ( is_numeric( $sgs_ta_line_raw ) || 'normal' === strtolower( $sgs_ta_line_raw ) ) {
+	$sgs_ta_css .= sgs_responsive_css_rule(
+		$attributes,
+		array(
+			array(
+				'attr'      => 'inputLineHeight',
+				'css'       => 'line-height',
+				'transform' => static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw : 'normal',
+			),
+		),
+		$sgs_ta_sel
+	);
 }
 
 $sgs_ta_classes = array();

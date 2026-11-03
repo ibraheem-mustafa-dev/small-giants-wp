@@ -41,9 +41,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		.map( ( [ prop, val ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val }` )
 		.join( ';' );
 	const counterPreviewCss = [
-		inputPaddingCss && `.${ counterScope }.${ counterScope }.${ counterScope }.${ counterScope } textarea.sgs-form-field__input{${ inputPaddingCss };}`,
-		inputMinHeight && `.${ counterScope }.${ counterScope }.${ counterScope }.${ counterScope } textarea.sgs-form-field__input{min-height:${ inputMinHeight };}`,
-		attributes.inputLineHeight && `.${ counterScope }.${ counterScope }.${ counterScope }.${ counterScope } textarea.sgs-form-field__input{line-height:${ attributes.inputLineHeight };}`,
+		inputPaddingCss && `.${ counterScope }.sgs-form-field textarea.sgs-form-field__input{${ inputPaddingCss };}`,
+		inputMinHeight && `.${ counterScope }.sgs-form-field textarea.sgs-form-field__input{min-height:${ inputMinHeight };}`,
+		attributes.inputLineHeight && `.${ counterScope }.sgs-form-field textarea.sgs-form-field__input{line-height:${ attributes.inputLineHeight };}`,
 		counterColour && `.${ counterScope } .sgs-form-field__counter{color:${ counterColour };}`,
 		counterSize && `.${ counterScope } .sgs-form-field__counter{font-size:${ counterSize };}`,
 	].filter( Boolean ).join( '' );

@@ -119,7 +119,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<label className="sgs-form-field__consent">
+				<label className="sgs-form-field__consent" style={ attributes.optionRowMinHeight ? { minHeight: attributes.optionRowMinHeight } : undefined }>
 					<input
 						type="checkbox"
 						checked={ !! attributes.defaultChecked }
