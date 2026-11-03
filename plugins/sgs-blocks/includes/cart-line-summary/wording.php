@@ -81,11 +81,12 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 			}
 		}
 
-		// The separator keeps its edge spaces (sanitize_text_field() would
-		// trim a lone " " to nothing), so tags and control characters are
-		// stripped by hand and the length capped.
+		// The separator keeps its edge spaces (sanitize_text_field() and
+		// wp_strip_all_tags() both trim, turning ": " into ":" and a lone " "
+		// into nothing), so tags go through wp_kses() with no allowed tags,
+		// control characters are stripped by hand and the length capped.
 		$separator = isset( $raw['labelSeparator'] ) && \is_string( $raw['labelSeparator'] )
-			? \mb_substr( (string) \preg_replace( '/[\x00-\x1F\x7F]/', '', \wp_strip_all_tags( $raw['labelSeparator'] ) ), 0, 5 )
+			? \mb_substr( (string) \preg_replace( '/[\x00-\x1F\x7F]/', '', \wp_kses( $raw['labelSeparator'], array() ) ), 0, 5 )
 			: '';
 
 		$raw_band = isset( $raw['sizeBand'] ) && \is_array( $raw['sizeBand'] ) ? $raw['sizeBand'] : array();
