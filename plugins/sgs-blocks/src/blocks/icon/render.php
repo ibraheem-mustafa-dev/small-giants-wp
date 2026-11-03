@@ -338,7 +338,13 @@ if ( $has_label ) {
 	$own_colours['labelColourHover'] = '--sgs-icon-label-colour-hover';
 }
 foreach ( $own_colours as $attr => $property ) {
-	$value = sgs_colour_value( is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '' );
+	$raw   = is_string( $attributes[ $attr ] ?? null ) ? $attributes[ $attr ] : '';
+	$value = sgs_colour_value( $raw );
+	// A background named by a brand slug the palette lacks ('whatsapp') is that brand's colour, never currentColor.
+	if ( str_starts_with( $attr, 'backgroundColour' ) ) {
+		$brand_value = sgs_brand_slug_colour( $raw );
+		$value       = '' !== $brand_value ? sgs_colour_value( $brand_value ) : $value;
+	}
 	if ( '' !== $value ) {
 		$root_decls[] = $property . ':' . $value;
 	}

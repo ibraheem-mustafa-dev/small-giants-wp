@@ -75,6 +75,30 @@ if ( ! function_exists( 'sgs_brand_by_slug' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_brand_slug_colour' ) ) {
+	/**
+	 * The brand colour a bare registry slug names ('whatsapp' is #25D366), for a colour setting whose slug the site
+	 * palette does not define. A palette slug of the same name wins, so a client palette entry is never overridden.
+	 *
+	 * @param string $value A colour setting value (palette slug, hex or other CSS colour).
+	 * @return string The brand's colour, or '' when the value is not an unresolved brand slug.
+	 */
+	function sgs_brand_slug_colour( string $value ): string {
+		$value = trim( $value );
+		if ( 1 !== preg_match( '/^[a-z][a-z0-9-]*$/', $value ) ) {
+			return '';
+		}
+		$brand = sgs_brand_by_slug( $value );
+		if ( null === $brand || '' === $brand['colour'] ) {
+			return '';
+		}
+		if ( function_exists( 'sgs_resolve_palette_hex' ) && '' !== sgs_resolve_palette_hex( $value ) ) {
+			return '';
+		}
+		return $brand['colour'];
+	}
+}
+
 if ( ! function_exists( 'sgs_brand_by_site_info_key' ) ) {
 	/**
 	 * The registry entry a Site Info key links to.
