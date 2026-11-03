@@ -15,6 +15,7 @@ import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
+import ProductPinPanel from './ProductPinPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
@@ -108,6 +109,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<SgsColourPanel rows={ colourRows } />
 			<ButtonActionPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<ProductPinPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<RowWrapPanel
 					rows={ [
