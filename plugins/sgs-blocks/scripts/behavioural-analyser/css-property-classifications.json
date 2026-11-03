@@ -18971,6 +18971,14 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemBadgeOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemBorderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -31569,6 +31577,70 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterChipBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipBackgroundPressed",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipColourPressed",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterCountColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "gridTemplateColumns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -38646,6 +38718,14 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "chromeRowBorder",
+      "fields": {
+        "css_property": "border-color,border-style,border-width",
+        "css_element": "chrome"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "chromeRowGap",
       "fields": {
         "css_property": "gap",
@@ -38828,6 +38908,50 @@
         "css_property": "color-gradient",
         "css_element": "close",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "badgeBorder",
+      "fields": {
+        "css_property": "border-color,border-style,border-width",
+        "css_element": "badge"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "badgeColourA",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge-tone-a"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "badgeColourB",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "badge-tone-b"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "badgeTextColourA",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "badge-tone-a"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "badgeTextColourB",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "badge-tone-b"
       }
     },
     {
