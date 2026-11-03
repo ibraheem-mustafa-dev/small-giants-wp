@@ -559,12 +559,6 @@
   },
   {
    "block": "post-grid",
-   "selector": ".sgs-post-grid__filter",
-   "property": "min-height",
-   "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."
-  },
-  {
-   "block": "post-grid",
    "selector": ".sgs-post-grid__load-more",
    "property": "min-height",
    "reason": "No post-grid setting sizes this control: imageSize sizes the card image, and the filter, pagination, load-more, arrow and dot controls only take typography and colour settings."

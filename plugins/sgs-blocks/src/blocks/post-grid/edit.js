@@ -25,7 +25,7 @@ import {
 	usePreviewTier, isCssGradient,
 } from '../../utils';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
-import { postGridWrapperPreview } from './preview-style';
+import { postGridWrapperPreview, filterChipVarsPreview, orderFilterTerms } from './preview-style';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { resolveColourToken } from '../../components';
 import PreviewCard from './components/PreviewCard';
@@ -82,6 +82,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		textColourHoverGradient,
 		shadow,
 		shadowColour,
+		showFilters,
+		filterTaxonomy,
+		filterOrder,
+		filterTermIds,
+		keepEmptyColumns,
 	} = attributes;
 
 	const set = ( key ) => ( value ) => setAttributes( { [ key ]: value } );
@@ -120,6 +125,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			hide_empty: false,
 		} );
 	}, [] );
+
+	// Filter chip row: the same terms, order and chip look the front end prints.
+	const filterTerms = useSelect( ( select ) => {
+		if ( ! showFilters ) {
+			return null;
+		}
+		return select( 'core' ).getEntityRecords( 'taxonomy', filterTaxonomy || 'category', {
+			per_page: 100,
+			hide_empty: true,
+		} );
+	}, [ showFilters, filterTaxonomy ] );
+	const orderedFilterTerms = orderFilterTerms( filterTerms, filterOrder, filterTermIds );
 
 	const catSuggestions = ( allCategories || [] ).map( ( c ) => c.name );
 	const tagSuggestions = ( allTags || [] ).map( ( t ) => t.name );
@@ -238,8 +255,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		deps: [ columnsDesktop, gap, posts?.length ],
 	} );
 	const blockProps = useBlockProps( {
-		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }`,
-		style:     { ...inlineStyles, ...rootStyle, ...( cardRadius ? { '--sgs-card-radius': cardRadius } : {} ) },
+		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }${ keepEmptyColumns && 'grid' === layout ? ' sgs-post-grid--fixed-columns' : '' }`,
+		style:     { ...inlineStyles, ...rootStyle, ...filterChipVarsPreview( attributes, colourPalette ), ...( cardRadius ? { '--sgs-card-radius': cardRadius } : {} ) },
 	} );
 
 	// -----------------------------------------------------------------------
@@ -524,6 +541,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ postGridHoverPreviewCss && <style>{ postGridHoverPreviewCss }</style> }
 				{ 'carousel' === layout && attributes.carouselAutoplay && attributes.carouselPauseButton && (
 					<MotionPausePreview block="sgs-post-grid" />
+				) }
+				{ showFilters && orderedFilterTerms.length > 0 && (
+					<div className="sgs-post-grid__filters" role="group" aria-hidden="true">
+						<span className="sgs-post-grid__filter sgs-post-grid__filter--active">{ __( 'All', 'sgs-blocks' ) }</span>
+						{ orderedFilterTerms.map( ( term ) => (
+							<span key={ term.id } className="sgs-post-grid__filter">{ term.name }</span>
+						) ) }
+					</div>
 				) }
 				{ isResolving && (
 					<div className="sgs-post-grid-editor__loading">

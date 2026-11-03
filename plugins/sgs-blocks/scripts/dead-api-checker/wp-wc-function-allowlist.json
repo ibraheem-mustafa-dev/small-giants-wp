@@ -98,6 +98,7 @@
     "get_post_mime_type",
     "get_post_status",
     "get_post_thumbnail_id",
+    "get_post_timestamp",
     "get_post_type",
     "get_post_type_archive_link",
     "get_post_type_object",

@@ -84,6 +84,31 @@
             }
           }
         },
+        "filter": {
+          "motion": false,
+          "selector": ".sgs-post-grid__filter",
+          "label": "Filter chip",
+          "order": 10,
+          "clusters": [ "text", "fill", "layout" ],
+          "attrMap": {
+            "css:border-width": "filterBorderWidth",
+            "css:border-color": "filterBorderColour",
+            "css:background-color": "filterBackground",
+            "css:color": "filterTextColour",
+            "css:font-weight": "filterFontWeight",
+            "css:min-height": "filterMinHeight"
+          },
+          "states": {
+            "current": {
+              "attrMap": {
+                "css:border-width": "filterActiveBorderWidth",
+                "css:border-color": "filterActiveBorderColour",
+                "css:background-color": "filterActiveBackground",
+                "css:color": "filterActiveTextColour"
+              }
+            }
+          }
+        },
         "load-more": {
           "motion": false,
           "selector": ".sgs-post-grid__load-more",
@@ -195,9 +220,10 @@
         "image": {
           "label": "Post image",
           "order": 2,
-          "clusters": [],
+          "clusters": [ "layout" ],
           "attrMap": {
-            "css:aspect-ratio": "aspectRatio"
+            "css:aspect-ratio": "aspectRatio",
+            "css:height": "imageHeight"
           },
           "_note": "Renamed from 'card-image' 2026-08-15 to match the DB's own css_element spelling - the audit script does exact-string matching, so the near-miss was real drift, not a false positive. aspectRatio/imageSize/showImage govern this element; no supports.sgs.imageControls declared on this block (unlike gallery/hero/feature-grid), and no Text/Fill/Layout style attrs exist for it.",
         	"absentIn": [ "minimal-no-image" ],
@@ -559,8 +585,8 @@
     },
     "filterBorderWidth": {
       "type": "string",
-      "default": "",
-      "description": "Border width of the filter chips. Empty keeps 2px."
+      "default": "2px",
+      "description": "Border width of the filter chips. Set 0 for no outline."
     },
     "filterBorderColour": {
       "type": "string",
@@ -604,19 +630,20 @@
     },
     "filterActiveBorderWidth": {
       "type": "string",
-      "default": "",
-      "description": "Border width of the active filter chip. Empty keeps 3px."
+      "default": "3px",
+      "description": "Border width of the active filter chip. Set 0 for no outline."
     },
     "filterOrder": {
       "type": "string",
       "default": "name",
-      "description": "Order of the filter chips: name (alphabetical), count (most posts first) or custom (the filterTermOrder list)."
+      "enum": [ "name", "count", "term_order" ],
+      "description": "Order of the filter chips: name (alphabetical), count (most posts first) or term_order (the filterTermIds list)."
     },
-    "filterTermOrder": {
+    "filterTermIds": {
       "type": "array",
       "items": { "type": "integer" },
       "default": [],
-      "description": "Term IDs in the order the filter chips show when filterOrder is custom; terms not listed follow in name order."
+      "description": "Term IDs in the order the filter chips show when filterOrder is term_order; terms not listed follow in name order."
     },
     "imageHeight": {
       "type": "object",

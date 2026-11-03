@@ -139,24 +139,41 @@ if ( '' !== $post_grid_card_radius ) {
 // style.css keeps owning hover/focus (an unset property prints nothing, so the stylesheet
 // default stays today's look).
 $post_grid_filter_vars = '';
-foreach (
-	array(
-		'filterBorderColour'       => array( '--sgs-pg-filter-border', 'colour' ),
-		'filterBackground'         => array( '--sgs-pg-filter-bg', 'colour' ),
-		'filterTextColour'         => array( '--sgs-pg-filter-text', 'colour' ),
-		'filterActiveBackground'   => array( '--sgs-pg-filter-active-bg', 'colour' ),
-		'filterActiveTextColour'   => array( '--sgs-pg-filter-active-text', 'colour' ),
-		'filterActiveBorderColour' => array( '--sgs-pg-filter-active-border', 'colour' ),
-		'filterBorderWidth'        => array( '--sgs-pg-filter-bw', 'length' ),
-		'filterActiveBorderWidth'  => array( '--sgs-pg-filter-active-bw', 'length' ),
-		'filterMinHeight'          => array( '--sgs-pg-filter-min-h', 'length' ),
-	) as $post_grid_filter_attr => $post_grid_filter_spec
-) {
-	$post_grid_filter_raw = $attributes[ $post_grid_filter_attr ] ?? '';
-	$post_grid_filter_val = 'colour' === $post_grid_filter_spec[1] ? sgs_colour_value( is_string( $post_grid_filter_raw ) ? $post_grid_filter_raw : '' ) : sgs_css_length_value( $post_grid_filter_raw );
-	if ( '' !== $post_grid_filter_val ) {
-		$post_grid_filter_vars .= $post_grid_filter_spec[0] . ':' . $post_grid_filter_val . ';';
-	}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterBorderColour'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-border:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterBackground'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-bg:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterTextColour'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-text:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterActiveBackground'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-active-bg:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterActiveTextColour'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-active-text:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_colour_value( (string) ( $attributes['filterActiveBorderColour'] ?? '' ) );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-active-border:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_css_length_value( $attributes['filterBorderWidth'] ?? '' );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-bw:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_css_length_value( $attributes['filterActiveBorderWidth'] ?? '' );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-active-bw:' . $post_grid_filter_val . ';';
+}
+$post_grid_filter_val = sgs_css_length_value( $attributes['filterMinHeight'] ?? '' );
+if ( '' !== $post_grid_filter_val ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-min-h:' . $post_grid_filter_val . ';';
 }
 $post_grid_filter_weight = (int) ( $attributes['filterFontWeight'] ?? 0 );
 if ( $post_grid_filter_weight >= 100 && $post_grid_filter_weight <= 900 ) {
@@ -168,20 +185,23 @@ if ( '' !== $post_grid_filter_vars ) {
 
 // imageHeight: a fixed image frame per device that wins over aspectRatio. A descendant rule on
 // the block root, so cards that view.js pages in later take it too.
-$post_grid_img_tiers = sgs_responsive_normalise_object( $attributes['imageHeight'] ?? null );
-foreach (
-	array(
-		''                         => $post_grid_img_tiers['desktop'],
-		'@media(max-width:1023px)' => $post_grid_img_tiers['tablet'],
-		'@media(max-width:767px)'  => $post_grid_img_tiers['mobile'],
-	) as $post_grid_img_media => $post_grid_img_raw
-) {
-	$post_grid_img_height = sgs_css_length_value( $post_grid_img_raw ?? '' );
-	if ( '' === $post_grid_img_height ) {
-		continue;
-	}
-	$post_grid_img_rule = $root_sel . ' .sgs-post-grid__image{height:' . $post_grid_img_height . ';aspect-ratio:auto;}';
-	$responsive_css    .= '' === $post_grid_img_media ? $post_grid_img_rule : $post_grid_img_media . '{' . $post_grid_img_rule . '}';
+$post_grid_img_tiers = $attributes['imageHeight'] ?? null;
+if ( is_array( $post_grid_img_tiers ) && array() !== $post_grid_img_tiers ) {
+	$responsive_css .= sgs_emit_responsive_css(
+		$root_sel . ' .sgs-post-grid__image',
+		array(
+			array(
+				'value'     => $post_grid_img_tiers,
+				'css'       => 'height',
+				'transform' => static fn( $raw ): string => sgs_css_length_value( $raw ),
+			),
+			array(
+				'value'     => $post_grid_img_tiers,
+				'css'       => 'aspect-ratio',
+				'transform' => static fn( $raw ): string => '' !== sgs_css_length_value( $raw ) ? 'auto' : '',
+			),
+		)
+	);
 }
 
 // categoryPadding / categoryRadius: padding (per device) and corner radius of the plain category

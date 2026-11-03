@@ -16,6 +16,7 @@ import {
 	wrapperBorderPreview,
 	isCssGradient,
 } from '../../utils';
+import { resolveColourToken } from '../../components';
 
 /**
  * Root style and content band for the post grid canvas.
@@ -50,4 +51,60 @@ export function cardGradientPreview( gradient ) {
 	return isCssGradient( gradient )
 		? { '--sgs-card-bg-gradient': gradient }
 		: {};
+}
+
+/**
+ * The filter chip custom properties render-scoped-css.php prints on the block root.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Array}  palette    Theme colour palette.
+ * @return {Object} Style fragment; unset attributes add nothing so style.css keeps its defaults.
+ */
+export function filterChipVarsPreview( attributes, palette ) {
+	const vars = {};
+	const colour = ( prop, value ) => {
+		if ( value ) {
+			vars[ prop ] = resolveColourToken( value, palette );
+		}
+	};
+	const length = ( prop, value ) => {
+		if ( value ) {
+			vars[ prop ] = value;
+		}
+	};
+	colour( '--sgs-pg-filter-border', attributes.filterBorderColour );
+	colour( '--sgs-pg-filter-bg', attributes.filterBackground );
+	colour( '--sgs-pg-filter-text', attributes.filterTextColour );
+	colour( '--sgs-pg-filter-active-bg', attributes.filterActiveBackground );
+	colour( '--sgs-pg-filter-active-text', attributes.filterActiveTextColour );
+	colour( '--sgs-pg-filter-active-border', attributes.filterActiveBorderColour );
+	length( '--sgs-pg-filter-bw', attributes.filterBorderWidth );
+	length( '--sgs-pg-filter-active-bw', attributes.filterActiveBorderWidth );
+	length( '--sgs-pg-filter-min-h', attributes.filterMinHeight );
+	const weight = parseInt( attributes.filterFontWeight, 10 );
+	if ( weight >= 100 && weight <= 900 ) {
+		vars[ '--sgs-pg-filter-weight' ] = weight;
+	}
+	return vars;
+}
+
+/**
+ * Filter terms in the order filterOrder asks for (name, count, or the custom id list).
+ *
+ * @param {Array}  terms     Taxonomy term records.
+ * @param {string} order     filterOrder value.
+ * @param {Array}  termOrder filterTermIds ids.
+ * @return {Array} Sorted copy.
+ */
+export function orderFilterTerms( terms, order, termOrder ) {
+	const list = [ ...( terms || [] ) ];
+	const byName = ( a, b ) => a.name.localeCompare( b.name );
+	if ( 'count' === order ) {
+		return list.sort( ( a, b ) => ( b.count - a.count ) || byName( a, b ) );
+	}
+	if ( 'term_order' === order ) {
+		const rank = new Map( ( termOrder || [] ).map( ( id, i ) => [ id, i ] ) );
+		return list.sort( ( a, b ) => ( ( rank.get( a.id ) ?? 1e9 ) - ( rank.get( b.id ) ?? 1e9 ) ) || byName( a, b ) );
+	}
+	return list.sort( byName );
 }

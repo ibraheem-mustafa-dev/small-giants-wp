@@ -189,6 +189,8 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							onDeselect={ () => setAttributes( { dateFormat: '' } ) }
 						>
 							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
 								label={ __( 'Date format', 'sgs-blocks' ) }
 								value={ [ 'M Y', 'F Y', 'j M Y', 'd/m/Y', '' ].includes( dateFormat ) ? dateFormat : 'custom' }
 								options={ [

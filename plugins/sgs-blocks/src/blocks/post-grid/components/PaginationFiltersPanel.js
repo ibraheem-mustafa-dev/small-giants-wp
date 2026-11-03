@@ -3,7 +3,14 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl, TextControl, ToggleControl, Button } from '@wordpress/components';
+import {
+	PanelBody,
+	SelectControl,
+	TextControl,
+	ToggleControl,
+	Button,
+} from '@wordpress/components';
+import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { DesignTokenPicker, SgsLengthControl } from '../../../components';
@@ -17,7 +24,7 @@ const WEIGHT_OPTIONS = [
 const ORDER_OPTIONS = [
 	{ value: 'name', label: __( 'Name (A to Z)', 'sgs-blocks' ) },
 	{ value: 'count', label: __( 'Number of posts (most first)', 'sgs-blocks' ) },
-	{ value: 'custom', label: __( 'Custom order', 'sgs-blocks' ) },
+	{ value: 'term_order', label: __( 'Custom order', 'sgs-blocks' ) },
 ];
 
 /** Move-up / move-down list of the taxonomy's terms; saves the ordered term IDs. */
@@ -74,7 +81,7 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 		filterTaxonomy,
 		errorMessage,
 		filterOrder,
-		filterTermOrder,
+		filterTermIds,
 	} = attributes;
 
 	const chipColour = ( label, base, active ) => (
@@ -85,9 +92,6 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 				{ key: 'active', label: __( 'Active chip', 'sgs-blocks' ), value: attributes[ active ], onChange: ( v ) => setAttributes( { [ active ]: v ?? '' } ) },
 			] }
 		/>
-	);
-	const chipLength = ( label, name, help ) => (
-		<SgsLengthControl label={ label } value={ attributes[ name ] || '' } onChange={ ( v ) => setAttributes( { [ name ]: v ?? '' } ) } help={ help } presets={ false } />
 	);
 
 	return (
@@ -126,27 +130,88 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-							{ 'custom' === filterOrder && (
+							{ 'term_order' === filterOrder && (
 								<TermOrderList
 									taxonomy={ filterTaxonomy }
-									order={ filterTermOrder }
-									onChange={ ( ids ) => setAttributes( { filterTermOrder: ids } ) }
+									order={ filterTermIds }
+									onChange={ ( ids ) => setAttributes( { filterTermIds: ids } ) }
 								/>
 							) }
-							{ chipColour( __( 'Filter fill', 'sgs-blocks' ), 'filterBackground', 'filterActiveBackground' ) }
-							{ chipColour( __( 'Filter text colour', 'sgs-blocks' ), 'filterTextColour', 'filterActiveTextColour' ) }
-							{ chipColour( __( 'Filter border colour', 'sgs-blocks' ), 'filterBorderColour', 'filterActiveBorderColour' ) }
-							{ chipLength( __( 'Filter border width', 'sgs-blocks' ), 'filterBorderWidth', __( 'Empty keeps 2px.', 'sgs-blocks' ) ) }
-							{ chipLength( __( 'Active filter border width', 'sgs-blocks' ), 'filterActiveBorderWidth', __( 'Empty keeps 3px.', 'sgs-blocks' ) ) }
-							{ chipLength( __( 'Filter minimum height', 'sgs-blocks' ), 'filterMinHeight', __( 'Empty keeps 44px, the touch-target minimum.', 'sgs-blocks' ) ) }
-							<SelectControl
-								label={ __( 'Filter font weight', 'sgs-blocks' ) }
-								value={ attributes.filterFontWeight || '' }
-								options={ WEIGHT_OPTIONS }
-								onChange={ set( 'filterFontWeight' ) }
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
+							<ToolsPanel
+								label={ __( 'Filter chip look', 'sgs-blocks' ) }
+								resetAll={ () => setAttributes( {
+									filterBackground: '',
+									filterActiveBackground: '',
+									filterTextColour: '',
+									filterActiveTextColour: '',
+									filterBorderColour: '',
+									filterActiveBorderColour: '',
+									filterBorderWidth: '2px',
+									filterActiveBorderWidth: '3px',
+									filterMinHeight: '',
+									filterFontWeight: '',
+								} ) }
+							>
+								<ToolsPanelItem
+									label={ __( 'Filter fill', 'sgs-blocks' ) }
+									isShownByDefault
+									hasValue={ () => !! ( attributes.filterBackground || attributes.filterActiveBackground ) }
+									onDeselect={ () => setAttributes( { filterBackground: '', filterActiveBackground: '' } ) }
+								>
+									{ chipColour( __( 'Filter fill', 'sgs-blocks' ), 'filterBackground', 'filterActiveBackground' ) }
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter text colour', 'sgs-blocks' ) }
+									isShownByDefault
+									hasValue={ () => !! ( attributes.filterTextColour || attributes.filterActiveTextColour ) }
+									onDeselect={ () => setAttributes( { filterTextColour: '', filterActiveTextColour: '' } ) }
+								>
+									{ chipColour( __( 'Filter text colour', 'sgs-blocks' ), 'filterTextColour', 'filterActiveTextColour' ) }
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter border colour', 'sgs-blocks' ) }
+									isShownByDefault
+									hasValue={ () => !! ( attributes.filterBorderColour || attributes.filterActiveBorderColour ) }
+									onDeselect={ () => setAttributes( { filterBorderColour: '', filterActiveBorderColour: '' } ) }
+								>
+									{ chipColour( __( 'Filter border colour', 'sgs-blocks' ), 'filterBorderColour', 'filterActiveBorderColour' ) }
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter border width', 'sgs-blocks' ) }
+									hasValue={ () => '2px' !== attributes.filterBorderWidth }
+									onDeselect={ () => setAttributes( { filterBorderWidth: '2px' } ) }
+								>
+									<SgsLengthControl label={ __( 'Filter border width', 'sgs-blocks' ) } value={ attributes.filterBorderWidth || '' } onChange={ ( v ) => setAttributes( { filterBorderWidth: v ?? '' } ) } help={ __( 'Default 2px.', 'sgs-blocks' ) } presets={ false } />
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Active filter border width', 'sgs-blocks' ) }
+									hasValue={ () => '3px' !== attributes.filterActiveBorderWidth }
+									onDeselect={ () => setAttributes( { filterActiveBorderWidth: '3px' } ) }
+								>
+									<SgsLengthControl label={ __( 'Active filter border width', 'sgs-blocks' ) } value={ attributes.filterActiveBorderWidth || '' } onChange={ ( v ) => setAttributes( { filterActiveBorderWidth: v ?? '' } ) } help={ __( 'Default 3px.', 'sgs-blocks' ) } presets={ false } />
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter minimum height', 'sgs-blocks' ) }
+									hasValue={ () => !! attributes.filterMinHeight }
+									onDeselect={ () => setAttributes( { filterMinHeight: '' } ) }
+								>
+									<SgsLengthControl label={ __( 'Filter minimum height', 'sgs-blocks' ) } value={ attributes.filterMinHeight || '' } onChange={ ( v ) => setAttributes( { filterMinHeight: v ?? '' } ) } help={ __( 'Empty keeps 44px, the touch-target minimum.', 'sgs-blocks' ) } presets={ false } />
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter font weight', 'sgs-blocks' ) }
+									hasValue={ () => !! attributes.filterFontWeight }
+									onDeselect={ () => setAttributes( { filterFontWeight: '' } ) }
+								>
+									<SelectControl
+										label={ __( 'Filter font weight', 'sgs-blocks' ) }
+										value={ attributes.filterFontWeight || '' }
+										options={ WEIGHT_OPTIONS }
+										onChange={ set( 'filterFontWeight' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</ToolsPanelItem>
+							</ToolsPanel>
 						</>
 					) }
 					{ ( 'none' !== pagination || showFilters ) && (

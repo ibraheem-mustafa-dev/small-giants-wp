@@ -452,6 +452,22 @@ if ( ! function_exists( 'get_the_date' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_post_timestamp' ) ) {
+	// The post file's `post_date` as a Unix timestamp.
+	function get_post_timestamp( $post = null, $field = 'date' ) {
+		$found = sgs_qa_find_post( $post );
+		$date  = (string) ( $found->{'post_' . $field} ?? '' );
+		return '' === $date ? false : (int) strtotime( $date );
+	}
+}
+
+if ( ! function_exists( 'wp_date' ) ) {
+	// Core's site-timezone formatter; the harness runs in UTC.
+	function wp_date( $format, $timestamp = null, $timezone = null ) {
+		return gmdate( (string) $format, null === $timestamp ? time() : (int) $timestamp );
+	}
+}
+
 if ( ! function_exists( 'get_post_field' ) ) {
 	function get_post_field( $field, $post = null, $context = 'display' ) {
 		// A --product-file product's `password` answers `post_password` for its own ID.

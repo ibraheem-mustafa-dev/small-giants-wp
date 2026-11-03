@@ -27,7 +27,7 @@ function formatDate( dateString, phpFormat = '' ) {
 		const full = d.toLocaleDateString( 'en-GB', { month: 'long' } );
 		const pad = ( n ) => String( n ).padStart( 2, '0' );
 		const map = { j: d.getDate(), d: pad( d.getDate() ), n: d.getMonth() + 1, m: pad( d.getMonth() + 1 ), M: mon, F: full, Y: d.getFullYear(), y: pad( d.getFullYear() % 100 ) };
-		return phpFormat.replace( /\?(.)/g, ( all, ch ) => ( all.length > 1 ? ch : ( ch in map ? map[ ch ] : ch ) ) );
+		return phpFormat.replace( /\\?(.)/g, ( all, ch ) => ( all.length > 1 ? ch : ( ch in map ? map[ ch ] : ch ) ) );
 	}
 	return d.toLocaleDateString( 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' } );
 }

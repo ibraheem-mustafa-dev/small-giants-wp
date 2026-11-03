@@ -27,12 +27,12 @@ if ( $show_filters ) :
 	);
 
 	if ( ! is_wp_error( $filter_terms ) && ! empty( $filter_terms ) ) :
-		// filterOrder: name (get_terms default) | count (most posts first) | custom (filterTermOrder, unlisted terms follow by name).
+		// filterOrder: name (get_terms default) | count (most posts first) | term_order (filterTermIds, unlisted terms follow by name).
 		$filter_order = (string) ( $attributes['filterOrder'] ?? 'name' );
 		if ( 'count' === $filter_order ) {
 			usort( $filter_terms, static fn( $a, $b ) => ( $b->count <=> $a->count ) ?: strcasecmp( $a->name, $b->name ) );
-		} elseif ( 'custom' === $filter_order && is_array( $attributes['filterTermOrder'] ?? null ) ) {
-			$filter_rank = array_flip( array_map( 'intval', array_values( $attributes['filterTermOrder'] ) ) );
+		} elseif ( 'term_order' === $filter_order && is_array( $attributes['filterTermIds'] ?? null ) ) {
+			$filter_rank = array_flip( array_map( 'intval', array_values( $attributes['filterTermIds'] ) ) );
 			usort(
 				$filter_terms,
 				static fn( $a, $b ) => ( $filter_rank[ $a->term_id ] ?? PHP_INT_MAX ) <=> ( $filter_rank[ $b->term_id ] ?? PHP_INT_MAX ) ?: strcasecmp( $a->name, $b->name )

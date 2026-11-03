@@ -7731,6 +7731,9 @@
 		{"slug": "sgs/language-switch", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the language items, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
 		{"slug": "sgs/local-time", "attr": "separator", "fields": {"role": "glyph"}, "_reason": "2026-10-30 (rich-text migration): the glyph printed between the label and the time, a symbol the clone copies exactly, not words (role glyph, data/roles.json)."},
 		{"slug": "sgs/form-field-checkbox", "attr": "boxColourChecked", "fields": {"css_property": "background-color", "role": "color", "css_element": "option", "css_state": "current"}, "_reason": "2026-11-03: the fill of the card row's tick box once ticked; render.php prints it as a scoped :checked rule through sgs_fill_decls(), which the static extractor cannot trace to a property."},
-		{"slug": "sgs/form", "attr": "actionsSticky", "fields": {"role": "behaviour"}, "_reason": "2026-11-03: per-device on/off for pinning the buttons row to the bottom of the viewport; a behaviour switch, not a CSS value of its own."}
+		{"slug": "sgs/form", "attr": "actionsSticky", "fields": {"role": "behaviour"}, "_reason": "2026-11-03: per-device on/off for pinning the buttons row to the bottom of the viewport; a behaviour switch, not a CSS value of its own."},
+		{"slug": "sgs/breadcrumbs", "attr": "currentCrumbLabel", "fields": {"role": "text-content"}, "_reason": "2026-11-03: the words of the current-page crumb (render.php $current_crumb_label), page text the clone copies, same as homeLabel and middleCrumbLabel."},
+		{"slug": "sgs/post-grid", "attr": "filterOrder", "fields": {"role": "enum-mode"}, "_reason": "2026-11-03: chooses how the filter chips are ordered (name, count or custom); render-interior.php sorts the terms, no CSS value of its own."},
+		{"slug": "sgs/post-grid", "attr": "filterTermIds", "fields": {"role": "technical"}, "_reason": "2026-11-03: the term IDs that give the custom filter chip order; render-interior.php ranks the terms by them, no CSS value of its own."}
 	]
 }
