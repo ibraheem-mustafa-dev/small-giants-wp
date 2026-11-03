@@ -105,7 +105,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 
 	public function test_the_picker_box_colours_print_scoped(): void {
 		$html = self::html( array( 'pickerBoxBorderColour' => '#112233', 'pickerBoxBorderWidth' => '2px', 'pickerBoxRadius' => '16px' ) );
-		$this->assertMatchesRegularExpression( '/\.sgs-buybox-pick__groups\{[^}]*border-color:#112233[^}]*border-width:2px[^}]*border-radius:16px/', $html );
+		$this->assertMatchesRegularExpression( '/\.sgs-buybox__pick-box\{[^}]*border-color:#112233[^}]*border-width:2px[^}]*border-radius:16px/', $html );
 	}
 
 	public function test_a_product_with_no_pick_groups_renders_the_shell_without_groups(): void {

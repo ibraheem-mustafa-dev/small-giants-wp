@@ -695,7 +695,7 @@
 					}
 				},
 				"picker-box": {
-					"selector": ".sgs-buybox-pick__groups",
+					"selector": ".sgs-buybox__pick-box",
 					"label": "Picker box",
 					"order": 18,
 					"clusters": [

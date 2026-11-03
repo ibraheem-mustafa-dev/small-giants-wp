@@ -102,7 +102,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 			$box[] = 'border-radius:' . $radius;
 		}
 		if ( $box ) {
-			$css[] = $root_sel . ' .sgs-buybox-pick__groups{' . implode( ';', $box ) . ';padding:var(--wp--preset--spacing--30,1rem);}';
+			$css[] = $root_sel . ' .sgs-buybox__pick-box{' . implode( ';', $box ) . ';padding:var(--wp--preset--spacing--30,1rem);}';
 		}
 		return $css;
 	}
@@ -215,7 +215,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 		$out .= ' data-pack-labels="' . esc_attr( (string) wp_json_encode( (object) $pack_l ) ) . '"';
 		$out .= ' data-layer-axis="' . esc_attr( $layer ) . '"';
 		$out .= ' data-layer-colours="' . esc_attr( (string) wp_json_encode( (object) $layer_c ) ) . '">';
-		$out .= '<div class="sgs-buybox-pick__groups">';
+		$out .= '<div class="sgs-buybox-pick__groups sgs-buybox__pick-box">';
 		return $out;
 	}
 }

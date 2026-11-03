@@ -393,7 +393,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			boxDecls.push( `border-radius:${ attributes.pickerBoxRadius }` );
 		}
 		if ( boxDecls.length ) {
-			css += `${ root } .sgs-buybox-pick__groups{${ boxDecls.join( ';' ) };padding:var(--wp--preset--spacing--30,1rem);}`;
+			css += `${ root } .sgs-buybox__pick-box{${ boxDecls.join( ';' ) };padding:var(--wp--preset--spacing--30,1rem);}`;
 		}
 	}
 	return css;
@@ -527,7 +527,7 @@ function SamplePickSet( { attributes } ) {
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
 	return (
 		<div className="sgs-buybox-pick">
-			<div className="sgs-buybox-pick__groups">
+			<div className="sgs-buybox-pick__groups sgs-buybox__pick-box">
 				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
 					<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
 					<div className={ `sgs-buybox-pick__options sgs-buybox-pick__options--${ style }` }>
