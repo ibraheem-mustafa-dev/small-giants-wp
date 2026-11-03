@@ -10526,6 +10526,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "statusRowMarginBottom",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_element": "status-row"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "stepCounterFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -20797,6 +20805,24 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterActiveBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "filter",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "filter"
       }
     },
     {
@@ -40585,11 +40611,91 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "filterActiveBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "filter",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterActiveBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "filter",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterActiveTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "filter",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "filterTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "gridTemplateColumns",
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
       }
     },
     {

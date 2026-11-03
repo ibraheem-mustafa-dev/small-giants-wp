@@ -1,5 +1,5 @@
 {
-	"generatedAt": "2026-11-03T16:55:58.126Z",
+	"generatedAt": "2026-11-03T23:20:10.371Z",
 	"total": 13,
 	"violations": 0,
 	"findings": [
@@ -109,7 +109,7 @@
 		{
 			"file": "src/blocks/nav-drawer-menu/edit.js",
 			"block": "sgs/nav-drawer-menu",
-			"line": 802,
+			"line": 809,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -120,7 +120,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3523,
+			"line": 3534,
 			"wrapped": true,
 			"ancestors": [
 				"",
