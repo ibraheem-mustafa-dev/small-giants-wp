@@ -157,6 +157,12 @@ class Post_Grid_REST {
 				'type'    => 'boolean',
 				'default' => true,
 			],
+			'metaLayout'           => [
+				'type'              => 'string',
+				'default'           => '',
+				'enum'              => [ '', 'inline' ],
+				'sanitize_callback' => 'sanitize_key',
+			],
 			'showReadMore'         => [
 				'type'    => 'boolean',
 				'default' => true,
@@ -378,6 +384,7 @@ class Post_Grid_REST {
 		$show_date     = isset( $params['showDate'] ) ? (bool) $params['showDate'] : true;
 		$show_author   = isset( $params['showAuthor'] ) ? (bool) $params['showAuthor'] : false;
 		$show_category = isset( $params['showCategory'] ) ? (bool) $params['showCategory'] : true;
+		$meta_inline   = isset( $params['metaLayout'] ) && 'inline' === $params['metaLayout'];
 		$show_readmore = isset( $params['showReadMore'] ) ? (bool) $params['showReadMore'] : true;
 		$readmore_text = isset( $params['readMoreText'] ) ? sgs_rich_text_kses( (string) $params['readMoreText'], false ) : 'Read more';
 		$excerpt_len   = isset( $params['excerptLength'] ) ? absint( $params['excerptLength'] ) : 20;
@@ -478,11 +485,12 @@ class Post_Grid_REST {
 		$card .= '<div class="sgs-post-grid__content">';
 
 		// Meta row: date and/or author above title.
+		$meta_html = '';
 		if ( $show_date || $show_author ) {
-			$card .= '<div class="sgs-post-grid__meta"' . $meta_style . '>';
+			$meta_html .= '<div class="sgs-post-grid__meta"' . $meta_style . '>';
 
 			if ( $show_date ) {
-				$card .= sprintf(
+				$meta_html .= sprintf(
 					'<time datetime="%s">%s</time>',
 					esc_attr( get_the_date( 'c', $post_id ) ),
 					esc_html( get_the_date( '', $post_id ) )
@@ -492,25 +500,33 @@ class Post_Grid_REST {
 			if ( $show_author ) {
 				$author_id   = (int) get_post_field( 'post_author', $post_id );
 				$author_name = get_the_author_meta( 'display_name', $author_id );
-				$card       .= sprintf(
+				$meta_html  .= sprintf(
 					'<span class="sgs-post-grid__author">%s</span>',
 					esc_html( $author_name )
 				);
 			}
 
-			$card .= '</div>';
+			$meta_html .= '</div>';
 		}
 
 		// Inline category label for flat/minimal styles (no badge on image).
+		$category_html = '';
 		if ( $show_category && in_array( $card_style, [ 'flat', 'minimal' ], true ) ) {
 			$cats = get_the_category( $post_id );
 			if ( ! empty( $cats ) ) {
-				$card .= sprintf(
+				$category_html = sprintf(
 					'<span class="sgs-post-grid__category sgs-post-grid__category-badge"%s>%s</span>',
 					$badge_style,
 					esc_html( $cats[0]->name )
 				);
 			}
+		}
+
+		// metaLayout 'inline': the label and the meta line share one flex row, label first (left), meta last (right).
+		if ( $meta_inline && '' !== $category_html ) {
+			$card .= '<div class="sgs-post-grid__meta-row">' . $category_html . $meta_html . '</div>';
+		} else {
+			$card .= $meta_html . $category_html;
 		}
 
 		// Title with accessible link.

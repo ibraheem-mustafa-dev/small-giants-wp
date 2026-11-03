@@ -165,12 +165,14 @@
           "label": "Each post card",
           "order": 1,
           "clusters": [
-            "fill"
+            "fill",
+            "layout"
           ],
           "prefix": "card",
           "attrMap": {
             "css:background-color": "cardBgColour",
             "css:box-shadow": "shadow",
+            "css:border-radius": "cardRadius",
             "css:background-image": "cardBgColourGradient"
           },
           "states": {
@@ -291,7 +293,9 @@
             "css:background-color": "categoryBadgeBgColour",
             "css:background-image": "categoryBadgeBgColourGradient",
             "css:-webkit-text-stroke-width": "categoryTextStrokeWidth",
-            "css:-webkit-text-stroke-color": "categoryTextStrokeColour"
+            "css:-webkit-text-stroke-color": "categoryTextStrokeColour",
+            "css:padding": "categoryPadding",
+            "css:border-radius": "categoryRadius"
           },
           "states": {
             "hover": {
@@ -1571,6 +1575,30 @@
       "type": "string",
       "description": "Category badge text colour on :hover/:focus-within (colour-conformance text-colour trio closeout, 2026-09-07). Emitted as a direct decl targeting .sgs-post-grid__badge and .sgs-post-grid__category (the two mutually-exclusive elements per cardStyle) via sgs_hover_state_rules() in render.php.",
       "default": ""
+    },
+    "metaLayout": {
+      "type": "string",
+      "enum": [
+        "",
+        "inline"
+      ],
+      "default": "",
+      "description": "Flat and minimal cards: 'inline' puts the category label and the date on one row (category left, date right). Empty keeps the label and the date on separate lines."
+    },
+    "categoryPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the plain category label (flat and minimal cards), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps the stylesheet's none."
+    },
+    "categoryRadius": {
+      "type": "string",
+      "default": "",
+      "description": "Corner radius of the plain category label and its painted background (flat and minimal cards). Empty keeps square corners."
+    },
+    "cardRadius": {
+      "type": "string",
+      "default": "",
+      "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
     }
   },
   "editorScript": "file:./index.js",

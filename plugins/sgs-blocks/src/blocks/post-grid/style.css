@@ -325,6 +325,21 @@
 	margin-bottom: 8px;
 }
 
+/* metaLayout 'inline': category label (left) and meta line (right) on one row. */
+.sgs-post-grid__meta-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+.sgs-post-grid__meta-row > .sgs-post-grid__category,
+.sgs-post-grid__meta-row > .sgs-post-grid__meta {
+	margin-bottom: 0;
+}
+
 .sgs-post-grid__meta time,
 .sgs-post-grid__meta .sgs-post-grid__author {
 	font-size: inherit;

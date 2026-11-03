@@ -4,7 +4,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, RangeControl, RadioControl, SelectControl } from '@wordpress/components';
-import { DesignTokenPicker } from '../../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsLengthControl } from '../../../components';
+import { patchTier } from '../../../utils';
 import ShadowControl, { shadowAttrKeys } from '../../../components/ShadowControl';
 import { CSS_EASING_OPTIONS } from '../../../components/motion/easing-master-list';
 import { CARD_STYLE_OPTIONS } from './constants';
@@ -12,6 +13,9 @@ import { CARD_STYLE_OPTIONS } from './constants';
 export default function CardStylePanel( { attributes, setAttributes, set } ) {
 	const {
 		cardStyle,
+		cardRadius,
+		categoryPadding,
+		categoryRadius,
 		borderColourHover,
 		scaleHover,
 		transitionDuration,
@@ -31,6 +35,45 @@ export default function CardStylePanel( { attributes, setAttributes, set } ) {
 					     in the global panel; border colour stays element-scoped,
 					     which is why "Card border hover colour" below is
 					     correctly untouched). */ }
+					<SgsLengthControl
+						label={ __( 'Card corner radius', 'sgs-blocks' ) }
+						value={ cardRadius || '' }
+						onChange={ ( val ) => setAttributes( { cardRadius: val || '' } ) }
+						units={ [
+							{ value: 'px', label: 'px', default: 8 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.5 },
+							{ value: 'em', label: 'em', default: 0.5 },
+						] }
+						help={ __( 'Leave empty to use the theme default.', 'sgs-blocks' ) }
+						presets={ false }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Category label padding (flat and minimal)', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: categoryPadding?.desktop ?? {},
+							tablet: categoryPadding?.tablet ?? {},
+							mobile: categoryPadding?.mobile ?? {},
+						} }
+						onChange={ ( tier, next ) => {
+							const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
+							patchTier( attributes, setAttributes, 'categoryPadding', tierMap[ tier ], next );
+						} }
+					/>
+					<SgsLengthControl
+						label={ __( 'Category label corner radius (flat and minimal)', 'sgs-blocks' ) }
+						value={ categoryRadius || '' }
+						onChange={ ( val ) => setAttributes( { categoryRadius: val || '' } ) }
+						units={ [
+							{ value: 'px', label: 'px', default: 3 },
+							{ value: '%', label: '%', default: 50 },
+							{ value: 'rem', label: 'rem', default: 0.25 },
+							{ value: 'em', label: 'em', default: 0.25 },
+						] }
+						help={ __( 'Leave empty for square corners.', 'sgs-blocks' ) }
+						presets={ false }
+					/>
 					<DesignTokenPicker
 						label={ __( 'Card border hover colour', 'sgs-blocks' ) }
 						states={ [

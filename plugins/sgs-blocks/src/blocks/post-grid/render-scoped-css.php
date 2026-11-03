@@ -124,6 +124,37 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . \SGS\Blocks\Post_Grid_REST::card_vars_decls( $card_params ) . '}';
 
+// cardRadius: the one custom property every card, card image and list-card corner reads (style.css
+// declares the 8px default on the block root). A descendant-free rule on the root, so the later
+// AJAX-injected cards pick it up too. Unset prints nothing.
+$post_grid_card_radius = sgs_css_length_value( $attributes['cardRadius'] ?? '' );
+if ( '' !== $post_grid_card_radius ) {
+	$responsive_css .= $root_sel . '{--sgs-card-radius:' . $post_grid_card_radius . ';}';
+}
+
+// categoryPadding / categoryRadius: padding (per device) and corner radius of the plain category
+// label. The label's painted background (categoryBadgeBgColour, the ::after layer below) takes
+// border-radius:inherit and fills the label's padding box, so both settings shape the painted pill.
+$post_grid_category_sel   = $root_sel . ' .sgs-post-grid__category';
+$post_grid_category_tiers = sgs_responsive_normalise_object( $attributes['categoryPadding'] ?? null, true );
+$post_grid_category_pad   = array(
+	''                         => $post_grid_category_tiers['desktop'],
+	'@media(max-width:1023px)' => $post_grid_category_tiers['tablet'],
+	'@media(max-width:767px)'  => $post_grid_category_tiers['mobile'],
+);
+foreach ( $post_grid_category_pad as $post_grid_category_media => $post_grid_category_box ) {
+	$post_grid_category_decls = sgs_box_object_longhands( is_array( $post_grid_category_box ) ? $post_grid_category_box : array(), 'padding' );
+	if ( null === $post_grid_category_decls ) {
+		continue;
+	}
+	$post_grid_category_rule = $post_grid_category_sel . '{' . $post_grid_category_decls . ';}';
+	$responsive_css         .= '' === $post_grid_category_media ? $post_grid_category_rule : $post_grid_category_media . '{' . $post_grid_category_rule . '}';
+}
+$post_grid_category_radius = sgs_css_length_value( $attributes['categoryRadius'] ?? '' );
+if ( '' !== $post_grid_category_radius ) {
+	$responsive_css .= $post_grid_category_sel . '{border-radius:' . $post_grid_category_radius . ';}';
+}
+
 // categoryBadgeBgColour background layer — moved to ::after (D292) so the
 // categoryBadgeColour text-colour gradient can use background-clip:text on the
 // same element. This MUST run before the text-colour trio loop below.

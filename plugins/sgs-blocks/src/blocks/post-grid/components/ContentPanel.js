@@ -22,6 +22,7 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 		showDate,
 		showAuthor,
 		showCategory,
+		metaLayout,
 		showReadMore,
 		readMoreText,
 	} = attributes;
@@ -41,6 +42,7 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							showDate: true,
 							showAuthor: false,
 							showCategory: true,
+							metaLayout: '',
 							showReadMore: true,
 							readMoreText: 'Read more',
 						} )
@@ -191,6 +193,24 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							checked={ showCategory }
 							onChange={ set( 'showCategory' ) }
 							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Category and date row', 'sgs-blocks' ) }
+						hasValue={ () => '' !== ( metaLayout || '' ) }
+						onDeselect={ () => setAttributes( { metaLayout: '' } ) }
+					>
+						<SelectControl
+							label={ __( 'Category and date row', 'sgs-blocks' ) }
+							value={ metaLayout || '' }
+							options={ [
+								{ label: __( 'Separate lines', 'sgs-blocks' ), value: '' },
+								{ label: __( 'One row: category left, date right', 'sgs-blocks' ), value: 'inline' },
+							] }
+							onChange={ set( 'metaLayout' ) }
+							help={ __( 'Flat and minimal card styles only.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</ToolsPanelItem>
 					<ToolsPanelItem

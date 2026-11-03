@@ -59,6 +59,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		columns,
 		gap,
 		pagination,
+		cardRadius,
 		titleColour,
 		titleColourGradient,
 		excerptColour,
@@ -238,7 +239,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} );
 	const blockProps = useBlockProps( {
 		className: `sgs-post-grid sgs-post-grid--${ layout } ${ postGridPreviewScope }`,
-		style:     { ...inlineStyles, ...rootStyle },
+		style:     { ...inlineStyles, ...rootStyle, ...( cardRadius ? { '--sgs-card-radius': cardRadius } : {} ) },
 	} );
 
 	// -----------------------------------------------------------------------

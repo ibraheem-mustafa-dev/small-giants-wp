@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { resolveColourToken } from '../../../components';
-import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient } from '../../../utils';
+import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../../utils';
 import { cardGradientPreview } from '../preview-style';
 
 import AuthoredText from '../../../components/AuthoredText';
@@ -48,6 +48,9 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		showDate,
 		showAuthor,
 		showCategory,
+		metaLayout,
+		categoryPadding,
+		categoryRadius,
 		showReadMore,
 		readMoreText,
 		aspectRatio,
@@ -104,6 +107,31 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 
 	const isOverlay = cardStyle === 'overlay';
 
+	// metaLayout 'inline' wraps the flat/minimal category label and the meta line in one flex row, as render_card() does.
+	const isInlineLabel = showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' );
+	const metaInline    = 'inline' === metaLayout && isInlineLabel;
+	const categoryShape = {
+		...tierBoxLonghands( categoryPadding, tier, 'padding' ),
+		...( categoryRadius ? { borderRadius: categoryRadius } : {} ),
+	};
+	const metaNode      = ( showDate || showAuthor ) && (
+		<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
+			{ showDate && (
+				<time>{ formatDate( post?.date ) }</time>
+			) }
+			{ showAuthor && authorName && (
+				<span className="sgs-post-grid__author">
+					{ authorName }
+				</span>
+			) }
+		</div>
+	);
+	const categoryNode  = isInlineLabel && (
+		<span className="sgs-post-grid__category sgs-post-grid__category-badge" style={ { ...badgeStyle, ...categoryShape, ...typographyPreviewStyle( attributes, 'category', tier ) } }>
+			{ firstCat.name }
+		</span>
+	);
+
 	return (
 		<article
 			className={ `sgs-post-grid__card sgs-post-grid__card--${ cardStyle }` }
@@ -132,23 +160,16 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 			) }
 
 			<div className="sgs-post-grid__content">
-				{ ( showDate || showAuthor ) && (
-					<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
-						{ showDate && (
-							<time>{ formatDate( post?.date ) }</time>
-						) }
-						{ showAuthor && authorName && (
-							<span className="sgs-post-grid__author">
-								{ authorName }
-							</span>
-						) }
+				{ metaInline ? (
+					<div className="sgs-post-grid__meta-row">
+						{ categoryNode }
+						{ metaNode }
 					</div>
-				) }
-
-				{ showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' ) && (
-					<span className="sgs-post-grid__category sgs-post-grid__category-badge" style={ { ...badgeStyle, ...typographyPreviewStyle( attributes, 'category', tier ) } }>
-						{ firstCat.name }
-					</span>
+				) : (
+					<>
+						{ metaNode }
+						{ categoryNode }
+					</>
 				) }
 
 				{ showTitle && (
