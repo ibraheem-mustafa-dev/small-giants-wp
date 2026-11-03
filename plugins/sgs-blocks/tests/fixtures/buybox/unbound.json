@@ -1,0 +1,183 @@
+{
+    "attrs": {
+        "productId": 52
+    },
+    "context": {},
+    "queried": {
+        "id": 52,
+        "post_type": "product"
+    },
+    "product": {
+        "id": 52,
+        "name": "Test box",
+        "price_html": "<span class=\"woocommerce-Price-amount amount\">£9</span>",
+        "price": "9",
+        "type": "variable",
+        "image_id": 7,
+        "image_url": "https://example.test/box.jpg",
+        "short_description": "A box.",
+        "in_stock": true,
+        "variation_price_min": "9",
+        "variation_price_max": "15"
+    },
+    "manifest": {
+        "decimals": 2,
+        "currencySymbol": "£",
+        "generatedAt": 1767225600,
+        "axes": [
+            {
+                "taxonomy": "pa_size",
+                "label": "Size",
+                "variesBy": "size",
+                "terms": [
+                    {
+                        "slug": "small",
+                        "label": "Small"
+                    },
+                    {
+                        "slug": "large",
+                        "label": "Large"
+                    }
+                ]
+            },
+            {
+                "taxonomy": "pa_colour",
+                "label": "Colour",
+                "variesBy": "color",
+                "terms": [
+                    {
+                        "slug": "red",
+                        "label": "Red"
+                    },
+                    {
+                        "slug": "blue",
+                        "label": "Blue"
+                    }
+                ]
+            }
+        ],
+        "combos": {
+            "pa_size:small|pa_colour:red": {
+                "variationId": 61,
+                "priceMinor": 900,
+                "regularMinor": 900,
+                "saleMinor": 0,
+                "pctOff": 0,
+                "pctDisplay": "",
+                "inStock": true,
+                "imageUrl": "https://example.test/box-small-red.jpg",
+                "hasOwnImage": true,
+                "exMinor": 900,
+                "taxMinor": 0,
+                "regularExMinor": 900,
+                "unitDivisor": 1,
+                "unitLabel": "",
+                "discountLabel": "",
+                "incMinor": 900,
+                "sku": "T-61",
+                "gtin": "",
+                "saleEndDate": "",
+                "gallery": [
+                    {
+                        "url": "https://example.test/box-small-red.jpg",
+                        "w": 800,
+                        "h": 800,
+                        "alt": "Box"
+                    }
+                ]
+            },
+            "pa_size:small|pa_colour:blue": {
+                "variationId": 62,
+                "priceMinor": 900,
+                "regularMinor": 900,
+                "saleMinor": 0,
+                "pctOff": 0,
+                "pctDisplay": "",
+                "inStock": true,
+                "imageUrl": "https://example.test/box-small-blue.jpg",
+                "hasOwnImage": true,
+                "exMinor": 900,
+                "taxMinor": 0,
+                "regularExMinor": 900,
+                "unitDivisor": 1,
+                "unitLabel": "",
+                "discountLabel": "",
+                "incMinor": 900,
+                "sku": "T-62",
+                "gtin": "",
+                "saleEndDate": "",
+                "gallery": [
+                    {
+                        "url": "https://example.test/box-small-blue.jpg",
+                        "w": 800,
+                        "h": 800,
+                        "alt": "Box"
+                    }
+                ]
+            },
+            "pa_size:large|pa_colour:red": {
+                "variationId": 63,
+                "priceMinor": 1500,
+                "regularMinor": 1500,
+                "saleMinor": 0,
+                "pctOff": 0,
+                "pctDisplay": "",
+                "inStock": true,
+                "imageUrl": "https://example.test/box-large-red.jpg",
+                "hasOwnImage": true,
+                "exMinor": 1500,
+                "taxMinor": 0,
+                "regularExMinor": 1500,
+                "unitDivisor": 1,
+                "unitLabel": "",
+                "discountLabel": "",
+                "incMinor": 1500,
+                "sku": "T-63",
+                "gtin": "",
+                "saleEndDate": "",
+                "gallery": [
+                    {
+                        "url": "https://example.test/box-large-red.jpg",
+                        "w": 800,
+                        "h": 800,
+                        "alt": "Box"
+                    }
+                ]
+            },
+            "pa_size:large|pa_colour:blue": {
+                "variationId": 64,
+                "priceMinor": 1500,
+                "regularMinor": 1500,
+                "saleMinor": 0,
+                "pctOff": 0,
+                "pctDisplay": "",
+                "inStock": true,
+                "imageUrl": "https://example.test/box-large-blue.jpg",
+                "hasOwnImage": true,
+                "exMinor": 1500,
+                "taxMinor": 0,
+                "regularExMinor": 1500,
+                "unitDivisor": 1,
+                "unitLabel": "",
+                "discountLabel": "",
+                "incMinor": 1500,
+                "sku": "T-64",
+                "gtin": "",
+                "saleEndDate": "",
+                "gallery": [
+                    {
+                        "url": "https://example.test/box-large-blue.jpg",
+                        "w": 800,
+                        "h": 800,
+                        "alt": "Box"
+                    }
+                ]
+            }
+        },
+        "defaultKey": "pa_size:small|pa_colour:red",
+        "defaultAxes": {
+            "pa_size": "small",
+            "pa_colour": "red"
+        }
+    }
+}
