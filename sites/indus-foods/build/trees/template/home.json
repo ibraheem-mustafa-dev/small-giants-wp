@@ -433,7 +433,9 @@
                     "desktop": "30px"
                   },
                   "overflow": "hidden",
-                  "alignItems": "center",
+                  "alignItems": {
+                    "desktop": "center"
+                  },
                   "contentWidth": {
                     "desktop": "full"
                   },
