@@ -3763,6 +3763,23 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerLabelLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "picker-label-link"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerLabelLinkUnderlineColour",
+      "fields": {
+        "css_property": "border-bottom-color",
+        "css_element": "picker-label-link"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -3869,6 +3886,70 @@
       "attr": "priceLineHeight",
       "fields": {
         "css_property": "line-height"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpChipTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "rrpChip"
       }
     },
     {
@@ -5467,6 +5548,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "free-delivery-text"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "freeDeliveryTrackColour",
       "fields": {
         "css_property": "background-color",
@@ -6279,6 +6368,14 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "option-description"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionMediaSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "option-photo"
       }
     },
     {
@@ -19610,6 +19707,14 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -30973,6 +31078,13 @@
     },
     {
       "slug": "sgs/whatsapp-cta",
+      "attr": "floatingOffset",
+      "fields": {
+        "css_property": "bottom,right"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
       "attr": "iconGap",
       "fields": {
         "css_property": "gap",
@@ -32690,11 +32802,27 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerLabelLinkPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "picker-label-link"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "priceRowFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "rrp-pill"
       }
     },
     {
@@ -43053,6 +43181,25 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/whatsapp-cta",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
