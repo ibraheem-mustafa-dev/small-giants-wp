@@ -402,6 +402,10 @@ echo (string) $card_grid_loop_style . $card_grid_style_tags . SGS_Container_Wrap
 		'tag'           => 'div',
 		'extra_classes' => $class_names,
 		'extra_styles'  => $grid_style_parts,
+		// overlayGradient / overlayColour on this block paint each tile's own
+		// `.sgs-card-grid__image-overlay`; the wrapper's whole-section overlay
+		// would paint a second copy over the grid, gaps included.
+		'no_overlay'    => true,
 	)
 );
 
