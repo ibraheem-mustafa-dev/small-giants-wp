@@ -14,12 +14,6 @@
  *   element scope  -> object-fit        (the `ObjectFit` base)
  *   backdrop scope -> background-size   (the `Size` base)
  *
- * ⛔ `custom` is NOT a member of either vocabulary. `sgs/hero`'s
- * `splitMediaObjectFit` uses it as a SIZING MODE ("explicit width/height"),
- * not a CSS fit value — render.php gates object-fit off entirely when it sees
- * `custom` (hero/render.php:625). That mode belongs to the `box-shape` atom;
- * this atom never validates or emits it.
- *
  * ── ELEMENT scope is tiered (Bean-directed, 2026-09-01, reversing an earlier
  * documented decision) ───────────────────────────────────────────────────
  * Different media genuinely needs a different fit mode per device — a video

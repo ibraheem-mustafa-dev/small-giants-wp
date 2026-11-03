@@ -15,6 +15,10 @@
 import { SelectControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
+const FIT_LABELS = {
+	fill: __( 'Stretch (may distort)', 'sgs-blocks' ),
+};
+
 /**
  * @param {Object}   props
  * @param {string}   [props.label]        Row label.
@@ -28,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  *                                        hiddenReason }`) across atoms.
  * @param {boolean}  [props.disabled]     Disable without hiding the row.
  * @param {string}   [props.hiddenReason] Help text shown while disabled.
+ * @param {string}   [props.hint]         Help text shown while enabled.
  */
 export default function ObjectFitField( {
 	label,
@@ -37,16 +42,17 @@ export default function ObjectFitField( {
 	prefix, // eslint-disable-line no-unused-vars -- shared prop shape, see docblock.
 	disabled = false,
 	hiddenReason = '',
+	hint = '',
 } ) {
 	return (
 		<SelectControl
 			label={ label }
 			value={ value || '' }
 			disabled={ disabled }
-			help={ disabled ? hiddenReason : undefined }
+			help={ disabled ? hiddenReason : hint || undefined }
 			options={ [
 				{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
-				...( vocabulary || [] ).map( ( v ) => ( { label: v, value: v } ) ),
+				...( vocabulary || [] ).map( ( v ) => ( { label: FIT_LABELS[ v ] || v, value: v } ) ),
 			] }
 			onChange={ onChange }
 			__nextHasNoMarginBottom

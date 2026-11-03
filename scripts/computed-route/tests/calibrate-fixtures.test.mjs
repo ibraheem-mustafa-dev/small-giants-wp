@@ -128,11 +128,16 @@ test( 'every fixture variant names only attributes its block declares (or an ext
 	}
 } );
 
-test( 'MUST FAIL ON REVERT (hero splitMediaWidth dead): a fixture precondition puts the gating attribute on the setting\'s instance', () => {
-	const schema = { splitMediaWidth: { type: 'object' }, splitMediaObjectFit: { type: 'string', default: 'cover' } };
-	const ctx = { settingPreconditions: FX[ 'sgs/hero' ].preconditions };
-	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaWidth', css_property: 'width' }, schema, { splitMediaObjectFit: 'cover' }, ctx ), { splitMediaObjectFit: 'custom' } );
+test( 'MUST FAIL ON REVERT (hero splitMediaWidth gated): the hero calibrates width directly, with no precondition', () => {
+	assert.equal( FX[ 'sgs/hero' ].preconditions, undefined, 'hero width paints under every fit, so no gating attribute is needed' );
+	assert.doesNotMatch( render( 'hero' ), /'custom'\s*===\s*\$image_object_fit/ );
+} );
+
+test( 'a fixture precondition puts the gating attribute on the setting\'s instance', () => {
+	const schema = { gatedSetting: { type: 'object' }, gate: { type: 'string', default: 'off' } };
+	const ctx = { settingPreconditions: { gatedSetting: { gate: 'on' } } };
+	assert.deepEqual( preconditionsFor( { attr_name: 'gatedSetting', css_property: 'width' }, schema, { gate: 'off' }, ctx ), { gate: 'on' } );
 	// Another setting is untouched, and an instance already holding the value gets nothing extra.
-	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaHeight', css_property: 'height' }, schema, {}, ctx ), {} );
-	assert.deepEqual( preconditionsFor( { attr_name: 'splitMediaWidth', css_property: 'width' }, schema, { splitMediaObjectFit: 'custom' }, ctx ), {} );
+	assert.deepEqual( preconditionsFor( { attr_name: 'otherSetting', css_property: 'height' }, schema, {}, ctx ), {} );
+	assert.deepEqual( preconditionsFor( { attr_name: 'gatedSetting', css_property: 'width' }, schema, { gate: 'on' }, ctx ), {} );
 } );

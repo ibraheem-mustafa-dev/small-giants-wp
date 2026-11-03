@@ -28,7 +28,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { TextControl, ToggleControl } from '@wordpress/components';
+import { TextControl } from '@wordpress/components';
 import MediaElementPanel from '../MediaElementPanel.js';
 import ResponsiveControl from '../ResponsiveControl.js';
 import { resolveMediaType } from './atoms/source.js';
@@ -142,20 +142,8 @@ export function HeroSplitMediaSourceSection( { attributes, setAttributes } ) {
 
 /**
  * The "Split image styling" panel's rows — object-fit + focal-point (prefix
- * 'splitMedia'), plus a hero-specific "custom sizing" toggle bridging into
- * the atom's `custom` sizing-mode sentinel (see the module-level note below).
- *
- * ⚑ JUDGEMENT CALL — the "Custom sizing" toggle is NOT part of any atom.
- * `object-fit`'s own vocabulary (cover/contain/fill/none/scale-down) never
- * includes `custom` — `splitMediaObjectFit==='custom'` is hero's OWN sizing-
- * mode sentinel meaning "ignore object-fit, use the explicit Width/Height
- * controls below instead" (kept UNCHANGED — box-shape/width/height were not
- * part of this migration's adopted atom set). The atom's own `ObjectFitField`
- * has no way to select `custom`, so this toggle is the ONLY way left to
- * enter/exit that mode once the hand-rolled `SelectControl`'s 4th option is
- * gone. Turning it ON sets `splitMediaObjectFit` to `'custom'` directly
- * (bypassing the atom's own `validate()`, which would reject it); turning it
- * OFF resets to `'cover'`, the atom's own documented ultimate fallback.
+ * 'splitMedia'). Width and height live in the box-shape controls and apply
+ * under every fit.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes
@@ -170,37 +158,21 @@ export function HeroSplitMediaStylingSection( { attributes, setAttributes } ) {
 		insertion: 'element',
 	};
 	const resolvedType = resolveMediaType( attributes, 'split', BLOCK_SLUG );
-	const isCustomSizing = 'custom' === attributes.splitMediaObjectFit;
 
 	return (
 		<>
 			<p style={ { fontWeight: 600, margin: '16px 0 4px' } }>
 				{ __( 'Display', 'sgs-blocks' ) }
 			</p>
-			<ToggleControl
-				label={ __( 'Custom sizing (explicit width/height)', 'sgs-blocks' ) }
-				help={ __(
-					'Off: choose how the media fills its box (Object fit, below). On: set an explicit width and height in the "Custom dimensions" controls further down instead.',
-					'sgs-blocks'
-				) }
-				checked={ isCustomSizing }
-				onChange={ ( val ) =>
-					setAttributes( { splitMediaObjectFit: val ? 'custom' : 'cover' } )
-				}
-				__nextHasNoMarginBottom
+			<MediaElementPanel
+				{ ...commonProps }
+				prefix="splitMedia"
+				atoms={ [ 'object-fit' ] }
+				mediaType={ resolvedType }
 			/>
-			{ ! isCustomSizing && (
-				<MediaElementPanel
-					{ ...commonProps }
-					prefix="splitMedia"
-					atoms={ [ 'object-fit' ] }
-					mediaType={ resolvedType }
-				/>
-			) }
 			{ /* focal-point's own `disclosure()` already hides/disables itself
-			     when ObjectFit is not in cover|contain|none|scale-down — 'custom'
-			     is outside that list, so this row self-gates correctly with no
-			     extra logic needed here. Mounted unconditionally on purpose. */ }
+			     when ObjectFit is not in cover|contain|none|scale-down, so this row
+			     self-gates with no extra logic here. Mounted unconditionally on purpose. */ }
 			<MediaElementPanel
 				{ ...commonProps }
 				prefix="splitMedia"

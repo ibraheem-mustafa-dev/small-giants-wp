@@ -28,6 +28,35 @@ const ATOM_ID = 'object-fit';
 /** Same 'cover' ultimate fallback the atom's CSS var() chain resolves to. */
 const DEFAULT_FIT = 'cover';
 
+/** True when a stored width/height (scalar or tier object) holds a real length. */
+function hasLength( stored ) {
+	const isLength = ( v ) => '' !== String( v ?? '' ).trim() && 'auto' !== String( v ).trim();
+	if ( stored && 'object' === typeof stored ) {
+		return Object.values( stored ).some( isLength );
+	}
+	return isLength( stored );
+}
+
+/**
+ * Help text for the fit value shown at one tier.
+ *
+ * @param {string}  fit           The fit value shown.
+ * @param {boolean} hasBothSizes  Whether a width and a height are both set.
+ * @return {string} Hint, or ''.
+ */
+function fitHint( fit, hasBothSizes ) {
+	if ( 'fill' === fit && hasBothSizes ) {
+		return __( 'Stretch with both a width and a height set may distort the picture.', 'sgs-blocks' );
+	}
+	if ( 'none' === fit ) {
+		return __( 'None shows the picture at its own size; the frame crops it.', 'sgs-blocks' );
+	}
+	if ( 'scale-down' === fit ) {
+		return __( 'Scale down never enlarges the picture.', 'sgs-blocks' );
+	}
+	return '';
+}
+
 /**
  * Resolve what a tier VISUALLY falls back to, for the inherit hint — mirrors
  * the CSS cascade in `assets/css/media-atoms/object-fit.css` (mobile ->
@@ -112,6 +141,11 @@ export function control( {
 						prefix={ prefix }
 						disabled={ isDisabled }
 						hiddenReason={ disc.hiddenReason }
+						hint={ fitHint(
+							attributes[ tierKeys[ breakpoint ] ],
+							hasLength( attributes[ mediaStoredAttrName( blockSlug, prefix, 'Width' ) ] ) &&
+								hasLength( attributes[ mediaStoredAttrName( blockSlug, prefix, 'Height' ) ] )
+						) }
 						onChange={ ( next ) =>
 							setAttributes( {
 								[ tierKeys[ breakpoint ] ]: validate( next, 'element' ),

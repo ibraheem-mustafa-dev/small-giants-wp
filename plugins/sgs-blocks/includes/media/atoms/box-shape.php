@@ -11,8 +11,7 @@
  * ALSO writes a genuine editable radius via a SEPARATE custom property
  * (`--sgs-media-border-{corner}-radius`, one property per corner) targeting the MEDIA ELEMENT itself, not the
  * wrapper. See the JS twin's docblock for the full reasoning, the collision
- * risk this leaves open for a future block, the `custom` handoff from the
- * `object-fit` atom, the ratio format bridge, and the two `reads` traps
+ * risk this leaves open for a future block, the ratio format bridge, and the two `reads` traps
  * (product-card `imageHeight` flat string, hero `splitMediaWidth` number).
  *
  * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
@@ -70,12 +69,11 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_normalise_ratio' ) ) {
 
 if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
 	/**
-	 * Reject an out-of-vocabulary `MediaSizing` value to 'auto'. `custom`
-	 * (the object-fit atom's sizing-mode sentinel) resolves to 'height' only
-	 * when nothing has explicitly chosen a mode yet.
+	 * Resolve the sizing mode: an in-vocabulary `MediaSizing` value wins; an
+	 * unset or unknown one is derived from the stored Height / AspectRatio.
 	 *
 	 * @param mixed $raw_sizing Raw `MediaSizing` value.
-	 * @param mixed $object_fit The surface's own object-fit value (may be 'custom').
+	 * @param mixed $object_fit The surface's own object-fit value (not read; kept for the twin's signature).
 	 * @return string 'auto' | 'height' | 'ratio' | 'fill'.
 	 */
 	function sgs_media_atom_box_shape_resolve_sizing_mode( $raw_sizing, $object_fit, array $attributes = array(), $prefix = '', $block_slug = '' ) {
@@ -83,10 +81,6 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_resolve_sizing_mode' ) ) {
 		if ( is_string( $raw_sizing ) && in_array( $raw_sizing, $vocabulary, true ) ) {
 			return $raw_sizing;
 		}
-		if ( 'custom' === $object_fit ) {
-			return 'height';
-		}
-
 		// DERIVED MODE (D1001). An absent `MediaSizing` used to fall straight to
 		// 'auto' -- which is the one mode that HIDES the Height control AND
 		// suppresses its CSS. The result was a stored value that rendered

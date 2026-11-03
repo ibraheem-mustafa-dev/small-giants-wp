@@ -269,8 +269,8 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 
 
 // ── Phase 1: Image display attributes ──────────────────────────────────────
-// $image_object_fit is still read directly (the 'custom' explicit-sizing
-// gate below, Width/Height family). $image_object_position was removed —
+// $image_object_fit is still read directly (it feeds the sizing-mode
+// resolver below). $image_object_position was removed —
 // the `focal-point` atom's own PHP twin reads `splitMediaObjectPosition*`
 // directly now (Wave 6).
 $image_object_fit = $attributes['splitMediaObjectFit'] ?? 'cover';
@@ -828,10 +828,7 @@ if ( $is_split ) {
 	// `$extra` parameter below — object-fit/object-position are no-ops on the
 	// SVG `<span>` tier regardless of whether the rule reaches it (replaced-
 	// element properties only), so a single unscoped-by-type marker is safe.
-	// The atom's own `validate()` already rejects `custom` (hero's own
-	// explicit-sizing sentinel — see `object-fit.js`'s module docblock) to ''
-	// for the fit property, so no separate `'custom' !== $image_object_fit`
-	// gate is needed here — it degrades identically to the old hand-rolled gate.
+	// The atom's own `validate()` rejects unknown fit values to ''.
 	$responsive_css .= SGS_Media_Element::style(
 		$attributes,
 		'splitMedia',
@@ -841,27 +838,22 @@ if ( $is_split ) {
 	);
 }
 
-// ── splitMediaWidth: per device (custom fit only) ──────────────────────────────
-if ( 'custom' === $image_object_fit ) {
-	$responsive_css .= sgs_emit_responsive_css(
-		'.' . $uid . ' .sgs-hero__split-media',
+// ── splitMediaWidth: per device, under every fit and every split media type ───
+// Width paints on the frame wrapper `.sgs-hero__split-media`, so it applies to
+// image, video and svg frames alike.
+$responsive_css .= sgs_emit_responsive_css(
+	'.' . $uid . ' .sgs-hero__split-media',
+	array(
 		array(
-			array(
-				'value' => $attributes['splitMediaWidth'] ?? null,
-				'css'   => 'width',
-				'unit_default' => 'px',
-			),
-		)
-	);
-}
+			'value' => $attributes['splitMediaWidth'] ?? null,
+			'css'   => 'width',
+			'unit_default' => 'px',
+		),
+	)
+);
 
 // ── splitMediaHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
-// Deliberately OUTSIDE the `custom` object-fit gate above (2026-08-10). Height
-// used to be gated with width, while the now-removed `splitImageHeight` family
-// wrote the same property to the same element with NO gate. Consolidating onto
-// `splitMediaHeight` therefore has to keep the UNGATED reach, or every hero that set
-// a split-image height without also choosing `custom` object-fit would silently
-// lose it. Width stays gated — it never had an ungated equivalent.
+// Height, like width, applies under every object-fit.
 // Emitted base -> tablet -> mobile so the later, narrower @media rule wins at
 // its own width (same cascade convention as gap/grid-template-columns above).
 //
@@ -913,7 +905,16 @@ $image_media_sizing = sgs_media_atom_box_shape_resolve_sizing_mode( $attributes[
 $image_shape        = sgs_media_atom_box_shape_validate_shape( $attributes['splitMediaShape'] ?? null );
 $image_aspect_ratio = sgs_media_atom_box_shape_normalise_ratio( $attributes['splitMediaAspectRatio'] ?? null );
 
-if ( 'ratio' === $image_media_sizing && '' !== $image_aspect_ratio ) {
+// An explicit width AND height win over the ratio: both set (neither empty nor
+// 'auto') at desktop means the frame is already fully dimensioned.
+$sgs_hero_dimension_is_set = static function ( $value ): bool {
+	$css = sgs_css_length_value( $value );
+	return '' !== $css && 'auto' !== $css;
+};
+$image_width_desktop       = sgs_responsive_normalise_object( $attributes['splitMediaWidth'] ?? null )['desktop'] ?? null;
+$image_has_width_and_height = $sgs_hero_dimension_is_set( $image_width_desktop ) && $sgs_hero_dimension_is_set( $image_height_desktop );
+
+if ( 'ratio' === $image_media_sizing && '' !== $image_aspect_ratio && ! $image_has_width_and_height ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{aspect-ratio:' . esc_attr( $image_aspect_ratio ) . '}';
 }
 

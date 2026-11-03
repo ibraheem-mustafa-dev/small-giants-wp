@@ -88,10 +88,20 @@ export const RATIO_OPTIONS = [
 	{ label: __( '9 / 16 — vertical', 'sgs-blocks' ), value: '9 / 16' },
 ];
 
+const FIT_HINTS = {
+	fill: __( 'Stretch squeezes the picture to the box and may distort it.', 'sgs-blocks' ),
+	none: __( 'None shows the picture at its own size; the frame crops it.', 'sgs-blocks' ),
+	'scale-down': __( 'Scale down never enlarges the picture.', 'sgs-blocks' ),
+};
+
+function fitHint( value ) {
+	return FIT_HINTS[ value ] || __( 'How the picture fills the box.', 'sgs-blocks' );
+}
+
 const OBJECT_FIT_OPTIONS = [
 	{ label: __( 'Cover (fill, crop)', 'sgs-blocks' ), value: 'cover' },
 	{ label: __( 'Contain (fit, letterbox)', 'sgs-blocks' ), value: 'contain' },
-	{ label: __( 'Fill (stretch)', 'sgs-blocks' ), value: 'fill' },
+	{ label: __( 'Stretch (may distort)', 'sgs-blocks' ), value: 'fill' },
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Scale down', 'sgs-blocks' ), value: 'scale-down' },
 ];
@@ -281,7 +291,7 @@ export default function MediaSizingPanel( {
 				>
 					<SelectControl
 						label={ __( 'Fill style', 'sgs-blocks' ) }
-						help={ fitInert ? fitReason : __( 'How the picture fills the box.', 'sgs-blocks' ) }
+						help={ fitInert ? fitReason : fitHint( objectFit ) }
 						value={ objectFit || 'cover' }
 						options={ OBJECT_FIT_OPTIONS }
 						onChange={ onObjectFitChange }

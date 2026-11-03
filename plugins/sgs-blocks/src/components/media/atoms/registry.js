@@ -213,12 +213,6 @@ export const MEDIA_ATOMS = {
 		attachesTo: 'element',
 		requires: {},
 		reads: {
-			// `custom` is a SIZING MODE, not a CSS fit value: render.php gates
-			// object-fit off for it so explicit width/height take over. Read it
-			// as "sizing mode = explicit" and hand it to the box-shape atom.
-			'sgs/hero': {
-				splitMediaObjectFit: "'custom' means sizing mode = explicit; declares no enum",
-			},
 			// The backdrop vocabulary is NARROWER: cover/contain/auto only.
 			'sgs/container': {
 				backgroundSize: 'backdrop vocabulary — cover/contain/auto, no fill/none/scale-down',
@@ -294,9 +288,6 @@ export const MEDIA_ATOMS = {
 		reads: {
 			'sgs/product-card': {
 				imageHeight: 'plain "180px" STRING, non-responsive — not the tier object',
-			},
-			'sgs/hero': {
-				splitMediaObjectFit: "'custom' arrives here as sizing mode = explicit",
 			},
 		},
 		vocabulary: {

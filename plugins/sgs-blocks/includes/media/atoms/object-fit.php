@@ -7,11 +7,6 @@
  * (registry.js `vocabulary`): element scope -> `object-fit` (the `ObjectFit`
  * base), backdrop scope -> `background-size` (the `Size` base).
  *
- * ⛔ `custom` is NOT a member of either vocabulary — it is a SIZING MODE read
- * by the `box-shape` atom (see `sgs/hero`'s `splitMediaObjectFit` handling in
- * `hero/render.php` around line 625, which gates object-fit off entirely for
- * `custom`). Never validate or emit it here.
- *
  * ── ELEMENT scope is tiered (Bean-directed, 2026-09-01, reversing an earlier
  * documented decision) ───────────────────────────────────────────────────
  * Different media genuinely needs a different fit mode per device — a video

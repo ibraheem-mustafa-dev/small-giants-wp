@@ -1447,12 +1447,7 @@
           "content": "The same designer shades. A good deal less."
         }
       }
-    ],
-    "preconditions": {
-      "splitMediaWidth": {
-        "splitMediaObjectFit": "custom"
-      }
-    }
+    ]
   },
   "sgs/icon-list": {
     "attributes": {

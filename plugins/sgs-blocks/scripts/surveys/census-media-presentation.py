@@ -191,9 +191,8 @@ NOTES = {
     ('media', 'maxWidth'): 'Bounds the media box -- sgs/media has no contentWidth.',
     ('before-after', 'maxWidth'): 'Bounds the media box -- no contentWidth on this block.',
     ('hero', 'splitMediaObjectFit'):
-        'Declares NO enum, and carries a 4th value "custom" that is a SIZING MODE '
-        '(explicit width/height), not a CSS fit value -- render.php:625 gates '
-        'object-fit OFF for it. Reassigned to box-shape (D909).',
+        'Declares NO enum; the shared object-fit atom validates it against the '
+        'element vocabulary. Width and height apply under every fit.',
     ('hero', 'splitMediaObjectPosition'):
         'The only per-tier focal point in the population. Mobile defaults to '
         '"center 20%", Tablet to "".',

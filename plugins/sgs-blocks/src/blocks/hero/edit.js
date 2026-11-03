@@ -61,11 +61,8 @@ import { getBlockType } from '@wordpress/blocks';
 // by a consolidated <SgsBorderControl> mount (which owns its own style options via
 // GradientCapableColourControl's BorderStyleControl); see migrate-colour-picker-to-panel.py.
 
-// IMAGE_FIT_OPTIONS (cover/contain/fill/custom) was removed 2026-09-01 — the
-// hand-rolled "Object fit" SelectControl it fed was replaced by the shared
-// object-fit atom's own ObjectFitField (HeroSplitMediaStylingSection). The
-// 'custom' sizing-mode sentinel is no longer a SelectControl option; it is
-// now toggled via that section's dedicated "Custom sizing" ToggleControl.
+// The split media's object-fit select is the shared object-fit atom's own
+// ObjectFitField (HeroSplitMediaStylingSection).
 
 const UNIT_PX_PCT = [
 	{ label: 'px', value: 'px' },
@@ -505,13 +502,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// `sgs-media-el` marker class applied below — the same mechanism
 		// `sgs/media`'s own edit.js canvas uses. This REPLACES the old direct
 		// `imagePreviewStyle.objectFit = splitMediaObjectFit || 'cover'`
-		// assignment; the atom's own CSS (`object-fit.css`) already falls
+		// assignment; the atom's own CSS (`object-fit.css`) falls
 		// back to 'cover' via `var(--sgs-media-object-fit, cover)`, so an
-		// unset value renders identically. Gated off entirely while
-		// `splitMediaObjectFit === 'custom'` — see `object-fit.js`'s own
-		// `validate()`, which rejects 'custom' to '' and therefore emits no
-		// custom property, leaving the explicit width/height below in sole
-		// control, matching render.php's gate.
+		// unset value renders identically.
 		// The `shadow` atom's resting/hover custom properties ride the same marker
 		// (`assets/css/media-atoms/shadow.css` paints `.sgs-media-el`), matching
 		// render.php's `SGS_Media_Element::style()` atom list.
@@ -1586,11 +1579,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						     sgs/hero, so the canonical splitMedia+Base naming already
 						     matches — zero renames) plus the NEW splitMediaMediaSizing/
 						     Shape/AspectRatio/MinHeight/MaxWidth/MaxHeight
-						     attrs hand-declared in block.json. The
-						     'custom' sizing-mode sentinel written by the "Custom sizing"
-						     toggle above (HeroSplitMediaStylingSection) still works
-						     unchanged: box-shape's own resolveSizingMode() resolves an
-						     unset MediaSizing + objectFit==='custom' to mode 'height'. */ }
+						     attrs hand-declared in block.json. Width and height apply
+						     under every object-fit. */ }
 						<ToolsPanelItem
 							label={ __( 'Split media box, border & shadow', 'sgs-blocks' ) }
 							hasValue={ () =>

@@ -184,10 +184,11 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 	const image = {};
 	if ( isSplit ) {
 		const width = deviceLength( attributes.splitMediaWidth, tier );
-		if ( 'custom' === attributes.splitMediaObjectFit && width ) {
+		if ( width ) {
 			image.width = width;
 		}
-		image.height = deviceLength( attributes.splitMediaHeight, tier ) || '100%';
+		const height = deviceLength( attributes.splitMediaHeight, tier );
+		image.height = height || '100%';
 		Object.assign( image, tierBoxLonghands( attributes.splitMediaPadding, tier, 'padding' ) );
 		// Only the corners set at this tier or a wider one, as render.php prints them (sgs_corner_object_longhands).
 		Object.assign( image, borderRadiusLonghands( {
@@ -198,7 +199,10 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		// Sizing mode, ratio and shape through the box-shape atom's own twins, as render.php does.
 		const mode = resolveSizingMode( attributes.splitMediaMediaSizing, attributes.splitMediaObjectFit, attributes, 'splitMedia', 'sgs/hero' );
 		const ratio = normaliseRatio( attributes.splitMediaAspectRatio );
-		if ( 'ratio' === mode && ratio ) {
+		// An explicit desktop width and height win over the ratio, as render.php checks.
+		const isSet = ( v ) => Boolean( v ) && 'auto' !== v;
+		const hasBoth = isSet( deviceLength( attributes.splitMediaWidth, 'desktop' ) ) && isSet( deviceLength( attributes.splitMediaHeight, 'desktop' ) );
+		if ( 'ratio' === mode && ratio && ! hasBoth ) {
 			image.aspectRatio = ratio;
 		}
 		if ( 'none' !== validateShape( attributes.splitMediaShape ) ) {

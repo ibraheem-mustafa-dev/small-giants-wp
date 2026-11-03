@@ -49,16 +49,6 @@
  * both on one node would have two radius writers on that node and needs a
  * design call before it ships, not an assumption either one wins.
  *
- * `custom` ARRIVES HERE FROM THE `object-fit` ATOM. `sgs/hero`'s
- * `splitMediaObjectFit` carries a 4th value, `custom`, that is not a CSS fit
- * value at all — it means "sizing mode = explicit width/height"
- * (`hero/render.php:625` gates object-fit off for it). `object-fit`'s own
- * `validate()` never accepts `custom` into either of ITS vocabularies (see
- * that atom's docblock) — the value is handed to THIS atom to interpret. This
- * atom treats it as `MediaSizing:'height'` (this atom's own "explicit
- * width/height" mode) whenever `splitMediaObjectFit === 'custom'` and no
- * `MediaSizing` value is already stored — see `resolveSizingMode()` below.
- *
  * RATIO FORMAT DIVERGES — spaced `"16 / 9"` (`MediaSizingPanel`,
  * `image-sequence/render.php` — the only server-side ratio allowlist) vs
  * unspaced `"16/10"` (`card-grid`/`gallery`/`post-grid`, free text). This
@@ -135,12 +125,11 @@ export function normaliseRatio( value ) {
 }
 
 /**
- * Reject an out-of-vocabulary `MediaSizing` value to `'auto'` — `custom`
- * (the object-fit atom's sizing-mode sentinel, see module docblock) resolves
- * to `'height'` only when nothing has explicitly chosen a mode yet.
+ * Resolve the sizing mode: an in-vocabulary `MediaSizing` value wins; an
+ * unset or unknown one is derived from the stored Height / AspectRatio.
  *
  * @param {*} rawSizing Raw `MediaSizing` value.
- * @param {*} objectFit The surface's own object-fit value (may be `custom`).
+ * @param {*} objectFit The surface's own object-fit value (not read; kept for the twin's signature).
  * @return {string} 'auto' | 'height' | 'ratio' | 'fill'.
  */
 export function resolveSizingMode(
@@ -154,10 +143,6 @@ export function resolveSizingMode(
 	if ( vocabulary.includes( rawSizing ) ) {
 		return rawSizing;
 	}
-	if ( 'custom' === objectFit ) {
-		return 'height';
-	}
-
 	// DERIVED MODE (D1001) — byte-identical twin of
 	// `sgs_media_atom_box_shape_resolve_sizing_mode()`; read that function's
 	// comment for the full rationale. Summary: an absent `MediaSizing` fell to
