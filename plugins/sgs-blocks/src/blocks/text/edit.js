@@ -118,11 +118,14 @@ const FIRST_LETTER_SIZE_UNITS = [
 // Style builder — editor preview only (desktop styles; responsive handled PHP)
 // ---------------------------------------------------------------------------
 
+const MAX_WIDTH_ALIGN_MARGIN = { left: '0 auto', centre: 'auto', right: 'auto 0' };
+
 function buildEditorStyle( attributes, tier ) {
 	const { padding, margin,
 		textColour,
 		textColourGradient,
 		maxWidth,
+		maxWidthAlign,
 		customWidth,
 		borderWidth,
 		borderStyle,
@@ -152,6 +155,10 @@ function buildEditorStyle( attributes, tier ) {
 	const maxWidthPreview = cssLengthValue( resolveTier( maxWidth, tier, '' ).value ?? '' );
 	if ( maxWidthPreview ) {
 		previewStyle.maxWidth = maxWidthPreview;
+		const maxWidthAlignPreview = MAX_WIDTH_ALIGN_MARGIN[ resolveTier( maxWidthAlign, tier, '' ).value ];
+		if ( maxWidthAlignPreview ) {
+			previewStyle.marginInline = maxWidthAlignPreview;
+		}
 	}
 	const customWidthPreview = cssLengthValue( resolveTier( customWidth, tier, '' ).value ?? '' );
 	if ( customWidthPreview ) {
@@ -275,6 +282,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		textAlign,
 		textWrap,
 		maxWidth,
+		maxWidthAlign,
 		dropCap,
 		firstLetterColour,
 		firstLetterColourHover,
@@ -742,6 +750,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								units={ MAX_WIDTH_UNITS }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
+
+					{ /* Where the width-capped box sits on each device. */ }
+					<ResponsiveOverride
+						label={ __( 'Max width position', 'sgs-blocks' ) }
+						value={ maxWidthAlign }
+						onChange={ ( obj ) => setAttributes( { maxWidthAlign: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SelectControl
+								label={ __( 'Max width position', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								options={ [
+									{ value: '', label: __( 'Default (centre)', 'sgs-blocks' ) },
+									{ value: 'left', label: __( 'Left', 'sgs-blocks' ) },
+									{ value: 'centre', label: __( 'Centre', 'sgs-blocks' ) },
+									{ value: 'right', label: __( 'Right', 'sgs-blocks' ) },
+								] }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								help={ __( 'Where the box sits when a max width is set.', 'sgs-blocks' ) }
 							/>
 						) }
 					</ResponsiveOverride>

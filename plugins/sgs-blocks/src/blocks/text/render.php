@@ -254,6 +254,14 @@ if ( '' !== $text_colour_effective ) {
 // Max width prints per device through the shared responsive emitter in step 6;
 // the auto-centring pair follows any device holding a safe max width.
 $has_max_width = false;
+// Where the width-capped box sits per device: left (0 auto), centre (auto), right (auto 0).
+$max_width_align_tiers = sgs_responsive_normalise_object( $attributes['maxWidthAlign'] ?? null );
+$max_width_align_map   = array(
+	'left'   => '0 auto',
+	'centre' => 'auto',
+	'right'  => 'auto 0',
+);
+$max_width_align_desktop = ( is_string( $max_width_align_tiers['desktop'] ?? null ) && isset( $max_width_align_map[ $max_width_align_tiers['desktop'] ] ) ) ? $max_width_align_tiers['desktop'] : '';
 foreach ( sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null ) as $max_width_value ) {
 	if ( null !== $max_width_value && '' !== sgs_css_length_value( (string) $max_width_value ) ) {
 		$has_max_width = true;
@@ -284,7 +292,9 @@ if ( $has_max_width ) {
 	// children — skip auto-centring there; keep it for a plain block-flow
 	// ancestor (or none at all), which is exactly the quote/testimonial/
 	// before-after/option-picker shape this pairing was built for.
-	if ( ! sgs_text_nearest_ancestor_establishes_own_alignment() ) {
+	// An explicit desktop `maxWidthAlign` prints through the responsive emitter below; the
+	// auto-centring default stands only where no desktop position is chosen.
+	if ( '' === $max_width_align_desktop && ! sgs_text_nearest_ancestor_establishes_own_alignment() ) {
 		$base_decls[] = 'margin-inline:auto';
 	}
 }
@@ -574,6 +584,20 @@ $css_widths = sgs_emit_responsive_css(
 		),
 	)
 );
+if ( $has_max_width ) {
+	$css_widths .= sgs_emit_responsive_css(
+		$scope,
+		array(
+			array(
+				'value'     => $max_width_align_tiers,
+				'css'       => 'margin-inline',
+				'transform' => static function ( $raw ) use ( $max_width_align_map ) {
+					return ( is_string( $raw ) && isset( $max_width_align_map[ $raw ] ) ) ? $max_width_align_map[ $raw ] : '';
+				},
+			),
+		)
+	);
+}
 
 $responsive_css = trim( $css_base_decls . $css_widths . $css_base_spacing_radius . $css_base_and_tiers . $css_tablet_box . $css_mobile_box . $css_drop_cap . $css_hover );
 

@@ -90,6 +90,7 @@
 						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
+						"css:margin-inline": "maxWidthAlign",
 						"css:color-gradient": "textColourGradient",
 						"css:color-link": "linkColour",
 						"css:color-link-gradient": "linkColourGradient"
@@ -374,6 +375,11 @@
 		"maxWidth": {
 			"type": "object",
 			"default": {}
+		},
+		"maxWidthAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Where a width-capped box sits in its parent, per device: left, centre or right. Unset = centre (the box auto-centres in a plain block-flow parent). Only applies while maxWidth is set."
 		},
 		"dropCap": {
 			"type": "boolean",
