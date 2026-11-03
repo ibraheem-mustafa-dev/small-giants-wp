@@ -337,6 +337,12 @@ export default function Edit( { attributes, setAttributes } ) {
 							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
 						</li>
 					) }
+					{ showTermCrumb !== false && (
+						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
+							<a href="#" style={ linkPaint }>{ __( 'Post category', 'sgs-blocks' ) }</a>
+							<span className="sgs-breadcrumbs__separator" aria-hidden="true" style={ separatorPaint }>{ separator }</span>
+						</li>
+					) }
 					{ ( productPageCrumbs === 'category' || productPageCrumbs === 'both' ) && (
 						<li className="sgs-breadcrumbs__item" style={ gapStyle }>
 							<a href="#" style={ linkPaint }>{ __( 'Category', 'sgs-blocks' ) }</a>

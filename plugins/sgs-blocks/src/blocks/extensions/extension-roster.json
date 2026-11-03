@@ -149,6 +149,14 @@
 			"attributes": {
 				"sgsChipGap": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" }
 			}
+		},
+		{
+			"id": "postTimeToReadShort",
+			"file": "post-time-to-read-short.js",
+			"rule": { "mode": "named", "blocks": [ "core/post-time-to-read" ] },
+			"attributes": {
+				"sgsShortFormat": { "type": "boolean", "default": false, "role": "content" }
+			}
 		}
 	]
 }
