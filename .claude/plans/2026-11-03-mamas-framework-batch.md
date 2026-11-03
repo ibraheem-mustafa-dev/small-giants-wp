@@ -155,7 +155,7 @@ Fixed in this session (ours): `src/blocks/buybox/configurator.php::sgs_buybox_co
 
 Checked and clean: `includes/helpers-tiered-border.php` and `TierBorderControl.js` do not duplicate `SgsBorderControl` (it holds one box-object width for every device, per-device width was dropped in f5c9b66ae and has not landed on main; the tier object is a different shape, so fold only if SgsBorderControl gains per-device width). `nav-drawer-chrome-css.php`, `nav-drawer-menu-parity-css.php` and `accordion-filter.php` already emit through `sgs_emit_responsive_css` with `sgs_colour_value` and `sgs_tiered_border_specs`.
 
-Still open on our side: `ConfiguratorPanel.js` wraps its fields in `PanelBody` without `ToolsPanel` (Spec 35 reset dots); `src/blocks/buybox/configurator.css` uses static `@media (min-width: 768px)` (plain CSS cannot read `SGS_Breakpoints`; same convention as the other block stylesheets); `includes/configurator-picks/class-configurator-picks-admin.php::render_flags_fields` carries `style="width:4.5em"` on two admin number inputs (admin screen, not a block).
+Closed on our side: `ConfiguratorPanel.js` is a `ToolsPanel` with per-item reset to the block.json default; `class-configurator-picks-admin.php` uses the class `sgs-attr-flags__count` from `assets/admin/configurator-attribute-flags.css`, enqueued on the product edit screen only. `configurator.css` keeps its static `@media (min-width: 768px)` (plain CSS cannot read `SGS_Breakpoints`).
 
 Pre-existing, not ours (hand-typed breakpoint literals in per-device output, for the detector-first migration to `sgs_emit_responsive_css`):
 - `src/blocks/accordion/render.php` (border tablet/mobile, f4ebc7097)
