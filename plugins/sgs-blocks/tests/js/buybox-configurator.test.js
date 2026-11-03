@@ -38,7 +38,8 @@ describe( 'shopper-set counts', () => {
 		expect( stepCount( { a: 1 }, 'a', -1, 8 ) ).toEqual( { a: 1 } );
 	} );
 	test( 'a new pick needs room and the total must equal the pack', () => {
-		expect( addCounted( { a: 8 }, 'b', 8 ) ).toBeNull();
+		expect( addCounted( { a: 8 }, 'b', 8 ) ).toEqual( { a: 7, b: 1 } );
+		expect( addCounted( { a: 1, b: 1 }, 'c', 2 ) ).toBeNull();
 		expect( addCounted( { a: 7 }, 'b', 8 ) ).toEqual( { a: 7, b: 1 } );
 		expect( countsComplete( { a: 5, b: 3 }, 8 ) ).toBe( true );
 		expect( countsComplete( { a: 5 }, 8 ) ).toBe( false );

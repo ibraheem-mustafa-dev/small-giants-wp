@@ -83,16 +83,24 @@ export function stepCount( counts, slug, delta, pack ) {
 }
 
 /**
- * Counts for a newly picked option under "Shopper sets counts": 1 while the pack has room, else refused.
+ * Counts for a newly picked option under "Shopper sets counts": 1 while the pack has room; when the pack is full,
+ * one is taken from the largest count so the new pick can start. Refused when nothing can give one up.
  *
  * @param {Object<string,number>} counts Slug to count.
  * @param {string}                slug   The pick.
  * @param {number}                pack   Pack size.
- * @return {Object<string,number>|null} New counts, or null when the pack is already full.
+ * @return {Object<string,number>|null} New counts, or null when every pick is already down to 1.
  */
 export function addCounted( counts, slug, pack ) {
 	const total = Object.values( counts ).reduce( ( a, b ) => a + b, 0 );
-	return total >= pack ? null : { ...counts, [ slug ]: 1 };
+	if ( total < pack ) {
+		return { ...counts, [ slug ]: 1 };
+	}
+	const donor = Object.keys( counts ).sort( ( a, b ) => counts[ b ] - counts[ a ] )[ 0 ];
+	if ( ! donor || counts[ donor ] < 2 ) {
+		return null;
+	}
+	return { ...counts, [ donor ]: counts[ donor ] - 1, [ slug ]: 1 };
 }
 
 /**

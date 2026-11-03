@@ -137,10 +137,20 @@ $manifest = sgs_preselect_apply_to_manifest( $manifest );
 
 /* ── 4b. Guided layout (Spec 43 FR-43-23) — resolved early so both the wrapper class (below) and the 8b picker section can read it. ── */
 $buybox_layout = (string) ( $attributes['buyboxLayout'] ?? 'standard' );
-if ( ! in_array( $buybox_layout, array( 'standard', 'guided' ), true ) ) {
+if ( ! in_array( $buybox_layout, array( 'standard', 'guided', 'configurator' ), true ) ) {
 	$buybox_layout = 'standard';
 }
-$buybox_is_guided = ( 'guided' === $buybox_layout );
+$buybox_is_guided       = ( 'guided' === $buybox_layout );
+$buybox_is_configurator = ( 'configurator' === $buybox_layout );
+$buybox_cfg_state       = array();
+$buybox_cfg_form_id     = '';
+if ( $buybox_is_configurator ) {
+	// The "Pick a set" mode: pick-several groups, preview and summary (configurator.php). Loaded only in this mode.
+	require_once dirname( __DIR__, 3 ) . '/includes/configurator-picks/functions.php';
+	require_once dirname( __DIR__, 3 ) . '/includes/configurator-picks/class-configurator-groups.php';
+	require_once __DIR__ . '/configurator.php';
+	$buybox_cfg_state = sgs_buybox_configurator_state( $attributes, $buybox_post_id );
+}
 
 /* ── 5. Build seeded context (mirrors product-card L444-504 exactly) ─────── */
 
@@ -539,6 +549,10 @@ $uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
+if ( $buybox_is_configurator ) {
+	$buybox_cfg_form_id = $uid . '-form';
+	$scoped_css         = array_merge( $scoped_css, sgs_buybox_configurator_css( $buybox_cfg_state, $attributes, $root_sel ) );
+}
 
 // Pressed look (helpers-button-press.php): the add-to-cart style's `active-transform` / `active-shadow` preset tokens
 // (the `default` preset's when no style is chosen), printed only when a preset sets one. The doubled uid class
@@ -680,12 +694,18 @@ if ( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ) {
 if ( $buybox_is_guided ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--guided';
 }
+if ( $buybox_is_configurator ) {
+	$buybox_wrapper_classes .= ' sgs-buybox--configurator';
+}
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
 // (no 'style' key — the root carries ZERO inline property declarations;
 // every declaration lives in the scoped <style> below).
 // The add-to-basket bar's per-device on/off map rides on the root for sticky-bar.js.
 $wrapper_extra = array( 'class' => $buybox_wrapper_classes );
+if ( $buybox_is_configurator ) {
+	$wrapper_extra['data-sgs-pick-summary'] = '1';
+}
 if ( $buybox_bar_on ) {
 	$wrapper_extra['data-sgs-bar'] = wp_json_encode( $buybox_bar );
 }
@@ -1062,7 +1082,10 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	<?php endif; ?>
 	<?php $buybox_stock_markup = ob_get_clean(); ?>
 
-	<?php // ── 8a. Price row FIRST (CRO: price anchor visible before the pickers — uimax e-commerce hierarchy rule). ?>
+	<?php
+	// ── 8a. Price row FIRST (CRO: price anchor visible before the pickers — uimax e-commerce hierarchy rule). showPriceRow off hides it.
+	if ( false !== ( $attributes['showPriceRow'] ?? true ) ) :
+		?>
 	<div class="buybox__price-row" aria-live="polite">
 		<span
 			class="buybox__price buybox__price--current"
@@ -1102,6 +1125,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 		data-wp-bind--hidden="context.perUnitHidden"
 		data-wp-text="context.perUnitDisplay"
 	><?php echo esc_html( $per_unit_display ); ?></p>
+<?php endif; ?>
 
 	<?php // ── 8a-ii. Comparative value-ladder (FR-30-8, SSR-only — no data-wp-* on ladder nodes). ?>
 	<?php if ( false !== ( $attributes['showLadder'] ?? true ) && ! $buybox_ladder_hidden ) : ?>
@@ -1203,6 +1227,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			)
 		);
 	else :
+		if ( $buybox_is_configurator ) {
+			echo sgs_buybox_configurator_open( $buybox_cfg_state, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
+		}
 		foreach ( $manifest['axes'] as $axis ) {
 			$terms                = $axis['terms'] ?? array();
 			$buybox_axis_taxonomy = (string) ( $axis['taxonomy'] ?? '' );
@@ -1219,6 +1246,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			$buybox_axis_style      = $buybox_axis_has_swatch
 				? $buybox_picker_swatch_style
 				: $buybox_picker_plain_style;
+			// Pick a set: a per-group look (groupStyles, keyed by attribute) maps onto the picker's own style enum.
+			if ( $buybox_is_configurator && is_array( $attributes['groupStyles'] ?? null ) ) {
+				$buybox_group_style = sanitize_key( (string) ( $attributes['groupStyles'][ $buybox_axis_taxonomy ] ?? '' ) );
+				if ( in_array( $buybox_group_style, sgs_buybox_configurator_styles(), true ) ) {
+					$buybox_axis_style = $buybox_group_style;
+				}
+			}
 
 			// Band-letter labels for the configured axis only —
 			// every other axis's terms keep their own raw labels.
@@ -1266,6 +1300,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			}
 			if ( '' !== $buybox_picker_sub_label_key ) {
 				$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
+			} elseif ( $buybox_is_configurator && '' !== $buybox_cfg_state['pack']['key'] && $buybox_axis_taxonomy === $buybox_cfg_state['pack']['key'] ) {
+				// The pack tiles show each pack's own one-line description (and badge) by default.
+				$buybox_picker_attrs['subLabelMetaKey'] = '_sgs_term_description';
 			}
 
 			// This specific axis gets the label-row LINK instead of
@@ -1329,6 +1366,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 					'attrs'     => $buybox_picker_attrs,
 				)
 			);
+		}
+		if ( $buybox_is_configurator ) {
+			echo sgs_buybox_configurator_close( $buybox_cfg_state, $attributes, $buybox_cfg_form_id, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
 		}
 	endif;
 	?>
@@ -1401,13 +1441,14 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 		// control.
 		?>
 	<form
-		class="buybox__cart-form"
+		class="buybox__cart-form"<?php echo $buybox_is_configurator ? ' id="' . esc_attr( $buybox_cfg_form_id ) . '"' : ''; ?>
+
 		data-wp-bind--hidden="!context.inStock"
 		method="post"
 		action="<?php echo $product_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already esc_url'd above. ?>"
 		data-wp-on--submit="actions.addToCart"
 	>
-		<button
+		<?php if ( $buybox_is_configurator ) { echo sgs_buybox_configurator_hidden_inputs( $buybox_post_id, (int) $def['variationId'], (array) $manifest['defaultAxes'] ); } // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside. ?><button
 			type="submit"
 			class="<?php echo esc_attr( $add_to_cart_button_classes ); ?>"
 			data-wp-bind--disabled="context.pending"

@@ -802,9 +802,10 @@
 			"default": "standard",
 			"enum": [
 				"standard",
-				"guided"
+				"guided",
+				"configurator"
 			],
-			"description": "'standard' (default) shows every axis picker at once. 'guided' turns the buy box into a one-decision-per-screen flow behind a segmented progress meter (Spec 43 FR-43-23)."
+			"description": "'standard' (default) shows every axis picker at once. 'guided' turns the buy box into a one-decision-per-screen flow behind a segmented progress meter (Spec 43 FR-43-23). 'configurator' (Pick a set) shows every picker plus pick-several groups, a live preview and one summary on the product page itself."
 		},
 		"guidedAutoAdvance": {
 			"type": "boolean",
@@ -2669,6 +2670,51 @@
 			"type": "string",
 			"default": "",
 			"description": "Border width of every option pill and tile in the pickers (CSS length, e.g. \"1px\"), forwarded to sgs/option-picker's pillBorderWidth. Empty = the option picker's own 2px."
+		},
+		"groupStyles": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: the look of each option group, keyed by attribute (for example pa_flavour). Each value is one of the option picker's own styles: filled, outlined, ghost or tile. A group not listed uses the picker style."
+		},
+		"summaryText": {
+			"type": "string",
+			"default": "Your {pack}: {split}",
+			"description": "Pick a set only: the one-line summary under the preview. Tokens: {pack}, {pack_label}, {variation}, {split}, {picks}, {count}. Unknown tokens are removed."
+		},
+		"previewImageId": {
+			"type": "integer",
+			"default": 0,
+			"description": "Pick a set only: the media-library image the live preview draws on (for example a tray or a vest). 0 = a plain tinted shape."
+		},
+		"previewLayerAxis": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: the variation attribute (for example pa_chip) whose chosen option's colour is scattered over the preview as small squares. Empty = none."
+		},
+		"showPriceRow": {
+			"type": "boolean",
+			"default": true,
+			"description": "Show the price row (current price, sale price, saving and per-unit note) above the pickers. Off hides the whole row."
+		},
+		"pickerBoxBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of the box around the pickers. A palette slug or a hex colour. Empty = no fill."
+		},
+		"pickerBoxBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of the box around the pickers. A palette slug or a hex colour."
+		},
+		"pickerBoxBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border width of the box around the pickers (CSS length, for example 2px). Empty = no border."
+		},
+		"pickerBoxRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the box around the pickers (CSS length)."
 		}
 	},
 	"editorScript": "file:./index.js",
@@ -2677,6 +2723,7 @@
 	"viewScriptModule": [
 		"file:./notify-view.js",
 		"file:./guided.js",
-		"file:./sticky-bar.js"
+		"file:./sticky-bar.js",
+		"file:./configurator-view.js"
 	]
 }

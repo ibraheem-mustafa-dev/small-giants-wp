@@ -184,6 +184,12 @@ if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
 
 if ( ! function_exists( 'apply_filters' ) ) {
 	function apply_filters( string $tag, $value ) {
+		// SGS_QA_GROUPS (a JSON list of pick groups) answers the Pick a set resolver's override filter, so a render test
+		// needs no WooCommerce attribute and term tables.
+		if ( 'sgs_configurator_groups' === $tag && false !== getenv( 'SGS_QA_GROUPS' ) && '' !== getenv( 'SGS_QA_GROUPS' ) ) {
+			$groups = json_decode( (string) getenv( 'SGS_QA_GROUPS' ), true );
+			return is_array( $groups ) ? $groups : $value;
+		}
 		return $value;
 	}
 }
