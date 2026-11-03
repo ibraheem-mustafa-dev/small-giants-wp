@@ -25,6 +25,45 @@ import {
 import { resolveColourToken } from '../../components';
 
 /**
+ * The chrome row's bottom border for the previewed device: each member (width, style, colour) takes the nearest
+ * device at or above it that sets it, the twin of sgs_nav_drawer_chrome_border_specs().
+ *
+ * @param {Object} border  The chromeRowBorder attribute.
+ * @param {string} tier    Previewed device tier.
+ * @param {Array}  palette Theme colour palette.
+ * @return {Object} React style fragment.
+ */
+export function chromeRowBorderPreview( border, tier, palette ) {
+	if ( ! border || 'object' !== typeof border ) {
+		return {};
+	}
+	const order = 'mobile' === tier ? [ 'mobile', 'tablet', 'desktop' ] : 'tablet' === tier ? [ 'tablet', 'desktop' ] : [ 'desktop' ];
+	const pick = ( member ) => {
+		for ( const key of order ) {
+			const value = border[ key ]?.[ member ];
+			if ( value ) {
+				return value;
+			}
+		}
+		return '';
+	};
+	const out = {};
+	const width = pick( 'width' );
+	const style = pick( 'style' );
+	const colour = resolveColourToken( pick( 'colour' ), palette );
+	if ( width ) {
+		out.borderBottomWidth = /^[\d.]+$/.test( width ) ? width + 'px' : width;
+	}
+	if ( style ) {
+		out.borderBottomStyle = style;
+	}
+	if ( colour ) {
+		out.borderBottomColor = colour;
+	}
+	return out;
+}
+
+/**
  * The chrome row: min-height, gap, padding and fill.
  *
  * @param {Object} attributes Block attributes.
@@ -44,6 +83,7 @@ export function chromeRowStyle( attributes, tier, palette ) {
 		style.gap = gap;
 	}
 	Object.assign( style, padding );
+	Object.assign( style, chromeRowBorderPreview( attributes.chromeRowBorder, tier, palette ) );
 	return style;
 }
 

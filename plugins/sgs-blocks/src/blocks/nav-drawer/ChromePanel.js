@@ -16,6 +16,7 @@ import ChromeLogoBoxControls from './ChromeLogoBoxControls';
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
 import CloseBoxControls from './CloseBoxControls';
+import ChromeRowBorderControls from './ChromeRowBorderControls';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 /** The three logo tiers: attribute suffix and label. */
@@ -159,6 +160,8 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 				onChange={ ( value ) => setAttributes( { chromeSticky: value } ) }
 				__nextHasNoMarginBottom
 			/>
+
+			<ChromeRowBorderControls attributes={ attributes } setAttributes={ setAttributes } />
 
 			<CloseBoxControls attributes={ attributes } setAttributes={ setAttributes } />
 		</PanelBody>
