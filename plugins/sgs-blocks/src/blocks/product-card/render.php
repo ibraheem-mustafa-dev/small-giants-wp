@@ -1169,7 +1169,7 @@ $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?
 
 // Badge: bound branches have no live badge — live value is '' (override OFF or
 // empty typed value = no badge, matching pre-override bound output).
-$sgs_badge_from_product = ! empty( $attributes['_sgsBadgeFromProduct'] );
+$sgs_badge_from_product = sgs_product_card_badge_from_product( $attributes );
 $sgs_badge_typed    = $sgs_badge_from_product
 	? (string) ( $attributes['featuredTag'] ?? '' )
 	: ( 'trial' === $variant_style

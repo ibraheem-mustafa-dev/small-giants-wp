@@ -156,6 +156,18 @@ if ( ! function_exists( 'sgs_product_card_per_product_fill' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_product_card_badge_from_product' ) ) {
+	/**
+	 * Whether the card's badge text comes from the product's own meta.
+	 *
+	 * @param array<string,mixed> $attributes Attributes after sgs_product_card_per_product_apply().
+	 * @return bool
+	 */
+	function sgs_product_card_badge_from_product( array $attributes ): bool {
+		return ! empty( $attributes['_sgsBadgeFromProduct'] );
+	}
+}
+
 if ( ! function_exists( 'sgs_product_card_price_note_markup' ) ) {
 	/**
 	 * The per-product price note beside the price on a connected card.
