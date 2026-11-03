@@ -308,7 +308,15 @@ try {
 	if ( ! flag( 'no-mods' ) ) {
 		for ( const key of Object.keys( MODS ) ) {
 			const r = ssh( `wp theme mod get ${ key } --format=json` );
-			original[ key ] = r.code === 0 && r.out && r.out !== 'null' ? r.out : null;
+			let value = null;
+			try {
+				const rows = JSON.parse( r.out );
+				const row = Array.isArray( rows ) ? rows.find( ( x ) => x.key === key ) : null;
+				value = row && '' !== String( row.value ) ? String( row.value ) : null;
+			} catch ( e ) {
+				value = null;
+			}
+			original[ key ] = value;
 		}
 		for ( const [ key, value ] of Object.entries( MODS ) ) {
 			const r = ssh( `wp theme mod set ${ key } ${ value }` );

@@ -237,6 +237,27 @@ function strip_shop_load_more_canonical_param( $canonical ) {
 add_filter( 'get_canonical_url', __NAMESPACE__ . '\strip_shop_load_more_canonical_param', 20 );
 
 /**
+ * The list total on the collection's outer element. The router swaps that element on every navigation, so the
+ * client module always reads the total of the list on screen (the results-count block sits outside the region).
+ *
+ * @param mixed $content Rendered block HTML.
+ * @return mixed
+ */
+function add_shop_load_more_total( $content ) {
+	global $wp_query;
+	if ( ! is_string( $content ) || '' === $content || ! shop_load_more_enabled() || ! $wp_query instanceof \WP_Query ) {
+		return $content;
+	}
+	$tags = new \WP_HTML_Tag_Processor( $content );
+	if ( ! $tags->next_tag() ) {
+		return $content;
+	}
+	$tags->set_attribute( 'data-sgs-total', (string) absint( $wp_query->found_posts ) );
+	return $tags->get_updated_html();
+}
+add_filter( 'render_block_woocommerce/product-collection', __NAMESPACE__ . '\add_shop_load_more_total', 20 );
+
+/**
  * The settings the client module reads.
  *
  * @return array<string,mixed>

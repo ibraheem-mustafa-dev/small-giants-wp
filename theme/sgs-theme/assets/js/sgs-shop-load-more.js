@@ -20,6 +20,7 @@ const REGION = '.wp-block-woocommerce-product-collection';
 const ITEM = 'li.wc-block-product';
 const NAV = '.wp-block-query-pagination';
 const NEXT = '.wp-block-query-pagination-next';
+const NEXT_LINK = 'a' + NEXT + ', ' + NEXT + ' a';
 const NUMBERS = '.wp-block-query-pagination-numbers';
 const COUNT_TEXT = '.wp-block-woocommerce-product-results-count';
 const ROOT_CLASS = 'sgs-shop-load-more';
@@ -67,9 +68,13 @@ function items() {
 	return scope ? Array.from( scope.querySelectorAll( ITEM ) ) : [];
 }
 
-/** The list total: the last whole number in the results-count text, else 0 when it cannot be read. */
+/** The list total: the collection's `data-sgs-total`, else the last number in the results-count text, else 0. */
 function readTotal( scope ) {
-	const node = scope.querySelector( COUNT_TEXT );
+	const fromServer = parseInt( scope.dataset.sgsTotal || '', 10 );
+	if ( fromServer > 0 ) {
+		return fromServer;
+	}
+	const node = document.querySelector( COUNT_TEXT );
 	const numbers = node ? ( node.textContent.match( /\d+/g ) || [] ) : [];
 	return numbers.length ? parseInt( numbers[ numbers.length - 1 ], 10 ) : 0;
 }
@@ -125,7 +130,7 @@ function sync() {
 		return;
 	}
 	const nav = scope.querySelector( NAV );
-	const next = scope.querySelector( NEXT + ' a' );
+	const next = scope.querySelector( NEXT_LINK );
 	const loaded = items().length;
 	const total = readTotal( scope );
 	const more = total ? loaded < total : !! next;
