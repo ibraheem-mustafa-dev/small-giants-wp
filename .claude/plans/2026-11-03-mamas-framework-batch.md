@@ -152,11 +152,10 @@ There is no `sgs/choice-flow-option` block and no `includes/choice-flow-pricing*
 
 **Done when (B8, live, local mirror).** A flow set to the new layout: every question visible in page order at 375 and 1440, the stage beside at 1440 and below at 375; two flavours and a 20-pack print "Your 20: 10 strawberry · 10 mango"; the swatch dot shows per flavour; with `replace-oldest` and a limit of 3 a fourth pick swaps the oldest and announces it; Add to bag with a question missing focuses its group and announces, with everything answered it adds one cart line with the FR-43-21 row and the server price; the same flow set back to compact is unchanged.
 
-## B10: extracted snapshots make every font size fluid (found 2026-11-03, Round 4)
+## B10: extracted snapshots make every font size fluid (owned by the Eye Care session)
 
-- **Cause (proven).** The extractor writes `settings.typography.fluid` (375 to 1200px) but no `fluid` key on each `fontSizes` entry (`sites/{mamas-munches-redesign,indus-foods,eye-care-ward-end}/theme-snapshot.json`; the older `sites/mamas-munches` snapshot writes `fluid: false` on each). WordPress treats an entry with no `fluid: false` as fluid when the global switch is on, so on local-mamas `regular` (16px) renders `clamp(14px, …, 16px)`, `large` 14–17px, `x-large` 14.6–22px, `xx-large` 15.7–24px: body text is 14px at 375 and 14.95px at 768 where the draft is 16px at every width. Spec 32 §14 says no preset opts in (FR-32-16 not built).
-- **Fix.** `plugins/sgs-blocks/scripts/theme-extractor/token_families.py::apply_scales` writes `fluid: false` on every size the draft holds fixed, and the FR-32-16 per-width values only where the draft's size changes with the width; re-extract the three snapshots keeping their Fill-patched keys (as `71cad373f` did for Mama's: take only the changed keys), push each with `push-theme-snapshot.py`. A snapshot gate refuses a `fontSizes` entry without a `fluid` key when `settings.typography.fluid` is set.
-- **Owners.** Mama's here; Indus and Eye Care sessions told (their snapshots, their deploys).
+- **Cause (proven 2026-11-03 on local-mamas).** `settings.typography.fluid` is declared in `theme/sgs-theme/theme.json` and every client snapshot, so WordPress clamps font sizes on small screens: `regular` 16px renders `clamp(14px, …, 16px)`, so Mama's body text is 14px at 375 where the draft holds 16px at every width.
+- **Fix (Eye Care session, one commit):** `"fluid": false` in the base `theme.json` and all six snapshots, the extractor writing false, a gate refusing fluid on, and Spec 32 FR-32-16's per-preset ranges as a direct zoom-safe `clamp()`. This batch does not edit any snapshot's `typography.fluid`. After it deploys, re-measure Mama's body text at 375 and 768.
 
 ## B11: per-product card content inside a product grid (found 2026-11-03, card comparison)
 
