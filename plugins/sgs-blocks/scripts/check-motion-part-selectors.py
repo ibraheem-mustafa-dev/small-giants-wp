@@ -378,7 +378,7 @@ def _plant(root: Path, name: str, part_spec: dict, render: str) -> None:
     (folder / "render.php").write_text(render, encoding="utf-8")
 
 
-HELPER_DEF = "function sgs_nav_shared_badge_html( $badge, $root ) { return sprintf( '<span class=\"%1$s__badge\">%2$s</span>', $root, $badge ); }"
+HELPER_DEF = "function sgs_nav_shared_badge_html( $badge, $root ) { return sprintf( '<span class=\"%1$s__badge%3$s\">%2$s</span>', $root, $badge ); }"
 
 
 def self_test() -> int:
