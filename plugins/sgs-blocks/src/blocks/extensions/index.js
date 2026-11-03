@@ -40,6 +40,9 @@
  * - Filter chips "Gap between chips": adds a per-device `sgsChipGap` length control
  *   to WooCommerce's `woocommerce/product-filter-chips` block only — see
  *   product-filter-chips-gap.js (frontend rule: includes/product-filter-chips-gap.php).
+ * - Product Collection "Minimum card width": adds a per-device `sgsCardMinWidth` length
+ *   control to `woocommerce/product-collection` only — see product-collection-card-min.js
+ *   (frontend rule: includes/product-collection-card-min.php).
  */
 import './responsive-device-toggle';
 import './hover-effects';
@@ -55,6 +58,7 @@ import './cpt-default-panel';
 import './mega-section-page-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
+import './product-collection-card-min';
 import './motion';
 // The "Highlight" and "Inline photo" rich-text formats, offered by every SGS RichText whose `allowedFormats` lists them (Spec 02 FR-2-4, FR-2-5).
 import './inline-formats';

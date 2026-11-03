@@ -125,6 +125,14 @@
 			}
 		},
 		{
+			"id": "cardMinWidth",
+			"file": "product-collection-card-min.js",
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-collection" ] },
+			"attributes": {
+				"sgsCardMinWidth": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" }
+			}
+		},
+		{
 			"id": "chipGap",
 			"file": "product-filter-chips-gap.js",
 			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips" ] },

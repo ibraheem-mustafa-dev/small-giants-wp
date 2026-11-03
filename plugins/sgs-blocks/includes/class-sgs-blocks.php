@@ -166,6 +166,10 @@ final class SGS_Blocks {
 		// only. Adds the per-device `sgsChipGap` length as a scoped <style> rule.
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-chips-gap.php';
 
+		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
+		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.
+		require_once SGS_BLOCKS_PATH . 'includes/product-collection-card-min.php';
+
 		// Product Collection empty-detection registry -- records whether a
 		// `woocommerce/product-collection` block's frontend query returned any
 		// products, keyed by its `queryId`. Feeds conditional-visibility.php's

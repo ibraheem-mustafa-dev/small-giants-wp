@@ -13,6 +13,7 @@ return array(
 	'sgsBlockLinkLabel' => array( 'type' => 'string' ),
 	'sgsBlockLinkSource' => array( 'type' => 'string' ),
 	'sgsBlockLinkTarget' => array( 'type' => 'boolean' ),
+	'sgsCardMinWidth' => array( 'type' => 'object' ),
 	'sgsChildSizing' => array( 'type' => 'object' ),
 	'sgsChildWidth' => array( 'type' => 'object' ),
 	'sgsChipGap' => array( 'type' => 'object' ),

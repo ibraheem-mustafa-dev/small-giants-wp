@@ -1,0 +1,13 @@
+// Editor-canvas preview for the minimum card width extension (product-collection-card-min.js).
+// The front-end rule is emitted per instance by includes/product-collection-card-min.php;
+// this mirrors it for the tier the editor is previewing.
+.sgs-card-min-preview .wc-block-product-template {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--sgs-card-min)), 1fr));
+
+	&.is-flex-container.is-flex-container.is-flex-container > li {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+	}
+}
