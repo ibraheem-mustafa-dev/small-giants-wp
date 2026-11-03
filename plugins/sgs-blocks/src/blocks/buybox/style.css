@@ -7,6 +7,10 @@
  * hardcoded client values (block-style-controls rule).
  */
 
+/* The Pick a set rules ship with the front-end stylesheet (style-index.css), not the editor-only index.css. */
+@import "./configurator.css";
+
+
 .sgs-buybox {
 	display: flex;
 	flex-direction: column;
