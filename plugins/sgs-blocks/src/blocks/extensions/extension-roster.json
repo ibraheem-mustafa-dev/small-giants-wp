@@ -133,6 +133,16 @@
 			}
 		},
 		{
+			"id": "postContentLists",
+			"file": "post-content-lists.js",
+			"rule": { "mode": "named", "blocks": [ "core/post-content" ] },
+			"attributes": {
+				"sgsListFontSize": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" },
+				"sgsListTextColour": { "type": "string", "default": "", "role": "visual" },
+				"sgsListGap": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" }
+			}
+		},
+		{
 			"id": "chipGap",
 			"file": "product-filter-chips-gap.js",
 			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips" ] },

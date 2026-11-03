@@ -73,6 +73,8 @@ ROLE_EXCEPTIONS = {
     # Attributes a filter registers (not in block.json, so not in the DB), named by the extension that owns them.
     'extension/sgsChildWidth': ('spacing', 'extension attribute: a child width'),
     'extension/sgsCardMinWidth': ('spacing', 'extension attribute: a product grid card minimum width per device'),
+    'extension/sgsListFontSize': ('font-size', 'extension attribute: the font size of list items per device'),
+    'extension/sgsListGap': ('spacing', 'extension attribute: the space between list items per device'),
     'extension/sgsChipGap': ('spacing', 'extension attribute: a gap between chips'),
     'extension/sgsHeight': ('spacing', 'extension attribute: an image height per device'),
 }

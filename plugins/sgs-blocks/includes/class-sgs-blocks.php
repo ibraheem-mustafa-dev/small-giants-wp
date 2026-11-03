@@ -169,6 +169,8 @@ final class SGS_Blocks {
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
 		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.
 		require_once SGS_BLOCKS_PATH . 'includes/product-collection-card-min.php';
+		// Core Post Content only. Adds the `sgsListFontSize`, `sgsListTextColour` and `sgsListGap` list settings.
+		require_once SGS_BLOCKS_PATH . 'includes/post-content-lists.php';
 
 		// Product Collection empty-detection registry -- records whether a
 		// `woocommerce/product-collection` block's frontend query returned any

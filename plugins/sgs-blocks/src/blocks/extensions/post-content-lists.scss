@@ -1,0 +1,8 @@
+// Editor-canvas preview for the Post Content "Lists" extension (post-content-lists.js).
+// The front-end rules are emitted per instance by includes/post-content-lists.php;
+// this mirrors them for the tier the editor is previewing. The gap needs no rule here:
+// the theme's Plain lists style reads --sgs-plain-list-gap, which the preview sets directly.
+.sgs-post-content-lists-preview li {
+	font-size: var(--sgs-list-preview-size, inherit);
+	color: var(--sgs-list-preview-colour, inherit);
+}
