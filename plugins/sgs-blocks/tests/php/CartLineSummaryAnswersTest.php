@@ -21,6 +21,7 @@ namespace SGS\Blocks {
 			return array(
 				'leadWithAddons'    => 'Prescription',
 				'leadWithoutAddons' => 'Frame only',
+				'labelSeparator'    => ': ',
 			);
 		}
 	}
