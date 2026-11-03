@@ -1,0 +1,111 @@
+/* sgs/accordion filter bar: search, topic chips, count, empty message and the item eyebrow. Loaded only by an accordion with its filter on. */
+
+.sgs-accordion__filter,
+.sgs-accordion__empty,
+.sgs-accordion-item[hidden] {
+	display: none;
+}
+
+.sgs-accordion__filter:not([hidden]) {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	grid-column: 1 / -1;
+	margin-block-end: 1rem;
+}
+
+.sgs-accordion__empty:not([hidden]) {
+	display: block;
+	grid-column: 1 / -1;
+	padding: 1.5rem;
+	border: 2px dashed currentColor;
+	border-radius: 1rem;
+	text-align: center;
+}
+
+.sgs-accordion__sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+.sgs-accordion__search {
+	position: relative;
+}
+
+.sgs-accordion__search-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding-inline: 1rem;
+	border: 2px solid currentColor;
+	border-radius: 999px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+}
+
+.sgs-accordion__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.sgs-accordion__chip {
+	min-height: 44px;
+	padding-inline: 1rem;
+	border: 2px solid currentColor;
+	border-radius: 999px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sgs-accordion__chip:hover {
+	transform: translateY(-2px);
+}
+
+.sgs-accordion__chip[aria-pressed="true"] {
+	background: var(--wp--preset--color--primary);
+	border-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-text);
+}
+
+.sgs-accordion__count {
+	margin: 0;
+	font-weight: 700;
+}
+
+.sgs-accordion-item__heading {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.sgs-accordion-item__eyebrow {
+	font-size: 0.75em;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-accordion__chip {
+		transition: none;
+	}
+
+	.sgs-accordion__chip:hover {
+		transform: none;
+	}
+}

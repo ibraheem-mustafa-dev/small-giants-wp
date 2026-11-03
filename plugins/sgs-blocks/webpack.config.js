@@ -274,6 +274,14 @@ if ( moduleConfig ) {
 				'effects',
 				'magnet.js'
 			),
+			// The accordion filter module: includes/accordion-filter.php registers it as '@sgs/accordion-filter' and an accordion with its filter on loads it.
+			'accordion-filter/index': path.resolve(
+				process.cwd(),
+				'src',
+				'blocks',
+				'accordion',
+				'filter.js'
+			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),
 				'src',

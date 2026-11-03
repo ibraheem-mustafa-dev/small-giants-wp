@@ -28,6 +28,8 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import { usePreviewTier } from '../../utils';
 import { accordionWrapperPreview } from './preview-style';
 import { partHasEntranceLayer } from '../extensions/motion/part-layer';
+import FilterPanel from './FilterPanel';
+import FilterCanvasBar from './FilterCanvasBar';
 
 const STYLE_OPTIONS = [
 	{ label: __( 'Bordered', 'sgs-blocks' ), value: 'bordered' },
@@ -131,6 +133,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 	const { children: innerBlocksChildren, ...innerBlocksRest } =
 		innerBlocksProps;
+
+	// A static copy of the filter bar so the canvas shows what the front end adds above the items.
+	const filterBar = attributes.filterEnabled ? (
+		<FilterCanvasBar attributes={ attributes } clientId={ clientId } palette={ palette } />
+	) : null;
 
 	return (
 		<>
@@ -385,6 +392,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						/>
 					) }
 				</PanelBody>
+
+				<FilterPanel attributes={ attributes } setAttributes={ setAttributes } />
 
 				<PanelBody
 					title={ __(
@@ -801,11 +810,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			{ preview.hasBandProps ? (
 				<div { ...blockProps }>
 					{ preview.css && <style>{ preview.css }</style> }
+					{ filterBar }
 					<div { ...innerBlocksProps } />
 				</div>
 			) : (
 				<div { ...innerBlocksRest }>
 					{ preview.css && <style>{ preview.css }</style> }
+					{ filterBar }
 					{ innerBlocksChildren }
 				</div>
 			) }

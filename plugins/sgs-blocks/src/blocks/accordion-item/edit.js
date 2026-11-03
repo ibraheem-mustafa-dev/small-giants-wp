@@ -6,7 +6,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { useState } from '@wordpress/element';
@@ -170,6 +170,22 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 	);
 
 
+	const filterOn = !! context[ 'sgs/accordionFilterEnabled' ];
+	const { category, showCategoryEyebrow } = attributes;
+	const showEyebrow = filterOn && '' !== ( category ?? '' ).trim() && !! showCategoryEyebrow;
+	const titleField = (
+		<RichText
+			tagName="span"
+			className="sgs-accordion-item__title"
+			value={ title }
+			onChange={ ( val ) => setAttributes( { title: val } ) }
+			placeholder={ __( 'Accordion item title\u2026', 'sgs-blocks' ) }
+			onClick={ ( e ) => e.stopPropagation() }
+			style={ head.title }
+			allowedFormats={ RICH_TEXT_BODY_NO_LINK }
+		/>
+	);
+
 	const chevron = (
 		<span className="sgs-accordion-item__icons" style={ iconRingPreview( context, tier, editorOpen ) }>
 			<span
@@ -235,6 +251,24 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 						__nextHasNoMarginBottom
 					/>
 				</PanelBody>
+				{ filterOn && (
+					<PanelBody title={ __( 'Category', 'sgs-blocks' ) } initialOpen>
+						<TextControl
+							label={ __( 'Category', 'sgs-blocks' ) }
+							help={ __( 'The topic chip this item belongs to. Items with the same category share a chip.', 'sgs-blocks' ) }
+							value={ category ?? '' }
+							onChange={ ( value ) => setAttributes( { category: value } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<ToggleControl
+							label={ __( 'Show the category above the heading', 'sgs-blocks' ) }
+							checked={ !! showCategoryEyebrow }
+							onChange={ ( value ) => setAttributes( { showCategoryEyebrow: value } ) }
+							__nextHasNoMarginBottom
+						/>
+					</PanelBody>
+				) }
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
@@ -272,19 +306,14 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 				onClick={ () => setManualOpen( ! editorOpen ) }
 			>
 				{ iconPosition === 'left' && chevron }
-				<RichText
-					tagName="span"
-					className="sgs-accordion-item__title"
-					value={ title }
-					onChange={ ( val ) => setAttributes( { title: val } ) }
-					placeholder={ __(
-						'Accordion item title\u2026',
-						'sgs-blocks'
-					) }
-					onClick={ ( e ) => e.stopPropagation() }
-					style={ head.title }
-					allowedFormats={ RICH_TEXT_BODY_NO_LINK }
-				/>
+				{ showEyebrow ? (
+					<span className="sgs-accordion-item__heading">
+						<span className="sgs-accordion-item__eyebrow">{ category }</span>
+						{ titleField }
+					</span>
+				) : (
+					titleField
+				) }
 				{ iconPosition === 'right' && chevron }
 			</div>
 			<div { ...innerBlocksProps } />
