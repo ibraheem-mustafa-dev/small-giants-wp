@@ -148,3 +148,21 @@ Sanctioned diffs, not byte-identical: the cart pill name and the icon background
 ## Open questions for Bean
 
 None open. B5's switch to refusing is Next in the streams plan, Mama's section.
+
+## Spec 32/35 audit (2026-11-03, this session's Mama's code)
+
+Fixed in this session (ours): `src/blocks/buybox/configurator.php::sgs_buybox_configurator_tier_css` hand-typed `@media(max-width:1023px/767px)` wrappers, now `sgs_emit_responsive_css`; `src/blocks/buybox/ConfiguratorPanel.js` used `TextControl` for five CSS lengths (previewBorderWidth, previewRadius, pickOptionRadius, pickerBoxBorderWidth, pickerBoxRadius), now `SgsLengthControl`.
+
+Checked and clean: `includes/helpers-tiered-border.php` and `TierBorderControl.js` do not duplicate `SgsBorderControl` (it holds one box-object width for every device, per-device width was dropped in f5c9b66ae and has not landed on main; the tier object is a different shape, so fold only if SgsBorderControl gains per-device width). `nav-drawer-chrome-css.php`, `nav-drawer-menu-parity-css.php` and `accordion-filter.php` already emit through `sgs_emit_responsive_css` with `sgs_colour_value` and `sgs_tiered_border_specs`.
+
+Still open on our side: `ConfiguratorPanel.js` wraps its fields in `PanelBody` without `ToolsPanel` (Spec 35 reset dots); `src/blocks/buybox/configurator.css` uses static `@media (min-width: 768px)` (plain CSS cannot read `SGS_Breakpoints`; same convention as the other block stylesheets); `includes/configurator-picks/class-configurator-picks-admin.php::render_flags_fields` carries `style="width:4.5em"` on two admin number inputs (admin screen, not a block).
+
+Pre-existing, not ours (hand-typed breakpoint literals in per-device output, for the detector-first migration to `sgs_emit_responsive_css`):
+- `src/blocks/accordion/render.php` (border tablet/mobile, f4ebc7097)
+- `src/blocks/accordion-item/render.php` (border and header radius tablet/mobile, f4ebc7097)
+- `src/blocks/product-card/render.php` (attribute-tag border and card border, 69515de0f and f4ebc7097)
+- `src/blocks/cart/render.php` (`$sgs_cart_tier_media`, `$sgs_cart_tier_ranges`, `$trigger_ranges`, cebd58310 and cdddd9090)
+- `src/blocks/icon/render.php` (line with `'@media(max-width:' . $max . ')'`)
+- `src/blocks/buybox/sticky-bar.js` (`matchMedia('(max-width: 767px)')` and `1023px`, fb1740e27)
+- `src/blocks/buybox/render.php` main-photo border tiers (144908b14, Eye Care session; already uses `SGS_Breakpoints` constants but bypasses the emitter)
+- `src/blocks/post-grid/style.css` filter border defaults not in `:where()` (check-border-width-defaults, 3 findings)
