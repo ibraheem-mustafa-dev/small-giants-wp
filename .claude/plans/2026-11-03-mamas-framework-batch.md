@@ -152,10 +152,10 @@ There is no `sgs/choice-flow-option` block and no `includes/choice-flow-pricing*
 
 **Done when (B8, live, local mirror).** A flow set to the new layout: every question visible in page order at 375 and 1440, the stage beside at 1440 and below at 375; two flavours and a 20-pack print "Your 20: 10 strawberry · 10 mango"; the swatch dot shows per flavour; with `replace-oldest` and a limit of 3 a fourth pick swaps the oldest and announces it; Add to bag with a question missing focuses its group and announces, with everything answered it adds one cart line with the FR-43-21 row and the server price; the same flow set back to compact is unchanged.
 
-## B10: extracted snapshots make every font size fluid (owned by the Eye Care session)
+## B10: extracted snapshots made every font size fluid (done by the Eye Care session)
 
-- **Cause (proven 2026-11-03 on local-mamas).** `settings.typography.fluid` is declared in `theme/sgs-theme/theme.json` and every client snapshot, so WordPress clamps font sizes on small screens: `regular` 16px renders `clamp(14px, …, 16px)`, so Mama's body text is 14px at 375 where the draft holds 16px at every width.
-- **Fix (Eye Care session, one commit):** `"fluid": false` in the base `theme.json` and all six snapshots, the extractor writing false, a gate refusing fluid on, and Spec 32 FR-32-16's per-preset ranges as a direct zoom-safe `clamp()`. This batch does not edit any snapshot's `typography.fluid`. After it deploys, re-measure Mama's body text at 375 and 768.
+- Done: `84b58c55f`, deployed with `0d6934798` (`settings.typography.fluid` false in `theme/sgs-theme/theme.json` and all six snapshots, gate `check-no-fluid-typography`, Specs 01, 32 and 48 updated).
+- Open: re-measure Mama's body text at 375 and 768 against the draft's 16px after the mamas-test deploy.
 
 ## B11: per-product card content inside a product grid (found 2026-11-03, card comparison)
 
