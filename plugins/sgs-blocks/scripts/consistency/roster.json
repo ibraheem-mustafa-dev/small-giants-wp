@@ -221,7 +221,7 @@
         "styling": true,
         "colour": true,
         "link": true,
-        "media": false,
+        "media": true,
         "animation": false
       },
       "qualifies": {

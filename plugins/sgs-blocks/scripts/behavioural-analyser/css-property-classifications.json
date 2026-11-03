@@ -3739,6 +3739,20 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerBoxRadius",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelColour",
       "fields": {
         "css_property": "color",
