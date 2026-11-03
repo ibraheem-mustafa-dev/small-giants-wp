@@ -3190,6 +3190,16 @@
 			"default": false,
 			"description": "From-each-product mode: a product that needs choices (variable, grouped or not purchasable) gets a button linking to its page instead of an add-to-basket form, unless the product's own button action says otherwise. Read only while cardContentSource is product."
 		},
+		"priceFromLowest": {
+			"type": "boolean",
+			"default": false,
+			"description": "From-each-product mode: a variable product whose variations differ prints 'From' and its lowest price (Product_Bindings price_from_html) instead of the default variation's price. Read only while cardContentSource is product. The 'From' wording is styled by the priceFromLabel* typography."
+		},
+		"priceTrimZeros": {
+			"type": "boolean",
+			"default": false,
+			"description": "Trailing zero decimals are dropped from every price a connected card prints from the product: 5.00 reads 5, 9.50 stays 9.50. includes/product-card-price-display.php::sgs_product_card_trim_price_zeros."
+		},
 		"swatchAttribute": {
 			"type": "string",
 			"default": "",

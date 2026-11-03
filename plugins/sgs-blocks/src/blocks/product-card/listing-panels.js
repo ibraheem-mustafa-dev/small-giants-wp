@@ -39,6 +39,8 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 		ctaLabelMetaKey,
 		ctaActionMetaKey,
 		ctaChoicesToPage,
+		priceFromLowest,
+		priceTrimZeros,
 	} = attributes;
 	const fromProduct = 'product' === cardContentSource;
 	const metaKeyFields = [
@@ -92,6 +94,25 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 				/>
 			) }
+			{ fromProduct && (
+				<ToggleControl
+					label={ __( 'Show “From” and the lowest price', 'sgs-blocks' ) }
+					help={ __(
+						'A variable product whose options cost different amounts shows “From” and its lowest price instead of the default option’s price.',
+						'sgs-blocks'
+					) }
+					checked={ !! priceFromLowest }
+					onChange={ ( v ) => setAttributes( { priceFromLowest: v } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			<ToggleControl
+				label={ __( 'Drop trailing .00 from prices', 'sgs-blocks' ) }
+				help={ __( '£5.00 reads £5; £9.50 stays £9.50.', 'sgs-blocks' ) }
+				checked={ !! priceTrimZeros }
+				onChange={ ( v ) => setAttributes( { priceTrimZeros: v } ) }
+				__nextHasNoMarginBottom
+			/>
 			<ToggleControl
 				label={ __( 'Show description', 'sgs-blocks' ) }
 				help={ __(

@@ -60,6 +60,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php'
 require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-per-product.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-price-display.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 
@@ -984,6 +985,8 @@ $sgs_bound_htag             = in_array( $attributes['headingLevel'] ?? '', $sgs_
 
 // From-each-product mode: the badge, price note, button label and action come from the product's own meta. Off (typed) = no change.
 $attributes = sgs_product_card_per_product_fill( $attributes, (int) $product_id, (string) $source_mode );
+// priceTrimZeros: 5.00 reads 5 in every price this card prints from the product. Off = no change.
+$data = sgs_product_card_price_data_apply( $data, $attributes );
 
 // FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
 // markup share this value so label and behaviour always agree).
@@ -1271,9 +1274,10 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 		// Pre-format display strings server-side so SSR text == seeded value
 		// (SSR-wipe-safe — see MEMORY rule wp-interactivity-directives-wipe-ssr).
 		$price_display   = sgs_configurator_mode_price( $def, $tax_mode, $decimals, $price_suffix );
+		$price_display   = sgs_product_card_price_text( $attributes, $price_display );
 		$show_sale       = ( null !== $def['saleMinor'] );
 		$regular_display = $show_sale
-			? sgs_configurator_mode_regular( $def, $tax_mode, $decimals )
+			? sgs_product_card_price_text( $attributes, sgs_configurator_mode_regular( $def, $tax_mode, $decimals ) )
 			: '';
 		$pct_display     = '';
 		if ( $def['pctOff'] > 0 ) {
@@ -1740,6 +1744,12 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<?php // ── 2c. Price slot — bound to seeded context literals (SSR-wipe-safe). ?>
 				<div class="price-row sgs-product-card__price-row" aria-live="polite">
 					<div class="sgs-product-card__price-group">
+					<?php if ( sgs_product_card_from_lowest( $attributes, $data ) ) : ?>
+					<span class="price price--from sgs-product-card__price">
+						<span class="price-from-label sgs-product-card__price-from-label"><?php esc_html_e( 'From', 'sgs-blocks' ); ?></span>
+						<span class="price-from-amount"><?php echo wp_kses_post( $data['price_from_html'] ); ?></span>
+					</span>
+					<?php else : ?>
 					<span
 						class="price price--current sgs-product-card__price"
 						data-wp-text="context.priceDisplay"
@@ -1760,6 +1770,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 						data-wp-bind--hidden="context.discountHidden"
 						data-wp-text="context.discountLabel"
 					><?php echo esc_html( $discount_label ); ?></span>
+					<?php endif; ?>
 					<?php
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_rrp_markup( $attributes );
