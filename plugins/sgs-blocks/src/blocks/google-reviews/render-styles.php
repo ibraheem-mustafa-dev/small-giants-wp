@@ -149,12 +149,11 @@ $gr_button_box = static function ( string $selector, string $prefix, $size = nul
 	return $css;
 };
 
-// ── The block root: background, padding and the block's own type. ──
+// ── The block root: background and the block's own type. `padding` is printed once, by SGS_Container_Wrapper, on the content band (`.sgs-container__inner`). ──
 $gr_bg_decl = sgs_background_paint_decl( (string) ( $attributes['backgroundColour'] ?? '' ), (string) ( $attributes['backgroundColourGradient'] ?? '' ) );
 if ( '' !== $gr_bg_decl ) {
 	$gr_responsive_css .= $gr_root_hi . '{' . $gr_bg_decl . ';}';
 }
-$gr_responsive_css .= $gr_box_rule( $gr_root_hi, $attributes['padding'] ?? null, 'padding', $gr_sides );
 $gr_responsive_css .= sgs_typography_css_rule( $attributes, '', $gr_root_hi, '', false, false, sgs_object_attr_keys( $block ) );
 
 // ── Header row: gap, padding and the divider under it. ──
