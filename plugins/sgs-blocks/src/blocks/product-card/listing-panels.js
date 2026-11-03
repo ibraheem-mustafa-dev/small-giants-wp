@@ -40,7 +40,6 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 		ctaActionMetaKey,
 		ctaChoicesToPage,
 		priceFromLowest,
-		priceTrimZeros,
 		showCtaIcon,
 		showCtaShadow,
 		showSwatches,
@@ -121,13 +120,6 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 					__nextHasNoMarginBottom
 				/>
 			) }
-			<ToggleControl
-				label={ __( 'Drop trailing .00 from prices', 'sgs-blocks' ) }
-				help={ __( '£5.00 reads £5; £9.50 stays £9.50.', 'sgs-blocks' ) }
-				checked={ !! priceTrimZeros }
-				onChange={ ( v ) => setAttributes( { priceTrimZeros: v } ) }
-				__nextHasNoMarginBottom
-			/>
 			<ToggleControl
 				label={ __( 'Show description', 'sgs-blocks' ) }
 				help={ __(
