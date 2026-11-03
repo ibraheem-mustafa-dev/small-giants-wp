@@ -3116,6 +3116,38 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -3739,14 +3771,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "pickOptionRadius",
-      "fields": {
-        "css_property": "border-radius",
-        "css_element": "pick-option"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "pickSelectedBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -4049,6 +4073,15 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "priceRowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "rrpChipFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -4109,6 +4142,137 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "rrpChip"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "rrp-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "rrp-price",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "rrp-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPriceWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "rrp-price"
       }
     },
     {
@@ -20872,6 +21036,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "imageHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "justifyContent",
       "fields": {
         "css_property": "justify-content",
@@ -33014,6 +33186,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -33091,6 +33271,32 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "mainPhotoBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "mainPhotoShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "main-photo-frame"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "meterFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -33121,6 +33327,14 @@
       "attr": "pickOptionPadding",
       "fields": {
         "css_property": "padding",
+        "css_element": "pick-option"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickOptionRadius",
+      "fields": {
+        "css_property": "border-radius",
         "css_element": "pick-option"
       }
     },
@@ -34592,6 +34806,15 @@
       "fields": {
         "css_property": "display",
         "css_element": "actions-note"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsSpaceAbove",
+      "fields": {
+        "css_property": "padding-top",
+        "css_layer": "OUTER",
+        "css_element": "actions"
       }
     },
     {
@@ -40688,14 +40911,6 @@
         "css_property": "grid-template-columns",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/post-grid",
-      "attr": "imageHeight",
-      "fields": {
-        "css_property": "height",
-        "css_element": "image"
       }
     },
     {
