@@ -45,6 +45,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-value-ladder.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-rrp.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-modal-cta.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-guided.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-pinned-product.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-linked-flow.php';
 require_once __DIR__ . '/extras.php';
 require_once __DIR__ . '/picker-label-map.php';
@@ -75,6 +76,16 @@ $buybox_core_fallback = '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:w
 $buybox_post_id = isset( $block->context['postId'] ) ? absint( $block->context['postId'] ) : 0;
 if ( 0 === $buybox_post_id ) {
 	$buybox_post_id = absint( get_queried_object_id() );
+}
+
+// A pinned product (`buyboxProductId`) replaces the context post for everything below; a pin the viewer may not read
+// renders nothing at all (sgs_buybox_resolve_product_id()).
+$buybox_pinned_id = absint( $attributes['buyboxProductId'] ?? 0 );
+if ( $buybox_pinned_id > 0 ) {
+	$buybox_post_id = sgs_buybox_resolve_product_id( $buybox_post_id, $buybox_pinned_id );
+	if ( $buybox_post_id <= 0 ) {
+		return;
+	}
 }
 
 /* ── 2. Guard: WooCommerce absent or no product ──────────────────────────── */

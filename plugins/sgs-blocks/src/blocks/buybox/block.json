@@ -792,6 +792,11 @@
 			"default": "",
 			"description": "The HTML anchor set on the sgs/modal block this button opens, when addToCartAction is 'modal'. Empty falls back to cart mode even when 'modal' is selected."
 		},
+		"buyboxProductId": {
+			"type": "integer",
+			"default": 0,
+			"description": "The product this buy box shows, by ID. 0 (default) shows the product of the page it sits on. Set it to place a buy box on a page that is not a product page, such as the home page."
+		},
 		"buyboxLayout": {
 			"type": "string",
 			"default": "standard",

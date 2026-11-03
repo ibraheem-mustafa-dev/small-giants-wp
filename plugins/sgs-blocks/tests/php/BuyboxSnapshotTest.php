@@ -2,7 +2,7 @@
 /**
  * Byte-identical render snapshots of sgs/buybox for every fixture in tests/fixtures/buybox/*.json. The buy box
  * "Pick a set" work (.claude/plans/2026-11-03-buybox-configurator.md) must leave every existing buy box unchanged:
- * a fixture that renders differently from its stored snapshot fails.
+ * a fixture that renders differently from its stored snapshot fails (the attribute-hash scope class is masked, see norm()).
  *
  * Fixture shape: attrs, product, manifest, context, optional queried. Snapshots live in tests/fixtures/buybox/snapshots.
  * Write or refresh them only on purpose: SGS_UPDATE_SNAPSHOTS=1 vendor/bin/phpunit --filter BuyboxSnapshotTest
@@ -33,9 +33,13 @@ final class BuyboxSnapshotTest extends TestCase {
 	}
 
 	/** Render a fixture through the real render.php in a child process. */
-	public static function render_fixture( string $name, array $attr_overrides = array() ): string {
+	public static function render_fixture( string $name, array $attr_overrides = array(), ?array $context_override = null, array $product_overrides = array() ): string {
 		$fixture = json_decode( (string) file_get_contents( self::DIR . "/$name.json" ), true, 512, JSON_THROW_ON_ERROR );
 		$fixture['attrs'] = array_merge( $fixture['attrs'], $attr_overrides );
+		if ( null !== $context_override ) {
+			$fixture['context'] = $context_override;
+		}
+		$fixture['product'] = array_merge( $fixture['product'], $product_overrides );
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$files   = array();
 		$cmd     = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness ) . ' --slug sgs/buybox --motion-targets';
@@ -60,6 +64,14 @@ final class BuyboxSnapshotTest extends TestCase {
 		return (string) $decoded['html'];
 	}
 
+	/**
+	 * The scope class (sgs-bb-xxxxxxxx) is an md5 of the block's attributes, so adding any attribute to block.json renames
+	 * it on every buy box; the comparison masks that one token and nothing else.
+	 */
+	public static function norm( string $html ): string {
+		return (string) preg_replace( '/sgs-bb-[0-9a-f]{8}/', 'sgs-bb-X', $html );
+	}
+
 	/** @dataProvider fixtures */
 	public function test_the_render_is_byte_identical_to_its_snapshot( string $name ): void {
 		$html = self::render_fixture( $name );
@@ -68,7 +80,7 @@ final class BuyboxSnapshotTest extends TestCase {
 			file_put_contents( $snap, $html );
 		}
 		$this->assertFileExists( $snap, "no snapshot for $name; write it on purpose with SGS_UPDATE_SNAPSHOTS=1" );
-		$this->assertSame( file_get_contents( $snap ), $html, "the $name buy box no longer renders byte-identically" );
+		$this->assertSame( self::norm( (string) file_get_contents( $snap ) ), self::norm( $html ), "the $name buy box no longer renders byte-identically" );
 	}
 
 	public function test_a_render_is_deterministic(): void {
