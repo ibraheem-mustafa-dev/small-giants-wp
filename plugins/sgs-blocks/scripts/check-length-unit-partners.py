@@ -118,7 +118,7 @@ ALLOW = {
          ('"sgs/plant", "thicknessUnit"', 'got.get("thicknessUnit")', "got.get('thicknessUnit')")),
     ('plugins/sgs-blocks/scripts/inspector-scan/rules.json', 'maxWidthUnit'):
         ("rule 34's dated ratchet record: each lowering keeps the composition it enumerated that day",
-         ('"advisoryReason": "LOWERED 67 -> 49 (2026-10-16).',)),
+         ('"advisoryReason": "RAISED 49 -> 50 (2026-11-03):',)),
     ('plugins/sgs-blocks/scripts/survey-length-control-scale.py', 'maxWidthUnit'):
         ("a synthetic sgs/x self-test source: the survey reads the setting out of a wrapped value expression",
          ('composeUnit( attributes.maxWidth, attributes.maxWidthUnit )',)),
