@@ -84,6 +84,7 @@ export {
 // length-unit rebuild — see each file's own docblock for the evidence).
 export { default as SgsBoxControl } from './SgsBoxControl';
 export { default as BorderStyleControl } from './BorderStyleControl';
+export { default as TierBorderControl } from './TierBorderControl';
 export {
 	default as LogicalAlignControl,
 	LogicalAlignToolbar,

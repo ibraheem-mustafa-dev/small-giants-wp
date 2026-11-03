@@ -70,6 +70,7 @@ import SectionMotionPanel from './SectionMotionPanel';
 // The bar's own treatment node (none / swap / sweep + angle) for its separator
 // colour row, reused as-is: it names nothing bar-specific.
 import TrailingIconPanel from './TrailingIconPanel';
+import BadgePanel from './BadgePanel';
 // This block's OWN declared Sweep-eligibility source (FR-41-26) — read here
 // rather than inside the shared ColourRowExtras/ColourTreatment modules,
 // which do not statically import either block's manifest (see
@@ -772,6 +773,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				/>
 
 				<TrailingIconPanel
+					resolvedItems={ resolvedItems }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+
+				<BadgePanel
 					resolvedItems={ resolvedItems }
 					attributes={ attributes }
 					setAttributes={ setAttributes }

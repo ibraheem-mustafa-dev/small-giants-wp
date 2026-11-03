@@ -73,6 +73,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 			// sgs_nav_drawer_menu_trailing_icon_html() so an unused entry never
 			// costs a sanitise/lookup.
 			'trailing_icons'      => is_array( $attributes['itemTrailingIcons'] ?? null ) ? $attributes['itemTrailingIcons'] : array(),
+			// Per-item badge tone map (item identifier => 'a' | 'b'), read where the badge is built.
+			'badge_tones'         => is_array( $attributes['itemBadgeTones'] ?? null ) ? $attributes['itemBadgeTones'] : array(),
 			// Parity with sgs/nav-bar-menu (2026-09-28) — read by
 			// sgs_nav_drawer_menu_accordion_html() for the accordion-parent
 			// row's disabled treatment.

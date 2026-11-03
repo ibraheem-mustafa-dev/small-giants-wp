@@ -12,6 +12,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-tiered-border.php';
+
 if ( ! function_exists( 'sgs_nav_drawer_menu_parity_css' ) ) {
 	/**
 	 * The open-state, badge, disabled and trailing-icon CSS fragment.
@@ -47,6 +49,24 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_parity_css' ) ) {
 		}
 		if ( function_exists( 'sgs_nav_item_badge_css' ) ) {
 			$css .= sgs_nav_item_badge_css( $scope . ' .sgs-nav-drawer-menu__badge', $attributes );
+		}
+
+		// Badge tones: an item set to tone A or B (itemBadgeTones) carries a modifier class; its colours paint that class
+		// only, after the block-level rule so they win at equal specificity.
+		foreach ( array( 'A', 'B' ) as $tone ) {
+			$tone_bg   = sgs_background_paint_decl( (string) ( $attributes[ 'badgeColour' . $tone ] ?? '' ), '' );
+			$tone_text = sgs_text_colour_decl( (string) ( $attributes[ 'badgeTextColour' . $tone ] ?? '' ) );
+			$tone_css  = ( '' !== $tone_bg ? $tone_bg . ';' : '' ) . ( '' !== $tone_text ? $tone_text . ';' : '' );
+			if ( '' !== $tone_css ) {
+				$css .= $scope . ' .sgs-nav-drawer-menu__badge--tone-' . strtolower( $tone ) . '{' . $tone_css . '}';
+			}
+		}
+
+		// Badge border per device, and an opacity over the stylesheet's 0.65 (an empty value keeps that default).
+		$css .= sgs_emit_responsive_css( $scope . ' .sgs-nav-drawer-menu__badge', sgs_tiered_border_specs( $attributes['badgeBorder'] ?? array() ) );
+		$badge_opacity = trim( (string) ( $attributes['itemBadgeOpacity'] ?? '' ) );
+		if ( '' !== $badge_opacity && is_numeric( $badge_opacity ) ) {
+			$css .= $scope . ' .sgs-nav-drawer-menu__badge{opacity:' . round( min( 1.0, max( 0.0, (float) $badge_opacity ) ), 2 ) . ';}';
 		}
 
 		// Parity — disabled item/sublink text colour.

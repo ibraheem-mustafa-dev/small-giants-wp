@@ -15,6 +15,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-responsive.php';
+require_once __DIR__ . '/helpers-tiered-border.php';
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
@@ -97,56 +98,6 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_show_tiers' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_nav_drawer_chrome_border_specs' ) ) {
-	/**
-	 * The chrome row's bottom border (`chromeRowBorder`, `{desktop|tablet|mobile: {width, style, colour}}`) as
-	 * responsive property specs: width a CSS length, style `none|solid|dashed|dotted`, colour a palette slug or any
-	 * colour. A member a tier leaves empty inherits the tier above, so each member is its own spec. A tier with a
-	 * value that fails its check contributes nothing.
-	 *
-	 * @param mixed $raw The `chromeRowBorder` attribute.
-	 * @return array<int, array<string, mixed>> Specs for sgs_emit_responsive_css(); empty when nothing is set.
-	 */
-	function sgs_nav_drawer_chrome_border_specs( $raw ): array {
-		if ( ! is_array( $raw ) ) {
-			return array();
-		}
-		$members = array(
-			'width'  => array(
-				'css'          => 'border-bottom-width',
-				'unit_default' => 'px',
-			),
-			'style'  => array(
-				'css'       => 'border-bottom-style',
-				'transform' => static function ( $value ) {
-					$style = is_string( $value ) ? strtolower( trim( $value ) ) : '';
-					return in_array( $style, array( 'none', 'solid', 'dashed', 'dotted' ), true ) ? $style : null;
-				},
-			),
-			'colour' => array(
-				'css'       => 'border-bottom-color',
-				'transform' => static function ( $value ) {
-					return sgs_colour_value( is_string( $value ) ? $value : '' );
-				},
-			),
-		);
-		$specs   = array();
-		foreach ( $members as $member => $spec ) {
-			$tiers = array();
-			foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-				$value = is_array( $raw[ $tier ] ?? null ) ? ( $raw[ $tier ][ $member ] ?? null ) : null;
-				if ( null !== $value && '' !== $value ) {
-					$tiers[ $tier ] = $value;
-				}
-			}
-			if ( $tiers ) {
-				$specs[] = array( 'value' => $tiers ) + $spec;
-			}
-		}
-		return $specs;
-	}
-}
-
 if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 	/**
 	 * Build the chrome row's scoped CSS.
@@ -195,7 +146,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 		);
 
 		// The row's bottom border (chromeRowBorder), per device.
-		$css .= sgs_emit_responsive_css( $row_sel, sgs_nav_drawer_chrome_border_specs( $attributes['chromeRowBorder'] ?? array() ) );
+		$css .= sgs_emit_responsive_css( $row_sel, sgs_tiered_border_specs( $attributes['chromeRowBorder'] ?? array(), 'border-bottom' ) );
 
 		// The × box border (closeBorderWidth box / closeBorderStyle / closeBorderColour,
 		// the SgsBorderControl family: width is one box for every device). A style

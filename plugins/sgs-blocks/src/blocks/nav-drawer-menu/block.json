@@ -470,9 +470,43 @@
 						"css:background-color": "itemBadgeColour",
 						"css:padding": "itemBadgePadding",
 						"css:border-radius": "itemBadgeBorderRadius",
-						"css:margin": "itemBadgeGap"
+						"css:margin": "itemBadgeGap",
+						"css:opacity": "itemBadgeOpacity",
+						"css:border-width": "badgeBorder",
+						"css:border-style": "badgeBorder",
+						"css:border-color": "badgeBorder"
 					},
 					"_note": "Parity with sgs/nav-bar-menu, 2026-09-28. The optional per-item marker chip (\"SOON\", \"NEW\") rendered after an item's label via the SHARED includes/nav-menu-markup.php::sgs_nav_shared_badge_html() call already present in sgs_nav_drawer_menu_render_items(); this block previously declared no colour attributes for it. Badge COPY is per-item (the operator's classic-menu-item Description field); badge COLOUR is block-level, one Colour-panel row applying to every badge this drawer renders. No hover state — a badge is never itself interactive."
+				},
+				"badge-tone-a": {
+					"selector": ".sgs-nav-drawer-menu__badge--tone-a",
+					"label": "Item badge, tone A",
+					"order": 6.6,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "badge",
+					"attrMap": {
+						"css:color": "badgeTextColourA",
+						"css:background-color": "badgeColourA"
+					},
+					"_note": "A menu item set to badge tone A (itemBadgeTones, a map keyed by item identifier) prints the extra class `sgs-nav-drawer-menu__badge--tone-a` on its badge; the colours here paint that class only. Emitted by includes/nav-drawer-menu-parity-css.php."
+				},
+				"badge-tone-b": {
+					"selector": ".sgs-nav-drawer-menu__badge--tone-b",
+					"label": "Item badge, tone B",
+					"order": 6.7,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "badge",
+					"attrMap": {
+						"css:color": "badgeTextColourB",
+						"css:background-color": "badgeColourB"
+					},
+					"_note": "As tone A, for the class `sgs-nav-drawer-menu__badge--tone-b`."
 				},
 				"disabled-item": {
 					"state": "disabled",
@@ -1745,6 +1779,41 @@
 			"type": "string",
 			"default": "accent-text",
 			"description": "Parity with sgs/nav-bar-menu (2026-09-28) — text colour of the optional per-item badge chip. See itemBadgeColour."
+		},
+		"itemBadgeTones": {
+			"type": "object",
+			"default": {},
+			"description": "A per-item map, { [item identifier]: 'a' | 'b' }, same identifier scheme as itemTrailingIcons. A listed item's badge carries the class sgs-nav-drawer-menu__badge--tone-a or --tone-b, painted by the tone colours below. Unset items keep the block-level badge colours."
+		},
+		"badgeColourA": {
+			"type": "string",
+			"default": "",
+			"description": "Background of badges set to tone A. A palette slug or any colour. Unset leaves the block-level badge colour."
+		},
+		"badgeTextColourA": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of badges set to tone A. Unset leaves the block-level badge text colour."
+		},
+		"badgeColourB": {
+			"type": "string",
+			"default": "",
+			"description": "Background of badges set to tone B. A palette slug or any colour. Unset leaves the block-level badge colour."
+		},
+		"badgeTextColourB": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of badges set to tone B. Unset leaves the block-level badge text colour."
+		},
+		"badgeBorder": {
+			"type": "object",
+			"default": {},
+			"description": "Border round every item badge per device: {desktop|tablet|mobile: {width, style, colour}}. Width is a CSS length, style is none, solid, dashed or dotted, colour is a palette slug or any colour. A member a device leaves empty takes the device above's. Unset draws no border."
+		},
+		"itemBadgeOpacity": {
+			"type": "string",
+			"default": "",
+			"description": "Opacity of every item badge, 0 to 1. Unset keeps the stylesheet's 0.65."
 		},
 		"itemMinHeight": {
 			"type": "object",

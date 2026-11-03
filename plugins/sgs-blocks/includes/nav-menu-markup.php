@@ -54,7 +54,7 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	 * @param string $bem_root 'sgs-nav-bar-menu' or 'sgs-nav-drawer-menu'.
 	 * @return string HTML fragment, or '' when there is no badge.
 	 */
-	function sgs_nav_shared_badge_html( string $badge, string $bem_root ): string {
+	function sgs_nav_shared_badge_html( string $badge, string $bem_root, string $tone = '' ): string {
 		$badge = trim( $badge );
 		if ( '' === $badge ) {
 			return '';
@@ -65,10 +65,13 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 		// every reference badge copy ("SOON", "NEW", "Coming spring 2027")
 		// with headroom.
 		$badge = function_exists( 'mb_substr' ) ? mb_substr( $badge, 0, 24 ) : substr( $badge, 0, 24 );
+		// A tone ('a' or 'b', set per item) adds the modifier class the tone colours paint; no tone, the class is unchanged.
+		$tone_class = in_array( $tone, array( 'a', 'b' ), true ) ? ' ' . $bem_root . '__badge--tone-' . $tone : '';
 		return sprintf(
-			'<span class="screen-reader-text"> (</span><span class="%1$s__badge">%2$s</span><span class="screen-reader-text">)</span>',
+			'<span class="screen-reader-text"> (</span><span class="%1$s__badge%3$s">%2$s</span><span class="screen-reader-text">)</span>',
 			esc_attr( $bem_root ),
-			esc_html( $badge )
+			esc_html( $badge ),
+			esc_attr( $tone_class )
 		);
 	}
 }
@@ -501,7 +504,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_render_items' ) ) {
 				$is_disabled = in_array( $item['identifier'], $disabled_ids, true );
 				$li_class    = 'sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--drawer' . ( $is_featured ? ' sgs-nav-drawer-menu__item--featured' : '' )
 					. ( $is_disabled ? ' sgs-nav-drawer-menu__item--disabled' : '' );
-				$leaf_badge  = sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu' );
+				$leaf_badge  = sgs_nav_shared_badge_html( (string) ( $item['badge'] ?? '' ), 'sgs-nav-drawer-menu', (string) ( $options['badge_tones'][ $item['identifier'] ] ?? '' ) );
 				$link_html   = $is_disabled
 					? sgs_nav_drawer_disabled_link_html( $li_class, sgs_nav_drawer_menu_label_inner( $item, $options ), $leaf_badge )
 					: sprintf(
