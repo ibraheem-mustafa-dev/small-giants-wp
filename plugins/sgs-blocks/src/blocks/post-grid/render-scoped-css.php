@@ -31,6 +31,9 @@ $post_grid_classes = array(
 	'sgs-post-grid--' . $layout,
 	$uid,
 );
+if ( ! empty( $attributes['keepEmptyColumns'] ) && 'grid' === $layout ) {
+	$post_grid_classes[] = 'sgs-post-grid--fixed-columns';
+}
 
 $responsive_css = '';
 
@@ -130,6 +133,55 @@ $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . \SGS\Blocks\Post_Grid_
 $post_grid_card_radius = sgs_css_length_value( $attributes['cardRadius'] ?? '' );
 if ( '' !== $post_grid_card_radius ) {
 	$responsive_css .= $root_sel . '{--sgs-card-radius:' . $post_grid_card_radius . ';}';
+}
+
+// Filter chips: resting and active looks ride custom properties on the block root so
+// style.css keeps owning hover/focus (an unset property prints nothing, so the stylesheet
+// default stays today's look).
+$post_grid_filter_vars = '';
+foreach (
+	array(
+		'filterBorderColour'       => array( '--sgs-pg-filter-border', 'colour' ),
+		'filterBackground'         => array( '--sgs-pg-filter-bg', 'colour' ),
+		'filterTextColour'         => array( '--sgs-pg-filter-text', 'colour' ),
+		'filterActiveBackground'   => array( '--sgs-pg-filter-active-bg', 'colour' ),
+		'filterActiveTextColour'   => array( '--sgs-pg-filter-active-text', 'colour' ),
+		'filterActiveBorderColour' => array( '--sgs-pg-filter-active-border', 'colour' ),
+		'filterBorderWidth'        => array( '--sgs-pg-filter-bw', 'length' ),
+		'filterActiveBorderWidth'  => array( '--sgs-pg-filter-active-bw', 'length' ),
+		'filterMinHeight'          => array( '--sgs-pg-filter-min-h', 'length' ),
+	) as $post_grid_filter_attr => $post_grid_filter_spec
+) {
+	$post_grid_filter_raw = $attributes[ $post_grid_filter_attr ] ?? '';
+	$post_grid_filter_val = 'colour' === $post_grid_filter_spec[1] ? sgs_colour_value( is_string( $post_grid_filter_raw ) ? $post_grid_filter_raw : '' ) : sgs_css_length_value( $post_grid_filter_raw );
+	if ( '' !== $post_grid_filter_val ) {
+		$post_grid_filter_vars .= $post_grid_filter_spec[0] . ':' . $post_grid_filter_val . ';';
+	}
+}
+$post_grid_filter_weight = (int) ( $attributes['filterFontWeight'] ?? 0 );
+if ( $post_grid_filter_weight >= 100 && $post_grid_filter_weight <= 900 ) {
+	$post_grid_filter_vars .= '--sgs-pg-filter-weight:' . $post_grid_filter_weight . ';';
+}
+if ( '' !== $post_grid_filter_vars ) {
+	$responsive_css .= $root_sel . '{' . $post_grid_filter_vars . '}';
+}
+
+// imageHeight: a fixed image frame per device that wins over aspectRatio. A descendant rule on
+// the block root, so cards that view.js pages in later take it too.
+$post_grid_img_tiers = sgs_responsive_normalise_object( $attributes['imageHeight'] ?? null );
+foreach (
+	array(
+		''                         => $post_grid_img_tiers['desktop'],
+		'@media(max-width:1023px)' => $post_grid_img_tiers['tablet'],
+		'@media(max-width:767px)'  => $post_grid_img_tiers['mobile'],
+	) as $post_grid_img_media => $post_grid_img_raw
+) {
+	$post_grid_img_height = sgs_css_length_value( $post_grid_img_raw ?? '' );
+	if ( '' === $post_grid_img_height ) {
+		continue;
+	}
+	$post_grid_img_rule = $root_sel . ' .sgs-post-grid__image{height:' . $post_grid_img_height . ';aspect-ratio:auto;}';
+	$responsive_css    .= '' === $post_grid_img_media ? $post_grid_img_rule : $post_grid_img_media . '{' . $post_grid_img_rule . '}';
 }
 
 // categoryPadding / categoryRadius: padding (per device) and corner radius of the plain category

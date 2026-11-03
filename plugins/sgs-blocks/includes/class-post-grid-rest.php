@@ -149,6 +149,11 @@ class Post_Grid_REST {
 				'type'    => 'boolean',
 				'default' => true,
 			],
+			'dateFormat'           => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
 			'showAuthor'           => [
 				'type'    => 'boolean',
 				'default' => false,
@@ -382,6 +387,7 @@ class Post_Grid_REST {
 		$show_title    = isset( $params['showTitle'] ) ? (bool) $params['showTitle'] : true;
 		$show_excerpt  = isset( $params['showExcerpt'] ) ? (bool) $params['showExcerpt'] : true;
 		$show_date     = isset( $params['showDate'] ) ? (bool) $params['showDate'] : true;
+		$date_format   = isset( $params['dateFormat'] ) ? sanitize_text_field( (string) $params['dateFormat'] ) : '';
 		$show_author   = isset( $params['showAuthor'] ) ? (bool) $params['showAuthor'] : false;
 		$show_category = isset( $params['showCategory'] ) ? (bool) $params['showCategory'] : true;
 		$meta_inline   = isset( $params['metaLayout'] ) && 'inline' === $params['metaLayout'];
@@ -493,7 +499,7 @@ class Post_Grid_REST {
 				$meta_html .= sprintf(
 					'<time datetime="%s">%s</time>',
 					esc_attr( get_the_date( 'c', $post_id ) ),
-					esc_html( get_the_date( '', $post_id ) )
+					esc_html( wp_date( '' !== $date_format ? $date_format : get_option( 'date_format' ), get_post_timestamp( $post_id ) ) )
 				);
 			}
 

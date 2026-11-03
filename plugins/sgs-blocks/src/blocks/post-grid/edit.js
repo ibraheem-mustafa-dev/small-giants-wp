@@ -478,7 +478,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				<CardStylePanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
 				{ /* Panel 5: Pagination & Filters */ }
-				<PaginationFiltersPanel attributes={ attributes } set={ set } />
+				<PaginationFiltersPanel attributes={ attributes } setAttributes={ setAttributes } set={ set } />
 
 				{ /* Panel: Container wrapper (WS-4 mirror) */ }
 				{ /* showLayout={false}: this block owns its own Layout control

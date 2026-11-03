@@ -134,6 +134,7 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		showExcerpt:           queryData.showExcerpt,
 		excerptLength:         queryData.excerptLength,
 		showDate:              queryData.showDate,
+		dateFormat:            queryData.dateFormat,
 		showAuthor:            queryData.showAuthor,
 		showCategory:          queryData.showCategory,
 		showReadMore:          queryData.showReadMore,

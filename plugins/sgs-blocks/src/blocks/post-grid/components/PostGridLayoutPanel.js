@@ -3,7 +3,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, RangeControl, RadioControl } from '@wordpress/components';
+import { PanelBody, RangeControl, RadioControl, ToggleControl } from '@wordpress/components';
 import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import { LAYOUT_OPTIONS } from './constants';
 
@@ -11,6 +11,7 @@ export default function PostGridLayoutPanel( { attributes, setAttributes, set } 
 	const {
 		layout,
 		columns,
+		keepEmptyColumns,
 	} = attributes;
 
 	return (
@@ -61,6 +62,15 @@ export default function PostGridLayoutPanel( { attributes, setAttributes, set } 
 							);
 						} }
 					</ResponsiveOverride>
+					{ 'grid' === layout && (
+						<ToggleControl
+							label={ __( 'Keep empty columns', 'sgs-blocks' ) }
+							help={ __( 'With fewer posts than columns, cards keep their column width instead of stretching.', 'sgs-blocks' ) }
+							checked={ !! keepEmptyColumns }
+							onChange={ ( v ) => setAttributes( { keepEmptyColumns: v } ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
 					{ /* Gap is provided by the shared ContainerWrapperControls panel below. */ }
 				</PanelBody>
 	);

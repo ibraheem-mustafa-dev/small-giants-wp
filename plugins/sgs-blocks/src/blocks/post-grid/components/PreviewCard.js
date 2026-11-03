@@ -17,11 +17,18 @@ import AuthoredText from '../../../components/AuthoredText';
  * @param {string} dateString ISO date string.
  * @return {string} Formatted date.
  */
-function formatDate( dateString ) {
+function formatDate( dateString, phpFormat = '' ) {
 	if ( ! dateString ) {
 		return '';
 	}
 	const d = new Date( dateString );
+	if ( phpFormat ) {
+		const mon = d.toLocaleDateString( 'en-GB', { month: 'short' } );
+		const full = d.toLocaleDateString( 'en-GB', { month: 'long' } );
+		const pad = ( n ) => String( n ).padStart( 2, '0' );
+		const map = { j: d.getDate(), d: pad( d.getDate() ), n: d.getMonth() + 1, m: pad( d.getMonth() + 1 ), M: mon, F: full, Y: d.getFullYear(), y: pad( d.getFullYear() % 100 ) };
+		return phpFormat.replace( /\?(.)/g, ( all, ch ) => ( all.length > 1 ? ch : ( ch in map ? map[ ch ] : ch ) ) );
+	}
 	return d.toLocaleDateString( 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' } );
 }
 
@@ -46,6 +53,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		showTitle,
 		showExcerpt,
 		showDate,
+		dateFormat,
 		showAuthor,
 		showCategory,
 		metaLayout,
@@ -54,6 +62,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		showReadMore,
 		readMoreText,
 		aspectRatio,
+		imageHeight,
 		titleColour,
 		titleColourGradient,
 		excerptColour,
@@ -117,7 +126,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 	const metaNode      = ( showDate || showAuthor ) && (
 		<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
 			{ showDate && (
-				<time>{ formatDate( post?.date ) }</time>
+				<time>{ formatDate( post?.date, dateFormat ) }</time>
 			) }
 			{ showAuthor && authorName && (
 				<span className="sgs-post-grid__author">
@@ -132,6 +141,8 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		</span>
 	);
 
+	const imageHeightPx = ( 'mobile' === tier ? imageHeight?.mobile || imageHeight?.tablet || imageHeight?.desktop : 'tablet' === tier ? imageHeight?.tablet || imageHeight?.desktop : imageHeight?.desktop ) || '';
+
 	return (
 		<article
 			className={ `sgs-post-grid__card sgs-post-grid__card--${ cardStyle }` }
@@ -141,7 +152,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				<div className="sgs-post-grid__image-link">
 					<div
 						className="sgs-post-grid__image"
-						style={ aspectRatio ? { aspectRatio } : {} }
+						style={ imageHeightPx ? { height: imageHeightPx, aspectRatio: 'auto' } : ( aspectRatio ? { aspectRatio } : {} ) }
 					>
 						<img
 							src={ imageUrl }

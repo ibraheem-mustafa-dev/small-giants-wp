@@ -68,6 +68,11 @@
 	);
 }
 
+/* keepEmptyColumns: hold the declared column count so fewer posts keep their column width. */
+.sgs-post-grid--grid.sgs-post-grid--fixed-columns .sgs-post-grid__inner {
+	grid-template-columns: repeat( var( --sgs-columns ), minmax( 0, 1fr ) );
+}
+
 /* ==========================================================================
    List layout (horizontal card: image left, content right)
    ========================================================================== */
@@ -517,14 +522,14 @@
 .sgs-post-grid__filter {
 	display: inline-flex;
 	align-items: center;
-	min-height: 44px; /* WCAG 2.2 minimum touch target */
+	min-height: var( --sgs-pg-filter-min-h, 44px ); /* WCAG 2.2 minimum touch target */
 	padding: 8px 20px;
 	font-size: 0.875rem;
-	font-weight: 600;
-	border: 2px solid var( --wp--preset--color--primary, #1a3a5c );
+	font-weight: var( --sgs-pg-filter-weight, 600 );
+	border: var( --sgs-pg-filter-bw, 2px ) solid var( --sgs-pg-filter-border, var( --wp--preset--color--primary, #1a3a5c ) );
 	border-radius: 4px;
-	background: transparent;
-	color: inherit;
+	background: var( --sgs-pg-filter-bg, transparent );
+	color: var( --sgs-pg-filter-text, inherit );
 	cursor: pointer;
 	transition: background-color 200ms var(--wp--custom--easing--ease, ease), color 200ms var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
@@ -537,12 +542,13 @@
 
 .sgs-post-grid__filter--active,
 .sgs-post-grid__filter[aria-pressed="true"] {
-	background-color: var( --wp--preset--color--primary, #1a3a5c );
-	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff ));
+	background-color: var( --sgs-pg-filter-active-bg, var( --wp--preset--color--primary, #1a3a5c ) );
+	border-color: var( --sgs-pg-filter-active-border, var( --sgs-pg-filter-border, var( --wp--preset--color--primary, #1a3a5c ) ) );
+	color: var( --sgs-pg-filter-active-text, var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff )) );
 	/* Rule 43 (WCAG 1.4.1): active-filter state must not rely on colour alone —
 	 * the resting border is already 2px solid primary, so bump to 3px as the
 	 * non-colour signal. */
-	border-width: 3px;
+	border-width: var( --sgs-pg-filter-active-bw, 3px );
 }
 
 .sgs-post-grid__filter:disabled {

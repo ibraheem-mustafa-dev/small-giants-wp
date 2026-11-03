@@ -7,12 +7,14 @@ import { SelectControl, RangeControl, ToggleControl } from '@wordpress/component
 import MediaElementPanel from '../../../components/MediaElementPanel';
 import SgsBooleanField from '../../../components/SgsBooleanField';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
+import ResponsiveLengthControl from '../../../components/ResponsiveLengthControl';
 import { ASPECT_RATIO_OPTIONS, IMAGE_SIZE_OPTIONS } from './constants';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
 export default function ContentPanel( { attributes, setAttributes, set } ) {
 	const {
 		aspectRatio,
+		imageHeight,
 		imageSize,
 		showImage,
 		imageDecorative,
@@ -20,6 +22,7 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 		showExcerpt,
 		excerptLength,
 		showDate,
+		dateFormat,
 		showAuthor,
 		showCategory,
 		metaLayout,
@@ -36,10 +39,12 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							imageSize: 'medium_large',
 							imageDecorative: false,
 							aspectRatio: '16 / 9',
+							imageHeight: {},
 							showTitle: true,
 							showExcerpt: true,
 							excerptLength: 20,
 							showDate: true,
+							dateFormat: '',
 							showAuthor: false,
 							showCategory: true,
 							metaLayout: '',
@@ -73,6 +78,12 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 										onChange={ set( 'aspectRatio' ) }
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
+									/>
+									<ResponsiveLengthControl
+										label={ __( 'Image height', 'sgs-blocks' ) }
+										help={ __( 'A fixed image frame per device. When set it replaces the aspect ratio and the image covers the frame.', 'sgs-blocks' ) }
+										value={ imageHeight }
+										onChange={ set( 'imageHeight' ) }
 									/>
 									<SelectControl
 										label={ __( 'Image size', 'sgs-blocks' ) }
@@ -171,6 +182,35 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							__nextHasNoMarginBottom
 						/>
 					</ToolsPanelItem>
+					{ showDate && (
+						<ToolsPanelItem
+							label={ __( 'Date format', 'sgs-blocks' ) }
+							hasValue={ () => '' !== dateFormat }
+							onDeselect={ () => setAttributes( { dateFormat: '' } ) }
+						>
+							<SelectControl
+								label={ __( 'Date format', 'sgs-blocks' ) }
+								value={ [ 'M Y', 'F Y', 'j M Y', 'd/m/Y', '' ].includes( dateFormat ) ? dateFormat : 'custom' }
+								options={ [
+									{ label: __( 'Site default', 'sgs-blocks' ), value: '' },
+									{ label: __( 'Feb 2026 (M Y)', 'sgs-blocks' ), value: 'M Y' },
+									{ label: __( 'February 2026 (F Y)', 'sgs-blocks' ), value: 'F Y' },
+									{ label: __( '12 Feb 2026 (j M Y)', 'sgs-blocks' ), value: 'j M Y' },
+									{ label: __( '12/02/2026 (d/m/Y)', 'sgs-blocks' ), value: 'd/m/Y' },
+									{ label: __( 'Custom', 'sgs-blocks' ), value: 'custom' },
+								] }
+								onChange={ ( v ) => setAttributes( { dateFormat: 'custom' === v ? 'j F Y' : v } ) }
+								__nextHasNoMarginBottom
+							/>
+							{ ! [ 'M Y', 'F Y', 'j M Y', 'd/m/Y', '' ].includes( dateFormat ) && (
+								<SgsFreeTextField
+									label={ __( 'Custom date format (PHP)', 'sgs-blocks' ) }
+									value={ dateFormat }
+									onChange={ set( 'dateFormat' ) }
+								/>
+							) }
+						</ToolsPanelItem>
+					) }
 					<ToolsPanelItem
 						label={ __( 'Show author', 'sgs-blocks' ) }
 						hasValue={ () => showAuthor !== false }
