@@ -60,6 +60,7 @@ import './product-collection-same-term';
 import './product-filter-chips-gap';
 import './product-collection-card-min';
 import './post-content-lists';
+import './post-time-to-read-short';
 import './motion';
 // The "Highlight" and "Inline photo" rich-text formats, offered by every SGS RichText whose `allowedFormats` lists them (Spec 02 FR-2-4, FR-2-5).
 import './inline-formats';

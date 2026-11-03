@@ -57,6 +57,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		productPageCrumbs,
 		showArchiveCrumb,
 		showCurrentCrumb,
+		showTermCrumb,
+		currentCrumbLabel,
 		currentColour,
 		currentColourGradient,
 		borderColour,
@@ -211,6 +213,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						onChange={ ( val ) => setAttributes( { showCurrentCrumb: val } ) }
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Show the category', 'sgs-blocks' ) }
+						help={ __( 'On a single post, the link to its first category.', 'sgs-blocks' ) }
+						checked={ showTermCrumb !== false }
+						onChange={ ( val ) => setAttributes( { showTermCrumb: val } ) }
+						__nextHasNoMarginBottom
+					/>
+					<TextControl
+						label={ __( 'Current page label', 'sgs-blocks' ) }
+						help={ __( 'Replaces the page title in the last crumb. Leave empty to use the title.', 'sgs-blocks' ) }
+						value={ currentCrumbLabel ?? '' }
+						onChange={ ( val ) => setAttributes( { currentCrumbLabel: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 				</PanelBody>
 
 				{ /* ── Spacing panel ── padding/margin are each a single block-owned
@@ -337,7 +354,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						aria-current="page"
 						style={ { ...gapStyle, ...resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) } }
 					>
-						{ __( 'Current Page', 'sgs-blocks' ) }
+						{ currentCrumbLabel || __( 'Current Page', 'sgs-blocks' ) }
 					</li> ) }
 				</ol>
 			</nav>

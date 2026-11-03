@@ -171,6 +171,8 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/product-collection-card-min.php';
 		// Core Post Content only. Adds the `sgsListFontSize`, `sgsListTextColour` and `sgsListGap` list settings.
 		require_once SGS_BLOCKS_PATH . 'includes/post-content-lists.php';
+		// Core Post Time to Read only. Adds the `sgsShortFormat` setting (short reading-time wording).
+		require_once SGS_BLOCKS_PATH . 'includes/post-time-to-read-short.php';
 
 		// Product Collection empty-detection registry -- records whether a
 		// `woocommerce/product-collection` block's frontend query returned any

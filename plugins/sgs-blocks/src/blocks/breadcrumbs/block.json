@@ -226,6 +226,16 @@
 			"default": true,
 			"description": "On a single post, product or page, end the trail with the current page's own title. Off ends it at the last parent (e.g. the brand)."
 		},
+		"showTermCrumb": {
+			"type": "boolean",
+			"default": true,
+			"description": "On a single post, show the crumb for the post's first category. Off leaves it out."
+		},
+		"currentCrumbLabel": {
+			"type": "string",
+			"default": "",
+			"description": "Text of the current-page crumb. Empty uses the page's own title."
+		},
 		"linkColour": {
 			"type": "string",
 			"default": "text-muted"

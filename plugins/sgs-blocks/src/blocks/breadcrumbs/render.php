@@ -86,6 +86,8 @@ $product_page_crumbs_raw     = $attributes['productPageCrumbs'] ?? 'none';
 $product_page_crumbs         = in_array( $product_page_crumbs_raw, array( 'none', 'category', 'brand', 'both' ), true ) ? $product_page_crumbs_raw : 'none';
 $show_archive_crumb          = ! isset( $attributes['showArchiveCrumb'] ) || (bool) $attributes['showArchiveCrumb'];
 $show_current_crumb          = ! isset( $attributes['showCurrentCrumb'] ) || (bool) $attributes['showCurrentCrumb'];
+$show_term_crumb             = ! isset( $attributes['showTermCrumb'] ) || (bool) $attributes['showTermCrumb'];
+$current_crumb_label         = sanitize_text_field( (string) ( $attributes['currentCrumbLabel'] ?? '' ) );
 $link_colour                 = $attributes['linkColour'] ?? 'text-muted';
 $link_colour_gradient        = $attributes['linkColourGradient'] ?? '';
 $link_colour_hover           = $attributes['linkColourHover'] ?? '';
@@ -476,7 +478,7 @@ if ( is_singular() ) {
 		// Current page (no link), unless showCurrentCrumb is off.
 		if ( $show_current_crumb ) {
 			$crumbs[] = array(
-				'label' => esc_html( get_the_title( $post->ID ) ),
+				'label' => esc_html( '' !== $current_crumb_label ? $current_crumb_label : get_the_title( $post->ID ) ),
 				'url'   => '',
 			);
 		}

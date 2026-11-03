@@ -43,6 +43,7 @@ return array(
 	'sgsObjectFit' => array( 'type' => 'string' ),
 	'sgsObjectPosition' => array( 'type' => 'object' ),
 	'sgsSameTermAs' => array( 'type' => 'string' ),
+	'sgsShortFormat' => array( 'type' => 'boolean' ),
 	'sgsTimeText' => array( 'type' => 'array' ),
 	'sgsTimeTextZone' => array( 'type' => 'string' ),
 );
