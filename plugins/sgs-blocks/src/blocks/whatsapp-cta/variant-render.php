@@ -95,9 +95,10 @@ function sgs_whatsapp_cta_card_markup( array $attributes, string $whatsapp_svg )
 }
 
 /**
- * Floating variant's "hide label below" scoped @media rule — collapses the
- * visible-label pill back to an icon-only circle below the given viewport
- * width. Emitted only when a visible label exists AND a threshold > 0 is
+ * Floating variant's "hide label below" scoped @media rule — hides the
+ * visible label below the given viewport width; the button keeps its pill
+ * padding, radius and minimum height, so it stays the same shape around the
+ * icon alone (its aria-label names it). Emitted only when a visible label exists AND a threshold > 0 is
  * set (0 = never hide — the default, matching the block's off-by-default
  * contract: an existing floating button with no label renders unchanged).
  *
@@ -114,6 +115,30 @@ function sgs_whatsapp_cta_floating_hide_label_css( string $root_sel, int $hide_b
 	// "Below N" stops just under N, like every other below-N setting.
 	return '@media(max-width:' . ( $hide_below - 1 ) . 'px){'
 		. "{$root_sel} .sgs-whatsapp-cta__label--floating{display:none}"
-		. "{$root_sel}.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn{width:56px;height:56px;border-radius:50%;padding:0;justify-content:center}"
 		. '}';
+}
+
+
+/**
+ * Floating variant's scoped offset from the viewport edges (`floatingOffset`: { right, bottom }).
+ * A side that is unset keeps style.css's 24px; the bottom offset still rides above a showing
+ * add-to-basket bar through --sgs-sticky-bar-h.
+ *
+ * @param array $attributes Block attributes.
+ * @return string[] Declarations (no trailing semicolons) for the block's scoped root rule.
+ */
+function sgs_whatsapp_cta_floating_offset_decls( array $attributes ): array {
+	$offset = is_array( $attributes['floatingOffset'] ?? null ) ? $attributes['floatingOffset'] : array();
+	$decls  = array();
+
+	$right = sgs_css_length_value( is_scalar( $offset['right'] ?? null ) ? (string) $offset['right'] : '' );
+	if ( '' !== $right ) {
+		$decls[] = 'right:' . $right;
+	}
+	$bottom = sgs_css_length_value( is_scalar( $offset['bottom'] ?? null ) ? (string) $offset['bottom'] : '' );
+	if ( '' !== $bottom ) {
+		$decls[] = 'bottom:calc(var(--sgs-sticky-bar-h,0px) + ' . $bottom . ')';
+	}
+
+	return $decls;
 }

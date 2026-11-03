@@ -56,6 +56,7 @@
 						"css:border-style": "cardBorderStyle",
 						"css:border-color": "cardBorderColour",
 						"css:gap": "iconGap",
+						"css:box-shadow": "boxShadow",
 						"css:min-height": "minHeight",
 						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "labelTextStrokeColour"
@@ -67,6 +68,7 @@
 								"css:background-image": "backgroundColourHoverGradient",
 								"css:color": "labelColourHover",
 								"css:color-gradient": "labelColourHoverGradient",
+								"css:box-shadow": "boxShadowHover",
 								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
 							}
 						}
@@ -403,6 +405,35 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Floating button steps aside (and leaves the tab order) whenever a non-floating sgs/whatsapp-cta is on screen, so the same WhatsApp CTA never shows twice at once."
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Resting shadow shape: layers of 'X Y BLUR SPREAD', a theme shadow name or none. Empty keeps the variant's stylesheet shadow."
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting shadow colour: 'site', a palette slug or a CSS colour, with an optional opacity (e.g. '#0D6E35 32%')."
+		},
+		"boxShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover shadow shape. Empty lifts the resting shadow automatically (shadowLiftOnHover)."
+		},
+		"boxShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover shadow colour. Empty keeps the resting colour."
+		},
+		"shadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"floatingOffset": {
+			"type": "object",
+			"default": {},
+			"description": "Floating variant distance from the viewport edges: { right, bottom } as CSS lengths or spacing slugs. A missing side keeps the stylesheet's 24px."
 		},
 		"iconGap": {
 			"type": "string",

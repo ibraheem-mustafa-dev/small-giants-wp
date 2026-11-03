@@ -93,7 +93,7 @@ export function buildRootClassName( { variant, showOnMobile, showOnDesktop } ) {
 /**
  * Editor twin of variant-render.php::sgs_whatsapp_cta_floating_hide_label_css():
  * below the configured width the floating pill collapses to the icon-only
- * circle. The canvas is an iframe whose width follows the device preview, so the
+ * pill (same padding, radius and minimum height). The canvas is an iframe whose width follows the device preview, so the
  * same media query applies there.
  *
  * @param {string}  rootSelector      Selector of the preview root (uid class).
@@ -109,6 +109,5 @@ export function floatingHideLabelPreviewCss( rootSelector, hideBelow, hasVisible
 	// "Below N" stops just under N, like every other below-N setting.
 	return `@media(max-width:${ below - 1 }px){`
 		+ `${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}`
-		+ `${ rootSelector }.sgs-whatsapp-cta--floating.sgs-whatsapp-cta__btn{width:56px;height:56px;border-radius:50%;padding:0;justify-content:center}`
 		+ '}';
 }

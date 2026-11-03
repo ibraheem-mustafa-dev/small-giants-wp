@@ -16,6 +16,8 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsBoxControl,
+	ShadowControl,
+	shadowAttrKeys,
 	textRow,
 } from '../../components';
 import {
@@ -220,6 +222,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes={ setAttributes }
 					/>
 				) }
+
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'boxShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
+					/>
+				</PanelBody>
 
 				<PanelBody
 					title={ __( 'Visibility', 'sgs-blocks' ) }

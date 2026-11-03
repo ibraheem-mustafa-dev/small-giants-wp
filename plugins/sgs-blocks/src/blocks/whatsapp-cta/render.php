@@ -214,6 +214,26 @@ if ( '' !== (string) ( $attributes['iconSize'] ?? '' ) ) {
 	$icon_size    = sgs_css_length_value( (string) $attributes['iconSize'] );
 	$scoped_css[] = '.' . $uid . ' .sgs-whatsapp-cta__icon{width:' . $icon_size . ';height:' . $icon_size . ';}';
 }
+// Box shadow (shape + colour, resting and hover) through the shared composer; the focus system draws on
+// box-shadow, so each drawn shadow is paired with --sgs-focus-under. Unset keeps style.css's own shadow.
+$box_shadow_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	),
+	'sgs/whatsapp-cta'
+);
+$btn_decls        = array_merge( $btn_decls, sgs_focus_under_decls( $box_shadow_decls['normal'] ) );
+if ( $box_shadow_decls['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', sgs_focus_under_decls( $box_shadow_decls['hover'] ) ) );
+}
+// Floating offset from the viewport edges (floatingOffset); unset keeps style.css's 24px.
+if ( 'floating' === $variant ) {
+	$btn_decls = array_merge( $btn_decls, sgs_whatsapp_cta_floating_offset_decls( $attributes ) );
+}
 if ( $btn_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $btn_decls ) . ';}';
 }
