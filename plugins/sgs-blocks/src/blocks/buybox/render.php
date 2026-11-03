@@ -552,6 +552,19 @@ $scoped_css = array();
 if ( $buybox_is_configurator ) {
 	$buybox_cfg_form_id = $uid . '-form';
 	$scoped_css         = array_merge( $scoped_css, sgs_buybox_configurator_css( $buybox_cfg_state, $attributes, $root_sel ) );
+	// The summary's own typography and colour (the saving badge's typography set under the prefix pickSummary).
+	$buybox_pick_summary_css = sgs_typography_css_rule( $attributes, 'pickSummary', $root_sel . ' .sgs-buybox__pick-summary', '', false, false, sgs_object_attr_keys( $block ) );
+	if ( '' !== $buybox_pick_summary_css ) {
+		$scoped_css[] = $buybox_pick_summary_css;
+	}
+	$buybox_pick_summary_colour = sgs_colour_value( (string) ( $attributes['pickSummaryColour'] ?? '' ) );
+	if ( '' !== $buybox_pick_summary_colour ) {
+		$scoped_css[] = $root_sel . ' .sgs-buybox__pick-summary{color:' . $buybox_pick_summary_colour . ';}';
+	}
+	if ( ! empty( $attributes['pickHideGallery'] ) ) {
+		// No photo column: the picker, preview and summary take the full width.
+		$scoped_css[] = $root_sel . '.sgs-buybox--no-gallery{grid-template-columns:minmax(0,1fr);}';
+	}
 }
 
 // Pressed look (helpers-button-press.php): the add-to-cart style's `active-transform` / `active-shadow` preset tokens
@@ -696,6 +709,9 @@ if ( $buybox_is_guided ) {
 }
 if ( $buybox_is_configurator ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--configurator';
+	if ( ! empty( $attributes['pickHideGallery'] ) ) {
+		$buybox_wrapper_classes .= ' sgs-buybox--no-gallery';
+	}
 }
 
 // Wrapper attributes — includes Interactivity API bindings. uid CLASS added
@@ -1018,13 +1034,17 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_gallery_badge_position = in_array( (string) ( $attributes['gallerySavingBadgePosition'] ?? 'top-right' ), array( 'top-right', 'top-left', 'bottom-right', 'bottom-left' ), true )
 		? (string) ( $attributes['gallerySavingBadgePosition'] ?? 'top-right' )
 		: 'top-right';
-	?>
+	// Pick a set can drop the photo column (pickHideGallery).
+	$buybox_hide_gallery = $buybox_is_configurator && ! empty( $attributes['pickHideGallery'] );
+	if ( ! $buybox_hide_gallery ) :
+		?>
 	<div class="sgs-buybox__gallery-col">
 		<?php require __DIR__ . '/gallery-col.php'; ?>
 		<?php if ( '' !== $buybox_gallery_badge_text ) : ?>
 		<span class="sgs-buybox__saving-badge sgs-buybox__saving-badge--<?php echo esc_attr( $buybox_gallery_badge_position ); ?>"><?php echo esc_html( $buybox_gallery_badge_text ); ?></span>
 		<?php endif; ?>
-	</div>
+	</div><?php endif; ?>
+
 
 	<?php
 	// ── 8-config. Configurator column — right column, all interactive content.
@@ -1300,9 +1320,6 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			}
 			if ( '' !== $buybox_picker_sub_label_key ) {
 				$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;
-			} elseif ( $buybox_is_configurator && '' !== $buybox_cfg_state['pack']['key'] && $buybox_axis_taxonomy === $buybox_cfg_state['pack']['key'] ) {
-				// The pack tiles show each pack's own one-line description (and badge) by default.
-				$buybox_picker_attrs['subLabelMetaKey'] = '_sgs_term_description';
 			}
 
 			// This specific axis gets the label-row LINK instead of

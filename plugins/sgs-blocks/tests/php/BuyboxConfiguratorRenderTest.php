@@ -119,4 +119,65 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-buybox-pick', $html );
 		$this->assertStringNotContainsString( 'data-sgs-pick-summary', $html );
 	}
+
+	public function test_pick_hide_gallery_drops_the_photo_column_and_is_off_by_default(): void {
+		$this->assertStringContainsString( 'sgs-buybox__gallery-col', self::html() );
+		$hidden = self::html( array( 'pickHideGallery' => true ) );
+		$this->assertStringNotContainsString( 'sgs-buybox__gallery-col', $hidden );
+		$this->assertStringContainsString( 'sgs-buybox--no-gallery', $hidden );
+		$this->assertMatchesRegularExpression( '/\.sgs-buybox--no-gallery\{grid-template-columns:minmax\(0,1fr\);\}/', $hidden );
+		$this->assertStringContainsString( 'sgs-buybox__gallery-col', BuyboxSnapshotTest::render_fixture( 'standard', array( 'pickHideGallery' => true ) ), 'the setting only acts in Pick a set' );
+	}
+
+	public function test_the_preview_box_settings_print_scoped_per_device(): void {
+		$html = self::html(
+			array(
+				'previewBackgroundColour' => '#FFFAF0',
+				'previewBorderColour'     => '#3A2A22',
+				'previewBorderWidth'      => '2px',
+				'previewRadius'           => '28px',
+				'previewPadding'          => array( 'desktop' => array( 'top' => '28px', 'right' => '20px' ), 'mobile' => array( 'top' => '12px' ) ),
+			)
+		);
+		$this->assertMatchesRegularExpression( '/\.sgs-buybox__pick-preview\{background:#FFFAF0;border-color:#3A2A22;border-width:2px;border-radius:28px;\}/', $html );
+		$this->assertStringContainsString( '.sgs-buybox__pick-preview{padding-top:28px;padding-right:20px;}', $html );
+		$this->assertStringContainsString( '@media(max-width:767px){', $html );
+		$this->assertStringContainsString( 'padding-top:12px', $html );
+		$this->assertStringContainsString( 'class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview', $html );
+	}
+
+	public function test_the_summary_takes_its_own_colour_and_typography(): void {
+		$html = self::html( array( 'pickSummaryColour' => '#112233', 'pickSummaryFontFamily' => 'Caveat', 'pickSummaryFontSize' => array( 'desktop' => 26 ) ) );
+		$this->assertStringContainsString( '.sgs-buybox__pick-summary{color:#112233;}', $html );
+		$this->assertStringContainsString( 'class="sgs-buybox-pick__caption sgs-buybox__pick-summary"', $html );
+		$this->assertMatchesRegularExpression( '/\.sgs-buybox__pick-summary\{[^}]*font-family:[^}]*Caveat/', $html );
+	}
+
+	public function test_the_selected_colour_reaches_every_group_through_shared_properties(): void {
+		$html = self::html( array( 'pickSelectedBackgroundColour' => '#F9CF6E', 'pickSelectedBorderColour' => '#3A2A22' ) );
+		$this->assertStringContainsString( '--sgs-pick-sel-bg:#F9CF6E;--sgs-op-sel-bg:#F9CF6E;--sgs-pick-sel-border:#3A2A22;--sgs-op-sel-border:#3A2A22', $html );
+		$this->assertStringNotContainsString( '--sgs-pick-sel-bg', self::html(), 'nothing is printed until it is set' );
+	}
+
+	public function test_the_pill_and_tile_settings_print_scoped(): void {
+		$html = self::html(
+			array(
+				'pickOptionRadius'  => '999px',
+				'pickOptionGap'     => '8px',
+				'pickOptionPadding' => array( 'desktop' => array( 'left' => '10px', 'right' => '16px' ) ),
+				'pickTilePadding'   => array( 'desktop' => array( 'top' => '12px', 'left' => '8px' ) ),
+				'pickTileGap'       => '10px',
+			)
+		);
+		$this->assertStringContainsString( '.sgs-buybox__pick-option{border-radius:999px;}', $html );
+		$this->assertStringContainsString( '.sgs-buybox-pick__options{gap:8px;}', $html );
+		$this->assertStringContainsString( '.sgs-buybox__pick-option{padding-right:16px;padding-left:10px;}', $html );
+		$this->assertStringContainsString( '.sgs-option-picker__pill{padding-top:12px;padding-left:8px;}', $html );
+		$this->assertStringContainsString( '.sgs-option-picker__options{gap:10px;}', $html );
+	}
+
+	public function test_the_pack_tiles_do_not_ask_for_a_second_sub_line(): void {
+		$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/buybox/render.php' );
+		$this->assertStringNotContainsString( "'_sgs_term_description'", $source, 'the option picker already prints the term description; a sub-label key would print it twice' );
+	}
 }

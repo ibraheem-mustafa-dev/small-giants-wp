@@ -101,8 +101,113 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 		if ( '' !== $radius ) {
 			$box[] = 'border-radius:' . $radius;
 		}
+		$css = array_merge( $css, sgs_buybox_configurator_look_css( $attributes, $root_sel ) );
 		if ( $box ) {
 			$css[] = $root_sel . ' .sgs-buybox__pick-box{' . implode( ';', $box ) . ';padding:var(--wp--preset--spacing--30,1rem);}';
+		}
+		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_configurator_tier_css' ) ) {
+	/**
+	 * A per-device box setting (`{desktop, tablet, mobile}` of top/right/bottom/left) as scoped padding rules.
+	 *
+	 * @param mixed  $value    The attribute value.
+	 * @param string $selector Scoped selector.
+	 * @return string[] CSS rules (desktop, then the tablet and mobile media rules).
+	 */
+	function sgs_buybox_configurator_tier_css( $value, string $selector ): array {
+		$tiers = sgs_responsive_normalise_object( $value, true );
+		$wrap  = array(
+			'desktop' => '%s',
+			'tablet'  => '@media(max-width:1023px){%s}',
+			'mobile'  => '@media(max-width:767px){%s}',
+		);
+		$out   = array();
+		foreach ( $wrap as $tier => $media ) {
+			$decls = array();
+			foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+				$length = isset( $tiers[ $tier ][ $side ] ) && is_string( $tiers[ $tier ][ $side ] ) ? sgs_css_length_value( $tiers[ $tier ][ $side ] ) : '';
+				if ( '' !== $length ) {
+					$decls[] = 'padding-' . $side . ':' . $length;
+				}
+			}
+			if ( $decls ) {
+				$out[] = sprintf( $media, $selector . '{' . implode( ';', $decls ) . ';}' );
+			}
+		}
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
+	/**
+	 * The Pick a set look settings as scoped rules: the preview box, the selected colours (every group), the pick-several
+	 * pills and the priced tiles. Each attribute is read by name so the wiring check sees it reach a declaration.
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @param string              $root_sel   The block's scoped root selector.
+	 * @return string[] CSS rules.
+	 */
+	function sgs_buybox_configurator_look_css( array $attributes, string $root_sel ): array {
+		$css     = array();
+		$preview = array();
+		$fill    = sgs_colour_value( (string) ( $attributes['previewBackgroundColour'] ?? '' ) );
+		$border  = sgs_colour_value( (string) ( $attributes['previewBorderColour'] ?? '' ) );
+		$width   = sgs_css_length_value( (string) ( $attributes['previewBorderWidth'] ?? '' ) );
+		$radius  = sgs_css_length_value( (string) ( $attributes['previewRadius'] ?? '' ) );
+		if ( '' !== $fill ) {
+			$preview[] = 'background:' . $fill;
+		}
+		if ( '' !== $border ) {
+			$preview[] = 'border-color:' . $border;
+		}
+		if ( '' !== $width ) {
+			$preview[] = 'border-width:' . $width;
+		}
+		if ( '' !== $radius ) {
+			$preview[] = 'border-radius:' . $radius;
+		}
+		if ( $preview ) {
+			$css[] = $root_sel . ' .sgs-buybox__pick-preview{' . implode( ';', $preview ) . ';}';
+		}
+		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['previewPadding'] ?? null, $root_sel . ' .sgs-buybox__pick-preview' ) );
+
+		// Selected options: one pair of custom properties read by the pick-several pills and by every option picker.
+		$sel_fill   = sgs_colour_value( (string) ( $attributes['pickSelectedBackgroundColour'] ?? '' ) );
+		$sel_border = sgs_colour_value( (string) ( $attributes['pickSelectedBorderColour'] ?? '' ) );
+		$vars       = array();
+		if ( '' !== $sel_fill ) {
+			$vars[] = '--sgs-pick-sel-bg:' . $sel_fill;
+			$vars[] = '--sgs-op-sel-bg:' . $sel_fill;
+		}
+		if ( '' !== $sel_border ) {
+			$vars[] = '--sgs-pick-sel-border:' . $sel_border;
+			$vars[] = '--sgs-op-sel-border:' . $sel_border;
+		}
+		if ( $vars ) {
+			$css[] = $root_sel . '{' . implode( ';', $vars ) . ';}';
+		}
+
+		$option = array();
+		$o_rad  = sgs_css_length_value( (string) ( $attributes['pickOptionRadius'] ?? '' ) );
+		if ( '' !== $o_rad ) {
+			$option[] = 'border-radius:' . $o_rad;
+		}
+		if ( $option ) {
+			$css[] = $root_sel . ' .sgs-buybox__pick-option{' . implode( ';', $option ) . ';}';
+		}
+		$css    = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickOptionPadding'] ?? null, $root_sel . ' .sgs-buybox__pick-option' ) );
+		$o_gap  = sgs_css_length_value( (string) ( $attributes['pickOptionGap'] ?? '' ) );
+		if ( '' !== $o_gap ) {
+			$css[] = $root_sel . ' .sgs-buybox-pick__options{gap:' . $o_gap . ';}';
+		}
+
+		$css   = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickTilePadding'] ?? null, $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker__pill' ) );
+		$t_gap = sgs_css_length_value( (string) ( $attributes['pickTileGap'] ?? '' ) );
+		if ( '' !== $t_gap ) {
+			$css[] = $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker__options{gap:' . $t_gap . ';}';
 		}
 		return $css;
 	}
@@ -150,7 +255,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_group_html' ) ) {
 			$slug    = (string) $term['slug'];
 			$checked = $slug === (string) $flags['startWith'];
 			$has_dot = '' !== $term['colour'] || $term['image'] > 0;
-			$out    .= '<label class="sgs-buybox-pick__option">';
+			$out    .= '<label class="sgs-buybox-pick__option sgs-buybox__pick-option">';
 			$out    .= '<input class="sgs-buybox-pick__input" type="checkbox" form="' . esc_attr( $form_id ) . '" name="sgs_picks[' . esc_attr( $key ) . '][]" value="' . esc_attr( $slug ) . '" data-label="' . esc_attr( (string) $term['label'] ) . '" data-colour="' . esc_attr( (string) $term['colour'] ) . '"' . ( $term['image'] > 0 ? ' data-has-image="1"' : '' ) . ( $checked ? ' checked' : '' ) . ' />';
 			$out    .= '<span class="sgs-buybox-pick__option-body">';
 			if ( $has_dot || 'tile' === $style ) {
@@ -247,8 +352,8 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 		$image    = $image_id > 0 ? wp_get_attachment_image( $image_id, 'large', false, array( 'class' => 'sgs-buybox-pick__preview-image', 'alt' => '', 'loading' => 'lazy' ) ) : '';
 		$out     .= '<div class="sgs-buybox-pick__side">';
 		$out     .= '<figure class="sgs-buybox-pick__preview">';
-		$out     .= '<div class="sgs-buybox-pick__preview-box' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
-		$out     .= '<figcaption class="sgs-buybox-pick__caption" data-sgs-caption></figcaption>';
+		$out     .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+		$out     .= '<figcaption class="sgs-buybox-pick__caption sgs-buybox__pick-summary" data-sgs-caption></figcaption>';
 		$out     .= '</figure>';
 		$out     .= '<p class="sgs-buybox-pick__per-unit" data-sgs-per-unit hidden></p>';
 		$out     .= '</div>';

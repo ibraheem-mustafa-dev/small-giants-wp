@@ -111,9 +111,9 @@
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked) {
-	background: var(--wp--preset--color--accent);
+	background: var(--sgs-pick-sel-bg, var(--wp--preset--color--accent));
 	color: var(--wp--preset--color--accent-text, var(--wp--preset--color--text));
-	border-color: var(--wp--preset--color--text);
+	border-color: var(--sgs-pick-sel-border, var(--wp--preset--color--text));
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked):hover {
@@ -151,6 +151,29 @@
 	padding: 0.1rem 0.5rem;
 	font-size: var(--wp--preset--font-size--small);
 	font-weight: 700;
+	border-radius: 999px;
+	background: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--text-inverse, var(--wp--preset--color--surface));
+}
+
+/* Priced tiles (the option picker's own pills) in this mode: a badge sits on the tile's top edge, centred, never over the
+   number or price; the term description is the one sub-line. */
+
+.sgs-buybox--configurator .sgs-option-picker__pill {
+	position: relative;
+	overflow: visible;
+}
+
+.sgs-buybox--configurator .sgs-option-picker__term-badge {
+	position: absolute;
+	top: -0.75rem;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 0.05rem 0.6rem;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 700;
+	white-space: nowrap;
+	border: 2px solid var(--wp--preset--color--text);
 	border-radius: 999px;
 	background: var(--wp--preset--color--primary);
 	color: var(--wp--preset--color--text-inverse, var(--wp--preset--color--surface));

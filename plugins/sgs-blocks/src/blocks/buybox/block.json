@@ -29,7 +29,9 @@
 		},
 		"sgs": {
 			"spacingDefaults": {
-				"pickerLabelLinkPadding": { "bottom": "1px" }
+				"pickerLabelLinkPadding": {
+					"bottom": "1px"
+				}
 			},
 			"motion": true,
 			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
@@ -85,7 +87,9 @@
 					"motion": false,
 					"selector": ".sgs-buybox .sgs-option-picker--tile .sgs-option-picker__pill-label",
 					"label": "Option tile name",
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "pickerOption",
 					"attrMap": {
 						"css:font-size": "pickerOptionFontSize",
@@ -101,7 +105,9 @@
 					"motion": false,
 					"selector": ".sgs-buybox .sgs-buybox__picker-selected-value",
 					"label": "Chosen picker value",
-					"clusters": [ "text" ],
+					"clusters": [
+						"text"
+					],
 					"prefix": "pickerValue",
 					"attrMap": {
 						"css:font-size": "pickerValueFontSize",
@@ -612,7 +618,9 @@
 						"css:writing-mode": "guidedMeterWritingMode"
 					},
 					"_note": "Guided layout: the meter step text, its step number and the compact \"2 of 4\" line (.sgs-buybox-guided__meter-btn, .sgs-buybox-guided__meter-index, .sgs-buybox-guided__meter-compact). The number sits inside the step, so one setting governs the whole step.",
-					"absentIn": [ "main" ],
+					"absentIn": [
+						"main"
+					],
 					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
 					"states": {
 						"hover": {
@@ -648,7 +656,9 @@
 						"css:writing-mode": "guidedGroupTitleWritingMode"
 					},
 					"_note": "Guided layout: the heading above each question (.sgs-buybox-guided__group-title).",
-					"absentIn": [ "main" ],
+					"absentIn": [
+						"main"
+					],
 					"absentWhy": "The step meter and group titles print only in the guided layout (buyboxLayout guided).",
 					"states": {
 						"hover": {
@@ -686,7 +696,10 @@
 						"text",
 						"layout"
 					],
-					"absentIn": [ "main", "guided" ],
+					"absentIn": [
+						"main",
+						"guided"
+					],
 					"absentWhy": "The size-guide link prints only when the buybox has link text (pickerLabelLinkText) set, which the render fixtures do not set.",
 					"attrMap": {
 						"css:color": "pickerLabelLinkColour",
@@ -702,13 +715,118 @@
 						"fill",
 						"layout"
 					],
-					"absentIn": [ "main", "guided" ],
+					"absentIn": [
+						"main",
+						"guided"
+					],
 					"absentWhy": "The box around the pickers prints only in the Pick a set type (buyboxLayout configurator).",
 					"attrMap": {
 						"css:background-color": "pickerBoxBackgroundColour",
 						"css:border-color": "pickerBoxBorderColour",
 						"css:border-width": "pickerBoxBorderWidth",
 						"css:border-radius": "pickerBoxRadius"
+					}
+				},
+				"pick-preview": {
+					"selector": ".sgs-buybox__pick-preview",
+					"label": "Pick a set preview box",
+					"order": 19,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "previewBackgroundColour",
+						"css:border-color": "previewBorderColour",
+						"css:border-width": "previewBorderWidth",
+						"css:border-radius": "previewRadius",
+						"css:padding": "previewPadding"
+					}
+				},
+				"pick-summary": {
+					"selector": ".sgs-buybox__pick-summary",
+					"label": "Pick a set summary",
+					"order": 20,
+					"clusters": [
+						"text"
+					],
+					"prefix": "pickSummary",
+					"attrMap": {
+						"css:font-size": "pickSummaryFontSize",
+						"css:font-weight": "pickSummaryFontWeight",
+						"css:font-style": "pickSummaryFontStyle",
+						"css:font-family": "pickSummaryFontFamily",
+						"css:text-transform": "pickSummaryTextTransform",
+						"css:text-decoration": "pickSummaryTextDecoration",
+						"css:line-height": "pickSummaryLineHeight",
+						"css:letter-spacing": "pickSummaryLetterSpacing",
+						"css:text-wrap": "pickSummaryTextWrap",
+						"css:-webkit-text-stroke-width": "pickSummaryTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "pickSummaryTextStrokeColour",
+						"css:column-count": "pickSummaryTextColumns",
+						"css:writing-mode": "pickSummaryWritingMode",
+						"css:color": "pickSummaryColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "pickSummaryTextStrokeColourHover"
+							}
+						}
+					},
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator)."
+				},
+				"pick-option": {
+					"selector": ".sgs-buybox__pick-option",
+					"label": "Pick a set option pill",
+					"order": 21,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:border-radius": "pickOptionRadius",
+						"css:padding": "pickOptionPadding",
+						"css:gap": "pickOptionGap"
+					},
+					"states": {
+						"selected": {
+							"attrMap": {
+								"css:background-color": "pickSelectedBackgroundColour",
+								"css:border-color": "pickSelectedBorderColour"
+							}
+						}
+					}
+				},
+				"pick-tile": {
+					"selector": ".sgs-buybox__pick-box",
+					"label": "Pick a set priced tiles",
+					"order": 22,
+					"clusters": [
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:padding": "pickTilePadding",
+						"css:gap": "pickTileGap"
 					}
 				}
 			},
@@ -2732,6 +2850,175 @@
 			"type": "string",
 			"default": "",
 			"description": "Pick a set only: corner radius of the box around the pickers (CSS length)."
+		},
+		"pickSummaryFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickSummaryFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"pickSummaryFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"pickSummaryTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"pickSummaryLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pickSummaryLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"pickSummaryTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"pickSummaryTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"pickSummaryTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"pickSummaryTextColumns": {
+			"type": "number"
+		},
+		"pickSummaryWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"pickHideGallery": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: hide the product photo gallery so the picker, preview and summary fill the width. Off by default."
+		},
+		"previewBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of the live preview box. A palette slug or a hex colour."
+		},
+		"previewBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of the live preview box."
+		},
+		"previewBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border width of the live preview box (CSS length)."
+		},
+		"previewRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the live preview box (CSS length)."
+		},
+		"previewPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside the live preview box, per device ({desktop, tablet, mobile} boxes)."
+		},
+		"pickSummaryColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the one-line summary under the preview."
+		},
+		"pickSelectedBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: background of a selected option in every group, pick-several and priced."
+		},
+		"pickSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: border colour of a selected option in every group."
+		},
+		"pickOptionRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the pick-several option pills (CSS length, for example 999px)."
+		},
+		"pickOptionPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each pick-several option pill, per device."
+		},
+		"pickOptionGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the pick-several option pills (CSS length)."
+		},
+		"pickTilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each priced option tile (for example the pack sizes), per device."
+		},
+		"pickTileGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the priced option tiles (CSS length)."
 		}
 	},
 	"editorScript": "file:./index.js",

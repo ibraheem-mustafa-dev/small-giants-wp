@@ -4,7 +4,7 @@ import { PanelBody, SelectControl, TextControl, ToggleControl, Button, Notice } 
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { fillRow } from '../../components';
+import { fillRow, ResponsiveBoxControl, SgsLengthControl } from '../../components';
 
 const STYLE_OPTIONS = [
 	{ value: '', label: __( 'Same as the picker style', 'sgs-blocks' ) },
@@ -78,6 +78,28 @@ function Checklist( { productId, list, failed } ) {
 				</li>
 			) }
 		</ul>
+	);
+}
+
+/**
+ * A per-device inner-spacing control for a `{desktop, tablet, mobile}` attribute.
+ *
+ * @param {Object}   props               Props.
+ * @param {string}   props.label         Control label.
+ * @param {string}   props.name          Attribute name.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @return {Element} The control.
+ */
+function TierBox( { label, name, attributes, setAttributes } ) {
+	const value = attributes[ name ] && 'object' === typeof attributes[ name ] ? attributes[ name ] : {};
+	return (
+		<ResponsiveBoxControl
+			label={ label }
+			presets
+			values={ { base: value.desktop ?? {}, tablet: value.tablet ?? {}, mobile: value.mobile ?? {} } }
+			onChange={ ( tier, next ) => setAttributes( { [ name ]: { ...value, [ 'base' === tier ? 'desktop' : tier ]: next } } ) }
+		/>
 	);
 }
 
@@ -163,10 +185,59 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 					__next40pxDefaultSize
 				/>
 				<ToggleControl
+					label={ __( 'Hide the product photos', 'sgs-blocks' ) }
+					checked={ true === attributes.pickHideGallery }
+					onChange={ ( val ) => setAttributes( { pickHideGallery: val } ) }
+					help={ __( 'The picker, preview and summary then fill the width.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+				/>
+				<ToggleControl
 					label={ __( 'Show the price row', 'sgs-blocks' ) }
 					checked={ false !== attributes.showPriceRow }
 					onChange={ ( val ) => setAttributes( { showPriceRow: val } ) }
 					__nextHasNoMarginBottom
+				/>
+			</PanelBody>
+			<PanelBody title={ __( 'Preview box', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControl
+					label={ __( 'Border width', 'sgs-blocks' ) }
+					value={ attributes.previewBorderWidth || '' }
+					onChange={ ( val ) => setAttributes( { previewBorderWidth: val } ) }
+					help={ __( 'A CSS length such as 2px.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<TextControl
+					label={ __( 'Corner radius', 'sgs-blocks' ) }
+					value={ attributes.previewRadius || '' }
+					onChange={ ( val ) => setAttributes( { previewRadius: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<TierBox label={ __( 'Inner spacing', 'sgs-blocks' ) } name="previewPadding" attributes={ attributes } setAttributes={ setAttributes } />
+			</PanelBody>
+			<PanelBody title={ __( 'Options and tiles', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControl
+					label={ __( 'Option pill corner radius', 'sgs-blocks' ) }
+					value={ attributes.pickOptionRadius || '' }
+					onChange={ ( val ) => setAttributes( { pickOptionRadius: val } ) }
+					help={ __( 'For the pick-several options, for example 999px.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<TierBox label={ __( 'Option pill inner spacing', 'sgs-blocks' ) } name="pickOptionPadding" attributes={ attributes } setAttributes={ setAttributes } />
+				<SgsLengthControl
+					presets
+					label={ __( 'Space between option pills', 'sgs-blocks' ) }
+					value={ attributes.pickOptionGap || '' }
+					onChange={ ( val ) => setAttributes( { pickOptionGap: val ?? '' } ) }
+				/>
+				<TierBox label={ __( 'Priced tile inner spacing', 'sgs-blocks' ) } name="pickTilePadding" attributes={ attributes } setAttributes={ setAttributes } />
+				<SgsLengthControl
+					presets
+					label={ __( 'Space between priced tiles', 'sgs-blocks' ) }
+					value={ attributes.pickTileGap || '' }
+					onChange={ ( val ) => setAttributes( { pickTileGap: val ?? '' } ) }
 				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Picker box', 'sgs-blocks' ) } initialOpen={ false }>
@@ -205,5 +276,10 @@ export function configuratorColourRows( { attributes, setAttributes } ) {
 	return [
 		fillRow( { key: 'pickerBoxFill', label: __( 'Picker box fill', 'sgs-blocks' ), attrs: { base: 'pickerBoxBackgroundColour' }, attributes, setAttributes } ),
 		fillRow( { key: 'pickerBoxBorder', label: __( 'Picker box border colour', 'sgs-blocks' ), attrs: { base: 'pickerBoxBorderColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'previewFill', label: __( 'Preview box fill', 'sgs-blocks' ), attrs: { base: 'previewBackgroundColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'previewBorder', label: __( 'Preview box border colour', 'sgs-blocks' ), attrs: { base: 'previewBorderColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickSummary', label: __( 'Summary colour', 'sgs-blocks' ), attrs: { base: 'pickSummaryColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickSelectedFill', label: __( 'Selected option fill', 'sgs-blocks' ), attrs: { base: 'pickSelectedBackgroundColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickSelectedBorder', label: __( 'Selected option border colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedBorderColour' }, attributes, setAttributes } ),
 	];
 }

@@ -368,6 +368,62 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			';'
 		) };}`;
 	}
+	// Pick a set: the preview box, the summary and the option pills (render.php prints the same settings scoped).
+	if ( 'configurator' === attributes.buyboxLayout ) {
+		const resolve = ( value ) => ( value ? resolveColourToken( value, palette ) || value : '' );
+		const previewDecls = [];
+		if ( attributes.previewBackgroundColour ) {
+			previewDecls.push( `background:${ resolve( attributes.previewBackgroundColour ) }` );
+		}
+		if ( attributes.previewBorderColour ) {
+			previewDecls.push( `border-color:${ resolve( attributes.previewBorderColour ) }` );
+		}
+		if ( attributes.previewBorderWidth ) {
+			previewDecls.push( `border-width:${ attributes.previewBorderWidth }` );
+		}
+		if ( attributes.previewRadius ) {
+			previewDecls.push( `border-radius:${ attributes.previewRadius }` );
+		}
+		const previewPad = tierBoxLonghands( attributes.previewPadding, tier, 'padding' );
+		Object.entries( previewPad ).forEach( ( [ prop, val ] ) => {
+			previewDecls.push( `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val }` );
+		} );
+		if ( previewDecls.length ) {
+			css += `${ root } .sgs-buybox__pick-preview{${ previewDecls.join( ';' ) };}`;
+		}
+		if ( attributes.pickSummaryColour ) {
+			css += `${ root } .sgs-buybox__pick-summary{color:${ resolve( attributes.pickSummaryColour ) };}`;
+		}
+		css += typographyPreviewCss( attributes, 'pickSummary', `${ root } .sgs-buybox__pick-summary`, tier );
+		if ( attributes.pickOptionRadius ) {
+			css += `${ root } .sgs-buybox__pick-option{border-radius:${ attributes.pickOptionRadius };}`;
+		}
+		const kebab = ( prop ) => prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` );
+		const optionPad = Object.entries( tierBoxLonghands( attributes.pickOptionPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		if ( optionPad.length ) {
+			css += `${ root } .sgs-buybox__pick-option{${ optionPad.join( ';' ) };}`;
+		}
+		const tilePad = Object.entries( tierBoxLonghands( attributes.pickTilePadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		if ( tilePad.length ) {
+			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__pill{${ tilePad.join( ';' ) };}`;
+		}
+		if ( attributes.pickTileGap ) {
+			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__options{gap:${ attributes.pickTileGap };}`;
+		}
+		if ( attributes.pickOptionGap ) {
+			css += `${ root } .sgs-buybox-pick__options{gap:${ attributes.pickOptionGap };}`;
+		}
+		const selVars = [];
+		if ( attributes.pickSelectedBackgroundColour ) {
+			selVars.push( `--sgs-pick-sel-bg:${ resolve( attributes.pickSelectedBackgroundColour ) }` );
+		}
+		if ( attributes.pickSelectedBorderColour ) {
+			selVars.push( `--sgs-pick-sel-border:${ resolve( attributes.pickSelectedBorderColour ) }` );
+		}
+		if ( selVars.length ) {
+			css += `${ root }{${ selVars.join( ';' ) };}`;
+		}
+	}
 	// Pick a set: the box around the pickers (render.php paints the same four settings on .sgs-buybox-pick__groups).
 	if ( 'configurator' === attributes.buyboxLayout ) {
 		const boxDecls = [];
@@ -543,7 +599,8 @@ function SamplePickSet( { attributes } ) {
 				</div>
 			</div>
 			<div className="sgs-buybox-pick__side">
-				<p className="sgs-buybox-pick__caption">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
+				<div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" />
+				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
 			</div>
 		</div>
 	);
