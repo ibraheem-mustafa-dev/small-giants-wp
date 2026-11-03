@@ -80,6 +80,7 @@ import {
 import { isTouchInput } from '../effects/motion-utils';
 import { initDetachChips } from './detach-chip';
 import { announceDrawer, whenAnimationsSettle } from './drawer-lifecycle';
+import { carryCustomCssScope } from './custom-css-scope';
 
 /**
  * Canonical focusable-element selector. `a[href]` plus `:not([disabled])` on
@@ -245,6 +246,7 @@ function reparentToBody( dialog, scrim ) {
 	if ( scrim ) {
 		document.body.appendChild( scrim );
 	}
+	carryCustomCssScope( dialog );
 	document.body.appendChild( dialog );
 	reparented.add( dialog );
 }

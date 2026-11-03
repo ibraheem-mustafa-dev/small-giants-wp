@@ -48,6 +48,7 @@ import {
 	placePanel,
 	PANEL_ALIGNS,
 } from './panel-bounds';
+import { carryCustomCssScope, dropCustomCssScope } from './custom-css-scope';
 
 /** Focusable-elements selector — inlined (see file header). */
 const FOCUSABLE_SELECTOR =
@@ -797,6 +798,7 @@ function reparentPanelIfNeeded( root, panel, megaId ) {
 		originalParent: panel.parentNode,
 		originalNextSibling: panel.nextSibling,
 		focusHandler,
+		scopeClasses: carryCustomCssScope( panel ),
 	} );
 	// CSS-var VALUES only (Spec 32 no-inline) — style.css's
 	// `[data-sgs-nav-fixed]` rule reads these two and switches the panel to
@@ -823,11 +825,12 @@ function revertReparent( megaId ) {
 		return;
 	}
 	reparentedPanels.delete( megaId );
-	const { panel, root, originalParent, originalNextSibling, focusHandler } = rec;
+	const { panel, root, originalParent, originalNextSibling, focusHandler, scopeClasses } = rec;
 	detachAncestorFlagWatcher( panel, root, focusHandler );
 	if ( originalParent ) {
 		originalParent.insertBefore( panel, originalNextSibling );
 	}
+	dropCustomCssScope( panel, scopeClasses );
 	panel.removeAttribute( 'data-sgs-nav-fixed' );
 	panel.style.removeProperty( '--sgs-mm-fixed-top' );
 	panel.style.removeProperty( '--sgs-mm-fixed-left' );

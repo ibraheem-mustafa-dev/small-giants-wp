@@ -78,6 +78,13 @@
 	align-items: center;
 }
 
+/* Each option is a <label>; WooCommerce's page stylesheet gives every label on its pages
+ * `margin-bottom: .7em` (`.woocommerce-page label`, 0,1,1), which opens a gap under the
+ * picker. The option's spacing is the picker's own gap, so the leak is reset (0,2,0). */
+.sgs-option-picker .sgs-option-picker__option {
+	margin: 0;
+}
+
 /* Hide the real radio visually — kept in the DOM for full a11y */
 .sgs-option-picker__option input[type="radio"] {
 	position: absolute;
