@@ -408,7 +408,7 @@
         "ring": "#101010",
         "near": "var(--wp--preset--color--accent)",
         "far": "var(--wp--preset--color--accent)",
-        "ringOnDark": "#101010",
+        "ringOnDark": "var(--wp--preset--color--brand-gold)",
         "nearOnDark": "var(--wp--preset--color--accent)",
         "farOnDark": "var(--wp--preset--color--accent)",
         "signatureA": "var(--wp--preset--color--primary)",

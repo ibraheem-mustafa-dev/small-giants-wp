@@ -207,3 +207,37 @@ QC (three reviewers, captures E:/sgs-tmp/vision/indus-foods/*-live-r3.png; findi
 | R4-14 | apply "Have these ready" bar | default focus ring dark on navy | accessibility |
 
 Confirmed matching after round 3: the About and Our Story timelines (row, bar, counter, year fade, Today, pin length), Sanam ingredient-card cursor images, the careers form and chips, the FAQ ring, testimonial arrows, Delivery and the other split flips.
+
+## Round 4 register (Bean approved 2026-11-03; review page with draft-vs-live pairs: E:/sgs-tmp/r4-pairs/index.html)
+
+R4-01 cause (proven 2026-11-03): not a framework regression. No drawer-block commit lands between d31250dad and the round-4 base, FW-H (16fa7612e) drops only the Tablet `@container` copy, and post 203 was last saved 2026-10-28. The drawer menu (cr-ref-drawer-site-menu-11) was cloned with only `navColour`; no earlier round opened the drawer, because full-page captures show it closed. QC now captures the open drawer at 375 and 768.
+
+Site settings (existing settings, applied on local-indus):
+
+| Id | Pages | Wrong compared with the draft | Proven cause | Fix | Stage | Status |
+|---|---|---|---|---|---|---|
+| R4-01 | drawer (post 203) | no logo card, empty close circle and stray X, small gold items, no numbers, dividers or rings, Follow us overlaps Contact, CTA arrow bare; full-width at 768 | fill gap: menu stores only navColour; logo row built from blocks, so the close was a container that cannot close; no drawerPadding, anchor or panelSize | logo, phone/email and close moved into the drawer chrome (chromeLogo* card 141px logo, chromeSlotType icons, close* 46px gold, closeIconSize 30px); drawerAlign stretch, body container fill; menu itemFont*, itemColour/Current, itemOrnament index, itemBorder* dividers (current row white too), itemTrailingIcons + caretBox*; 440px side panel with scrim at tablet; Follow us margin; CTA nowrap, start-aligned, icon circle with per-tier iconGap (label x 44 / 373, as the draft) | Fill | done on the mirror; row-end arrows and centred chevrons need D1 |
+| R4-02 | mega menus (155, 157, 159, 161), header 201 | panels 1120px wide; Brands tiles empty; no backdrop | mega-panel maxWidth none (sectors container none); gallery has no media; nav scrim unset | maxWidth 620 (about, trade) / 1080 (sectors, brands); Brands gallery: 5 client logos + 5 placeholder partner logos, 4/2/1 columns; header scrim #141923 .28 blur 2px; submenuCaretOpacity 0.6 | Fill | done; Brands gallery 596px wide vs 725 (panel padding, open) |
+| R4-03 | home cards | text left, 221px image, full-width tag pill (on the FW-F build) | the cards save scalar textAlign/alignItems, which FW-F's per-device shape no longer reads | the FW-F live sweep on local-indus (297 values in 33 posts, undo file E:/sgs-tmp/r4-briefs/fwf-undo-local-indus.json) with the FW-F build synced | sweep | done on the mirror |
+| R4-04 | blog (template 508, page 131) | hero and CTA band with no padding | hero padding unset; CTA padding saved as per-device strings the container cannot read | per-device padding boxes (hero 44/40/88/40, 44/32/72/32, 32/20/52/20; CTA card 68/64, 52/44, 40/24; CTA section 64/52/40) | Fill | done; grid-to-CTA gap 151 vs 195 at 1440 (open) |
+| R4-05 | sanam, shan, green-leaf, lemon-tree | hero logo card empty | split hero with no media | splitMediaImageId 705-708 (real logos), splitMediaObjectFit contain in the 4:3 ratio card (cover cropped the logos) | Fill | done; card 510px wide at 1440, draft 555 (media column width, open) |
+| R4-06 | apply form (163) | heading touches the stepper; Continue has no border; note 13px; counter in body font | form steps carry no top padding; the Custom CSS rule ends border:0; note takes help-text size | 28px top on each step, 2px primary border, helpTextFontSize 15, stepCounterFontFamily heading | Fill | done (heading gap 61 vs 59) |
+| R4-07 | contact form (149) | Reply-by pills wrap; "01" inline at 375 | the label shares the pill row; the theme's heading letter-spacing narrows the heading enough to share a row with 01 | label customWidth mobile 100%; heading letterSpacing 0 | Fill | done |
+| R4-08 | about hero | rays more saturated than the draft | the draft recoloured the rays #d4af37 to #d8ca50 | recoloured all six source SVGs in sites/indus-foods/assets; reduced-motion-safe copies uploaded as 996-998 and set on cr-ref-about-1 | assets | done |
+| R4-09 | brands (113) | blank logo tiles | tile media unset | 705-709 on tiles 19-39; placeholder partner logos 1006-1010 (dummy SVGs, E:/sgs-tmp/r4-partners) on tiles 44-64, contain | Fill | done |
+| R4-10 | blog cards (508) | badge plain 12px; "Read more" grey | the site set badge* (overlay cards) where flat cards render the category label | category* typography; readMoreText "Read article", blue, 14.5px bold | Fill | done |
+| R4-12 | header, footer, drawer | LinkedIn and Facebook outline | brand registry gives outline glyphs | iconFill true | Fill | done |
+| R4-13 | 14 pages; brands | breadcrumb gaps wider; brands subline tight | itemGap 21.17px (draft 8px); subline has no top margin | itemGap 8px (15 pages); margin top 16px | Fill | done |
+| R4-14 | apply accordion | dark focus ring on the navy bar | the accordion never marked its header dark; the snapshot's ringOnDark was #101010 | framework A3 below; snapshot focus.ringOnDark brand gold (8:1 on navy) | snapshot | in progress |
+
+Framework settings (Bean approved 2026-11-03), each off by default:
+
+| Id | Block | Draft behaviour | Setting | Status |
+|---|---|---|---|---|
+| F8 | sgs/form, form-field-textarea | "Step 1 of 5 · Business" on mobile; grey 6px track; step label colours; note hidden on mobile; status row wraps; counter inside the textarea | stepCounterNameSuffix + stepCounterNameHidden, progressTrackColour/Height, stepLabelColour(Active), stepNumberInactiveBackground, actionsNoteHidden, statusRowWrap/Gap; counterPlacement inside, counterFontSize, counterColour | built |
+| P1 | sgs/post-grid | badge and date on one row; badge pill; 22px card radius | metaLayout inline, categoryPadding, categoryRadius, cardRadius | built |
+| N1 (R4-11) | sgs/nav-bar-menu | current-page line flat, label-wide, independent of the item radius (the curve came from the site's 11px item radius bending the link border) | itemBorderScope label | built |
+| A3 (R4-14) | sgs/accordion-item | header carries the surface-tone marker from its own background, so the on-dark focus ring applies | automatic (no attribute) | built |
+| D1 (R4-01) | sgs/nav-drawer-menu | leaf-row arrows at the row end, level with the chevron rings; chevron centred on a 72px row | itemTrailingIconPosition row-end; the overlaid expander follows itemMinHeight (bug fix) | built |
+
+Not a gap (Bean 2026-11-03): the drawer CTA arrow uses the button's per-tier iconGap, and the desktop nav underline curve was the site's own radius setting.
