@@ -387,9 +387,24 @@
                   "backgroundColourHover": "section",
                   "sgsFocusRests": true,
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "22px",
+                      "right": "22px",
+                      "bottom": "22px",
+                      "left": "22px"
+                    }
                   },
                   "sgsMotion": {
                     "v": 1,
@@ -576,9 +591,24 @@
                   "backgroundColourHover": "custom-mm-yellow-soft",
                   "sgsFocusRests": true,
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "22px",
+                      "right": "22px",
+                      "bottom": "22px",
+                      "left": "22px"
+                    }
                   },
                   "sgsMotion": {
                     "v": 1,
@@ -893,9 +923,24 @@
                   },
                   "textColourHover": "primary-text",
                   "padding": {
-                    "desktop": "40px",
-                    "tablet": "32px",
-                    "mobile": "22px"
+                    "desktop": {
+                      "top": "40px",
+                      "right": "40px",
+                      "bottom": "40px",
+                      "left": "40px"
+                    },
+                    "tablet": {
+                      "top": "32px",
+                      "right": "32px",
+                      "bottom": "32px",
+                      "left": "32px"
+                    },
+                    "mobile": {
+                      "top": "22px",
+                      "right": "22px",
+                      "bottom": "22px",
+                      "left": "22px"
+                    }
                   }
                 },
                 "innerBlocks": [

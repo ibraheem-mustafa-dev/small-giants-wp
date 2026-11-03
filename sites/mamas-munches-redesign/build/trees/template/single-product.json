@@ -20,9 +20,24 @@
       },
       "textColourHover": "primary-text",
       "padding": {
-        "desktop": "40px",
-        "tablet": "32px",
-        "mobile": "20px"
+        "desktop": {
+          "top": "40px",
+          "right": "40px",
+          "bottom": "40px",
+          "left": "40px"
+        },
+        "tablet": {
+          "top": "32px",
+          "right": "32px",
+          "bottom": "32px",
+          "left": "32px"
+        },
+        "mobile": {
+          "top": "20px",
+          "right": "20px",
+          "bottom": "20px",
+          "left": "20px"
+        }
       }
     },
     "innerBlocks": [
@@ -1762,8 +1777,18 @@
                   },
                   "textColourHover": "primary-text",
                   "padding": {
-                    "desktop": "0px",
-                    "mobile": "20px"
+                    "desktop": {
+                      "top": "0px",
+                      "right": "0px",
+                      "bottom": "0px",
+                      "left": "0px"
+                    },
+                    "mobile": {
+                      "top": "20px",
+                      "right": "20px",
+                      "bottom": "20px",
+                      "left": "20px"
+                    }
                   },
                   "sgsCustomCss": "@media (max-width: 767px) { & { overflow-x: auto; } } @media (min-width: 768px) { & { overflow-x: visible; } }",
                   "sgsCustomCssId": "wgate53",
@@ -2440,9 +2465,24 @@
                                   },
                                   "textColourHover": "primary-text",
                                   "padding": {
-                                    "desktop": "18px",
-                                    "tablet": "18px",
-                                    "mobile": "12px"
+                                    "desktop": {
+                                      "top": "18px",
+                                      "right": "18px",
+                                      "bottom": "18px",
+                                      "left": "18px"
+                                    },
+                                    "tablet": {
+                                      "top": "18px",
+                                      "right": "18px",
+                                      "bottom": "18px",
+                                      "left": "18px"
+                                    },
+                                    "mobile": {
+                                      "top": "12px",
+                                      "right": "12px",
+                                      "bottom": "12px",
+                                      "left": "12px"
+                                    }
                                   }
                                 },
                                 "innerBlocks": [
@@ -2746,9 +2786,24 @@
                                   },
                                   "textColourHover": "primary-text",
                                   "padding": {
-                                    "desktop": "18px",
-                                    "tablet": "18px",
-                                    "mobile": "12px"
+                                    "desktop": {
+                                      "top": "18px",
+                                      "right": "18px",
+                                      "bottom": "18px",
+                                      "left": "18px"
+                                    },
+                                    "tablet": {
+                                      "top": "18px",
+                                      "right": "18px",
+                                      "bottom": "18px",
+                                      "left": "18px"
+                                    },
+                                    "mobile": {
+                                      "top": "12px",
+                                      "right": "12px",
+                                      "bottom": "12px",
+                                      "left": "12px"
+                                    }
                                   }
                                 },
                                 "innerBlocks": [

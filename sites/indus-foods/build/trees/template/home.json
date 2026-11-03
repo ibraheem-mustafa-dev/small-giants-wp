@@ -440,9 +440,24 @@
                     "desktop": "full"
                   },
                   "padding": {
-                    "desktop": "64px",
-                    "tablet": "44px",
-                    "mobile": "24px"
+                    "desktop": {
+                      "top": "64px",
+                      "right": "64px",
+                      "bottom": "64px",
+                      "left": "64px"
+                    },
+                    "tablet": {
+                      "top": "44px",
+                      "right": "44px",
+                      "bottom": "44px",
+                      "left": "44px"
+                    },
+                    "mobile": {
+                      "top": "24px",
+                      "right": "24px",
+                      "bottom": "24px",
+                      "left": "24px"
+                    }
                   },
                   "borderRadius": {
                     "desktop": {

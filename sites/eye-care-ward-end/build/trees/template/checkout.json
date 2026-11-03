@@ -19,9 +19,24 @@
       },
       "textColourHover": "primary",
       "padding": {
-        "desktop": "52px",
-        "tablet": "52px",
-        "mobile": "20px"
+        "desktop": {
+          "top": "52px",
+          "right": "52px",
+          "bottom": "52px",
+          "left": "52px"
+        },
+        "tablet": {
+          "top": "52px",
+          "right": "52px",
+          "bottom": "52px",
+          "left": "52px"
+        },
+        "mobile": {
+          "top": "20px",
+          "right": "20px",
+          "bottom": "20px",
+          "left": "20px"
+        }
       }
     },
     "innerBlocks": [
