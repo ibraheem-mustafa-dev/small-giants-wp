@@ -480,8 +480,9 @@ $pill_and_badge_html = $pill_icon_html . sprintf(
 $trigger_inner_html = ( 'pill' === $trigger_style || $trigger_mixed ) ? $pill_and_badge_html : $icon_and_badge_html;
 
 // A visible word must be inside the accessible name (WCAG 2.5.3), so a mixed block names the button
-// by its word at every width, then the aria-label setting and the live count.
-if ( $trigger_mixed ) {
+// by its word at every width, then the aria-label setting and the live count. The same rule applies whenever
+// any tier shows the pill (a uniform pill included).
+if ( $trigger_has_pill ) {
 	$pill_label_text = trim( wp_strip_all_tags( $pill_label ) );
 	if ( '' !== $pill_label_text && false === stripos( $aria_label, $pill_label_text ) ) {
 		$trigger_label = $pill_label_text . ', ' . $trigger_label;
