@@ -761,6 +761,54 @@ $scoped_css = array_merge(
 	sgs_buybox_extras_scoped_css( $attributes, $root_sel, $buybox_rrp, $buybox_sticky )
 );
 
+// Main photo frame: the box is .product-card__media (the photo inside it is the
+// .sgs-buybox__main-photo image). Ground, border (width, style, colour; tablet and
+// mobile widths in their own queries), corner radius and shadow print on the box only; the
+// thumbnails keep their own radius setting. All empty prints nothing.
+$sgs_bb_photo_sel    = $root_sel . ' .product-card__media';
+$sgs_bb_photo_border = sgs_border_element_decls(
+	$attributes,
+	'mainPhoto',
+	$sgs_bb_photo_sel,
+	array(
+		'colour' => array( 'base' => 'mainPhotoBorderColour' ),
+		'radius' => false,
+	)
+);
+$sgs_bb_photo_decls  = $sgs_bb_photo_border['base'];
+$sgs_bb_photo_ground = sgs_colour_value( (string) ( $attributes['mainPhotoBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_bb_photo_ground ) {
+	$sgs_bb_photo_decls[] = 'background:' . $sgs_bb_photo_ground;
+}
+$sgs_bb_photo_decls = array_merge(
+	$sgs_bb_photo_decls,
+	sgs_shadow_box_decls( (string) ( $attributes['mainPhotoShadow'] ?? '' ), (string) ( $attributes['mainPhotoShadowColour'] ?? '' ) )
+);
+if ( ! empty( $sgs_bb_photo_decls ) ) {
+	$scoped_css[] = $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_decls ) . ';}';
+}
+$scoped_css[] = implode( '', $sgs_bb_photo_border['rules'] );
+if ( $sgs_bb_photo_border['tablet'] ) {
+	$scoped_css[] = '@media(max-width:1023px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['tablet'] ) . ';}}';
+}
+if ( $sgs_bb_photo_border['mobile'] ) {
+	$scoped_css[] = '@media(max-width:767px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['mobile'] ) . ';}}';
+}
+$sgs_bb_photo_radius = sgs_css_length_value( (string) ( $attributes['mainPhotoRadius'] ?? '' ) );
+if ( '' !== $sgs_bb_photo_radius ) {
+	$scoped_css[] = $sgs_bb_photo_sel . '{border-radius:' . $sgs_bb_photo_radius . ';}';
+}
+
+// Price row gap, and the saving pill's corner radius.
+$sgs_bb_row_gap = sgs_css_length_value( (string) ( $attributes['priceRowGap'] ?? '' ) );
+if ( '' !== $sgs_bb_row_gap ) {
+	$scoped_css[] = $root_sel . ' .buybox__price-row{gap:' . $sgs_bb_row_gap . ';}';
+}
+$sgs_bb_pill_radius = sgs_css_length_value( (string) ( $attributes['rrpPillRadius'] ?? '' ) );
+if ( '' !== $sgs_bb_pill_radius ) {
+	$scoped_css[] = $root_sel . ' .buybox__rrp-pill{border-radius:' . $sgs_bb_pill_radius . ';}';
+}
+
 // Wrap settings of the rows: gallery thumbnails, price row, guided meter and Back/Next.
 $scoped_css[] = sgs_flex_wrap_css(
 	$attributes,
@@ -908,6 +956,13 @@ if ( '' !== $sgs_bb_ladder_typo_css ) {
 // no badge, in-stock product, standard layout).
 $sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpPrice', $root_sel . ' .buybox__rrp-price', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
+	array(
+		'padding' => is_array( $attributes['addToCartPadding'] ?? null ) ? $attributes['addToCartPadding'] : array(),
+	),
+	$root_sel . ' .buybox__add-to-cart'
+);
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpChip', $root_sel . ' .buybox__rrp-pill', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
 	array(

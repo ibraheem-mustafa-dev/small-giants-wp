@@ -359,6 +359,13 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		fillRow( {
+			key: 'main-photo-background',
+			label: __( 'Main photo ground', 'sgs-blocks' ),
+			attrs: { base: 'mainPhotoBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
 			key: 'rrp-pill-background',
 			label: __( 'RRP pill background', 'sgs-blocks' ),
 			attrs: { base: 'rrpPillBackgroundColour' },

@@ -126,7 +126,8 @@
 					],
 					"layer": "OUTER",
 					"attrMap": {
-						"css:flex-wrap": "priceRowFlexWrap"
+						"css:flex-wrap": "priceRowFlexWrap",
+						"css:gap": "priceRowGap"
 					},
 					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
@@ -200,7 +201,8 @@
 					"attrMap": {
 						"css:background-color": "rrpPillBackgroundColour",
 						"css:color": "rrpPillTextColour",
-						"css:padding": "rrpPillPadding"
+						"css:padding": "rrpPillPadding",
+						"css:border-radius": "rrpPillRadius"
 					},
 					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (includes/product-rrp.php::sgs_product_rrp_saving). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
 				},
@@ -256,7 +258,8 @@
 						"css:font-weight": "addToCartFontWeight",
 						"css:text-transform": "addToCartTextTransform",
 						"css:letter-spacing": "addToCartLetterSpacing",
-						"css:min-height": "addToCartMinHeight"
+						"css:min-height": "addToCartMinHeight",
+						"css:padding": "addToCartPadding"
 					},
 					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				},
@@ -824,6 +827,60 @@
 						"css:padding": "pickTilePadding",
 						"css:gap": "pickTileGap"
 					}
+				},
+				"rrp-price": {
+					"text": true,
+					"selector": ".buybox__rrp-price",
+					"label": "Struck RRP price",
+					"order": 17,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rrpPrice",
+					"attrMap": {
+						"css:font-size": "rrpPriceFontSize",
+						"css:font-weight": "rrpPriceFontWeight",
+						"css:font-style": "rrpPriceFontStyle",
+						"css:font-family": "rrpPriceFontFamily",
+						"css:text-transform": "rrpPriceTextTransform",
+						"css:text-decoration": "rrpPriceTextDecoration",
+						"css:line-height": "rrpPriceLineHeight",
+						"css:letter-spacing": "rrpPriceLetterSpacing",
+						"css:text-align": "rrpPriceTextAlign",
+						"css:text-wrap": "rrpPriceTextWrap",
+						"css:-webkit-text-stroke-width": "rrpPriceTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "rrpPriceTextStrokeColour",
+						"css:column-count": "rrpPriceTextColumns",
+						"css:writing-mode": "rrpPriceWritingMode"
+					},
+					"_note": "The struck RRP price (.buybox__rrp-price). Its colour stays the price row's; render.php scopes the rrpPrice* rule to it.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "rrpPriceTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"main-photo-frame": {
+					"selector": ".sgs-buybox .product-card__media",
+					"label": "Main photo",
+					"order": 19,
+					"motion": false,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "mainPhotoBackgroundColour",
+						"css:border-width": "mainPhotoBorderWidth",
+						"css:border-style": "mainPhotoBorderStyle",
+						"css:border-color": "mainPhotoBorderColour",
+						"css:border-radius": "mainPhotoRadius",
+						"css:box-shadow": "mainPhotoShadow",
+						"css:box-shadow-color": "mainPhotoShadowColour"
+					},
+					"_note": "The box that frames the main photo (.product-card__media; the photo inside it is .sgs-buybox__main-photo). Ground, border and shadow print on the box from render.php; the radius prints as --sgs-buybox-img-radius on the block root so the thumbnails follow it."
 				}
 			},
 			"fx": {
@@ -3015,6 +3072,170 @@
 			"type": "string",
 			"default": "",
 			"description": "Pick a set only: space between the priced option tiles (CSS length)."
+		},
+		"mainPhotoBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Ground colour behind the main product photo (palette slug or colour). Empty keeps the stylesheet's surface colour."
+		},
+		"mainPhotoBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of the main photo box, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty keeps the stylesheet's 1px."
+		},
+		"mainPhotoBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of the main photo box. Read only when a width is set."
+		},
+		"mainPhotoBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the main photo box (palette slug or colour). Empty keeps the stylesheet's faint border."
+		},
+		"mainPhotoRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the main photo box as a CSS length. Prints as --sgs-buybox-img-radius, so the gallery thumbnails follow it unless they set their own. Empty keeps 8px."
+		},
+		"mainPhotoShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Box shadow of the main photo box (shadow preset or value)."
+		},
+		"mainPhotoShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the main photo box shadow (palette slug or colour)."
+		},
+		"rrpPillRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the RRP saving pill as a CSS length. Empty keeps the stylesheet's 4px."
+		},
+		"priceRowGap": {
+			"type": "string",
+			"default": "",
+			"description": "CSS length of the gap between the price, RRP and saving pill. Empty keeps 8px."
+		},
+		"addToCartPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the add-to-cart button, a {top, right, bottom, left} box. An unset side keeps the stylesheet's 12px 24px."
+		},
+		"rrpPriceFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpPriceFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"rrpPriceFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpPriceTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpPriceLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPriceLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPriceTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"rrpPriceTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpPriceTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpPriceTextColumns": {
+			"type": "number"
+		},
+		"rrpPriceWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

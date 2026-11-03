@@ -5,7 +5,7 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { SgsLengthControl, SgsBoxControl } from '../../components';
+import { SgsLengthControl, SgsBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -32,6 +32,14 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 		pickerLabelLinkPadding,
 		pickerPillBorderWidth,
 		rrpPillPadding,
+		rrpPillRadius,
+		priceRowGap,
+		addToCartPadding,
+		mainPhotoBorderWidth,
+		mainPhotoBorderStyle,
+		mainPhotoBorderColour,
+		mainPhotoRadius,
+		mainPhotoShadow,
 		pickerVariationSwatch,
 		gallerySavingBadge,
 		gallerySavingBadgeFormat,
@@ -162,6 +170,63 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					onChange={ ( next ) =>
 						setAttributes( { rrpPillPadding: next } )
 					}
+				/>
+				<SgsLengthControl
+					label={ __( 'RRP saving pill corner radius', 'sgs-blocks' ) }
+					value={ rrpPillRadius || '' }
+					onChange={ ( val ) => setAttributes( { rrpPillRadius: val ?? '' } ) }
+					help={ __( 'Empty = the default 4px.', 'sgs-blocks' ) }
+					presets={ false }
+				/>
+				<SgsLengthControl
+					label={ __( 'Price row gap', 'sgs-blocks' ) }
+					value={ priceRowGap || '' }
+					onChange={ ( val ) => setAttributes( { priceRowGap: val ?? '' } ) }
+					help={ __( 'Space between the price, the RRP and the saving pill. Empty = the default 8px.', 'sgs-blocks' ) }
+					presets={ false }
+				/>
+				<SgsBoxControl
+					label={ __( 'Add to cart button padding', 'sgs-blocks' ) }
+					values={ addToCartPadding ?? {} }
+					presets
+					onChange={ ( next ) => setAttributes( { addToCartPadding: next } ) }
+				/>
+			</PanelBody>
+
+			<PanelBody
+				title={ __( 'Main photo frame', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<SgsBorderControl
+					label={ __( 'Photo border width', 'sgs-blocks' ) }
+					widthValues={ mainPhotoBorderWidth ?? {} }
+					onWidthChange={ ( next ) => setAttributes( { mainPhotoBorderWidth: next } ) }
+					styleValue={ mainPhotoBorderStyle }
+					onStyleChange={ ( val ) => setAttributes( { mainPhotoBorderStyle: val } ) }
+					contrastAgainst={ attributes.mainPhotoBackgroundColour && ! attributes.mainPhotoBackgroundColourGradient ? attributes.mainPhotoBackgroundColour : '' }
+					colourLabel={ __( 'Photo border colour', 'sgs-blocks' ) }
+					colourStates={ [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: mainPhotoBorderColour,
+							onChange: ( val ) => setAttributes( { mainPhotoBorderColour: val ?? '' } ),
+							linked: true,
+						},
+					] }
+				/>
+				<SgsLengthControl
+					label={ __( 'Photo corner radius', 'sgs-blocks' ) }
+					value={ mainPhotoRadius || '' }
+					onChange={ ( val ) => setAttributes( { mainPhotoRadius: val ?? '' } ) }
+					help={ __( 'Also sets the thumbnail corners unless they have their own. Empty = the default 8px.', 'sgs-blocks' ) }
+					presets={ false }
+				/>
+				<ShadowControl
+					label={ __( 'Photo shadow', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					attrNames={ shadowAttrKeys( 'mainPhotoShadow' ) }
 				/>
 			</PanelBody>
 

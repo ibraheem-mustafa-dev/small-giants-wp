@@ -3,6 +3,33 @@
   "baselineSeededAt": "2026-06-09T21:27:06.524Z",
   "accepted": [
     {
+      "block": "sgs/buybox",
+      "file": "src\\blocks\\buybox\\style.css",
+      "property": "gap",
+      "value": "8px",
+      "attr": "priceRowGap",
+      "reason": "2026-11-03: not a defect. priceRowGap governs only `.buybox__price-row` (`buybox/render.php` prints `{$root_sel} .buybox__price-row{gap}`); this gap belongs to .sgs-buybox__picker-label-row (the option label and its link), a different element the gate matches only because the property is the same.",
+      "disposition": "by-design"
+    },
+    {
+      "block": "sgs/buybox",
+      "file": "src\\blocks\\buybox\\style.css",
+      "property": "gap",
+      "value": "4px 8px",
+      "attr": "priceRowGap",
+      "reason": "2026-11-03: not a defect. priceRowGap governs only `.buybox__price-row` (`buybox/render.php` prints `{$root_sel} .buybox__price-row{gap}`); this gap belongs to .value-ladder__row (the bulk-price ladder rows), a different element the gate matches only because the property is the same.",
+      "disposition": "by-design"
+    },
+    {
+      "block": "sgs/buybox",
+      "file": "src\\blocks\\buybox\\style.css",
+      "property": "gap",
+      "value": "10px",
+      "attr": "priceRowGap",
+      "reason": "2026-11-03: not a defect. priceRowGap governs only `.buybox__price-row` (`buybox/render.php` prints `{$root_sel} .buybox__price-row{gap}`); this gap belongs to .sgs-buybox__notify-consent-row (the back-in-stock consent checkbox row), a different element the gate matches only because the property is the same.",
+      "disposition": "by-design"
+    },
+    {
       "block": "sgs/brand-strip",
       "file": "src\\blocks\\brand-strip\\style.css",
       "property": "line-height",

@@ -28,6 +28,7 @@ import {
 } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
+import { composeShadow } from '../../utils/shadow-layers';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
 	'top-right',
@@ -134,6 +135,12 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		attributes,
 		'savingBadge',
 		`${ root } .sgs-buybox__saving-badge`,
+		tier
+	);
+	css += typographyPreviewCss(
+		attributes,
+		'rrpPrice',
+		`${ root } .buybox__rrp-price`,
 		tier
 	);
 	css += typographyPreviewCss(
@@ -257,6 +264,51 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			: '';
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
+	// Main photo frame, price row gap, chip radius and cart padding: the same settings render.php prints.
+	const safeLength = ( value ) => ( /^[\w.%() ,-]+$/.test( String( value || '' ) ) ? String( value ) : '' );
+	const photoDecls = [];
+	const photoGround = colourOf( attributes.mainPhotoBackgroundColour );
+	if ( photoGround ) {
+		photoDecls.push( `background:${ photoGround }` );
+	}
+	const photoBorderColour = colourOf( attributes.mainPhotoBorderColour );
+	if ( photoBorderColour ) {
+		photoDecls.push( `border-color:${ photoBorderColour }` );
+	}
+	const photoWidth = attributes.mainPhotoBorderWidth || {};
+	const photoBox = photoWidth.desktop || photoWidth;
+	const photoSides = [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => safeLength( photoBox[ side ] ) );
+	if ( photoSides.some( Boolean ) ) {
+		photoDecls.push(
+			`border-style:${ attributes.mainPhotoBorderStyle || 'solid' }`,
+			`border-width:${ photoSides.map( ( side ) => side || '0' ).join( ' ' ) }`
+		);
+	}
+	if ( safeLength( attributes.mainPhotoRadius ) ) {
+		photoDecls.push( `border-radius:${ safeLength( attributes.mainPhotoRadius ) }` );
+	}
+	const photoShadow = attributes.mainPhotoShadow
+		? composeShadow( attributes.mainPhotoShadow, attributes.mainPhotoShadowColour )
+		: '';
+	if ( photoShadow && ! /[;{}<>]/.test( photoShadow ) ) {
+		photoDecls.push( `box-shadow:${ photoShadow }` );
+	}
+	if ( photoDecls.length ) {
+		css += `${ root } .product-card__media{${ photoDecls.join( ';' ) };}`;
+	}
+	if ( safeLength( attributes.priceRowGap ) ) {
+		css += `${ root } .buybox__price-row{gap:${ safeLength( attributes.priceRowGap ) };}`;
+	}
+	if ( safeLength( attributes.rrpPillRadius ) ) {
+		css += `${ root } .buybox__rrp-pill{border-radius:${ safeLength( attributes.rrpPillRadius ) };}`;
+	}
+	const cartPadding = attributes.addToCartPadding || {};
+	const cartPaddingDecls = [ 'top', 'right', 'bottom', 'left' ]
+		.filter( ( side ) => safeLength( cartPadding[ side ] ) )
+		.map( ( side ) => `padding-${ side }:${ safeLength( cartPadding[ side ] ) }` );
+	if ( cartPaddingDecls.length ) {
+		css += `${ root } .buybox__add-to-cart{${ cartPaddingDecls.join( ';' ) };}`;
+	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
 	const rawGap = String( attributes.thumbGap || '' ).trim();
 	const thumbGap = /^\d+(\.\d+)?$/.test( rawGap ) ? `${ rawGap }px` : rawGap;

@@ -21,12 +21,12 @@
 
 :where(.sgs-buybox .buybox__price-row) {
 	flex-wrap: wrap;
+	gap: 8px;
 }
 
 .sgs-buybox .buybox__price-row {
 	display: flex;
 	align-items: baseline;
-	gap: 8px;
 }
 
 .sgs-buybox .buybox__price--current {
@@ -61,8 +61,11 @@
 
 /* ── Struck-through RRP (rrpShowPrice) ──────────────────── */
 
-.sgs-buybox .buybox__rrp-price {
+:where(.sgs-buybox .buybox__rrp-price) {
 	font-size: 0.95rem;
+}
+
+.sgs-buybox .buybox__rrp-price {
 	opacity: 0.7;
 }
 
