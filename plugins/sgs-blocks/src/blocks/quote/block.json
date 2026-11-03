@@ -391,15 +391,8 @@
 			"default": "em"
 		},
 		"attributionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"attributionTextWrap": {
 			"type": "string",

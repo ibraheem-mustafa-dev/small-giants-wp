@@ -126,7 +126,7 @@
 							"contentAlign": {
 								"desktop": "flex-start"
 							},
-							"textAlign": "left",
+							"textAlign": {"desktop":"left"},
 							"fontFamily": "heading",
 							"fontWeight": "500",
 							"fontSize": {
@@ -202,7 +202,7 @@
 							"contentAlign": {
 								"desktop": "flex-start"
 							},
-							"textAlign": "left",
+							"textAlign": {"desktop":"left"},
 							"fontFamily": "heading",
 							"fontWeight": "500",
 							"fontSize": {
@@ -278,7 +278,7 @@
 							"contentAlign": {
 								"desktop": "flex-start"
 							},
-							"textAlign": "left",
+							"textAlign": {"desktop":"left"},
 							"fontFamily": "heading",
 							"fontWeight": "500",
 							"fontSize": {
@@ -659,7 +659,7 @@
 							"contentAlign": {
 								"desktop": "flex-start"
 							},
-							"textAlign": "left",
+							"textAlign": {"desktop":"left"},
 							"icon": "",
 							"iconPosition": "before",
 							"iconSize": {

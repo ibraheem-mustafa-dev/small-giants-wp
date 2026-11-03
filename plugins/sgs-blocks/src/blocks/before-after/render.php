@@ -524,7 +524,7 @@ if ( '' !== $label_colour_effective_hover ) {
 // of properties from TypographyControls (font-family, font-size, font-weight,
 // font-style, text-decoration, text-transform, letter-spacing, text-align,
 // text-wrap, text-indent, text-columns, writing-mode).
-$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $label_typography_css ) {
 	$scoped_css[] = $label_typography_css;
 }

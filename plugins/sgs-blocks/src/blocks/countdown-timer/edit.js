@@ -94,7 +94,6 @@ function buildPreviewStyle( attributes, colourPalette, previewTier = 'desktop' )
 	const {
 		padding,
 		margin,
-		textAlign,
 		fontSize,
 		fontSizeUnit,
 		fontWeight,

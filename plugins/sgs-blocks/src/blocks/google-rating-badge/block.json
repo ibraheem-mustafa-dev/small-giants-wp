@@ -413,15 +413,8 @@
 			"default": ""
 		},
 		"scoreTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"scoreTextWrap": {
 			"type": "string",
@@ -510,15 +503,8 @@
 			"default": ""
 		},
 		"captionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"captionTextWrap": {
 			"type": "string",

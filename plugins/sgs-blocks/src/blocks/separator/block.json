@@ -275,15 +275,8 @@
 			"default": "em"
 		},
 		"contentTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"contentTextWrap": {
 			"type": "string",

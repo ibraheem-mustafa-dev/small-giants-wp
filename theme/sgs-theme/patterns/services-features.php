@@ -11,7 +11,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/heading {"content":"Why Choose Us","textAlign":"center","textColour":"text","fontSize":{"desktop":"xx-large"}} /-->
+	<!-- wp:sgs/heading {"content":"Why Choose Us","textAlign":{"desktop":"center"},"textColour":"text","fontSize":{"desktop":"xx-large"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"},"margin":{"top":"var:preset|spacing|50"}} -->
 		<!-- wp:sgs/container {"flexWrap":"wrap"} -->

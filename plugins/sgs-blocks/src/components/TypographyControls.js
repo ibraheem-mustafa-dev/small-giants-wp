@@ -70,23 +70,21 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { useInstanceId } from '@wordpress/compose';
-import { useSettings } from '@wordpress/block-editor';
+import { useSettings, useBlockEditContext } from '@wordpress/block-editor';
+import { getBlockType } from '@wordpress/blocks';
 import { BaseControl, Button, Flex, FlexItem, RangeControl, SelectControl } from '@wordpress/components';
 // The same four icons core's own TextAlignmentControl imports — see the
 // reimplementation note at its render site for why it is rebuilt, not imported.
 // formatUppercase/Lowercase/Capitalize are the same three icons core's own
 // TextTransformControl uses for those tiles — see the letter-case rebuild note.
 import {
-	alignLeft,
-	alignCenter,
-	alignRight,
-	alignJustify,
 	formatUppercase,
 	formatLowercase,
 	formatCapitalize,
 } from '@wordpress/icons';
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
+import TextAlignTierControl, { SGS_TEXT_ALIGN_OPTIONS } from './TextAlignTierControl';
 import DesignTokenPicker from './DesignTokenPicker';
 import { NumberStyleRow, TextShadowRow } from './TypographyNumberShadowRows';
 import {
@@ -235,12 +233,7 @@ export const SGS_TEXT_TRANSFORM_TILE_OPTIONS = [
  * picker for the same reason `sgs/text` omits them — they are RTL-aware
  * logical values the converter may set, not something a client picks.
  */
-export const SGS_TEXT_ALIGN_OPTIONS = [
-	{ label: __( 'Align text left', 'sgs-blocks' ), value: 'left', icon: alignLeft },
-	{ label: __( 'Align text center', 'sgs-blocks' ), value: 'center', icon: alignCenter },
-	{ label: __( 'Align text right', 'sgs-blocks' ), value: 'right', icon: alignRight },
-	{ label: __( 'Justify text', 'sgs-blocks' ), value: 'justify', icon: alignJustify },
-];
+export { SGS_TEXT_ALIGN_OPTIONS };
 
 /**
  * CSS `text-wrap` enum.
@@ -576,6 +569,10 @@ function TypographyControlsFields( {
 	const fontSizeIsTiered  = isTieredValue( fontSizeRaw );
 	const lineHeightRaw     = attributes[ k.lineHeight ];
 	const lineHeightIsTiered = isTieredValue( lineHeightRaw );
+	// Text alignment is per breakpoint exactly when the block's schema declares the attribute an object (FW-F);
+	// the stored value is never inspected for its shape.
+	const { name: blockName } = useBlockEditContext();
+	const textAlignIsTiered = 'object' === getBlockType( blockName )?.attributes?.[ k.textAlign ]?.type;
 	const letterSpacingRaw  = attributes[ k.letterSpacing ];
 	const letterSpacingIsTiered = isTieredValue( letterSpacingRaw );
 
@@ -1323,30 +1320,37 @@ function TypographyControlsFields( {
 					) }
 					{ showTextAlign && (
 						<FlexItem isBlock style={ { flexGrow: 2 } }>
-							<ToggleGroupControl
-								isDeselectable
-								label={ __( 'Text alignment', 'sgs-blocks' ) }
-								value={ attributes[ k.textAlign ] || undefined }
-								onChange={ ( val ) =>
-									setAttributes( {
-										[ k.textAlign ]:
-											val === ( attributes[ k.textAlign ] || undefined )
-												? ''
-												: val ?? '',
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							>
-								{ SGS_TEXT_ALIGN_OPTIONS.map( ( option ) => (
-									<ToggleGroupControlOptionIcon
-										key={ option.value }
-										value={ option.value }
-										icon={ option.icon }
-										label={ option.label }
-									/>
-								) ) }
-							</ToggleGroupControl>
+							{ textAlignIsTiered ? (
+								<TextAlignTierControl
+									value={ attributes[ k.textAlign ] }
+									onChange={ ( obj ) => setAttributes( { [ k.textAlign ]: obj } ) }
+								/>
+							) : (
+								<ToggleGroupControl
+										isDeselectable
+										label={ __( 'Text alignment', 'sgs-blocks' ) }
+										value={ attributes[ k.textAlign ] || undefined }
+										onChange={ ( val ) =>
+											setAttributes( {
+												[ k.textAlign ]:
+													val === ( attributes[ k.textAlign ] || undefined )
+														? ''
+														: val ?? '',
+											} )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									>
+										{ SGS_TEXT_ALIGN_OPTIONS.map( ( option ) => (
+											<ToggleGroupControlOptionIcon
+												key={ option.value }
+												value={ option.value }
+												icon={ option.icon }
+												label={ option.label }
+											/>
+										) ) }
+									</ToggleGroupControl>
+							) }
 						</FlexItem>
 					) }
 				</Flex>

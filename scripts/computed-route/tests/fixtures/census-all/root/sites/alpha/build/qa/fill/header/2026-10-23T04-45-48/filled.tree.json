@@ -701,7 +701,7 @@
               "itemFontSizeUnit": "px",
               "itemFontWeight": "600",
               "itemLineHeight": 1.412,
-              "itemTextAlign": "center",
+              "itemTextAlign": {"desktop":"center"},
               "itemColour": "custom-ink",
               "itemBorderRadius": {
                 "topLeft": "11px",

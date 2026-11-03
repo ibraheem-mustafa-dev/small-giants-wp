@@ -1232,12 +1232,12 @@
 			"default": "px"
 		},
 		"panelNoteTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"panelEmptyTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"panelHeadBorderColour": {
 			"type": "string",

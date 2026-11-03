@@ -91,7 +91,9 @@
                 "desktop": 0.04
               },
               "letterSpacingUnit": "em",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-4"
             }
           },
@@ -110,7 +112,9 @@
                 "desktop": 0.04
               },
               "letterSpacingUnit": "em",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-5"
             }
           },
@@ -129,7 +133,9 @@
                 "desktop": 0.04
               },
               "letterSpacingUnit": "em",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-6"
             }
           }
@@ -168,7 +174,9 @@
               "letterSpacingUnit": "em",
               "textTransform": "uppercase",
               "textColour": "text-label",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-8"
             }
           },
@@ -186,7 +194,9 @@
               "letterSpacingUnit": "em",
               "textTransform": "uppercase",
               "textColour": "text-label",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-9"
             }
           },
@@ -204,7 +214,9 @@
               "letterSpacingUnit": "em",
               "textTransform": "uppercase",
               "textColour": "text-label",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "className": "cr-ref-size-guide-10"
             }
           }

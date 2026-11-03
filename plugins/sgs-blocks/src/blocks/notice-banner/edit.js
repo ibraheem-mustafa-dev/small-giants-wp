@@ -14,7 +14,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { IconPicker, IconPreview, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowControl } from '../../components';
-import { colourVar, resolveShadowPreviewComposed, usePreviewTier, textPaintPreview, textIndentPreviewCss, sgsBorderPreview } from '../../utils';
+import { colourVar, resolveShadowPreviewComposed, usePreviewTier, typographyPreviewStyle, textPaintPreview, textIndentPreviewCss, sgsBorderPreview } from '../../utils';
 import { buildWrapperStyle } from './preview-style';
 import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -43,17 +43,6 @@ const LENGTH_UNITS = [
 	{ value: 'rem', label: 'rem' },
 	{ value: 'em', label: 'em' },
 	{ value: '%', label: '%' },
-];
-
-// Block-private text-align (replaces the retired native
-// supports.typography.textAlign — D971/D972 full-replacement track; mirrors
-// sgs/text's canonical bare-attribute pattern).
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 const DISPLAY_MODE_OPTIONS = [
@@ -154,7 +143,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		maxWidth,
 		backgroundColour,
 		backgroundColourGradient,
-		textAlign,
 		messageMode,
 		rotateInterval,
 		messageTransition,
@@ -180,7 +168,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// Mirrors render.php's own allowlist exactly (left/center/right only —
 	// 'justify' is not a valid has-text-align-* class) so the editor canvas
 	// shows the same class the frontend emits.
-	const canvasTextAlign = [ 'left', 'center', 'right' ].includes( textAlign ) ? textAlign : '';
 
 	const className = [
 		'sgs-notice-banner',
@@ -188,7 +175,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		'bar' === displayMode ? 'sgs-notice-banner--bar' : '',
 		isAnnouncement ? 'sgs-notice-banner--announcement' : '',
 		isAnnouncement ? `sgs-notice-banner--sticky-${ stickyPosition }` : '',
-		canvasTextAlign ? `has-text-align-${ canvasTextAlign }` : '',
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -208,7 +194,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	const arrowStyle = textPaintPreview( attributes.arrowColour, '', colourPalette );
 	const blockProps = useBlockProps( {
 		className,
-		style: buildWrapperStyle( attributes, previewTier, colourPalette, isAnnouncement ),
+		style: {
+			...buildWrapperStyle( attributes, previewTier, colourPalette, isAnnouncement ),
+			...typographyPreviewStyle( { textAlign: attributes.textAlign }, '', previewTier ),
+		},
 	} );
 	const innerBlocksProps = useInnerBlocksProps( {}, {
 		template: NOTICE_BANNER_TEMPLATE,
@@ -683,10 +672,9 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 										/>
 									</>
 								) }
-								<SelectControl
+								<ToggleGroupControl
 									label={ __( 'Transition', 'sgs-blocks' ) }
 									value={ messageTransition }
-									options={ MESSAGE_TRANSITION_OPTIONS }
 									onChange={ ( val ) =>
 										setAttributes( { messageTransition: val } )
 									}
@@ -694,9 +682,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 										'A message change is instant for visitors who prefer reduced motion.',
 										'sgs-blocks'
 									) }
+									isBlock
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
-								/>
+								>
+									{ MESSAGE_TRANSITION_OPTIONS.map( ( option ) => (
+										<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+									) ) }
+								</ToggleGroupControl>
 							</>
 						) }
 					</PanelBody>
@@ -721,22 +714,6 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				   label <=12 chars ("— inherit —", 11 chars) renders as
 				   ToggleGroupControl, not SelectControl. */ }
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
-					<ToggleGroupControl
-						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ textAlign }
-						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
-							<ToggleGroupControlOption
-								key={ option.value }
-								value={ option.value }
-								label={ option.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
 					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing showTextAlign showTextWrap showTextStroke showTextColumns showTextIndent showWritingMode
 						attributes={ attributes }
 						setAttributes={ setAttributes }

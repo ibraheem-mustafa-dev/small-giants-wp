@@ -208,7 +208,7 @@ if ( '' !== $text_colour_effective_hover ) {
 // decimal UnitControl input is no longer silently rounded). This is a
 // deliberate, reasoned change, not a byte-identical swap — see D971/D972
 // helper-widening follow-up for the analysis.
-$font_size_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+$font_size_css = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $font_size_css ) {
 	$scoped_css[] = $font_size_css;
 }

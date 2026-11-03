@@ -74,7 +74,8 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 
 	// 4a. Item typography — flat scalar model, shared helper (matches
 	// TypographyControls' attribute contract: {prefix}FontSize/Unit/Tablet/Mobile).
-	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel );
+	// The BEM root `sgs-nav-bar-menu` names the block `sgs/nav-bar-menu` (Spec 00): the schema says which keys are per breakpoint.
+	$css .= sgs_typography_css_rule( $attributes, 'item', $link_sel, '', false, false, sgs_object_attr_keys( preg_replace( '/^sgs-/', 'sgs/', $bem_root ) ) );
 
 	// 4a-i. Item link padding + submenu link padding (`itemPadding`,
 	// `submenuLinkPadding` — Spec 36 "Item hover paint", shared with

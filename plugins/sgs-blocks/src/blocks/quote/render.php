@@ -274,7 +274,7 @@ if ( '' !== $attrib_colour_effective_hover ) {
 // pass 3b, 2026-08-11) directly off $attributes, and attributionLineHeight's
 // still-plain-scalar shape, routing each independently — no manual
 // normalise-and-refeed needed here any more.
-$css_attrib_typography = sgs_typography_css_rule( $attributes, 'attribution', $attrib_scope );
+$css_attrib_typography = sgs_typography_css_rule( $attributes, 'attribution', $attrib_scope, '', false, false, sgs_object_attr_keys( $block ) );
 
 // Two-state link colour (Task 3, 2026-09-07) — the attribution field permits
 // `core/link`, so a linked selection needs its own colour.

@@ -1039,7 +1039,9 @@
                       "fontSize": {
                         "desktop": 12.5
                       },
-                      "textAlign": "center",
+                      "textAlign": {
+                        "desktop": "center"
+                      },
                       "textColour": "custom-text-3",
                       "margin": {
                         "desktop": {

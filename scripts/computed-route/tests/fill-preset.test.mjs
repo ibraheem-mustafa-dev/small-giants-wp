@@ -25,7 +25,7 @@ const readsOf = ( styles = SECONDARY, hover = HOVER ) => ( {
 const w = ( prop, attr, before = null ) => ( { node: 'r0', slot: '', prop, attr, before, after: 'x', widths: [ 1440 ] } );
 const WRITES = () => [ w( 'background-color', 'colourBackground' ), w( 'padding-top', 'padding' ), w( 'font-size', 'fontSize', '15px' ), w( 'text-align', 'textAlign' ), { ...w( 'color', 'colourTextHover' ), state: 'hover' } ];
 function run( { block = 'sgs/button', reads = readsOf(), presets = PRESETS } = {} ) {
-	const flat = [ { name: block, attributes: { colourBackground: 'x', padding: { top: '12px' }, fontSize: 'x', textAlign: 'center', colourTextHover: 'x' }, ref: 'r0' } ];
+	const flat = [ { name: block, attributes: { colourBackground: 'x', padding: { top: '12px' }, fontSize: 'x', textAlign: {"desktop":"center"}, colourTextHover: 'x' }, ref: 'r0' } ];
 	const nodes = [ { index: 0, name: block, targets: [ { id: '0:', slot: '' } ] } ];
 	const res = presetWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, rawSnapshot: { settings: { custom: { buttonPresets: presets } } }, snapshot, writes: WRITES(), db } );
 	return { flat, ...res };

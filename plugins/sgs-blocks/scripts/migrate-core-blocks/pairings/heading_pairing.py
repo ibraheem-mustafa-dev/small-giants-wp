@@ -4,7 +4,7 @@
 Ground truth (heading/block.json + render.php read 2026-07-15):
   content   string  — echoed via wp_kses_post (inline markup survives)
   level     string  ENUM h1..h6, default 'h2'   <-- core stores an INT
-  textAlign string  enum '',left,center,right,justify,start,end
+  textAlign object  {desktop,tablet,mobile} of left,center,right,justify,start,end
   textColour string — the British spelling (core says textColor)
   fontSize  ["number","string"] — a preset slug now renders (this session)
   supports  color + spacing + border, all __experimentalSkipSerialization,
@@ -57,8 +57,8 @@ def transform(node, text):
         elif key == 'textAlign':
             if value not in ('left', 'center', 'right', 'justify', 'start', 'end'):
                 raise GapError(f'textAlign {value!r} outside the sgs/heading enum')
-            out['textAlign'] = value
-            accounting[key] = ('mapped', 'textAlign')
+            out['textAlign'] = {'desktop': value}
+            accounting[key] = ('mapped', 'textAlign (per-breakpoint object, desktop tier)')
         elif key == 'textColor':
             out['textColour'] = value
             accounting[key] = ('mapped', 'textColour (British spelling — the D338 naming class)')

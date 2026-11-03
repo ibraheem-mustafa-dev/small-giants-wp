@@ -333,7 +333,7 @@ $scoped_css             = array_merge( $scoped_css, sgs_text_colour_child_rules(
 $text_targets           = array(
 	array(
 		' .sgs-timeline__title',
-		(string) ( $attributes['titleTextAlign'] ?? '' ),
+		(string) sgs_resolve_tier( $attributes['titleTextAlign'] ?? null, 'desktop', '' )['value'],
 		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['titleColour'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['titleColourGradient'] ?? '' ) ) ),
 		sgs_resolve_text_colour_or_gradient( (string) ( $attributes['titleColourHover'] ?? '' ), sgs_css_gradient_value( (string) ( $attributes['titleColourHoverGradient'] ?? '' ) ) ),
 	),
@@ -457,7 +457,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 // D971/D972 full-replacement track: fontSize/lineHeight/fontWeight/fontStyle
 // only — letterSpacing/textTransform/textAlign have no shared-component
 // equivalent and are dropped as honest gaps (mirrors sgs/accordion). ---
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_sel );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', $title_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // --- Responsive padding/margin/border-radius tiers — box objects, longhands for
 // the set sides and corners only, scoped @media on the root selector (contract §B2: tablet

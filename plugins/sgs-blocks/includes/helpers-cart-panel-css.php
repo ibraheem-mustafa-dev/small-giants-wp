@@ -67,7 +67,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'panelNote'        => '.sgs-cart__panel-note',
 	);
 	foreach ( $typography as $prefix => $sel ) {
-		$rule = sgs_typography_css_rule( $attributes, $prefix, $p . ' ' . $sel );
+		$rule = sgs_typography_css_rule( $attributes, $prefix, $p . ' ' . $sel, '', false, false, sgs_object_attr_keys( 'sgs/cart' ) );
 		if ( '' !== $rule ) {
 			$css[] = $rule;
 		}

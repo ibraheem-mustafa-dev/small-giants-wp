@@ -163,7 +163,9 @@
                     "name": "sgs/text",
                     "attributes": {
                       "text": "No products matched that search. Try a different term or browse the full shop.",
-                      "textAlign": "center"
+                      "textAlign": {
+                        "desktop": "center"
+                      }
                     }
                   }
                 ]

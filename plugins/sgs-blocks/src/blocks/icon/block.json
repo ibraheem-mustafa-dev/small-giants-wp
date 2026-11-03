@@ -545,15 +545,8 @@
 			]
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		}
 	},
 	"editorScript": "file:./index.js",

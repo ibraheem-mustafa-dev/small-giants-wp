@@ -102,16 +102,16 @@ def map_typography(typo, out, accounting_detail, text_align_enum=('left', 'cente
             if value not in text_align_enum:
                 unmapped.append(f'textAlign:{value!r} outside the target block\'s textAlign enum {text_align_enum}')
                 continue
-            if out.get('textAlign', value) != value:
+            if (out.get('textAlign') or {}).get('desktop', value) != value:
                 # A top-level textAlign/align attr already mapped a DIFFERENT
                 # value onto this same target attr — genuine ambiguity, never
                 # silently let one win.
                 unmapped.append(
                     f'textAlign:{value!r} conflicts with an already-mapped textAlign '
-                    f'{out["textAlign"]!r} (top-level attr vs style.typography — ambiguous)')
+                    f'{out["textAlign"]["desktop"]!r} (top-level attr vs style.typography — ambiguous)')
                 continue
-            out['textAlign'] = value
-            accounting_detail.append(f'style.typography.textAlign -> textAlign ({value!r})')
+            out['textAlign'] = {'desktop': value}
+            accounting_detail.append(f'style.typography.textAlign -> textAlign ({value!r}, desktop tier)')
         else:
             unmapped.append(key)
     return unmapped

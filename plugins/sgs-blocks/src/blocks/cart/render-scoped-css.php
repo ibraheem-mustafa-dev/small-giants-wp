@@ -55,12 +55,12 @@ if ( '' !== $badge_text_hover_effective ) {
 // A mixed block applies it in the icon tiers only (a plain pill count keeps the label's typography there).
 $badge_is_bubble = 'bubble' === ( $attributes['pillCountStyle'] ?? 'plain' );
 if ( ( ! $trigger_mixed && ( 'pill' !== $trigger_style || $badge_is_bubble ) ) || ( $trigger_mixed && $badge_is_bubble ) ) {
-	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel );
+	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $badge_typo_css ) {
 		$scoped_css[] = $badge_typo_css;
 	}
 } elseif ( $trigger_mixed ) {
-	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel );
+	$badge_typo_css = sgs_typography_css_rule( $attributes, 'badge', $badge_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $badge_typo_css ) {
 		foreach ( $trigger_ranges['icon'] as $icon_range ) {
 			$scoped_css[] = '@media ' . $icon_range . '{' . $badge_typo_css . '}';
@@ -194,7 +194,7 @@ if ( $trigger_has_pill ) {
 	// border-radius:999px default in place (no override emitted).
 	// Pill text (size, weight, letter spacing, capitals) through the shared
 	// typography helper; unset keeps style.css's defaults.
-	$pill_typo_css = sgs_typography_css_rule( $attributes, 'pill', $pill_sel );
+	$pill_typo_css = sgs_typography_css_rule( $attributes, 'pill', $pill_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $pill_typo_css ) {
 		$scoped_css[] = $pill_typo_css;
 	}

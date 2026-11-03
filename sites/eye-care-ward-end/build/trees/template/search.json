@@ -195,7 +195,9 @@
                         "name": "sgs/heading",
                         "attributes": {
                           "content": "No results found",
-                          "textAlign": "center",
+                          "textAlign": {
+                            "desktop": "center"
+                          },
                           "level": "h2"
                         }
                       },
@@ -203,7 +205,9 @@
                         "name": "sgs/text",
                         "attributes": {
                           "text": "Sorry, no content matched your search. Please try a different search term.",
-                          "textAlign": "center",
+                          "textAlign": {
+                            "desktop": "center"
+                          },
                           "textColour": "text-muted"
                         }
                       },
@@ -211,7 +215,9 @@
                         "name": "sgs/text",
                         "attributes": {
                           "text": "Try fewer or different words, or browse from here:",
-                          "textAlign": "center",
+                          "textAlign": {
+                            "desktop": "center"
+                          },
                           "textColour": "text-muted",
                           "fontSize": {
                             "desktop": "small"

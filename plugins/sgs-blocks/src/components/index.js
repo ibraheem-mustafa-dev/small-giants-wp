@@ -69,6 +69,7 @@ export {
 	shadowAttrKeys,
 } from './ShadowControl';
 export { IconPicker, IconPreview } from './IconPicker';
+export { default as TextAlignTierControl } from './TextAlignTierControl';
 export { default as RowQuickInsertAppender } from './RowQuickInsertAppender';
 export { default as RowScrollBehaviourControls } from './RowScrollBehaviourControls';
 export {

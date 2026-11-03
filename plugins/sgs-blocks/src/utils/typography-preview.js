@@ -247,7 +247,11 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 	}
 
 	for ( const [ suffix, [ prop, allowed ] ] of Object.entries( KEYWORD_SUFFIXES ) ) {
-		const v = attributes[ attrKey( suffix ) ];
+		let v = attributes[ attrKey( suffix ) ];
+		if ( 'TextAlign' === suffix && v && 'object' === typeof v && ! Array.isArray( v ) ) {
+			// Per breakpoint: the value painting at the previewed tier (an empty tier inherits the one above).
+			v = tierKeys( tier ).map( ( t ) => v[ t ] ).find( ( own ) => ! isUnset( own ) );
+		}
 		if ( allowed.includes( v ) ) {
 			style[ prop ] = v;
 		}

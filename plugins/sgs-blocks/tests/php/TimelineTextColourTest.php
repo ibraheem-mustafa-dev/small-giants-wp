@@ -96,13 +96,13 @@ final class TimelineTextColourTest extends TestCase {
 	}
 
 	public function test_a_gradient_gets_its_own_box_and_keeps_its_alignment(): void {
-		$centre = $this->block( array( 'titleColourGradient' => self::GRADIENT, 'titleTextAlign' => 'center' ) )['css'];
+		$centre = $this->block( array( 'titleColourGradient' => self::GRADIENT, 'titleTextAlign' => array( 'desktop' => 'center' ) ) )['css'];
 		$this->assertMatchesRegularExpression( '/__title\{[^}]*width:fit-content;max-width:100%;-webkit-box-decoration-break:clone;box-decoration-break:clone;margin-inline:auto;?\}/', $centre );
 
-		$right = $this->block( array( 'titleColourGradient' => self::GRADIENT, 'titleTextAlign' => 'right' ) )['css'];
+		$right = $this->block( array( 'titleColourGradient' => self::GRADIENT, 'titleTextAlign' => array( 'desktop' => 'right' ) ) )['css'];
 		$this->assertMatchesRegularExpression( '/__title\{[^}]*margin-inline-start:auto;margin-inline-end:0;?\}/', $right );
 
-		$flat = $this->block( array( 'titleColour' => '#aa0000', 'titleTextAlign' => 'center' ) )['css'];
+		$flat = $this->block( array( 'titleColour' => '#aa0000', 'titleTextAlign' => array( 'desktop' => 'center' ) ) )['css'];
 		$this->assertStringNotContainsString( 'fit-content', $flat, 'negative control: a flat colour is never resized' );
 	}
 }

@@ -128,11 +128,6 @@ $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
 $inherit_style = ! empty( $attributes['inheritStyle'] );
 
-// Text alignment — validated against allowlist; emitted scoped on the wrapper.
-$text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
-$allowed_text_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
-$text_align          = in_array( $text_align_raw, $allowed_text_aligns, true ) ? $text_align_raw : '';
-
 // ---------------------------------------------------------------------------
 // 2b. Box-object interface contract §1 + security §D sanitisers, plus the box
 // objects (border-width / border-radius), base spacing objects, tier objects,
@@ -277,10 +272,6 @@ if ( ! $inherit_style ) {
 	if ( $box_shadow_decls['normal'] ) {
 		$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 	}
-	// $text_align is allowlist-validated above.
-	if ( '' !== $text_align ) {
-		$wrapper_decls[] = 'text-align:' . $text_align;
-	}
 }
 
 // ---------------------------------------------------------------------------
@@ -342,7 +333,7 @@ if ( '' !== $text_colour_fallback_rule ) {
 // the old hand-rolled preset-slug branch here did, closing the D574 bug
 // class the same way) plus fontWeight/fontStyle/lineHeight/letterSpacing/
 // textTransform/textDecoration/fontFamily.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // Two-state link colour (Task 3, 2026-09-07) — the heading's own RichText
 // content permits `core/link`, so a linked selection needs its own colour.

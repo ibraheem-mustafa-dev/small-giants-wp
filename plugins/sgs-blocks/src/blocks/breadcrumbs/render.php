@@ -311,7 +311,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 // Replaces the old WP-native supports.typography (fontSize only) with the
 // framework's own helper, which also now offers fontWeight/fontStyle/
 // lineHeight. Inherited across link/separator/current, same as before. ---
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet

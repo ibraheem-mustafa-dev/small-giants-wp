@@ -466,7 +466,7 @@ if ( $tile_shadow_decls['hover'] ) {
 // weight). Emitted only when the caption is shown (an element that never
 // renders should not carry emitted CSS). ---
 if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
-	$name_typography_css = sgs_typography_css_rule( $attributes, 'name', "{$root_sel} .sgs-brand-strip__name" );
+	$name_typography_css = sgs_typography_css_rule( $attributes, 'name', "{$root_sel} .sgs-brand-strip__name", '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $name_typography_css ) {
 		$scoped_css[] = $name_typography_css;
 	}
@@ -493,14 +493,6 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 		if ( '' !== $name_text_fallback_rule ) {
 			$scoped_css[] = $name_text_fallback_rule;
 		}
-	}
-	// Caption alignment. text-align is not part of the shared typography
-	// emitter's property set, so it is emitted here against the same selector.
-	// Allowlist-validated (heading/render.php precedent) — never interpolated raw.
-	$name_align_raw     = isset( $attributes['nameTextAlign'] ) ? sanitize_text_field( $attributes['nameTextAlign'] ) : '';
-	$allowed_name_align = array( 'left', 'center', 'right', 'justify' );
-	if ( in_array( $name_align_raw, $allowed_name_align, true ) ) {
-		$scoped_css[] = "{$root_sel} .sgs-brand-strip__name{--sgs-name-text-align:" . $name_align_raw . ';}';
 	}
 }
 
@@ -801,7 +793,7 @@ if ( '' !== trim( wp_strip_all_tags( $bs_title_value ) ) ) {
 			'hover_gradient' => 'titleColourHoverGradient',
 		)
 	);
-	$scoped_css[]  = sgs_typography_css_rule( $attributes, 'title', $bs_title_sel );
+	$scoped_css[]  = sgs_typography_css_rule( $attributes, 'title', $bs_title_sel, '', false, false, sgs_object_attr_keys( $block ) );
 }
 
 // $scoped_css is pre-sanitised (sgs_css_length_value() / wp_style_engine_get_styles),

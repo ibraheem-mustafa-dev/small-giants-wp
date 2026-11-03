@@ -400,10 +400,10 @@ $desc_scope  = $root_sel . ' .sgs-process-steps__description';
 // root (0,3,0), which out-ranks style.css's bare step-class rules (0,1,0). The
 // selector is built inline in each call so the hardcoded-render-defaults gate
 // can read the prefix and the selector fragment together.
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'icon', '.' . $uid . '.sgs-process-steps .sgs-process-steps__icon' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.sgs-process-steps .sgs-process-steps__number' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.sgs-process-steps .sgs-process-steps__title' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid . '.sgs-process-steps .sgs-process-steps__description' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'icon', '.' . $uid . '.sgs-process-steps .sgs-process-steps__icon', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.sgs-process-steps .sgs-process-steps__number', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.sgs-process-steps .sgs-process-steps__title', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid . '.sgs-process-steps .sgs-process-steps__description', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Space between the steps (stepGap); unset keeps style.css's gap.
 if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {

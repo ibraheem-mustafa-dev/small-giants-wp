@@ -25,6 +25,15 @@ describe( 'typographyPreviewStyle', () => {
 		} );
 	} );
 
+	it( 'resolves a per-breakpoint text alignment for the previewed tier', () => {
+		const attrs = { textAlign: { desktop: 'left', mobile: 'center' } };
+		expect( typographyPreviewStyle( attrs, '', 'desktop' ).textAlign ).toBe( 'left' );
+		expect( typographyPreviewStyle( attrs, '', 'tablet' ).textAlign ).toBe( 'left' );
+		expect( typographyPreviewStyle( attrs, '', 'mobile' ).textAlign ).toBe( 'center' );
+		expect( typographyPreviewStyle( { textAlign: { desktop: 'middle' } }, '', 'desktop' ) ).toEqual( {} );
+		expect( typographyPreviewStyle( { titleTextAlign: { mobile: 'right' } }, 'title', 'desktop' ) ).toEqual( {} );
+	} );
+
 	it( 'drops off-allowlist and out-of-range values', () => {
 		expect( typographyPreviewStyle( { textAlign: 'middle', textWrap: 'x', textColumns: 9 } ) ).toEqual( {} );
 	} );

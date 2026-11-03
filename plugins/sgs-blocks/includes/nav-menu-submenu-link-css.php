@@ -110,7 +110,7 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_link_css' ) ) {
 		// `submenu*` typography attributes is a dead control and the build fails
 		// `check-dead-controls.js`. The hover trio has no branch in the shared
 		// helper at all, hence the block-private companion emitter beside it.
-		$css .= sgs_typography_css_rule( $attributes, 'submenu', $sublink_sel );
+		$css .= sgs_typography_css_rule( $attributes, 'submenu', $sublink_sel, '', false, false, sgs_object_attr_keys( preg_replace( '/^sgs-/', 'sgs/', $bem_root ) ) );
 		$css .= sgs_nav_shared_typography_hover_rule( $attributes, 'submenu', $sublink_sel, $submenu_sweep_hover );
 
 		/*

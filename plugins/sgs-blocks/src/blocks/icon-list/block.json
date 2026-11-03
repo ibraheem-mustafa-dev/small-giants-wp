@@ -711,15 +711,8 @@
 			"default": "em"
 		},
 		"headingTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"headingTextWrap": {
 			"type": "string",
@@ -792,15 +785,8 @@
 			"default": "em"
 		},
 		"itemTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"itemTextWrap": {
 			"type": "string",
@@ -902,15 +888,8 @@
 			"default": "em"
 		},
 		"textElTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"textElTextWrap": {
 			"type": "string",
@@ -1017,15 +996,8 @@
 			"default": "em"
 		},
 		"descriptionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"descriptionTextWrap": {
 			"type": "string",

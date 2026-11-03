@@ -316,7 +316,7 @@ if ( '' !== $text_colour_hover_effective ) {
 // helper, which also now offers fontWeight/fontStyle.
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-product-faq', '.' . $uid . '.wp-block-sgs-product-faq :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$sgs_pf_typography_css = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-product-faq', '.' . $uid . '.wp-block-sgs-product-faq :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_pf_typography_css ) {
 	$scoped_css[] = $sgs_pf_typography_css;
 }
@@ -326,7 +326,7 @@ if ( '' !== $sgs_pf_typography_css ) {
 // parent control paints every question in this FAQ instance through a
 // descendant selector on the uid class (specificity 0,3,0, above the
 // stylesheet's base and open/hover rules).
-$sgs_pf_question_css = sgs_typography_css_rule( $attributes, 'question', '.' . $uid . '.wp-block-sgs-product-faq .sgs-product-faq-item__question' );
+$sgs_pf_question_css = sgs_typography_css_rule( $attributes, 'question', '.' . $uid . '.wp-block-sgs-product-faq .sgs-product-faq-item__question', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_pf_question_css ) {
 	$scoped_css[] = $sgs_pf_question_css;
 }

@@ -585,15 +585,8 @@
 			"default": "em"
 		},
 		"titleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"titleTextWrap": {
 			"type": "string",
@@ -690,15 +683,8 @@
 			"default": "em"
 		},
 		"iconTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"iconTextWrap": {
 			"type": "string",
@@ -771,15 +757,8 @@
 			"default": "em"
 		},
 		"numberTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"numberTextWrap": {
 			"type": "string",
@@ -876,15 +855,8 @@
 			"default": "em"
 		},
 		"descriptionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"descriptionTextWrap": {
 			"type": "string",

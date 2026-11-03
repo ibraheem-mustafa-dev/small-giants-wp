@@ -296,14 +296,8 @@
 			"description": "HOVER/focus descendant-link colour — no native equivalent existed; new sibling to linkColour."
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"borderWidth": {
 			"type": "object",

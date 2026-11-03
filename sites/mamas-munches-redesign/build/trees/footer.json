@@ -1290,7 +1290,9 @@
                                     "textColourHover": "mm-cocoa",
                                     "displayType": "copyright",
                                     "copyrightPrefix": "",
-                                    "textAlign": "center",
+                                    "textAlign": {
+                                        "desktop": "center"
+                                    },
                                     "sgsCustomCss": "@media (min-width: 1024px) { & { text-align: left; justify-self: start; } }",
                                     "sgsCustomCssNote": "Draft: copyright is start-aligned at 1440, centred below 1024."
                                 }
@@ -1440,7 +1442,9 @@
                                     "displayType": "attribution",
                                     "fontWeight": "700",
                                     "textWrap": "nowrap",
-                                    "textAlign": "center",
+                                    "textAlign": {
+                                        "desktop": "center"
+                                    },
                                     "sgsCustomCss": "@media (min-width: 1024px) { & { text-align: right; justify-self: end; } }",
                                     "sgsCustomCssNote": "Draft: attribution is end-aligned at 1440, centred below 1024.",
                                     "linkMinHeight": {

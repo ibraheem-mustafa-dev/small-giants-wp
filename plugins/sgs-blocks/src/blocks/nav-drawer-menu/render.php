@@ -663,22 +663,30 @@ $css .= sgs_nav_drawer_menu_row_layout_css( $attributes, $uid_sel );
 $css .= sgs_nav_drawer_menu_section_box_css( $attributes, $uid_sel );
 // The drill-down Back button (injected by src/shared/effects/nav-drilldown.js, so it has no PHP
 // markup) is a text element of its own: the item and submenu typography do not reach it.
-$css .= sgs_typography_css_rule( $attributes, 'drillBack', $uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn' );
+$css .= sgs_typography_css_rule( $attributes, 'drillBack', $uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn', '', false, false, sgs_object_attr_keys( $block ) );
 // The row ornament's own type (font family, weight, letter spacing): the `ornamentText` set.
-$css .= sgs_typography_css_rule( $attributes, 'ornamentText', $uid_sel . ' .sgs-nav-drawer-menu__ornament' );
+$css .= sgs_typography_css_rule( $attributes, 'ornamentText', $uid_sel . ' .sgs-nav-drawer-menu__ornament', '', false, false, sgs_object_attr_keys( $block ) );
 // The Back button is a full-width flex row (arrow + label), so text-align alone moves nothing:
 // justify-content places the arrow and label along the row.
-$sgs_nm_back_justify = array(
-	'left'    => 'flex-start',
-	'start'   => 'flex-start',
-	'justify' => 'flex-start',
-	'center'  => 'center',
-	'right'   => 'flex-end',
-	'end'     => 'flex-end',
-)[ is_string( $attributes['drillBackTextAlign'] ?? null ) ? $attributes['drillBackTextAlign'] : '' ] ?? '';
-if ( '' !== $sgs_nm_back_justify ) {
-	$css .= $uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn{justify-content:' . $sgs_nm_back_justify . ';}';
-}
+$css .= sgs_emit_responsive_css(
+	$uid_sel . ' .sgs-nav-drawer-menu__drill-back-btn',
+	array(
+		array(
+			'value'     => $attributes['drillBackTextAlign'] ?? array(),
+			'css'       => 'justify-content',
+			'transform' => static function ( $raw ) {
+				return array(
+					'left'    => 'flex-start',
+					'start'   => 'flex-start',
+					'justify' => 'flex-start',
+					'center'  => 'center',
+					'right'   => 'flex-end',
+					'end'     => 'flex-end',
+				)[ is_string( $raw ) ? $raw : '' ] ?? '';
+			},
+		),
+	)
+);
 // megaBodyPadding: the padding around a mega item's panel in its accordion
 // (style.css keeps 0 12px 12px as the unset default; (0,2,0) beats its (0,1,0)).
 if ( is_array( $attributes['megaBodyPadding'] ?? null ) ) {

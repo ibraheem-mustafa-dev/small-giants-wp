@@ -95,7 +95,9 @@
             "attributes": {
               "showIcon": false,
               "displayMode": "inline",
-              "textAlign": "center",
+              "textAlign": {
+                "desktop": "center"
+              },
               "textTransform": "uppercase",
               "fontFamily": "'Sometype Mono', monospace",
               "fontSize": {

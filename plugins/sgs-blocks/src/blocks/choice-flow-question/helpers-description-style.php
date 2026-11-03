@@ -30,7 +30,7 @@ if ( ! function_exists( 'sgs_choice_flow_question_description_css' ) ) {
 	 * @return string The `<style>` element, or '' when no description typography or colour and no badge colour is set.
 	 */
 	function sgs_choice_flow_question_description_css( array $attributes, string $uid ): string {
-		$css = sgs_typography_css_rule( $attributes, 'optionDescription', '.' . $uid . '.sgs-choice-flow-question .sgs-choice-flow-question__option-description' );
+		$css = sgs_typography_css_rule( $attributes, 'optionDescription', '.' . $uid . '.sgs-choice-flow-question .sgs-choice-flow-question__option-description', '', false, false, sgs_object_attr_keys( 'sgs/choice-flow-question' ) );
 
 		$colour = sgs_colour_value( (string) ( $attributes['optionDescriptionColour'] ?? '' ) );
 		if ( '' !== $colour ) {

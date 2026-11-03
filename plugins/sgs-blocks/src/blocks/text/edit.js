@@ -466,7 +466,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							textDecoration: '',
 							textTransform: '',
 							fontFamily: '',
-							textAlign: '',
+							textAlign: {},
 							textWrap: '',
 						} )
 					}
@@ -484,7 +484,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							!! fontFamily ||
 							!! textDecoration ||
 							!! textTransform ||
-							!! textAlign ||
+							( textAlign && 'object' === typeof textAlign && Object.keys( textAlign ).length > 0 ) ||
 							!! textWrap
 						}
 						onDeselect={ () =>
@@ -499,7 +499,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								fontFamily: '',
 								textDecoration: '',
 								textTransform: '',
-								textAlign: '',
+								textAlign: {},
 								textWrap: '',
 							} )
 						}

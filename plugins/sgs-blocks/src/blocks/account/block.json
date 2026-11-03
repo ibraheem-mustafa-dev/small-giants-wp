@@ -448,8 +448,8 @@
 			"default": ""
 		},
 		"menuTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"menuTextWrap": {
 			"type": "string",
@@ -503,8 +503,8 @@
 			"default": ""
 		},
 		"headingTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"headingTextWrap": {
 			"type": "string",
@@ -558,8 +558,8 @@
 			"default": ""
 		},
 		"cardTitleTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"cardTitleTextWrap": {
 			"type": "string",
@@ -613,8 +613,8 @@
 			"default": ""
 		},
 		"cardDescTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"cardDescTextWrap": {
 			"type": "string",
@@ -719,8 +719,8 @@
 			"default": ""
 		},
 		"progressStepTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"progressStepTextWrap": {
 			"type": "string",
@@ -774,8 +774,8 @@
 			"default": ""
 		},
 		"guestLineTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"guestLineTextWrap": {
 			"type": "string",

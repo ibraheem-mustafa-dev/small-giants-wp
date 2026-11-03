@@ -164,8 +164,8 @@ if ( '' !== $sgs_md_caption_decl ) {
 }
 
 // ── Label typography (one TypographyControls mount, two targets) ───────────
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'value', '.' . $uid . ' .sgs-diagram-dimension__value' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'caption', '.' . $uid . ' .sgs-diagram-dimension__caption' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'value', '.' . $uid . ' .sgs-diagram-dimension__value', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'caption', '.' . $uid . ' .sgs-diagram-dimension__caption', '', false, false, sgs_object_attr_keys( $block ) );
 
 // ── Gap between a label's caption and value ─────────────────────────────────
 $scoped_css[] = sgs_emit_responsive_css(

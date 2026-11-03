@@ -292,15 +292,8 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"textWrap": {
 			"type": "string",
@@ -390,9 +383,8 @@
 			"default": "em"
 		},
 		"questionTextAlign": {
-			"type": "string",
-			"enum": [ "", "left", "center", "right", "justify" ],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"questionTextWrap": {
 			"type": "string",

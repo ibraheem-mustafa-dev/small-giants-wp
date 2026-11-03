@@ -241,8 +241,8 @@ $classes[] = $sgs_card_uid;
 // overrides font-family — so a blank value correctly falls through to Fraunces,
 // same as theme.json's heading-preset default every other heading-tagged caller
 // already gets. No opt-in needed; the helper's normal default is already correct.
-$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount' );
+$sgs_card_typo_css  = sgs_typography_css_rule( $attributes, 'title', '.' . $sgs_card_uid . ' .sgs-product-card__title, .' . $sgs_card_uid . ' h3', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'price', '.' . $sgs_card_uid . ' .sgs-product-card__price, .' . $sgs_card_uid . ' .price, .' . $sgs_card_uid . ' .price-from-amount', '', false, false, sgs_object_attr_keys( $block ) );
 // The description can hold several paragraphs; its text indent follows core's
 // convention (every paragraph that follows another paragraph) on both markups.
 $sgs_card_desc_para = ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)';
@@ -250,29 +250,29 @@ $sgs_card_typo_css .= sgs_typography_css_rule(
 	$attributes,
 	'desc',
 	'.' . $sgs_card_uid . ' .sgs-product-card__description, .' . $sgs_card_uid . ' .product-desc',
-	'.' . $sgs_card_uid . ' .sgs-product-card__description' . $sgs_card_desc_para . ', .' . $sgs_card_uid . ' .product-desc' . $sgs_card_desc_para
+	'.' . $sgs_card_uid . ' .sgs-product-card__description' . $sgs_card_desc_para . ', .' . $sgs_card_uid . ' .product-desc' . $sgs_card_desc_para, false, false, sgs_object_attr_keys( $block )
 );
 // 'pill' typography targets the option-picker pill (both typed + bound pack
 // pickers render sgs/option-picker).
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'pill', '.' . $sgs_card_uid . ' .sgs-option-picker__pill', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceNote', '.' . $sgs_card_uid . ' .sgs-product-card__price-note, .' . $sgs_card_uid . ' .price-note', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'priceFromLabel', '.' . $sgs_card_uid . ' .price-from-label', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'tag', '.' . $sgs_card_uid . ' .sgs-product-card__tag', '', false, false, sgs_object_attr_keys( $block ) );
 // 'brand' typography targets the Frame Card brand overlay (image top-left).
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'brand', '.' . $sgs_card_uid . ' .sgs-product-card__brand', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'attributeTag', '.' . $sgs_card_uid . ' .sgs-product-card__attribute-tag', '', false, false, sgs_object_attr_keys( $block ) );
 // Frame Card rating row, its star glyphs, the live-card RRP, the saving badge over the image and the
 // swatch row's "+N" count: each owns a surface, painted on the element the control names.
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rating', '.' . $sgs_card_uid . ' .sgs-product-card__rating' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'ratingStars', '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rrp', '.' . $sgs_card_uid . ' .sgs-product-card__rrp' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', '.' . $sgs_card_uid . ' .sgs-product-card__saving-badge' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'swatchMore', '.' . $sgs_card_uid . ' .sgs-product-card__swatch-more' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rating', '.' . $sgs_card_uid . ' .sgs-product-card__rating', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'ratingStars', '.' . $sgs_card_uid . ' .sgs-product-card__rating-stars', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'rrp', '.' . $sgs_card_uid . ' .sgs-product-card__rrp', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', '.' . $sgs_card_uid . ' .sgs-product-card__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'swatchMore', '.' . $sgs_card_uid . ' .sgs-product-card__swatch-more', '', false, false, sgs_object_attr_keys( $block ) );
 // Value ladder (bound mode): the wrapper, and the per-row saving text that style.css sizes absolutely.
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder' );
-$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', '.' . $sgs_card_uid . ' .value-ladder__saving' );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadder', '.' . $sgs_card_uid . ' .product-card__value-ladder', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_card_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', '.' . $sgs_card_uid . ' .value-ladder__saving', '', false, false, sgs_object_attr_keys( $block ) );
 // The no-photo label (includes/product-card-no-photo.php) and the space above the price row.
-$sgs_card_typo_css        .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label' );
+$sgs_card_typo_css        .= sgs_typography_css_rule( $attributes, 'noImageLabel', '.' . $sgs_card_uid . ' .product-card__no-image-label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_no_image_label_colour = sgs_colour_value( $attributes['noImageLabelColour'] ?? '' );
 if ( '' !== $sgs_no_image_label_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .product-card__no-image-label{color:' . $sgs_no_image_label_colour . ';}';
@@ -310,17 +310,26 @@ if ( '' !== $sgs_rating_colour ) {
 }
 // The rating row is a block-level flex box as wide as the card body (style.css), so text-align alone
 // moves nothing: justify-content places the stars and count along it.
-$sgs_rating_justify = array(
-	'left'    => 'flex-start',
-	'start'   => 'flex-start',
-	'justify' => 'flex-start',
-	'center'  => 'center',
-	'right'   => 'flex-end',
-	'end'     => 'flex-end',
-)[ is_string( $attributes['ratingTextAlign'] ?? null ) ? $attributes['ratingTextAlign'] : '' ] ?? '';
-if ( '' !== $sgs_rating_justify ) {
-	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__rating{justify-content:' . $sgs_rating_justify . ';}';
-}
+$sgs_rating_justify_value = static function ( $raw ) {
+	return array(
+		'left'    => 'flex-start',
+		'start'   => 'flex-start',
+		'justify' => 'flex-start',
+		'center'  => 'center',
+		'right'   => 'flex-end',
+		'end'     => 'flex-end',
+	)[ is_string( $raw ) ? $raw : '' ] ?? '';
+};
+$sgs_card_typo_css .= sgs_emit_responsive_css(
+	'.' . $sgs_card_uid . ' .sgs-product-card__rating',
+	array(
+		array(
+			'value'     => $attributes['ratingTextAlign'] ?? array(),
+			'css'       => 'justify-content',
+			'transform' => $sgs_rating_justify_value,
+		),
+	)
+);
 $sgs_brand_colour = sgs_colour_value( $attributes['brandColour'] ?? '' );
 if ( '' !== $sgs_brand_colour ) {
 	$sgs_card_typo_css .= '.' . $sgs_card_uid . ' .sgs-product-card__brand{color:' . $sgs_brand_colour . ';}';
@@ -736,18 +745,7 @@ if ( 'typed' === $source_mode ) {
 		'ctaTextAlign'  => '.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
 		'cta2TextAlign' => '.' . $sgs_card_uid . ' .sgs-product-card__cta--secondary',
 	) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
-		$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
-		if ( '' !== $sgs_cta_align ) {
-			// The CTA is an inline-flex box wider than its label in the CTA row, so text-align alone
-			// moves nothing: justify-content places the label (wrapped lines still follow text-align).
-			$sgs_cta_justify    = array(
-				'left'    => 'flex-start',
-				'center'  => 'center',
-				'right'   => 'flex-end',
-				'justify' => 'flex-start',
-			)[ $sgs_cta_align ];
-			$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';justify-content:' . $sgs_cta_justify . ';}';
-		}
+		$sgs_card_typo_css .= sgs_button_element_text_align_css( $sgs_cta_align_sel, $attributes[ $sgs_cta_align_attr ] ?? array() );
 	}
 
 	// In-body TRIAL tag box (padding / background / radius / display) — rendered
@@ -904,17 +902,7 @@ foreach ( array(
 	'ctaTextAlign'  => '.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
 	'cta2TextAlign' => '.' . $sgs_card_uid . ' .product-card__cta-secondary',
 ) as $sgs_cta_align_attr => $sgs_cta_align_sel ) {
-	$sgs_cta_align = sgs_button_element_text_align( $attributes[ $sgs_cta_align_attr ] ?? '' );
-	if ( '' !== $sgs_cta_align ) {
-		// Inline-flex CTA wider than its label: justify-content places the label, text-align covers wrapped lines.
-		$sgs_cta_justify    = array(
-			'left'    => 'flex-start',
-			'center'  => 'center',
-			'right'   => 'flex-end',
-			'justify' => 'flex-start',
-		)[ $sgs_cta_align ];
-		$sgs_card_typo_css .= $sgs_cta_align_sel . '{text-align:' . $sgs_cta_align . ';justify-content:' . $sgs_cta_justify . ';}';
-	}
+	$sgs_card_typo_css .= sgs_button_element_text_align_css( $sgs_cta_align_sel, $attributes[ $sgs_cta_align_attr ] ?? array() );
 }
 $sgs_card_typo_tag = '' !== $sgs_card_typo_css ? '<style>' . wp_strip_all_tags( $sgs_card_typo_css ) . '</style>' : '';
 

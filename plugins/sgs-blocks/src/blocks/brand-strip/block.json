@@ -529,15 +529,8 @@
 			"default": ""
 		},
 		"nameTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"nameColour": {
 			"type": "string",
@@ -846,16 +839,9 @@
 		"default": "em"
 	},
 		"titleTextAlign": {
-		"type": "string",
-		"enum": [
-			"",
-			"left",
-			"center",
-			"right",
-			"justify"
-		],
-		"default": ""
-	},
+			"type": "object",
+			"default": {}
+		},
 		"titleTextWrap": {
 		"type": "string",
 		"enum": [

@@ -910,15 +910,8 @@
 			"default": "em"
 		},
 		"titleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"titleTextWrap": {
 			"type": "string",

@@ -95,14 +95,6 @@ const PLATFORM_OPTIONS = [
 	{ label: __( 'Discord', 'sgs-blocks' ),      value: 'discord' },
 ];
 
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( 'Default', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
-
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
 	{ value: 'rem', label: 'rem', default: 0 },
@@ -210,7 +202,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 		maxWidth,
 		nameColourHover,
 		roleColourHover,
-		textAlign,
 	} = attributes;
 
 	// Contrast check for border — warn if border fails WCAG 3:1 contrast
@@ -272,15 +263,10 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 		setAttributes( { socialLinks: [ ...socialLinks, { platform: 'website', url: '', opensInNewTab: true, rel: '' } ] } );
 	};
 
-	// Mirrors render.php's own allowlist exactly so the editor canvas shows
-	// the same class the frontend emits.
-	const canvasTextAlign = [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ? textAlign : '';
-
 	const className = [
 		'sgs-team-member',
 		`sgs-team-member--${ cardStyle }`,
 		isCompact && 'sgs-team-member--compact',
-		canvasTextAlign && `has-text-align-${ canvasTextAlign }`,
 	]
 		.filter( Boolean )
 		.join( ' ' );
@@ -291,7 +277,10 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 	// automatic canvas preview.
 	const blockProps = useBlockProps( {
 		className,
-		style: buildWrapperStyle( attributes, previewTier, colourPalette ),
+		style: {
+			...buildWrapperStyle( attributes, previewTier, colourPalette ),
+			...typographyPreviewStyle( { textAlign: attributes.textAlign }, '', previewTier ),
+		},
 	} );
 
 	return (
@@ -720,22 +709,6 @@ export default function Edit( { attributes, setAttributes, name: blockName } ) {
 							},
 						] }
 					/>
-					<ToggleGroupControl
-						label={ __( 'Text alignment', 'sgs-blocks' ) }
-						value={ textAlign || '' }
-						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						{ TEXT_ALIGN_OPTIONS.map( ( option ) => (
-							<ToggleGroupControlOption
-								key={ option.value }
-								value={ option.value }
-								label={ option.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
 				</PanelBody>
 
 				{ /* padding/margin are each a single block-owned tier-object attr

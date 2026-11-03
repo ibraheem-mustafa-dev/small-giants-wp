@@ -560,12 +560,16 @@
     "attributes": {
       "pillLabel": "Bag",
       "freeDeliveryMessage": "Add %s more for free UK delivery",
-      "showZero": true,
+      "showZero": {
+        "desktop": true
+      },
       "panelHeading": "Bag",
       "panelShowCount": true,
       "emptyCartMessage": "Nothing in here yet.",
       "emptyCartCtaLabel": "Shop sunglasses",
-      "panelEmptyTextAlign": "center",
+      "panelEmptyTextAlign": {
+        "desktop": "center"
+      },
       "itemShowQty": false,
       "itemShowSaveForLater": false,
       "itemRemoveLabel": "Remove",

@@ -350,15 +350,8 @@
 			"default": "em"
 		},
 		"valueTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"valueTextWrap": {
 			"type": "string",
@@ -455,15 +448,8 @@
 			"default": "em"
 		},
 		"captionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"captionTextWrap": {
 			"type": "string",

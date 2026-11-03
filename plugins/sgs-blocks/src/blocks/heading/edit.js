@@ -219,8 +219,9 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 	// styling (background/border/text-align) and inherits from the parent —
 	// mirrored here so the canvas doesn't show the OPPOSITE of what saves.
 	if ( ! inheritStyle ) {
-		if ( textAlign ) {
-			wrapperStyle.textAlign = textAlign;
+		const tierAlign = resolveTier( textAlign, previewTier, '' ).value;
+		if ( tierAlign ) {
+			wrapperStyle.textAlign = tierAlign;
 		}
 		// A gradient wins over the flat colour (sgs_background_paint_decl()).
 		if ( isCssGradient( attributes.backgroundColourGradient ) ) {

@@ -84,14 +84,6 @@ const LOGO_OBJECT_FIT_OPTIONS = [
 	...LOGO_FIT_OPTIONS,
 ];
 
-const CAPTION_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
-];
-
 const IMAGE_EFFECT_OPTIONS = [
 	{ label: __( 'None (full colour)', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Greyscale', 'sgs-blocks' ), value: 'grayscale' },
@@ -251,7 +243,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		showNames,
 		nameColour,
 		nameColourGradient,
-		nameTextAlign,
 		logoGap,
 		tilePadding,
 		tileRadius,
@@ -1094,20 +1085,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								showDecoration
 								showTransform
 								showLetterSpacing
-							/>
-							<SelectControl
-								label={ __( 'Caption align', 'sgs-blocks' ) }
-								help={ __(
-									'Aligns the caption text within its tile. Leave as inherit unless a caption wraps onto two lines.',
-									'sgs-blocks'
-								) }
-								value={ nameTextAlign }
-								options={ CAPTION_ALIGN_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { nameTextAlign: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 						</>
 					) }

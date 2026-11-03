@@ -343,7 +343,7 @@ if ( $mobile_box_decls ) {
 // --- Scoped typography for the label element (unchanged mechanism — the
 // label span is still a nested child of the root). ---
 $label_selector = '.' . $uid . ' .sgs-whatsapp-cta__label';
-$typo_css       = sgs_typography_css_rule( $attributes, 'label', $label_selector );
+$typo_css       = sgs_typography_css_rule( $attributes, 'label', $label_selector, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $typo_css ) {
 	$scoped_css[] = $typo_css;
 }

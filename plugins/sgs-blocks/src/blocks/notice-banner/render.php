@@ -218,18 +218,6 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 // colour helpers (helpers-colour-variants.php / helpers-tokens.php).
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 
-// textAlign is now a block-private bare attribute (D971/D972 full-replacement
-// track — mirrors sgs/text's canonical pattern; the old native
-// supports.typography.textAlign was removed from block.json). Rendered as a
-// `has-text-align-{value}` CLASS, not a style-engine declaration — WP core's
-// own convention, does not reliably merge into get_block_wrapper_attributes()
-// for a dynamic block (verified pattern: class-sgs-container-wrapper.php's
-// identical fix for container-equivalent composites) — emit it explicitly.
-$text_align = $attributes['textAlign'] ?? '';
-if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
-	$text_align = '';
-}
-
 // Width (SGS custom scalars, base only — matches the pre-existing attribute
 // set; no tiers were requested for this pass).
 $max_width = $attributes['maxWidth'] ?? '';
@@ -385,7 +373,9 @@ if ( ! empty( $base_style_engine_args ) ) {
 // wrapper-inheritance carve-out) rather than a per-element override.
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
+// The banner's alignment also places each message row (a flex row), through --sgs-text-justify.
+$scoped_css[] = sgs_text_align_tier_css( $root_sel, $attributes['textAlign'] ?? array(), array(), false );
 
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
@@ -458,10 +448,6 @@ if ( '' !== $preset_text_slug ) {
 	$sgs_wrapper_classes[] = 'has-text-color';
 	$sgs_wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
 }
-if ( '' !== $text_align ) {
-	$sgs_wrapper_classes[] = 'has-text-align-' . $text_align;
-}
-
 if ( $is_bar ) {
 	$sgs_wrapper_classes[] = 'sgs-notice-banner--bar';
 }

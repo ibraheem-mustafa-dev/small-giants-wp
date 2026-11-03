@@ -170,14 +170,6 @@ $wrapper_bg_paint_decl     = sgs_background_paint_decl( $attributes['backgroundC
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
 
-// Typography — migrated off WP-native supports.typography onto the shared
-// TypographyControls/sgs_typography_css_rule() mechanism (D971/D972
-// full-replacement track). textAlign is a plain custom-attr keyword edited
-// through TypographyControls' own text-align field.
-$text_align_raw   = isset( $attributes['textAlign'] ) ? (string) $attributes['textAlign'] : '';
-$allowed_aligns   = array( 'left', 'center', 'right', 'justify' );
-$text_align       = in_array( $text_align_raw, $allowed_aligns, true ) ? $text_align_raw : '';
-
 // ---------------------------------------------------------------------------
 // 5. Scoped CSS assembly. uid is a CLASS — anchor support is declared, so the
 // element's own `id` attribute stays free for the anchor.
@@ -249,16 +241,10 @@ if ( '' !== $wrapper_text_hover_decl ) {
 // The expired message paints its own colour in style.scss and has no colour control of its own, so the wrapper colour is carried onto it.
 $scoped_css = array_merge(
 	$scoped_css,
-	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-countdown__expired' ), $wrapper_text_colour_value, $wrapper_text_hover_value, true, (string) ( $attributes['textAlign'] ?? '' ) )
+	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-countdown__expired' ), $wrapper_text_colour_value, $wrapper_text_hover_value, true, (string) sgs_resolve_tier( $attributes['textAlign'] ?? null, 'desktop', '' )['value'] )
 );
 if ( '' !== $wrapper_bg_paint_decl ) {
 	$scoped_css[] = sgs_block_background_layer_css( $root_sel, $wrapper_bg_paint_decl );
-}
-
-// --- text-align — scoped declaration (custom attr keyword, WP core support
-// value; not native inline-serialised). ---
-if ( '' !== $text_align ) {
-	$scoped_css[] = "{$root_sel}{text-align:{$text_align};}";
 }
 
 // --- Typography — root prefix '', shared TypographyControls/
@@ -271,10 +257,10 @@ if ( '' !== $text_align ) {
 // selector together. The emitted rules are (0,3,0) and beat style.css's :where()
 // defaults. .sgs-countdown__expired is a direct child of the wrapper, a sibling
 // of .sgs-countdown__grid.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-countdown-timer' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__number' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__label' );
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'expired', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__expired' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', '.' . $uid . '.wp-block-sgs-countdown-timer', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__number', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__label', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'expired', '.' . $uid . '.wp-block-sgs-countdown-timer .sgs-countdown__expired', '', false, false, sgs_object_attr_keys( $block ) );
 
 // --- Number/label colour custom-property VALUES (FR-32-4, D345) — scoped, NOT
 // inline. Values are sanitised via sgs_colour_value() and routed into the

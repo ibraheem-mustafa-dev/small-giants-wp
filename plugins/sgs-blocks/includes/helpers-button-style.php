@@ -41,23 +41,50 @@ if ( ! function_exists( 'sgs_button_element_line_height' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_button_element_text_align' ) ) {
+if ( ! function_exists( 'sgs_button_element_text_align_css' ) ) {
 
 	/**
-	 * Allow-list a button text-align keyword. Used by blocks that emit a
-	 * `{prefix}TextAlign` rule for their own built-in CTA; the style helper
-	 * above deliberately does not read it, because blocks such as
-	 * google-reviews already own a `{prefix}TextAlign` through their typography
-	 * rule on the same element.
+	 * Scoped CSS for the text alignment of a built-in CTA, per breakpoint.
 	 *
-	 * @param mixed $value Raw attribute value.
-	 * @return string One of left|center|right|justify, or ''.
+	 * Used by blocks that emit a `{prefix}TextAlign` rule for their own built-in CTA; the style helper above deliberately
+	 * does not read it, because blocks such as google-reviews already own a `{prefix}TextAlign` through their typography
+	 * rule on the same element. The CTA is an inline-flex box wider than its label, so text-align alone moves nothing:
+	 * `justify-content` places the label and `text-align` covers wrapped lines. An empty tier inherits the one above.
+	 *
+	 * @param string $selector Scoped selector.
+	 * @param mixed  $value    The `{desktop, tablet, mobile}` attribute object.
+	 * @return string CSS, or '' when nothing is set.
 	 */
-	function sgs_button_element_text_align( $value ): string {
-		return is_string( $value ) && in_array( $value, array( 'left', 'center', 'right', 'justify' ), true ) ? $value : '';
+	function sgs_button_element_text_align_css( string $selector, $value ): string {
+		$allowed = array( 'left', 'center', 'right', 'justify' );
+		$flex    = array(
+			'left'    => 'flex-start',
+			'center'  => 'center',
+			'right'   => 'flex-end',
+			'justify' => 'flex-start',
+		);
+		$object  = is_array( $value ) ? $value : array();
+		return sgs_emit_responsive_css(
+			$selector,
+			array(
+				array(
+					'value'     => $object,
+					'css'       => 'text-align',
+					'transform' => static function ( $raw ) use ( $allowed ) {
+						return ( is_string( $raw ) && in_array( $raw, $allowed, true ) ) ? $raw : '';
+					},
+				),
+				array(
+					'value'     => $object,
+					'css'       => 'justify-content',
+					'transform' => static function ( $raw ) use ( $flex ) {
+						return ( is_string( $raw ) && isset( $flex[ $raw ] ) ) ? $flex[ $raw ] : '';
+					},
+				),
+			)
+		);
 	}
 }
-
 if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 
 	/**

@@ -811,7 +811,7 @@
                   "itemLetterSpacing": {
                     "desktop": -0.01
                   },
-                  "itemTextAlign": "center",
+                  "itemTextAlign": {"desktop":"center"},
                   "itemColour": "custom-ink",
                   "itemBorderRadius": {
                     "topLeft": "11px",

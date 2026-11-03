@@ -35,8 +35,8 @@ function sgs_whatsapp_cta_card_css( array $attributes, string $uid, string $root
 			$attributes,
 			array( 'base' => 'cardSublineColour' )
 		),
-		sgs_typography_css_rule( $attributes, 'cardTitle', '.' . $uid . ' .sgs-whatsapp-cta__card-title' ),
-		sgs_typography_css_rule( $attributes, 'cardSubline', '.' . $uid . ' .sgs-whatsapp-cta__card-subline' ),
+		sgs_typography_css_rule( $attributes, 'cardTitle', '.' . $uid . ' .sgs-whatsapp-cta__card-title', '', false, false, sgs_object_attr_keys( 'sgs/whatsapp-cta' ) ),
+		sgs_typography_css_rule( $attributes, 'cardSubline', '.' . $uid . ' .sgs-whatsapp-cta__card-subline', '', false, false, sgs_object_attr_keys( 'sgs/whatsapp-cta' ) ),
 	);
 
 	// Card border (width, style, colour). The card has no radius attribute of its

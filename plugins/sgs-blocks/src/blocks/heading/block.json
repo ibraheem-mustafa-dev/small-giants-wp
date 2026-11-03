@@ -400,17 +400,8 @@
 			"description": "Maximum width of the heading, one length per device (e.g. 15ch or 40rem). Empty = no cap. Lets a long heading wrap at a set measure without fixing its width."
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify",
-				"start",
-				"end"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"inheritStyle": {
 			"type": "boolean",

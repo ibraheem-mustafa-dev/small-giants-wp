@@ -433,15 +433,8 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"textWrap": {
 			"type": "string",

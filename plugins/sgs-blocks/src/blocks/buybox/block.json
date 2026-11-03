@@ -856,15 +856,8 @@
 			"default": "em"
 		},
 		"valueLadderTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"valueLadderTextWrap": {
 			"type": "string",
@@ -966,15 +959,8 @@
 			"default": "em"
 		},
 		"valueLadderSavingTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"valueLadderSavingTextWrap": {
 			"type": "string",
@@ -1665,15 +1651,8 @@
 			"default": "em"
 		},
 		"notifyHeadingTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"notifyHeadingTextWrap": {
 			"type": "string",
@@ -1775,15 +1754,8 @@
 			"default": "em"
 		},
 		"notifyLabelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"notifyLabelTextWrap": {
 			"type": "string",
@@ -1885,15 +1857,8 @@
 			"default": "em"
 		},
 		"notifyInputTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"notifyInputTextWrap": {
 			"type": "string",
@@ -1995,15 +1960,8 @@
 			"default": "em"
 		},
 		"notifySubmitTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"notifySubmitTextWrap": {
 			"type": "string",
@@ -2105,15 +2063,8 @@
 			"default": "em"
 		},
 		"notifyStatusTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"notifyStatusTextWrap": {
 			"type": "string",
@@ -2314,15 +2265,8 @@
 			"default": "em"
 		},
 		"stockTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"stockTextWrap": {
 			"type": "string",
@@ -2424,15 +2368,8 @@
 			"default": "em"
 		},
 		"guidedMeterTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"guidedMeterTextWrap": {
 			"type": "string",
@@ -2534,15 +2471,8 @@
 			"default": "em"
 		},
 		"guidedGroupTitleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"guidedGroupTitleTextWrap": {
 			"type": "string",

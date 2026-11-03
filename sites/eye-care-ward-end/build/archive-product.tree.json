@@ -791,7 +791,9 @@
                         "name": "sgs/text",
                         "attributes": {
                           "text": "Nothing matches all of that. Loosen a filter, or message me and I'll see what I can find.",
-                          "textAlign": "center",
+                          "textAlign": {
+                            "desktop": "center"
+                          },
                           "className": "cr-ref-shop-56"
                         }
                       }

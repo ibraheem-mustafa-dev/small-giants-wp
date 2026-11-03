@@ -259,9 +259,9 @@ if ( ! empty( $root_style_args ) ) {
 // mechanism (D971/D972 full-replacement track). Replaces the old WP-native
 // supports.typography (fontSize + lineHeight only) with the framework's own
 // helper, which also now offers fontWeight/fontStyle.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 // Title typography — the <summary> (collapsible) or <p> (flat) title.
-$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.wp-block-sgs-table-of-contents .sgs-toc__title' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.wp-block-sgs-table-of-contents .sgs-toc__title', '', false, false, sgs_object_attr_keys( $block ) );
 
 // --- Responsive padding/margin tiers — SGS custom box objects, longhands for
 // the set sides and corners only, scoped @media on the SAME selector (contract §B2: tablet

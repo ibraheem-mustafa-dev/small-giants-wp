@@ -231,7 +231,9 @@
                       },
                       "fontWeight": "700",
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                      "textAlign": "left",
+                      "textAlign": {
+                        "desktop": "left"
+                      },
                       "icon": "arrow-right",
                       "iconPosition": "after",
                       "minHeight": {
@@ -415,7 +417,9 @@
                       },
                       "fontWeight": "700",
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                      "textAlign": "left",
+                      "textAlign": {
+                        "desktop": "left"
+                      },
                       "icon": "arrow-right",
                       "iconPosition": "after",
                       "minHeight": {
@@ -599,7 +603,9 @@
                       },
                       "fontWeight": "700",
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                      "textAlign": "left",
+                      "textAlign": {
+                        "desktop": "left"
+                      },
                       "icon": "arrow-right",
                       "iconPosition": "after",
                       "minHeight": {
@@ -783,7 +789,9 @@
                       },
                       "fontWeight": "700",
                       "fontFamily": "\"Plus Jakarta Sans\", system-ui, sans-serif",
-                      "textAlign": "left",
+                      "textAlign": {
+                        "desktop": "left"
+                      },
                       "icon": "arrow-right",
                       "iconPosition": "after",
                       "minHeight": {

@@ -20,7 +20,9 @@
         "name": "sgs/text",
         "attributes": {
           "text": "404",
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "textColour": "text-muted",
           "fontSize": {
             "desktop": 120,
@@ -36,7 +38,9 @@
         "name": "sgs/heading",
         "attributes": {
           "content": "Page not found",
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "level": "h1",
           "fontSize": {
             "desktop": "xx-large"
@@ -47,7 +51,9 @@
         "name": "sgs/text",
         "attributes": {
           "text": "The page you're looking for doesn't exist or has been moved. Try searching or head back to the homepage.",
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "textColour": "text-muted"
         }
       },
@@ -100,7 +106,9 @@
         "name": "sgs/text",
         "attributes": {
           "text": "Status code: 404",
-          "textAlign": "center",
+          "textAlign": {
+            "desktop": "center"
+          },
           "textColour": "text-muted",
           "fontSize": {
             "desktop": "small"

@@ -735,7 +735,7 @@ if ( $buybox_bar_on ) {
 // TypographyControls prefix 'price', scoped to the current-price figure only
 // (mirrors sgs/product-card's own priceFontFamily/priceFontSize/
 // priceFontWeight trio and sgs_typography_css_rule() call).
-$sgs_bb_price_typo_css = sgs_typography_css_rule( $attributes, 'price', $root_sel . ' .buybox__price--current' );
+$sgs_bb_price_typo_css = sgs_typography_css_rule( $attributes, 'price', $root_sel . ' .buybox__price--current', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_bb_price_typo_css ) {
 	$scoped_css[] = $sgs_bb_price_typo_css;
 }
@@ -748,7 +748,7 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 // button's label text. Minimum height is a plain CSS length, not a
 // typography property, so it is emitted as its own declaration on the same
 // selector straight after.
-$sgs_bb_add_to_cart_typo_css = sgs_typography_css_rule( $attributes, 'addToCart', $root_sel . ' .buybox__add-to-cart' );
+$sgs_bb_add_to_cart_typo_css = sgs_typography_css_rule( $attributes, 'addToCart', $root_sel . ' .buybox__add-to-cart', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_bb_add_to_cart_typo_css ) {
 	$scoped_css[] = $sgs_bb_add_to_cart_typo_css;
 }
@@ -784,7 +784,7 @@ if ( '' !== $sgs_bb_add_to_cart_border_css ) {
 // $buybox_picker_show_selected_value/$buybox_picker_has_link are computed
 // early, above the RRP block.
 if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
-	$sgs_bb_picker_label_typo_css = sgs_typography_css_rule( $attributes, 'pickerLabel', $root_sel . ' .sgs-buybox__picker-label-text' );
+	$sgs_bb_picker_label_typo_css = sgs_typography_css_rule( $attributes, 'pickerLabel', $root_sel . ' .sgs-buybox__picker-label-text', '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $sgs_bb_picker_label_typo_css ) {
 		$scoped_css[] = $sgs_bb_picker_label_typo_css;
 	}
@@ -796,7 +796,7 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	// colour and nothing else, so without this it inherits the buybox's own font
 	// size. Own-render path only — the element does not exist on the forwarding
 	// path, so unlike pickerLabel there is no option-picker attribute to relay to.
-	$sgs_bb_picker_value_typo_css = sgs_typography_css_rule( $attributes, 'pickerValue', $root_sel . ' .sgs-buybox__picker-selected-value' );
+	$sgs_bb_picker_value_typo_css = sgs_typography_css_rule( $attributes, 'pickerValue', $root_sel . ' .sgs-buybox__picker-selected-value', '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $sgs_bb_picker_value_typo_css ) {
 		$scoped_css[] = $sgs_bb_picker_value_typo_css;
 	}
@@ -810,7 +810,7 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 // states. Emitted whether or not a picker renders: the rules match nothing
 // without one.
 $sgs_bb_option_sel      = $root_sel . ' .sgs-option-picker--tile .sgs-option-picker__pill-label';
-$sgs_bb_option_typo_css = sgs_typography_css_rule( $attributes, 'pickerOption', $sgs_bb_option_sel );
+$sgs_bb_option_typo_css = sgs_typography_css_rule( $attributes, 'pickerOption', $sgs_bb_option_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_bb_option_typo_css ) {
 	$scoped_css[] = $sgs_bb_option_typo_css;
 }
@@ -823,8 +823,8 @@ if ( '' !== $sgs_bb_option_colour ) {
 // text ('valueLadderSaving'), which style.css sizes absolutely so the wrapper
 // setting cannot reach it. Emitted whether or not the ladder renders: the rules
 // match nothing when it is hidden.
-$sgs_bb_ladder_typo_css  = sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder' );
-$sgs_bb_ladder_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', $root_sel . ' .value-ladder__saving' );
+$sgs_bb_ladder_typo_css  = sgs_typography_css_rule( $attributes, 'valueLadder', $root_sel . ' .buybox__value-ladder', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_ladder_typo_css .= sgs_typography_css_rule( $attributes, 'valueLadderSaving', $root_sel . ' .value-ladder__saving', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_bb_ladder_typo_css ) {
 	$scoped_css[] = $sgs_bb_ladder_typo_css;
 }
@@ -835,17 +835,17 @@ if ( '' !== $sgs_bb_ladder_typo_css ) {
 // specificity default for each, so an unset control leaves that default.
 // The rules match nothing when the element is not rendered (stock line off,
 // no badge, in-stock product, standard layout).
-$sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyHeading', $root_sel . ' .sgs-buybox__notify-heading' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-label' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-consent-label' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyInput', $root_sel . ' .sgs-buybox__notify-email' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifySubmit', $root_sel . ' .sgs-buybox__notify-submit' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyStatus', $root_sel . ' .sgs-buybox__notify-status' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-btn' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-index' );
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact' );
+$sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyHeading', $root_sel . ' .sgs-buybox__notify-heading', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-label', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-consent-label', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyInput', $root_sel . ' .sgs-buybox__notify-email', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifySubmit', $root_sel . ' .sgs-buybox__notify-submit', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyStatus', $root_sel . ' .sgs-buybox__notify-status', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-btn', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-index', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact', '', false, false, sgs_object_attr_keys( $block ) );
 // The status stock line and each meter step are flex rows as wide as their cell, so text-align
 // alone moves nothing there: justify-content places their content (a plain line follows text-align).
 $sgs_bb_justify_map = array(
@@ -856,15 +856,25 @@ $sgs_bb_justify_map = array(
 	'right'   => 'flex-end',
 	'end'     => 'flex-end',
 );
-$sgs_bb_stock_align = is_string( $attributes['stockTextAlign'] ?? null ) ? $attributes['stockTextAlign'] : '';
-if ( isset( $sgs_bb_justify_map[ $sgs_bb_stock_align ] ) ) {
-	$sgs_bb_surface_typo_css .= $root_sel . ' .buybox__stock--status{justify-content:' . $sgs_bb_justify_map[ $sgs_bb_stock_align ] . ';}';
+$sgs_bb_justify_value = static function ( $raw ) use ( $sgs_bb_justify_map ) {
+	return ( is_string( $raw ) && isset( $sgs_bb_justify_map[ $raw ] ) ) ? $sgs_bb_justify_map[ $raw ] : '';
+};
+foreach ( array(
+	'stockTextAlign'       => ' .buybox__stock--status',
+	'guidedMeterTextAlign' => ' .sgs-buybox-guided__meter-btn',
+) as $sgs_bb_align_attr => $sgs_bb_align_sel ) {
+	$sgs_bb_surface_typo_css .= sgs_emit_responsive_css(
+		$root_sel . $sgs_bb_align_sel,
+		array(
+			array(
+				'value'     => $attributes[ $sgs_bb_align_attr ] ?? array(),
+				'css'       => 'justify-content',
+				'transform' => $sgs_bb_justify_value,
+			),
+		)
+	);
 }
-$sgs_bb_meter_align = is_string( $attributes['guidedMeterTextAlign'] ?? null ) ? $attributes['guidedMeterTextAlign'] : '';
-if ( isset( $sgs_bb_justify_map[ $sgs_bb_meter_align ] ) ) {
-	$sgs_bb_surface_typo_css .= $root_sel . ' .sgs-buybox-guided__meter-btn{justify-content:' . $sgs_bb_justify_map[ $sgs_bb_meter_align ] . ';}';
-}
-$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedGroupTitle', $root_sel . ' .sgs-buybox-guided__group-title' );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedGroupTitle', $root_sel . ' .sgs-buybox-guided__group-title', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $sgs_bb_surface_typo_css ) {
 	$scoped_css[] = $sgs_bb_surface_typo_css;
 }

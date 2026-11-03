@@ -97,7 +97,7 @@ $number_sel = '.' . $uid . ' .sgs-counter__number';
 $label_sel  = '.' . $uid . ' .sgs-counter__label';
 
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-typography.php';
-$typo_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$typo_css = sgs_typography_css_rule( $attributes, 'label', $label_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // Guarded declaration — render.php is included per block render, so an unguarded
 // top-level function fatals on the 2nd counter on a page ("Cannot redeclare").

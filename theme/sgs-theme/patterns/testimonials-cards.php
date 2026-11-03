@@ -11,7 +11,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface-alt","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/heading {"content":"What Our Clients Say","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
+	<!-- wp:sgs/heading {"content":"What Our Clients Say","textAlign":{"desktop":"center"},"fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"1fr 1fr 1fr","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|40"}} -->
 

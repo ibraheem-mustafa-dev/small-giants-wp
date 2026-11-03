@@ -193,7 +193,9 @@
                   "fontWeight": "500",
                   "lineHeight": 1.5,
                   "letterSpacing": 0.3,
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColourHover": "primary"
                 },
                 "innerBlocks": []
@@ -210,7 +212,9 @@
                     "desktop": 0.14
                   },
                   "textTransform": "uppercase",
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "custom-text-4",
                   "textColourHover": "custom-text-4"
                 },
@@ -768,7 +772,9 @@
                   "letterSpacing": {
                     "desktop": 0.04
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "custom-text-strong",
                   "padding": {
                     "desktop": {
@@ -797,7 +803,9 @@
                   "letterSpacing": {
                     "desktop": 0.04
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "custom-text-strong",
                   "padding": {
                     "desktop": {
@@ -826,7 +834,9 @@
                   "letterSpacing": {
                     "desktop": 0.04
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "custom-text-strong",
                   "padding": {
                     "desktop": {
@@ -855,7 +865,9 @@
                   "letterSpacing": {
                     "desktop": 0.04
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "custom-text-strong",
                   "padding": {
                     "desktop": {
@@ -989,7 +1001,9 @@
                   "lineHeight": {
                     "desktop": 1.333
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColourHover": "primary"
                 },
                 "innerBlocks": []
@@ -1005,7 +1019,9 @@
                   "lineHeight": {
                     "desktop": 1.273
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColourHover": "primary"
                 },
                 "innerBlocks": []
@@ -1021,7 +1037,9 @@
                   "lineHeight": {
                     "desktop": 1.333
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "primary-text",
                   "textColourHover": "primary-text"
                 },
@@ -1038,7 +1056,9 @@
                   "lineHeight": {
                     "desktop": 1.273
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColour": "primary-text",
                   "textColourHover": "primary-text"
                 },
@@ -1055,7 +1075,9 @@
                   "lineHeight": {
                     "desktop": 1.333
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColourHover": "primary"
                 },
                 "innerBlocks": []
@@ -1071,7 +1093,9 @@
                   "lineHeight": {
                     "desktop": 1.273
                   },
-                  "textAlign": "center",
+                  "textAlign": {
+                    "desktop": "center"
+                  },
                   "textColourHover": "primary"
                 },
                 "innerBlocks": []
@@ -2471,7 +2495,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"
@@ -3104,7 +3130,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"
@@ -3741,7 +3769,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"
@@ -4323,7 +4353,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"
@@ -4838,7 +4870,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"
@@ -5445,7 +5479,9 @@
                                 "bottomRight": "50%",
                                 "bottomLeft": "50%"
                               },
-                              "textAlign": "center",
+                              "textAlign": {
+                                "desktop": "center"
+                              },
                               "iconColour": "#000000",
                               "iconSize": {
                                 "desktop": "17px"

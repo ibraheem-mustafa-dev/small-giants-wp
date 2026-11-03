@@ -119,6 +119,89 @@ if ( ! function_exists( 'sgs_font_family_preset_slugs' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_object_attr_keys' ) ) {
+	/**
+	 * The attribute keys a block declares as `type: object` in its block.json.
+	 *
+	 * The explicit `$tiered_keys` argument of sgs_typography_css_rule(): the schema decides which keys are per-breakpoint
+	 * objects, never the shape of a stored value.
+	 *
+	 * @param object|string|null $block The rendering WP_Block, or the block name (`sgs/x`) from a helper function that has no
+	 *                                  block instance, or null.
+	 * @return string[] Attribute keys.
+	 */
+	function sgs_object_attr_keys( $block ): array {
+		if ( is_string( $block ) ) {
+			$type  = class_exists( 'WP_Block_Type_Registry' ) ? WP_Block_Type_Registry::get_instance()->get_registered( $block ) : null;
+			$attrs = ( $type && is_array( $type->attributes ) ) ? $type->attributes : array();
+		} else {
+			$attrs = ( is_object( $block ) && isset( $block->block_type->attributes ) && is_array( $block->block_type->attributes ) )
+				? $block->block_type->attributes
+				: array();
+		}
+		$keys  = array();
+		foreach ( $attrs as $key => $spec ) {
+			if ( is_array( $spec ) && 'object' === ( $spec['type'] ?? '' ) ) {
+				$keys[] = (string) $key;
+			}
+		}
+		return $keys;
+	}
+}
+
+if ( ! function_exists( 'sgs_text_align_tier_css' ) ) {
+	/**
+	 * Scoped CSS for a block's own per-breakpoint text alignment: `text-align` plus the custom property
+	 * `--sgs-text-justify`, which places a flex row (a notice message: icon and text) the way the surrounding text is aligned,
+	 * because text-align alone cannot move a flex item. A descendant reads it through `justify-content:
+	 * var(--sgs-text-justify, normal)` (`notice-message/style.css`).
+	 *
+	 * @param string $selector Scoped selector.
+	 * @param mixed  $value    The `{desktop, tablet, mobile}` attribute object.
+	 * @param array  $opts     Options for `sgs_emit_responsive_css()` (`container => true` for a block in a narrow column).
+	 * @param bool   $with_text_align False when the caller's typography rule already prints `text-align` and only the property is needed.
+	 * @return string CSS, or '' when nothing is set.
+	 */
+	function sgs_text_align_tier_css( string $selector, $value, array $opts = array(), bool $with_text_align = true ): string {
+		$aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
+		$flex   = array(
+			'left'    => 'normal',
+			'start'   => 'normal',
+			'justify' => 'normal',
+			'center'  => 'center',
+			'right'   => 'end',
+			'end'     => 'end',
+		);
+		$object = is_array( $value ) ? $value : array();
+		$specs  = array();
+		if ( $with_text_align ) {
+			$specs[] = array(
+				'value'     => $object,
+				'css'       => 'text-align',
+				'transform' => static function ( $raw ) use ( $aligns ) {
+					return ( is_string( $raw ) && in_array( $raw, $aligns, true ) ) ? $raw : '';
+				},
+			);
+		}
+		return sgs_emit_responsive_css(
+			$selector,
+			array_merge(
+				$specs,
+				array(
+				array(
+					'value'     => $object,
+					'css'       => '--sgs-text-justify',
+					'transform' => static function ( $raw ) use ( $flex ) {
+						return ( is_string( $raw ) && isset( $flex[ $raw ] ) ) ? $flex[ $raw ] : '';
+					},
+				),
+				)
+			),
+			$opts
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	/**
 	 * Build a scoped typography CSS rule string (base + responsive) for one
@@ -174,9 +257,15 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 	 *   never a hardcoded px literal that could drift from a given
 	 *   client's theme. Leave false for every existing caller — this is
 	 *   additive/backward-compatible, default preserves current behaviour.
+	 * @param string[] $tiered_keys Full attribute keys (for example `textAlign`, `titleTextAlign`) the caller declares as
+	 *   `{desktop, tablet, mobile}` objects, from `sgs_object_attr_keys( $block )`. A key listed here is emitted per
+	 *   breakpoint through `sgs_emit_responsive_css()`; a key not listed is emitted as the scalar it is declared as. The
+	 *   emitter never decides by the shape of the stored value (FW-F, footer framework batch).
+	 * @param array    $responsive_opts Options for `sgs_emit_responsive_css()` (`container => true` for blocks that sit in a
+	 *   narrow column).
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '', $inherit_font_family_when_blank = false, $inherit_font_size_when_blank = false ) {
+	function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = '', $inherit_font_family_when_blank = false, $inherit_font_size_when_blank = false, array $tiered_keys = array(), array $responsive_opts = array() ) {
 		$k_size        = sgs_typography_attr( $prefix, 'FontSize' );
 		$k_size_unit   = sgs_typography_attr( $prefix, 'FontSizeUnit' );
 		$k_family      = sgs_typography_attr( $prefix, 'FontFamily' );
@@ -313,9 +402,21 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			);
 		}
 
+		$allowed_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
+		$align_tiered   = in_array( $k_align, $tiered_keys, true );
+		if ( $align_tiered && isset( $attributes[ $k_align ] ) ) {
+			$tiered_specs[] = array(
+				'value'     => $attributes[ $k_align ],
+				'css'       => 'text-align',
+				'transform' => function ( $raw ) use ( $allowed_aligns ) {
+					return ( is_string( $raw ) && in_array( $raw, $allowed_aligns, true ) ) ? $raw : '';
+				},
+			);
+		}
+
 		$css = '';
 		if ( ! empty( $tiered_specs ) ) {
-			$css .= sgs_emit_responsive_css( $selector, $tiered_specs );
+			$css .= sgs_emit_responsive_css( $selector, $tiered_specs, $responsive_opts );
 		}
 		if ( ! empty( $flat_specs ) ) {
 			$css .= sgs_responsive_css_rule( $attributes, $flat_specs, $selector );
@@ -393,16 +494,16 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		if ( ! empty( $attributes[ $k_decoration ] ) && in_array( $attributes[ $k_decoration ], $allowed_decorations, true ) ) {
 			$base_decls[] = 'text-decoration:' . $attributes[ $k_decoration ] . ';';
 		}
-		// text-align — flat scalar (no responsive tier), same discipline as
-		// font-weight/font-style/text-transform/text-decoration above.
+		// text-align — a flat scalar here only when the caller does not list the key in
+		// $tiered_keys (a tiered key was emitted above with the other per-breakpoint
+		// properties), same discipline as font-weight/font-style/text-transform above.
 		// Allowlist-validated (brand-strip/render.php:370, heading/render.php
 		// precedent) — never interpolated raw.
 		// 'start'/'end' added 2026-09-06 -- the RTL-aware logical values, found
 		// missing while migrating sgs/label (its own block.json enum already
 		// permitted them; this allowlist was the narrower of the two, not the
 		// other way round -- widened here rather than narrowing the schema).
-		$allowed_aligns = array( 'left', 'center', 'right', 'justify', 'start', 'end' );
-		if ( ! empty( $attributes[ $k_align ] ) && in_array( $attributes[ $k_align ], $allowed_aligns, true ) ) {
+		if ( ! $align_tiered && ! empty( $attributes[ $k_align ] ) && is_string( $attributes[ $k_align ] ) && in_array( $attributes[ $k_align ], $allowed_aligns, true ) ) {
 			$base_decls[] = 'text-align:' . $attributes[ $k_align ] . ';';
 		}
 		// text-wrap — flat scalar (no responsive tier), same discipline as the

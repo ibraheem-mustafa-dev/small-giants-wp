@@ -362,7 +362,10 @@ $css_base_and_tiers = sgs_typography_css_rule(
 	$attributes,
 	'',
 	$scope,
-	'.wp-block-sgs-text + ' . $scope
+	'.wp-block-sgs-text + ' . $scope,
+	false,
+	false,
+	sgs_object_attr_keys( $block )
 );
 
 // Two-state link colour (Task 3, 2026-09-07) — the body RichText permits

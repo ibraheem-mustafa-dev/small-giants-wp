@@ -783,7 +783,7 @@ if ( '' !== $label_colour_effective_hover ) {
 // block declares; the shared helper reads just the keys that exist). Same
 // target as the label colour above; empty emits nothing, so the day label
 // follows the block's own weight (style.css has `font-weight: inherit`).
-$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel );
+$label_typography_css = sgs_typography_css_rule( $attributes, 'label', $label_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $label_typography_css ) {
 	$scoped_css[] = $label_typography_css;
 }
@@ -889,7 +889,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 // Typography — root prefix '', shared TypographyControls/sgs_typography_css_rule()
 // mechanism, which offers fontSize/fontFamily/fontWeight/fontStyle/lineHeight.
 // $root_sel is the whole-wrapper selector.
-$typography_css = sgs_typography_css_rule( $attributes, '', $root_sel );
+$typography_css = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
 }

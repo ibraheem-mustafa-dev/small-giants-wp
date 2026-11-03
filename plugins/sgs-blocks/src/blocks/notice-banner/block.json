@@ -457,15 +457,8 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"fontFamily": {
 			"type": "string",

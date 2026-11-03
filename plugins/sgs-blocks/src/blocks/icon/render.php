@@ -393,15 +393,22 @@ if ( ! $is_outline ) {
 		)
 	);
 }
-$text_align = $attributes['textAlign'] ?? '';
-if ( in_array( $text_align, array( 'left', 'center', 'right', 'justify' ), true ) ) {
-	$root_decls[] = 'text-align:' . $text_align;
-}
-
 $scoped_css = array();
 if ( $root_decls ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $root_decls ) . ';}';
 }
+$scoped_css[] = sgs_emit_responsive_css(
+	$root_sel,
+	array(
+		array(
+			'value'     => $attributes['textAlign'] ?? array(),
+			'css'       => 'text-align',
+			'transform' => static function ( $raw ) {
+				return ( is_string( $raw ) && in_array( $raw, array( 'left', 'center', 'right', 'justify' ), true ) ) ? $raw : '';
+			},
+		),
+	)
+);
 
 // ── Gradients: background (box shapes only) and glyph ────────────────────────
 if ( $show_bg && ! $is_outline ) {
@@ -497,7 +504,7 @@ if ( $has_label ) {
 		$scoped_css[] = sgs_hover_state_rules( $link_sel, 'background-image:none;color:var(--sgs-icon-label-colour-hover)', ':focus-visible', ' .sgs-icon__label-text' );
 	}
 	// One class above a wrapping row's group label rule, so an icon's own label typography wins.
-	$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-icon.sgs-icon .sgs-icon__label-text' );
+	$scoped_css[] = sgs_typography_css_rule( $attributes, 'label', '.' . $uid . '.wp-block-sgs-icon.sgs-icon .sgs-icon__label-text', '', false, false, sgs_object_attr_keys( $block ) );
 	$scoped_css   = array_values( array_filter( $scoped_css, 'strlen' ) );
 }
 

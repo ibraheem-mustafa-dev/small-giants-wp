@@ -587,7 +587,7 @@
                       "left": "0px"
                     }
                   },
-                  "panelEmptyTextAlign": "center",
+                  "panelEmptyTextAlign": {"desktop":"center"},
                   "panelEmptyColour": "text-muted",
                   "emptyMessageFontFamily": "heading",
                   "emptyMessageFontSize": {

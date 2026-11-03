@@ -169,7 +169,9 @@
               "sgsChildSizing": {
                 "desktop": "fill"
               },
-              "textAlign": "left",
+              "textAlign": {
+                "desktop": "left"
+              },
               "iconGap": {
                 "desktop": "8px"
               }

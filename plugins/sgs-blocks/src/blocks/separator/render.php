@@ -312,7 +312,7 @@ if ( 'icon' === $content_mode ) {
 	$content_colour_gradient = $attributes['contentColourGradient'] ?? '';
 
 	if ( function_exists( 'sgs_typography_css_rule' ) ) {
-		$content_typography_css = sgs_typography_css_rule( $attributes, 'content', "{$root_sel} .sgs-separator__content" );
+		$content_typography_css = sgs_typography_css_rule( $attributes, 'content', "{$root_sel} .sgs-separator__content", '', false, false, sgs_object_attr_keys( $block ) );
 		if ( '' !== $content_typography_css ) {
 			$scoped_css[] = $content_typography_css;
 		}

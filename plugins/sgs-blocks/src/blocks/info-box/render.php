@@ -301,7 +301,7 @@ if ( ! empty( $base_style_engine_args ) ) {
 // own typography still wins by cascade).
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
 
 // --- D744: Text colour (flat-or-gradient, base + hover) — block-private
 // replacement for the retired native supports.color.text/gradients. Both
@@ -360,31 +360,6 @@ $scoped_css[]      = sgs_block_background_layer_css(
 	$sgs_info_bg_decls['normal'][0] ?? '',
 	$sgs_info_bg_decls['hover'][0] ?? ''
 );
-
-/*
- * text-align is the ONE declared typography support the wholesale passthrough
- * above cannot carry: it is not a style-engine key, so
- * wp_style_engine_get_styles() silently ignores it (same reason
- * sgs/notice-banner emits it by hand). Every other
- * declared support — fontSize / lineHeight / letterSpacing / textTransform /
- * fontWeight / fontStyle — already reaches $root_sel through
- * $style_typography_args, so this is the only gap.
- *
- * Emitted to the block ROOT, not a child element: this block renders its
- * heading and description as InnerBlocks children (HC2 migration, see
- * style.css:99), so plain CSS inheritance carries the value down. A
- * DECLARATION beats an INHERITED value regardless of specificity, so an
- * unset child inherits this and any child setting its own alignment wins.
- *
- * Reads the native key first — WP's "Align text" control writes
- * style.typography.textAlign — with the top-level attribute as the fallback
- * the cloning converter writes.
- */
-$info_box_text_align = $attributes['style']['typography']['textAlign']
-	?? ( $attributes['textAlign'] ?? '' );
-if ( in_array( $info_box_text_align, array( 'left', 'center', 'right' ), true ) ) {
-	$scoped_css[] = $root_sel . '{text-align:' . esc_attr( $info_box_text_align ) . '}';
-}
 
 // D744: Link colour — block-private replacement for the retired native
 // Elements API (supports.color.link). Same descendant-link selector the

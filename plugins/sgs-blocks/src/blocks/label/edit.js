@@ -62,7 +62,7 @@ const TYPOGRAPHY_DEFAULTS = {
 	letterSpacingUnit: 'em',
 	textTransform: 'uppercase',
 	textDecoration: '',
-	textAlign: '',
+	textAlign: {},
 	textWrap: '',
 	textColumns: undefined,
 	writingMode: '',
@@ -83,6 +83,9 @@ function hasTypographyValue( attributes ) {
 					? attributes.fontSize
 					: {};
 			return 12 !== size.desktop || !! size.tablet || !! size.mobile;
+		}
+		if ( 'textAlign' === key ) {
+			return Object.values( attributes.textAlign || {} ).some( Boolean );
 		}
 		const value = attributes[ key ];
 		const fallback = TYPOGRAPHY_DEFAULTS[ key ];

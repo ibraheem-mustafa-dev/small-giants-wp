@@ -484,7 +484,7 @@ $sgs_btn_typography_attrs = $attributes;
 if ( $sgs_btn_underline_owned ) {
 	unset( $sgs_btn_typography_attrs['textDecoration'] );
 }
-$scoped_css_parts[] = sgs_typography_css_rule( $sgs_btn_typography_attrs, '', ".{$uid}.sgs-button" );
+$scoped_css_parts[] = sgs_typography_css_rule( $sgs_btn_typography_attrs, '', ".{$uid}.sgs-button", '', false, false, sgs_object_attr_keys( $block ) );
 // The shared underline settings, the button being itself the link (doubled uid: beats style.css's hover and focus resets).
 $scoped_css_parts[] = sgs_link_underline_css( $attributes, '', ".{$uid}.{$uid}.sgs-button", ' .sgs-button__label', true );
 

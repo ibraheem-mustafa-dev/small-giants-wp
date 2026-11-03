@@ -181,7 +181,7 @@ $slider_scoped_css .= sgs_block_background_layer_css(
 // root element (block.json `selectors.typography` targets the root too).
 // letterSpacing/textTransform/textAlign are honest gaps the shared helper
 // doesn't cover (matches sgs/accordion's wrapper element).
-$slider_scoped_css .= sgs_typography_css_rule( $attributes, '', $root_sel );
+$slider_scoped_css .= sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // Skip-serialised `color` support also stops WP auto-adding the standard
 // has-*-color / has-*-background-color classes onto the wrapper — re-add them

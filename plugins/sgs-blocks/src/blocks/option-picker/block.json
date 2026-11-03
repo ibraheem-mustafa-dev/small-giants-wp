@@ -503,15 +503,8 @@
 			"default": "em"
 		},
 		"labelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"labelTextWrap": {
 			"type": "string",
@@ -601,15 +594,8 @@
 			"default": "em"
 		},
 		"pillTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"pillTextWrap": {
 			"type": "string",

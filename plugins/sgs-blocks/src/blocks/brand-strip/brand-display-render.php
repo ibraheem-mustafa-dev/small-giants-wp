@@ -70,7 +70,7 @@ if ( ! function_exists( 'sgs_brand_strip_text_style_css' ) ) {
 		$sel   = "{$root_sel} .sgs-brand-strip__brand-text";
 
 		if ( function_exists( 'sgs_typography_css_rule' ) ) {
-			$typography_css = sgs_typography_css_rule( $attributes, 'brandText', $sel );
+			$typography_css = sgs_typography_css_rule( $attributes, 'brandText', $sel, '', false, false, sgs_object_attr_keys( 'sgs/brand-strip' ) );
 			if ( '' !== $typography_css ) {
 				$rules[] = $typography_css;
 			}

@@ -1333,15 +1333,8 @@
 			"default": "em"
 		},
 		"itemTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"itemTextWrap": {
 			"type": "string",
@@ -1593,8 +1586,8 @@
 			"default": "em"
 		},
 		"submenuTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"submenuTextWrap": {
 			"type": "string",
@@ -1838,8 +1831,8 @@
 			"default": "em"
 		},
 		"drillBackTextAlign": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"drillBackTextWrap": {
 			"type": "string",

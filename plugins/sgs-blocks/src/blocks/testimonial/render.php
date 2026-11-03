@@ -403,7 +403,7 @@ if ( '' !== $quote_link_underline_css ) {
 	// helper, exactly as the name element below). The base rules (font-size
 	// + font-style + line-height + margin-bottom) are built above; this call
 	// emits the RESPONSIVE and EXTENDED typography properties.
-	$quote_typography_css = sgs_typography_css_rule( $attributes, 'quote', $quote_colour_sel );
+	$quote_typography_css = sgs_typography_css_rule( $attributes, 'quote', $quote_colour_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $quote_typography_css ) {
 	$scoped_css[] = $quote_typography_css;
 	}
@@ -425,7 +425,7 @@ if ( '' !== $name_colour_effective ) {
 	}
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $name_colour_sel, $name_colour_effective );
 }
-$name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-testimonial__name' );
+$name_typography_css = sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-testimonial__name', '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $name_typography_css ) {
 	$scoped_css[] = $name_typography_css;
 }

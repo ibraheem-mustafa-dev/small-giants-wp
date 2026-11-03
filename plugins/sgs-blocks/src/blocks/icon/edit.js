@@ -115,8 +115,9 @@ export function canvasRootStyle( attributes, tier, brand, presetSlugs, hoverMap 
 		const { boxShadow, boxShadowColour, boxShadowHover, boxShadowColourHover, shadowLiftOnHover } = attributes;
 		Object.assign( style, iconShadowStyle( { shadow: boxShadow, colour: boxShadowColour, hover: boxShadowHover, hoverColour: boxShadowColourHover, lift: shadowLiftOnHover }, '--sgs-icon', { pinHover: true, hoverMap } ) );
 	}
-	if ( [ 'left', 'center', 'right', 'justify' ].includes( textAlign ) ) {
-		style.textAlign = textAlign;
+	const tierAlign = resolveTier( textAlign, tier ).value;
+	if ( [ 'left', 'center', 'right', 'justify' ].includes( tierAlign ) ) {
+		style.textAlign = tierAlign;
 	}
 	Object.assign( style, tierBoxLonghands( attributes.padding, tier, 'padding' ) );
 	Object.assign( style, tierBoxLonghands( attributes.margin, tier, 'margin' ) );

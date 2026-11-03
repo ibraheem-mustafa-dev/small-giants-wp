@@ -206,15 +206,13 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		right: 'flex-end',
 		end: 'flex-end',
 	};
-	if ( justify[ attributes.stockTextAlign ] ) {
-		css += `${ root } .buybox__stock--status{justify-content:${
-			justify[ attributes.stockTextAlign ]
-		};}`;
+	const stockAlign = resolveResponsiveTier( attributes.stockTextAlign, tier ).value;
+	if ( justify[ stockAlign ] ) {
+		css += `${ root } .buybox__stock--status{justify-content:${ justify[ stockAlign ] };}`;
 	}
-	if ( justify[ attributes.guidedMeterTextAlign ] ) {
-		css += `${ root } .sgs-buybox-guided__meter-btn{justify-content:${
-			justify[ attributes.guidedMeterTextAlign ]
-		};}`;
+	const meterAlign = resolveResponsiveTier( attributes.guidedMeterTextAlign, tier ).value;
+	if ( justify[ meterAlign ] ) {
+		css += `${ root } .sgs-buybox-guided__meter-btn{justify-content:${ justify[ meterAlign ] };}`;
 	}
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
 	const gap = String( attributes.galleryColumnGap || '' ).trim();

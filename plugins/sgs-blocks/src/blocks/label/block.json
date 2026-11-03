@@ -246,17 +246,8 @@
 			"default": ""
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify",
-				"start",
-				"end"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"padding": {
 			"type": "object",

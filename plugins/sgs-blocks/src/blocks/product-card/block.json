@@ -1356,15 +1356,8 @@
 			"default": "em"
 		},
 		"valueLadderTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"valueLadderTextWrap": {
 			"type": "string",
@@ -1466,15 +1459,8 @@
 			"default": "em"
 		},
 		"valueLadderSavingTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"valueLadderSavingTextWrap": {
 			"type": "string",
@@ -1851,15 +1837,8 @@
 			"default": "em"
 		},
 		"priceFromLabelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"priceFromLabelTextWrap": {
 			"type": "string",
@@ -1956,15 +1935,8 @@
 			"default": "em"
 		},
 		"ratingTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"ratingTextWrap": {
 			"type": "string",
@@ -2061,15 +2033,8 @@
 			"default": "em"
 		},
 		"ratingStarsTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"ratingStarsTextWrap": {
 			"type": "string",
@@ -2498,15 +2463,8 @@
 			"default": "em"
 		},
 		"attributeTagTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"attributeTagTextWrap": {
 			"type": "string",
@@ -2550,26 +2508,12 @@
 			"default": "1.4"
 		},
 		"ctaTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"cta2TextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tagFontSize": {
 			"type": "object",
@@ -2662,15 +2606,8 @@
 			"default": "em"
 		},
 		"titleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"titleTextWrap": {
 			"type": "string",
@@ -2752,15 +2689,8 @@
 			"default": "em"
 		},
 		"descTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"descTextWrap": {
 			"type": "string",
@@ -2858,15 +2788,8 @@
 			"default": "em"
 		},
 		"tagTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"tagTextWrap": {
 			"type": "string",

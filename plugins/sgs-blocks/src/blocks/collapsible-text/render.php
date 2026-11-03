@@ -99,7 +99,7 @@ $root_sel = '.' . $uid . '.sgs-collapsible-text';
 $typography_selector = '.' . esc_attr( $uid ) . ' .sgs-collapsible-text__body';
 // Text indent follows core's convention: every paragraph that follows another
 // paragraph inside the element.
-$typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector, $typography_selector . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' );
+$typography_css      = sgs_typography_css_rule( $attributes, '', $typography_selector, $typography_selector . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
 // Two-state link colour (Task 3, 2026-09-07) — the body's RichText permits
 // `core/link`, so a linked selection needs its own colour independent of the
 // surrounding text.
@@ -130,13 +130,6 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 $style_color_text = isset( $attributes['textColour'] ) ? (string) $attributes['textColour'] : '';
 $preset_text_slug = isset( $attributes['textColor'] ) ? sanitize_html_class( $attributes['textColor'] ) : '';
 $preset_bg_slug   = isset( $attributes['backgroundColor'] ) ? sanitize_html_class( $attributes['backgroundColor'] ) : '';
-
-// WP `typography.textAlign` support (skip-serialised, top-level attribute —
-// NOT nested under style.typography). block.json maps css:text-align to the
-// `body` element (`.sgs-collapsible-text__body`), so it is scoped there, not
-// the root wrapper (contract §B — element manifest is DB-first, FP-1).
-$text_align_raw = $attributes['textAlign'] ?? '';
-$text_align     = in_array( $text_align_raw, array( 'left', 'center', 'right' ), true ) ? $text_align_raw : '';
 
 // ---------------------------------------------------------------------------
 // 3. Scoped CSS assembly.
@@ -263,12 +256,6 @@ if ( '' !== $sgs_ct_fill_css ) {
 
 if ( '' !== $typography_css ) {
 	$scoped_css[] = $typography_css;
-}
-
-// --- text-align (skip-serialised WP support, scoped to the body element per
-// the block.json element manifest — never an inert root class). ---
-if ( '' !== $text_align ) {
-	$scoped_css[] = $typography_selector . '{text-align:' . $text_align . ';}';
 }
 
 // --sgs-collapsible-text-collapsed-lines VALUE — scoped rule (contract §A

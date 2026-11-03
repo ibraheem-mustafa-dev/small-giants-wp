@@ -804,15 +804,8 @@
 			"default": "em"
 		},
 		"quoteTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"quoteTextWrap": {
 			"type": "string",
@@ -902,15 +895,8 @@
 			"default": "em"
 		},
 		"nameTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"nameTextWrap": {
 			"type": "string",

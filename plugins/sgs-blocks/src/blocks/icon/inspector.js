@@ -26,6 +26,7 @@ import {
 	LinkPopoverField,
 	ResponsiveControl,
 	ResponsiveOverride,
+	TextAlignTierControl,
 	SgsBoxControl,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -72,14 +73,6 @@ const COLOUR_MODES = [
 	{ label: __( 'Brand colours', 'sgs-blocks' ), value: 'brand' },
 	{ label: __( 'Brand colour: logo only', 'sgs-blocks' ), value: 'brand-glyph' },
 	{ label: __( 'Theme colours', 'sgs-blocks' ), value: 'theme' },
-];
-
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-	{ label: __( 'Justify', 'sgs-blocks' ), value: 'justify' },
 ];
 
 /**
@@ -314,13 +307,10 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 			</InspectorControls>
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
+					<TextAlignTierControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
 						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
 						onChange={ ( value ) => setAttributes( { textAlign: value } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 					<RangeControl
 						label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }

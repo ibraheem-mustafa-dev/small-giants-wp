@@ -222,8 +222,8 @@ $grb_score_colour   = sgs_text_decls( $attributes, array( 'base' => 'scoreColour
 $grb_caption_colour = sgs_text_decls( $attributes, array( 'base' => 'captionColour' ) );
 $grb_css[]          = sgs_emit_state_colour_css( $grb_root_sel . ' .sgs-google-rating-badge__score', $grb_score_colour['normal'], array() );
 $grb_css[]          = sgs_emit_state_colour_css( $grb_root_sel . ' .sgs-google-rating-badge__caption', $grb_caption_colour['normal'], array() );
-$grb_css[]          = sgs_typography_css_rule( $attributes, 'score', $grb_root_sel . ' .sgs-google-rating-badge__score' );
-$grb_css[]          = sgs_typography_css_rule( $attributes, 'caption', $grb_root_sel . ' .sgs-google-rating-badge__caption' );
+$grb_css[]          = sgs_typography_css_rule( $attributes, 'score', $grb_root_sel . ' .sgs-google-rating-badge__score', '', false, false, sgs_object_attr_keys( $block ) );
+$grb_css[]          = sgs_typography_css_rule( $attributes, 'caption', $grb_root_sel . ' .sgs-google-rating-badge__caption', '', false, false, sgs_object_attr_keys( $block ) );
 
 // Compact mode below the chosen viewport width.
 $grb_css[] = sgs_grb_compact_css( $grb_root_sel, (int) ( $attributes['compactBelow'] ?? 0 ), $grb_synced );

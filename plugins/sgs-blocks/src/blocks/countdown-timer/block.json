@@ -357,16 +357,9 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"description": "Wrapper text alignment — a plain attribute edited by TypographyControls' text-align field, emitted by render.php as a scoped declaration."
+			"type": "object",
+			"description": "Wrapper text alignment — a plain attribute edited by TypographyControls' text-align field, emitted by render.php as a scoped declaration.",
+			"default": {}
 		},
 		"fontFamily": {
 			"type": "string",
@@ -496,15 +489,8 @@
 			"default": "em"
 		},
 		"numberTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"numberTextWrap": {
 			"type": "string",
@@ -601,15 +587,8 @@
 			"default": "em"
 		},
 		"labelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"labelTextWrap": {
 			"type": "string",
@@ -706,15 +685,8 @@
 			"default": "em"
 		},
 		"expiredTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"expiredTextWrap": {
 			"type": "string",

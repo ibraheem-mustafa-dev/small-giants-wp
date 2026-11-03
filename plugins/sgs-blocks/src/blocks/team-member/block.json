@@ -504,15 +504,8 @@
 			"default": "em"
 		},
 		"textAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"nameFontSize": {
 			"type": "object",
@@ -577,15 +570,8 @@
 			"default": "em"
 		},
 		"nameTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"nameTextWrap": {
 			"type": "string",
@@ -687,15 +673,8 @@
 			"default": "em"
 		},
 		"roleTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"roleTextWrap": {
 			"type": "string",
@@ -797,15 +776,8 @@
 			"default": "em"
 		},
 		"bioTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"bioTextWrap": {
 			"type": "string",
@@ -907,15 +879,8 @@
 			"default": "em"
 		},
 		"socialLinkTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"socialLinkTextWrap": {
 			"type": "string",

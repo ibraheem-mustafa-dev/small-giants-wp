@@ -347,11 +347,11 @@ $border = sgs_border_element_decls(
 // --- Heading + item + item text typography families (shared emitter,
 // never a bespoke font-size control). Only set properties are emitted. ---
 if ( function_exists( 'sgs_typography_css_rule' ) ) {
-	$heading_typography_css = sgs_typography_css_rule( $attributes, 'heading', $heading_sel );
+	$heading_typography_css = sgs_typography_css_rule( $attributes, 'heading', $heading_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $heading_typography_css ) {
 		$scoped_css[] = $heading_typography_css;
 	}
-	$item_typography_css = sgs_typography_css_rule( $attributes, 'item', $item_row_sel );
+	$item_typography_css = sgs_typography_css_rule( $attributes, 'item', $item_row_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $item_typography_css ) {
 		$scoped_css[] = $item_typography_css;
 	}
@@ -371,7 +371,7 @@ if ( function_exists( 'sgs_typography_css_rule' ) ) {
 			$scoped_css[] = $root_sel . $root_sel . ' .sgs-icon-list__item-link{--sgs-sweep-thickness:0px;}';
 		}
 	}
-	$text_typography_css = sgs_typography_css_rule( $attributes, 'textEl', $text_sel );
+	$text_typography_css = sgs_typography_css_rule( $attributes, 'textEl', $text_sel, '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $text_typography_css ) {
 		$scoped_css[] = $text_typography_css;
 	}
@@ -385,7 +385,7 @@ $description_colour = trim( (string) ( $attributes['descriptionColour'] ?? '' ) 
 if ( '' !== $description_colour ) {
 	$scoped_css[] = $description_sel . '{color:' . sgs_colour_value( $description_colour ) . ';}';
 }
-$description_typography_css = sgs_typography_css_rule( $attributes, 'description', $description_sel );
+$description_typography_css = sgs_typography_css_rule( $attributes, 'description', $description_sel, '', false, false, sgs_object_attr_keys( $block ) );
 if ( '' !== $description_typography_css ) {
 	$scoped_css[] = $description_typography_css;
 }

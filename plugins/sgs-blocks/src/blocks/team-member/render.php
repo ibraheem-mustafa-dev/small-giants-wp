@@ -175,14 +175,6 @@ $preset_border_slug = isset( $attributes['borderColor'] ) ? sanitize_html_class(
 // sgs/product-card + sgs/accordion-item + sgs/quote, commit `2eebbe55`). Capability
 // MOVES rather than disappearing — the client also gains hover states it never had.
 
-// Text-align — block-private attribute (D971/D972 full-replacement track:
-// no real native supports.typography sub-capability remains). WP core does
-// NOT reliably apply the has-text-align-* class for a DYNAMIC block via
-// get_block_wrapper_attributes() (STOP-44 pattern), so it is added explicitly.
-$text_align          = $attributes['textAlign'] ?? '';
-$allowed_text_aligns = array( 'left', 'center', 'right', 'justify' );
-$has_text_align      = in_array( $text_align, $allowed_text_aligns, true );
-
 // ---------------------------------------------------------------------------
 // 5. Wrapper classes (unchanged behaviour — card style / compact / hover
 // feature classes — the CSS rules in style.css key off these).
@@ -504,11 +496,11 @@ if ( ! empty( $base_style_engine_args ) ) {
 // One literal-prefix call per surface (never a loop), so every static gate and the DB seeder see each prefix.
 // The bio shows in the photo overlay too, so its typography reaches both.
 $sgs_tm_typo_css = array(
-	sgs_typography_css_rule( $attributes, '', $root_sel ),
-	sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name' ),
-	sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role' ),
-	sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio' ),
-	sgs_typography_css_rule( $attributes, 'socialLink', $root_sel . ' .sgs-team-member__social-link' ),
+	sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) ),
+	sgs_typography_css_rule( $attributes, 'name', $root_sel . ' .sgs-team-member__name', '', false, false, sgs_object_attr_keys( $block ) ),
+	sgs_typography_css_rule( $attributes, 'role', $root_sel . ' .sgs-team-member__role', '', false, false, sgs_object_attr_keys( $block ) ),
+	sgs_typography_css_rule( $attributes, 'bio', $root_sel . ' .sgs-team-member__bio,' . $root_sel . ' .sgs-team-member__overlay-bio', '', false, false, sgs_object_attr_keys( $block ) ),
+	sgs_typography_css_rule( $attributes, 'socialLink', $root_sel . ' .sgs-team-member__social-link', '', false, false, sgs_object_attr_keys( $block ) ),
 );
 $sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
 if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
@@ -586,7 +578,7 @@ if ( '' !== $sgs_tm_text_hover_resolved && $sgs_tm_text_hover_resolved !== $sgs_
 // The bio paints its own colour in the stylesheet, so the wrapper colour is carried onto it (the name and role have their own controls).
 $scoped_css = array_merge(
 	$scoped_css,
-	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-team-member__bio' ), $sgs_tm_text_normal_resolved, $sgs_tm_text_hover_resolved, true, (string) ( $attributes['textAlign'] ?? '' ) )
+	sgs_text_colour_child_rules( $root_sel, array( ' .sgs-team-member__bio' ), $sgs_tm_text_normal_resolved, $sgs_tm_text_hover_resolved, true, (string) sgs_resolve_tier( $attributes['textAlign'] ?? null, 'desktop', '' )['value'] )
 );
 
 // --- maxWidth (kept-scalar family, contract §C). ---
@@ -735,9 +727,6 @@ $root_classes = $sgs_classes;
 if ( '' !== $preset_border_slug ) {
 	$root_classes[] = 'has-border-color';
 	$root_classes[] = 'has-' . $preset_border_slug . '-border-color';
-}
-if ( $has_text_align ) {
-	$root_classes[] = 'has-text-align-' . $text_align;
 }
 
 $root_attr_args = array(

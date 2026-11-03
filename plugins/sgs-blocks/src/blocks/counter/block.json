@@ -313,15 +313,8 @@
 			"default": "em"
 		},
 		"labelTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"labelTextWrap": {
 			"type": "string",

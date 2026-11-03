@@ -3,7 +3,7 @@
 
 Ground truth (text/block.json + render.php read 2026-07-15):
   text       string  — echoed via wp_kses_post (inline markup survives)
-  textAlign  string  enum '',left,center,right,justify   <-- core says `align`
+  textAlign  object  {desktop,tablet,mobile} of left,center,right,justify   <-- core says `align`
   textColour string  — British spelling (core says textColor)
   fontSize   ["number","string"] — preset slug renders since the preset-gap fix
   dropCap    boolean
@@ -62,8 +62,8 @@ def transform(node, text):
         if key == 'align':
             if value not in ('left', 'center', 'right', 'justify'):
                 raise GapError(f'align {value!r} outside the sgs/text textAlign enum')
-            out['textAlign'] = value
-            accounting[key] = ('mapped', 'textAlign (core paragraph `align` IS text alignment)')
+            out['textAlign'] = {'desktop': value}
+            accounting[key] = ('mapped', 'textAlign (core paragraph `align` IS text alignment; per-breakpoint object, desktop tier)')
         elif key == 'textColor':
             out['textColour'] = value
             accounting[key] = ('mapped', 'textColour (British spelling — the D338 naming class)')

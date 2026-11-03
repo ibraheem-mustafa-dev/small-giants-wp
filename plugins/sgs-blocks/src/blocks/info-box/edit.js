@@ -14,7 +14,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsColourPanel, ShadowControl, fillRow, textRow, SgsLengthControl, SgsBorderControl, resolveColourToken, TypographyControls, ResponsiveOverride, TextAlignTierControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
@@ -99,19 +99,8 @@ function buildPreviewStyle( attributes, tier ) {
 		borderStyle,
 		borderColour,
 		borderRadius,
-		textAlign,
 	} = attributes;
 	const preview = {};
-
-	// `style?.typography?.textAlign` — DEAD: block.json declares no
-	// `typography` support at all, so WP never populates `style.typography`.
-	// The top-level `textAlign` attribute (the cloning converter's fallback)
-	// is this block's only real source; applied to the block ROOT so
-	// InnerBlocks children inherit it.
-	const infoBoxTextAlign = textAlign ?? '';
-	if ( [ 'left', 'center', 'right' ].includes( infoBoxTextAlign ) ) {
-		preview.textAlign = infoBoxTextAlign;
-	}
 
 	// Background/text colour moved OFF native style.color.* to block-private
 	// attrs mounted in SgsColourPanel (D744) — supports.color.background/
@@ -168,13 +157,6 @@ const CARD_STYLE_OPTIONS = [
 const ICON_POSITION_OPTIONS = [
 	{ label: __( 'Top', 'sgs-blocks' ), value: 'top' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
-];
-
-const TEXT_ALIGN_OPTIONS = [
-	{ label: __( '— inherit —', 'sgs-blocks' ), value: '' },
-	{ label: __( 'Left', 'sgs-blocks' ), value: 'left' },
-	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'right' },
 ];
 
@@ -723,15 +705,10 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<SelectControl
+					<TextAlignTierControl
 						label={ __( 'Text align', 'sgs-blocks' ) }
-						value={ textAlign }
-						options={ TEXT_ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { textAlign: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+						value={ attributes.textAlign }
+						onChange={ ( val ) => setAttributes( { textAlign: val } ) }
 					/>
 				</PanelBody>
 

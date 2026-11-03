@@ -22,9 +22,9 @@ def txt(text, **kw):
 BOX = {"top": "1px", "right": "1px", "bottom": "1px", "left": "1px"}
 THREE = {"desktop": "repeat(3,minmax(0,1fr))", "mobile": "repeat(3,minmax(0,1fr))"}
 BIG = dict(fontFamily="heading", fontWeight="500", fontSize={"desktop": 32, "mobile": 26}, fontSizeUnit="px",
-           letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", textAlign="center")
+           letterSpacing={"desktop": 0.04}, letterSpacingUnit="em", textAlign={'desktop': 'center'})
 CAP = dict(fontSize={"desktop": 12}, fontSizeUnit="px", letterSpacing={"desktop": 0.1}, letterSpacingUnit="em",
-           textTransform="uppercase", textColour="text-label", textAlign="center")
+           textTransform="uppercase", textColour="text-label", textAlign={'desktop': 'center'})
 GAP_B = {"desktop": {"bottom": "22px"}}
 
 

@@ -8,10 +8,7 @@
 }
 
 /* The banner's text alignment places each message's row: text-align alone cannot move a flex item. */
-.has-text-align-center .sgs-notice-message {
-	justify-content: center;
-}
-
-.has-text-align-right .sgs-notice-message {
-	justify-content: end;
+/* --sgs-text-justify is set by the block that owns the text alignment (sgs_text_align_tier_css). */
+.sgs-notice-message {
+	justify-content: var(--sgs-text-justify, normal);
 }

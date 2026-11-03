@@ -327,15 +327,8 @@
 			"default": ""
 		},
 		"optionDescriptionTextAlign": {
-			"type": "string",
-			"enum": [
-				"",
-				"left",
-				"center",
-				"right",
-				"justify"
-			],
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"optionDescriptionTextWrap": {
 			"type": "string",

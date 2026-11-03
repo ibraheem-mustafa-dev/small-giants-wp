@@ -12,7 +12,7 @@
 
 <!-- wp:sgs/container {"tagName":"div","backgroundColour":"surface","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40","right":"var:preset|spacing|40"},"flexWrap":"wrap","templateLock":"contentOnly"} -->
 
-	<!-- wp:sgs/heading {"content":"Get in Touch","textAlign":"center","fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
+	<!-- wp:sgs/heading {"content":"Get in Touch","textAlign":{"desktop":"center"},"fontSize":{"desktop":"xx-large"},"margin":{"bottom":"var:preset|spacing|60"}} /-->
 
 	<!-- wp:sgs/container {"layout":"grid","gridTemplateColumns":{"desktop":"60% 40%","mobile":"1fr"},"gap":{"desktop":"var:preset|spacing|60"}} -->
 
