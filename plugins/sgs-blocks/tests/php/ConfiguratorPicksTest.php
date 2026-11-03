@@ -53,7 +53,7 @@ namespace SGS\Blocks\Tests {
 				),
 				array(
 					'key' => 'flavour', 'label' => 'Flavour', 'role' => 'answer', 'terms' => self::FLAVOURS,
-					'flags' => array( 'multi' => true, 'least' => 1, 'most' => 3, 'overflow' => 'replace', 'startWith' => 'vanilla', 'share' => true ),
+					'flags' => array( 'multi' => true, 'least' => 1, 'most' => 3, 'overflow' => 'replace', 'startWith' => 'vanilla', 'share' => 'equal' ),
 				),
 			);
 		}
@@ -150,11 +150,30 @@ namespace SGS\Blocks\Tests {
 		}
 
 		public function test_a_total_that_is_not_the_pack_is_refused_and_one_that_is_passes(): void {
+			$GLOBALS['sgs_t_groups'][1]['flags']['share'] = 'counts';
 			$counts = static fn( array $c ) => array( 'flavour' => array_map( static fn( $s, $n ) => array( 'slug' => $s, 'count' => $n ), array_keys( $c ), $c ) );
 			$ok = $this->item( $counts( array( 'mango' => 12, 'mint' => 8 ) ) );
 			$this->assertSame( '12 Mango · 8 Mint', $ok['sgs_flow_fields'][0]['value'] );
 			$this->expectException( \Exception::class );
 			$this->item( $counts( array( 'mango' => 12, 'mint' => 9 ) ) );
+		}
+
+		public function test_counts_mode_needs_counts_and_equal_mode_refuses_them(): void {
+			$GLOBALS['sgs_t_groups'][1]['flags']['share'] = 'counts';
+			try {
+				$this->item( self::pick( 'mango' ) );
+				$this->fail( 'counts mode accepted picks with no counts' );
+			} catch ( \Exception $e ) {
+				$this->assertStringContainsString( 'Flavour', $e->getMessage() );
+			}
+			$GLOBALS['sgs_t_groups'][1]['flags']['share'] = 'equal';
+			$this->expectException( \Exception::class );
+			$this->item( array( 'flavour' => array( array( 'slug' => 'mango', 'count' => 20 ) ) ) );
+		}
+
+		public function test_none_mode_gives_a_plain_list_even_with_a_pack(): void {
+			$GLOBALS['sgs_t_groups'][1]['flags']['share'] = 'none';
+			$this->assertSame( 'Mango, Mint', $this->item( self::pick( 'mango', 'mint' ) )['sgs_flow_fields'][0]['value'] );
 		}
 
 		public function test_most_is_clamped_to_the_pack_size(): void {
@@ -207,6 +226,22 @@ namespace SGS\Blocks\Tests {
 			$GLOBALS['sgs_t_groups'][1]['terms'] = array_slice( self::FLAVOURS, 0, 2 ); // Mango removed.
 			$restored = Configurator_Picks::restore_from_session( $line, $line );
 			$this->assertSame( array( 'Flavour' ), $restored['sgs_picks_stale'] );
+		}
+
+		public function test_the_no_js_form_posts_through_the_same_rules(): void {
+			$_POST['sgs_picks'] = array( 'flavour' => array( 'mango', 'mint' ) );
+			$data = Configurator_Picks::add_cart_item_data( array( 'variation' => array( 'attribute_pa_pack-size' => 'pack-of-20' ) ), 7, 70 );
+			unset( $_POST['sgs_picks'] );
+			$this->assertSame( '10 Mango · 10 Mint', $data['sgs_flow_fields'][0]['value'] );
+			$_POST['sgs_picks'] = array( 'flavour' => array( '<script>' ) );
+			try {
+				Configurator_Picks::add_cart_item_data( array(), 7, 70 );
+				$this->fail( 'accepted' );
+			} catch ( \Exception $e ) {
+				$this->assertStringNotContainsString( 'script', $e->getMessage() );
+			} finally {
+				unset( $_POST['sgs_picks'] );
+			}
 		}
 
 		public function test_active_groups_need_two_options(): void {

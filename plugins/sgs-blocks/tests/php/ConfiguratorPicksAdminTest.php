@@ -27,13 +27,13 @@ namespace SGS\Blocks\Tests {
 
 		public function test_posted_rows_become_flags_keyed_by_attribute_key(): void {
 			$flags = Configurator_Picks_Admin::flags_from_request(
-				array( 0 => array( 'multi' => '1', 'least' => '1', 'most' => '3', 'overflow' => 'replace', 'startWith' => 'vanilla', 'share' => '1' ) ),
+				array( 0 => array( 'multi' => '1', 'least' => '1', 'most' => '3', 'overflow' => 'replace', 'startWith' => 'vanilla', 'share' => 'equal' ) ),
 				array( 0 => 'Flavour' ),
 				array()
 			);
 			$this->assertSame( array( 'flavour' ), array_keys( $flags ) );
 			$this->assertSame( 'replace', $flags['flavour']['overflow'] );
-			$this->assertTrue( $flags['flavour']['share'] );
+			$this->assertSame( 'equal', $flags['flavour']['share'] );
 		}
 
 		public function test_a_global_attribute_is_keyed_by_its_taxonomy_name(): void {

@@ -57,6 +57,38 @@ final class Configurator_Picks {
 	}
 
 	/**
+	 * Shape the no-JS form fields (`sgs_picks[attrKey][]` slugs and `sgs_pick_counts[attrKey][slug]`) like the REST `picks`.
+	 * Anything not a string slug is dropped here; sgs_picks_check() then checks every slug against the product.
+	 *
+	 * @param mixed $slugs  Posted slugs per group.
+	 * @param mixed $counts Posted counts per group and slug.
+	 * @return array<string,array<int,array{slug:string,count:int}>>
+	 */
+	public static function picks_from_post( $slugs, $counts ): array {
+		$out = array();
+		if ( ! is_array( $slugs ) ) {
+			return $out;
+		}
+		$counts = is_array( $counts ) ? $counts : array();
+		foreach ( array_slice( $slugs, 0, SGS_PICKS_MAX_GROUPS, true ) as $key => $list ) {
+			if ( ! is_string( $key ) || ! is_array( $list ) ) {
+				continue;
+			}
+			foreach ( array_slice( $list, 0, SGS_PICKS_MOST_MAX + 1 ) as $slug ) {
+				if ( ! is_string( $slug ) ) {
+					continue;
+				}
+				$count            = isset( $counts[ $key ][ $slug ] ) ? (int) $counts[ $key ][ $slug ] : 0;
+				$out[ $key ][]    = array(
+					'slug'  => $slug,
+					'count' => max( 0, min( 999, $count ) ),
+				);
+			}
+		}
+		return $out;
+	}
+
+	/**
 	 * Accept or refuse the picks, and carry them as one server-built row.
 	 *
 	 * @param array<string,mixed> $cart_item_data Cart item data.
@@ -68,6 +100,10 @@ final class Configurator_Picks {
 	public static function add_cart_item_data( array $cart_item_data, int $product_id, int $variation_id ): array {
 		$raw = $cart_item_data[ self::RAW_KEY ] ?? array();
 		unset( $cart_item_data[ self::RAW_KEY ] );
+		if ( array() === (array) $raw && isset( $_POST['sgs_picks'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce's own add-to-cart form carries no nonce; every value is checked against the product's own options below.
+			// The no-JS form: real checkbox inputs posted with the standard add-to-cart request.
+			$raw = self::picks_from_post( wp_unslash( $_POST['sgs_picks'] ), isset( $_POST['sgs_pick_counts'] ) ? wp_unslash( $_POST['sgs_pick_counts'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- shaped and checked in picks_from_post() and sgs_picks_check().
+		}
 
 		$groups = Configurator_Groups::for_product( $product_id );
 		if ( array() === sgs_picks_active_groups( $groups ) && array() === (array) $raw ) {

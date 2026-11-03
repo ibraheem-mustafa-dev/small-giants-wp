@@ -50,6 +50,11 @@ namespace {
 			return abs( (int) $s );
 		}
 	}
+	if ( ! function_exists( 'wp_unslash' ) ) {
+		function wp_unslash( $v ) {
+			return $v;
+		}
+	}
 	if ( ! function_exists( 'add_filter' ) ) {
 		function add_filter( ...$args ) {
 			return true;

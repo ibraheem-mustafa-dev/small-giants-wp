@@ -101,7 +101,12 @@ final class Configurator_Picks_Admin {
 			echo '<option value="' . \esc_attr( $slug ) . '"' . \selected( $flags['startWith'] ?? '', $slug, false ) . '>' . esc_html( $label ) . '</option>';
 		}
 		echo '</select></label></p>';
-		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[share]" value="1"' . \checked( ! empty( $flags['share'] ), true, false ) . ' /> ' . esc_html__( 'Share the pack between these', 'sgs-blocks' ) . '</label></p>';
+		$share = sgs_picks_share_mode( $flags['share'] ?? 'none' );
+		echo '<p><label>' . esc_html__( 'Share the pack between these', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[share]">';
+		echo '<option value="none"' . \selected( $share, 'none', false ) . '>' . esc_html__( "Don't", 'sgs-blocks' ) . '</option>';
+		echo '<option value="equal"' . \selected( $share, 'equal', false ) . '>' . esc_html__( 'Equally', 'sgs-blocks' ) . '</option>';
+		echo '<option value="counts"' . \selected( $share, 'counts', false ) . '>' . esc_html__( 'Shopper sets counts', 'sgs-blocks' ) . '</option>';
+		echo '</select></label></p>';
 		echo '<p class="description">' . esc_html__( 'Groups show on the product page in the order you drag the attributes into. Each option is not counted in stock, so an option can be oversold. Click Update to save these choices.', 'sgs-blocks' ) . '</p>';
 		echo '</div>';
 		echo '</div>';

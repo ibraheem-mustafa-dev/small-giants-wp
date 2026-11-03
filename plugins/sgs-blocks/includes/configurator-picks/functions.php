@@ -17,6 +17,26 @@ const SGS_PICKS_MOST_MIN   = 2;
 const SGS_PICKS_MOST_MAX   = 12;
 const SGS_PICKS_MAX_GROUPS = 8;
 
+if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_share_mode' ) ) {
+	/**
+	 * How a group shares the pack: `none` (a plain list), `equal` (split equally) or `counts` (the shopper sets counts).
+	 * A legacy truthy value means `equal`.
+	 *
+	 * @param mixed $raw Raw value.
+	 * @return string none|equal|counts
+	 */
+	function sgs_picks_share_mode( $raw ): string {
+		$raw = is_string( $raw ) ? strtolower( trim( $raw ) ) : $raw;
+		if ( 'counts' === $raw ) {
+			return 'counts';
+		}
+		if ( 'equal' === $raw || true === $raw || '1' === $raw || 1 === $raw ) {
+			return 'equal';
+		}
+		return 'none';
+	}
+}
+
 if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_sanitise_flags' ) ) {
 	/**
 	 * Sanitise a `{attrKey: {multi, least, most, overflow, startWith, share}}` map from the panel or from stored meta.
@@ -24,7 +44,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_sanitise_flags' ) ) {
 	 * `most` is clamped to 2..12, `least` to 1..most, `overflow` to refuse|replace; a key with nothing set is dropped.
 	 *
 	 * @param mixed $raw Raw map.
-	 * @return array<string,array{multi:bool,least:int,most:int,overflow:string,startWith:string,share:bool}>
+	 * @return array<string,array{multi:bool,least:int,most:int,overflow:string,startWith:string,share:string}>
 	 */
 	function sgs_picks_sanitise_flags( $raw ): array {
 		if ( ! is_array( $raw ) ) {
@@ -41,7 +61,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_sanitise_flags' ) ) {
 			$least = max( 1, min( $most, (int) ( $flags['least'] ?? 1 ) ) );
 			$over  = 'replace' === ( $flags['overflow'] ?? '' ) ? 'replace' : 'refuse';
 			$start = sanitize_title( (string) ( $flags['startWith'] ?? '' ) );
-			$share = ! empty( $flags['share'] ) && 'false' !== $flags['share'] && '0' !== (string) $flags['share'];
+			$share = sgs_picks_share_mode( $flags['share'] ?? 'none' );
 			if ( ! $multi ) {
 				continue;
 			}
@@ -208,7 +228,8 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_check' ) ) {
 			foreach ( $group['terms'] as $term ) {
 				$known[ (string) $term['slug'] ] = (string) $term['label'];
 			}
-			$shares = ! empty( $flags['share'] ) && null !== $pack && $pack > 0;
+			$mode   = sgs_picks_share_mode( $flags['share'] ?? 'none' );
+			$shares = 'none' !== $mode && null !== $pack && $pack > 0;
 			$most   = $shares ? min( (int) $flags['most'], $pack ) : (int) $flags['most'];
 			$least  = min( (int) $flags['least'], $most );
 
@@ -236,7 +257,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_check' ) ) {
 			}
 
 			$parts = array();
-			if ( $shares && $any ) {
+			if ( $shares && 'counts' === $mode ) {
 				foreach ( $counts as $count ) {
 					if ( $count < 1 ) {
 						return $fail( sprintf( /* translators: %s: option group name. */ __( 'Please set a number for every %s you picked.', 'sgs-blocks' ), $label ) );
@@ -245,7 +266,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_check' ) ) {
 				if ( array_sum( $counts ) !== $pack ) {
 					return $fail( sprintf( /* translators: 1: option group name, 2: pack size. */ __( 'The %1$s must add up to %2$d.', 'sgs-blocks' ), $label, $pack ) );
 				}
-			} elseif ( $shares ) {
+			} elseif ( $shares && ! $any ) {
 				$split = sgs_picks_distribute( $pack, $chosen );
 				$i     = 0;
 				foreach ( $counts as $slug => $unused ) {

@@ -37,7 +37,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_preflight_issues' ) ) {
 					'severity' => 'blocker',
 				);
 			}
-			if ( ! empty( $group['flags']['share'] ) && array() !== $pack['units'] && (int) $group['flags']['most'] > min( $pack['units'] ) ) {
+			if ( 'none' !== sgs_picks_share_mode( $group['flags']['share'] ?? 'none' ) && array() !== $pack['units'] && (int) $group['flags']['most'] > min( $pack['units'] ) ) {
 				$issues[] = array(
 					'code'     => 'picks_most_above_pack',
 					/* translators: 1: option group name, 2: smallest pack size. */

@@ -29,7 +29,7 @@ namespace SGS\Blocks\Tests {
 			for ( $i = 0; $i < $terms; $i++ ) {
 				$list[] = array( 'id' => $i, 'slug' => 's' . $i, 'label' => 'S' . $i );
 			}
-			return array( 'key' => 'flavour', 'label' => 'Flavour', 'role' => 'answer', 'terms' => $list, 'flags' => array_merge( array( 'multi' => true, 'least' => 1, 'most' => 3, 'share' => false ), $flags ) );
+			return array( 'key' => 'flavour', 'label' => 'Flavour', 'role' => 'answer', 'terms' => $list, 'flags' => array_merge( array( 'multi' => true, 'least' => 1, 'most' => 3, 'share' => 'none' ), $flags ) );
 		}
 
 		private static function codes( array $groups, array $pack ): array {
@@ -55,7 +55,7 @@ namespace SGS\Blocks\Tests {
 
 		public function test_most_above_the_smallest_pack_is_flagged_only_when_sharing(): void {
 			$pack = array( 'key' => 'p', 'units' => array( 'two' => 2, 'big' => 20 ), 'unparseable' => array() );
-			$this->assertSame( array( 'picks_most_above_pack' ), self::codes( array( self::group( 4, array( 'share' => true ) ) ), $pack ) );
+			$this->assertSame( array( 'picks_most_above_pack' ), self::codes( array( self::group( 4, array( 'share' => 'equal' ) ) ), $pack ) );
 			$this->assertSame( array(), self::codes( array( self::group( 4 ) ), $pack ) );
 		}
 	}
