@@ -92,7 +92,7 @@ if ( ! function_exists( 'sgs_brand_slug_colour' ) ) {
 		if ( null === $brand || '' === $brand['colour'] ) {
 			return '';
 		}
-		if ( function_exists( 'sgs_resolve_palette_hex' ) && '' !== sgs_resolve_palette_hex( $value ) ) {
+		if ( function_exists( 'sgs_colour_hex_for_contrast' ) && '' !== sgs_colour_hex_for_contrast( $value ) ) {
 			return '';
 		}
 		return $brand['colour'];
