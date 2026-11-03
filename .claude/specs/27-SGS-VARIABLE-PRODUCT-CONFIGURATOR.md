@@ -848,6 +848,10 @@ Bean, 2026-10-26: WooCommerce's cart, checkout and account pages keep WooCommerc
 
 **Done when:** on mamas-test, inside the site's own cart, checkout and account template copies, a field look set on `sgs/account` paints the log-in, register, address and account-details inputs, and a field look set on the checkout wrapper paints the checkout's contact, address and payment inputs, at 375/768/1440; an order still completes on the canary through the FR-30-0 gateway and an account still saves an address; with no field settings set the pages render as today (negative control); axe 0 per surface. The cloning route writes these settings (Spec 48 FR-48-87).
 
+#### FR-30-19 -- Shop wording settings page -- built
+
+The sentences a shopper reads after adding to the bag are site settings, not code. WooCommerce > Shop wording (`plugins/sgs-blocks/includes/cart-line-summary/class-cart-line-summary-admin.php::Cart_Line_Summary_Admin`, capability and nonce checked on save) stores `addedToBag`, `addedWithAddons` and `labelSeparator` (the text between a bag line's label and its value, default `: ` with its spaces kept) in the `sgs_cart_line_summary` option, read through `includes/cart-line-summary/wording.php::sgs_cart_line_summary_wording`. The toast reads the two sentences from the `sgs/toast` interactivity state (`includes/class-sgs-toast.php`), so the added-to-bag messages follow the setting. Status: built.
+
 ### Open questions
 
 1. **B2B price display**: Indus Foods is B2B (trade buyers): ex-VAT display vs the consumer inc-VAT default. Needs a per-client display-context decision before Indus's shop build.
