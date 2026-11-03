@@ -9,7 +9,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
-import { DesignTokenPicker, SgsLengthControl } from '../../components';
+import { DesignTokenPicker, LinkPopoverField, SgsLengthControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 /** Defaults mirror block.json; the reset of a field writes its default back. */
@@ -208,13 +208,11 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
-						<TextControl
+						<LinkPopoverField
+							searchOnly
 							label={ __( 'Link address', 'sgs-blocks' ) }
-							type="url"
 							value={ link.url ?? '' }
-							onChange={ ( val ) => setAttributes( { filterEmptyLink: { ...link, url: val } } ) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							onChange={ ( val ) => setAttributes( { filterEmptyLink: { ...link, url: val ?? '' } } ) }
 						/>
 					</Field>
 				</ToolsPanel>
