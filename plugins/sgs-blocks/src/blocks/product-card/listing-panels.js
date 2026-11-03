@@ -33,13 +33,65 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 		rrpMetaKey,
 		rrpSavingFormat,
 		swatchAttribute,
+		cardContentSource,
+		badgeMetaKey,
+		priceNoteMetaKey,
+		ctaLabelMetaKey,
+		ctaActionMetaKey,
+		ctaChoicesToPage,
 	} = attributes;
+	const fromProduct = 'product' === cardContentSource;
+	const metaKeyFields = [
+		[ 'badgeMetaKey', badgeMetaKey, __( 'Badge field (meta key)', 'sgs-blocks' ), '_sgs_card_badge' ],
+		[ 'priceNoteMetaKey', priceNoteMetaKey, __( 'Price note field (meta key)', 'sgs-blocks' ), '_sgs_card_price_note' ],
+		[ 'ctaLabelMetaKey', ctaLabelMetaKey, __( 'Button label field (meta key)', 'sgs-blocks' ), '_sgs_card_cta_label' ],
+		[ 'ctaActionMetaKey', ctaActionMetaKey, __( 'Button action field (meta key)', 'sgs-blocks' ), '_sgs_card_cta_action' ],
+	];
 
 	return (
 		<PanelBody
 			title={ __( 'Listing card', 'sgs-blocks' ) }
 			initialOpen={ false }
 		>
+			<SelectControl
+				label={ __( 'Card content', 'sgs-blocks' ) }
+				help={ __(
+					'Typed on this card: the badge, price note and button text you set here. From each product: every product’s own badge, price note and button, set on its Card tab in the product editor.',
+					'sgs-blocks'
+				) }
+				value={ fromProduct ? 'product' : 'typed' }
+				options={ [
+					{ label: __( 'Typed on this card', 'sgs-blocks' ), value: 'typed' },
+					{ label: __( 'From each product', 'sgs-blocks' ), value: 'product' },
+				] }
+				onChange={ ( v ) => setAttributes( { cardContentSource: v } ) }
+				__next40pxDefaultSize
+				__nextHasNoMarginBottom
+			/>
+			{ fromProduct &&
+				metaKeyFields.map( ( [ attr, value, label, standard ] ) => (
+					<TextControl
+						key={ attr }
+						label={ label }
+						help={ __( 'Empty uses', 'sgs-blocks' ) + ' ' + standard }
+						value={ value || '' }
+						onChange={ ( v ) => setAttributes( { [ attr ]: v } ) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				) ) }
+			{ fromProduct && false !== showCta && (
+				<ToggleControl
+					label={ __( 'Products that need choices go to their page', 'sgs-blocks' ) }
+					help={ __(
+						'A variable or grouped product gets a link to its page instead of an add-to-basket button, unless its own Button action says otherwise.',
+						'sgs-blocks'
+					) }
+					checked={ !! ctaChoicesToPage }
+					onChange={ ( v ) => setAttributes( { ctaChoicesToPage: v } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 			<ToggleControl
 				label={ __( 'Show description', 'sgs-blocks' ) }
 				help={ __(

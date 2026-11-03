@@ -361,6 +361,8 @@ function ProductOptionsPanel( { attributes, setAttributes, wcProduct, loading } 
 function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 	const { overrideElements, variantStyle, ctaBehaviour } = attributes;
 	const overrides = Array.isArray( overrideElements ) ? overrideElements : [];
+	// "From each product" mode: the product's own badge and button label replace the typed ones, so those two overrides are hidden.
+	const fromProduct = 'product' === attributes.cardContentSource;
 
 	const isOn = ( el ) => overrides.includes( el );
 
@@ -471,7 +473,8 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 					) }
 				</ToolsPanelItem>
 
-				{ /* Badge */ }
+				{ /* Badge: from each product in that mode */ }
+				{ ! fromProduct && (
 				<ToolsPanelItem
 					label={ __( "Override badge", "sgs-blocks" ) }
 					hasValue={ () => isOn( "badge" ) }
@@ -503,6 +506,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 							</Notice>
 						) ) }
 				</ToolsPanelItem>
+				) }
 
 				{ /* Image */ }
 				<ToolsPanelItem
@@ -607,7 +611,8 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 					) }
 				</ToolsPanelItem>
 
-				{ /* CTA */ }
+				{ /* CTA: label from each product in that mode */ }
+				{ ! fromProduct && (
 				<ToolsPanelItem
 					label={ __( "Override button", "sgs-blocks" ) }
 					hasValue={ () => isOn( "cta" ) }
@@ -654,6 +659,7 @@ function ContentOverridesPanel( { attributes, setAttributes, wcProduct } ) {
 						</>
 					) }
 				</ToolsPanelItem>
+				) }
 			</ToolsPanel>
 		</>
 	);

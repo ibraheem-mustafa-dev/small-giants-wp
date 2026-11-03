@@ -3156,6 +3156,40 @@
 			],
 			"description": "How the saving badge filled from the RRP is worded: a money amount (\"Save £32\") or a percentage (\"Save 19%\")."
 		},
+		"cardContentSource": {
+			"type": "string",
+			"default": "typed",
+			"enum": [
+				"typed",
+				"product"
+			],
+			"description": "Where the badge, price note and button label of a connected (wc-product) card come from. typed = the values typed on this card (today's output, unchanged). product = each product's own values from its Card tab on the product edit screen, read from product meta by includes/product-card-per-product.php::sgs_product_card_per_product_fill; the typed values stay stored and return when this is switched back."
+		},
+		"badgeMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the badge text on the image. Empty = the standard key _sgs_card_badge, written by the product edit screen's Card tab. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"priceNoteMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the small note beside the price. Empty = the standard key _sgs_card_price_note. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaLabelMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding the button label. Empty = the standard key _sgs_card_cta_label. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaActionMetaKey": {
+			"type": "string",
+			"default": "",
+			"description": "From-each-product mode: the post-meta key holding what the button does (add or page). Empty = the standard key _sgs_card_cta_action. Same contract as rrpMetaKey. Read only while cardContentSource is product."
+		},
+		"ctaChoicesToPage": {
+			"type": "boolean",
+			"default": false,
+			"description": "From-each-product mode: a product that needs choices (variable, grouped or not purchasable) gets a button linking to its page instead of an add-to-basket form, unless the product's own button action says otherwise. Read only while cardContentSource is product."
+		},
 		"swatchAttribute": {
 			"type": "string",
 			"default": "",

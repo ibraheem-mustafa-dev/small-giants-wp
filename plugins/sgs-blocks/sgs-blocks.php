@@ -148,6 +148,9 @@ Configurator_Meta::register();
 // (delegates to Configurator_Meta::save_product_fields). No-op without WooCommerce.
 require_once SGS_BLOCKS_PATH . 'includes/configurator-product-fields.php';
 
+// Product edit screen "Card" tab: the per-product badge, price note and button for sgs/product-card (No-op without WooCommerce).
+require_once SGS_BLOCKS_PATH . 'includes/product-card-fields.php';
+
 // Choice Flow — "Customisation flow" product link (Spec 43 FR-43-25).
 // Self-hooks woocommerce_product_options_general_product_data + its own save
 // handler + register_post_meta(). No-op without WooCommerce.

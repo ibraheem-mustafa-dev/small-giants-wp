@@ -59,6 +59,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/configurator-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-builtin-render.php';
 require_once __DIR__ . '/attribute-tag.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-live-fill.php';
+require_once dirname( __DIR__, 3 ) . '/includes/product-card-per-product.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-card-parts.php';
 require_once dirname( __DIR__, 3 ) . '/includes/product-card-swatches.php';
 
@@ -981,6 +982,9 @@ $sgs_bound_htag             = in_array( $attributes['headingLevel'] ?? '', $sgs_
 	? $attributes['headingLevel']
 	: 'h3';
 
+// From-each-product mode: the badge, price note, button label and action come from the product's own meta. Off (typed) = no change.
+$attributes = sgs_product_card_per_product_fill( $attributes, (int) $product_id, (string) $source_mode );
+
 // FP-H: resolve the CTA behaviour ONCE for all bound branches (context seed +
 // markup share this value so label and behaviour always agree).
 $sgs_cta_behaviour = in_array( $attributes['ctaBehaviour'] ?? 'learn-more', array( 'learn-more', 'add-to-basket', 'buy-now' ), true )
@@ -1123,15 +1127,18 @@ $sgs_resolved_img_alt = $sgs_img_override ? (string) ( $attributes['imageAlt'] ?
 
 // Badge: bound branches have no live badge — live value is '' (override OFF or
 // empty typed value = no badge, matching pre-override bound output).
-$sgs_badge_typed    = 'trial' === $variant_style
-	? ( isset( $attributes['trialTag'] ) ? (string) $attributes['trialTag'] : '' )
-	: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? (string) $attributes['featuredTag'] : '' ) : '' );
+$sgs_badge_from_product = ! empty( $attributes['_sgsBadgeFromProduct'] );
+$sgs_badge_typed    = $sgs_badge_from_product
+	? (string) ( $attributes['featuredTag'] ?? '' )
+	: ( 'trial' === $variant_style
+		? ( isset( $attributes['trialTag'] ) ? (string) $attributes['trialTag'] : '' )
+		: ( 'featured' === $variant_style ? ( isset( $attributes['featuredTag'] ) ? (string) $attributes['featuredTag'] : '' ) : '' ) );
 $sgs_resolved_badge = sgs_product_card_resolve_element( $attributes, 'badge', $sgs_badge_typed, '' );
 
 // F7 (visual-polish): the FEATURED badge overlays the media area (overlay CSS is
 // scoped to the media containers); the TRIAL badge stays in-body (draft canon).
-$sgs_badge_overlay = ( 'featured' === $variant_style ) ? $sgs_resolved_badge : '';
-$sgs_badge_inbody  = ( 'featured' === $variant_style ) ? '' : $sgs_resolved_badge;
+$sgs_badge_overlay = ( 'featured' === $variant_style || $sgs_badge_from_product ) ? $sgs_resolved_badge : '';
+$sgs_badge_inbody  = ( 'featured' === $variant_style || $sgs_badge_from_product ) ? '' : $sgs_resolved_badge;
 
 /* ── FR-27-A5: WC below the version floor → read-only card (no configurator JS) */
 
@@ -1206,6 +1213,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_rrp_markup( $attributes );
+			echo sgs_product_card_price_note_markup( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo '</div>';
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
@@ -1755,6 +1763,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					<?php
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_rrp_markup( $attributes );
+					echo sgs_product_card_price_note_markup( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo '</div>';
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 					echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
@@ -2148,6 +2157,7 @@ echo sgs_product_card_wishlist_markup( $attributes );
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_rrp_markup( $attributes );
+		echo sgs_product_card_price_note_markup( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo '</div>';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 		echo sgs_product_card_swatches_markup( $attributes, $sgs_card_uid );
