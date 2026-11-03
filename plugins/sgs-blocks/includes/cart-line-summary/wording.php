@@ -13,6 +13,9 @@
  *   {
  *     "leadWithAddons":    "",         // opens line 1 when the line has add-ons
  *     "leadWithoutAddons": "",         // opens the single line when it has none
+ *     "labelSeparator":    ": ",       // between an attribute label and its value ("Colour: Ivory"); " " prints "Colour Ivory"
+ *     "addedToBag":        "Added to your basket.", // add-to-bag toast sentence
+ *     "addedWithAddons":   "",         // toast sentence when the item carries add-ons; empty = addedToBag
  *     "attributeLabels":   { "pa_x": "Shorter name" },
  *     "sizeBand":          { "axis": "pa_x", "scale": "S:52,M:57,L" }
  *   }
@@ -41,7 +44,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording' ) ) {
 	/**
 	 * Read the client's summary wording, normalised, with empty defaults.
 	 *
-	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
+	 * @return array{leadWithAddons:string,leadWithoutAddons:string,labelSeparator:string,addedToBag:string,addedWithAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
 	 */
 	function sgs_cart_line_summary_wording(): array {
 		$raw = \get_option( SGS_CART_LINE_SUMMARY_OPTION, array() );
@@ -57,7 +60,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 	 * line, an order email or a PayPal line description.
 	 *
 	 * @param array<string,mixed> $raw Raw wording.
-	 * @return array{leadWithAddons:string,leadWithoutAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
+	 * @return array{leadWithAddons:string,leadWithoutAddons:string,labelSeparator:string,addedToBag:string,addedWithAddons:string,attributeLabels:array<string,string>,sizeBand:array{axis:string,scale:string}}
 	 */
 	function sgs_cart_line_summary_wording_normalise( array $raw ): array {
 		$labels     = array();
@@ -78,6 +81,13 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 			}
 		}
 
+		// The separator keeps its edge spaces (sanitize_text_field() would
+		// trim a lone " " to nothing), so tags and control characters are
+		// stripped by hand and the length capped.
+		$separator = isset( $raw['labelSeparator'] ) && \is_string( $raw['labelSeparator'] )
+			? \mb_substr( (string) \preg_replace( '/[\x00-\x1F\x7F]/', '', \wp_strip_all_tags( $raw['labelSeparator'] ) ), 0, 5 )
+			: '';
+
 		$raw_band = isset( $raw['sizeBand'] ) && \is_array( $raw['sizeBand'] ) ? $raw['sizeBand'] : array();
 
 		return array(
@@ -86,6 +96,13 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording_normali
 				: '',
 			'leadWithoutAddons' => isset( $raw['leadWithoutAddons'] ) && \is_scalar( $raw['leadWithoutAddons'] )
 				? \sanitize_text_field( (string) $raw['leadWithoutAddons'] )
+				: '',
+			'labelSeparator'    => '' !== $separator ? $separator : ': ',
+			'addedToBag'        => isset( $raw['addedToBag'] ) && \is_scalar( $raw['addedToBag'] ) && '' !== 	rim( (string) $raw['addedToBag'] )
+				? \sanitize_text_field( (string) $raw['addedToBag'] )
+				: 'Added to your basket.',
+			'addedWithAddons'   => isset( $raw['addedWithAddons'] ) && \is_scalar( $raw['addedWithAddons'] )
+				? \sanitize_text_field( (string) $raw['addedWithAddons'] )
 				: '',
 			'attributeLabels'   => $labels,
 			'sizeBand'          => array(

@@ -44,7 +44,7 @@ export function formatMinor( minor, decimals, trimZeros = false ) {
 
 /**
  * Name the chosen variation's options: "Ivory · Frame size 56". A value that
- * starts with a digit carries its attribute's label, since a bare number
+ * starts with a digit, or is a size band, carries its attribute's label, since a bare number
  * says nothing on its own.
  *
  * @param {Object} axes       The stage's `data-axes`: taxonomy => {label, terms}.
@@ -56,7 +56,7 @@ function variationNames( axes, attributes ) {
 		const slug = attributes[ taxonomy ] || attributes[ `attribute_${ taxonomy }` ] || '';
 		const name = slug ? axes[ taxonomy ].terms?.[ slug ] || '' : '';
 		if ( name ) {
-			names.push( /^\d/.test( name ) ? `${ axes[ taxonomy ].label } ${ name }` : name );
+			names.push( axes[ taxonomy ].banded || /^\d/.test( name ) ? `${ axes[ taxonomy ].label } ${ name }` : name );
 		}
 		return names;
 	}, [] );

@@ -50,7 +50,8 @@ export function getSteps( flowRoot ) {
  * This flow's advanceMode — 'continue' (default), 'tap' or 'pick' —
  * (`choice-flow/render.php`'s `data-advance-mode`). 'continue' and 'pick'
  * both use the select-then-Continue model; 'pick' also advances on a
- * single-choice pick (`flow-options.js::handleOptionClick`).
+ * single-choice pick (`flow-options.js::handleOptionClick`) and shows
+ * Continue only on a question that already holds an answer.
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
  * @return {'continue'|'tap'|'pick'} The flow's advance mode.
@@ -75,7 +76,8 @@ export function getActiveResultEl( flowRoot ) {
  * Continue (a question step, 'continue' advanceMode only), Add to basket/
  * Buy now (an `add-to-bag` result step, per its own data-* attributes), or
  * nothing (a recommendation/email result, or any step in 'tap' advanceMode).
- * 'pick' keeps Continue, like 'continue'.
+ * 'pick' shows Continue only on a question that already holds an answer
+ * (`updateContinueState()`).
  *
  * @param {HTMLElement}      flowRoot    Flow wrapper element.
  * @param {HTMLElement|null} targetStepEl The step now shown.
@@ -166,6 +168,12 @@ export function updateContinueState( flowRoot, stepEl ) {
 	const selectedEl = stepEl.querySelector( `.${ SELECTED_CLASS }` );
 	// FR-43-27: a multi-answer question is ready once its least is chosen.
 	const hasSelection = !! selectedEl && meetsLeast( chosenButtons( selectedEl ).length, questionLimits( selectedEl.closest( QUESTION_SELECTOR ) ).min );
+	// 'pick' advanceMode: picking already moves on, so Continue shows only once this
+	// question holds an answer (the shopper came back to it with Back, or the pick
+	// routes to a result). A multi-answer question always needs it.
+	if ( 'pick' === advanceModeOf( flowRoot ) && ! stepEl.querySelector( '[data-answers-max]' ) ) {
+		continueBtn.hidden = ! hasSelection;
+	}
 	continueBtn.classList.toggle( 'is-muted', ! hasSelection );
 	continueBtn.setAttribute( 'aria-disabled', hasSelection ? 'false' : 'true' );
 }

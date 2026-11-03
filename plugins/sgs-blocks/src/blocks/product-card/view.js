@@ -1071,7 +1071,7 @@ store( 'sgs/product-card', {
 					return;
 				}
 
-				toastActions.showSuccess( 'Added to your basket.' );
+				toastActions.showAdded( false );
 
 				// Notify the sgs/cart badge to re-fetch the authoritative count.
 				// WC fires this itself when its own blocks are present; we dispatch

@@ -35,11 +35,11 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					options={ [
 						{ label: __( 'Select, then Continue', 'sgs-blocks' ), value: 'continue' },
 						{ label: __( 'Advance straight away', 'sgs-blocks' ), value: 'tap' },
-						{ label: __( 'Advance when an option is picked (keep Continue)', 'sgs-blocks' ), value: 'pick' },
+						{ label: __( 'Advance when an option is picked (Continue only after Back)', 'sgs-blocks' ), value: 'pick' },
 					] }
 					onChange={ ( val ) => setAttributes( { advanceMode: val } ) }
 					help={ __(
-						'"Select, then Continue" shows the choice as picked and waits for the footer’s Continue button — the shopper can change their mind first. "Advance straight away" keeps the original quick-quiz behaviour. "Advance when an option is picked" moves on at once from a single-choice question but keeps Continue, so Back can return and move on again without re-picking.',
+						'"Select, then Continue" shows the choice as picked and waits for the footer’s Continue button — the shopper can change their mind first. "Advance straight away" keeps the original quick-quiz behaviour. "Advance when an option is picked" moves on at once from a single-choice question and shows Continue only on a question that already holds an answer, so Back can return and move on again without re-picking.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom

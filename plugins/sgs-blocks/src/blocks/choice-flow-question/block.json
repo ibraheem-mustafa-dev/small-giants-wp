@@ -163,6 +163,11 @@
 			"maximum": 12,
 			"description": "FR-43-27: the most answers a shopper may pick. 1 (the default) is a single-choice question; above 1 the options act as toggles and a pick past the most is refused with a live-region message. The chosen labels travel as one FR-43-21 cart-line row. Ignored on a priced add-on or product-option step."
 		},
+		"optionMediaSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size of this question's option pictures as a percentage of the picture band's width ({desktop, tablet, mobile}); overrides the flow's own optionMediaSize for this question only. Empty = the flow's value."
+		},
 		"questionFontWeight": {
 			"type": "string",
 			"enum": [ "400", "500", "600", "700", "800" ],

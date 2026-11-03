@@ -66,11 +66,16 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_lines' ) ) {
 	 * An attribute with an empty label prints its value bare, so a value that
 	 * already reads as a sentence needs no invented label.
 	 *
-	 * @param array{lead?:string,addons?:array<int,string>,attributes?:array<int,array{label?:string,value?:string}>} $parts Summary parts.
+	 * `labelSeparator` (default ": ") sits between an attribute's label and its value.
+	 *
+	 * @param array{lead?:string,addons?:array<int,string>,attributes?:array<int,array{label?:string,value?:string}>,labelSeparator?:string} $parts Summary parts.
 	 * @return array<int,string> 0, 1 or 2 non-empty lines.
 	 */
 	function sgs_cart_line_summary_lines( array $parts ): array {
 		$sep  = SGS_CART_LINE_SUMMARY_SEPARATOR;
+		$join = isset( $parts['labelSeparator'] ) && \is_string( $parts['labelSeparator'] ) && '' !== $parts['labelSeparator']
+			? $parts['labelSeparator']
+			: ': ';
 		$lead = isset( $parts['lead'] ) ? \trim( (string) $parts['lead'] ) : '';
 
 		$addons = array();
@@ -98,7 +103,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_lines' ) ) {
 			$label                = isset( $attribute['label'] ) && \is_scalar( $attribute['label'] )
 				? \trim( (string) $attribute['label'] )
 				: '';
-			$attribute_segments[] = '' !== $label ? $label . ': ' . $value : $value;
+			$attribute_segments[] = '' !== $label ? $label . $join . $value : $value;
 		}
 		$attribute_line = \implode( $sep, $attribute_segments );
 
@@ -334,6 +339,7 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_for_cart_item' 
 				'lead'       => $lead,
 				'addons'     => $has_addons ? sgs_addon_short_labels( $addon_lines ) : array(),
 				'attributes' => $attributes,
+				'labelSeparator' => $wording['labelSeparator'],
 			)
 		);
 	}

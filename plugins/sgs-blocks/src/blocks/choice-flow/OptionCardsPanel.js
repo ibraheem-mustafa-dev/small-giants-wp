@@ -23,9 +23,10 @@ const TIER_LABEL = {
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
  * @param {Function} o.setAttributes Block setAttributes.
+ * @param {string}   [o.title]       Panel title; sgs/choice-flow-question passes its own.
  * @return {JSX.Element} The panel.
  */
-export default function OptionCardsPanel( { attributes, setAttributes } ) {
+export default function OptionCardsPanel( { attributes, setAttributes, title } ) {
 	const sizes = attributes.optionMediaSize && ! Array.isArray( attributes.optionMediaSize ) ? attributes.optionMediaSize : {};
 	const setSize = ( tier, val ) => {
 		const next = { ...sizes };
@@ -47,7 +48,7 @@ export default function OptionCardsPanel( { attributes, setAttributes } ) {
 	};
 
 	return (
-		<PanelBody title={ __( 'Option cards', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody title={ title || __( 'Option cards', 'sgs-blocks' ) } initialOpen={ false }>
 			<ResponsiveControl
 				label={ __( 'Picture size', 'sgs-blocks' ) }
 				value={ sizes }

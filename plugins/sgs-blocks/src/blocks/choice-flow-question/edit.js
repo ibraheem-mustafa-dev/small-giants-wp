@@ -14,6 +14,9 @@ import { VStack } from '../../components/primitives';
 import MediaPicker from '../../components/MediaPicker';
 import AddonPricingPanel from './AddonPricingPanel';
 import AnswersPanel from './AnswersPanel';
+import OptionCardsPanel from '../choice-flow/OptionCardsPanel';
+import { mediaSizePreviewStyle } from '../choice-flow/preview-style';
+import { usePreviewTier } from '../../utils';
 import ProductAttributePanel from './ProductAttributePanel';
 import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
@@ -46,8 +49,10 @@ function slugifyLabel( label ) {
 export default function Edit( { attributes, setAttributes, clientId, context } ) {
 	const { question, options, layout, priceGroup } = attributes;
 
+	const previewTier = usePreviewTier();
 	const blockProps = useBlockProps( {
 		className: 'sgs-choice-flow-question',
+		style: mediaSizePreviewStyle( attributes.optionMediaSize, previewTier ),
 	} );
 
 	// Walk up from this question block to the nearest sgs/choice-flow
@@ -363,6 +368,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 			</InspectorControls>
 			<InspectorControls group="styles">
 				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } title={ __( 'Option pictures', 'sgs-blocks' ) } />
 				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 

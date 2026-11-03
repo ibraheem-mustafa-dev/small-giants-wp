@@ -62,6 +62,20 @@ final class Sgs_Toast {
 	 */
 	public static function request(): void {
 		self::$requested = true;
+
+		// The site's own "added" sentences, merged into the toast store's
+		// server state so the view modules read state.addedToBag and
+		// state.addedWithAddons. Repeat calls merge the same values.
+		if ( \function_exists( 'wp_interactivity_state' ) && \function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_wording' ) ) {
+			$wording = sgs_cart_line_summary_wording();
+			\wp_interactivity_state(
+				'sgs/toast',
+				array(
+					'addedToBag'      => $wording['addedToBag'],
+					'addedWithAddons' => $wording['addedWithAddons'],
+				)
+			);
+		}
 	}
 
 	/**

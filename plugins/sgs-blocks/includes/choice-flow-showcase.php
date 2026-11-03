@@ -223,6 +223,21 @@ if ( ! function_exists( 'sgs_choice_flow_media_size_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_choice_flow_question_media_size_css' ) ) {
+	/**
+	 * A question's own `optionMediaSize`, scoped to its wrapper so its custom
+	 * properties override the flow's for this question's options only.
+	 *
+	 * @param array  $attributes Question block attributes.
+	 * @param string $uid        The question's scoped class (`sgs-cfq-...`).
+	 * @return string A `<style>` element, or '' when no size is set.
+	 */
+	function sgs_choice_flow_question_media_size_css( array $attributes, string $uid ): string {
+		$css = sgs_choice_flow_media_size_css( $attributes, '.' . sanitize_html_class( $uid ) . '.sgs-choice-flow-question' );
+		return '' === $css ? '' : '<style>' . wp_strip_all_tags( $css ) . '</style>';
+	}
+}
+
 if ( ! function_exists( 'sgs_choice_flow_product_details' ) ) {
 	/**
 	 * What the stage names beside the product: its brand (WooCommerce's own
@@ -232,7 +247,7 @@ if ( ! function_exists( 'sgs_choice_flow_product_details' ) ) {
 	 * "Frame size 56".
 	 *
 	 * @param int $product_id The flow's resolved product (0 = none).
-	 * @return array{brand:string,axes:array<string,array{label:string,terms:array<string,string>}>}
+	 * @return array{brand:string,axes:array<string,array{label:string,terms:array<string,string>,banded:bool}>}
 	 */
 	function sgs_choice_flow_product_details( int $product_id ): array {
 		$details = array(
@@ -260,9 +275,22 @@ if ( ! function_exists( 'sgs_choice_flow_product_details' ) ) {
 			foreach ( $attribute->get_terms() as $term ) {
 				$terms[ $term->slug ] = html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8' );
 			}
+			// The configured size-band axis reads as the bag does ("M", not "57"):
+			// the same band map, so the stage and the bag never disagree.
+			$band   = function_exists( 'SGS\Blocks\sgs_cart_line_summary_size_band' ) ? \SGS\Blocks\sgs_cart_line_summary_size_band() : array( 'axis' => '', 'scale' => '' );
+			$banded = false;
+			if ( '' !== $band['axis'] && $band['axis'] === $taxonomy && '' !== $band['scale'] && function_exists( 'SGS\Blocks\sgs_cart_line_summary_band_map' ) ) {
+				foreach ( \SGS\Blocks\sgs_cart_line_summary_band_map( $product_id, $taxonomy, $band['scale'] ) as $slug => $letter ) {
+					if ( '' !== $letter && isset( $terms[ $slug ] ) ) {
+						$terms[ $slug ] = $letter;
+						$banded         = true;
+					}
+				}
+			}
 			$details['axes'][ $taxonomy ] = array(
-				'label' => wc_attribute_label( $taxonomy ),
-				'terms' => $terms,
+				'label'  => wc_attribute_label( $taxonomy ),
+				'terms'  => $terms,
+				'banded' => $banded,
 			);
 		}
 		return $details;

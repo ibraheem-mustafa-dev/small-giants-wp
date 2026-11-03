@@ -8,6 +8,14 @@
  * the same system. Every value resolves from a theme.json preset with a
  * literal only as the no-theme fallback.
  *
+ * A site restyles the toast from theme.json `settings.custom.toast.*`
+ * (WordPress prints each as `--wp--custom--toast--<kebab-name>`). Unset keys
+ * fall back to the look below, so nothing changes for a site that sets none.
+ * Keys: background, colour, borderColour, borderWidth, radius, padding,
+ * gap, fontSize, shadow, iconBackground, iconColour, iconRadius, iconBox,
+ * iconSize, actionColour, actionWeight, actionPadding, actionHoverBackground,
+ * actionFontSize.
+ *
  * The wrapper is NEVER display:none, visibility:hidden or [hidden]: its
  * message paragraph is a role="status" live region, and any of those three
  * would drop it out of the accessibility tree and silence every
@@ -26,16 +34,16 @@
 
 	display: flex;
 	align-items: center;
-	gap: var(--wp--preset--spacing--20, 0.75rem);
-	padding: var(--wp--preset--spacing--20, 0.75rem) var(--wp--preset--spacing--30, 1rem);
+	gap: var(--wp--custom--toast--gap, var(--wp--preset--spacing--20, 0.75rem));
+	padding: var(--wp--custom--toast--padding, var(--wp--preset--spacing--20, 0.75rem) var(--wp--preset--spacing--30, 1rem));
 
-	border: 1px solid transparent;
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
-	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+	border: var(--wp--custom--toast--border-width, 1px) solid transparent;
+	border-radius: var(--wp--custom--toast--radius, var(--wp--custom--border-radius--medium, 8px));
+	box-shadow: var(--wp--custom--toast--shadow, 0 6px 24px rgba(0, 0, 0, 0.14));
 
-	background-color: var(--wp--preset--color--surface, #faf9f6);
+	background-color: var(--wp--custom--toast--background, var(--wp--preset--color--surface, #faf9f6));
 	/* #1f2937 reaches 4.5:1 on both variant tints below. */
-	color: var(--wp--preset--color--text, #1f2937);
+	color: var(--wp--custom--toast--colour, var(--wp--preset--color--text, #1f2937));
 
 	opacity: 0;
 	pointer-events: none;
@@ -43,15 +51,15 @@
 
 /* Success — sgs/notice-banner's success tint and border token. */
 .sgs-toast--success {
-	background-color: var(--wp--preset--color--success-light, #ecfdf5);
-	border-color: var(--wp--preset--color--success, #2e7d4f);
+	background-color: var(--wp--custom--toast--background, var(--wp--preset--color--success-light, #ecfdf5));
+	border-color: var(--wp--custom--toast--border-colour, var(--wp--preset--color--success, #2e7d4f));
 }
 
 /* Error — sgs/notice-banner's error tint and border token. Colour is never
    the only carrier: the icon changes to circle-x alongside it. */
 .sgs-toast--error {
-	background-color: var(--wp--preset--color--error-light, #fef2f2);
-	border-color: var(--wp--preset--color--error, #dc2626);
+	background-color: var(--wp--custom--toast--background, var(--wp--preset--color--error-light, #fef2f2));
+	border-color: var(--wp--custom--toast--border-colour, var(--wp--preset--color--error, #dc2626));
 }
 
 .sgs-toast--visible {
@@ -90,13 +98,21 @@
 }
 
 .sgs-toast__icon svg {
-	width: 22px;
-	height: 22px;
+	width: var(--wp--custom--toast--icon-size, 22px);
+	height: var(--wp--custom--toast--icon-size, 22px);
 	display: block;
 }
 
+/* An optional disc behind the glyph: iconBackground fills it, iconBox sizes
+   it (auto = the glyph's own size) and iconRadius rounds it. */
 .sgs-toast__icon--success {
-	color: var(--wp--preset--color--success, #2e7d4f);
+	align-items: center;
+	justify-content: center;
+	width: var(--wp--custom--toast--icon-box, auto);
+	height: var(--wp--custom--toast--icon-box, auto);
+	border-radius: var(--wp--custom--toast--icon-radius, 0);
+	background-color: var(--wp--custom--toast--icon-background, transparent);
+	color: var(--wp--custom--toast--icon-colour, var(--wp--preset--color--success, #2e7d4f));
 }
 
 .sgs-toast__icon--error {
@@ -108,7 +124,7 @@
 .sgs-toast__message {
 	margin: 0;
 	flex: 1 1 auto;
-	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-size: var(--wp--custom--toast--font-size, var(--wp--preset--font-size--small, 0.9375rem));
 	line-height: 1.4;
 }
 
@@ -124,11 +140,11 @@
 	justify-content: center;
 	min-width: 44px;
 	min-height: 44px;
-	padding-inline: var(--wp--preset--spacing--20, 0.75rem);
+	padding-inline: var(--wp--custom--toast--action-padding, var(--wp--preset--spacing--20, 0.75rem));
 	border-radius: var(--wp--custom--border-radius--small, 4px);
-	color: inherit;
-	font-size: var(--wp--preset--font-size--small, 0.9375rem);
-	font-weight: 600;
+	color: var(--wp--custom--toast--action-colour, inherit);
+	font-size: var(--wp--custom--toast--action-font-size, var(--wp--preset--font-size--small, 0.9375rem));
+	font-weight: var(--wp--custom--toast--action-weight, 600);
 	text-decoration: underline;
 	text-underline-offset: 3px;
 }
@@ -136,7 +152,7 @@
 /* Hover BRIGHTENS: a white wash lifts the tint while the dark label stays
    put, so contrast only ever improves. */
 .sgs-toast__action:hover {
-	background-color: rgba(255, 255, 255, 0.65);
+	background-color: var(--wp--custom--toast--action-hover-background, rgba(255, 255, 255, 0.65));
 	text-decoration-thickness: 2px;
 }
 

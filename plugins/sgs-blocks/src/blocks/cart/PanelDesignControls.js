@@ -26,7 +26,7 @@ const TEXT_TARGETS = [
 	[ 'itemPrice', __( 'Item price', 'sgs-blocks' ), {} ],
 	[ 'itemAction', __( 'Item links', 'sgs-blocks' ), { showWeight: false } ],
 	[ 'subtotal', __( 'Subtotal', 'sgs-blocks' ), {} ],
-	[ 'freeDeliveryText', __( 'Free-delivery message', 'sgs-blocks' ), { showWeight: false } ],
+	[ 'freeDeliveryText', __( 'Free-delivery message', 'sgs-blocks' ), {} ],
 	[ 'checkout', __( 'Checkout button', 'sgs-blocks' ), { showLetterSpacing: true, showTransform: true } ],
 	[ 'panelNote', __( 'Note under Checkout', 'sgs-blocks' ), { showWeight: false, showTextAlign: true } ],
 ].map( ( [ prefix, label, fields ] ) => ( {

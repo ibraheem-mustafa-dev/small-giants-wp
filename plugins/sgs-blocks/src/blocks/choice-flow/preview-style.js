@@ -62,16 +62,29 @@ export function buildWrapperStyle( attributes, tier = 'desktop' ) {
 	}
 
 	// choice-flow-showcase.php: 10 to 300 %, the picture keeps its own proportions.
+	return { ...style, ...mediaSizePreviewStyle( optionMediaSize, tier ) };
+}
+
+/**
+ * The option-picture size custom properties for one device (the flow's or a
+ * question's own `optionMediaSize`), the front end's 10 to 300 % range.
+ *
+ * @param {Object} optionMediaSize {desktop, tablet, mobile} percentages.
+ * @param {string} tier            The previewed device.
+ * @return {Object} Style object; empty when no size is set.
+ */
+export function mediaSizePreviewStyle( optionMediaSize, tier = 'desktop' ) {
 	const mediaSize = tierValueOf( optionMediaSize, tier, ( raw ) => {
 		const value = Number( raw );
 		return Number.isFinite( value ) && value >= 10 && value <= 300 ? value : undefined;
 	} );
-	if ( undefined !== mediaSize ) {
-		style[ '--sgs-choice-flow-media-size' ] = `${ Math.round( mediaSize * 100 ) / 100 }%`;
-		style[ '--sgs-choice-flow-media-height' ] = 'auto';
+	if ( undefined === mediaSize ) {
+		return {};
 	}
-
-	return style;
+	return {
+		'--sgs-choice-flow-media-size': `${ Math.round( mediaSize * 100 ) / 100 }%`,
+		'--sgs-choice-flow-media-height': 'auto',
+	};
 }
 
 /**

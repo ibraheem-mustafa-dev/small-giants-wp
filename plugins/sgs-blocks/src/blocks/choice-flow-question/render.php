@@ -313,5 +313,5 @@ $sgs_cfq_html   = ob_get_clean();
 $sgs_cfq_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_cfq_html, 'sgs-choice-flow-question__option' );
 $sgs_cfq_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/choice-flow-question', $sgs_cfq_uid, $attributes, $sgs_cfq_tagged['count'], '.sgs-choice-flow-question__option' );
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- the block's own markup, escaped where it was printed; the rules come from the collector.
-echo sgs_choice_flow_question_description_css( $attributes, $sgs_cfq_uid ) . (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
+echo sgs_choice_flow_question_description_css( $attributes, $sgs_cfq_uid ) . sgs_choice_flow_question_media_size_css( $attributes, $sgs_cfq_uid ) . (string) $sgs_cfq_style . ( null === $sgs_cfq_style ? $sgs_cfq_html : $sgs_cfq_tagged['html'] );
 // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped

@@ -25,6 +25,7 @@ import { getAddonSummary, resetAddonAnswers } from './pricing.js';
 import { collectFlowFields, validateTerminalFields } from './flow-fields.js';
 import { getResolvedVariation } from './variation.js';
 import { FLOW_SELECTOR, getActiveResultEl } from './navigation.js';
+import { closeEnclosingModal } from './flow-modal.js';
 
 /**
  * Whether this flow ever asked a variation-mode product-option question
@@ -151,11 +152,11 @@ async function addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout,
 			return false;
 		}
 
-		toastActions.showSuccess(
-			redirectToCheckout
-				? 'Added — taking you to checkout…'
-				: 'Added to your bag.'
-		);
+		if ( redirectToCheckout ) {
+			toastActions.showSuccess( 'Added — taking you to checkout…' );
+		} else {
+			toastActions.showAdded( ! bareFrame && addons.length > 0 );
+		}
 
 		// Same post-success signalling as sgs/product-card's own addToCart —
 		// so a page's mini-cart/bag badge updates regardless of which block
@@ -203,7 +204,11 @@ async function handleTerminalPurchase( buttonEl, redirectToCheckout ) {
 		return;
 	}
 
-	await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame: false } );
+	const added = await addFlowToBag( flowRoot, resultEl, { buttonEl, redirectToCheckout, bareFrame: false } );
+	// "Add to basket" closes the pop-up the flow sits in; "Buy now" is already leaving for checkout.
+	if ( added && ! redirectToCheckout ) {
+		closeEnclosingModal( flowRoot );
+	}
 }
 
 /**

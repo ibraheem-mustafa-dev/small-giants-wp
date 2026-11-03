@@ -29,6 +29,9 @@
  *
  * Imperative API (call from any view module after a cart request settles):
  *   actions.showSuccess( message )  — success colours, auto-closes after 5s.
+ *   actions.showAdded( withAddons ) — success toast carrying the site's own
+ *                                     "added" wording (server state
+ *                                     `addedToBag` / `addedWithAddons`).
  *   actions.showError( message )    — error colours, STAYS until closed.
  *   actions.close()                 — close it now.
  *
@@ -246,6 +249,23 @@ const { state, actions } = store( 'sgs/toast', {
 
 			state.variant = 'success';
 			arm( AUTO_CLOSE_MS );
+		},
+
+		/**
+		 * Show the success toast with the site's own "added" wording.
+		 *
+		 * The sentences come from the shop wording option through
+		 * includes/class-sgs-toast.php (server state `addedToBag` and
+		 * `addedWithAddons`); an empty `addedWithAddons` falls back to
+		 * `addedToBag`.
+		 *
+		 * @param {boolean} withAddons True when the added item carries add-ons.
+		 */
+		showAdded( withAddons ) {
+			const plain = state.addedToBag || 'Added to your basket.';
+			actions.showSuccess(
+				withAddons ? state.addedWithAddons || plain : plain
+			);
 		},
 
 		/**

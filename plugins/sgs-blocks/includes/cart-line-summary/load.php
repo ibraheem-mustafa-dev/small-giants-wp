@@ -29,6 +29,12 @@ require_once __DIR__ . '/functions.php';
 // The band-letter parser the summary and the product-page size tiles share.
 require_once \dirname( __DIR__ ) . '/buybox-picker-band.php';
 
+// WooCommerce > Shop wording — admin only.
+if ( \is_admin() ) {
+	require_once __DIR__ . '/class-cart-line-summary-admin.php';
+	Cart_Line_Summary_Admin::register();
+}
+
 require_once __DIR__ . '/class-cart-line-summary-cart.php';
 Cart_Line_Summary_Cart::register();
 
