@@ -245,3 +245,24 @@ Open framework item found in round 4: a form step with its own padding renders a
 Shipped 2026-11-03: framework 748f611d6, a2b694e9e, 6f58e7f90, reseed bb018370c; site files 3d2a52377. FW-F swept on local-indus (297 values) and on indus-test before its deploy (301 values; build-deploy's oldshape audit refuses while the server holds scalars; backup ~/backup-fwf-indus-test-20261103.sql, undo ~/fwf-undo-indus-test-20261103.json). indus-test deployed and the mirror pushed (648 front-end files match). site-check: every check passes except forms, where one form a run (apply, careers, catalogue in three runs) reports "Clicking the checkbox did not change its state"; ten direct ticks on indus-test at 0 to 3000ms after load all succeed, and round 3 saw the same once: cause unproven, open.
 
 Not a gap (Bean 2026-11-03): the drawer CTA arrow uses the button's per-tier iconGap, and the desktop nav underline curve was the site's own radius setting.
+
+## Round 4 QC and the round 5 starting list (2026-11-03)
+
+QC (three design reviewers on indus-test after round 4; captures E:/sgs-tmp/vision/indus-foods/*-live-r4.png, pairs in E:/sgs-tmp/r4qc-a, -b, -c): 3 high, about 23 medium, about 18 low. Confirmed matching: the drawer at 375 and 768 (logo card, numbers, dividers, rings, CTA), home service and why-choose cards (R4-03), About hero rays (R4-08), solid social icons, blog card style (meta row, pill, radius, Read article), Contact "01" stacking and the inside counter, Apply note hidden on mobile. The two highs below were re-measured by the main thread.
+
+| Id | Surface, widths | Wrong compared with the draft | Note |
+|---|---|---|---|
+| R5-01 | mega About, Trade, 1440 | the promo aside (sgs-mega-aside, 340px) wraps under the 572px link group inside the 620px panel, so the panel is 937px tall | high; caused by R4-02's 620px width: the group column must narrow (draft: list and promo side by side, panel about 480px tall) |
+| R5-02 | delivery | "Good to know." FAQ has no questions: icons and containers only, no accordion items | high; clone gap: build the three accordion items (questions and answers from the draft) as on /faqs/ |
+| R5-03 | mega panels, 1440 | square, flush to the header, no border or inner padding (draft rounded, thin border, about 14px below the header, 30px padding); Sectors card links not pinned to the card bottom; Brands tag lost its gold chip, promo card inset, logos without tile frames | medium |
+| R5-04 | header nav, 1440 | labels shift about 5px when a menu opens; the open item shows the label underline as well as the pill, chevron outside the pill; Brands and Trade not marked current on their child pages | medium; check whether itemBorderScope paints the open state |
+| R5-05 | about, our-story timelines | pinned section 151px shorter at 1440; mobile card text smaller (title 20 vs 22, body 14 vs 15); swipe hint arrow and indent | medium |
+| R5-06 | apply | sticky Continue bar at 375 missing; completed step shown as plain "1" (draft gold circle with tick); track filled at step 1 (draft empty); stepper-to-heading and heading-to-intro gaps larger; "Deliver to this address" lacks its pale-blue bordered row; "Have these ready" panel 9px shorter | medium |
+| R5-07 | contact | info-card icons larger (24 vs 16px), lines tighter; textarea placeholder missing and box taller (136 vs 114); Reply-by pills touch (4 vs 8px gap); choice tiles taller | medium |
+| R5-08 | careers | Talk-to-us decorative ring overflows its card (overflow); section subline gaps tighter | medium/low |
+| R5-09 | shan, green-leaf, lemon-tree | eyebrow gold dash missing (set on sanam only); About feature-list rows 75px pitch (grid gap 24px both ways; sanam's fix not copied) | medium; repeat round 3's A3/A5 fixes on the other brand pages |
+| R5-10 | brand heroes | contained logo on white leaves yellow bars at 768/375; card 510 vs 555 at 1440 | medium |
+| R5-11 | food-service, delivery | numbered-list sections: eyebrow-to-heading 34 vs 51px, rows 4-8px shorter | medium |
+| R5-12 | blog | eyebrow pill shown as plain text; posts have no images, excerpts or categories and "Hello world!" shows; grid-to-CTA gap | medium; content items need Bean's call (write six posts from the draft) |
+| R5-13 | site-check | one form a run fails "Clicking the checkbox did not change its state" | open, cause unproven |
+| R5-14 | lows | drawer X weight, social glyph size, WhatsApp pill width, food-service hero crop at 375, brands tile strips, testimonial avatar, heritage spacing, CTA band and footer heights | low |
