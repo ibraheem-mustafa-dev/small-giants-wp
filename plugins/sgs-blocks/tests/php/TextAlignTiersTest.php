@@ -48,7 +48,7 @@ final class TextAlignTiersTest extends TestCase {
 	}
 
 	public function test_a_key_the_caller_does_not_list_is_printed_as_the_scalar_it_is(): void {
-		$css = sgs_typography_css_rule( array( 'textAlign' => 'right' ), '', '.x', '', false, false, array() );
+		$css = sgs_typography_css_rule( array( 'textAlign' => 'right' ), '', '.x', '', false, false, array() ); // scalar-tier-allow: a key the caller does not list is a scalar.
 		$this->assertStringContainsString( '.x{text-align:right;}', $css );
 
 		$tiered = sgs_typography_css_rule( array( 'textAlign' => array( 'desktop' => 'right', 'tablet' => 'left' ) ), '', '.x', '', false, false, array( 'textAlign' ) );
