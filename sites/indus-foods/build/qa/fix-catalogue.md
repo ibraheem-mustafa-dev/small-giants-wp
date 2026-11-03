@@ -139,16 +139,71 @@ Site fixes approved, written with scripts/local-wp/patch-block-attrs.py on local
 
 | Id | Pages | Wrong compared with the draft | Proven cause | Fix | Stage | Status |
 |---|---|---|---|---|---|---|
-| S1 (R3-02) | food-service, brands, sanam, delivery | photo corners square inside the rounded frame | frames carry borderRadius but no overflow, so the image paints past the corners | frame `overflow: hidden` | Fill | approved |
-| S2 (R3-03, R3-08) | food-service, brands, sanam, our-story, delivery | dot-list rows 75px apart against 51px | the list grid's single `gap:24px` also spaces rows; the draft is `gap:0 24px` | grid `gap` `{"desktop":"0px 24px"}` | Fill | approved |
-| S3 (R3-04) | sanam | eyebrows have no gold dash | the three labels lack the line-marker settings food-service carries | `dot`, `markerShape:"line"`, 28x2px, 12px gap, gold (blue on "The range") | Fill | approved |
-| S5 (R3-07) | about | Explore titles 14px at 375 against 19px | cards 02-08 are sgs/text with no fontSize, so they inherit the fluid body size | `fontSize {"desktop":19}` | Fill | approved |
-| S6 | about, our-story | stat labels touch their numbers (draft 12px) | about counters' Custom CSS zeroes the number margin (R2-07); our-story labels have no top margin | 12px gap, through a setting where one exists | site build | approved |
-| S8 | about hero | the draft's animated landscape is missing | the hero has no background image; the draft animates its SVG with script | Bean's uploaded SVG variants (media library) set as the hero background per device, animated per the draft | intake | approved |
-| S9 (R3-09) | careers form (post 151) | labels 12px/600 against 13.5px/700 | no label size or weight saved | form `labelFontSize {"desktop":13.5}`, `labelFontWeight "700"` | Fill | approved |
-| S10 (R3-10) | careers "Talk to us" | phone and email underlined, icons 20px | `linkUnderline` and `iconSize` unset, so the theme underline and the medium default show | `linkUnderline:"none"`, `iconSize:"small"` | Fill | approved |
-| S11 (R3-11) | careers vacancy chips | chips wider (letter-spaced) | the label's 0.08em default letter spacing; the draft has none | `letterSpacing: 0` on the nine chips | Fill | approved |
-| S12 (R3-12) | contact | enquiry form inset 60px at 1440 | its panel lacks `contentWidth` full, so the band caps at 1080px | `contentWidth {"desktop":"full"}` on cr-ref-contact-42 | Fill | approved |
-| S13 (R3-16) | footer | quick links turn teal on hover and focus | the icon-list stylesheet's own hover colour (primary-dark) and the theme link hover | footer list `textColourHover: accent` (gold, the draft's hover) | Fill | approved |
+| S1 (R3-02) | food-service, brands, sanam, delivery | photo corners square inside the rounded frame | frames carry borderRadius but no overflow, so the image paints past the corners | frame `overflow: hidden` | Fill | done |
+| S2 (R3-03, R3-08) | food-service, brands, sanam, our-story, delivery | dot-list rows 75px apart against 51px | the list grid's single `gap:24px` also spaces rows; the draft is `gap:0 24px` | grid `gap` `{"desktop":"0px 24px"}` | Fill | done |
+| S3 (R3-04) | sanam | eyebrows have no gold dash | the three labels lack the line-marker settings food-service carries | `dot`, `markerShape:"line"`, 28x2px, 12px gap, gold (blue on "The range") | Fill | done |
+| S5 (R3-07) | about | Explore titles 14px at 375 against 19px | cards 02-08 are sgs/text with no fontSize, so they inherit the fluid body size | `fontSize {"desktop":19}` | Fill | done |
+| S6 | about, our-story | stat labels touch their numbers (draft 12px) | about counters' Custom CSS zeroes the number margin (R2-07); our-story labels have no top margin | 12px gap, through a setting where one exists | site build | done |
+| S8 | about hero | the draft's animated landscape is missing | the hero had no background; Bean's animated originals (sites/indus-foods/assets) were never uploaded intact (media 217 predated the whole-file SVG sanitiser and lost its <style> and SMIL); the draft's handoff copies are static | Bean's originals with a reduced-motion block (finished scene, nothing moving) uploaded as media 966/967/968 and set as backgroundImage / Tablet / Mobile, center bottom, cover | intake | done |
+| S9 (R3-09) | careers form (post 151) | labels 12px/600 against 13.5px/700 | no label size or weight saved | form `labelFontSize {"desktop":13.5}`, `labelFontWeight "700"` | Fill | done |
+| S10 (R3-10) | careers "Talk to us" | phone and email underlined, icons 20px | `linkUnderline` and `iconSize` unset, so the theme underline and the medium default show | `linkUnderline:"none"`, `iconSize:"small"` | Fill | done |
+| S11 (R3-11) | careers vacancy chips | chips wider (letter-spaced) | the label's 0.08em default letter spacing; the draft has none | `letterSpacing: 0` on the nine chips | Fill | done |
+| S12 (R3-12) | contact | enquiry form inset 60px at 1440 | its panel lacks `contentWidth` full, so the band caps at 1080px | `contentWidth {"desktop":"full"}` on cr-ref-contact-42 | Fill | done |
+| S13 (R3-16) | footer | quick links turn teal on hover and focus | the icon-list stylesheet's own hover colour (primary-dark) and the theme link hover | footer list `textColourHover: accent` (gold, the draft's hover) | Fill | done |
 
 Accepted: S4 (R3-05, brands and faqs CTA link beside the button at 375): Bean prefers the live layout (D-26). Dropped as not reproducing on the mirror: R3-17 (no stored tiles field has desktop-only columns). Re-investigation by reading each block's source (Bean: avoid Custom CSS, propose each gap fix with certainty): the timeline (gold year fill animated on scroll, "Today" casing, progress bar, slide number placement and style, side-card fade), the form stepper and Step N of M, required-mark colour, plain file field, label icon, form button icon, container child order (Delivery), rounded accordion header corners, FAQ icon ring, testimonial arrows, the brands ingredient cards' cursor-follow image (new, Bean), and the blog posts-page template (keep it the posts page; edit its template as the WooCommerce templates are edited).
+
+Done on settings that already existed, after Bean's source-reading recheck (2026-11-02):
+
+| Id | Pages | Wrong compared with the draft | Proven cause | Fix | Stage | Status |
+|---|---|---|---|---|---|---|
+| G1 | sanam, shan, green-leaf, lemon-tree | ingredient cards show no cursor-follow food image | each card's Motion cursor-field (image-reveal) was saved with no image | sgsMotion cursor-field values: the card's own attachment, ring 180px / 3px white / shadow / 400ms lag (14 cards); Shan "Pastes & pickles" (257) shows dried fruit: replace with client photography | Fill | done |
+| G2 | about, our-story | timeline side cards not faded | proximity focus unset | panelProximityFocus, edge opacity 0.58 / scale 0.944 | Fill | done |
+| G3 | blog | the posts page showed only the loop | WordPress renders the posts page through the home template (wp_template 508), which held a bare query loop | 508 rebuilt from page 131's blocks with wp-build-page.js --template home (tree sites/indus-foods/build/trees/template/home.json); post grid layout grid 4/2/1 with category filters; section padding saved as per-device boxes | site build | done |
+
+Framework settings (Bean approved 2026-11-02; d8ac24f7d, 0ad98b63c, 396dc42f8, wiring fix 60dc08c97, reseed dd70320ba), each off by default, applied on local-indus:
+
+| Id | Block | Draft behaviour | Setting | Applied to | Status |
+|---|---|---|---|---|---|
+| T1-T5 (R3-06) | sgs/timeline | gold year fades 0.5s; "Today" not capitalised; counter / gold-to-blue progress bar / hint row; counter follows the centre card; ~2694px pin | panelTransitionMs, dateTextTransform, panelProgressBar + panelHint + bar/counter/hint styling, panelCounterBasis active, panelPinLength/Tail | about-33, our-story-18 (old desktop hint texts about-32 / our-story-17 removed; tablet rule now hides the row) | done, row x/width identical to the draft at 1440, pin 2700 vs 2694 |
+| F1-F7 (R3-13, R3-15, R3-09 CV) | sgs/form, form-field-file | inline stepper, Step 1 of 5, red/blue asterisk, ink labels, plain file input, Continue arrow, note beside Continue | stepLayout, stepCounter, requiredMarkColour, labelColour, zoneStyle native, navIcon, actionsNote | forms 163, 151 (the separate note text form-trade-application-55 removed) | done |
+| L1 | sgs/label | location pin on vacancy chips | markerShape icon + markerIcon (any Lucide icon) | careers-52, -61, -70 | done, 139.4x32 as the draft |
+| C1 | sgs/container | photo left from 768 up, text first on mobile | order (per device) | delivery-52, our-story-27 (R2-10 flip Custom CSS removed), community-54, retail-35 | done |
+| A1 (R3-14) | sgs/accordion-item | rounded bar keeps its corners | header follows the item radius (bug fix) | apply-acc-item (no patch) | done |
+| A2 | sgs/accordion | FAQ plus in a 32px ring, blue when open | iconCircle* | faqs-16, -30, -44 | done |
+| S1 | sgs/testimonial-slider | line arrows | arrowIconPrev / arrowIconNext | home-79 | done |
+| B1 | sgs/breadcrumbs | blog trail ends "Blog" | posts-page crumb | blog (no patch) | done |
+
+Open after round 3 (for the round-3 QC to confirm or carry):
+- Apply form: Continue lacks the draft's 2px border (148 vs 152 wide); the note is 13px against 15px and shows at 375 where the draft hides it; step label colours differ; no grey progress track.
+- Apply "Have these ready" bar: the browser's default focus ring is dark on the navy bar.
+- Blog: card corners 8px against 22px (post-grid has no card radius setting); the badge size setting does not reach the badge; posts have no featured images and the draft's categories do not exist (content).
+- Home testimonial arrow glyph larger than the draft's (its own Custom CSS sets the icon to 16px).
+- The About hero and the timeline's left edge sit 6 to 12px off the draft in places (wrapper offset, not measured as a cause yet).
+
+## Round 3 QC and the round 4 starting list (2026-11-03)
+
+Shipped: framework settings d8ac24f7d, 0ad98b63c, 396dc42f8 with wiring fix 60dc08c97 and reseed dd70320ba; site repo files b9b0d7e40; indus-test deployed at b9b0d7e40 and the mirror pushed (site-check 0 failed). R3-01 closed: the light-section headings paint #2C3E50.
+
+Incident during QC: another stream's crawl applied its FW-F sweep (textAlign / alignItems scalars to per-device objects, 301 values in 33 posts) to local-indus and synced its uncommitted build there, before this round's push; indus-test briefly carried content its plugin could not read (centring and vertical alignment lost). Reverted exactly (33 posts byte-identical to the pre-sweep backup), origin build resynced, indus-test re-pushed, site-check 0 failed. Rechecked on indus-test: home headings centred, careers Apply buttons 199x50, split sections centred.
+
+QC (three reviewers, captures E:/sgs-tmp/vision/indus-foods/*-live-r3.png; findings caused by the sweep removed after the recheck). Round 4 starting list:
+
+| Id | Surface, widths | Wrong compared with the draft | Note |
+|---|---|---|---|
+| R4-01 | header drawer, 375 (every page) | no white logo card; close button an empty yellow circle with a stray X; items small yellow Source Sans, draft large white Montserrat with 01-06 numbers, row dividers and arrow / chevron buttons; Follow us overlaps Contact; CTA arrow not in a dark circle | high; round 2 QC did not report it, so suspect a framework change since d31250dad (bisect on the mirror) |
+| R4-02 | header mega menus, 1440 | panels about 1120px wide (draft 620-650); Brands tiles empty; no backdrop blur behind an open panel | high/medium; check after R4-01's cause |
+| R4-03 | home service and why-choose cards, all widths | card text left, draft centred; service image 221px against a 140px circle; why-choose tag pill full width | high |
+| R4-04 | blog hero and CTA band, all widths | zero vertical padding and the CTA text flush to the band edge | high; likely padding saved as a scalar string in template 508 (the container reads a per-device box), as found on -8 and -11 |
+| R4-05 | sanam hero, all widths | right-hand placeholder logo card missing | high/medium; empty image slot |
+| R4-06 | apply step 1, all widths | heading 12px under the stepper (draft 40px); at 375 the draft stacks STEP 1 OF 5 · BUSINESS, Saves as you go and a full-width grey track | medium; plus the known Continue border, note size and mobile hide, step colours |
+| R4-07 | contact form, 375 | Reply-by pills wrap; the 0/800 counter sits below the textarea (draft inside, bottom right); step number 01 inline (draft stacked) | medium |
+| R4-08 | about hero, all widths | rays more saturated than the draft | medium; Bean's own artwork differs from the draft's recolour, decide |
+| R4-09 | brands logo tiles | plain blank tiles, draft dashed placeholder with icon and caption | medium; placeholder content |
+| R4-10 | blog cards | badge and date on separate lines (draft one row); "Read more" grey, draft "Read article →" blue; radius 8 vs 22; badge size setting does not reach the badge; no images or excerpts (content) | medium |
+| R4-11 | header nav, 1440 | active item a pill with a curve, draft a plain line; chevrons tight to labels | medium |
+| R4-12 | social icons, header and footer | LinkedIn and Facebook outline glyphs, draft solid | medium |
+| R4-13 | sector pages | heading-to-subline gaps 9-16px tighter; breadcrumb separators wider (all pages) | low/medium |
+| R4-14 | apply "Have these ready" bar | default focus ring dark on navy | accessibility |
+
+Confirmed matching after round 3: the About and Our Story timelines (row, bar, counter, year fade, Today, pin length), Sanam ingredient-card cursor images, the careers form and chips, the FAQ ring, testimonial arrows, Delivery and the other split flips.
