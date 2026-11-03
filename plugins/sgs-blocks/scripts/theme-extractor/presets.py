@@ -91,6 +91,11 @@ def _rest_entry(rest: dict, paddings: dict | None = None) -> dict:
     for rest_key, css_key in _REST_PASSTHROUGH:
         if rest.get(rest_key):
             entry[css_key] = rest[rest_key]
+    # letter-spacing / text-transform: "normal" and "none" are the CSS initials, i.e. nothing authored.
+    for rest_key, css_key, initial in (("letterSpacing", "letter-spacing", "normal"),
+                                       ("textTransform", "text-transform", "none")):
+        if rest.get(rest_key) and rest[rest_key] != initial:
+            entry[css_key] = rest[rest_key]
     # min-height: BOTH "auto" and "0px" are the CSS initial (unset) value — an element with no
     # authored min-height computes to one of them. Emitting "0px" asserts a floor of zero that the
     # draft never declared, and would override the framework's 48px WCAG touch-target floor with

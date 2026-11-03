@@ -173,6 +173,8 @@
 	   .uid rule) beats all of these. */
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
 	font-size: var(--wp--custom--button-presets--primary--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing,);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform,);
 	padding: var(--wp--custom--button-presets--primary--padding, 14px 24px);
 	min-height: var(--wp--custom--button-presets--primary--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
@@ -200,6 +202,8 @@
 	   .uid rule) beats all of these. */
 	font-weight: var(--wp--custom--button-presets--secondary--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
 	font-size: var(--wp--custom--button-presets--secondary--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	letter-spacing: var(--wp--custom--button-presets--secondary--letter-spacing,);
+	text-transform: var(--wp--custom--button-presets--secondary--text-transform,);
 	padding: var(--wp--custom--button-presets--secondary--padding, 14px 24px);
 	min-height: var(--wp--custom--button-presets--secondary--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--primary));
@@ -227,6 +231,8 @@
 	   .uid rule) beats all of these. */
 	font-weight: var(--wp--custom--button-presets--outline--font-weight, var(--sgs-mb-btn-font-weight-default, 600));
 	font-size: var(--wp--custom--button-presets--outline--font-size, var(--sgs-mb-btn-font-size-default, 15px));
+	letter-spacing: var(--wp--custom--button-presets--outline--letter-spacing,);
+	text-transform: var(--wp--custom--button-presets--outline--text-transform,);
 	padding: var(--wp--custom--button-presets--outline--padding, 14px 24px);
 	min-height: var(--wp--custom--button-presets--outline--min-height, 48px);
 	--sgs-btn-color: var(--wp--custom--button-presets--outline--text, var(--wp--preset--color--text));

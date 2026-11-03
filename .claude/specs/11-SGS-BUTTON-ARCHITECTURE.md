@@ -64,7 +64,7 @@ Per-client preset values live in `settings.custom.buttonPresets` of the client's
 | Site Editor, Styles, Buttons | Site owners and power users | Native WordPress UI with live preview and pseudo-element support |
 | `sites/<client>/theme-snapshot.json` | Developers shipping a client | Code-first, version-controlled, per-site push CLI |
 
-Each preset (primary, secondary, outline) carries the full per-state set: background, text, border, border width, radius, padding, font size and weight, minimum height, and the `:hover` background, text and border.
+Each preset (primary, secondary, outline) carries the full per-state set: background, text, border, border width, radius, padding, font size and weight, letter spacing and text transform (defaults `normal` and `none`), minimum height, and the `:hover` background, text and border.
 
 ## 5. Rulings
 

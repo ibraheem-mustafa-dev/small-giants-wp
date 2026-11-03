@@ -38,6 +38,7 @@ const CAPTURE_SRC = function (generatedClassSrc) {
   const BOX = ['backgroundColor', 'backgroundImage', 'color', 'borderTopColor',
     'borderTopWidth', 'borderTopStyle', 'borderTopLeftRadius', 'paddingTop', 'paddingRight',
     'paddingBottom', 'paddingLeft', 'fontFamily', 'fontSize', 'fontWeight', 'minHeight',
+    'letterSpacing', 'textTransform',
     'boxShadow', 'transform'];
 
   const pick = (el, props) => {

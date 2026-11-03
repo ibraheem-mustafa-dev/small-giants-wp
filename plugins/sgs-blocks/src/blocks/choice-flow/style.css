@@ -146,6 +146,8 @@
 	font-family: inherit;
 	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
 	cursor: pointer;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
 		border-color var(--wp--custom--transition--fast, 0.15s ease), color var(--wp--custom--transition--fast, 0.15s ease),
@@ -186,6 +188,8 @@
 	font-family: inherit;
 	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
 	cursor: pointer;
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease),
 		border-color var(--wp--custom--transition--fast, 0.15s ease), color var(--wp--custom--transition--fast, 0.15s ease),

@@ -2447,6 +2447,8 @@ body.sgs-shop-filters-plain .sgs-shop-filters__sheet-footer .sgs-shop-filters__c
 	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
 	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--small));
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
 	border-radius: var(--wp--custom--button-presets--primary--border-radius, 0);
 	text-decoration: none;
 }

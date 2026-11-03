@@ -32,6 +32,8 @@
 	font: inherit;
 	font-size: var(--wp--custom--button-presets--primary--font-size, 0.9375rem);
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
 	cursor: pointer;
 	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }

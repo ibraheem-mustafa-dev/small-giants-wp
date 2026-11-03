@@ -650,6 +650,8 @@
           "padding": "0px 28px 0px 28px",
           "font-size": "13px",
           "font-weight": "400",
+          "letter-spacing": "1.3px",
+          "text-transform": "uppercase",
           "min-height": "52px",
           "hover-background": "#2a2a2a",
           "hover-text": "var(--wp--preset--color--primary-text)",

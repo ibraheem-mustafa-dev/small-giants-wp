@@ -398,6 +398,8 @@ a.sgs-field-fallback:visited {
 	font-family: var(--wp--preset--font-family--body, inherit);
 	font-size: var(--wp--custom--button-presets--primary--font-size, 15px);
 	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
 	letter-spacing: normal;
 	line-height: 1.2;
 	text-align: center;
