@@ -3739,18 +3739,163 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "pickerBoxBorderWidth",
+      "attr": "pickOptionRadius",
       "fields": {
-        "css_property": "border-width",
-        "css_element": "picker-box"
+        "css_property": "border-radius",
+        "css_element": "pick-option"
       }
     },
     {
       "slug": "sgs/buybox",
-      "attr": "pickerBoxRadius",
+      "attr": "pickSelectedBackgroundColour",
       "fields": {
-        "css_property": "border-radius",
-        "css_element": "picker-box"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pick-option",
+        "css_state": "selected"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSelectedBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "pick-option",
+        "css_state": "selected"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "pick-summary",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickSummaryWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "pick-summary"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTileGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "pick-tile"
       }
     },
     {
@@ -32940,6 +33085,31 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickOptionGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "pick-option"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickOptionPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "pick-option"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTilePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "pick-tile"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerBoxBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -32958,10 +33128,68 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerBoxRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelLinkPadding",
       "fields": {
         "css_property": "padding",
         "css_element": "picker-label-link"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pick-preview"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "pick-preview"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "pick-preview"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "pick-preview"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "previewRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "pick-preview"
       }
     },
     {
