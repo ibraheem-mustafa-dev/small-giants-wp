@@ -203,8 +203,18 @@ $sgs_form_counter_label = trim( (string) ( $attributes['stepCounterLabel'] ?? ''
 if ( '' === $sgs_form_counter_label || 'Step %1$d of %2$d' === $sgs_form_counter_label ) {
 	$sgs_form_counter_label = __( 'Step %1$d of %2$d', 'sgs-blocks' );
 }
+// The step name beside the counter: the suffix carries %3$s for the name. view.js reads the wording and the names from the context.
+$sgs_form_counter_suffix = (string) ( $attributes['stepCounterNameSuffix'] ?? '' );
+$sgs_form_counter_names  = false !== strpos( $sgs_form_counter_suffix, '%3$s' ) && $sgs_form_counter_on;
 if ( $sgs_form_counter_on ) {
 	$context['stepCounterLabel'] = $sgs_form_counter_label;
+}
+if ( $sgs_form_counter_names ) {
+	$context['stepCounterNameLabel'] = $sgs_form_counter_suffix;
+	$context['stepNames']            = array_map(
+		static fn( array $sgs_step ): string => sgs_authored_text_plain( $sgs_step['label'] ),
+		$steps
+	);
 }
 
 // ---------------------------------------------------------------------------
@@ -580,6 +590,74 @@ if ( ! empty( $sgs_counter_text['normal'] ) ) {
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'stepCounter', '.' . $sgs_form_uid . ' .sgs-form__step-counter', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'savedNotice', '.' . $sgs_form_uid . ' .sgs-form__saved-notice', '', false, false, sgs_object_attr_keys( $block ) );
 
+// Progress track (colour and per-device height), stepper colours, per-device hiding of the counter's step name and
+// of the buttons-row note, and the counter row's wrap and gap. Each is opt-in: unset prints nothing.
+$sgs_hidden_display = static fn( $raw ): string => is_bool( $raw ) || is_numeric( $raw ) ? ( $raw ? 'none' : 'revert' ) : '';
+$sgs_form_length    = static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
+$sgs_track_colour   = sgs_colour_value( (string) ( $attributes['progressTrackColour'] ?? '' ) );
+$sgs_track_height   = $attributes['progressTrackHeight'] ?? null;
+$sgs_track_has_h    = is_array( $sgs_track_height ) && array() !== $sgs_track_height;
+if ( '' !== $sgs_track_colour || $sgs_track_has_h ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress{' . ( '' !== $sgs_track_colour ? 'background-color:' . $sgs_track_colour . ';' : '' ) . 'border-radius:999px;overflow:hidden;}';
+}
+if ( $sgs_track_has_h ) {
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__progress',
+		array(
+			array(
+				'value'     => $sgs_track_height,
+				'css'       => 'height',
+				'transform' => $sgs_form_length,
+			),
+		)
+	);
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-bar{height:100%;}';
+}
+$sgs_label_off = sgs_text_decls( $attributes, array( 'base' => 'stepLabelColour' ) );
+if ( ! empty( $sgs_label_off['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{' . implode( ';', $sgs_label_off['normal'] ) . ';}';
+}
+$sgs_label_on = sgs_text_decls( $attributes, array( 'base' => 'stepLabelColourActive' ) );
+if ( ! empty( $sgs_label_on['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step--active .sgs-form__progress-step-label{' . implode( ';', $sgs_label_on['normal'] ) . ';}';
+}
+$sgs_number_off = sgs_colour_value( (string) ( $attributes['stepNumberInactiveBackground'] ?? '' ) );
+if ( '' !== $sgs_number_off ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:' . $sgs_number_off . ';}';
+}
+foreach ( array(
+	'stepCounterNameHidden' => '.sgs-form__step-counter-name',
+	'actionsNoteHidden'     => '.sgs-form__actions-note',
+) as $sgs_hide_attr => $sgs_hide_sel ) {
+	$sgs_hide_value = $attributes[ $sgs_hide_attr ] ?? null;
+	if ( is_array( $sgs_hide_value ) && array() !== $sgs_hide_value ) {
+		$sgs_field_css .= sgs_emit_responsive_css(
+			'.' . $sgs_form_uid . ' ' . $sgs_hide_sel,
+			array(
+				array(
+					'value'     => $sgs_hide_value,
+					'css'       => 'display',
+					'transform' => $sgs_hidden_display,
+				),
+			)
+		);
+	}
+}
+$sgs_status_gap = $attributes['statusRowGap'] ?? null;
+if ( is_array( $sgs_status_gap ) && array() !== $sgs_status_gap ) {
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__status-row',
+		array(
+			array(
+				'value'     => $sgs_status_gap,
+				'css'       => 'row-gap',
+				'transform' => $sgs_form_length,
+			),
+		)
+	);
+}
+$sgs_field_css .= sgs_flex_wrap_css( $attributes, '.' . $sgs_form_uid, array( 'statusRowWrap' => '.sgs-form__status-row' ) );
+
 // Icon on the step buttons: its size and the gap to the label. Printed only when an icon is set.
 $sgs_nav_icon_name = sanitize_key( (string) ( $attributes['navIcon'] ?? '' ) );
 $sgs_nav_icon_svg  = '';
@@ -821,7 +899,14 @@ if ( $sgs_form_counter_on ) {
 		array( '1', (string) (int) $total_steps ),
 		$sgs_form_counter_label
 	);
-	echo '<div class="sgs-form__status-row"><span class="sgs-form__step-counter" data-wp-text="state.stepCounterText">' . esc_html( $sgs_form_counter_text ) . '</span>';
+	if ( $sgs_form_counter_names ) {
+		// The counter and the step name travel together, so the row keeps them at its left.
+		$sgs_form_counter_name = str_replace( '%3$s', (string) ( $context['stepNames'][0] ?? '' ), $sgs_form_counter_suffix );
+		echo '<div class="sgs-form__status-row"><span class="sgs-form__step-counter"><span data-wp-text="state.stepCounterText">' . esc_html( $sgs_form_counter_text ) . '</span>'
+			. '<span class="sgs-form__step-counter-name" data-wp-text="state.stepCounterNameText">' . esc_html( $sgs_form_counter_name ) . '</span></span>';
+	} else {
+		echo '<div class="sgs-form__status-row"><span class="sgs-form__step-counter" data-wp-text="state.stepCounterText">' . esc_html( $sgs_form_counter_text ) . '</span>';
+	}
 }
 
 if ( $sgs_form_saved_on ) :

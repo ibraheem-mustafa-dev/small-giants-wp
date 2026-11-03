@@ -3,7 +3,7 @@
  *
  * - A field with floating labels switched off keeps its label above the box.
  * - A field with the "inside" floating label keeps the label inside the box and lifts it on focus or once filled.
- * - The textarea's live character counter sits under the box, right-aligned.
+ * - The textarea's live character counter sits under the box, right-aligned, or inside the box at its bottom right (counterPlacement "inside").
  *
  * Colours come from the theme tokens; the floating-label rules these override live in style.css.
  */
@@ -68,4 +68,24 @@
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-variant-numeric: tabular-nums;
 	text-align: end;
+}
+
+/* Counter inside the box (counterPlacement "inside"): render.php wraps the box and the counter in one positioned
+   element and puts the modifier on the field. The counter rests at the bottom right of the box; the box keeps
+   room under the typed text so it never runs beneath the counter. The chained modifier lifts the padding above the
+   label-inside rule's chained specificity and the form's field padding. */
+.sgs-form-field__control {
+	position: relative;
+}
+
+.sgs-form-field--counter-inside .sgs-form-field__counter {
+	position: absolute;
+	right: 1rem;
+	bottom: 0.875rem;
+	margin: 0;
+	pointer-events: none;
+}
+
+.sgs-form-field.sgs-form-field--counter-inside.sgs-form-field--counter-inside.sgs-form-field--counter-inside.sgs-form-field--counter-inside textarea.sgs-form-field__input {
+	padding-bottom: 2.75rem;
 }

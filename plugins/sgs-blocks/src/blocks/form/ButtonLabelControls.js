@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-import { IconPicker, SgsLengthControl } from '../../components';
+import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
 
 /**
@@ -76,6 +76,22 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 					onChange={ ( value ) => setAttributes( { actionsNoteFirstStepOnly: value } ) }
 					__nextHasNoMarginBottom
 				/>
+			) }
+			{ !! attributes.actionsNote && (
+				<ResponsiveOverride
+					label={ __( 'Hide the note', 'sgs-blocks' ) }
+					value={ attributes.actionsNoteHidden }
+					onChange={ ( obj ) => setAttributes( { actionsNoteHidden: obj } ) }
+				>
+					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+						<ToggleControl
+							label={ __( 'Hide the note on this device', 'sgs-blocks' ) }
+							checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
+							onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
 			) }
 		</>
 	);

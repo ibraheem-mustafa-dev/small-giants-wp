@@ -25,6 +25,8 @@ import {
 	wrapperPreview,
 	isCssGradient,
 	tierBoxLonghands,
+	tierLengthPreview,
+	tierValueOf,
 } from '../../utils';
 import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
@@ -327,6 +329,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const labelColourValue = resolveColourToken( attributes.labelColour, palette );
 	const requiredMarkValue = resolveColourToken( attributes.requiredMarkColour, palette );
 	const stepCounterColourValue = resolveColourToken( attributes.stepCounterColour, palette );
+	const trackColourValue = resolveColourToken( attributes.progressTrackColour, palette );
+	const stepNumberInactiveValue = resolveColourToken( attributes.stepNumberInactiveBackground, palette );
 	const fieldEdgeValue = resolveColourToken( fieldBorderColour, palette );
 	const fieldHolderValue = resolveColourToken( fieldPlaceholderColour, palette );
 	const fieldVars = [
@@ -389,6 +393,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 
 	// Typography, spacing, border, radius, max-width, layout and the content band the wrapper paints on the form's outer element.
 	const previewTier = usePreviewTier();
+	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
+	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 
@@ -437,6 +443,15 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		labelColourValue && `.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
 		requiredMarkValue && `.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
 		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
+		trackColourValue && `.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,
+		( trackColourValue || trackHeightValue ) && `.${ formPreviewScope } .sgs-form__progress{border-radius:999px;overflow:hidden;}`,
+		trackHeightValue && `.${ formPreviewScope } .sgs-form__progress{height:${ trackHeightValue };}.${ formPreviewScope } .sgs-form__progress-bar{height:100%;}`,
+		stepNumberInactiveValue && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
+		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
+		tierValueOf( attributes.stepCounterNameHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
+		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
+		resolveColourToken( attributes.stepLabelColour, palette ) && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColour, palette ) };}`,
+		resolveColourToken( attributes.stepLabelColourActive, palette ) && `.${ formPreviewScope } .sgs-form__progress-step--active .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColourActive, palette ) };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -739,6 +754,34 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'step-counter',
 						label: __( 'Step counter colour', 'sgs-blocks' ),
 						attrs: { base: 'stepCounterColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'progress-track',
+						label: __( 'Progress track colour', 'sgs-blocks' ),
+						attrs: { base: 'progressTrackColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'step-label-active',
+						label: __( 'Active step label colour', 'sgs-blocks' ),
+						attrs: { base: 'stepLabelColourActive' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'step-label-inactive',
+						label: __( 'Inactive step label colour', 'sgs-blocks' ),
+						attrs: { base: 'stepLabelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'step-number-inactive',
+						label: __( 'Inactive step number background', 'sgs-blocks' ),
+						attrs: { base: 'stepNumberInactiveBackground' },
 						attributes,
 						setAttributes,
 					} ),
@@ -1458,6 +1501,11 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					<div className="sgs-form__status-row">
 						<span className="sgs-form__step-counter">
 							{ ( attributes.stepCounterLabel || __( 'Step %1$d of %2$d', 'sgs-blocks' ) ).replace( '%1$d', '1' ).replace( '%2$d', '3' ) }
+							{ String( attributes.stepCounterNameSuffix || '' ).includes( '%3$s' ) && (
+								<span className="sgs-form__step-counter-name">
+									{ attributes.stepCounterNameSuffix.replace( '%3$s', __( 'Step 1', 'sgs-blocks' ) ) }
+								</span>
+							) }
 						</span>
 					</div>
 				) }

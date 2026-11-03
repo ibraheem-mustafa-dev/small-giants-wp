@@ -233,7 +233,7 @@
 .sgs-form-step:has(.sgs-form-field__row-heading),
 .sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
 	padding-left: var(--sgs-form-row-heading-gutter, 32px);
-	row-gap: 8px;
+	row-gap: var(--sgs-form-row-heading-gap, 8px);
 }
 
 /* The table's notes (help, a note block) run under the whole table, R/L gutter included. */
@@ -245,7 +245,7 @@
    for the number: tighter side padding and no spinner arrows. */
 .sgs-form-step:has(.sgs-form-field__row-heading),
 .sgs-form__inner:has(> .sgs-form-field > .sgs-form-field__row-heading) {
-	column-gap: 8px;
+	column-gap: var(--sgs-form-row-heading-gap, 8px);
 }
 
 .sgs-form-step:has(.sgs-form-field__row-heading) .sgs-form-field--number .sgs-form-field__input,
@@ -829,7 +829,7 @@ select.sgs-form-field__input {
 }
 
 .sgs-form__progress-bar {
-	height: 4px;
+	height: var(--sgs-progress-bar-height, 4px);
 	border-radius: 2px;
 	background-color: var(--sgs-progress-colour, var(--wp--preset--color--primary, #0f7e80));
 	background-image: var(--sgs-progress-colour-gradient, none);
@@ -870,8 +870,8 @@ select.sgs-form-field__input {
 }
 
 .sgs-form__progress-step-number {
-	width: 28px;
-	height: 28px;
+	width: var(--sgs-progress-step-number-size, 28px);
+	height: var(--sgs-progress-step-number-size, 28px);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;

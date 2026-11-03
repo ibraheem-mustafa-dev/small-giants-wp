@@ -41,6 +41,18 @@
                     "clusters": [],
                     "_note": "helpText itself is field-behaviour content, not a style property (Bean's non-cluster rule) — the rendered <p class=\"sgs-form-field__help\"> also carries no per-instance style attribute of its own. clusters: []. The conformance checker's orphan scanner reports helpText as an ORPHAN here (its element-key-as-fallback-prefix convention coincidentally matches help+Text); this is a known false-positive of the checker, not evidence of an unaccounted style control — helpText is intentionally content, not style, and out of scope to silence without editing the checker script."
                 },
+                "counter": {
+                    "selector": ".sgs-form-field__counter",
+                    "motion": false,
+                    "label": "Character counter",
+                    "order": 5,
+                    "clusters": [ "text" ],
+                    "attrMap": {
+                        "css:font-size": "counterFontSize",
+                        "css:color": "counterColour"
+                    },
+                    "_note": "The live \"0 / 800\" count printed when a maximum length is set. counterPlacement chooses below the box or inside it at the bottom right; render.php prints a scoped rule on the field's uid class for the size and colour."
+                },
                 "error": {
                     "label": "Error message",
                     "order": 4,
@@ -152,6 +164,22 @@
         "showCounter": {
             "type": "boolean",
             "default": true
+        },
+        "counterPlacement": {
+            "type": "string",
+            "enum": [ "below", "inside" ],
+            "default": "below",
+            "description": "Where the character counter sits: below the box (default) or inside it at the bottom right, with room kept under the typed text."
+        },
+        "counterFontSize": {
+            "type": "object",
+            "default": {},
+            "description": "Font size of the character counter, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's small preset size."
+        },
+        "counterColour": {
+            "type": "string",
+            "default": "",
+            "description": "Colour of the character counter: a palette slug or a custom colour. Empty = the muted text token."
         }
     },
     "render": "file:./render.php",

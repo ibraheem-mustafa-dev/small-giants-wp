@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import {
 	PanelBody,
 	TextControl,
@@ -8,27 +8,47 @@ import {
 	RangeControl,
 } from '@wordpress/components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { DesignTokenPicker, ResponsiveOverride, SgsLengthControl, resolveColourToken } from '../../components';
+import { usePreviewTier, tierLengthPreview } from '../../utils';
 import { fieldLabelClasses, fieldDefaultValue, FieldCounterPreview } from '../../components/form-field-preview';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
+const COUNTER_PLACEMENT_OPTIONS = [
+	{ label: __( 'Below the box', 'sgs-blocks' ), value: 'below' },
+	{ label: __( 'Inside the box, bottom right', 'sgs-blocks' ), value: 'inside' },
+];
+
 const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { fieldName, label, placeholder, helpText, required, width, rows } =
 		attributes;
+
+	const [ palette ] = useSettings( 'color.palette' );
+	const counterInside = 'inside' === attributes.counterPlacement;
+	const counterScope = `sgs-ta-preview-${ clientId }`;
+	const counterColour = resolveColourToken( attributes.counterColour, palette );
+	const previewTier = usePreviewTier();
+	const counterSize = tierLengthPreview( attributes.counterFontSize, previewTier );
+	const counterPreviewCss = [
+		counterColour && `.${ counterScope } .sgs-form-field__counter{color:${ counterColour };}`,
+		counterSize && `.${ counterScope } .sgs-form-field__counter{font-size:${ counterSize };}`,
+	].filter( Boolean ).join( '' );
 
 	const className = [
 		'sgs-form-field',
 		'sgs-form-field--textarea',
 		`sgs-form-field--${ width }`,
 		...fieldLabelClasses( attributes ),
-	].join( ' ' );
+		counterInside && attributes.maxLength > 0 && false !== attributes.showCounter ? 'sgs-form-field--counter-inside' : '',
+		counterScope,
+	].filter( Boolean ).join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
 
@@ -165,9 +185,46 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid', 'maxLength', 'counter', 'msgTooLong' ] }
 				/>
+				{ attributes.maxLength > 0 && false !== attributes.showCounter && (
+					<PanelBody title={ __( 'Character counter', 'sgs-blocks' ) } initialOpen={ false }>
+						<SelectControl
+							label={ __( 'Counter position', 'sgs-blocks' ) }
+							value={ attributes.counterPlacement || 'below' }
+							options={ COUNTER_PLACEMENT_OPTIONS }
+							onChange={ ( val ) => setAttributes( { counterPlacement: val } ) }
+							help={ __( 'Inside keeps the count at the bottom right of the box and leaves room under the typed text.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+						<ResponsiveOverride
+							label={ __( 'Counter font size', 'sgs-blocks' ) }
+							value={ attributes.counterFontSize }
+							onChange={ ( obj ) => setAttributes( { counterFontSize: obj } ) }
+						>
+							{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								<SgsLengthControl
+									scale="font-size"
+									presets={ false }
+									label={ __( 'Counter font size', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue ?? '' }
+									placeholder={ inherited ? effectiveValue : '' }
+									onChange={ ( val ) => setOwnValue( val || undefined ) }
+								/>
+							) }
+						</ResponsiveOverride>
+						<DesignTokenPicker
+							label={ __( 'Counter colour', 'sgs-blocks' ) }
+							value={ attributes.counterColour }
+							onChange={ ( val ) => setAttributes( { counterColour: val ?? '' } ) }
+							linked
+						/>
+					</PanelBody>
+				) }
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ counterPreviewCss && <style>{ counterPreviewCss }</style> }
 				{ label && (
 					<label className="sgs-form-field__label">
 						<AuthoredText value={ label } />
@@ -178,15 +235,31 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</label>
 				) }
-				<textarea
-					className="sgs-form-field__input"
-					placeholder={ placeholder || ' ' }
-					value={ fieldDefaultValue( attributes ) }
-					readOnly
-					rows={ rows }
-					disabled
-				/>
-				<FieldCounterPreview attributes={ attributes } />
+				{ counterInside ? (
+					<div className="sgs-form-field__control">
+						<textarea
+							className="sgs-form-field__input"
+							placeholder={ placeholder || ' ' }
+							value={ fieldDefaultValue( attributes ) }
+							readOnly
+							rows={ rows }
+							disabled
+						/>
+						<FieldCounterPreview attributes={ attributes } />
+					</div>
+				) : (
+					<>
+						<textarea
+							className="sgs-form-field__input"
+							placeholder={ placeholder || ' ' }
+							value={ fieldDefaultValue( attributes ) }
+							readOnly
+							rows={ rows }
+							disabled
+						/>
+						<FieldCounterPreview attributes={ attributes } />
+					</>
+				) }
 				{ helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>
 				) }

@@ -62,6 +62,17 @@ const { state } = store( 'sgs/form', {
 		},
 
 		/**
+		 * The current step's name in the counter's suffix wording.
+		 *
+		 * @return {string} For example " · Business".
+		 */
+		get stepCounterNameText() {
+			const ctx = getContext();
+			const name = Array.isArray( ctx.stepNames ) ? ctx.stepNames[ ctx.currentStep ] : '';
+			return String( ctx.stepCounterNameLabel || '' ).replace( '%3$s', String( name || '' ) );
+		},
+
+		/**
 		 * Check if currently on first step.
 		 *
 		 * @return {boolean} True if on first step.

@@ -67,6 +67,74 @@
 				]
 			},
 			"elements": {
+				"step-label-active": {
+					"selector": ".sgs-form__progress-step--active .sgs-form__progress-step-label",
+					"motion": false,
+					"state": "active",
+					"label": "Active step label",
+					"order": 34,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "stepLabelColourActive"
+					},
+					"_note": "Colour of the active step's label; render.php prints a scoped rule on .{uid} .sgs-form__progress-step--active .sgs-form__progress-step-label. Unset keeps the stylesheet's text token.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
+				},
+				"progress-track": {
+					"selector": ".sgs-form__progress",
+					"motion": false,
+					"label": "Progress track",
+					"order": 35,
+					"clusters": [ "fill", "layout" ],
+					"attrMap": {
+						"css:background-color": "progressTrackColour",
+						"css:height": "progressTrackHeight"
+					},
+					"_note": "The track behind the progress fill. progressTrackColour paints it; progressTrackHeight (per device) sets its height and the fill follows it. When either is set the track is clipped to a pill shape so the fill stays inside it. Unset keeps the bare 4px fill.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
+				},
+				"step-counter-name": {
+					"selector": ".sgs-form__step-counter-name",
+					"motion": false,
+					"label": "Step counter step name",
+					"order": 36,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:display": "stepCounterNameHidden"
+					},
+					"_note": "The current step's name beside the counter. stepCounterNameSuffix sets the wording and turns it on; stepCounterNameHidden (per device, true hides) chooses where it shows.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The counter prints only for a multi-step form with the Step counter switch on."
+				},
+				"status-row": {
+					"selector": ".sgs-form__status-row",
+					"motion": false,
+					"label": "Counter and saved-progress row",
+					"order": 37,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:flex-wrap": "statusRowWrap",
+						"css:row-gap": "statusRowGap"
+					},
+					"_note": "The row holding the step counter and the saved-progress notice. statusRowWrap lets them wrap onto two lines in a narrow form; statusRowGap (per device) spaces the lines.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The row prints only for a multi-step form with the Step counter switch on."
+				},
+				"actions-note": {
+					"selector": ".sgs-form__actions-note",
+					"motion": false,
+					"label": "Note beside the buttons",
+					"order": 38,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:display": "actionsNoteHidden"
+					},
+					"_note": "The note at the left of the buttons row. actionsNoteHidden (per device, true hides) removes it on the devices chosen; the first-step-only switch is separate. Its type is the help text's.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The note prints only when Note beside the buttons has text; the single-step fixture leaves it empty."
+				},
 				"actions": {
 					"selector": ".sgs-form__actions",
 					"motion": false,
@@ -703,9 +771,10 @@
 						"css:-webkit-text-stroke-width": "stepLabelTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "stepLabelTextStrokeColour",
 						"css:column-count": "stepLabelTextColumns",
-						"css:writing-mode": "stepLabelWritingMode"
+						"css:writing-mode": "stepLabelWritingMode",
+						"css:color": "stepLabelColour"
 					},
-					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue.",
+					"_note": "Typography only (stepLabel* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-label). The label beside each multi-step progress number; the active-step bold in style.css stays as the non-colour active cue. stepLabelColour is the colour of the labels of steps that are not the active one (render.php scoped rule on .{uid} .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label); unset keeps the stylesheet's muted token.",
 					"absentIn": [ "single-step" ],
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step).",
 					"states": {
@@ -963,7 +1032,7 @@
 					"selector": ".sgs-form__progress-step-number",
 					"label": "Progress step number",
 					"order": 26,
-					"clusters": [ "text" ],
+					"clusters": [ "text", "fill" ],
 					"prefix": "stepNumber",
 					"attrMap": {
 						"css:font-size": "stepNumberFontSize",
@@ -979,9 +1048,10 @@
 						"css:-webkit-text-stroke-width": "stepNumberTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "stepNumberTextStrokeColour",
 						"css:column-count": "stepNumberTextColumns",
-						"css:writing-mode": "stepNumberWritingMode"
+						"css:writing-mode": "stepNumberWritingMode",
+						"css:background-color": "stepNumberInactiveBackground"
 					},
-					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble.",
+					"_note": "Typography only (stepNumber* family, render.php sgs_typography_css_rule on .{uid} .sgs-form__progress-step-number). The number inside each multi-step progress bubble. stepNumberInactiveBackground fills the bubble of a step that is neither active nor completed (render.php scoped rule); unset keeps it unfilled.",
 					"absentIn": [ "single-step" ],
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step).",
 					"states": {
@@ -3301,6 +3371,58 @@
 			"default": "",
 			"role": "content",
 			"description": "A short note at the left of the buttons row, plain inline formatting only. Empty = none."
+		},
+		"stepCounterNameSuffix": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Wording printed after the step counter that carries the current step's name: %3$s is the name, for example ' · %3$s'. Empty = no name beside the counter."
+		},
+		"stepCounterNameHidden": {
+			"type": "object",
+			"default": {},
+			"description": "Hides the step name beside the counter, per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere."
+		},
+		"progressTrackColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the track behind the progress fill: a palette slug or a custom colour. Empty = no track colour."
+		},
+		"progressTrackHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Height of the progress track and its fill, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's 4px fill."
+		},
+		"stepLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the labels of the steps that are not the active one: a palette slug or a custom colour. Empty = the stylesheet's muted token."
+		},
+		"stepLabelColourActive": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the active step's label: a palette slug or a custom colour. Empty = the stylesheet's text token."
+		},
+		"stepNumberInactiveBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background of the number bubble of a step that is neither active nor completed: a palette slug or a custom colour. Empty = unfilled."
+		},
+		"actionsNoteHidden": {
+			"type": "object",
+			"default": {},
+			"description": "Hides the note beside the buttons, per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere."
+		},
+		"statusRowWrap": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "nowrap", "wrap" ],
+			"description": "Whether the step counter and saved-progress notice wrap onto two lines when they overrun the row. Empty keeps the stylesheet's own behaviour."
+		},
+		"statusRowGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between the lines of the counter row (and between its items), per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's 0.5rem."
 		},
 		"actionsNoteFirstStepOnly": {
 			"type": "boolean",
