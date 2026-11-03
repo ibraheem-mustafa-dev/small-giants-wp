@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9610,
+    "row_count": 9615,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -601,6 +601,7 @@
     "sgs/accordion::iconPosition": "select-from-enum",
     "sgs/accordion::iconRotation": "styling",
     "sgs/accordion::iconSize": "select-from-enum",
+    "sgs/accordion::iconStrokeWidth": "layout",
     "sgs/accordion::justifyContent": "layout",
     "sgs/accordion::justifyItems": "layout",
     "sgs/accordion::layout": "layout",
@@ -1558,6 +1559,7 @@
     "sgs/buybox::pickerStyle": "behaviour",
     "sgs/buybox::pickerSubLabelMetaKey": "technical",
     "sgs/buybox::pickerSwatchStyle": "behaviour",
+    "sgs/buybox::pickerValueColour": "color",
     "sgs/buybox::pickerValueFontSize": "typography",
     "sgs/buybox::pickerValueFontSizeUnit": "typography",
     "sgs/buybox::pickerValueLineHeight": "typography",
@@ -4772,6 +4774,7 @@
     "sgs/icon-list::itemFontSizeUnit": "typography",
     "sgs/icon-list::itemFontStyle": "typography",
     "sgs/icon-list::itemFontWeight": "typography",
+    "sgs/icon-list::itemGap": "layout",
     "sgs/icon-list::itemLetterSpacing": "typography",
     "sgs/icon-list::itemLetterSpacingUnit": "typography",
     "sgs/icon-list::itemLineHeight": "typography",
@@ -7347,6 +7350,7 @@
     "sgs/product-card::priceFromLabelTextTransform": "typography",
     "sgs/product-card::priceFromLabelTextWrap": "typography",
     "sgs/product-card::priceFromLabelWritingMode": "select-from-enum",
+    "sgs/product-card::priceGroupLayout": "layout",
     "sgs/product-card::priceLarge": "text-content",
     "sgs/product-card::priceLineHeight": "typography",
     "sgs/product-card::priceLineHeightUnit": "typography",
@@ -8952,6 +8956,7 @@
     "sgs/text::linkUnderlineThickness": "typography",
     "sgs/text::margin": "layout",
     "sgs/text::maxWidth": "layout",
+    "sgs/text::maxWidthAlign": "enum-mode",
     "sgs/text::padding": "layout",
     "sgs/text::sgsChildSizing": "layout",
     "sgs/text::sgsChildWidth": "layout",

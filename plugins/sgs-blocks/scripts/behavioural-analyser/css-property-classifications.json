@@ -3820,10 +3820,19 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerValueColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "picker-value"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerValueFontSize",
       "fields": {
         "css_property": "font-size",
-        "css_element": "picker-selected-value"
+        "css_element": "picker-value"
       }
     },
     {
@@ -3831,7 +3840,7 @@
       "attr": "pickerValueLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "picker-selected-value"
+        "css_element": "picker-value"
       }
     },
     {
@@ -15459,6 +15468,15 @@
       "attr": "itemFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "itemGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
         "css_element": "item"
       }
     },
@@ -29113,6 +29131,14 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "maxWidthAlign",
+      "fields": {
+        "css_property": "margin-inline",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -31578,6 +31604,15 @@
       "attr": "iconSize",
       "fields": {
         "css_property": "width",
+        "css_layer": "OUTER",
+        "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "iconStrokeWidth",
+      "fields": {
+        "css_property": "stroke-width",
         "css_layer": "OUTER",
         "css_element": "icon"
       }
@@ -40193,6 +40228,15 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "priceGroupLayout",
+      "fields": {
+        "css_property": "flex-direction",
+        "css_layer": "OUTER",
+        "css_element": "price-group"
       }
     },
     {
