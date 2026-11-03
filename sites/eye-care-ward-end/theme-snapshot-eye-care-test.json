@@ -586,6 +586,27 @@
       ]
     },
     "custom": {
+      "toast": {
+        "background": "#141414",
+        "colour": "#FAF8F5",
+        "borderWidth": "0",
+        "borderColour": "#141414",
+        "radius": "0",
+        "padding": "14px 22px",
+        "gap": "16px",
+        "fontSize": "14px",
+        "shadow": "0 12px 40px rgba(0,0,0,.25)",
+        "iconBox": "22px",
+        "iconRadius": "50%",
+        "iconBackground": "#9C8B78",
+        "iconColour": "#FAF8F5",
+        "iconSize": "14px",
+        "actionColour": "#FAF8F5",
+        "actionWeight": "400",
+        "actionPadding": "0",
+        "actionHoverBackground": "transparent",
+        "actionFontSize": "13px"
+      },
       "focus": {
         "width": "2px",
         "inner": "var(--wp--preset--color--surface)",
