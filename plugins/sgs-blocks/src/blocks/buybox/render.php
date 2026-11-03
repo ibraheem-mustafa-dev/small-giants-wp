@@ -800,6 +800,13 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	if ( '' !== $sgs_bb_picker_value_typo_css ) {
 		$scoped_css[] = $sgs_bb_picker_value_typo_css;
 	}
+	$sgs_bb_picker_value_sel  = $root_sel . ' .sgs-buybox__picker-selected-value';
+	$sgs_bb_picker_value_text = sgs_resolve_text_colour_or_gradient( (string) ( $attributes['pickerValueColour'] ?? '' ), '' );
+	$sgs_bb_picker_value_decl = sgs_text_colour_decl( $sgs_bb_picker_value_text );
+	if ( '' !== $sgs_bb_picker_value_decl ) {
+		$scoped_css[] = $sgs_bb_picker_value_sel . '{' . $sgs_bb_picker_value_decl . ';}';
+		$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $sgs_bb_picker_value_sel, $sgs_bb_picker_value_text );
+	}
 }
 
 // Option-tile name (e.g. "Ivory" under a colour tile) typography and colour.

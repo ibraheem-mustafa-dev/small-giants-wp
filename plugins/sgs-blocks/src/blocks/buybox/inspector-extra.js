@@ -401,6 +401,13 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
+			key: 'picker-value',
+			label: __( 'Chosen picker value', 'sgs-blocks' ),
+			attrs: { base: 'pickerValueColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'picker-option',
 			label: __( 'Option tile name', 'sgs-blocks' ),
 			attrs: { base: 'pickerOptionColour' },

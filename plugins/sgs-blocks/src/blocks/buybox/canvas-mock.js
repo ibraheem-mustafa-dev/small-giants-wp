@@ -651,11 +651,18 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 	};
 	// The chosen value renders beside the label only on the own-render path, so
 	// the canvas shows it under the same condition render.php uses.
-	const valueStyle = typographyPreviewStyle(
-		attributes,
-		'pickerValue',
-		tier
-	);
+	const valueStyle = {
+		...typographyPreviewStyle( attributes, 'pickerValue', tier ),
+		...( attributes.pickerValueColour
+			? {
+					color:
+						resolveColourToken(
+							attributes.pickerValueColour,
+							palette
+						) || attributes.pickerValueColour,
+			  }
+			: {} ),
+	};
 	// The option tile names (render.php scopes the same typography and colour to a tile-style picker's .sgs-option-picker__pill-label).
 	const optionStyle = {
 		...typographyPreviewStyle( attributes, 'pickerOption', tier ),

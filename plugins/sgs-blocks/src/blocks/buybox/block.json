@@ -94,6 +94,19 @@
 					},
 					"_note": "The name under each colour or size tile; render.php scopes the pickerOption* rule to it."
 				},
+				"picker-value": {
+					"motion": false,
+					"selector": ".sgs-buybox .sgs-buybox__picker-selected-value",
+					"label": "Chosen picker value",
+					"clusters": [ "text" ],
+					"prefix": "pickerValue",
+					"attrMap": {
+						"css:font-size": "pickerValueFontSize",
+						"css:line-height": "pickerValueLineHeight",
+						"css:color": "pickerValueColour"
+					},
+					"_note": "The chosen option beside a picker's label (e.g. Ivory after COLOUR); render.php scopes the pickerValue* rule to it."
+				},
 				"price-row": {
 					"selector": ".sgs-buybox .buybox__price-row",
 					"motion": false,
@@ -1354,6 +1367,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Font size for the chosen value shown beside each axis picker's label (e.g. \"Ivory\"). Own-render path only — this element exists only when pickerShowSelectedValue or pickerLabelLinkAxis replaces sgs/option-picker's legend, so there is nothing to forward. Empty = inherited from the buybox."
+		},
+		"pickerValueColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour for the chosen value shown beside each axis picker's label. Own-render path only, like pickerValueFontSize. Empty = the muted text colour from the block's stylesheet."
 		},
 		"pickerValueFontSizeUnit": {
 			"type": "string",
