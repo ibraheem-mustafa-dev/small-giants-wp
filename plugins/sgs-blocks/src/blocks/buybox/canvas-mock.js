@@ -368,6 +368,34 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 			';'
 		) };}`;
 	}
+	// Pick a set: the box around the pickers (render.php paints the same four settings on .sgs-buybox-pick__groups).
+	if ( 'configurator' === attributes.buyboxLayout ) {
+		const boxDecls = [];
+		const boxFill = attributes.pickerBoxBackgroundColour;
+		const boxBorder = attributes.pickerBoxBorderColour;
+		if ( boxFill ) {
+			boxDecls.push(
+				`background-color:${ resolveColourToken( boxFill, palette ) || boxFill }`
+			);
+		}
+		if ( boxBorder ) {
+			boxDecls.push(
+				`border-color:${ resolveColourToken( boxBorder, palette ) || boxBorder }`
+			);
+		}
+		if ( attributes.pickerBoxBorderWidth ) {
+			boxDecls.push(
+				`border-width:${ attributes.pickerBoxBorderWidth }`,
+				'border-style:solid'
+			);
+		}
+		if ( attributes.pickerBoxRadius ) {
+			boxDecls.push( `border-radius:${ attributes.pickerBoxRadius }` );
+		}
+		if ( boxDecls.length ) {
+			css += `${ root } .sgs-buybox-pick__groups{${ boxDecls.join( ';' ) };padding:var(--wp--preset--spacing--30,1rem);}`;
+		}
+	}
 	return css;
 }
 
@@ -487,6 +515,40 @@ function SampleOptionGroup( {
  * @param {string} props.tier       Previewed tier.
  * @return {JSX.Element} The ladder list.
  */
+/**
+ * Pick a set sample: one pick-several group wearing the look chosen for it, so the canvas reads groupStyles.
+ *
+ * @param {Object} props            Props.
+ * @param {Object} props.attributes Block attributes.
+ * @return {Element} Sample markup.
+ */
+function SamplePickSet( { attributes } ) {
+	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
+	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
+	return (
+		<div className="sgs-buybox-pick">
+			<div className="sgs-buybox-pick__groups">
+				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
+					<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
+					<div className={ `sgs-buybox-pick__options sgs-buybox-pick__options--${ style }` }>
+						{ [ __( 'Vanilla', 'sgs-blocks' ), __( 'Mango', 'sgs-blocks' ), __( 'Mint', 'sgs-blocks' ) ].map( ( name ) => (
+							<span key={ name } className="sgs-buybox-pick__option">
+								<span className="sgs-buybox-pick__option-body">
+									<span className="sgs-buybox-pick__swatch" aria-hidden="true" />
+									<span className="sgs-buybox-pick__option-name">{ name }</span>
+								</span>
+							</span>
+						) ) }
+					</div>
+				</div>
+			</div>
+			<div className="sgs-buybox-pick__side">
+				<p className="sgs-buybox-pick__caption">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
+			</div>
+		</div>
+	);
+}
+
 function SampleValueLadder( { attributes, tier } ) {
 	const savingStyle = typographyPreviewStyle(
 		attributes,
@@ -1014,6 +1076,9 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							linkText={ linkText }
 							linkStyle={ linkStyle }
 						/>
+						{ 'configurator' === attributes.buyboxLayout && (
+							<SamplePickSet attributes={ attributes } />
+						) }
 					</>
 				) }
 				<div className="buybox__cart-form">

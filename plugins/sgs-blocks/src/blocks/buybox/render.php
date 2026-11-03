@@ -545,7 +545,7 @@ if ( $add_to_cart_hover_lift ) {
 // attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
-$uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) . wp_json_encode( $block->context ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();

@@ -693,6 +693,23 @@
 						"css:border-bottom-color": "pickerLabelLinkUnderlineColour",
 						"css:padding": "pickerLabelLinkPadding"
 					}
+				},
+				"picker-box": {
+					"selector": ".sgs-buybox-pick__groups",
+					"label": "Picker box",
+					"order": 18,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [ "main", "guided" ],
+					"absentWhy": "The box around the pickers prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickerBoxBackgroundColour",
+						"css:border-color": "pickerBoxBorderColour",
+						"css:border-width": "pickerBoxBorderWidth",
+						"css:border-radius": "pickerBoxRadius"
+					}
 				}
 			},
 			"fx": {
