@@ -365,7 +365,7 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Inner blocks:** `sgs/accordion-item` inner blocks, each with a `title` (RichText) and content (any blocks). Attributes: `/wp-blocks schema sgs/accordion`.
 
-**Render:** Dynamic `render.php`; `save` returns `<InnerBlocks.Content />`. `viewScriptModule` enhances `<details>`/`<summary>` (no-JS fallback) with smooth animation.
+**Render:** Dynamic `render.php`; `save` returns `<InnerBlocks.Content />`. `viewScriptModule` enhances `<details>`/`<summary>` (no-JS fallback) with smooth animation. Each item's `<summary>` carries `sgs-on-dark` or `sgs-on-light` from its own header paint (resting, else open, else hover; `sgs_surface_tone_class()` as the container uses it), so the theme's on-dark focus ring applies on a dark header; no paint, no marker.
 
 ---
 
