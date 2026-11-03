@@ -51,9 +51,9 @@ if ( '' !== $sgs_ta_counter && is_array( $sgs_ta_counter_size ) && array() !== $
 }
 
 // The box itself: per-device minimum height and padding, and the line height. Each is opt-in; the chained
-// field class lifts the rule above the form-level field rules. With the counter inside, the stylesheet keeps the
-// bottom padding that leaves room under the typed text, so a custom bottom padding does not apply there.
-$sgs_ta_sel    = '.' . $sgs_ta_uid . '.sgs-form-field textarea.sgs-form-field__input';
+// scope class is repeated so the rule outranks the label-inside and counter-inside padding defaults. With the
+// counter inside, the bottom padding is the larger of the counter clearance and the author's bottom.
+$sgs_ta_sel    = '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.' . $sgs_ta_uid . '.sgs-form-field textarea.sgs-form-field__input';
 $sgs_ta_height = $attributes['inputMinHeight'] ?? null;
 if ( is_array( $sgs_ta_height ) && array() !== $sgs_ta_height ) {
 	$sgs_ta_css .= sgs_emit_responsive_css(
@@ -81,7 +81,31 @@ if ( is_array( $sgs_ta_padding ) && array() !== $sgs_ta_padding ) {
 		)
 	);
 }
-$sgs_ta_line_height = sgs_css_single_length_value( (string) ( $attributes['inputLineHeight'] ?? '' ) );
+if ( $sgs_ta_inside && is_array( $sgs_ta_padding ) ) {
+	$sgs_ta_bottoms = array();
+	foreach ( $sgs_ta_padding as $sgs_ta_tier => $sgs_ta_box ) {
+		$sgs_ta_bottom = is_array( $sgs_ta_box ) ? sgs_css_length_value( $sgs_ta_box['bottom'] ?? '' ) : '';
+		if ( '' !== $sgs_ta_bottom ) {
+			$sgs_ta_bottoms[ $sgs_ta_tier ] = $sgs_ta_bottom;
+		}
+	}
+	if ( array() !== $sgs_ta_bottoms ) {
+		$sgs_ta_css .= sgs_emit_responsive_css(
+			$sgs_ta_sel,
+			array(
+				array(
+					'value'     => $sgs_ta_bottoms,
+					'css'       => 'padding-bottom',
+					'transform' => static fn( $raw ): string => 'max(2.75rem,' . ( is_numeric( $raw ) ? (string) (float) $raw . 'px' : (string) $raw ) . ')',
+				),
+			)
+		);
+	}
+}
+$sgs_ta_line_height = sgs_button_element_line_height( $attributes['inputLineHeight'] ?? '' );
+if ( '' === $sgs_ta_line_height && 'normal' === strtolower( trim( (string) ( $attributes['inputLineHeight'] ?? '' ) ) ) ) {
+	$sgs_ta_line_height = 'normal';
+}
 if ( '' !== $sgs_ta_line_height ) {
 	$sgs_ta_css .= $sgs_ta_sel . '{line-height:' . $sgs_ta_line_height . ';}';
 }
@@ -95,14 +119,14 @@ if ( $sgs_ta_inside ) {
 	$sgs_ta_classes[] = 'sgs-form-field--counter-inside';
 }
 
-$sgs_ta_box = '<textarea class="sgs-form-field__input" rows="' . $rows . '" ' . field_input_attrs( $fid, $attributes, false ) . '>' . esc_html( field_default_value( $attributes, true ) ) . '</textarea>';
+$sgs_ta_markup = '<textarea class="sgs-form-field__input" rows="' . $rows . '" ' . field_input_attrs( $fid, $attributes, false ) . '>' . esc_html( field_default_value( $attributes, true ) ) . '</textarea>';
 
 echo field_open( $attributes, 'textarea', implode( ' ', $sgs_ta_classes ) );
 echo field_label( $fid, $attributes );
 if ( $sgs_ta_inside ) {
-	echo '<div class="sgs-form-field__control">' . $sgs_ta_box . $sgs_ta_counter . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both parts are escaped by their builders.
+	echo '<div class="sgs-form-field__control">' . $sgs_ta_markup . $sgs_ta_counter . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both parts are escaped by their builders.
 } else {
-	echo $sgs_ta_box . $sgs_ta_counter; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both parts are escaped by their builders.
+	echo $sgs_ta_markup . $sgs_ta_counter; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both parts are escaped by their builders.
 }
 echo field_error( $fid );
 echo field_help( $fid, $attributes );
