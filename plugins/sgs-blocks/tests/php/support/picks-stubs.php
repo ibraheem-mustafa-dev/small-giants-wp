@@ -50,6 +50,11 @@ namespace {
 			return abs( (int) $s );
 		}
 	}
+	if ( ! function_exists( 'get_edit_post_link' ) ) {
+		function get_edit_post_link( $id, $context = '' ) {
+			return 'https://example.test/wp-admin/post.php?post=' . (int) $id . '&action=edit';
+		}
+	}
 	if ( ! function_exists( 'wp_unslash' ) ) {
 		function wp_unslash( $v ) {
 			return $v;
