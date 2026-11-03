@@ -65,193 +65,199 @@ export function ListingContentPanel( { attributes, setAttributes } ) {
 	];
 
 	return (
-		<PanelBody
-			title={ __( 'Listing card', 'sgs-blocks' ) }
-			initialOpen={ false }
-		>
-			<SelectControl
-				label={ __( 'Card content', 'sgs-blocks' ) }
-				help={ __(
-					'Typed on this card: the badge, price note and button text you set here. From each product: every product’s own badge, price note and button, set on its Card tab in the product editor.',
-					'sgs-blocks'
-				) }
-				value={ fromProduct ? 'product' : 'typed' }
-				options={ [
-					{ label: __( 'Typed on this card', 'sgs-blocks' ), value: 'typed' },
-					{ label: __( 'From each product', 'sgs-blocks' ), value: 'product' },
-				] }
-				onChange={ ( v ) => setAttributes( { cardContentSource: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
-			{ fromProduct &&
-				metaKeyFields.map( ( [ attr, value, label, standard ] ) => (
-					<TextControl
-						key={ attr }
-						label={ label }
-						help={ __( 'Empty uses', 'sgs-blocks' ) + ' ' + standard }
-						value={ value || '' }
-						onChange={ ( v ) => setAttributes( { [ attr ]: v } ) }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-					/>
-				) ) }
-			{ fromProduct && false !== showCta && (
-				<ToggleControl
-					label={ __( 'Products that need choices go to their page', 'sgs-blocks' ) }
-					help={ __(
-						'A variable or grouped product gets a link to its page instead of an add-to-basket button, unless its own Button action says otherwise.',
-						'sgs-blocks'
-					) }
-					checked={ !! ctaChoicesToPage }
-					onChange={ ( v ) => setAttributes( { ctaChoicesToPage: v } ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
-			{ fromProduct && (
-				<ToggleControl
-					label={ __( 'Show “From” and the lowest price', 'sgs-blocks' ) }
-					help={ __(
-						'A variable product whose options cost different amounts shows “From” and its lowest price instead of the default option’s price.',
-						'sgs-blocks'
-					) }
-					checked={ !! priceFromLowest }
-					onChange={ ( v ) => setAttributes( { priceFromLowest: v } ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
-			<ToggleControl
-				label={ __( 'Show description', 'sgs-blocks' ) }
-				help={ __(
-					'The product’s short description under the title.',
-					'sgs-blocks'
-				) }
-				checked={ showDescription !== false }
-				onChange={ ( v ) => setAttributes( { showDescription: v } ) }
-				__nextHasNoMarginBottom
-			/>
-			{ showDescription !== false &&
-				[
-					[ 'desktop', __( 'Description on desktop', 'sgs-blocks' ) ],
-					[ 'tablet', __( 'Description on tablet', 'sgs-blocks' ) ],
-					[ 'mobile', __( 'Description on mobile', 'sgs-blocks' ) ],
-				].map( ( [ tier, label ] ) => (
-					<SelectControl
-						key={ tier }
-						label={ label }
-						value={ tierValue( tier ) }
-						options={ [
-							{ label: __( 'As the tier above', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Show', 'sgs-blocks' ), value: 'on' },
-							{ label: __( 'Hide', 'sgs-blocks' ), value: 'off' },
-						] }
-						onChange={ ( v ) => setTier( tier, v ) }
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-					/>
-				) ) }
-			<ToggleControl
-				label={ __( 'Show button', 'sgs-blocks' ) }
-				help={ __(
-					'Off for shop grids: the image and title still link to the product.',
-					'sgs-blocks'
-				) }
-				checked={ showCta !== false }
-				onChange={ ( v ) => setAttributes( { showCta: v } ) }
-				__nextHasNoMarginBottom
-			/>
-			{ showCta !== false && (
-				<>
-					<ToggleControl
-						label={ __( 'Show basket icon on the button', 'sgs-blocks' ) }
-						checked={ showCtaIcon !== false }
-						onChange={ ( v ) => setAttributes( { showCtaIcon: v } ) }
-						__nextHasNoMarginBottom
-					/>
-					<ToggleControl
-						label={ __( 'Show button shadow', 'sgs-blocks' ) }
-						checked={ showCtaShadow !== false }
-						onChange={ ( v ) => setAttributes( { showCtaShadow: v } ) }
-						__nextHasNoMarginBottom
-					/>
-				</>
-			) }
-			<ToggleControl
-				label={ __( 'Show wishlist heart', 'sgs-blocks' ) }
-				help={ __(
-					'A heart on the image that saves the product in the visitor’s browser.',
-					'sgs-blocks'
-				) }
-				checked={ !! showWishlist }
-				onChange={ ( v ) => setAttributes( { showWishlist: v } ) }
-				__nextHasNoMarginBottom
-			/>
-			<TextControl
-				label={ __( 'RRP field (meta key)', 'sgs-blocks' ) }
-				help={ __(
-					'The product field holding the recommended retail price, e.g. _sgs_rrp. When the RRP is above the price it shows struck through, and an empty saving badge reads the saving.',
-					'sgs-blocks'
-				) }
-				value={ rrpMetaKey || '' }
-				onChange={ ( v ) => setAttributes( { rrpMetaKey: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
-			{ '' !== ( rrpMetaKey || '' ) && (
+		<>
+			<PanelBody title={ __( 'Card content', 'sgs-blocks' ) } initialOpen={ false }>
 				<SelectControl
-					label={ __( 'Saving wording', 'sgs-blocks' ) }
-					value={ rrpSavingFormat || 'amount' }
+					label={ __( 'Card content', 'sgs-blocks' ) }
+					help={ __(
+						'Typed on this card: the badge, price note and button text you set here. From each product: every product’s own badge, price note and button, set on its Card tab in the product editor.',
+						'sgs-blocks'
+					) }
+					value={ fromProduct ? 'product' : 'typed' }
 					options={ [
-						{
-							label: __( 'Amount (Save £32)', 'sgs-blocks' ),
-							value: 'amount',
-						},
-						{
-							label: __( 'Percentage (Save 19%)', 'sgs-blocks' ),
-							value: 'percentage',
-						},
+						{ label: __( 'Typed on this card', 'sgs-blocks' ), value: 'typed' },
+						{ label: __( 'From each product', 'sgs-blocks' ), value: 'product' },
 					] }
-					onChange={ ( v ) => setAttributes( { rrpSavingFormat: v } ) }
+					onChange={ ( v ) => setAttributes( { cardContentSource: v } ) }
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
 				/>
-			) }
-			<SelectControl
-				label={ __( 'Photo size', 'sgs-blocks' ) }
-				help={ __( 'A larger size stops a small thumbnail looking soft on a wide card. Default = the shop\u2019s thumbnail size.', 'sgs-blocks' ) }
-				value={ imageSize || '' }
-				options={ [
-					{ label: __( 'Shop thumbnail (default)', 'sgs-blocks' ), value: '' },
-					{ label: __( 'Thumbnail', 'sgs-blocks' ), value: 'thumbnail' },
-					{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
-					{ label: __( 'Medium large', 'sgs-blocks' ), value: 'medium_large' },
-					{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
-					{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
-				] }
-				onChange={ ( v ) => setAttributes( { imageSize: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
-			<ToggleControl
-				label={ __( 'Show colour dots', 'sgs-blocks' ) }
-				checked={ showSwatches !== false }
-				onChange={ ( v ) => setAttributes( { showSwatches: v } ) }
-				__nextHasNoMarginBottom
-			/>
-			{ showSwatches !== false && (
-			<TextControl
-				label={ __( 'Colour dots from attribute', 'sgs-blocks' ) }
-				help={ __(
-					'The variation attribute whose colours show as dots, e.g. pa_colour. Empty = the first attribute with colours set. Typed swatches win when present.',
-					'sgs-blocks'
+				{ fromProduct &&
+					metaKeyFields.map( ( [ attr, value, label, standard ] ) => (
+						<TextControl
+							key={ attr }
+							label={ label }
+							help={ __( 'Empty uses', 'sgs-blocks' ) + ' ' + standard }
+							value={ value || '' }
+							onChange={ ( v ) => setAttributes( { [ attr ]: v } ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) ) }
+				{ fromProduct && false !== showCta && (
+					<ToggleControl
+						label={ __( 'Products that need choices go to their page', 'sgs-blocks' ) }
+						help={ __(
+							'A variable or grouped product gets a link to its page instead of an add-to-basket button, unless its own Button action says otherwise.',
+							'sgs-blocks'
+						) }
+						checked={ !! ctaChoicesToPage }
+						onChange={ ( v ) => setAttributes( { ctaChoicesToPage: v } ) }
+						__nextHasNoMarginBottom
+					/>
 				) }
-				value={ swatchAttribute || '' }
-				onChange={ ( v ) => setAttributes( { swatchAttribute: v } ) }
-				__next40pxDefaultSize
-				__nextHasNoMarginBottom
-			/>
-			) }
-		</PanelBody>
+				{ fromProduct && (
+					<ToggleControl
+						label={ __( 'Show “From” and the lowest price', 'sgs-blocks' ) }
+						help={ __(
+							'A variable product whose options cost different amounts shows “From” and its lowest price instead of the default option’s price.',
+							'sgs-blocks'
+						) }
+						checked={ !! priceFromLowest }
+						onChange={ ( v ) => setAttributes( { priceFromLowest: v } ) }
+						__nextHasNoMarginBottom
+					/>
+				) }
+			</PanelBody>
+			<PanelBody title={ __( 'Show or hide', 'sgs-blocks' ) } initialOpen={ false }>
+				<ToggleControl
+					label={ __( 'Show description', 'sgs-blocks' ) }
+					help={ __(
+						'The product’s short description under the title.',
+						'sgs-blocks'
+					) }
+					checked={ showDescription !== false }
+					onChange={ ( v ) => setAttributes( { showDescription: v } ) }
+					__nextHasNoMarginBottom
+				/>
+				{ showDescription !== false &&
+					[
+						[ 'desktop', __( 'Description on desktop', 'sgs-blocks' ) ],
+						[ 'tablet', __( 'Description on tablet', 'sgs-blocks' ) ],
+						[ 'mobile', __( 'Description on mobile', 'sgs-blocks' ) ],
+					].map( ( [ tier, label ] ) => (
+						<SelectControl
+							key={ tier }
+							label={ label }
+							value={ tierValue( tier ) }
+							options={ [
+								{ label: __( 'As the tier above', 'sgs-blocks' ), value: '' },
+								{ label: __( 'Show', 'sgs-blocks' ), value: 'on' },
+								{ label: __( 'Hide', 'sgs-blocks' ), value: 'off' },
+							] }
+							onChange={ ( v ) => setTier( tier, v ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) ) }
+				<ToggleControl
+					label={ __( 'Show button', 'sgs-blocks' ) }
+					help={ __(
+						'Off for shop grids: the image and title still link to the product.',
+						'sgs-blocks'
+					) }
+					checked={ showCta !== false }
+					onChange={ ( v ) => setAttributes( { showCta: v } ) }
+					__nextHasNoMarginBottom
+				/>
+				{ showCta !== false && (
+					<>
+						<ToggleControl
+							label={ __( 'Show basket icon on the button', 'sgs-blocks' ) }
+							checked={ showCtaIcon !== false }
+							onChange={ ( v ) => setAttributes( { showCtaIcon: v } ) }
+							__nextHasNoMarginBottom
+						/>
+						<ToggleControl
+							label={ __( 'Show button shadow', 'sgs-blocks' ) }
+							checked={ showCtaShadow !== false }
+							onChange={ ( v ) => setAttributes( { showCtaShadow: v } ) }
+							__nextHasNoMarginBottom
+						/>
+					</>
+				) }
+				<ToggleControl
+					label={ __( 'Show wishlist heart', 'sgs-blocks' ) }
+					help={ __(
+						'A heart on the image that saves the product in the visitor’s browser.',
+						'sgs-blocks'
+					) }
+					checked={ !! showWishlist }
+					onChange={ ( v ) => setAttributes( { showWishlist: v } ) }
+					__nextHasNoMarginBottom
+				/>
+			</PanelBody>
+			<PanelBody
+				title={ __( 'Listing card', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<TextControl
+					label={ __( 'RRP field (meta key)', 'sgs-blocks' ) }
+					help={ __(
+						'The product field holding the recommended retail price, e.g. _sgs_rrp. When the RRP is above the price it shows struck through, and an empty saving badge reads the saving.',
+						'sgs-blocks'
+					) }
+					value={ rrpMetaKey || '' }
+					onChange={ ( v ) => setAttributes( { rrpMetaKey: v } ) }
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+				/>
+				{ '' !== ( rrpMetaKey || '' ) && (
+					<SelectControl
+						label={ __( 'Saving wording', 'sgs-blocks' ) }
+						value={ rrpSavingFormat || 'amount' }
+						options={ [
+							{
+								label: __( 'Amount (Save £32)', 'sgs-blocks' ),
+								value: 'amount',
+							},
+							{
+								label: __( 'Percentage (Save 19%)', 'sgs-blocks' ),
+								value: 'percentage',
+							},
+						] }
+						onChange={ ( v ) => setAttributes( { rrpSavingFormat: v } ) }
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+					/>
+				) }
+				<SelectControl
+					label={ __( 'Photo size', 'sgs-blocks' ) }
+					help={ __( 'A larger size stops a small thumbnail looking soft on a wide card. Default = the shop\u2019s thumbnail size.', 'sgs-blocks' ) }
+					value={ imageSize || '' }
+					options={ [
+						{ label: __( 'Shop thumbnail (default)', 'sgs-blocks' ), value: '' },
+						{ label: __( 'Thumbnail', 'sgs-blocks' ), value: 'thumbnail' },
+						{ label: __( 'Medium', 'sgs-blocks' ), value: 'medium' },
+						{ label: __( 'Medium large', 'sgs-blocks' ), value: 'medium_large' },
+						{ label: __( 'Large', 'sgs-blocks' ), value: 'large' },
+						{ label: __( 'Full size', 'sgs-blocks' ), value: 'full' },
+					] }
+					onChange={ ( v ) => setAttributes( { imageSize: v } ) }
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+				/>
+				<ToggleControl
+					label={ __( 'Show colour dots', 'sgs-blocks' ) }
+					checked={ showSwatches !== false }
+					onChange={ ( v ) => setAttributes( { showSwatches: v } ) }
+					__nextHasNoMarginBottom
+				/>
+				{ showSwatches !== false && (
+				<TextControl
+					label={ __( 'Colour dots from attribute', 'sgs-blocks' ) }
+					help={ __(
+						'The variation attribute whose colours show as dots, e.g. pa_colour. Empty = the first attribute with colours set. Typed swatches win when present.',
+						'sgs-blocks'
+					) }
+					value={ swatchAttribute || '' }
+					onChange={ ( v ) => setAttributes( { swatchAttribute: v } ) }
+					__next40pxDefaultSize
+					__nextHasNoMarginBottom
+				/>
+				) }
+			</PanelBody>
+		</>
 	);
 }
 
