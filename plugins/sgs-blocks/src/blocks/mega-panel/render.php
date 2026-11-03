@@ -849,7 +849,7 @@ $stack_rules = $content_sel . '{flex-direction:column;}'
 if ( $sgs_mm_in_drawer ) {
 	$css .= '@container (max-width: 640px){' . $stack_rules . '}';
 }
-$css .= '@media (max-width: 1023px){' . $stack_rules . '}';
+$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $stack_rules . '}';
 
 // ---------------------------------------------------------------------------
 // 6b. In the drawer (Spec 36 FR-36-6). The drawer copy of a panel paints its

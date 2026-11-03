@@ -130,7 +130,7 @@ $css .= '}';
 
 // Tablet breakpoint (768px to 1023px — device-tier standard,
 // .claude/rules/cloning-pipeline.md's breakpoint-discipline rule).
-$css .= '@media(max-width:1023px) and (min-width:768px){';
+$css .= SGS_Breakpoints::media( 'tablet' ) . ' and ' . SGS_Breakpoints::query( 'tablet-up' ) . '{';
 $css .= $flex_sel . '{';
 $css .= 'flex-direction:' . $direction_tablet . ';';
 $css .= 'flex-wrap:' . $wrap_tablet . ';';
@@ -140,7 +140,7 @@ $css .= 'align-items:' . $align_items_tablet . ';';
 $css .= '}}';
 
 // Mobile breakpoint (max 767px — device-tier standard; was 768px, see above).
-$css .= '@media(max-width:767px){';
+$css .= SGS_Breakpoints::media( 'mobile' ) . '{';
 $css .= $flex_sel . '{';
 $css .= 'flex-direction:' . $direction_mobile . ';';
 $css .= 'flex-wrap:' . $wrap_mobile . ';';
@@ -164,10 +164,10 @@ if ( $mb_radius_base ) {
 	$css .= $root_sel . '{' . implode( ';', $mb_radius_base ) . ';}';
 }
 if ( $mb_radius_tab ) {
-	$css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $mb_radius_tab ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $mb_radius_tab ) );
 }
 if ( $mb_radius_mob ) {
-	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $mb_radius_mob ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mb_radius_mob ) );
 }
 
 // NO-INLINE: this block emits zero inline style property declarations.
@@ -367,10 +367,10 @@ if ( $border['base'] ) {
 	$css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 $css .= implode( '', $border['rules'] );
 

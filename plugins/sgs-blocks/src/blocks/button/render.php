@@ -561,7 +561,7 @@ if ( null !== $radius_tab_val ) {
 	$tablet_box_decls[] = "{$radius_tab_val}";
 }
 if ( $tablet_box_decls ) {
-	$scoped_css_parts[] = '@media(max-width:1023px){' . ".{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
+	$scoped_css_parts[] = SGS_Breakpoints::media( 'tablet' ) . '{' . ".{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
 }
 
 $mobile_box_decls = array();
@@ -575,7 +575,7 @@ if ( null !== $radius_mob_val ) {
 	$mobile_box_decls[] = "{$radius_mob_val}";
 }
 if ( $mobile_box_decls ) {
-	$scoped_css_parts[] = '@media(max-width:767px){' . ".{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';
+	$scoped_css_parts[] = SGS_Breakpoints::media( 'mobile' ) . '{' . ".{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';
 }
 
 // Icon size CSS var — base + tablet + mobile on the SAME selector (Pattern A).
@@ -794,9 +794,9 @@ if ( $icon_html && 'none' !== $label_collapse ) {
 	if ( 'all' === $label_collapse ) {
 		$scoped_css_parts[] = $label_clip_rule;
 	} elseif ( 'tablet' === $label_collapse ) {
-		$scoped_css_parts[] = '@media(max-width:1023px){' . $label_clip_rule . '}';
+		$scoped_css_parts[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $label_clip_rule . '}';
 	} elseif ( 'mobile' === $label_collapse ) {
-		$scoped_css_parts[] = '@media(max-width:767px){' . $label_clip_rule . '}';
+		$scoped_css_parts[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $label_clip_rule . '}';
 	}
 }
 

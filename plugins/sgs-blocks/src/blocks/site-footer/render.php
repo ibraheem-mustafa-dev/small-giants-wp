@@ -179,10 +179,10 @@ if ( $border['base'] ) {
 }
 $css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // ── N46: each row stays full width. The footer shell is a flex column, so a row

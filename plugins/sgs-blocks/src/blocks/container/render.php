@@ -234,10 +234,10 @@ if ( $sgs_container_border['base'] || $sgs_container_border['hover'] || $sgs_con
 		$sgs_container_supports_css .= sgs_hover_state_rules( $sgs_container_border_sel, implode( ';', $sgs_container_border['hover'] ), ':focus-within' );
 	}
 	if ( $sgs_container_border['tablet'] ) {
-		$sgs_container_supports_css .= '@media(max-width:1023px){' . $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border['tablet'] ) . ';}}';
+		$sgs_container_supports_css .= sgs_emit_tier_decls( $sgs_container_border_sel, array( 'tablet' => $sgs_container_border['tablet'] ) );
 	}
 	if ( $sgs_container_border['mobile'] ) {
-		$sgs_container_supports_css .= '@media(max-width:767px){' . $sgs_container_border_sel . '{' . implode( ';', $sgs_container_border['mobile'] ) . ';}}';
+		$sgs_container_supports_css .= sgs_emit_tier_decls( $sgs_container_border_sel, array( 'mobile' => $sgs_container_border['mobile'] ) );
 	}
 }
 
