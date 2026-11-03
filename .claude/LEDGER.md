@@ -50,7 +50,7 @@ last_updated: 2026-11-03
 
 ### Front F: Eye Care Birmingham, built by hand (D1149)
 
-**State:** eye-care-test (`https://darkcyan-grouse-898606.hostingersite.com`, credentials `.claude/secrets/eye-care-test.env`) is the Eye Care site to present, edited directly; the clone is parked. Rounds 1 to 5 are done: every approved row in the register's round sections is live and verified at 375/768/1440. eye-care-test and sandybrown run origin/main at `301cee05e` (Round 5: Custom CSS reaches moved drawers); eye-care-test ships its own theme.json (`sites/eye-care-ward-end/theme-snapshot-eye-care-test.json`, a per-target `snapshot` in `deploy_common.py::TARGETS`).
+**State:** eye-care-test (`https://darkcyan-grouse-898606.hostingersite.com`, credentials `.claude/secrets/eye-care-test.env`) is the Eye Care site to present, edited directly; the clone is parked. Rounds 1 to 5 are done: every approved row in the register's round sections is live and verified at 375/768/1440. eye-care-test and sandybrown are deployed at `301cee05e` (Round 5: Custom CSS reaches moved drawers); eye-care-test ships its own theme.json (`sites/eye-care-ward-end/theme-snapshot-eye-care-test.json`, a per-target `snapshot` in `deploy_common.py::TARGETS`).
 
 **Open:**
 - **Round 6:** the streams plan's "Eye Care stream" Round 6 line (fresh review first).
