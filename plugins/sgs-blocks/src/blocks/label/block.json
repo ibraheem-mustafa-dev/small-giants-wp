@@ -31,7 +31,8 @@
 			"motion": true,
 			"iconPicker": true,
 			"enabledExtensions": [
-				"timeText"
+				"timeText",
+				"childSizing"
 			],
 			"timeTextWords": "text",
 			"boxFamilies": {

@@ -797,6 +797,16 @@ if ( $is_split ) {
 	}
 	$responsive_css .= implode( '', $split_media_border['rules'] );
 
+	// Background colour of the media element itself: shows through a contained
+	// or transparent image where the section background would otherwise show.
+	$split_media_bg = trim( (string) ( $attributes['splitMediaBackground'] ?? '' ) );
+	if ( '' !== $split_media_bg ) {
+		$split_media_bg_value = sgs_colour_value( $split_media_bg );
+		if ( '' !== $split_media_bg_value ) {
+			$responsive_css .= $split_media_sel . '{background-color:' . $split_media_bg_value . ';}';
+		}
+	}
+
 	// ── box shadow — the shared `shadow` atom (prefix 'splitMedia') sets
 	// `--sgs-media-box-shadow`/`--sgs-media-box-shadow-hover` on the same scope class,
 	// painted by the shared `.sgs-media-el` rule (assets/css/media-atoms/shadow.css) on the

@@ -293,6 +293,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		contentPadding,
 		mediaBackground,
 		mediaBackgroundGradient,
+		splitMediaBackground,
 		mediaPadding,
 		// Phase 1 — layout grid. splitColumnRatio* retired (Step 6, 2026-06-11);
 		// render.php now reads gridTemplateColumns* for the split variant.
@@ -525,6 +526,8 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// border style/width/colour — render.php:561-573 (box-object family,
 	// base only, no tiers). Entry condition matches render.php exactly:
 	// emit when style isn't 'none' OR a width is set.
+	// Background behind the image itself (splitMediaBackground), as render.php paints it on the split-media element.
+	Object.assign( imagePreviewStyle, backgroundPaintPreview( splitMediaBackground, '', colourPalette ) );
 	Object.assign( imagePreviewStyle, sgsBorderPreview( { widthValues: splitMediaBorderWidth, styleValue: splitMediaBorderStyle, colourValue: splitMediaBorderColour, colourGradientValue: attributes.splitMediaBorderColourGradient }, previewTier, colourPalette ) );
 
 	// Media-wrapper (`.sgs-hero__media`) class + style preview.
@@ -1517,6 +1520,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaBorderColour: '',
 								splitMediaBorderColourGradient: '',
 								splitMediaPadding: { desktop: {} },
+								splitMediaBackground: '',
 								mediaBackground: '',
 								mediaBackgroundGradient: '',
 								mediaPadding: { desktop: {} },
@@ -1664,6 +1668,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								attrNames={ gradientOverlayAttrKeys( 'mediaBackground', { solid: 'mediaBackground' } ) }
 								solidLabel={ __( 'Media background colour', 'sgs-blocks' ) }
 							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
+							label={ __( 'Image background colour', 'sgs-blocks' ) }
+							hasValue={ () => !! splitMediaBackground }
+							onDeselect={ () => setAttributes( { splitMediaBackground: '' } ) }
+						>
+							<DesignTokenPicker
+								label={ __( 'Image background colour', 'sgs-blocks' ) }
+								value={ splitMediaBackground }
+								onChange={ ( val ) => setAttributes( { splitMediaBackground: val ?? '' } ) }
+							/>
+							<p style={ { fontSize: '12px', color: '#757575', margin: '0 0 8px' } }>{ __( 'Paints behind the image itself, so a contained logo or transparent image sits on this colour.', 'sgs-blocks' ) }</p>
 						</ToolsPanelItem>
 
 						<ToolsPanelItem

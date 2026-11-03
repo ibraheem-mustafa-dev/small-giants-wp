@@ -105,6 +105,7 @@
 					"splitMediaBorderColourHover",
 					"splitMediaBorderColourHoverGradient",
 					"splitMediaPadding",
+					"splitMediaBackground",
 					"splitMediaMediaSizing",
 					"splitMediaShape",
 					"splitMediaAspectRatio",
@@ -366,6 +367,7 @@
 						"css:border-style": "splitMediaBorderStyle",
 						"css:border-width": "splitMediaBorderWidth",
 						"css:padding": "splitMediaPadding",
+						"css:background-color": "splitMediaBackground",
 						"css:object-fit": "splitMediaObjectFit",
 						"css:object-position": "splitMediaObjectPosition",
 						"css:box-shadow": "splitMediaBoxShadow",
@@ -798,6 +800,11 @@
 		"splitMediaMaxHeight": {
 			"type": "object",
 			"default": {}
+		},
+		"splitMediaBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Background colour painted on the split media element itself (the image, video or SVG box), so a contained logo or a transparent image sits on a solid ground instead of the section background showing beside it. A palette slug or any CSS colour."
 		},
 		"mediaBackground": {
 			"type": "string",

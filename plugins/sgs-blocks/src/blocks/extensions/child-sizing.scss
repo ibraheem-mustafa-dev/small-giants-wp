@@ -3,6 +3,7 @@
 // these mirror them for the tier the editor is previewing.
 .sgs-child-sizing--fit {
 	flex: 0 1 auto;
+	width: fit-content;
 }
 
 .sgs-child-sizing--fill {

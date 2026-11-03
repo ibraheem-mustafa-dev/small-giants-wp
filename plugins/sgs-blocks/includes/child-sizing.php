@@ -13,7 +13,7 @@
  *
  * 'fill' takes the space left over in the row (`flex:1 1 0%`), so the
  * siblings keep their natural size and this block gets the rest; 'fit' sizes
- * to the content; 'fixed' holds the given width. The rules land on the
+ * to the content (and, in a column, no longer stretches across it); 'fixed' holds the given width. The rules land on the
  * block's root element (the flex item) through a scoped `<style>` tag keyed
  * to a scope class, never a style="" attribute (Spec 32), the same path the
  * hover extension uses.
@@ -72,7 +72,9 @@ function child_sizing_declarations( string $mode, string $width, bool $any_fixed
 		case 'fill':
 			return 'flex:1 1 0%;min-width:0;' . $reset_width;
 		case 'fit':
-			return 'flex:0 1 auto;' . $reset_width;
+			// `width:fit-content` also stops a block stretching across a column-direction parent (a stretched
+			// flex item only fills the cross axis while its width is auto); in a row it is the content width.
+			return 'flex:0 1 auto;width:fit-content;' . ( $any_fixed ? 'max-width:none;' : '' );
 		case 'fixed':
 			// `width`, not `flex-basis`: in a column-direction parent the basis
 			// would size the height. No max-width cap: the item is `flex:0 0 auto`, so a fixed width is the author's choice.
