@@ -42,6 +42,10 @@ final class Configurator_Picks_Admin {
 		if ( ! \is_readable( $file ) ) {
 			return;
 		}
+		$css = SGS_BLOCKS_PATH . 'assets/admin/configurator-attribute-flags.css';
+		if ( \is_readable( $css ) ) {
+			\wp_enqueue_style( 'sgs-configurator-attribute-flags', SGS_BLOCKS_URL . 'assets/admin/configurator-attribute-flags.css', array(), (string) \filemtime( $css ) );
+		}
 		\wp_enqueue_script( 'sgs-configurator-attribute-flags', SGS_BLOCKS_URL . 'assets/admin/configurator-attribute-flags.js', array(), (string) \filemtime( $file ), true );
 	}
 
@@ -90,8 +94,8 @@ final class Configurator_Picks_Admin {
 		// Non-variation attribute: the pick-several controls.
 		echo '<div class="sgs-attr-flags__answer" data-sgs-attr-flags-answer' . ( $attribute->get_variation() ? ' hidden' : '' ) . '>';
 		echo '<p><label><input type="checkbox" name="' . \esc_attr( $field ) . '[multi]" value="1"' . \checked( ! empty( $flags['multi'] ), true, false ) . ' /> ' . esc_html__( 'Shopper can pick more than one', 'sgs-blocks' ) . '</label></p>';
-		echo '<p><label>' . esc_html__( 'At least', 'sgs-blocks' ) . ' <input type="number" min="1" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[least]" value="' . \esc_attr( (string) ( $flags['least'] ?? 1 ) ) . '" /></label> ';
-		echo '<label>' . esc_html__( 'No more than', 'sgs-blocks' ) . ' <input type="number" min="2" max="12" step="1" style="width:4.5em" name="' . \esc_attr( $field ) . '[most]" value="' . \esc_attr( (string) ( $flags['most'] ?? 3 ) ) . '" /></label></p>';
+		echo '<p><label>' . esc_html__( 'At least', 'sgs-blocks' ) . ' <input type="number" min="1" max="12" step="1" class="sgs-attr-flags__count" name="' . \esc_attr( $field ) . '[least]" value="' . \esc_attr( (string) ( $flags['least'] ?? 1 ) ) . '" /></label> ';
+		echo '<label>' . esc_html__( 'No more than', 'sgs-blocks' ) . ' <input type="number" min="2" max="12" step="1" class="sgs-attr-flags__count" name="' . \esc_attr( $field ) . '[most]" value="' . \esc_attr( (string) ( $flags['most'] ?? 3 ) ) . '" /></label></p>';
 		echo '<p><label>' . esc_html__( 'If they pick one too many', 'sgs-blocks' ) . ' <select name="' . \esc_attr( $field ) . '[overflow]">';
 		echo '<option value="refuse"' . \selected( $flags['overflow'] ?? 'refuse', 'refuse', false ) . '>' . esc_html__( 'Tell them', 'sgs-blocks' ) . '</option>';
 		echo '<option value="replace"' . \selected( $flags['overflow'] ?? '', 'replace', false ) . '>' . esc_html__( 'Swap out the oldest pick', 'sgs-blocks' ) . '</option>';
