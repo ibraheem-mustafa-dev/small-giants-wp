@@ -104,7 +104,7 @@ final class Configurator_Groups {
 					'description' => (string) get_term_meta( $id, '_sgs_term_description', true ),
 				);
 			}
-			return $out;
+			return sgs_picks_order_terms( $out, array_map( 'intval', (array) $attribute->get_options() ) );
 		}
 		foreach ( (array) $attribute->get_options() as $option ) {
 			$text = \trim( (string) $option );

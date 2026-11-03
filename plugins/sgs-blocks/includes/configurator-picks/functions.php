@@ -294,3 +294,29 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_check' ) ) {
 		);
 	}
 }
+
+if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_order_terms' ) ) {
+	/**
+	 * Put terms in the order the owner set on the product's Attributes tab (the attribute's own option order, as
+	 * WooCommerce's variation dropdowns do), not alphabetically. Terms the option list does not name keep their given order after.
+	 *
+	 * @param array<int,array<string,mixed>> $terms      Terms, each with an `id`.
+	 * @param int[]                          $option_ids The attribute's option IDs, in the owner's order.
+	 * @return array<int,array<string,mixed>>
+	 */
+	function sgs_picks_order_terms( array $terms, array $option_ids ): array {
+		$rank = array();
+		foreach ( array_values( $option_ids ) as $position => $id ) {
+			$rank[ (int) $id ] = $position;
+		}
+		$indexed = array();
+		foreach ( array_values( $terms ) as $i => $term ) {
+			$indexed[] = array( $rank[ (int) ( $term['id'] ?? 0 ) ] ?? PHP_INT_MAX, $i, $term );
+		}
+		usort(
+			$indexed,
+			static fn( array $a, array $b ): int => array( $a[0], $a[1] ) <=> array( $b[0], $b[1] )
+		);
+		return array_map( static fn( array $row ): array => $row[2], $indexed );
+	}
+}
