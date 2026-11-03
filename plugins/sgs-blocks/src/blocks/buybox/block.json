@@ -802,16 +802,11 @@
 					"attrMap": {
 						"css:border-radius": "pickOptionRadius",
 						"css:padding": "pickOptionPadding",
-						"css:gap": "pickOptionGap"
+						"css:gap": "pickOptionGap",
+						"css:background-color": "pickSelectedBackgroundColour",
+						"css:border-color": "pickSelectedBorderColour"
 					},
-					"states": {
-						"selected": {
-							"attrMap": {
-								"css:background-color": "pickSelectedBackgroundColour",
-								"css:border-color": "pickSelectedBorderColour"
-							}
-						}
-					}
+					"_note": "The background and border colour here are the SELECTED look: one pair of custom properties (--sgs-pick-sel-bg, --sgs-pick-sel-border) that a checked pick-several option and every option picker in the box read."
 				},
 				"pick-tile": {
 					"selector": ".sgs-buybox__pick-box",
