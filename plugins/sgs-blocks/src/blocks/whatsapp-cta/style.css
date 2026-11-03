@@ -163,7 +163,7 @@
 	border-radius: 999px;
 	padding: 0 18px 0 14px;
 	justify-content: flex-start;
-	gap: var(--wp--preset--spacing--10);
+	/* No gap here: .sgs-whatsapp-cta__btn's own default applies, and at (0,3,0) a gap would outrank the iconGap setting's scoped rule. */
 }
 
 .sgs-whatsapp-cta__label--floating {
