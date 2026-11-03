@@ -190,7 +190,8 @@
 					],
 					"attrMap": {
 						"css:background-color": "rrpPillBackgroundColour",
-						"css:color": "rrpPillTextColour"
+						"css:color": "rrpPillTextColour",
+						"css:padding": "rrpPillPadding"
 					},
 					"_note": "FR-Wave-B. SSR-only chip shown when a configured RRP meta key resolves to a genuine saving on the default variation (includes/product-rrp.php::sgs_product_rrp_saving). Background/text colour both live here rather than on the wrapper element, since this is a distinct visual element from the price row it sits beside."
 				},
@@ -652,6 +653,40 @@
 								"css:-webkit-text-stroke-color": "guidedGroupTitleTextStrokeColourHover"
 							}
 						}
+					}
+				},
+				"rrpChip": {
+					"selector": ".buybox__rrp-pill",
+					"label": "RRP saving pill text",
+					"order": 16,
+					"clusters": [
+						"text"
+					],
+					"prefix": "rrpChip",
+					"attrMap": {
+						"css:font-size": "rrpChipFontSize",
+						"css:font-weight": "rrpChipFontWeight",
+						"css:font-style": "rrpChipFontStyle",
+						"css:font-family": "rrpChipFontFamily",
+						"css:text-transform": "rrpChipTextTransform",
+						"css:text-decoration": "rrpChipTextDecoration",
+						"css:line-height": "rrpChipLineHeight",
+						"css:letter-spacing": "rrpChipLetterSpacing"
+					},
+					"_note": "The type of the RRP saving pill beside the RRP (extras.php, render.php rrpChip rule). Its colours and padding live on the rrp-pill element."
+				},
+				"picker-label-link": {
+					"selector": ".sgs-buybox__picker-label-link",
+					"label": "Size-guide link",
+					"order": 17,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"attrMap": {
+						"css:color": "pickerLabelLinkColour",
+						"css:border-bottom-color": "pickerLabelLinkUnderlineColour",
+						"css:padding": "pickerLabelLinkPadding"
 					}
 				}
 			},
@@ -2528,6 +2563,102 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"rrpChipFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"rrpChipFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpChipFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"rrpChipFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"rrpChipTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"rrpChipTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"rrpChipLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpChipLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"rrpChipLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"rrpPillPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the RRP saving pill { top, right, bottom, left }. Rendered via sgs_label_box_css_rule(). Empty = the stylesheet default (0.35em 0.6em)."
+		},
+		"pickerLabelLinkColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the picker-label link (e.g. \"Which size am I?\"). Theme token slug or raw CSS colour. Empty = the muted text colour."
+		},
+		"pickerLabelLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the 1px line under the picker-label link (its bottom border). Empty = the theme border colour."
+		},
+		"pickerLabelLinkPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Box padding for the picker-label link { top, right, bottom, left }. Empty = 1px at the bottom only."
+		},
+		"pickerPillFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size for the option pills of every non-tile picker (e.g. the size pills), forwarded to sgs/option-picker's pillFontSize. Empty = the option picker's own size."
+		},
+		"pickerPillFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"pickerPillBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of every option pill and tile in the pickers (CSS length, e.g. \"1px\"), forwarded to sgs/option-picker's pillBorderWidth. Empty = the option picker's own 2px."
 		}
 	},
 	"editorScript": "file:./index.js",

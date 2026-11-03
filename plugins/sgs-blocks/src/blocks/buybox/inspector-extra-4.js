@@ -5,7 +5,7 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { SgsLengthControl } from '../../components';
+import { SgsLengthControl, SgsBoxControl } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -28,6 +28,9 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 		pickerLabelLinkAxis,
 		pickerLabelLinkText,
 		pickerLabelLinkUrl,
+		pickerLabelLinkPadding,
+		pickerPillBorderWidth,
+		rrpPillPadding,
 		pickerVariationSwatch,
 		gallerySavingBadge,
 		gallerySavingBadgeFormat,
@@ -126,6 +129,37 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					placeholder="#size-guide"
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+				<SgsBoxControl
+					label={ __( 'Link padding', 'sgs-blocks' ) }
+					values={ pickerLabelLinkPadding ?? {} }
+					presets
+					onChange={ ( next ) =>
+						setAttributes( { pickerLabelLinkPadding: next } )
+					}
+				/>
+			</PanelBody>
+
+			<PanelBody
+				title={ __( 'Option pills and RRP pill', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<SgsLengthControl
+					label={ __( 'Option pill and tile border width', 'sgs-blocks' ) }
+					value={ pickerPillBorderWidth || '' }
+					onChange={ ( val ) =>
+						setAttributes( { pickerPillBorderWidth: val ?? '' } )
+					}
+					help={ __( 'Empty = the option picker default of 2px.', 'sgs-blocks' ) }
+					presets={ false }
+				/>
+				<SgsBoxControl
+					label={ __( 'RRP saving pill padding', 'sgs-blocks' ) }
+					values={ rrpPillPadding ?? {} }
+					presets
+					onChange={ ( next ) =>
+						setAttributes( { rrpPillPadding: next } )
+					}
 				/>
 			</PanelBody>
 

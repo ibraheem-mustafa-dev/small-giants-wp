@@ -115,6 +115,7 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 		pillSelectedTextColour,
 		pillSelectedBorderColour,
 		pillBorderRadius,
+		pillBorderWidth,
 		pillSelectedBorderRadius,
 		tileGap,
 	} = attributes;
@@ -163,6 +164,9 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 			pillSelectedBorderColour
 		);
 	}
+	if ( pillBorderWidth ) {
+		rootStyle[ '--sgs-op-border-width' ] = pillBorderWidth;
+	}
 	if ( pillBorderRadius ) {
 		rootStyle[ '--sgs-op-pill-radius' ] = pillBorderRadius + 'px';
 	}
@@ -210,6 +214,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		pillSelectedBorderColour,
 		pillSelectedBorderColourGradient,
 		pillBorderRadius,
+		pillBorderWidth,
 		pillSelectedBorderRadius,
 		// pillPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} (Spec 35
 		// box-tier); there are no pillPaddingTablet/pillPaddingMobile siblings.
@@ -939,6 +944,19 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /* Border-radius is a CSS-length STRING (number+unit), so the
 					   styling-lift's generic string value lands directly and an
 					   explicit "0"/"0px" is distinct from empty (= CSS default). */ }
+					<SgsLengthControl
+						label={ __( 'Pill border width', 'sgs-blocks' ) }
+						value={ pillBorderWidth || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) =>
+							setAttributes( { pillBorderWidth: val ?? '' } )
+						}
+						help={ __(
+							'Leave blank for the default (2px).',
+							'sgs-blocks'
+						) }
+						presets={ false }
+					/>
 					<SgsLengthControl
 						label={ __( 'Pill border radius', 'sgs-blocks' ) }
 						value={ pillBorderRadius || '' }

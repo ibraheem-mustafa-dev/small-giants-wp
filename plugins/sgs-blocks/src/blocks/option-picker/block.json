@@ -405,6 +405,11 @@
 			"type": "string",
 			"default": ""
 		},
+		"pillBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of every option pill and tile (CSS length, e.g. \"1px\"). Empty = the framework default (2px)."
+		},
 		"pillBorderRadius": {
 			"type": "string",
 			"default": ""

@@ -800,6 +800,23 @@ if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
 	if ( '' !== $sgs_bb_picker_value_typo_css ) {
 		$scoped_css[] = $sgs_bb_picker_value_typo_css;
 	}
+	// The picker-label link's colour, underline (its bottom border) and padding.
+	$sgs_bb_link_sel        = $root_sel . ' .sgs-buybox__picker-label-link';
+	$sgs_bb_link_colour     = sgs_colour_value( (string) ( $attributes['pickerLabelLinkColour'] ?? '' ) );
+	$sgs_bb_link_underline  = sgs_colour_value( (string) ( $attributes['pickerLabelLinkUnderlineColour'] ?? '' ) );
+	if ( '' !== $sgs_bb_link_colour ) {
+		$scoped_css[] = $sgs_bb_link_sel . '{color:' . $sgs_bb_link_colour . ';}';
+	}
+	if ( '' !== $sgs_bb_link_underline ) {
+		$scoped_css[] = $sgs_bb_link_sel . '{border-bottom-color:' . $sgs_bb_link_underline . ';}';
+	}
+	$sgs_bb_link_padding_css = sgs_label_box_css_rule(
+		array( 'padding' => is_array( $attributes['pickerLabelLinkPadding'] ?? null ) ? $attributes['pickerLabelLinkPadding'] : array() ),
+		$sgs_bb_link_sel
+	);
+	if ( '' !== $sgs_bb_link_padding_css ) {
+		$scoped_css[] = $sgs_bb_link_padding_css;
+	}
 	$sgs_bb_picker_value_sel  = $root_sel . ' .sgs-buybox__picker-selected-value';
 	$sgs_bb_picker_value_text = sgs_resolve_text_colour_or_gradient( (string) ( $attributes['pickerValueColour'] ?? '' ), '' );
 	$sgs_bb_picker_value_decl = sgs_text_colour_decl( $sgs_bb_picker_value_text );
@@ -844,6 +861,13 @@ if ( '' !== $sgs_bb_ladder_typo_css ) {
 // no badge, in-stock product, standard layout).
 $sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpChip', $root_sel . ' .buybox__rrp-pill', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
+	array(
+		'padding' => is_array( $attributes['rrpPillPadding'] ?? null ) ? $attributes['rrpPillPadding'] : array(),
+	),
+	$root_sel . ' .buybox__rrp-pill'
+);
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyHeading', $root_sel . ' .sgs-buybox__notify-heading', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel', $root_sel . ' .sgs-buybox__notify-consent-label', '', false, false, sgs_object_attr_keys( $block ) );
@@ -1127,6 +1151,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 	$buybox_picker_label_transform_raw  = sanitize_key( (string) ( $attributes['pickerLabelTextTransform'] ?? '' ) );
 	$buybox_picker_label_transform      = in_array( $buybox_picker_label_transform_raw, array( 'none', 'uppercase', 'lowercase', 'capitalize' ), true ) ? $buybox_picker_label_transform_raw : '';
 	$buybox_picker_label_colour_raw     = (string) ( $attributes['pickerLabelColour'] ?? '' );
+	$buybox_picker_pill_font_size       = is_array( $attributes['pickerPillFontSize'] ?? null ) ? $attributes['pickerPillFontSize'] : array();
+	$buybox_picker_pill_font_size_unit  = (string) ( $attributes['pickerPillFontSizeUnit'] ?? 'px' );
+	$buybox_picker_pill_border_width    = sgs_css_length_value( (string) ( $attributes['pickerPillBorderWidth'] ?? '' ) );
 	// $buybox_picker_term_label_map (the "show selected value" slug->label
 	// lookup) is computed early, above the RRP block, next to
 	// $buybox_picker_show_selected_value.
@@ -1216,6 +1243,15 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
 			);
 			if ( '' !== $buybox_axis_style ) {
 				$buybox_picker_attrs['pillStyle'] = $buybox_axis_style;
+			}
+			// Pill border width reaches every style; pill font size reaches the
+			// pill styles only, so a tile's caption keeps its own em-relative size.
+			if ( '' !== $buybox_picker_pill_border_width ) {
+				$buybox_picker_attrs['pillBorderWidth'] = $buybox_picker_pill_border_width;
+			}
+			if ( 'tile' !== $buybox_axis_style && ! empty( $buybox_picker_pill_font_size ) ) {
+				$buybox_picker_attrs['pillFontSize']     = $buybox_picker_pill_font_size;
+				$buybox_picker_attrs['pillFontSizeUnit'] = $buybox_picker_pill_font_size_unit;
 			}
 			if ( '' !== $buybox_picker_sub_label_key ) {
 				$buybox_picker_attrs['subLabelMetaKey'] = $buybox_picker_sub_label_key;

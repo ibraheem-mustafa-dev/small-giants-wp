@@ -9,6 +9,7 @@
      --sgs-op-bg              resting pill background
      --sgs-op-text            resting pill text
      --sgs-op-border          resting pill border
+     --sgs-op-border-width    pill border width (2px when unset)
      --sgs-op-pill-radius     resting pill border-radius
      --sgs-op-sel-bg          selected pill background
      --sgs-op-sel-text        selected pill text
@@ -197,7 +198,7 @@
 	background-color: var(--sgs-op-bg, transparent);
 	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
-	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
+	border: var(--sgs-op-border-width, 2px) solid var(--sgs-op-border, var(--wp--preset--color--text, currentColor));
 }
 
 /* Considering state (hover / focus-within on the label). --sgs-op-*-hover
@@ -273,7 +274,7 @@
 	background-color: var(--sgs-op-bg, var(--wp--preset--color--secondary, #e5e7eb));
 	background-image: var(--sgs-op-bg-gradient, none);
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
-	border: 2px solid transparent;
+	border: var(--sgs-op-border-width, 2px) solid transparent;
 }
 
 .sgs-option-picker--filled .sgs-option-picker__option:hover  .sgs-option-picker__pill,
@@ -308,7 +309,7 @@
 .sgs-option-picker--ghost .sgs-option-picker__pill {
 	background-color: transparent;
 	color:            var(--sgs-op-text, var(--wp--preset--color--text, currentColor));
-	border: 2px solid transparent;
+	border: var(--sgs-op-border-width, 2px) solid transparent;
 }
 
 .sgs-option-picker--ghost .sgs-option-picker__option:hover  .sgs-option-picker__pill,
@@ -713,7 +714,7 @@
 	/* The width is the same in every state so selecting a tile cannot change
 	   its box size; only the colour changes on :checked below. The non-colour
 	   selection signal is the shared ::before tick (WCAG 1.4.1). */
-	border: 2px solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
+	border: var(--sgs-op-border-width, 2px) solid var(--sgs-op-border, var(--wp--preset--color--border, #d1d5db));
 }
 
 /* Tile size — reuses the EXISTING pillSize control (small/medium/large)

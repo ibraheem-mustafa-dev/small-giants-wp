@@ -68,13 +68,17 @@
 
 /* ── RRP saving pill (FR-Wave-B) ───────────────────────────────────────── */
 
-.sgs-buybox .buybox__rrp-pill {
-	display: inline-block;
+/* The pill's type sits at zero specificity so the block's own type controls
+   (render.php, prefix `rrpChip`) win. */
+:where(.sgs-buybox .buybox__rrp-pill) {
 	font-size: 0.8rem;
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	padding: 0.35em 0.6em;
+}
+
+.sgs-buybox .buybox__rrp-pill {
+	display: inline-block;
 	border-radius: var(--wp--preset--spacing--10, 4px);
 	/* Neutral default chip — any-client, no brand hue baked in; the two
 	   colour attributes (RRP pill background/text, sgs_colour_value()) are
@@ -164,7 +168,7 @@
 	justify-content: center;
 	gap: 10px;
 	min-height: 48px;
-	padding: 12px 24px;
+	padding: var(--sgs-buybox-cta-padding, 12px 24px);
 	font-size: var(--sgs-buybox-cta-size, 1.05rem);
 	font-weight: var(--sgs-buybox-cta-weight, 700);
 	border: 0;
@@ -324,7 +328,6 @@
 	font-size: 13px;
 	color: var(--wp--preset--color--text-muted, currentColor);
 	border-bottom: 1px solid var(--wp--preset--color--border, currentColor);
-	padding-bottom: 1px;
 	text-decoration: none;
 }
 
@@ -1287,4 +1290,12 @@ body {
 	.sgs-buybox__bar.is-on {
 		transition: none;
 	}
+}
+
+/* Default spacing the rrpPillPadding and pickerLabelLinkPadding settings replace; zero specificity so a saved value always wins. */
+:where(.sgs-buybox .buybox__rrp-pill) {
+	padding: 0.35em 0.6em;
+}
+:where(.sgs-buybox .sgs-buybox__picker-label-link) {
+	padding-bottom: 1px;
 }

@@ -138,6 +138,12 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	);
 	css += typographyPreviewCss(
 		attributes,
+		'rrpChip',
+		`${ root } .buybox__rrp-pill`,
+		tier
+	);
+	css += typographyPreviewCss(
+		attributes,
 		'notifyHeading',
 		`${ root } .sgs-buybox__notify-heading`,
 		tier
@@ -377,6 +383,10 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
  * @param {Object}   root0.valueStyle        Inline preview style for the chosen value.
  * @param {Object}   root0.optionStyle       Inline preview style for a tile-style option name.
  * @param {boolean}  root0.showSelectedValue Whether the chosen value prints beside the heading.
+ * @param {Object}   root0.pillStyleVars     Inline preview custom properties for the picker (pill border width).
+ * @param {Object}   root0.pillTextStyle     Inline preview style for a non-tile option pill (font size).
+ * @param {string}   root0.linkText          The label-row link wording; empty = no link.
+ * @param {Object}   root0.linkStyle         Inline preview style for the label-row link.
  */
 function SampleOptionGroup( {
 	label,
@@ -387,6 +397,10 @@ function SampleOptionGroup( {
 	valueStyle,
 	optionStyle,
 	showSelectedValue,
+	pillStyleVars,
+	pillTextStyle,
+	linkText,
+	linkStyle,
 } ) {
 	const style = PICKER_STYLES.includes( pillStyle ) ? pillStyle : 'outlined';
 	return (
@@ -406,11 +420,22 @@ function SampleOptionGroup( {
 						{ options[ 0 ] }
 					</span>
 				) }
+				{ linkText && (
+					<a
+						className="sgs-buybox__picker-label-link"
+						href="#sgs-buybox-link-preview"
+						style={ linkStyle }
+						onClick={ ( event ) => event.preventDefault() }
+					>
+						{ linkText }
+					</a>
+				) }
 			</div>
 			<fieldset
 				className={ `wp-block-sgs-option-picker sgs-option-picker sgs-option-picker--${ style } sgs-option-picker--medium${
 					showTick ? '' : ' sgs-option-picker--no-tick'
 				}` }
+				style={ pillStyleVars }
 			>
 				<div className="sgs-option-picker__options" role="group">
 					{ options.map( ( option, index ) => (
@@ -426,7 +451,12 @@ function SampleOptionGroup( {
 								readOnly
 								tabIndex={ -1 }
 							/>
-							<span className="sgs-option-picker__pill">
+							<span
+								className="sgs-option-picker__pill"
+								style={
+									'tile' === style ? undefined : pillTextStyle
+								}
+							>
 								<span className="sgs-option-picker__pill-text">
 									<span
 										className="sgs-option-picker__pill-label"
@@ -677,7 +707,46 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 			: {} ),
 	};
 	const showSelectedValue = true === attributes.pickerShowSelectedValue;
+	// The forwarded option-pill settings (render.php passes them to sgs/option-picker as pillFontSize and pillBorderWidth).
+	const pillTextStyle = typographyPreviewStyle(
+		attributes,
+		'pickerPill',
+		tier
+	);
+	const pillStyleVars = attributes.pickerPillBorderWidth
+		? { '--sgs-op-border-width': attributes.pickerPillBorderWidth }
+		: undefined;
+	// The label-row link, shown on the Size sample group.
+	const linkText = attributes.pickerLabelLinkAxis
+		? attributes.pickerLabelLinkText || ''
+		: '';
+	const linkColour = attributes.pickerLabelLinkColour
+		? resolveColourToken(
+				attributes.pickerLabelLinkColour,
+				palette
+		  ) || attributes.pickerLabelLinkColour
+		: '';
+	const linkUnderline = attributes.pickerLabelLinkUnderlineColour
+		? resolveColourToken(
+				attributes.pickerLabelLinkUnderlineColour,
+				palette
+		  ) || attributes.pickerLabelLinkUnderlineColour
+		: '';
+	const linkStyle = {
+		...( linkColour ? { color: linkColour } : {} ),
+		...( linkUnderline ? { borderBottomColor: linkUnderline } : {} ),
+		...tierBoxLonghands(
+			{ desktop: attributes.pickerLabelLinkPadding },
+			tier,
+			'padding'
+		),
+	};
 	const rrpPillStyle = {
+		...tierBoxLonghands(
+			{ desktop: attributes.rrpPillPadding },
+			tier,
+			'padding'
+		),
 		...( attributes.rrpPillBackgroundColour
 			? {
 					backgroundColor:
@@ -893,6 +962,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							valueStyle={ valueStyle }
 							optionStyle={ optionStyle }
 							showSelectedValue={ showSelectedValue }
+							pillStyleVars={ pillStyleVars }
+							pillTextStyle={ pillTextStyle }
 						/>
 						<div
 							className="sgs-buybox-guided__nav"
@@ -926,6 +997,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							valueStyle={ valueStyle }
 							optionStyle={ optionStyle }
 							showSelectedValue={ showSelectedValue }
+							pillStyleVars={ pillStyleVars }
+							pillTextStyle={ pillTextStyle }
 						/>
 						<SampleOptionGroup
 							label={ __( 'Size', 'sgs-blocks' ) }
@@ -936,6 +1009,10 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 							valueStyle={ valueStyle }
 							optionStyle={ optionStyle }
 							showSelectedValue={ showSelectedValue }
+							pillStyleVars={ pillStyleVars }
+							pillTextStyle={ pillTextStyle }
+							linkText={ linkText }
+							linkStyle={ linkStyle }
 						/>
 					</>
 				) }

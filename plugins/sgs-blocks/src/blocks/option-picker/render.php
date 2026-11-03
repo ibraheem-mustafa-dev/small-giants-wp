@@ -350,6 +350,10 @@ if ( '' !== $pill_border_radius ) {
 		$var_decls[] = '--sgs-op-pill-radius:' . $pbr_safe;
 	}
 }
+$pill_border_width_safe = sgs_css_length_value( (string) ( $attributes['pillBorderWidth'] ?? '' ) );
+if ( '' !== $pill_border_width_safe ) {
+	$var_decls[] = '--sgs-op-border-width:' . $pill_border_width_safe;
+}
 if ( '' !== $pill_sel_radius_raw ) {
 	$psr_safe = sgs_css_length_value( $pill_sel_radius_raw );
 	if ( '' !== $psr_safe ) {

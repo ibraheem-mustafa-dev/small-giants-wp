@@ -408,6 +408,20 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
+			key: 'picker-label-link',
+			label: __( 'Picker label link', 'sgs-blocks' ),
+			attrs: { base: 'pickerLabelLinkColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'picker-label-link-underline',
+			label: __( 'Picker label link underline', 'sgs-blocks' ),
+			attrs: { base: 'pickerLabelLinkUnderlineColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'picker-option',
 			label: __( 'Option tile name', 'sgs-blocks' ),
 			attrs: { base: 'pickerOptionColour' },
