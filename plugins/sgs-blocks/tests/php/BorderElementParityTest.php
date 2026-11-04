@@ -650,10 +650,11 @@ final class BorderElementParityTest extends TestCase {
 		$out = array();
 		foreach ( $map as $key => $decls ) {
 			$canon = (string) preg_replace( '/@(media|supports|container) \(/', '@$1(', (string) $key );
-			$out[ $canon ] = array_merge( $out[ $canon ] ?? array(), $decls );
-		}
-		foreach ( $out as $canon => $decls ) {
-			sort( $decls );
+			if ( isset( $out[ $canon ] ) ) {
+				// Two keys that differed only by that space are now one rule: the union, order-independent.
+				$decls = array_merge( $out[ $canon ], $decls );
+				sort( $decls );
+			}
 			$out[ $canon ] = $decls;
 		}
 		return $out;
