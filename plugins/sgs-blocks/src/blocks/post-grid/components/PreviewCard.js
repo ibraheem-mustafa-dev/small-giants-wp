@@ -59,6 +59,11 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		metaLayout,
 		categoryPadding,
 		categoryRadius,
+		contentPadding,
+		metaMargin,
+		titleMargin,
+		excerptMargin,
+		readMoreMargin,
 		showReadMore,
 		readMoreText,
 		aspectRatio,
@@ -124,7 +129,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		...( categoryRadius ? { borderRadius: categoryRadius } : {} ),
 	};
 	const metaNode      = ( showDate || showAuthor ) && (
-		<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
+		<div className="sgs-post-grid__meta" style={ { ...metaStyle, ...( metaInline ? {} : tierBoxLonghands( metaMargin, tier, 'margin' ) ), ...typographyPreviewStyle( attributes, 'meta', tier ) } }>
 			{ showDate && (
 				<time>{ formatDate( post?.date, dateFormat ) }</time>
 			) }
@@ -170,9 +175,9 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				</div>
 			) }
 
-			<div className="sgs-post-grid__content">
+			<div className="sgs-post-grid__content" style={ tierBoxLonghands( contentPadding, tier, 'padding' ) }>
 				{ metaInline ? (
-					<div className="sgs-post-grid__meta-row">
+					<div className="sgs-post-grid__meta-row" style={ tierBoxLonghands( metaMargin, tier, 'margin' ) }>
 						{ categoryNode }
 						{ metaNode }
 					</div>
@@ -184,7 +189,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				) }
 
 				{ showTitle && (
-					<h3 className="sgs-post-grid__title" style={ typographyPreviewStyle( attributes, 'title', tier ) }>
+					<h3 className="sgs-post-grid__title" style={ { ...tierBoxLonghands( titleMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'title', tier ) } }>
 						<a href={ post?.link || '#' } style={ titleStyle }>
 							{ post?.title?.rendered || __( 'Post title', 'sgs-blocks' ) }
 						</a>
@@ -192,13 +197,13 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				) }
 
 				{ showExcerpt && (
-					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
+					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...tierBoxLonghands( excerptMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
 						{ excerptText || __( 'Post excerpt\u2026', 'sgs-blocks' ) }
 					</p>
 				) }
 
 				{ showReadMore && (
-					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
+					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...tierBoxLonghands( readMoreMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
 						<AuthoredText value={ readMoreText || __( 'Read more', 'sgs-blocks' ) } />{ ' ' }
 						<span aria-hidden="true">&rarr;</span>
 					</span>

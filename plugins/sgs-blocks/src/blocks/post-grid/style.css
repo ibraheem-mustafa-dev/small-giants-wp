@@ -267,11 +267,19 @@
 	transition: transform var( --sgs-transition-duration ) var( --sgs-transition-easing );
 }
 
+/* The frontend <img> also carries the shared `.sgs-media-el` (width/height from
+   --sgs-media-width/-height, default auto), which loads after this sheet at equal
+   specificity; the image frame owns the fill, as card-grid's image wrap does. */
+.sgs-post-grid__image .sgs-media-el {
+	width: 100%;
+	height: 100%;
+}
+
 /* ==========================================================================
    Card content
    ========================================================================== */
 
-.sgs-post-grid__content {
+:where(.sgs-post-grid__content) {
 	padding: 20px;
 }
 
@@ -519,11 +527,14 @@
 	margin-bottom: 32px;
 }
 
+:where(.sgs-post-grid__filter) {
+	padding: 8px 20px;
+}
+
 .sgs-post-grid__filter {
 	display: inline-flex;
 	align-items: center;
 	min-height: var( --sgs-pg-filter-min-h, 44px ); /* WCAG 2.2 minimum touch target */
-	padding: 8px 20px;
 	font-size: 0.875rem;
 	font-weight: var( --sgs-pg-filter-weight, 600 );
 	border-style: solid;
