@@ -16,6 +16,12 @@ import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	ShadowControl,
 	TypographyControls,
 	resolveColourToken,
+	ResponsiveOverride,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsBoxControl,
+	SgsGapControl,
+	AlignItemsTierControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -28,6 +34,9 @@ import {
 	BandWrap,
 	wrapperPreview,
 	RADIUS_STYLE_KEYS,
+	tierBoxShorthand,
+	tierLengthPreview,
+	tierValueOf,
 } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -43,6 +52,13 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
+];
+
+const TILE_ALIGN_OPTIONS = [
+	{ label: __( 'Left / top', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'Right / bottom', 'sgs-blocks' ), value: 'end' },
+	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
 const SELECTED_STYLE_OPTIONS = [
@@ -124,6 +140,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'tileLabel', `#block-${ clientId } .sgs-form-tile__label`, previewTier ),
 		typographyPreviewCss( attributes, 'tileDescription', `#block-${ clientId } .sgs-form-tile__description`, previewTier ),
 	].filter( Boolean ).join( '' );
+	// Each tile's own surface (background, border, radius, padding, inner gap, alignment) on the canvas. The first
+	// tile previews the selected state, so it keeps the stylesheet's selected border.
+	const tileSurface = ( selected ) => {
+		const style = {
+			...backgroundPaintPreview( attributes.tileBackgroundColour, '', colourPalette ),
+			...sgsBorderPreview(
+				{
+					widthValues: attributes.tileBorderWidth,
+					styleValue: attributes.tileBorderStyle,
+					colourValue: attributes.tileBorderColour,
+					radiusValues: attributes.tileRadius,
+				},
+				previewTier,
+				colourPalette,
+				{ defaultBorder: true }
+			),
+		};
+		if ( selected ) {
+			delete style.borderStyle;
+			delete style.borderWidth;
+			delete style.borderColor;
+		}
+		const padding = tierBoxShorthand( attributes.tilePadding, previewTier );
+		if ( padding ) {
+			style.padding = padding;
+		}
+		const gap = tierLengthPreview( attributes.tileInnerGap, previewTier );
+		if ( gap ) {
+			style.gap = gap;
+		}
+		const align = tierValueOf( attributes.tileAlign, previewTier );
+		if ( align ) {
+			style.alignItems = align;
+		}
+		return style;
+	};
 	const tileLabelPaint = textPaintPreview( tileLabelColour, '', colourPalette );
 	const tileDescriptionPaint = textPaintPreview( tileDescriptionColour, '', colourPalette );
 
@@ -178,17 +230,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
+					fillRow( {
+						key: 'tileBackground',
+						label: __( 'Tile background colour', 'sgs-blocks' ),
+						attrs: { base: 'tileBackgroundColour' },
+						attributes,
+						setAttributes,
+					} ),
 					textRow( {
 						key: 'tileLabel',
 						label: __( 'Tile label colour', 'sgs-blocks' ),
 						attrs: { base: 'tileLabelColour' },
-						attributes,
-						setAttributes,
-					} ),
-					fillRow( {
-						key: 'tileBackground',
-						label: __( 'Tile fill', 'sgs-blocks' ),
-						attrs: { base: 'tileBackgroundColour' },
 						attributes,
 						setAttributes,
 					} ),
@@ -510,6 +562,64 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			<InspectorControls>
+				<PanelBody title={ __( 'Tile surface', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.tileBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { tileBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.tileBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { tileBorderStyle: val } ) }
+						colourLabel={ __( 'Tile border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.tileBorderColour }
+						onColourChange={ ( val ) => setAttributes( { tileBorderColour: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: attributes.tileRadius?.desktop ?? {},
+							tablet: attributes.tileRadius?.tablet ?? {},
+							mobile: attributes.tileRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { tileRadius: { ...attributes.tileRadius, [ key ]: next } } );
+						} }
+					/>
+					<ResponsiveOverride
+						label={ __( 'Tile padding', 'sgs-blocks' ) }
+						value={ attributes.tilePadding }
+						onChange={ ( obj ) => setAttributes( { tilePadding: obj } ) }
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsBoxControl
+								label={ __( 'Tile padding', 'sgs-blocks' ) }
+								values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+								units={ BOX_UNITS }
+								presets
+								onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Gap between label and description', 'sgs-blocks' ) }
+						value={ attributes.tileInnerGap }
+						onChange={ ( obj ) => setAttributes( { tileInnerGap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsGapControl
+								value={ ownValue }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ setOwnValue }
+							/>
+						) }
+					</ResponsiveOverride>
+					<AlignItemsTierControl
+						label={ __( 'Tile content alignment', 'sgs-blocks' ) }
+						value={ attributes.tileAlign }
+						options={ TILE_ALIGN_OPTIONS }
+						onChange={ ( obj ) => setAttributes( { tileAlign: obj } ) }
+					/>
+				</PanelBody>
+			</InspectorControls>
 			<InspectorControls group="styles">
 				<PanelBody title={ __( 'Tile text', 'sgs-blocks' ) } initialOpen={ false }>
 					<TypographyControls
@@ -568,6 +678,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									'sgs-form-tile',
 									0 === index ? 'sgs-form-tile--selected' : '',
 								].filter( Boolean ).join( ' ' ) }
+								style={ tileSurface( 0 === index ) }
 							>
 								<input
 									className="sgs-form-tile__input"

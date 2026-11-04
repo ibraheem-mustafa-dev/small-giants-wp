@@ -13,7 +13,8 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
-import { DesignTokenPicker, SgsLengthControl } from '../../../components';
+import { DesignTokenPicker, ResponsiveBoxControl, SgsLengthControl } from '../../../components';
+import { patchTier } from '../../../utils';
 import { PAGINATION_OPTIONS, FILTER_TAXONOMY_OPTIONS } from './constants';
 
 const WEIGHT_OPTIONS = [
@@ -149,6 +150,7 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 									filterBorderWidth: '2px',
 									filterActiveBorderWidth: '3px',
 									filterMinHeight: '',
+									filterPadding: {},
 									filterFontWeight: '',
 								} ) }
 							>
@@ -189,6 +191,25 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 									onDeselect={ () => setAttributes( { filterActiveBorderWidth: '3px' } ) }
 								>
 									<SgsLengthControl label={ __( 'Active filter border width', 'sgs-blocks' ) } value={ attributes.filterActiveBorderWidth || '' } onChange={ ( v ) => setAttributes( { filterActiveBorderWidth: v ?? '' } ) } help={ __( 'Default 3px.', 'sgs-blocks' ) } presets={ false } />
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Filter padding', 'sgs-blocks' ) }
+									hasValue={ () => !! attributes.filterPadding && Object.keys( attributes.filterPadding ).length > 0 }
+									onDeselect={ () => setAttributes( { filterPadding: {} } ) }
+								>
+									<ResponsiveBoxControl
+										label={ __( 'Filter padding', 'sgs-blocks' ) }
+										presets
+										values={ {
+											base: attributes.filterPadding?.desktop ?? {},
+											tablet: attributes.filterPadding?.tablet ?? {},
+											mobile: attributes.filterPadding?.mobile ?? {},
+										} }
+										onChange={ ( tier, next ) => {
+											const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
+											patchTier( attributes, setAttributes, 'filterPadding', tierMap[ tier ], next );
+										} }
+									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
 									label={ __( 'Filter minimum height', 'sgs-blocks' ) }

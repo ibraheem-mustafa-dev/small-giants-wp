@@ -96,6 +96,7 @@
             "css:background-color": "filterBackground",
             "css:color": "filterTextColour",
             "css:font-weight": "filterFontWeight",
+            "css:padding": "filterPadding",
             "css:min-height": "filterMinHeight"
           },
           "states": {
@@ -245,6 +246,7 @@
             "css:font-weight": "titleFontWeight",
             "css:font-style": "titleFontStyle",
             "css:line-height": "titleLineHeight",
+            "css:margin": "titleMargin",
             "css:-webkit-text-stroke-width": "titleTextStrokeWidth",
             "css:-webkit-text-stroke-color": "titleTextStrokeColour"
           },
@@ -269,6 +271,7 @@
           "attrMap": {
             "css:color": "excerptColour",
             "css:color-gradient": "excerptColourGradient",
+            "css:margin": "excerptMargin",
             "css:-webkit-text-stroke-width": "excerptTextStrokeWidth",
             "css:-webkit-text-stroke-color": "excerptTextStrokeColour"
           },
@@ -292,6 +295,7 @@
           "attrMap": {
             "css:color": "metaColour",
             "css:color-gradient": "metaColourGradient",
+            "css:margin": "metaMargin",
             "css:-webkit-text-stroke-width": "metaTextStrokeWidth",
             "css:-webkit-text-stroke-color": "metaTextStrokeColour"
           },
@@ -347,6 +351,7 @@
           "attrMap": {
             "css:color": "readMoreColour",
             "css:color-gradient": "readMoreColourGradient",
+            "css:margin": "readMoreMargin",
             "css:-webkit-text-stroke-width": "readMoreTextStrokeWidth",
             "css:-webkit-text-stroke-color": "readMoreTextStrokeColour"
           },
@@ -357,6 +362,15 @@
                 "css:-webkit-text-stroke-color": "readMoreTextStrokeColourHover"
               }
             }
+          }
+        },
+        "content": {
+          "label": "Card text area",
+          "order": 3,
+          "clusters": [],
+          "prefix": "",
+          "attrMap": {
+            "css:padding": "contentPadding"
           }
         },
         "inner": {
@@ -1687,6 +1701,36 @@
       ],
       "default": "",
       "description": "Flat and minimal cards: 'inline' puts the category label and the date on one row (category left, date right). Empty keeps the label and the date on separate lines."
+    },
+    "contentPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the card text area (title, excerpt, read more), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding (20px; 24px 20px 20px on overlay cards; none on minimal cards)."
+    },
+    "metaMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the meta line (date and author) and the inline category and date row, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (8px below)."
+    },
+    "titleMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the card title, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (10px below)."
+    },
+    "excerptMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the card excerpt, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin (12px below)."
+    },
+    "readMoreMargin": {
+      "type": "object",
+      "default": {},
+      "description": "Margin around the read more link, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps none."
+    },
+    "filterPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Padding of the filter chips, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding (8px 20px)."
     },
     "categoryPadding": {
       "type": "object",

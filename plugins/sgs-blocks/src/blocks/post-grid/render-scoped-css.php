@@ -227,6 +227,32 @@ if ( '' !== $post_grid_category_radius ) {
 	$responsive_css .= $post_grid_category_sel . '{border-radius:' . $post_grid_category_radius . ';}';
 }
 
+// contentPadding / metaMargin / titleMargin / excerptMargin / readMoreMargin / filterPadding: per-device
+// boxes (same shape and emitter as categoryPadding above) on the card text area, its parts and the filter
+// chips. A descendant rule on the block root, so cards that view.js pages in later take it too. An unset
+// side keeps the stylesheet's own value.
+$post_grid_box_targets = array(
+	'contentPadding' => array( $root_sel . ' .sgs-post-grid__content', 'padding' ),
+	'metaMargin'     => array( $root_sel . ' .sgs-post-grid__content > .sgs-post-grid__meta,' . $root_sel . ' .sgs-post-grid__meta-row', 'margin' ),
+	'titleMargin'    => array( $root_sel . ' .sgs-post-grid__title', 'margin' ),
+	'excerptMargin'  => array( $root_sel . ' .sgs-post-grid__excerpt', 'margin' ),
+	'readMoreMargin' => array( $root_sel . ' .sgs-post-grid__readmore', 'margin' ),
+	'filterPadding'  => array( $root_sel . ' .sgs-post-grid__filter', 'padding' ),
+);
+foreach ( $post_grid_box_targets as $post_grid_box_attr => $post_grid_box_target ) {
+	$responsive_css .= sgs_emit_responsive_css(
+		$post_grid_box_target[0],
+		array(
+			array(
+				'value'        => $attributes[ $post_grid_box_attr ] ?? null,
+				'css'          => $post_grid_box_target[1],
+				'box'          => true,
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 // categoryBadgeBgColour background layer — moved to ::after (D292) so the
 // categoryBadgeColour text-colour gradient can use background-clip:text on the
 // same element. This MUST run before the text-colour trio loop below.

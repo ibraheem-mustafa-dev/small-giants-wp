@@ -474,7 +474,8 @@
 					"attrMap": {
 						"css:justify-content": "submitAlign",
 						"css:padding": "actionsTopPadding",
-						"css:gap": "actionsGap"
+						"css:gap": "actionsGap",
+						"css:align-items": "actionsAlignItems"
 					}
 				},
 				"tile-icon": {
@@ -3491,6 +3492,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Makes the Next and Submit buttons fill the rest of the buttons row, per device: {desktop,tablet,mobile}, each true (fill) or false (content width). A blank device follows the one above it. Empty = content width everywhere."
+		},
+		"actionsAlignItems": {
+			"type": "object",
+			"default": {},
+			"description": "Cross-axis alignment of the buttons in the buttons row, per device: {desktop,tablet,mobile}, each flex-start, center, flex-end, stretch or baseline. Empty = the stylesheet's default (buttons stretch to the tallest one)."
 		},
 		"actionsGap": {
 			"type": "object",

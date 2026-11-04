@@ -22,7 +22,7 @@ import {
 	resolveResponsiveTier,
 	resolveShadowPreviewComposed,
 	typographyPreviewStyle,
-	usePreviewTier, isCssGradient,
+	usePreviewTier, isCssGradient, tierBoxLonghands,
 } from '../../utils';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { postGridWrapperPreview, filterChipVarsPreview, orderFilterTerms } from './preview-style';
@@ -544,9 +544,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				) }
 				{ showFilters && orderedFilterTerms.length > 0 && (
 					<div className="sgs-post-grid__filters" role="group" aria-hidden="true">
-						<span className="sgs-post-grid__filter sgs-post-grid__filter--active">{ __( 'All', 'sgs-blocks' ) }</span>
+						<span className="sgs-post-grid__filter sgs-post-grid__filter--active" style={ tierBoxLonghands( attributes.filterPadding, previewTier, 'padding' ) }>{ __( 'All', 'sgs-blocks' ) }</span>
 						{ orderedFilterTerms.map( ( term ) => (
-							<span key={ term.id } className="sgs-post-grid__filter">{ term.name }</span>
+							<span key={ term.id } className="sgs-post-grid__filter" style={ tierBoxLonghands( attributes.filterPadding, previewTier, 'padding' ) }>{ term.name }</span>
 						) ) }
 					</div>
 				) }

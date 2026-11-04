@@ -54,6 +54,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		`sgs-form-field--${ width }`,
 		...fieldLabelClasses( attributes ),
 		counterInside && attributes.maxLength > 0 && false !== attributes.showCounter ? 'sgs-form-field--counter-inside' : '',
+		counterInside && false === attributes.counterReserve ? 'sgs-form-field--counter-unreserved' : '',
 		counterScope,
 	].filter( Boolean ).join( ' ' );
 
@@ -250,6 +251,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
+						{ 'inside' === attributes.counterPlacement && (
+							<ToggleControl
+								label={ __( 'Keep room under the text for the counter', 'sgs-blocks' ) }
+								checked={ false !== attributes.counterReserve }
+								onChange={ ( val ) => setAttributes( { counterReserve: val } ) }
+								help={ __( 'Off lets the box padding set the space, so the counter overlays the box.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
 						<ResponsiveOverride
 							label={ __( 'Counter font size', 'sgs-blocks' ) }
 							value={ attributes.counterFontSize }

@@ -36,6 +36,7 @@ export const ATTRS = {
 	edgeScale: 'data-sgs-fx-horizontal-panel-edge-scale',
 	focusOpacity: 'data-sgs-fx-horizontal-panel-focus-opacity',
 	edgeOpacity: 'data-sgs-fx-horizontal-panel-edge-opacity',
+	travelEnd: 'data-sgs-fx-horizontal-panel-travel-end',
 };
 
 /**
@@ -193,7 +194,7 @@ export function readHold( el ) {
  *
  * @param {HTMLElement} el The element carrying `data-sgs-fx="horizontal-panel"`.
  * @return {Object} The parameters: `scrub` (seconds, or `true` for none), `ease` (text or null), `hold`, `pinQuery`,
- *                  `belowMode`, `pinLength`, `pinTail`, `progress`, `active`, `focus` (on or off) and the four focus values.
+ *                  `belowMode`, `travelEnd` (`first-start` or `track-end`), `pinLength`, `pinTail`, `progress`, `active`, `focus` (on or off) and the four focus values.
  */
 export function readParams( el ) {
 	const breakpoint = text( el, ATTRS.breakpoint );
@@ -209,6 +210,7 @@ export function readParams( el ) {
 		hold: readHold( el ),
 		pinQuery: PIN_QUERIES[ breakpoint ] || PIN_QUERIES.tablet,
 		belowMode: 'static' === belowMode ? 'static' : 'snap',
+		travelEnd: 'track-end' === text( el, ATTRS.travelEnd ) ? 'track-end' : 'first-start',
 		pinLength: parseScrollLength( responsive( el, 'pinLength' ) ),
 		pinTail: parseScrollLength( responsive( el, 'pinTail' ) ),
 		progress: flag( el, ATTRS.progressOutput, true ),

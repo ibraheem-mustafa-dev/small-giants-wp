@@ -145,7 +145,8 @@
 					"attrMap": {
 						"css:color": "drawerLinkNumColour",
 						"css:color-gradient": "drawerLinkNumColourGradient",
-						"css:font-size": "drawerLinkNumSize"
+						"css:font-size": "drawerLinkNumSize",
+						"css:font-weight": "drawerLinkNumWeight"
 					},
 					"_note": "The row's direct-child sgs/text, in the drawer only."
 				},
@@ -254,9 +255,11 @@
 						"text"
 					],
 					"attrMap": {
-						"css:font-size": "drawerCardLinkSize"
+						"css:font-size": "drawerCardLinkSize",
+						"css:background-color": "drawerCardLinkBg",
+						"css:color": "drawerCardLinkColour"
 					},
-					"_note": "The aside's fifth slot (link button), in the compact card."
+					"_note": "The aside's fifth slot (link button) in the drawer: size in the compact card; colours in every card layout."
 				},
 				"icon": {
 					"selector": ".sgs-icon-list__icon",
@@ -614,6 +617,11 @@
 			"default": "",
 			"description": "Font size of each link row's number in the drawer, any single CSS length (e.g. 12px)."
 		},
+		"drawerLinkNumWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of each link row's number in the drawer (400, 700, bold). Validated in render.php."
+		},
 		"drawerLinkLabelColour": {
 			"type": "string",
 			"default": "",
@@ -797,6 +805,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Font size of the compact card's link button in the drawer."
+		},
+		"drawerCardLinkBg": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the background of the aside card's link button, in every card layout (a palette slug or any CSS colour). The button's own colour is shared with desktop; this applies in the drawer only."
+		},
+		"drawerCardLinkColour": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the text and icon colour of the aside card's link button, in every card layout (a palette slug or any CSS colour)."
 		},
 		"brandsEyebrow": {
 			"type": "string",

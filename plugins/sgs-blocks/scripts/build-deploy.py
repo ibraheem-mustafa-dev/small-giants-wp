@@ -46,6 +46,7 @@ import time
 from pathlib import Path
 
 import deploy_cache  # a commit's build and gate:full, done once (sibling module)
+import deploy_editor_check  # opt-in: open a local mirror's content in the block editor (sibling module)
 import deploy_multi  # several sites from one build (sibling module)
 
 # The deploy steps live in sibling modules; build-deploy.py is the command. Names other
@@ -87,6 +88,16 @@ def step_gate_full(dry_run: bool) -> int:
         return 0
     log("[gate:full] running the pre-deploy heavyweight gate tier")
     return run([resolve_exe("npm"), "run", "gate:full"], dry_run=False, cwd=PLUGIN_DIR)
+
+
+def editor_check_step(args: argparse.Namespace) -> int:
+    """The opt-in editor-crash check (--editor-check); 0 when not requested or clean."""
+    if not args.editor_check or args.dry_run or args.built_by_parent:
+        return 0
+    rc = timed("editor-check", deploy_editor_check.run, REPO_ROOT, args.editor_check, log)
+    if rc != 0:
+        print(f"[ABORTED] reason: editor-check-failed (exit {rc}). Nothing was uploaded.", flush=True)
+    return rc
 
 
 def build_and_gate(args: argparse.Namespace, deploy_blocks: bool) -> int:
@@ -170,6 +181,11 @@ def parse_args() -> argparse.Namespace:
                        help="Deploy only plugins/sgs-blocks.")
     p.add_argument("--dry-run", action="store_true",
                    help="Print commands; do not execute.")
+    p.add_argument("--editor-check", metavar="LOCAL_MIRROR", default=None,
+                   help="After the build and gate:full, sync this build into the named local mirror (local-indus, "
+                        "local-eye-care, ...) and open its real pages, posts and templates in the block editor; a "
+                        "crashed block or a console error aborts before anything is uploaded. It overwrites that "
+                        "mirror's plugin and theme, so tell the other sessions first. Never a live or test site.")
     p.add_argument("--gate-only", action="store_true",
                    help="Build and run gate:full for HEAD in the isolated worktree, record the pass in the deploy "
                         "cache, and stop: nothing is uploaded and no target is contacted. A later deploy of the "
@@ -339,7 +355,7 @@ def main() -> int:
                 "--no-isolate, --skip-build, --dry-run or uncommitted payload")
             print("[ABORTED] reason: gate-only-needs-isolation", flush=True)
             return 1
-        rc = build_and_gate(args, deploy_blocks)
+        rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
         if rc == 0:
             log("[gate-only] gate:full passed and is recorded for this commit and framework DB; "
                 "a deploy of it will not run the full tier again")
@@ -349,7 +365,7 @@ def main() -> int:
     if len(target_keys) > 1:
         log(f"[multi] {len(target_keys)} sites: {', '.join(target_keys)}; one build and "
             "gate:full, then every site at the same time")
-        rc = build_and_gate(args, deploy_blocks)
+        rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
         if rc != 0:
             return rc
         if args.dry_run:
@@ -385,7 +401,7 @@ def main() -> int:
                   flush=True)
             return 1
 
-    rc = build_and_gate(args, deploy_blocks)
+    rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
     if rc != 0:
         return rc
 

@@ -182,6 +182,11 @@
             "default": "below",
             "description": "Where the character counter sits: below the box (default) or inside it at the bottom right, with room kept under the typed text."
         },
+        "counterReserve": {
+            "type": "boolean",
+            "default": true,
+            "description": "With the counter inside the box, keep room under the typed text for it (at least 2.75rem of bottom padding). Off = reserve nothing, so the box's own bottom padding applies and the counter overlays the box."
+        },
         "counterFontSize": {
             "type": "object",
             "default": {},

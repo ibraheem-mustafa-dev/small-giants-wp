@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import { NumberControl, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { DesignTokenPicker, ResponsiveOverride, TypographyControls } from '../../components';
 
@@ -187,6 +187,7 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 		panelTransitionMs,
 		panelPinLength,
 		panelPinTail,
+		panelTravelEnd,
 	} = attributes;
 	return (
 		<>
@@ -201,6 +202,18 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 				label={ __( 'Extra scroll after the last card (vh)', 'sgs-blocks' ) }
 				value={ panelPinTail }
 				onChange={ ( obj ) => setAttributes( { panelPinTail: obj } ) }
+			/>
+			<SelectControl
+				label={ __( 'Travel to', 'sgs-blocks' ) }
+				help={ __( 'Where the row stops: the last card at the first card starting position, or the very end of the strip including its trailing padding.', 'sgs-blocks' ) }
+				value={ panelTravelEnd || 'first-start' }
+				options={ [
+					{ value: 'first-start', label: __( 'First card position', 'sgs-blocks' ) },
+					{ value: 'track-end', label: __( 'End of the strip', 'sgs-blocks' ) },
+				] }
+				onChange={ ( next ) => setAttributes( { panelTravelEnd: next } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
 			/>
 			<WholeNumberControl
 				label={ __( 'Card change transition (ms)', 'sgs-blocks' ) }

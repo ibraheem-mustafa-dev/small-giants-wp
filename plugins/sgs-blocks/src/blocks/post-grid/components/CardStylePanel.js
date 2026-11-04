@@ -10,6 +10,15 @@ import ShadowControl, { shadowAttrKeys } from '../../../components/ShadowControl
 import { CSS_EASING_OPTIONS } from '../../../components/motion/easing-master-list';
 import { CARD_STYLE_OPTIONS } from './constants';
 
+// Per-device spacing boxes of the card's text area and its parts: [ attribute, label ].
+const CARD_SPACING_BOXES = [
+	[ 'contentPadding', __( 'Card text area padding', 'sgs-blocks' ) ],
+	[ 'metaMargin', __( 'Meta line spacing (margin)', 'sgs-blocks' ) ],
+	[ 'titleMargin', __( 'Title spacing (margin)', 'sgs-blocks' ) ],
+	[ 'excerptMargin', __( 'Excerpt spacing (margin)', 'sgs-blocks' ) ],
+	[ 'readMoreMargin', __( 'Read more spacing (margin)', 'sgs-blocks' ) ],
+];
+
 export default function CardStylePanel( { attributes, setAttributes, set } ) {
 	const {
 		cardStyle,
@@ -48,6 +57,22 @@ export default function CardStylePanel( { attributes, setAttributes, set } ) {
 						help={ __( 'Leave empty to use the theme default.', 'sgs-blocks' ) }
 						presets={ false }
 					/>
+					{ CARD_SPACING_BOXES.map( ( [ attrName, label ] ) => (
+						<ResponsiveBoxControl
+							key={ attrName }
+							label={ label }
+							presets
+							values={ {
+								base: attributes[ attrName ]?.desktop ?? {},
+								tablet: attributes[ attrName ]?.tablet ?? {},
+								mobile: attributes[ attrName ]?.mobile ?? {},
+							} }
+							onChange={ ( tier, next ) => {
+								const tierMap = { base: 'desktop', tablet: 'tablet', mobile: 'mobile' };
+								patchTier( attributes, setAttributes, attrName, tierMap[ tier ], next );
+							} }
+						/>
+					) ) }
 					<ResponsiveBoxControl
 						label={ __( 'Category label padding (flat and minimal)', 'sgs-blocks' ) }
 						presets

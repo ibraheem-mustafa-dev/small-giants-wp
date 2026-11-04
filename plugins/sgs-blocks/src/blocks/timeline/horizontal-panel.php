@@ -36,6 +36,11 @@ if ( ! empty( $attributes['panelProximityFocus'] ) ) {
 	}
 }
 
+// Travel end: the engine reads this (horizontal-panel-params.js::ATTRS.travelEnd). The default `first-start` prints nothing.
+if ( 'track-end' === ( $attributes['panelTravelEnd'] ?? '' ) ) {
+	$hp_wrapper_args['data-sgs-fx-horizontal-panel-travel-end'] = 'track-end';
+}
+
 // Progress counter: a scroll-progress element reading the pin's progress (fx-scroll-progress.js, source `pin`).
 $hp_counter_only = '';
 if ( ! empty( $attributes['panelCounter'] ) && count( $entries ) > 0 ) {

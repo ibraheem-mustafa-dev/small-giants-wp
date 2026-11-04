@@ -209,6 +209,95 @@ if ( $border['mobile'] ) {
 }
 $sgs_ft_supports_css .= implode( '', $border['rules'] );
 
+// ── Each tile's own surface: background, border, radius, padding, inner gap and alignment. ──
+// A selected tile (checked, or the --selected class) keeps the selected style's border colour and width: the
+// width and colour rules exclude it. The hover colour stays the stylesheet's, so the colour rule also excludes
+// :hover. Background, radius, padding, gap and alignment apply to every state.
+$sgs_ft_tile_sel      = '.' . $sgs_ft_uid . ' .sgs-form-tile';
+$sgs_ft_tile_rest_sel = $sgs_ft_tile_sel . ':not(.sgs-form-tile--selected):not(:has(input:checked))';
+
+$sgs_ft_tile_background = sgs_colour_value( (string) ( $attributes['tileBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_ft_tile_background ) {
+	$sgs_ft_supports_css .= $sgs_ft_tile_sel . '{background-color:' . $sgs_ft_tile_background . ';}';
+}
+
+$sgs_ft_tile_border = sgs_border_element_decls(
+	$attributes,
+	'tile',
+	$sgs_ft_tile_rest_sel,
+	array(
+		'colour' => array( 'base' => 'tileBorderColour' ),
+		'radius' => 'tileRadius',
+	)
+);
+$sgs_ft_tile_buckets = array(
+	'width'  => array(),
+	'colour' => array(),
+	'radius' => array(),
+);
+foreach ( array( 'base', 'tablet', 'mobile' ) as $sgs_ft_tier ) {
+	$sgs_ft_tile_buckets['width'][ $sgs_ft_tier ]  = array();
+	$sgs_ft_tile_buckets['colour'][ $sgs_ft_tier ] = array();
+	$sgs_ft_tile_buckets['radius'][ $sgs_ft_tier ] = array();
+	foreach ( $sgs_ft_tile_border[ $sgs_ft_tier ] as $sgs_ft_decl_group ) {
+		foreach ( array_filter( explode( ';', (string) $sgs_ft_decl_group ) ) as $sgs_ft_decl ) {
+			if ( str_starts_with( $sgs_ft_decl, 'border-style:' ) || str_starts_with( $sgs_ft_decl, 'border-width:' ) ) {
+				$sgs_ft_tile_buckets['width'][ $sgs_ft_tier ][] = $sgs_ft_decl;
+			} elseif ( str_starts_with( $sgs_ft_decl, 'border-color:' ) ) {
+				$sgs_ft_tile_buckets['colour'][ $sgs_ft_tier ][] = $sgs_ft_decl;
+			} else {
+				$sgs_ft_tile_buckets['radius'][ $sgs_ft_tier ][] = $sgs_ft_decl;
+			}
+		}
+	}
+}
+$sgs_ft_tile_targets = array(
+	'width'  => $sgs_ft_tile_rest_sel,
+	'colour' => $sgs_ft_tile_rest_sel . ':not(:hover)',
+	'radius' => $sgs_ft_tile_sel,
+);
+foreach ( $sgs_ft_tile_targets as $sgs_ft_bucket => $sgs_ft_target ) {
+	$sgs_ft_tiers = $sgs_ft_tile_buckets[ $sgs_ft_bucket ];
+	if ( $sgs_ft_tiers['base'] ) {
+		$sgs_ft_supports_css .= $sgs_ft_target . '{' . implode( ';', $sgs_ft_tiers['base'] ) . ';}';
+	}
+	$sgs_ft_supports_css .= sgs_emit_tier_decls(
+		$sgs_ft_target,
+		array(
+			'tablet' => $sgs_ft_tiers['tablet'],
+			'mobile' => $sgs_ft_tiers['mobile'],
+		)
+	);
+}
+$sgs_ft_supports_css .= implode( '', $sgs_ft_tile_border['rules'] );
+
+$sgs_ft_align_allowed = array( 'start', 'center', 'end', 'stretch' );
+$sgs_ft_tile_align    = sgs_responsive_normalise_object( $attributes['tileAlign'] ?? null );
+foreach ( $sgs_ft_tile_align as $sgs_ft_tier => $sgs_ft_align_value ) {
+	if ( ! is_string( $sgs_ft_align_value ) || ! in_array( $sgs_ft_align_value, $sgs_ft_align_allowed, true ) ) {
+		$sgs_ft_tile_align[ $sgs_ft_tier ] = null;
+	}
+}
+$sgs_ft_supports_css .= sgs_emit_responsive_css(
+	$sgs_ft_tile_sel,
+	array(
+		array(
+			'value'        => $attributes['tilePadding'] ?? null,
+			'css'          => 'padding',
+			'box'          => true,
+			'unit_default' => 'px',
+		),
+		array(
+			'value' => $attributes['tileInnerGap'] ?? null,
+			'css'   => 'gap',
+		),
+		array(
+			'value' => $sgs_ft_tile_align,
+			'css'   => 'align-items',
+		),
+	)
+);
+
 // ── Tile text: the label and the description line each take their typography and colour from the panel. ──
 $sgs_ft_supports_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_ft_uid . ' .sgs-form-tile__label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_ft_label_colour  = sgs_colour_value( (string) ( $attributes['tileLabelColour'] ?? '' ) );
@@ -221,13 +310,10 @@ if ( '' !== $sgs_ft_description_colour ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__description{color:' . $sgs_ft_description_colour . ';}';
 }
 
-// ── Tile fill and the chosen tile's fill, border colour and shadow. The chosen-tile rule lists both the
-// `.sgs-form-tile--selected` class (set by view.js) and `:has(input:checked)` (set by the browser), and prints after the
-// stylesheet's selectedStyle rules at the same specificity, so a set value outranks them and an unset one changes nothing.
-$sgs_ft_tile_fill = sgs_colour_value( (string) ( $attributes['tileBackgroundColour'] ?? '' ) );
-if ( '' !== $sgs_ft_tile_fill ) {
-	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile{background-color:' . $sgs_ft_tile_fill . ';}';
-}
+// ── The chosen tile's fill, border colour and shadow (the resting tile surface is painted above). The chosen-tile rule
+// lists both the `.sgs-form-tile--selected` class (set by view.js) and `:has(input:checked)` (set by the browser), and
+// prints after the stylesheet's selectedStyle rules at the same specificity, so a set value outranks them and an unset
+// one changes nothing.
 $sgs_ft_selected_decls = array();
 $sgs_ft_selected_fill  = sgs_colour_value( (string) ( $attributes['tileSelectedBackgroundColour'] ?? '' ) );
 if ( '' !== $sgs_ft_selected_fill ) {

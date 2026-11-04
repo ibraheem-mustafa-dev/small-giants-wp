@@ -4612,6 +4612,21 @@
 						"dataAttr": "data-sgs-fx-horizontal-panel-below-mode"
 					}
 				},
+				"travelEnd": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"first-start",
+						"track-end"
+					],
+					"default": "first-start",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-horizontal-panel-travel-end"
+					}
+				},
 				"proximityFocus": {
 					"$ref": "#/$defs/boolean",
 					"x-sgs-field": {

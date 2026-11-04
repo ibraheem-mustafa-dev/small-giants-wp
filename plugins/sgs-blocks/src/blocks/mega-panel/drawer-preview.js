@@ -20,7 +20,7 @@
  */
 
 import { colourVar, isCssGradient } from '../../utils';
-import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss } from './drawer-preview-extras';
+import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -86,6 +86,10 @@ function borderPaint( colour, grad ) {
  * @return {string} CSS text.
  */
 export default function drawerPreviewCss( scope, v ) {
+	return drawerPreviewBaseCss( scope, v ) + drawerCardLinkPreviewCss( `${ scope } .sgs-mega-aside`, v );
+}
+
+function drawerPreviewBaseCss( scope, v ) {
 	const aside = `${ scope } .sgs-mega-aside`;
 	const row = `${ scope } .sgs-mega-group > .wp-block-sgs-container`;
 	let css = '';
@@ -109,6 +113,7 @@ export default function drawerPreviewCss( scope, v ) {
 			v.drawerLinkNumColour,
 			v.drawerLinkNumColourGradient,
 			v.drawerLinkNumSize,
+			v.drawerLinkNumWeight,
 		],
 		[ `${ row } .wp-block-sgs-heading`, v.drawerLinkLabelColour, v.drawerLinkLabelColourGradient, v.drawerLinkLabelSize ],
 		[
@@ -118,8 +123,8 @@ export default function drawerPreviewCss( scope, v ) {
 			v.drawerLinkDescSize,
 		],
 	];
-	parts.forEach( ( [ selector, colour, grad, size ] ) => {
-		const decls = textPaint( colour, grad ) + decl( 'font-size', size );
+	parts.forEach( ( [ selector, colour, grad, size, weight ] ) => {
+		const decls = textPaint( colour, grad ) + decl( 'font-size', size ) + decl( 'font-weight', weight );
 		if ( decls ) {
 			css += `${ selector }{${ decls }}`;
 		}
