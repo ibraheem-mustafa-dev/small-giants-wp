@@ -14,11 +14,12 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
-import DesignTokenPicker from '../../components/DesignTokenPicker';
+import DesignTokenPicker, { resolveColourToken } from '../../components/DesignTokenPicker';
+import './product-filter-look.scss';
 
 const CHIPS_BLOCK = 'woocommerce/product-filter-chips';
 const SORT_BLOCK = 'woocommerce/catalog-sorting';
@@ -183,4 +184,68 @@ if ( ! window.__sgsFilterLookRegistered ) {
 	}, 'withFilterLookControls' );
 
 	addFilter( 'editor.BlockEdit', 'sgs/product-filter-look/controls', withFilterLookControls );
+
+	/**
+	 * Editor preview: each set setting becomes a custom property plus a modifier class on the block wrapper
+	 * (custom properties only: Spec 32 forbids inline declarations), read by product-filter-look.scss.
+	 */
+	const withFilterLookPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
+		const [ palette ] = useSettings( 'color.palette' );
+		const { attributes, name } = props;
+		if ( ( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) || ! attributes ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const colour = ( ...keys ) => {
+			const raw = keys.map( ( k ) => attributes[ k ] ).find( Boolean );
+			return raw ? resolveColourToken( raw, palette ) : '';
+		};
+		let rows;
+		if ( CHIPS_BLOCK === name ) {
+			const paint = true === attributes.sgsChipPaintButtons;
+			const pill = true === attributes.sgsChipCountPill;
+			rows = [
+				[ 'chip-weight', attributes.sgsChipFontWeight ],
+				[ 'chip-border-width', attributes.sgsChipBorderWidth ],
+				[ 'chip-fill', paint && colour( 'customChipBackground', 'chipBackground' ) ],
+				[ 'chip-edge', paint && colour( 'customChipBorder', 'chipBorder' ) ],
+				[ 'chip-text', paint && colour( 'customChipText', 'chipText' ) ],
+				[ 'chip-chosen-fill', paint && colour( 'customSelectedChipBackground', 'selectedChipBackground' ) ],
+				[ 'chip-chosen-edge', paint && colour( 'customSelectedChipBorder', 'selectedChipBorder' ) ],
+				[ 'chip-chosen-text', paint && colour( 'customSelectedChipText', 'selectedChipText' ) ],
+				[ 'count-pill', pill && 'on' ],
+				[ 'count-fill', pill && colour( 'sgsChipCountBackground' ) ],
+				[ 'count-text', pill && colour( 'sgsChipCountColour' ) ],
+			];
+		} else {
+			rows = [
+				[ 'sort-fill', colour( 'sgsSortBackground' ) ],
+				[ 'sort-border-width', attributes.sgsSortBorderWidth ],
+				[ 'sort-edge', colour( 'sgsSortBorderColour' ) ],
+				[ 'sort-radius', attributes.sgsSortBorderRadius ],
+				[ 'sort-weight', attributes.sgsSortFontWeight ],
+			];
+		}
+		const style = {};
+		const classes = [];
+		rows.forEach( ( [ key, value ] ) => {
+			if ( value ) {
+				classes.push( `sgs-filter-look-preview--${ key }` );
+				style[ `--sgs-fl-${ key }` ] = value;
+			}
+		} );
+		if ( CHIPS_BLOCK === name && attributes.sgsChipCountRadius ) {
+			style[ '--sgs-fl-count-radius' ] = attributes.sgsChipCountRadius;
+		}
+		if ( ! classes.length ) {
+			return <BlockListBlock { ...props } />;
+		}
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			className: [ props.wrapperProps?.className, ...classes ].filter( Boolean ).join( ' ' ),
+			style: { ...( props.wrapperProps?.style || {} ), ...style },
+		};
+		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
+	}, 'withFilterLookPreview' );
+
+	addFilter( 'editor.BlockListBlock', 'sgs/product-filter-look/preview', withFilterLookPreview );
 } // end guard: window.__sgsFilterLookRegistered

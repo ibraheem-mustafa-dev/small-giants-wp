@@ -241,7 +241,7 @@
           "motion": false,
           "label": "Accordion item",
           "order": 6,
-          "clusters": [],
+          "clusters": ["fill", "layout"],
           "attrMap": {
             "css:background-color": "itemBackgroundOpen",
             "css:box-shadow": "itemShadow",

@@ -7,8 +7,8 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
-import { IconPicker, IconPreview, SgsColourPanel, fillRow, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
-import { backgroundPaintPreview, sgsBorderPreview, usePreviewTier } from '../../utils';
+import { IconPicker, IconPreview, SgsColourPanel, resolveColourToken, fillRow, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
+import { backgroundPaintPreview, sgsBorderPreview, usePreviewTier, resolveShadowPreviewComposed, sgsLengthPreview } from '../../utils';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 
@@ -31,12 +31,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
+	const iconSize = sgsLengthPreview( attributes.leadingIconSize );
+	const blockProps = useBlockProps( {
+		className,
+		style: iconSize ? { '--sgs-field-icon-size': iconSize } : undefined,
+	} );
+	const iconColour = resolveColourToken( attributes.leadingIconColour, colourPalette );
 	const radius = attributes.fieldBorderRadius ?? {};
 	const inputStyle = {
 		...backgroundPaintPreview( attributes.fieldBackground, '', colourPalette ),
+		boxShadow: resolveShadowPreviewComposed( attributes.fieldShadow, attributes.fieldShadowColour ),
 		...sgsBorderPreview( { widthValues: attributes.fieldBorderWidth, styleValue: attributes.fieldBorderStyle, colourValue: attributes.fieldBorderColour, radiusValues: radius }, previewTier, colourPalette ),
 	};
 	const inputControl = (
@@ -189,7 +195,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 				{ attributes.leadingIcon ? (
 					<span className="sgs-form-field__control sgs-form-field__control--has-icon">
-						<span className="sgs-form-field__leading-icon" aria-hidden="true">
+						<span className="sgs-form-field__leading-icon" style={ iconColour ? { color: iconColour } : undefined } aria-hidden="true">
 							<IconPreview source="lucide" name={ attributes.leadingIcon } />
 						</span>
 						{ inputControl }

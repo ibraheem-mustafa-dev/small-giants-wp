@@ -385,6 +385,17 @@
 		},
 		{
 			"slug": "sgs/option-picker",
+			"attr": "pillSelectedOffsetY",
+			"fields": {
+				"role": "styling",
+				"css_property": "translate",
+				"css_element": "pill",
+				"css_state": "current"
+			},
+			"_reason": "2026-11-04: the vertical half of the selected pill shift; render.php prints it in the same `translate` declaration as pillSelectedOffsetX, so it classifies exactly as that attribute does."
+		},
+		{
+			"slug": "sgs/option-picker",
 			"attr": "pillFontSize",
 			"fields": {
 				"derived_selector": ".sgs-option-picker__pill"
@@ -930,6 +941,22 @@
 			"fields": {
 				"derived_selector": ".sgs-testimonial__quote, .sgs-testimonial__text"
 			}
+		},
+		{
+			"slug": "sgs/media",
+			"attr": "displayWidth",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_reason": "2026-11-04: the width the image is drawn at per device, read by sgs_media_cover_crop_plan to print the `sizes` attribute; it paints no CSS, so the name-derived layout role is wrong."
+		},
+		{
+			"slug": "sgs/timeline",
+			"attr": "contentLayout",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-11-04: chooses how entries line up (alternating, same-side, single-column), a markup and CSS branch selector; its name carries the content element prefix but it is not a CSS value of that element."
 		},
 		{
 			"slug": "sgs/timeline",

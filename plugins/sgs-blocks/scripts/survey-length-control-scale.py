@@ -77,6 +77,10 @@ ROLE_EXCEPTIONS = {
     'extension/sgsListGap': ('spacing', 'extension attribute: the space between list items per device'),
     'extension/sgsChipGap': ('spacing', 'extension attribute: a gap between chips'),
     'extension/sgsHeight': ('spacing', 'extension attribute: an image height per device'),
+    'extension/sgsChipBorderWidth': ('spacing', 'extension attribute: a chip border width'),
+    'extension/sgsChipCountRadius': ('spacing', 'extension attribute: a count pill corner radius'),
+    'extension/sgsSortBorderWidth': ('spacing', 'extension attribute: the sort select border width'),
+    'extension/sgsSortBorderRadius': ('spacing', 'extension attribute: the sort select corner radius'),
 }
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {
