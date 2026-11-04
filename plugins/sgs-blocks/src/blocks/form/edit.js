@@ -41,7 +41,6 @@ import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
-import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
 const SUBMIT_ALIGN_OPTIONS = [
 	{ label: __( 'Right (default)', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
@@ -387,13 +386,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ),
 		fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ),
 		fieldTierDecls( 'tablet' ) !== fieldTierDecls( 'desktop' ) &&
-			`@media${ QUERY_TABLET }{${ fieldSel }{${ fieldTierDecls( 'tablet' ) }}}`,
+			`@media(max-width:1023px){${ fieldSel }{${ fieldTierDecls( 'tablet' ) }}}`,
 		fieldTierDecls( 'mobile' ) !== fieldTierDecls( 'tablet' ) &&
-			`@media${ QUERY_MOBILE }{${ fieldSel }{${ fieldTierDecls( 'mobile' ) }}}`,
+			`@media(max-width:767px){${ fieldSel }{${ fieldTierDecls( 'mobile' ) }}}`,
 		fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) !== fieldHeightRule( 'desktop', fieldSingleSel, fieldMinHeight ) &&
-			`@media${ QUERY_MOBILE }{${ fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) }}`,
+			`@media(max-width:767px){${ fieldHeightRule( 'mobile', fieldSingleSel, fieldMinHeight ) }}`,
 		fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) !== fieldHeightRule( 'desktop', fieldTextareaSel, fieldTextareaMinHeight ) &&
-			`@media${ QUERY_MOBILE }{${ fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) }}`,
+			`@media(max-width:767px){${ fieldHeightRule( 'mobile', fieldTextareaSel, fieldTextareaMinHeight ) }}`,
 		submitAlignValue && `.${ formPreviewScope } .sgs-form__actions{justify-content:${ submitAlignValue };}`,
 		actionsFlexWrap && `.${ formPreviewScope } .sgs-form__actions{flex-wrap:${ actionsFlexWrap };}`,
 	]
