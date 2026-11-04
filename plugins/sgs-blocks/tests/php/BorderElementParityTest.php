@@ -635,8 +635,28 @@ final class BorderElementParityTest extends TestCase {
 		$golden = json_decode( (string) file_get_contents( $file ), true );
 		$this->assertArrayHasKey( $case, $golden, "no golden for {$name} / {$case}" );
 
-		$diff = self::diff( $golden[ $case ], $map );
+		$diff = self::diff( self::canon_at_rule_keys( $golden[ $case ] ), self::canon_at_rule_keys( $map ) );
 		$this->assertSame( '', $diff, "{$name} / {$case}: printed CSS declaration set changed:\n" . $diff );
+	}
+
+	/**
+	 * Key the map with no space between an at-rule name and its condition, so `@media (max-width:1023px)` and
+	 * `@media(max-width:1023px)` (the same rule, printed through SGS_Breakpoints::media()) compare equal.
+	 *
+	 * @param array<string, array<int, string>> $map Declaration map.
+	 * @return array<string, array<int, string>>
+	 */
+	private static function canon_at_rule_keys( array $map ): array {
+		$out = array();
+		foreach ( $map as $key => $decls ) {
+			$canon = (string) preg_replace( '/@(media|supports|container) \(/', '@$1(', (string) $key );
+			$out[ $canon ] = array_merge( $out[ $canon ] ?? array(), $decls );
+		}
+		foreach ( $out as $canon => $decls ) {
+			sort( $decls );
+			$out[ $canon ] = $decls;
+		}
+		return $out;
 	}
 
 	/**
