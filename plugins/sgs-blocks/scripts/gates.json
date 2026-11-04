@@ -2123,5 +2123,23 @@
     "added_commit": null,
     "budget_ms": 1200,
     "order": 242
+  },
+  {
+    "id": "check-wp-package-exports",
+    "cmd": "node scripts/check-wp-package-exports.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 243
+  },
+  {
+    "id": "check-wp-package-exports-selftest",
+    "cmd": "node scripts/check-wp-package-exports.mjs --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 244
   }
 ]
