@@ -29,6 +29,62 @@
 			"motion": true,
 			"specRef": "30",
 			"elements": {
+				"fieldInput": {
+					"selector": ".sgs-account__wc form input.input-text",
+					"motion": false,
+					"label": "Account form fields",
+					"order": 20,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "field",
+					"attrMap": {
+						"css:background-color": "fieldBackground",
+						"css:color": "fieldTextColour",
+						"css:border-width": "fieldBorderWidth",
+						"css:border-style": "fieldBorderStyle",
+						"css:border-color": "fieldBorderColour",
+						"css:border-radius": "fieldBorderRadius",
+						"css:padding": "fieldPadding",
+						"css:min-height": "fieldMinHeight",
+						"css:font-size": "fieldFontSize",
+						"css:line-height": "fieldLineHeight",
+						"css:box-shadow": "fieldShadow",
+						"css:box-shadow-color": "fieldShadowColour"
+					},
+					"_note": "WooCommerce's own log-in, register, lost-password, address and account-details inputs, selects and textareas, painted through includes/forms/field-own-style.php::field_own_style_css (the form's field* names) plus includes/account/helpers-account-field-css.php for padding, height, text colour and type."
+				},
+				"fieldPlaceholder": {
+					"selector": ".sgs-account__wc form input.input-text::placeholder",
+					"motion": false,
+					"label": "Account field placeholder",
+					"order": 21,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "fieldPlaceholderColour"
+					}
+				},
+				"fieldLabel": {
+					"selector": ".sgs-account__wc form label",
+					"motion": false,
+					"label": "Account field labels",
+					"order": 22,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "label",
+					"attrMap": {
+						"css:color": "labelColour",
+						"css:margin-bottom": "labelGap",
+						"css:display": "labelPosition"
+					},
+					"_note": "The labels of WooCommerce's account forms. labelPosition above prints display:block and the label gap as margin-bottom; unset keeps WooCommerce's placement."
+				},
 				"order-thumbs": {
 					"selector": ".sgs-account__order-thumbs",
 					"motion": false,
@@ -329,6 +385,202 @@
 		}
 	},
 	"attributes": {
+		"fieldBackground": {
+			"type": "string",
+			"description": "Ground of the account forms' text inputs, selects and textareas: a palette slug or colour. Unset = the stylesheet's surface colour."
+		},
+		"fieldTextColour": {
+			"type": "string",
+			"description": "Text colour typed into the account forms' fields. Unset = the stylesheet's text colour."
+		},
+		"fieldPlaceholderColour": {
+			"type": "string",
+			"description": "Placeholder colour of the account forms' fields. Unset = the browser's placeholder colour."
+		},
+		"fieldBorderColour": {
+			"type": "string",
+			"description": "Resting border colour of the account forms' fields, via --sgs-field-edge-colour so the focus ring still wins. Unset = the stylesheet's border colour."
+		},
+		"fieldBorderWidth": {
+			"type": "object",
+			"description": "Field border width as a box {top,right,bottom,left}. Unset = the stylesheet's 1px."
+		},
+		"fieldBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"description": "Field border style. Unset = solid when a width is set."
+		},
+		"fieldBorderRadius": {
+			"type": "object",
+			"description": "Field corner radius per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Unset = the stylesheet's 6px."
+		},
+		"fieldPadding": {
+			"type": "object",
+			"description": "Field padding per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Unset = the stylesheet's 0.5rem 0.75rem."
+		},
+		"fieldMinHeight": {
+			"type": "object",
+			"description": "Minimum height of the account forms' single-line fields (inputs and selects), per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. The value is the height, even below 44px. Unset = 44px."
+		},
+		"fieldShadow": {
+			"type": "string",
+			"description": "Field shadow: a preset slug or a CSS box-shadow value. Unset = none."
+		},
+		"fieldShadowColour": {
+			"type": "string",
+			"description": "Field shadow colour. Unset = the preset's own colour."
+		},
+		"labelColour": {
+			"type": "string",
+			"description": "Colour of the account forms' field labels. Unset = the stylesheet's text colour."
+		},
+		"labelPosition": {
+			"type": "string",
+			"enum": [
+				"",
+				"above"
+			],
+			"description": "Where a field's label sits. above = a block above the field with the label gap beneath it; unset = WooCommerce's own label placement."
+		},
+		"labelGap": {
+			"type": "object",
+			"description": "Space between a label and its field when the label sits above, per device: {desktop,tablet,mobile}, each a CSS length or a spacing preset. Unset = WooCommerce's own spacing."
+		},
+		"fieldFontSize": {
+			"type": "object",
+			"description": "Font size of the field text per device: {desktop,tablet,mobile}."
+		},
+		"fieldFontSizeUnit": {
+			"type": "string",
+			"description": "Unit of the field font size."
+		},
+		"fieldFontFamily": {
+			"type": "string",
+			"description": "Font family of the field text."
+		},
+		"fieldFontWeight": {
+			"type": "string",
+			"description": "Font weight of the field text."
+		},
+		"fieldFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"description": "Font style of the field text."
+		},
+		"fieldLineHeight": {
+			"type": "object",
+			"description": "Line height of the field text per device: {desktop,tablet,mobile}."
+		},
+		"fieldLineHeightUnit": {
+			"type": "string",
+			"description": "Unit of the field line height ('' = unitless)."
+		},
+		"fieldLetterSpacing": {
+			"type": "object",
+			"description": "Letter spacing of the field text per device: {desktop,tablet,mobile}."
+		},
+		"fieldLetterSpacingUnit": {
+			"type": "string",
+			"description": "Unit of the field letter spacing."
+		},
+		"fieldTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Text transform of the field text."
+		},
+		"fieldTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"description": "Text decoration of the field text."
+		},
+		"labelFontSize": {
+			"type": "object",
+			"description": "Font size of the label text per device: {desktop,tablet,mobile}."
+		},
+		"labelFontSizeUnit": {
+			"type": "string",
+			"description": "Unit of the label font size."
+		},
+		"labelFontFamily": {
+			"type": "string",
+			"description": "Font family of the label text."
+		},
+		"labelFontWeight": {
+			"type": "string",
+			"description": "Font weight of the label text."
+		},
+		"labelFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"description": "Font style of the label text."
+		},
+		"labelLineHeight": {
+			"type": "object",
+			"description": "Line height of the label text per device: {desktop,tablet,mobile}."
+		},
+		"labelLineHeightUnit": {
+			"type": "string",
+			"description": "Unit of the label line height ('' = unitless)."
+		},
+		"labelLetterSpacing": {
+			"type": "object",
+			"description": "Letter spacing of the label text per device: {desktop,tablet,mobile}."
+		},
+		"labelLetterSpacingUnit": {
+			"type": "string",
+			"description": "Unit of the label letter spacing."
+		},
+		"labelTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"description": "Text transform of the label text."
+		},
+		"labelTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"description": "Text decoration of the label text."
+		},
 		"orderThumbsFlexWrap": {
 			"type": "string",
 			"default": "",

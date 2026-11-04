@@ -44,13 +44,14 @@ function field_own_style_set_attrs( array $attributes ): array {
  *
  * @param array<string, mixed> $attributes Block attributes.
  * @param string               $uid        The field's uid class, no leading dot.
+ * @param string $field_selector Full field selector, already scoped; empty keeps the field's own input.
  * @return string CSS text without a <style> wrapper; '' when nothing is set.
  */
-function field_own_style_css( array $attributes, string $uid ): string {
+function field_own_style_css( array $attributes, string $uid, string $field_selector = '' ): string {
 	if ( '' === $uid ) {
 		return '';
 	}
-	$field_sel = '.' . $uid . ' .sgs-form-field__input';
+	$field_sel = '' === $field_selector ? '.' . $uid . ' .sgs-form-field__input' : $field_selector;
 	$decls     = sgs_fill_decls( $attributes, array( 'base' => 'fieldBackground' ) )['normal'];
 	$border    = sgs_border_element_decls( $attributes, 'field', $field_sel, array() );
 	$decls     = array_merge( $decls, $border['base'] );

@@ -35,6 +35,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-defaults.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-render-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-field-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-signed-out.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-endpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-dashboard.php';
@@ -74,6 +75,7 @@ $menu_icons      = wp_parse_args(
 // -- Scoped CSS ---------------------------------------------------------
 $scoped_css   = array();
 $scoped_css[] = sgs_account_scoped_css( $attributes, $root_sel );
+$scoped_css[] = sgs_account_field_css( $attributes, $root_sel );
 $show_card    = sgs_account_signed_out_card_active( $attributes );
 if ( $show_menu_icons ) {
 	$scoped_css[] = sgs_account_menu_icon_css( $menu_icons, $root_sel );
