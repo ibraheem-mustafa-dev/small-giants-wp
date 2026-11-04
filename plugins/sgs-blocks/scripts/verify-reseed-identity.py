@@ -233,13 +233,21 @@ def self_test() -> int:
         conn.close()
         if not any("only in baseline" in d for d in compare_dbs(dbs[0], dbs[1], [], [])):
             failures.append("negative control: a missing row was not reported")
+        log_a, log_b = tmp_path / "a.log", tmp_path / "b.log"
+        log_a.write_text("Stage 12 (x): 3 finding(s)\nStage 13 Total: 3\nnoise\n", encoding="utf-8")
+        log_b.write_text("Stage 12 (x): 3 finding(s)\nStage 13 Total: 3\nother noise\n", encoding="utf-8")
+        if compare_logs(log_a, log_b, Path("A"), Path("B")):
+            failures.append("positive control: equal Stage 12/13 lines reported as different")
+        log_b.write_text("Stage 12 (x): 4 finding(s)\nStage 13 Total: 3\n", encoding="utf-8")
+        if not any("only in" in d for d in compare_logs(log_a, log_b, Path("A"), Path("B"))):
+            failures.append("negative control: a changed finding count was not reported")
         if norm_cell("C:\\r\\x\\y", ["C:\\r\\x"]) != "<REPO>\\y":
             failures.append("repository path was not normalised")
         if CLOCK.sub("<TS>", "at 2026-11-04 03:39:12.5Z ok") != "at <TS> ok":
             failures.append("clock time was not normalised")
     for line in failures:
         print("FAIL", line)
-    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, path and clock normalisation)")
+    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, path and clock normalisation)")
     return 1 if failures else 0
 
 
