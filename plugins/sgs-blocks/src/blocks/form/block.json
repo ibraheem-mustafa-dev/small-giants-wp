@@ -170,6 +170,7 @@
 					"layer": "OUTER",
 					"attrMap": {
 						"css:flex-wrap": "actionsFlexWrap",
+						"css:align-items": "actionsAlignItems",
 						"css:background-color": "actionsStickyBackground",
 						"css:border-color": "actionsStickyBorderColour",
 						"css:padding": "actionsStickyPadding",
@@ -474,8 +475,7 @@
 					"attrMap": {
 						"css:justify-content": "submitAlign",
 						"css:padding": "actionsTopPadding",
-						"css:gap": "actionsGap",
-						"css:align-items": "actionsAlignItems"
+						"css:gap": "actionsGap"
 					}
 				},
 				"tile-icon": {
