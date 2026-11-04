@@ -45,7 +45,6 @@
 			},
 			"elements": {
 				"card": {
-					"restingShadow": true,
 					"label": "Free-delivery card",
 					"order": 1,
 					"clusters": [
@@ -128,11 +127,11 @@
 		},
 		"freeDeliveryMessage": {
 			"type": "string",
-			"default": "You're %s away from free delivery"
+			"default": "Add %s more for free delivery"
 		},
 		"freeDeliverySuccessMessage": {
 			"type": "string",
-			"default": "You've unlocked free delivery!"
+			"default": "You have free delivery"
 		},
 		"freeDeliveryHideWhenEmpty": {
 			"type": "boolean",

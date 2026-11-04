@@ -107,6 +107,25 @@ describe( 'cart-live singleton', () => {
 		expect( global.fetch ).toHaveBeenCalledTimes( 2 );
 	} );
 
+	it( "ignores the store's empty defaults, which carry no currency, and asks the Store API after a grace period", async () => {
+		jest.useFakeTimers();
+		const selectors = {
+			getCartData: jest.fn( () => ( { items: [], itemsCount: 0, totals: { currency_code: '', total_items: '0' } } ) ),
+			hasFinishedResolution: jest.fn( () => true ),
+		};
+		window.wp = { data: { select: jest.fn( () => selectors ), subscribe: jest.fn() } };
+		const mod = loadBundle();
+		const cb = jest.fn();
+		mod.onCartChange( cb );
+		expect( cb ).not.toHaveBeenCalled();
+		expect( global.fetch ).not.toHaveBeenCalled();
+		jest.advanceTimersByTime( 3100 );
+		jest.useRealTimers();
+		await flush();
+		expect( global.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( cb ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'stop listening works', async () => {
 		const mod = loadBundle();
 		const cb = jest.fn();
@@ -124,10 +143,11 @@ describe( 'cart-live singleton', () => {
 			items: [ { quantity: 3 } ],
 			itemsCount: 3,
 			totals: {
-				totalItems: '2150',
-				totalItemsTax: '0',
-				currencyMinorUnit: 2,
-				currencyPrefix: '£',
+				total_items: '2150',
+				total_items_tax: '0',
+				currency_code: 'GBP',
+				currency_minor_unit: 2,
+				currency_prefix: '£',
 			},
 		};
 		const selectors = {
@@ -149,6 +169,7 @@ describe( 'cart-live singleton', () => {
 		expect( global.fetch ).not.toHaveBeenCalled();
 		expect( cb ).toHaveBeenCalledTimes( 1 );
 		expect( cb.mock.calls[ 0 ][ 0 ].totals.total_items ).toBe( '2150' );
+		expect( cb.mock.calls[ 0 ][ 0 ].totals.currency_prefix ).toBe( '£' );
 		expect( cb.mock.calls[ 0 ][ 0 ].items_count ).toBe( 3 );
 		// A quantity stepper on the Cart block changes the store: the listener hears it.
 		selectors.getCartData.mockReturnValue( {

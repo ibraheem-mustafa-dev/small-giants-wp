@@ -167,6 +167,12 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Behaviour and motion', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ToggleControl
 						label={ __(
 							'Hide while the basket is empty',
@@ -293,6 +299,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							{ ( { ownValue, setOwnValue } ) => (
 								<SgsBoxControl
 									label={ label }
+									hideLabelFromVision
 									values={
 										ownValue && 'object' === typeof ownValue
 											? ownValue

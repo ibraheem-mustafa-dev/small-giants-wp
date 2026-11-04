@@ -131,7 +131,12 @@ function createInstance() {
 			return;
 		}
 		const data = selectors.getCartData();
-		if ( ! data || data === lastStoreData ) {
+		// Before WooCommerce has loaded the cart the store holds empty defaults, which carry no currency: not a reading.
+		if (
+			! data ||
+			data === lastStoreData ||
+			! data.totals?.currency_code
+		) {
 			return;
 		}
 		lastStoreData = data;
