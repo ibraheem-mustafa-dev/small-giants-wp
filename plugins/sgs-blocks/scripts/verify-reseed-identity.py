@@ -110,6 +110,7 @@ def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[st
 
 
 REPORT_LINE = re.compile(r"^Stage 1[23]\b")
+DB_NAME = re.compile(r"\b(?:baseline|candidate)\.db\b")
 
 
 def report_lines(log: Path, root: str) -> list[str]:
@@ -119,7 +120,7 @@ def report_lines(log: Path, root: str) -> list[str]:
     out = []
     for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
         if REPORT_LINE.match(line):
-            out.append(CLOCK.sub("<TS>", line.replace(root, "<REPO>").replace(root.replace("\\", "/"), "<REPO>")))
+            out.append(DB_NAME.sub("<DB>", CLOCK.sub("<TS>", line.replace(root, "<REPO>").replace(root.replace("\\", "/"), "<REPO>"))))
     return out
 
 
