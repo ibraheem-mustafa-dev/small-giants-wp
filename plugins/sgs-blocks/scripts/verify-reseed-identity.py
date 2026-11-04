@@ -103,6 +103,30 @@ def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[st
     return out
 
 
+REPORT_LINE = re.compile(r"^Stage 1[23]")
+
+
+def report_lines(log: Path, root: str) -> list[str]:
+    """The Stage 12 per-scanner finding lines and the Stage 13 total, repository path and clock times normalised."""
+    if not log.is_file():
+        return []
+    out = []
+    for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+        if REPORT_LINE.match(line):
+            out.append(CLOCK.sub("<TS>", line.replace(root, "<REPO>").replace(root.replace("\\", "/"), "<REPO>")))
+    return out
+
+
+def compare_logs(base_log: Path, cand_log: Path, base: Path, cand: Path) -> list[str]:
+    a, b = report_lines(base_log, str(base)), report_lines(cand_log, str(cand))
+    out = []
+    if not a or not b:
+        return ["log: no Stage 12/13 lines in " + ("baseline" if not a else "candidate") + " log, so the findings were not compared"]
+    for line in sorted(set(a) ^ set(b)):
+        out.append(f"log line only in {'baseline' if line in a else 'candidate'}: {line[:200]}")
+    return out
+
+
 def changed_files(repo: Path) -> list[str]:
     done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=repo, capture_output=True, text=True, check=True)
     paths = []
@@ -261,7 +285,8 @@ def main() -> int:
         planted = plant(a.candidate, None if a.shared_readonly else db_b)
         print("Planted:", ", ".join(planted))
     db_diffs = [] if a.shared_readonly else compare_dbs(db_a, db_b, [str(a.baseline)], [str(a.candidate)])
-    diffs = db_diffs + compare_repos(a.baseline, a.candidate)
+    log_diffs = compare_logs(work / "baseline.log", work / "candidate.log", a.baseline, a.candidate) if (a.stage in (None, 12)) else []
+    diffs = db_diffs + compare_repos(a.baseline, a.candidate) + log_diffs
     for line in diffs:
         print(line)
     if a.plant_difference:
