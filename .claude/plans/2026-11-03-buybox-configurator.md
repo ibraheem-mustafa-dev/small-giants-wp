@@ -130,7 +130,7 @@ Status: built (`f9490d358`) and live on mamas-test 2026-11-03; four items open (
   2. Base and chip pills (priced groups) take the pack tiles' `pickTile*` and `pickSelected*` settings; the draft gives them pill looks (radius 999px, padding 0 18px 0 12px, gap 8px, 16px text). Give priced groups their own pill style settings.
   3. Pack tile text: the draft splits number 26px, price 14px, each-line 12px; `pickerPillFontSize` scales one label (9.9px live).
   4. Accessibility: axe colour-contrast (serious) on the selected pack tile's small label (yellow fill); fix with the label colour or size, re-run axe at 375 and 1440.
-- The main-photo frame (ground, border, radius, shadow) is the Eye Care session's Round 6 change to `sgs/buybox`, shared with Mama's.
+- The main-photo frame is built (`144908b14`): `mainPhotoBackgroundColour`, `mainPhotoBorderWidth` / `Style` / `Colour`, `mainPhotoRadius`, `mainPhotoShadow` / `mainPhotoShadowColour` in the buy box's "Main photo frame" panel; Mama's sets its values on the product template (2px cocoa border, 28px radius, 8px offset shadow).
 
 ## Parked (named)
 
