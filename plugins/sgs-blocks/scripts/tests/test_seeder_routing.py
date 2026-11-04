@@ -350,3 +350,15 @@ def test_update_db_flag_skips_children_that_ignore_the_env(tmp_path, monkeypatch
     assert not marker.exists()
     subprocess.run([sys.executable, str(aware)], check=True)
     assert marker.read_text() == "y"
+
+
+def test_update_db_flag_runs_listed_db_free_children(tmp_path, monkeypatch):
+    update = _load("sgs_update_v2_db_free_under_test", PLUGIN_ROOT / "scripts" / "sgs-update-v2.py")
+    marker = tmp_path / "ran.txt"
+    free = tmp_path / "validate-motion-presets.mjs"
+    free.write_text(f"import fs from 'fs'; fs.writeFileSync(String.raw`{marker}`, 'z');", encoding="utf-8")
+    monkeypatch.setattr(subprocess, "run", subprocess.run)
+    update._guard_children_for_db_override()
+    assert "validate-motion-presets.mjs" in update.DB_FREE_CHILDREN
+    done = subprocess.run(["node", str(free)], capture_output=True, text=True)
+    assert done.returncode == 0 and marker.read_text() == "z"
