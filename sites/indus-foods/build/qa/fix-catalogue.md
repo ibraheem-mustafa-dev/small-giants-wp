@@ -340,3 +340,21 @@ Indus-test: 0 high. The remaining mediums need framework settings; the site hold
 | R6-10 | blog filter chips | "All" chip ~8px wider than the draft | chip padding has no setting | framework: filter chip padding |
 | R6-11 | lows (R5-14 carried) | testimonial avatar chip, WhatsApp pill label size, food-service hero crop at 375, CTA band and footer heights, drawer close X weight, social glyph size, brands tile strips, heritage spacing | not traced | investigate |
 
+
+## Round 6 register (Bean approved 2026-11-04: all six framework groups; the timeline keeps its pin and fade on tablet, D-29; the timeline gains a "travel to the end of the strip" choice; the textarea gains a "reserve space for the counter" switch)
+
+Causes were proven from source and saved settings by three read-only investigators and checked in the main thread; live values come from a measuring pass before the site fixes.
+
+| Id | Fix | Kind |
+|---|---|---|
+| R6-01 | accepted as D-29 (pinned, focus-faded timeline on tablet) | ruling |
+| R6-02 | `helpers-media.php`: cover-cropped sgs/media images get a `sizes` value from their drawn width instead of the attachment's 100vw hint | framework |
+| R6-03 | post-grid image fills its frame (the `.sgs-media-el` cascade, card-grid's precedent); post-grid content padding and part spacing settings; Custom CSS on 508 and 432 removed | framework + site |
+| R6-04 | timeline `panelTravelEnd` ("first card position" default, "end of the strip"); set to the strip's end on posts 92 and 95 | framework + site |
+| R6-05 | mega-panel `drawerLinkNumWeight` = 500 on posts 155, 157, 159, 161 | framework + site |
+| R6-06 | timeline date, content and description spacing (92, 95); form-field-tiles tile appearance (149); mega-panel drawer card link colours and corner position, plus existing button tier settings (155, 157, 159, 161); each replaced Custom CSS rule removed | framework + site |
+| R6-07 | form `actionsAlignItems` = center on the apply form (163) | framework + site |
+| R6-08 | textarea `counterReserve` off on the enquiry form (149) | framework + site |
+| R6-09 | consent `boxSize` and `boxMargin` on careers (151) | framework + site |
+| R6-10 | post-grid `filterPadding` on 508 | framework + site |
+| R6-11 | drawer close X as an 18px-arm custom icon (203); social glyph sizes via `childIconSize` (201, 203, 205); the rest from the measuring pass | site |

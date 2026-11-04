@@ -452,5 +452,17 @@
     },
     "reason": "The draft's desktop mega panel sets no font on these titles, so they fall back to the body font; its mobile drawer sets the same titles in Montserrat, as it does every other title on the site (about 66). Treated as a draft slip: the titles use the heading font on every screen size.",
     "decided": "2026-11-03 Bean ruling (Indus round 5)"
+  },
+  {
+    "id": "D-29",
+    "scope": "about and our-story timeline, 768-1023",
+    "node": "horizontal timeline (cr-ref-about-33, cr-ref-our-story-18)",
+    "state": "*",
+    "property": "pin, opacity, transform",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft pins the timeline and fades the side cards only at 1024px and wider, and is a plain swipe row below that. Bean prefers the pinned, focus-faded timeline on tablet too, so it keeps the desktop treatment from 768px.",
+    "decided": "2026-11-04 Bean ruling (Indus round 6)"
   }
 ]
