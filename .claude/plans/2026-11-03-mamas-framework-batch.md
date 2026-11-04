@@ -157,12 +157,5 @@ Checked and clean: `includes/helpers-tiered-border.php` and `TierBorderControl.j
 
 Closed on our side: `ConfiguratorPanel.js` is a `ToolsPanel` with per-item reset to the block.json default; `class-configurator-picks-admin.php` uses the class `sgs-attr-flags__count` from `assets/admin/configurator-attribute-flags.css`, enqueued on the product edit screen only. `configurator.css` keeps its static `@media (min-width: 768px)` (plain CSS cannot read `SGS_Breakpoints`).
 
-Pre-existing, not ours (hand-typed breakpoint literals in per-device output, for the detector-first migration to `sgs_emit_responsive_css`):
-- `src/blocks/accordion/render.php` (border tablet/mobile, f4ebc7097)
-- `src/blocks/accordion-item/render.php` (border and header radius tablet/mobile, f4ebc7097)
-- `src/blocks/product-card/render.php` (attribute-tag border and card border, 69515de0f and f4ebc7097)
-- `src/blocks/cart/render.php` (`$sgs_cart_tier_media`, `$sgs_cart_tier_ranges`, `$trigger_ranges`, cebd58310 and cdddd9090)
-- `src/blocks/icon/render.php` (line with `'@media(max-width:' . $max . ')'`)
-- `src/blocks/buybox/sticky-bar.js` (`matchMedia('(max-width: 767px)')` and `1023px`, fb1740e27)
-- `src/blocks/buybox/render.php` main-photo border tiers (144908b14, Eye Care session; already uses `SGS_Breakpoints` constants but bypasses the emitter)
-- `src/blocks/post-grid/style.css` filter border defaults not in `:where()` (check-border-width-defaults, 3 findings)
+Done 2026-11-04 (Bean: fix, don't record): every hand-typed responsive breakpoint literal in PHP and JS (302 in 87 files, ours and pre-existing) moved onto the shared sources, `main` `d2b553681`: `plugins/sgs-blocks/includes/class-sgs-breakpoints.php::SGS_Breakpoints::query` and `::media`, `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_emit_tier_decls` (ready per-tier declaration lists, the border callers and the buybox main-photo frame) beside `sgs_emit_responsive_css`, and `plugins/sgs-blocks/src/utils/breakpoints.js` for JS. The fast gate `plugins/sgs-blocks/scripts/check-breakpoint-literals.py` (with its self-test) refuses any new literal, baseline empty; one allowlisted exception with its reason, the classic theme script `theme/sgs-theme/assets/js/sgs-shop-load-more.js`. The post-grid `:where()` border defaults were fixed by the Indus session.
+- Open: a second detector rule for queries hand-built by concatenating `SGS_Breakpoints` constants or a variable breakpoint (nav-drawer, header-float and similar), which the literal rule cannot see; then migrate them onto `SGS_Breakpoints::media()`. The 196 breakpoint literals in static `.css`/`.scss` have no shared mechanism yet (no custom-media or build-time constant); decide whether to add one.
