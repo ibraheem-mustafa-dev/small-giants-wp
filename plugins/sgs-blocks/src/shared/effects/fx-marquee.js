@@ -36,7 +36,7 @@ import {
 } from '@sgs/loop-control';
 /* eslint-enable import/no-unresolved */
 import { isEffectOffAtThisTier } from './off-switch';
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
 
 const SELECTOR = '[data-sgs-fx~="marquee"]';
 const SET = '[data-sgs-marquee-set]';
@@ -47,7 +47,7 @@ const DEFAULT_SPEED = 40;
 const DEFAULT_FADE = 5;
 const TOUCH_MODES = [ 'off', 'tap' ];
 const DEFAULT_TOUCH_PAUSE = 'tap';
-const BELOW = { tablet: SGS_BREAKPOINT_QUERIES.tablet, mobile: SGS_BREAKPOINT_QUERIES.mobile };
+const BELOW = { tablet: QUERY_TABLET, mobile: QUERY_MOBILE };
 const VERTICAL = [ 'up', 'down' ];
 const REVERSED = [ 'right', 'down' ];
 

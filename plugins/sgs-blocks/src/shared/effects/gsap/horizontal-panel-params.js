@@ -14,7 +14,7 @@
  */
 
 import { readSmoothing, readResponsive } from './scroll-rows.js';
-import { SGS_BREAKPOINT_QUERIES } from '../../../utils/responsive';
+import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../../utils/breakpoints';
 
 /**
  * Where each parameter arrives: the `x-sgs-field.dataAttr` of that parameter.
@@ -62,8 +62,8 @@ export const CUSTOM_PROPERTIES = {
  */
 export const PIN_QUERIES = {
 	mobile: '(min-width: 0px)',
-	tablet: SGS_BREAKPOINT_QUERIES.tabletUp,
-	desktop: SGS_BREAKPOINT_QUERIES.desktop,
+	tablet: QUERY_TABLET_UP,
+	desktop: QUERY_DESKTOP,
 };
 
 /** Named hold steps, the same fractions `pin-scrub-params.js` offers beside the slider. */

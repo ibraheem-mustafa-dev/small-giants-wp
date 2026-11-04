@@ -14,7 +14,7 @@
 
 import { buildSummary, formatMinor as formatTotal } from './summary-lines.js';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_DESKTOP } from '../../utils/breakpoints';
 
 export { formatMinor } from './summary-lines.js';
 
@@ -28,7 +28,7 @@ const TOTAL_VALUE_SELECTOR = '.sgs-choice-flow__summary-total-value, .sgs-choice
 const EFFECTS = [ 'dim', 'deepen', 'soften', 'brighten' ];
 
 /** `style.css`'s own two-column breakpoint for `.sgs-choice-flow__body--with-panel`. */
-const DESKTOP_QUERY = SGS_BREAKPOINT_QUERIES.desktop;
+const DESKTOP_QUERY = QUERY_DESKTOP;
 
 /** Flow roots whose "stay open on desktop" toggle lock is already bound. */
 const toggleLockBound = new WeakSet();

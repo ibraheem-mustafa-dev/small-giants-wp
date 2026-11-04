@@ -13,7 +13,7 @@ import {
 	prefersReducedMotion as isReducedMotionNow,
 	rafThrottle,
 } from '../../shared/effects/motion-utils.js';
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_MOBILE } from '../../utils/breakpoints';
 
 ( function () {
 	'use strict';
@@ -253,7 +253,7 @@ import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
 		if (
 			root.classList.contains( 'sgs-timeline--mobile-carousel' ) &&
 			window.matchMedia &&
-			window.matchMedia( SGS_BREAKPOINT_QUERIES.mobile ).matches
+			window.matchMedia( QUERY_MOBILE ).matches
 		) {
 			return;
 		}
@@ -661,7 +661,7 @@ import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
 			return;
 		}
 
-		const mobileQuery = window.matchMedia( SGS_BREAKPOINT_QUERIES.mobile );
+		const mobileQuery = window.matchMedia( QUERY_MOBILE );
 		// Server-rendered, i18n'd via render.php — never hardcoded here, so a
 		// translated site gets a translated name. Falls back to a sensible
 		// default only if the data attribute is somehow absent.

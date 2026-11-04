@@ -48,7 +48,7 @@ export {
 	resolveStart,
 	resolveTrigger,
 } from './provider-resolvers.js';
-import { SGS_BREAKPOINT_QUERIES } from '../../../utils/responsive';
+import { QUERY_MOBILE_FRACTIONAL, QUERY_TABLET_ONLY_FRACTIONAL } from '../../../utils/breakpoints';
 
 /**
  * Register Tier G plugins and return the shared GSAP instance.
@@ -203,11 +203,11 @@ function currentTier() {
 	if ( typeof window.matchMedia !== 'function' ) {
 		return null;
 	}
-	if ( window.matchMedia( SGS_BREAKPOINT_QUERIES.mobileFractional ).matches ) {
+	if ( window.matchMedia( QUERY_MOBILE_FRACTIONAL ).matches ) {
 		return 'mobile';
 	}
 	if (
-		window.matchMedia( SGS_BREAKPOINT_QUERIES.tabletOnlyFractional )
+		window.matchMedia( QUERY_TABLET_ONLY_FRACTIONAL )
 			.matches
 	) {
 		return 'tablet';
@@ -315,8 +315,8 @@ export function bootEffect( effect, init ) {
 	// matchMedia, or a returned object without addEventListener, gets no
 	// listener: the boot-time decision then stands.
 	const tierQueries = [
-		SGS_BREAKPOINT_QUERIES.mobileFractional,
-		SGS_BREAKPOINT_QUERIES.tabletOnlyFractional,
+		QUERY_MOBILE_FRACTIONAL,
+		QUERY_TABLET_ONLY_FRACTIONAL,
 	];
 	const queries =
 		typeof window.matchMedia === 'function'

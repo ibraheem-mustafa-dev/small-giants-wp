@@ -72,7 +72,7 @@ import {
 	nextDirectionScrollState,
 	positionScrolled,
 } from './direction-scroll-state.js';
-import { SGS_BREAKPOINT_QUERIES } from '../utils/responsive';
+import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 
 ( function () {
 	'use strict';
@@ -562,10 +562,10 @@ import { SGS_BREAKPOINT_QUERIES } from '../utils/responsive';
 	 * @return {'desktop'|'tablet'|'mobile'}
 	 */
 	function getCurrentDeviceTier() {
-		if ( window.matchMedia( SGS_BREAKPOINT_QUERIES.mobile ).matches ) {
+		if ( window.matchMedia( QUERY_MOBILE ).matches ) {
 			return 'mobile';
 		}
-		if ( window.matchMedia( SGS_BREAKPOINT_QUERIES.tablet ).matches ) {
+		if ( window.matchMedia( QUERY_TABLET ).matches ) {
 			return 'tablet';
 		}
 		return 'desktop';

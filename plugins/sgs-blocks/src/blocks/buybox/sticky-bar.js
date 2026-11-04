@@ -26,7 +26,7 @@
  * @since 1.20.0 (Spec 02 FR-2-3)
  */
 
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
 
 const ROOT_SELECTOR = '.sgs-buybox[data-sgs-bar]';
 const HEIGHT_PROPERTY = '--sgs-sticky-bar-h';
@@ -85,8 +85,8 @@ function initStickyBar( root ) {
 
 	const tiers = parseObject( root.getAttribute( 'data-sgs-bar' ) );
 	const seed = parseObject( root.getAttribute( 'data-wp-context' ) );
-	const phone = window.matchMedia( SGS_BREAKPOINT_QUERIES.mobile );
-	const tablet = window.matchMedia( SGS_BREAKPOINT_QUERIES.tablet );
+	const phone = window.matchMedia( QUERY_MOBILE );
+	const tablet = window.matchMedia( QUERY_TABLET );
 	const variantEl = bar.querySelector( '[data-sgs-bar-variant]' );
 
 	let controlAbove = false;

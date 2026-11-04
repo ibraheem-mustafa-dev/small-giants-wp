@@ -22,7 +22,7 @@
  * @package
  */
 
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_MOBILE_FRACTIONAL, QUERY_TABLET_ONLY_FRACTIONAL } from '../../utils/breakpoints';
 
 /**
  * The device-tier queries: mobile <=767, tablet 768-1023, desktop >=1024. Never design breakpoints. The fractional edges
@@ -30,8 +30,8 @@ import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
  * script and in CSS.
  */
 export const TIER_QUERIES = {
-	mobile: SGS_BREAKPOINT_QUERIES.mobileFractional,
-	tablet: SGS_BREAKPOINT_QUERIES.tabletOnlyFractional,
+	mobile: QUERY_MOBILE_FRACTIONAL,
+	tablet: QUERY_TABLET_ONLY_FRACTIONAL,
 };
 
 /**

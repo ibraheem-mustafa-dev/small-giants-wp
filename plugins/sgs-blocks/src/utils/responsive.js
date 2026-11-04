@@ -2,29 +2,9 @@
  * Responsive class name helpers.
  */
 
-/**
- * Spec 37 FR-37-16 shared breakpoint source (mirror of PHP SGS_Breakpoints, FP-1).
- * The single source of truth for device-tier widths on the editor side. Never
- * hardcode a second 768/1024 or 1023/767 pair in a block.
- */
-export const SGS_BREAKPOINTS = {
-	TABLET_MAX: 1023,
-	MOBILE_MAX: 767,
-};
+import { SGS_BREAKPOINTS } from './breakpoints';
 
-/**
- * Ready-made `matchMedia` conditions built from SGS_BREAKPOINTS (mirror of PHP SGS_Breakpoints::query()). The
- * `*Fractional` pair matches the stylesheet gates `max-width: 767.98px`, so a fractional viewport reads as the same
- * tier in script and in CSS.
- */
-export const SGS_BREAKPOINT_QUERIES = {
-	tablet: `(max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }px)`,
-	mobile: `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }px)`,
-	tabletUp: `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px)`,
-	desktop: `(min-width: ${ SGS_BREAKPOINTS.TABLET_MAX + 1 }px)`,
-	mobileFractional: `(max-width: ${ SGS_BREAKPOINTS.MOBILE_MAX }.98px)`,
-	tabletOnlyFractional: `(min-width: ${ SGS_BREAKPOINTS.MOBILE_MAX + 1 }px) and (max-width: ${ SGS_BREAKPOINTS.TABLET_MAX }.98px)`,
-};
+export { SGS_BREAKPOINTS };
 
 /** Canonical tier order — MUST match the PHP canonicaliser (uid stability). */
 export const RESPONSIVE_TIERS = [ 'desktop', 'tablet', 'mobile' ];

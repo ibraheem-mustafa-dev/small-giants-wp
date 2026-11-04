@@ -52,14 +52,14 @@
 
 import { initMotionPause } from '../motion-pause';
 import { ensureButton as makeButton, removeButton } from './loop-button';
-import { SGS_BREAKPOINT_QUERIES } from '../../utils/responsive';
+import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
 
 export { parseTime, parseLength, readLoopTiming } from './loop-timing';
 
 const ROOT_SELECTOR = '[class*="wp-block-sgs-"]';
 const PAUSED_ATTR = 'data-sgs-loop-paused';
 const DEFAULT_LABEL = 'Pause animation';
-export const BREAKPOINTS = [ SGS_BREAKPOINT_QUERIES.tablet, SGS_BREAKPOINT_QUERIES.mobile ];
+export const BREAKPOINTS = [ QUERY_TABLET, QUERY_MOBILE ];
 
 /** The root's shared state, kept for the life of the page so a root registered again reuses its listeners. */
 const groups = new WeakMap();
