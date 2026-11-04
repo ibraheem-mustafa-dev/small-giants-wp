@@ -410,6 +410,46 @@ if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
 	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';
 }
 
+// Per-device badge size (numberSize): sets the size custom property that the
+// connector-line maths reads, and the badge's real width/height. Row gap
+// (stepRowGap) follows stepGap so it wins over the shorthand.
+$sgs_num_size_tiers = sgs_responsive_normalise_object( $attributes['numberSize'] ?? null );
+$scoped_css[]       = sgs_emit_responsive_css(
+	$root_sel,
+	array(
+		array(
+			'value'        => $sgs_num_size_tiers,
+			'css'          => '--sgs-step-number-size',
+			'unit_default' => 'px',
+		),
+	)
+);
+$scoped_css[]       = sgs_emit_responsive_css(
+	$root_sel . ' .sgs-process-steps__number',
+	array(
+		array(
+			'value'        => $sgs_num_size_tiers,
+			'css'          => 'width',
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => $sgs_num_size_tiers,
+			'css'          => 'height',
+			'unit_default' => 'px',
+		),
+	)
+);
+$scoped_css[]       = sgs_emit_responsive_css(
+	$root_sel,
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['stepRowGap'] ?? null ),
+			'css'          => 'row-gap',
+			'unit_default' => 'px',
+		),
+	)
+);
+
 $sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
 if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
 	$scoped_css[] = $root_sel . '{flex-wrap:' . $sgs_flex_wrap . ';}';
