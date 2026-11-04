@@ -168,11 +168,13 @@
 						"css:border-top-style": "reviewFooterBorder",
 						"css:border-top-color": "reviewFooterBorder"
 					},
-					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "case-study-media" ],
+					"absentIn": [ "avatar-spotlight", "classic-card", "corporate-logo", "minimal-quote", "pull-quote-editorial", "rating-led", "case-study-media", "rating-scale" ],
 					"absentWhy": "The name and date line prints only in the review-card layout."
 				},
 				"reviewer-role": {
 					"selector": ".sgs-testimonial__role",
+					"absentIn": [ "review-card" ],
+					"absentWhy": "The review-card variant prints only the name and date line, so it has no role.",
 					"label": "Reviewer role",
 					"order": 4,
 					"clusters": [
@@ -195,6 +197,8 @@
 				"org-name": {
 					"text": true,
 					"selector": ".sgs-testimonial__org",
+					"absentIn": [ "review-card" ],
+					"absentWhy": "The review-card variant prints only the name and date line, so it has no organisation name.",
 					"label": "Organisation name",
 					"order": 5,
 					"clusters": [

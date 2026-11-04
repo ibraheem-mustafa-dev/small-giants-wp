@@ -1514,7 +1514,7 @@
 			"default": "",
 			"description": "CSS length of the gap between gallery thumbnails (e.g. \"2px\"), or a per-device {desktop, tablet, mobile} object of lengths (a saved string is the desktop value). Empty keeps the stylesheet's 0.5rem."
 		},
-		"thumbSize": {
+		"galleryThumbSize": {
 			"type": "object",
 			"default": {},
 			"description": "Width and height of each gallery thumbnail in the fixed-size strip, per device {desktop, tablet, mobile}, each a CSS length (e.g. \"88px\"). A thumbnail never goes below the 48px touch-target floor. Empty keeps the stylesheet's 64px. Ignored at a tier where Thumbnails per row is 1 to 8."
