@@ -415,8 +415,19 @@ if ( is_singular() ) {
 			);
 		}
 
-		// Categories for posts.
-		if ( 'post' === $post->post_type ) {
+		// The site's posts page leads a single post's trail when no middle crumb stands in for it.
+		if ( 'post' === $post->post_type && '' === $middle_crumb_label ) {
+			$posts_page_for_post = (int) get_option( 'page_for_posts' );
+			if ( $posts_page_for_post > 0 && 'publish' === get_post_status( $posts_page_for_post ) ) {
+				$crumbs[] = array(
+					'label' => esc_html( get_the_title( $posts_page_for_post ) ),
+					'url'   => esc_url( get_permalink( $posts_page_for_post ) ),
+				);
+			}
+		}
+
+		// Categories for posts, unless showTermCrumb is off.
+		if ( 'post' === $post->post_type && $show_term_crumb ) {
 			$categories = get_the_category( $post->ID );
 			if ( ! empty( $categories ) ) {
 				$cat      = $categories[0];
