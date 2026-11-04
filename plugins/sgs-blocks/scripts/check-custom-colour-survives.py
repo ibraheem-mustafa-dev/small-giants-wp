@@ -52,7 +52,11 @@ PLUGIN = Path(__file__).resolve().parents[1]
 assert (PLUGIN.parents[1] / ".git").exists(), "repo anchor missing"
 BLOCKS = PLUGIN / "src" / "blocks"
 HARNESS = PLUGIN / "scripts" / "qa" / "lib" / "render-css-harness.php"
-DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB = framework_db_path()
 SKIP_PARTS = {"node_modules", "vendor", "build", "tests", "fixtures"}
 
 CORE_SLUG_ATTRS = {"textColor", "backgroundColor", "borderColor", "gradient"}

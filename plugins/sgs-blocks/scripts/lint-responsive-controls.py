@@ -100,7 +100,11 @@ REPO_ROOT = Path(__file__).resolve().parents[3]  # .../small-giants-wp
 BLOCKS_SRC = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
 COMPONENTS_SRC = REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "components"
 COMPONENTS_INDEX = COMPONENTS_SRC / "index.js"
-SGS_DB_CLI = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "scripts" / "sgs-db.py"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+SGS_DB_CLI = framework_db_path().parent / "scripts" / "sgs-db.py"
 
 # The two canonical primitives — named explicitly in FR-36-24 / FR-S9-6.
 # This is the ONE permitted structural constant (FP-1 exception, same

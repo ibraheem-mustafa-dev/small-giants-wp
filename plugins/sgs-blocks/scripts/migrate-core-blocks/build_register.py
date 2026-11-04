@@ -29,7 +29,11 @@ REPO = pathlib.Path(__file__).resolve().parents[4]
 THEME = REPO / 'theme' / 'sgs-theme'
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 SCRATCH = REPO / '.claude' / 'scratch'
-DEFAULT_DB = pathlib.Path.home() / '.claude' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db'
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DEFAULT_DB = framework_db_path()
 
 # Track A hands-off list (Track C prompt, 2026-07-15). Instances in these
 # files are register-only — never edited by this track.

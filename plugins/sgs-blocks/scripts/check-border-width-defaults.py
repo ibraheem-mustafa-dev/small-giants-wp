@@ -44,7 +44,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 PLUGIN = Path(__file__).resolve().parents[1]
 BLOCKS = PLUGIN / "src" / "blocks"
-DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB = framework_db_path()
 
 # Block roots whose class is not `sgs-<name>` (render.php's root class list).
 ROOT_CLASS = {

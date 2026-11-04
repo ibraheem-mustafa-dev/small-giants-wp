@@ -74,9 +74,8 @@ const REPO_ROOT = path.join( PLUGIN_ROOT, '..', '..' );
 const BLOCKS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks' );
 const COMPONENTS_DIR = path.join( PLUGIN_ROOT, 'src', 'components' );
 const EXTENSIONS_DIR = path.join( PLUGIN_ROOT, 'src', 'blocks', 'extensions' );
-const DB_PATH = path.join(
-	require( 'os' ).homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db'
-);
+const { frameworkDbPath } = require( '../lib/framework-db' );
+const DB_PATH = frameworkDbPath();
 
 const PARSER_OPTIONS = {
 	sourceType: 'module',
