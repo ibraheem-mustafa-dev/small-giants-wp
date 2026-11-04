@@ -524,6 +524,11 @@
 			"type": "object",
 			"default": {}
 		},
+		"displayWidth": {
+			"type": "object",
+			"default": {},
+			"_comment": "Per-device {desktop,tablet,mobile} px width the image is DRAWN at (box width, or box height x image ratio when the cover crop is wider than the box). Read by helpers-media.php::sgs_media_cover_crop_plan to print a concrete `sizes` value; prints no CSS."
+		},
 		"caption": {
 			"type": "string",
 			"default": "",

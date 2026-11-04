@@ -19,9 +19,12 @@ class MediaCoverCropSizesTest extends TestCase {
 			}
 		}
 		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/render-helpers.php';
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/class-sgs-breakpoints.php';
 		$GLOBALS['sgs_test_meta'] = array(
 			7 => array( 'width' => 374, 'height' => 214 ),
 			8 => array( 'width' => 438, 'height' => 694 ),
+			9 => array( 'width' => 1600, 'height' => 1822 ),
+			10 => array( 'width' => 1600, 'height' => 1067 ),
 		);
 	}
 
@@ -52,5 +55,59 @@ class MediaCoverCropSizesTest extends TestCase {
 		$this->assertStringContainsString( 'sizes="(max-width: 374px) 100vw, 374px"', sgs_media_drop_auto_sizes( $marked ) );
 		$plain = str_replace( ' data-sgs-cover-crop', '', $marked );
 		$this->assertSame( $plain, sgs_media_drop_auto_sizes( $plain ) );
+	}
+
+	public function test_a_known_ratio_and_width_give_a_concrete_sizes_per_device(): void {
+		$attrs = $this->ratio_attrs( '1/1' );
+		$attrs['maxWidth'] = array( 'desktop' => '400px', 'tablet' => '300px', 'mobile' => '200px' );
+		// Image 10 is 3:2, so a square box draws it 1.5x wider than the box.
+		$this->assertSame(
+			'(max-width: 767px) 300px, (max-width: 1023px) 450px, 600px',
+			sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 )
+		);
+	}
+
+	public function test_a_fill_box_of_a_portrait_image_keeps_auto(): void {
+		$attrs = array( 'objectFit' => 'cover', 'mediaSizing' => 'fill' );
+		$this->assertFalse( sgs_media_cover_crop_widens( $attrs, '', 'sgs/media', 9 ) );
+		$this->assertSame( '', sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 9 ) );
+	}
+
+	public function test_a_fill_box_of_a_landscape_image_without_a_hint_keeps_the_attachment_hint(): void {
+		$attrs = array( 'objectFit' => 'cover', 'mediaSizing' => 'fill' );
+		$this->assertTrue( sgs_media_cover_crop_widens( $attrs, '', 'sgs/media', 10 ) );
+		$this->assertSame( '', sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 ) );
+	}
+
+	public function test_a_display_width_hint_prints_concrete_sizes_and_inherits_downwards(): void {
+		$attrs = array(
+			'objectFit'    => 'cover',
+			'mediaSizing'  => 'fill',
+			'displayWidth' => array( 'desktop' => 205, 'mobile' => 165 ),
+		);
+		$this->assertTrue( sgs_media_cover_crop_widens( $attrs, '', 'sgs/media', 10 ) );
+		$this->assertSame(
+			'(max-width: 767px) 165px, (max-width: 1023px) 205px, 205px',
+			sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 )
+		);
+	}
+
+	public function test_negative_control_contain_ignores_the_display_width_hint(): void {
+		$attrs = array( 'objectFit' => 'contain', 'displayWidth' => array( 'desktop' => 205 ) );
+		$this->assertSame( '', sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 ) );
+	}
+
+	public function test_a_width_and_height_box_derives_its_ratio(): void {
+		$attrs = array(
+			'objectFit'   => 'cover',
+			'mediaSizing' => 'height',
+			'maxWidth'    => array( 'desktop' => '200px' ),
+			'height'      => array( 'desktop' => '400px' ),
+		);
+		// Box 1:2; image 10 is 3:2, factor 3 on every device (inherited): 600px.
+		$this->assertSame(
+			'(max-width: 767px) 600px, (max-width: 1023px) 600px, 600px',
+			sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 )
+		);
 	}
 }

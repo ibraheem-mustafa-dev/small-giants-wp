@@ -16,7 +16,7 @@ export default function MediaStylingPanel( { attributes, setAttributes } ) {
 	return (
 		<ToolsPanel
 			label={ __( 'Media Styling', 'sgs-blocks' ) }
-			resetAll={ () => setAttributes( { alignment: 'start', order: {}, imageBlendMode: '' } ) }
+			resetAll={ () => setAttributes( { alignment: 'start', order: {}, displayWidth: {}, imageBlendMode: '' } ) }
 		>
 			<ToolsPanelItem
 				label={ __( 'Order', 'sgs-blocks' ) }
@@ -36,6 +36,34 @@ export default function MediaStylingPanel( { attributes, setAttributes } ) {
 							label={ __( 'Order in a flex or grid row', 'sgs-blocks' ) }
 							help={ __( 'Lower numbers come first. Empty keeps the source order.', 'sgs-blocks' ) }
 							type="number"
+							value={ ownValue ?? '' }
+							onChange={ ( v ) => setOwnValue( '' === v ? '' : parseInt( v, 10 ) ) }
+							__next40pxDefaultSize
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Drawn width', 'sgs-blocks' ) }
+				hasValue={ () =>
+					!! attributes.displayWidth &&
+					Object.values( attributes.displayWidth ).some( ( v ) => '' !== v && null != v )
+				}
+				onDeselect={ () => setAttributes( { displayWidth: {} } ) }
+			>
+				<ResponsiveOverride
+					label={ __( 'Drawn width', 'sgs-blocks' ) }
+					value={ attributes.displayWidth }
+					onChange={ ( obj ) => setAttributes( { displayWidth: obj } ) }
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<TextControl
+							label={ __( 'Width the image is drawn at (px)', 'sgs-blocks' ) }
+							help={ __( 'Advanced. The picture width on screen: the box width, or the box height times the photo width-to-height ratio when the crop is wider than the box. It lets the browser download a file just big enough. Empty lets the browser decide.', 'sgs-blocks' ) }
+							type="number"
+							min={ 1 }
 							value={ ownValue ?? '' }
 							onChange={ ( v ) => setOwnValue( '' === v ? '' : parseInt( v, 10 ) ) }
 							__next40pxDefaultSize
