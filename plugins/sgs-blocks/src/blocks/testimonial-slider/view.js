@@ -127,7 +127,13 @@ sliders.forEach( ( slider ) => {
 	).matches;
 
 	const total = originalSlides.length;
-	const cloneCount = total > 1 ? Math.min( visibleRaw, total ) : 0;
+	// Loop padding covers the largest visible count of any device, so it holds at every width.
+	const visibleMax = Math.max(
+		visibleRaw,
+		Number.parseInt( slider.dataset.slidesTablet || '0', 10 ) || 0,
+		Number.parseInt( slider.dataset.slidesMobile || '0', 10 ) || 0
+	);
+	const cloneCount = total > 1 ? Math.min( visibleMax, total ) : 0;
 
 	let currentIndex = 0;
 	let visualIndex = cloneCount; // position inside the padded list

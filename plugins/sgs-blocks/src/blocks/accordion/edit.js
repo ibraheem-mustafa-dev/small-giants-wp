@@ -23,6 +23,8 @@ import {
 	SgsBoxControl,
 	SgsLengthControl,
 	SGS_FONT_WEIGHT_OPTIONS,
+	ShadowControl,
+	shadowAttrKeys,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { usePreviewTier } from '../../utils';
@@ -73,6 +75,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		headerBackgroundHoverGradient,
 		headerColourOpen,
 		headerBackgroundOpen,
+		itemBackgroundOpen,
 		headerFontWeight,
 		headerFontWeightOpen,
 		iconColour,
@@ -194,6 +197,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						],
 					},
 					{
+						key: 'itemBackground',
+						label: __( 'Item fill colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'open',
+								label: __( 'Open', 'sgs-blocks' ),
+								value: itemBackgroundOpen,
+								onChange: ( val ) =>
+									setAttributes( {
+										itemBackgroundOpen: val ?? '',
+									} ),
+							},
+						],
+					},
+					{
 						key: 'headerBackground',
 						label: __( 'Header background colour', 'sgs-blocks' ),
 						gradientCapable: true,
@@ -239,6 +257,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				] }
 			/>
 			<InspectorControls>
+				<PanelBody
+					title={ __( 'Item shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowControl
+						label={ __( 'Item shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'itemShadow' ) }
+					/>
+					<ShadowControl
+						label={ __( 'Item shadow (open)', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'itemShadowOpen' ) }
+					/>
+				</PanelBody>
 				<ContainerWrapperControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }

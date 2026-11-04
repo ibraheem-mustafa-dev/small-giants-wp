@@ -50,6 +50,11 @@ $header_font_weight       = $block->context['sgs/accordionHeaderFontWeight'] ?? 
 $header_font_weight_open  = $block->context['sgs/accordionHeaderFontWeightOpen'] ?? '700';
 $header_col_open          = $block->context['sgs/accordionHeaderColourOpen'] ?? '';
 $header_bg_open           = $block->context['sgs/accordionHeaderBackgroundOpen'] ?? '';
+$item_bg_open             = $block->context['sgs/accordionItemBackgroundOpen'] ?? '';
+$item_shadow              = $block->context['sgs/accordionItemShadow'] ?? '';
+$item_shadow_colour       = $block->context['sgs/accordionItemShadowColour'] ?? '';
+$item_shadow_open         = $block->context['sgs/accordionItemShadowOpen'] ?? '';
+$item_shadow_open_colour  = $block->context['sgs/accordionItemShadowOpenColour'] ?? '';
 $icon_col                 = $block->context['sgs/accordionIconColour'] ?? '';
 $header_padding_raw       = $block->context['sgs/accordionHeaderPadding'] ?? array();
 $header_gap_raw           = $block->context['sgs/accordionHeaderGap'] ?? array();
@@ -183,6 +188,25 @@ if ( '' !== $header_bg_open_paint ) {
 }
 if ( $header_open_decls ) {
 	$responsive_css .= $header_open_sel . '{' . implode( ';', $header_open_decls ) . '}';
+}
+
+// The whole item: its shadow while closed, and its fill and shadow while open. Each is empty by default and prints
+// nothing then. An open shadow with no colour of its own takes the closed shadow's colour.
+$item_shadow_decls = sgs_shadow_box_decls( (string) $item_shadow, (string) $item_shadow_colour );
+if ( $item_shadow_decls ) {
+	$responsive_css .= $root_sel . '{' . implode( ';', $item_shadow_decls ) . '}';
+}
+$item_open_decls = array();
+$item_bg_paint   = sgs_colour_value( (string) $item_bg_open );
+if ( '' !== $item_bg_paint ) {
+	$item_open_decls[] = 'background-color:' . $item_bg_paint;
+}
+$item_open_decls = array_merge(
+	$item_open_decls,
+	sgs_shadow_box_decls( (string) $item_shadow_open, '' !== (string) $item_shadow_open_colour ? (string) $item_shadow_open_colour : (string) $item_shadow_colour )
+);
+if ( $item_open_decls ) {
+	$responsive_css .= $root_sel . '[open]{' . implode( ';', $item_open_decls ) . '}';
 }
 
 // Slot padding, header gap, header minimum height and icon size/rotation —

@@ -8,8 +8,8 @@
  * legitimate (D192 carve-in). Every field is OPTIONAL and GATED — an empty
  * value emits NO node (no empty boxes, no initials placeholder).
  *
- * 7 variants (supports.sgs.variants): classic-card, pull-quote-editorial,
- * rating-led, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
+ * 8 variants (supports.sgs.variants): classic-card, pull-quote-editorial,
+ * rating-led, review-card, avatar-spotlight, corporate-logo, case-study-media, minimal-quote.
  * The wrapper carries `sgs-testimonial--{variant}`; per-variant layout is CSS-only.
  *
  * FP-14: NO server-side legacy fallback hack. The ONE legacy read below
@@ -72,6 +72,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-tiered-border.php';
 
 // ---------------------------------------------------------------------------
 // 0. Security §D sanitisers — mirror sgs/quote + sgs/button + sgs/container.
@@ -994,6 +995,24 @@ switch ( $variant ) {
 		$inner_html = $rating_html . $rating_meta . $quote_html . $footer_html;
 		break;
 
+	case 'review-card':
+		// Stars, title, quote, then the name and date on one line under an optional rule.
+		$review_line = array();
+		if ( '' !== $reviewer_name ) {
+			$review_line[] = '<cite class="sgs-testimonial__name">' . esc_html( $reviewer_name ) . '</cite>';
+		}
+		if ( '' !== $review_date ) {
+			if ( $review_line ) {
+				$review_line[] = '<span class="sgs-testimonial__separator" aria-hidden="true">&middot;</span>';
+			}
+			$review_line[] = '<span class="sgs-testimonial__date">' . sgs_rich_text_kses( $review_date, false ) . '</span>';
+		}
+		$review_footer = $review_line
+			? '<footer class="sgs-testimonial__footer sgs-testimonial__footer--review">' . implode( '', $review_line ) . '</footer>'
+			: '';
+		$inner_html    = $rating_html . $summary_html . $quote_html . $review_footer;
+		break;
+
 	case 'avatar-spotlight':
 		// Large avatar leads (CSS grid); quote; rating; attribution (name/role).
 		$inner_html = $avatar_html . $quote_html . $rating_html . $attribution_html;
@@ -1055,6 +1074,13 @@ if ( $border['base'] ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
+// The rule above the review-card's name and date line.
+if ( 'review-card' === $variant ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . ' .sgs-testimonial__footer--review',
+		sgs_tiered_border_specs( $attributes['reviewFooterBorder'] ?? array(), 'border-top' )
+	);
+}
 if ( $border['tablet'] ) {
 	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }

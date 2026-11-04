@@ -48,7 +48,12 @@ $autoplay       = $attributes['autoplay'] ?? false;
 $autoplay_speed = $attributes['autoplaySpeed'] ?? 5000;
 $show_dots      = $attributes['showDots'] ?? true;
 $show_arrows    = $attributes['showArrows'] ?? true;
-$slides_visible = $attributes['slidesVisible'] ?? 1;
+// slidesVisible is a TIER OBJECT; a saved scalar reads as the desktop count. Tablet inherits desktop, mobile is one
+// slide, unless the tier is set.
+$slides_tiers   = sgs_responsive_normalise_object( $attributes['slidesVisible'] ?? 1 );
+$slides_visible = max( 1, absint( $slides_tiers['desktop'] ?? 1 ) );
+$slides_tablet  = absint( $slides_tiers['tablet'] ?? 0 );
+$slides_mobile  = absint( $slides_tiers['mobile'] ?? 0 );
 // NOTE: cardStyle is not read here — the slide wrapper is positioning-only
 // (no card-in-a-card). It flows to child sgs/testimonial blocks
 // as `sgs/testimonialVariant` via block.json `providesContext`, resolved in
@@ -266,6 +271,13 @@ $slider_extra_attrs = array(
 	'aria-roledescription' => 'carousel',
 	'aria-label'           => esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
 );
+// view.js sizes its loop padding to the largest visible count of any device.
+if ( $slides_tablet > 0 ) {
+	$slider_extra_attrs['data-slides-tablet'] = (string) $slides_tablet;
+}
+if ( $slides_mobile > 0 ) {
+	$slider_extra_attrs['data-slides-mobile'] = (string) $slides_mobile;
+}
 
 // ── Track style ────────────────────────────────────────────────────────────
 // Scoped rule (not an inline `style=` attr) — this block's own `<style>`
@@ -273,6 +285,28 @@ $slider_extra_attrs = array(
 // the track's --sgs-slides-visible value rides that channel instead of a
 // literal `style=` attribute on the __track element.
 $slider_scoped_css .= $root_sel . ' .sgs-testimonial-slider__track{--sgs-slides-visible:' . absint( $slides_visible ) . '}';
+// Tablet and mobile counts print only when set. The stylesheet's phone rule reads --sgs-slides-visible-mobile (one slide
+// when absent), so the mobile count rides that name.
+$slider_scoped_css .= sgs_emit_tier_decls(
+	$root_sel . ' .sgs-testimonial-slider__track',
+	array(
+		'tablet' => $slides_tablet > 0 ? array( '--sgs-slides-visible:' . $slides_tablet ) : array(),
+		'mobile' => $slides_mobile > 0 ? array( '--sgs-slides-visible-mobile:' . $slides_mobile ) : array(),
+	)
+);
+// The peek: a length per device taken off the width the visible cards share, so the next card shows at the edge.
+if ( isset( $attributes['slidePeek'] ) && is_array( $attributes['slidePeek'] ) ) {
+	$slider_scoped_css .= sgs_emit_responsive_css(
+		$root_sel . ' .sgs-testimonial-slider__track',
+		array(
+			array(
+				'value'     => $attributes['slidePeek'],
+				'css'       => '--sgs-slide-peek',
+				'transform' => 'sgs_css_length_value',
+			),
+		)
+	);
+}
 $track_style_attr   = '';
 
 // ── Unique prefix for slide/dot IDs ────────────────────────────────────────

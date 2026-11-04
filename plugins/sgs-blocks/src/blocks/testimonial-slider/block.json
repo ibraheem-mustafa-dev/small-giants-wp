@@ -234,15 +234,34 @@
 			}
 		},
 		"slidesVisible": {
-			"type": "number",
-			"default": 3,
+			"type": "object",
+			"default": {
+				"desktop": 3
+			},
+			"description": "How many cards show side by side, per device: {desktop, tablet, mobile}. An empty tablet inherits desktop; an empty mobile is one slide.",
 			"sgs": {
 				"meaning": {
-					"what": "Sets how many testimonial cards show side by side in the slider.",
+					"what": "Sets how many testimonial cards show side by side in the slider, per device.",
 					"trigger": "always, from page load",
 					"parameters": {
 						"value": {
 							"unit": "count of slides"
+						}
+					}
+				}
+			}
+		},
+		"slidePeek": {
+			"type": "object",
+			"default": {},
+			"description": "How much of the next card shows beside the visible cards, per device: a CSS length. Empty shows no peek. Printed as --sgs-slide-peek, which is taken off the width the visible cards share.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how much of the next testimonial card shows at the edge of the slider.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "CSS length"
 						}
 					}
 				}

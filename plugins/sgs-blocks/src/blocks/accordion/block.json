@@ -242,6 +242,19 @@
           "label": "Accordion item",
           "order": 6,
           "clusters": [],
+          "attrMap": {
+            "css:background-color": "itemBackgroundOpen",
+            "css:box-shadow": "itemShadow",
+            "css:box-shadow-color": "itemShadowColour"
+          },
+          "states": {
+            "open": {
+              "attrMap": {
+                "css:box-shadow": "itemShadowOpen",
+                "css:box-shadow-color": "itemShadowOpenColour"
+              }
+            }
+          },
           "_note": "Each item's title + body content is rendered by the child `sgs/accordion-item` block, which owns its own typography controls — this element documents that ownership, mirroring sgs/quote's quote-body."
         },
         "filterbar": {
@@ -519,6 +532,31 @@
       "type": "string",
       "default": "",
       "description": "Item header background while the item is open (palette slug). Empty keeps the stylesheet's open-state background (surface-alt)."
+    },
+    "itemBackgroundOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Fill of the whole item (header and answer) while it is open (palette slug or any colour). Empty leaves the item unfilled."
+    },
+    "itemShadow": {
+      "type": "string",
+      "default": "",
+      "description": "Shadow shape round every item while closed. Composed with itemShadowColour. Empty draws no shadow."
+    },
+    "itemShadowColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of itemShadow (palette slug or any colour)."
+    },
+    "itemShadowOpen": {
+      "type": "string",
+      "default": "",
+      "description": "Shadow shape round the item while it is open. Composed with itemShadowOpenColour. Empty keeps the closed shadow."
+    },
+    "itemShadowOpenColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of itemShadowOpen (palette slug or any colour)."
     },
     "headerFontWeightOpen": {
       "type": "string",
@@ -858,6 +896,11 @@
     "sgs/accordionHeaderFontWeightOpen": "headerFontWeightOpen",
     "sgs/accordionHeaderColourOpen": "headerColourOpen",
     "sgs/accordionHeaderBackgroundOpen": "headerBackgroundOpen",
+    "sgs/accordionItemBackgroundOpen": "itemBackgroundOpen",
+    "sgs/accordionItemShadow": "itemShadow",
+    "sgs/accordionItemShadowColour": "itemShadowColour",
+    "sgs/accordionItemShadowOpen": "itemShadowOpen",
+    "sgs/accordionItemShadowOpenColour": "itemShadowOpenColour",
     "sgs/accordionHeaderPadding": "headerPadding",
     "sgs/accordionHeaderGap": "headerGap",
     "sgs/accordionHeaderMinHeight": "headerMinHeight",

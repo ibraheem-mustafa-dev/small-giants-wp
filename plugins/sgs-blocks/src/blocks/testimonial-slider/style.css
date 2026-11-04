@@ -114,7 +114,7 @@
 
 /* ===== Slide ===== */
 .sgs-testimonial-slider__slide {
-	flex: 0 0 calc( ( 100% - ( var(--sgs-slides-visible, 1) - 1 ) * var(--wp--preset--spacing--30, 16px) ) / var(--sgs-slides-visible, 1) );
+	flex: 0 0 calc( ( 100% - var(--sgs-slide-peek, 0px) - ( var(--sgs-slides-visible, 1) - 1 ) * var(--wp--preset--spacing--30, 16px) ) / var(--sgs-slides-visible, 1) );
 	min-width: 0;
 	margin: 0;
 	box-sizing: border-box;
@@ -315,12 +315,8 @@
 /* ===== Responsive ===== */
 
 @media (max-width: 767px) {
-	.sgs-testimonial-slider__slide {
-		flex: 0 0 100%;
-	}
-
 	.sgs-testimonial-slider__track {
-		--sgs-slides-visible: 1 !important;
+		--sgs-slides-visible: var(--sgs-slides-visible-mobile, 1) !important;
 	}
 }
 

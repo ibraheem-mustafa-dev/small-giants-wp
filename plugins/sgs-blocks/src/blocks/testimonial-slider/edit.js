@@ -20,11 +20,12 @@ import {
 	ToggleControl,
 	TextControl,
 } from '@wordpress/components';
-import { SgsColourPanel, fillRow, textRow, IconPicker,
+import { SgsColourPanel, fillRow, textRow, IconPicker, ResponsiveOverride, ResponsiveLengthControl,
 	SgsBorderControl,
 	TypographyControls,
 	resolveColourToken,
 } from '../../components';
+import { resolveResponsiveTier } from '../../utils/responsive';
 import { containerWrapperPreview, backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, BandWrap } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
@@ -70,6 +71,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		arrowIconPrev,
 		arrowIconNext,
 		slidesVisible,
+		slidePeek,
 		cardStyle,
 		backgroundColour,
 		backgroundColourGradient,
@@ -105,12 +107,23 @@ export default function Edit( { attributes, setAttributes } ) {
 		},
 	} );
 
+	// The visible-card count and peek at the previewed device (tablet inherits desktop; mobile is one slide unless set).
+	const slidesDesktop = resolveResponsiveTier( slidesVisible, 'desktop' )?.value || 3;
+	const slidesVisibleNow =
+		'mobile' === previewTier
+			? slidesVisible?.mobile || 1
+			: resolveResponsiveTier( slidesVisible, previewTier )?.value || slidesDesktop;
+	const slidePeekNow = resolveResponsiveTier( slidePeek, previewTier )?.value || '';
+
 	// InnerBlocks — allows any number of sgs/testimonial children.
 	// templateLock:false lets the client add as many slides as they want.
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'sgs-testimonial-slider__track',
-			style: { '--sgs-slides-visible': slidesVisible },
+			style: {
+				'--sgs-slides-visible': slidesVisibleNow,
+				'--sgs-slide-peek': slidePeekNow || undefined,
+			},
 		},
 		{
 			allowedBlocks: [ 'sgs/testimonial' ],
@@ -182,7 +195,6 @@ export default function Edit( { attributes, setAttributes } ) {
 								cardStyle: '',
 								transitionDuration: '300',
 								transitionEasing: 'ease-in-out',
-								slidesVisible: 3,
 								showArrows: true,
 								arrowIconPrev: 'chevron-left',
 								arrowIconNext: 'chevron-right',
@@ -191,6 +203,8 @@ export default function Edit( { attributes, setAttributes } ) {
 								autoplaySpeed: 5000,
 								pauseButton: false,
 								dragToScroll: false,
+								slidePeek: {},
+								slidesVisible: { desktop: 3 },
 							} )
 						}
 					>
@@ -297,30 +311,55 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
-							label={ __(
-								'Slides visible (desktop)',
-								'sgs-blocks'
-							) }
-							hasValue={ () => slidesVisible !== 3 }
+							label={ __( 'Slides visible', 'sgs-blocks' ) }
+							hasValue={ () =>
+								JSON.stringify( slidesVisible ) !==
+								JSON.stringify( { desktop: 3 } )
+							}
 							onDeselect={ () =>
-								setAttributes( { slidesVisible: 3 } )
+								setAttributes( { slidesVisible: { desktop: 3 } } )
 							}
 							isShownByDefault
 						>
-							<SelectControl
-								label={ __(
-									'Slides visible (desktop)',
-									'sgs-blocks'
-								) }
+							<ResponsiveOverride
+								label={ __( 'Slides visible', 'sgs-blocks' ) }
 								value={ slidesVisible }
-								options={ SLIDES_VISIBLE_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( {
-										slidesVisible: parseInt( val, 10 ),
-									} )
+								onChange={ ( obj ) =>
+									setAttributes( { slidesVisible: obj } )
 								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
+							>
+								{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+									<SelectControl
+										label={ __( 'Slides visible', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={
+											'' !== ownValue
+												? ownValue
+												: effectiveValue || ( 'mobile' === tier ? 1 : 3 )
+										}
+										options={ SLIDES_VISIBLE_OPTIONS }
+										onChange={ ( val ) =>
+											setOwnValue( parseInt( val, 10 ) )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								) }
+							</ResponsiveOverride>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Peek of the next slide', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! slidePeek && Object.keys( slidePeek ).length > 0
+							}
+							onDeselect={ () => setAttributes( { slidePeek: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Peek of the next slide', 'sgs-blocks' ) }
+								scale="spacing"
+								help={ __( 'How much of the next card shows at the edge, e.g. 48px. Empty shows none.', 'sgs-blocks' ) }
+								value={ slidePeek }
+								onChange={ ( obj ) => setAttributes( { slidePeek: obj } ) }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
