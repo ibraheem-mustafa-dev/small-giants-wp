@@ -828,6 +828,74 @@
 						"css:gap": "pickTileGap"
 					}
 				},
+				"pick-tile-number": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__pill-label",
+					"motion": false,
+					"label": "Pick a set tile number",
+					"order": 23,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTileNumberSize"
+					}
+				},
+				"pick-tile-price": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__sub-label",
+					"motion": false,
+					"label": "Pick a set tile price line",
+					"order": 24,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTilePriceSize"
+					}
+				},
+				"pick-tile-each": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__term-description",
+					"motion": false,
+					"label": "Pick a set tile each-line",
+					"order": 25,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickTileEachSize"
+					}
+				},
+				"pick-priced-pill": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill",
+					"motion": false,
+					"label": "Pick a set priced pill text",
+					"order": 26,
+					"clusters": [
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:font-size": "pickPricedFontSize"
+					}
+				},
 				"rrp-price": {
 					"selector": ".buybox__rrp-price",
 					"motion": false,
