@@ -160,8 +160,7 @@
 						"css:padding": "actionsStickyPadding",
 						"css:box-shadow": "actionsStickyShadow",
 						"css:box-shadow-color": "actionsStickyShadowColour",
-						"css:margin-inline": "actionsStickyBleed",
-						"css:padding-top": "actionsTopPadding"
+						"css:margin-inline": "actionsStickyBleed"
 					},
 					"_note": "The form buttons row: a flex row; the wrap setting chooses between one line and wrapping onto further rows. actionsSticky (per device, off by default) pins the row to the bottom of the viewport while the form is on screen; actionsStickyBackground, actionsStickyBorderColour (1px top line), actionsStickyPadding (box), actionsStickyShadow (+Colour) and actionsStickyBleed (negative side margin, so the row spans a padded card) style it. render.php prints them only on the devices where sticky is on."
 				},
@@ -458,7 +457,8 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:justify-content": "submitAlign"
+						"css:justify-content": "submitAlign",
+						"css:padding": "actionsTopPadding"
 					}
 				},
 				"tile-icon": {
