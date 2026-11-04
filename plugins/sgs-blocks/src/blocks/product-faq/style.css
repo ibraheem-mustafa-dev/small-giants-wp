@@ -146,7 +146,7 @@
 
 /* ─── RESPONSIVE ─── */
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
 	.sgs-product-faq-item__question {
 		padding: 14px 16px;
 	}

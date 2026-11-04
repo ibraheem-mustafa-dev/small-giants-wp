@@ -199,13 +199,13 @@ body.admin-bar html {
 /* ----------------------------------------------------------------
    Responsive text alignment helpers (M16)
    ---------------------------------------------------------------- */
-@media (max-width: 599px) {
+@media (max-width: 767px) {
 	.sgs-text-align-m-left { text-align: left !important; }
 	.sgs-text-align-m-center { text-align: center !important; }
 	.sgs-text-align-m-right { text-align: right !important; }
 }
 
-@media (min-width: 600px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-text-align-t-left { text-align: left !important; }
 	.sgs-text-align-t-center { text-align: center !important; }
 	.sgs-text-align-t-right { text-align: right !important; }

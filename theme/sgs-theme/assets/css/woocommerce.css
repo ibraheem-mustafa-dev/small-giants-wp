@@ -220,7 +220,7 @@ h2.wc-block-mini-cart__title {
 }
 
 /* Mobile overflow safety — 375px zero horizontal overflow */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
 	.wp-block-woocommerce-cart,
 	.wp-block-woocommerce-cart-items-block,
 	.wp-block-woocommerce-cart-line-items-block {
@@ -304,7 +304,7 @@ h2.wc-block-mini-cart__title {
 }
 
 /* Mobile — checkout zero horizontal overflow */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
 	.wp-block-woocommerce-checkout,
 	.wp-block-woocommerce-checkout-fields-block {
 		overflow-x: hidden;

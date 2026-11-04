@@ -9,7 +9,7 @@
 	padding: var(--wp--preset--spacing--40, 1.5rem) 0;
 }
 
-@media (max-width: 599px) {
+@media (max-width: 767px) {
 	.sgs-process-steps {
 		--sgs-step-number-size: 52px; /* still bigger than old desktop, smaller for mobile */
 	}

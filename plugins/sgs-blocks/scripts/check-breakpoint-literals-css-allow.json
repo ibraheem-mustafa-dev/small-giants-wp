@@ -1,0 +1,79 @@
+{
+  "allow": [
+    {
+      "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+      "condition": "max-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/buybox/style.css",
+      "condition": "min-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
+      "condition": "max-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "plugins/sgs-blocks/src/blocks/product-card/style.css",
+      "condition": "min-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "condition": "max-width:340px",
+      "reason": "very-small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "condition": "max-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "condition": "max-width:781px",
+      "reason": "WordPress core's columns stacking band (600-781px), matched on purpose for core/columns"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "condition": "min-width:481px",
+      "reason": "small-phone refinement edge (paired with the 480px rule)"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/core-blocks.css",
+      "condition": "min-width:600px",
+      "reason": "WordPress core's columns stacking band (600-781px), matched on purpose for core/columns"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+      "condition": "max-width:781px",
+      "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/utilities.css",
+      "condition": "max-width:782px",
+      "reason": "WordPress core's 782px mobile edge, matched on purpose"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "condition": "max-width:480px",
+      "reason": "small-phone refinement inside the mobile tier"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "condition": "max-width:481px",
+      "reason": "small-phone refinement edge (paired with the 480px rule)"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "condition": "max-width:781px",
+      "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/woocommerce.css",
+      "condition": "min-width:782px",
+      "reason": "WordPress core's 782px mobile edge, matched on purpose"
+    }
+  ]
+}
