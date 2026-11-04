@@ -922,7 +922,7 @@
 					},
 					"_note": "The asterisk beside a required field's label, emitted by includes/forms/field-render-helpers.php::field_label and by the checkbox field."
 				},
-				"next-button": {
+				"step-buttons": {
 					"selector": ".sgs-form__button--next, .sgs-form__button--submit",
 					"motion": false,
 					"label": "Next and Submit buttons",
