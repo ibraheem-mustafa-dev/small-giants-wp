@@ -221,11 +221,47 @@ if ( '' !== $sgs_ft_description_colour ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__description{color:' . $sgs_ft_description_colour . ';}';
 }
 
+// ── Tile fill and the chosen tile's fill, border colour and shadow. The chosen-tile rule lists both the
+// `.sgs-form-tile--selected` class (set by view.js) and `:has(input:checked)` (set by the browser), and prints after the
+// stylesheet's selectedStyle rules at the same specificity, so a set value outranks them and an unset one changes nothing.
+$sgs_ft_tile_fill = sgs_colour_value( (string) ( $attributes['tileBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_ft_tile_fill ) {
+	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile{background-color:' . $sgs_ft_tile_fill . ';}';
+}
+$sgs_ft_selected_decls = array();
+$sgs_ft_selected_fill  = sgs_colour_value( (string) ( $attributes['tileSelectedBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_ft_selected_fill ) {
+	$sgs_ft_selected_decls[] = 'background-color:' . $sgs_ft_selected_fill;
+}
+$sgs_ft_selected_border = sgs_colour_value( (string) ( $attributes['tileSelectedBorderColour'] ?? '' ) );
+if ( '' !== $sgs_ft_selected_border ) {
+	$sgs_ft_selected_decls[] = 'border-color:' . $sgs_ft_selected_border;
+}
+$sgs_ft_selected_shadow = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'   => 'tileSelectedShadow',
+		'colour' => 'tileSelectedShadowColour',
+	),
+	'sgs/form-field-tiles'
+);
+$sgs_ft_selected_decls  = array_merge( $sgs_ft_selected_decls, $sgs_ft_selected_shadow['normal'] );
+if ( array() !== $sgs_ft_selected_decls ) {
+	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile--selected,.' . $sgs_ft_uid . ' .sgs-form-tile:has(input:checked){' . implode( ';', $sgs_ft_selected_decls ) . ';}';
+}
+
 if ( '' !== $sgs_ft_supports_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators intact — $sgs_ft_supports_css is entirely style-engine-
 	// generated, so nothing un-sanitised survives here.
 	echo '<style>' . wp_strip_all_tags( $sgs_ft_supports_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
+// Default selection: `defaultValue` holds the value of the tile to start chosen (a comma-separated list on a multi-select
+// field). A value that matches no tile selects nothing.
+$sgs_ft_default_values = array_values( array_filter( array_map( 'trim', explode( ',', (string) ( $attributes['defaultValue'] ?? '' ) ) ), 'strlen' ) );
+if ( ! $multi ) {
+	$sgs_ft_default_values = array_slice( $sgs_ft_default_values, 0, 1 );
 }
 
 $sgs_ft_extra_class = trim( 'sgs-form-field--tiles-style-' . esc_attr( $selected_style ) . ' ' . implode( ' ', $sgs_ft_supports_classes ) );
@@ -250,10 +286,11 @@ ob_start();
 foreach ( $tiles as $i => $tile ) {
 	$tile_id = $fid . '-tile-' . $i;
 
-	echo '<label class="sgs-form-tile" for="' . esc_attr( $tile_id ) . '" data-wp-on--click="actions.toggleTile">';
 	// Use value if set; fall back to label (slugified) so the input always has a meaningful value.
-	$tile_value = ! empty( $tile['value'] ) ? $tile['value'] : sanitize_title( $tile['label'] ?? '' );
-	echo '<input type="' . esc_attr( $input_type ) . '" id="' . esc_attr( $tile_id ) . '" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $tile_value ) . '" class="sgs-form-tile__input"';
+	$tile_value   = ! empty( $tile['value'] ) ? $tile['value'] : sanitize_title( $tile['label'] ?? '' );
+	$tile_checked = in_array( (string) $tile_value, $sgs_ft_default_values, true );
+	echo '<label class="sgs-form-tile' . ( $tile_checked ? ' sgs-form-tile--selected' : '' ) . '" for="' . esc_attr( $tile_id ) . '" data-wp-on--click="actions.toggleTile">';
+	echo '<input type="' . esc_attr( $input_type ) . '" id="' . esc_attr( $tile_id ) . '" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $tile_value ) . '" class="sgs-form-tile__input"' . ( $tile_checked ? ' checked' : '' );
 	if ( $required ) {
 		echo ' required aria-required="true"';
 	}

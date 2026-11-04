@@ -165,6 +165,7 @@ final class SGS_Blocks {
 		// Attribute filter chips "Gap between chips" -- `woocommerce/product-filter-chips`
 		// only. Adds the per-device `sgsChipGap` length as a scoped <style> rule.
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-chips-gap.php';
+		require_once SGS_BLOCKS_PATH . 'includes/product-filter-look.php';
 
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
 		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.

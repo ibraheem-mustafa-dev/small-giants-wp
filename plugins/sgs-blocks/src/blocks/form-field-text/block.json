@@ -32,8 +32,28 @@
                 "input": {
                     "label": "Text input",
                     "order": 2,
+                    "clusters": [
+                        "fill"
+                    ],
+                    "prefix": "field",
+                    "attrMap": {
+                        "css:background-color": "fieldBackground",
+                        "css:border-width": "fieldBorderWidth",
+                        "css:border-style": "fieldBorderStyle",
+                        "css:border-color": "fieldBorderColour",
+                        "css:border-radius": "fieldBorderRadius",
+                        "css:box-shadow": "fieldShadow"
+                    },
+                    "motion": false,
+                    "_note": "Renders as <input class=\"sgs-form-field__input\">. Fill, border, corner radius and shadow are this field's own (includes/forms/field-own-style.php, scoped to the field's uid class), for a field outside an sgs/form such as a search box; the names are the form's own field* names. Typography has no per-field attribute."
+                },
+                "leading-icon": {
+                    "label": "Leading icon",
+                    "order": 5,
+                    "selector": ".sgs-form-field__leading-icon",
                     "clusters": [],
-                    "_note": "Renders as <input class=\"sgs-form-field__input\"> — border/background/typography come entirely from shared framework CSS; no per-instance style attribute exists. clusters: [] is a genuine gap."
+                    "motion": false,
+                    "_note": "A Lucide icon inside the control's start edge (leadingIcon, leadingIconColour, leadingIconSize); the input's start padding clears it."
                 },
                 "help": {
                     "label": "Help text",
@@ -144,6 +164,53 @@
             "type": "string",
             "default": "",
             "role": "content"
+        },
+        "fieldBackground": {
+            "type": "string",
+            "default": "",
+            "description": "Fill of this field's input. Empty = the stylesheet's surface colour."
+        },
+        "fieldBorderWidth": {
+            "type": "object",
+            "default": {},
+            "description": "This field's input border width as a box {top,right,bottom,left}, or one box per device. Empty = the stylesheet's 1px."
+        },
+        "fieldBorderStyle": {
+            "type": "string",
+            "enum": [ "", "none", "solid", "dashed", "dotted", "double" ],
+            "default": ""
+        },
+        "fieldBorderColour": {
+            "type": "string",
+            "default": "",
+            "description": "Resting border colour of this field's input. Empty = the stylesheet's border colour."
+        },
+        "fieldBorderRadius": {
+            "type": "object",
+            "default": {},
+            "description": "This field's input corner radius, per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Empty = the stylesheet's small radius."
+        },
+        "fieldShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "fieldShadowColour": {
+            "type": "string",
+            "default": ""
+        },
+        "leadingIcon": {
+            "type": "string",
+            "default": "",
+            "description": "Lucide icon slug printed inside the start edge of the input (for example 'search'). Empty = no icon."
+        },
+        "leadingIconColour": {
+            "type": "string",
+            "default": ""
+        },
+        "leadingIconSize": {
+            "type": "string",
+            "default": "",
+            "description": "Width and height of the leading icon as one CSS length. Empty = 1.25rem."
         }
     },
     "render": "file:./render.php",

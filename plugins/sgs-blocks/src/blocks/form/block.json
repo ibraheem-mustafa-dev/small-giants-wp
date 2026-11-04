@@ -916,7 +916,8 @@
 						"text"
 					],
 					"attrMap": {
-						"css:color": "requiredMarkColour"
+						"css:color": "requiredMarkColour",
+						"css:display": "requiredMarkHidden"
 					},
 					"_note": "The asterisk beside a required field's label, emitted by includes/forms/field-render-helpers.php::field_label and by the checkbox field."
 				},
@@ -3522,6 +3523,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Hides the step name beside the counter, per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere."
+		},
+		"requiredMarkHidden": {
+			"type": "object",
+			"default": {},
+			"description": "Hides the asterisk after a required field's label, per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere."
 		},
 		"progressTrackColour": {
 			"type": "string",

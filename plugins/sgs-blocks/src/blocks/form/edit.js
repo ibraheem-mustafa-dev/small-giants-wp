@@ -1126,6 +1126,21 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Hide the required mark', 'sgs-blocks' ) }
+						value={ attributes.requiredMarkHidden }
+						onChange={ ( obj ) => setAttributes( { requiredMarkHidden: obj } ) }
+					>
+						{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+							<ToggleControl
+								label={ __( 'Hide the required mark on this device', 'sgs-blocks' ) }
+								help={ __( 'The asterisk after a required field’s label. The field is still required and still announced as required.', 'sgs-blocks' ) }
+								checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
+								onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* One Typography panel, one target per surface. 'All text' (prefix '')

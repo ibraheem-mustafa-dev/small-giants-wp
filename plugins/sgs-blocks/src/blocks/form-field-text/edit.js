@@ -6,6 +6,9 @@ import {
 	ToggleControl,
 	SelectControl,
 } from '@wordpress/components';
+import { useSettings } from '@wordpress/block-editor';
+import { IconPicker, IconPreview, SgsColourPanel, fillRow, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
+import { backgroundPaintPreview, sgsBorderPreview, usePreviewTier } from '../../utils';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 
@@ -29,6 +32,24 @@ export default function Edit( { attributes, setAttributes } ) {
 	].join( ' ' );
 
 	const blockProps = useBlockProps( { className } );
+	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
+	const radius = attributes.fieldBorderRadius ?? {};
+	const inputStyle = {
+		...backgroundPaintPreview( attributes.fieldBackground, '', colourPalette ),
+		...sgsBorderPreview( { widthValues: attributes.fieldBorderWidth, styleValue: attributes.fieldBorderStyle, colourValue: attributes.fieldBorderColour, radiusValues: radius }, previewTier, colourPalette ),
+	};
+	const inputControl = (
+		<input
+			type="text"
+			className="sgs-form-field__input"
+			style={ inputStyle }
+			placeholder={ placeholder || ' ' }
+			value={ fieldDefaultValue( attributes ) }
+			readOnly
+			disabled
+		/>
+	);
 
 	return (
 		<>
@@ -92,7 +113,68 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 					features={ [ 'floatingLabel', 'autocomplete', 'inputmode', 'defaultValue', 'valueFromParam', 'msgRequired', 'msgInvalid', 'maxLength', 'msgTooLong' ] }
 				/>
+				<PanelBody title={ __( 'Input style', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.fieldBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { fieldBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.fieldBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { fieldBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourValue={ attributes.fieldBorderColour }
+						onColourChange={ ( val ) => setAttributes( { fieldBorderColour: val ?? '' } ) }
+						colourLinked={ true }
+						radiusValues={ {
+							base: radius.desktop ?? {},
+							tablet: radius.tablet ?? {},
+							mobile: radius.mobile ?? {},
+						} }
+						onRadiusChange={ ( tier, next ) => {
+							const key = tier === 'base' ? 'desktop' : tier;
+							setAttributes( { fieldBorderRadius: { ...radius, [ key ]: next } } );
+						} }
+					/>
+					<ShadowControl
+						label={ __( 'Input shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ { base: 'fieldShadow', colour: 'fieldShadowColour' } }
+					/>
+					<IconPicker
+						label={ __( 'Leading icon', 'sgs-blocks' ) }
+						sources={ [ 'lucide' ] }
+						value={ { source: 'lucide', name: attributes.leadingIcon || '' } }
+						onChange={ ( { name } ) => setAttributes( { leadingIcon: name || '' } ) }
+					/>
+					{ !! attributes.leadingIcon && (
+						<SgsLengthControl
+							scale="spacing"
+							presets={ false }
+							label={ __( 'Leading icon size', 'sgs-blocks' ) }
+							value={ attributes.leadingIconSize ?? '' }
+							onChange={ ( val ) => setAttributes( { leadingIconSize: val || '' } ) }
+						/>
+					) }
+				</PanelBody>
 			</InspectorControls>
+			<SgsColourPanel
+				rows={ [
+					fillRow( {
+						key: 'fieldBackground',
+						label: __( 'Input fill', 'sgs-blocks' ),
+						attrs: { base: 'fieldBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'leadingIconColour',
+						label: __( 'Leading icon colour', 'sgs-blocks' ),
+						attrs: { base: 'leadingIconColour' },
+						attributes,
+						setAttributes,
+					} ),
+				] }
+			/>
 
 			<div { ...blockProps }>
 				{ label && (
@@ -105,14 +187,14 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</label>
 				) }
-				<input
-					type="text"
-					className="sgs-form-field__input"
-					placeholder={ placeholder || ' ' }
-					value={ fieldDefaultValue( attributes ) }
-					readOnly
-					disabled
-				/>
+				{ attributes.leadingIcon ? (
+					<span className="sgs-form-field__control sgs-form-field__control--has-icon">
+						<span className="sgs-form-field__leading-icon" aria-hidden="true">
+							<IconPreview source="lucide" name={ attributes.leadingIcon } />
+						</span>
+						{ inputControl }
+					</span>
+				) : inputControl }
 				{ helpText && (
 					<p className="sgs-form-field__help">{ helpText }</p>
 				) }
