@@ -830,6 +830,7 @@
 				},
 				"rrp-price": {
 					"selector": ".buybox__rrp-price",
+					"motion": false,
 					"label": "Struck RRP price",
 					"order": 17,
 					"clusters": [
