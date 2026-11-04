@@ -20,7 +20,7 @@ governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md
 | B4 accordion filter | built, on main, deployed (Spec 02 FR-2-15); on for Help (page 152). |
 | B8 | replaced by the buy box configurator (below). |
 | B10 fluid font sizes | done by the Eye Care session (`84b58c55f`); stale `wp_global_styles` fluid objects set false on every test site; Mama's body text measured 16px at 375, 768 and 1440. |
-| B11 per-product card content | built, on main, deployed (Spec 27 FR-27-K1 to K6); on for Shop, Gifts and the related row. Open: the per-item tilt list inside a product template (FR-27-K6, `includes/motion/class-sgs-motion-rotation.php::nth_rules`), and soft thumbnails where a card's stored URL is the 300px size (the image-size swap misses it). |
+| B11 per-product card content | built, on main, deployed (Spec 27 FR-27-K1 to K6); on for Shop, Gifts and the related row. The per-item tilt list inside a product template (FR-27-K6, `includes/motion/class-sgs-motion-rotation.php::nth_rules`) and soft thumbnails (`includes/product-card-image-size.php::sgs_product_card_image_url_at_size`) are built on branch `feature/a-cards-motion`. |
 
 ## Read first (builder)
 

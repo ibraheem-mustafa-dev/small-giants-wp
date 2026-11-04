@@ -79,6 +79,48 @@ final class Sgs_Motion_Loop_Delays {
 	public static function register(): void {
 		add_filter( 'render_block_data', array( self::class, 'capture_context' ), 20, 3 );
 		add_filter( 'render_block', array( self::class, 'filter' ), 25, 2 );
+		add_filter( 'pre_render_block', array( self::class, 'enter_template' ), 1, 2 );
+		add_filter( 'render_block', array( self::class, 'leave_template' ), 1, 2 );
+	}
+
+	/** How many template blocks are rendering right now (their inner blocks sit inside repeated list items). */
+	private static int $template_depth = 0;
+
+	/**
+	 * Whether the block being rendered sits inside a post or product template's repeated list items.
+	 *
+	 * @return bool
+	 */
+	public static function in_template_item(): bool {
+		return self::$template_depth > 0;
+	}
+
+	/**
+	 * Note that a template block starts rendering.
+	 *
+	 * @param mixed $pre          Pre-render value, passed through.
+	 * @param mixed $parsed_block Parsed block.
+	 * @return mixed The pre-render value.
+	 */
+	public static function enter_template( $pre, $parsed_block = null ) {
+		if ( is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
+			++self::$template_depth;
+		}
+		return $pre;
+	}
+
+	/**
+	 * Note that a template block finished rendering.
+	 *
+	 * @param mixed $block_content Rendered HTML, passed through.
+	 * @param mixed $parsed_block  Parsed block.
+	 * @return mixed The HTML.
+	 */
+	public static function leave_template( $block_content, $parsed_block = null ) {
+		if ( self::$template_depth > 0 && is_array( $parsed_block ) && in_array( $parsed_block['blockName'] ?? '', self::TEMPLATE_BLOCKS, true ) ) {
+			--self::$template_depth;
+		}
+		return $block_content;
 	}
 
 	/**

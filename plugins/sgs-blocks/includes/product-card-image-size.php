@@ -29,14 +29,20 @@ if ( ! function_exists( 'sgs_product_card_image_url_at_size' ) ) {
 	 * The same attachment as a given image URL, at the chosen size.
 	 *
 	 * @param string $url  An attachment image URL (any size).
-	 * @param string $size Size name from sgs_product_card_image_size().
+	 * @param string $size    Size name from sgs_product_card_image_size().
+	 * @param int    $post_id The product whose featured image the URL is (0 when unknown).
 	 * @return string The sized URL, or the original when it cannot be resolved.
 	 */
-	function sgs_product_card_image_url_at_size( string $url, string $size ): string {
+	function sgs_product_card_image_url_at_size( string $url, string $size, int $post_id = 0 ): string {
 		if ( '' === $url || '' === $size ) {
 			return $url;
 		}
-		$id = (int) attachment_url_to_postid( $url );
+		// The product's own featured image is known by ID, so a URL stored at an intermediate size (-300x300) resolves
+		// without a guess; any other URL is mapped back to its attachment.
+		$id = $post_id > 0 ? (int) get_post_thumbnail_id( $post_id ) : 0;
+		if ( $id <= 0 ) {
+			$id = (int) attachment_url_to_postid( $url );
+		}
 		if ( $id <= 0 ) {
 			return $url;
 		}
@@ -58,7 +64,7 @@ if ( ! function_exists( 'sgs_product_card_image_size_apply' ) ) {
 		if ( '' === $size || ! is_array( $data ) || empty( $data['image_url'] ) || empty( $data['wc_id'] ) ) {
 			return $data;
 		}
-		$data['image_url'] = esc_url( sgs_product_card_image_url_at_size( (string) $data['image_url'], $size ) );
+		$data['image_url'] = esc_url( sgs_product_card_image_url_at_size( (string) $data['image_url'], $size, (int) $data['wc_id'] ) );
 		return $data;
 	}
 }
