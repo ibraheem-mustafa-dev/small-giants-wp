@@ -87,6 +87,8 @@ class FrontEnd:
         self._block_cache: dict[str, tuple[list[PhpText], dict]] = {}
         self._maps_cache: dict[int, tuple] = {}
         self.media = MediaKeys(index)
+        self._hook_derived: dict[str, list[str]] | None = None
+        self._hook_reach: list[PhpText] | None = None
 
     def block_texts(self, bdir: Path) -> tuple[list[PhpText], dict[str, list[str]]]:
         key = bdir.as_posix()
@@ -106,6 +108,15 @@ class FrontEnd:
                     t for k, t in own_map.items() if k != render_key and k not in inlined
                 ]
         texts, _seen = self.index.reach(own)
+        derived = self.derive(texts)
+        out = (texts, derived)
+        self._block_cache[key] = out
+        return out
+
+    def derive(self, texts: list[PhpText]) -> dict[str, list[str]]:
+        """attr name -> the prefix-taking helpers that build it: each call of a helper in `ptable` whose
+        prefix argument is a literal (or a loop variable over literals) names `prefix + suffix` for every
+        suffix the helper appends to that parameter."""
         derived: dict[str, list[str]] = defaultdict(list)
         for t in texts:
             for fname in sorted(set(_call_names(t.src)) & set(self.ptable)):
@@ -120,9 +131,20 @@ class FrontEnd:
                             for pre in pres:
                                 for s in sfx:
                                     derived[(pre + s) if pre else lower_first(s)].append(fname)
-        out = (texts, dict(derived))
-        self._block_cache[key] = out
-        return out
+        return dict(derived)
+
+    def hook_reach(self) -> list[PhpText]:
+        """The hook emitters and every PHP file they require (a hook emitter split into partials keeps the
+        partials' reads: the writer folder of an extension)."""
+        if self._hook_reach is None:
+            self._hook_reach, _seen = self.index.reach(list(self.hook_texts))
+        return self._hook_reach
+
+    def hook_derived(self) -> dict[str, list[str]]:
+        """`derive` over `hook_reach`."""
+        if self._hook_derived is None:
+            self._hook_derived = self.derive(self.hook_reach())
+        return self._hook_derived
 
     def _media_prefixes(self, texts: list[PhpText]) -> set[str]:
         key = ("media", id(texts))

@@ -5,15 +5,26 @@ paint population like block attributes: the roster's role and `css_property`
 decide paint first, then the channel signals. The front end is the `includes/`
 hook emitters, the canvas is the extension's `editor.BlockListBlock` filter, and
 the control may live in any extension file.
+
+Prefix families: an extension that builds attribute names from a prefix (`<CardControls prefix="sgsItem">`,
+`prefix + 'Background'`, the shared typography controls) is credited the way a block is (wf_editor.py): every
+prefix its reached files pass, joined to every suffix those files build. On the front end the same holds for the
+helpers that take a prefix (`FrontEnd.hook_derived`): a hook emitter and the PHP files it requires name
+`prefix + suffix` through those helpers. An extension whose roster entry sets `"canvasSource": "rest"` draws
+its canvas from a server route its editor component fetches: its attributes count as canvas reads when a file of
+the extension names a `sgs/v1/...` route.
 """
 from __future__ import annotations
 
+import re
+
 from wf_css import CssIndex, data_consumed, own_modifier, own_utility
-from wf_editor import EditorModel
+from wf_editor import PREFIX_FN_RE, EditorModel
 from wf_frontend import FrontEnd
 from wf_inputs import Inputs
 from wf_links import ADVISORY, runtime_only
 from wf_paint import PaintClassifier, is_motion, is_state
+from wf_php import lower_first, read
 
 
 def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: EditorModel,
@@ -25,14 +36,36 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
     all_ext = list(inp.facts.get("extensions", []))
     # Control writes also count from the shared components an extension mounts (its imports, two steps deep).
     ctl_files = sorted(set(all_ext) | {f for v in inp.facts.get("extensionReach", {}).values() for f in v})
+    suffixes: set[str] = set()
+    prefixes: set[str] = set()
+    for f in ctl_files:
+        fx = files.get(f, {})
+        suffixes |= set(fx.get("prefixSuffixes", []))
+        prefixes |= {p["prefix"] for p in fx.get("prefixJsx", [])}
+        prefixes |= {c["prefix"] for c in fx.get("canvasJsx", []) if c.get("prefix") is not None}
+        prefixes |= {c["prefix"] for c in fx.get("prefixCalls", []) if PREFIX_FN_RE.search(c.get("fn") or "") and c["idx"] <= 1}
+    family = {(p + s) if p else lower_first(s) for p in prefixes for s in suffixes}
+    derived = fe.hook_derived()
+    # ShadowControl keys: a shadow base names its colour, hover and hover-colour attributes too.
+    for f in ctl_files:
+        for sb in files.get(f, {}).get("shadowBases", []):
+            family |= {sb["base"] + x for x in ("", "Colour", "Hover", "ColourHover")}
     for ext in inp.roster:
         fam = "src/blocks/extensions/" + ext.get("file", "")
         fam_dir = fam.rsplit("/", 1)[0] + "/"
         fam_files = [f for f in all_ext if f == fam or (fam_dir != "src/blocks/extensions/" and f.startswith(fam_dir))]
         blb = any(files.get(f, {}).get("blockListBlock") for f in fam_files)
+        rest_canvas = "rest" == ext.get("canvasSource") and any(
+            re.search(r"""['"`]/?sgs/v1/[\w/-]+""", read(editor.plugin / f.removeprefix("plugins/sgs-blocks/"))) for f in fam_files
+        )
         ident = "ext/" + ext.get("file", "")
         for attr, spec in sorted((ext.get("attributes") or {}).items()):
-            ch = fe.flow_texts(fe.hook_texts, attr, lambda t, a=attr: list(t.literals.get(a, ())))
+            ch = fe.flow_texts(fe.hook_reach(), attr, lambda t, a=attr: list(t.literals.get(a, ())))
+            for h in derived.get(attr, ()):
+                ch.read = True
+                ch.helpers.add(h)
+                if fe.analyser.emits_css(h) or "css" in h:
+                    ch.decl = True
             row = {"attr_name": attr, "role": spec.get("role"), "css_property": spec.get("css_property")}
             signals = {
                 "class_rule": any(css.has_class(c) for c in ch.classes if own_modifier(c)),
@@ -52,9 +85,9 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 rec["class"] = "not-paint"
                 records.append(rec)
                 continue
-            ctl = any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
-                      for f in ctl_files)
-            canvas = blb and any(attr in files.get(f, {}).get("canvasReads", {}) for f in fam_files)
+            ctl = attr in family or any(attr in files.get(f, {}).get("setKeys", []) or (files.get(f, {}).get("callsSet") and attr in files.get(f, {}).get("literals", []))
+                                       for f in ctl_files)
+            canvas = rest_canvas or (blb and any(attr in files.get(f, {}).get("canvasReads", {}) for f in fam_files))
             missing, details = [], {}
             if not ctl:
                 missing.append("L2")
@@ -71,7 +104,7 @@ def scan_extensions(inp: Inputs, fe: FrontEnd, css: CssIndex, js: str, editor: E
                 missing.append("L5")
                 details["L5"] = "a hook emitter reads it but reaches no declaration, custom property, class or data attribute"
             blocking = [m for m in missing if m not in ADVISORY]
-            rec.update({"control": "extension" if ctl else None, "canvas": "blockListBlock" if canvas else None,
+            rec.update({"control": "extension" if ctl else None, "canvas": ("rest" if rest_canvas else "blockListBlock") if canvas else None,
                         "channel": ch.kinds(), "cps": sorted(ch.cps), "missing": missing,
                         "class": "full" if not missing else ("advisory" if not blocking else "partial")})
             records.append(rec)

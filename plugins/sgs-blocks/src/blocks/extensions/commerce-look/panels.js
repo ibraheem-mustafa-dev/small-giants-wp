@@ -5,7 +5,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { SgsLengthControl } from '../../../components';
+import { SgsLengthControl, ShadowControl } from '../../../components';
 import { CardControls, ColourRow, TextControls } from './controls';
 
 const LENGTH_UNITS = [
@@ -156,6 +156,12 @@ export function CheckoutPanels( { attributes, setAttributes } ) {
 				<CardControls { ...shared } prefix="sgsOption" />
 				<ColourRow { ...shared } label={ __( 'Chosen option fill', 'sgs-blocks' ) } name="sgsOptionChosenBackground" />
 				<ColourRow { ...shared } label={ __( 'Chosen option border colour', 'sgs-blocks' ) } name="sgsOptionChosenBorderColour" />
+				<ShadowControl
+					label={ __( 'Chosen option shadow', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					attrNames={ { base: 'sgsOptionChosenShadow', colour: 'sgsOptionChosenShadowColour' } }
+				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Show order summary bar (phones)', 'sgs-blocks' ) } initialOpen={ false }>
 				<CardControls { ...shared } prefix="sgsBar" />

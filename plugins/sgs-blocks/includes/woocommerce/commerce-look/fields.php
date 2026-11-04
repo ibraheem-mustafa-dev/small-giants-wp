@@ -57,12 +57,18 @@ function sgs_commerce_look_fields_css( array $attrs, string $block, string $root
 	}
 
 	// The form's `field*` names are the roster's `sgsField*` names without the `sgs` prefix.
-	$own = array();
-	foreach ( array( 'Background', 'BorderWidth', 'BorderStyle', 'BorderColour', 'BorderRadius', 'Shadow', 'ShadowColour' ) as $suffix ) {
-		if ( isset( $attrs[ 'sgsField' . $suffix ] ) ) {
-			$own[ 'field' . $suffix ] = $attrs[ 'sgsField' . $suffix ];
-		}
-	}
+	$own = array_filter(
+		array(
+			'fieldBackground'   => $attrs['sgsFieldBackground'] ?? null,
+			'fieldBorderWidth'  => $attrs['sgsFieldBorderWidth'] ?? null,
+			'fieldBorderStyle'  => $attrs['sgsFieldBorderStyle'] ?? null,
+			'fieldBorderColour' => $attrs['sgsFieldBorderColour'] ?? null,
+			'fieldBorderRadius' => $attrs['sgsFieldBorderRadius'] ?? null,
+			'fieldShadow'       => $attrs['sgsFieldShadow'] ?? null,
+			'fieldShadowColour' => $attrs['sgsFieldShadowColour'] ?? null,
+		),
+		static fn( $value ): bool => null !== $value
+	);
 	$css = field_own_style_css( $own, ltrim( $root, '.' ), $controls );
 
 	// Padding, minimum height, text colour and typography share the control's rule.

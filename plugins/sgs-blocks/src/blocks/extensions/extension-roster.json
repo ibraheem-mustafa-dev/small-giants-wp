@@ -9,6 +9,7 @@
 			"named": "only the blocks named in `blocks`; none of them is an sgs/* block, so no rows are seeded unless the rule sets `seedRows` (then the seeder adds a blocks row for each named block and an sgs-ext row for each attribute)"
 		},
 		"fields": "type, default (omitted = no default), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything)",
+		"canvas_source": "An extension entry may set canvasSource: \"rest\" when its editor canvas is drawn from a server route its editor component fetches (no editor.BlockListBlock read). scripts/wiring-fingerprint/wf_extensions.py then counts a sgs/v1 route named in the entry's files as the canvas read of every attribute of the entry.",
 		"css_slots": "db-consistency check_routing allows one attribute per (css_property, css_element, css_state, css_tier) on a block, so a CSS slot is declared once. Controls that paint a slot a block can already own (width) keep css_property NULL.",
 		"css_element": "wrapper = the block root; image = the img/video inside it (assets/css/extensions.css .sgs-has-image-controls rules)"
 	},
@@ -173,6 +174,7 @@
 			"id": "commerceLook",
 			"file": "commerce-look/attributes.js",
 			"rule": { "mode": "named", "blocks": [ "woocommerce/cart", "woocommerce/checkout" ], "seedRows": true },
+			"canvasSource": "rest",
 			"_comment": "Shop look settings on WooCommerce's Cart and Checkout blocks (Spec 27 FR-30-18). No attribute carries a default: absent is WooCommerce's and the theme's own look. seedRows makes the seeder write block_attributes rows (and a blocks row) for these two non-sgs blocks so the cloning route finds the settings.",
 			"attributes": {
 				"sgsFieldBackground": { "type": "string", "role": "colour-background", "css_property": "background-color", "css_element": "field-input" },
