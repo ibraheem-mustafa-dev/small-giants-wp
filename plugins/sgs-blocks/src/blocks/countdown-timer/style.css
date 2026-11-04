@@ -132,7 +132,7 @@
 	100% { transform: rotateX(0deg); opacity: 1; }
 }
 
-@media (max-width: 599px) {
+@media (max-width: 767px) {
 	.sgs-countdown__grid {
 		gap: var(--wp--preset--spacing--20);
 	}

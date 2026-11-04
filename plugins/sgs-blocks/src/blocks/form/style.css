@@ -311,7 +311,7 @@
 
 /* Viewport fallback for browsers without @container support */
 @supports not (container-type: inline-size) {
-	@media (max-width: 599px) {
+	@media (max-width: 767px) {
 		.sgs-form__inner,
 		.sgs-form-step {
 			grid-template-columns: 1fr;

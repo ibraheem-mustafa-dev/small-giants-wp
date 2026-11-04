@@ -144,7 +144,7 @@
 	padding: 0 56px;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.sgs-trustpilot-reviews--carousel .sgs-trustpilot-reviews__viewport,
 	.sgs-trustpilot-reviews--mini-carousel .sgs-trustpilot-reviews__viewport {
 		padding: 0;
@@ -366,7 +366,7 @@
 
 /* Mobile: hide arrows; touch users swipe the carousel naturally.
    Avoids the arrow overlapping card text on narrow viewports. */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
 	.sgs-trustpilot-reviews__arrow {
 		display: none;
 	}

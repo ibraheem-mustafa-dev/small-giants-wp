@@ -251,7 +251,7 @@ a.sgs-google-reviews__maps-link {
 	color: var( --sgs-gr-ink-muted );
 }
 
-@media ( max-width: 599px ) {
+@media ( max-width: 767px ) {
 	.sgs-google-reviews__breakdown-count {
 		font-size: 0.8125rem;
 	}

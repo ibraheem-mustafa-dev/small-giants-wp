@@ -619,7 +619,7 @@
   },
   {
    "block": "trust-bar",
-   "selector": "@media (max-width: 599px) .sgs-trust-bar--text-only .sgs-trust-bar__badge",
+   "selector": "@media (max-width: 767px) .sgs-trust-bar--text-only .sgs-trust-bar__badge",
    "property": "min-height",
    "reason": "badgeSize, iconCircleSize and badgeImageSize size icons and images; a text-only badge has none, and its height comes from padding (F2 candidate)."
   }
