@@ -25,6 +25,7 @@ import {
 import { patchTier } from '../../utils';
 import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
+import FieldsPanel, { fieldColourRows } from './FieldsPanel';
 import LoggedOutPanel from './LoggedOutPanel';
 import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
 
@@ -148,6 +149,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		...fieldColourRows( attributes, setAttributes ),
 	];
 
 	return (
@@ -177,6 +179,10 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 				<AuthTabsPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<FieldsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

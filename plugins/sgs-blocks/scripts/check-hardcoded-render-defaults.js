@@ -356,6 +356,16 @@ const ATTR_ELEMENT_OVERRIDES = {
 	signedOutCardBorderRadius: [ 'auth-card' ],
 	signedOutCardPadding: [ 'auth-card' ],
 	signedOutCardGap: [ 'signed-out' ],
+	// sgs/account: the field settings paint WooCommerce's inputs and labels through a scoped rule from
+	// includes/account/helpers-account-field-css.php, never the notices, menu links, thumbnails or address cards.
+	// A key `'<block>::<attr>'` (the block's slug without `sgs/`) pins that attribute in that block only, and is read
+	// before the bare attribute key, so the same attribute in another block keeps full checking.
+	'account::fieldBorderRadius': [ 'input' ],
+	'account::fieldPadding': [ 'input' ],
+	// labelGap is the space under a field's label, painted only by the scoped rule on `.sgs-account__wc form label`. The
+	// stylesheet holds no rule of its own for it, so it is pinned to its manifest element (`field-label`), a token no
+	// stylesheet selector carries: the tick-box gap in a checkbox label and the log-in layout's gap are other spacings.
+	'account::labelGap': [ 'field-label' ],
 };
 
 /**
@@ -376,10 +386,15 @@ const ATTR_ELEMENT_OVERRIDES = {
  *   attrName = "labelFontSize" selector tokens = ["label"] → "label" in "labelfontsize" → NOT exempt (real)
  *   attrName = "gap"         selector tokens = null (root) → NOT exempt (checked normally)
  */
-function isBemSubElementMismatch( attrName, bemElements ) {
+function attrElementOverride( attrName, blockSlug ) {
+	const short = String( blockSlug || '' ).replace( /^sgs\//, '' );
+	return ( short && ATTR_ELEMENT_OVERRIDES[ `${ short }::${ attrName }` ] ) || ATTR_ELEMENT_OVERRIDES[ attrName ];
+}
+
+function isBemSubElementMismatch( attrName, bemElements, blockSlug = '' ) {
 	// A pinned attr (ATTR_ELEMENT_OVERRIDES) names the one element it paints, so a rule with no sub-element
 	// (a root or descendant selector) is not its element either.
-	const override = ATTR_ELEMENT_OVERRIDES[ attrName ];
+	const override = attrElementOverride( attrName, blockSlug );
 	if ( override ) {
 		return bemElements === null || ! override.some( ( token ) => bemElements.has( token ) );
 	}
@@ -3105,7 +3120,7 @@ function isUnwrittenVarValue( value, writtenProps ) {
 	return props.length > 0 && ! props.some( ( p ) => writtenProps.has( p ) );
 }
 
-function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper, model, e9Props, writtenProps = new Set() ) {
+function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov, usesWrapper, model, e9Props, writtenProps = new Set(), blockSlug = '' ) {
 	const findings = [];
 	const lines    = src.split( '\n' );
 	// E14: every default-state declaration of an inherited property (any value),
@@ -3299,7 +3314,7 @@ function scanCssDeclarations( src, targetProps, attrNames, cssToAttrs, helperGov
 			}
 
 			// E1: sub-element selector mismatch — attr doesn't map to this element.
-			if ( isBemSubElementMismatch( attrName, bemElements ) ) {
+			if ( isBemSubElementMismatch( attrName, bemElements, blockSlug ) ) {
 				continue; // this attr is exempt for this selector
 			}
 
@@ -3597,7 +3612,8 @@ function checkBlock( blockDir ) {
 			usesWrapper,
 			elementModel,
 			e9Props,
-			elementModel ? collectWrittenCustomProps( blockDir ) : new Set()
+			elementModel ? collectWrittenCustomProps( blockDir ) : new Set(),
+			blockName
 		);
 		for ( const f of cssFindings ) {
 			const owningAttrs = f.attrs.join( ', ' );
@@ -3859,6 +3875,7 @@ function selfTestE12() {
 	}
 
 	selfTestE14( assert );
+	selfTestScopedPin( assert );
 	selfTestRequireHop( assert );
 	selfTestRenderTemplateFiles( assert );
 	selfTestParamBinding( assert );
@@ -4311,6 +4328,46 @@ function selfTestRenderTemplateFiles( assert ) {
 	const inst = buildMarkupModel( files, new Set() );
 	assert( "a partial's top-level markup is main-file markup", inst.find( ( i ) => i.classes.has( 'x-part' ) ).mainFile, true );
 	assert( "a function file's markup is not", inst.find( ( i ) => i.classes.has( 'x-fns' ) ).mainFile, false );
+}
+
+function selfTestScopedPin( assert ) {
+	process.stdout.write( '\n[check-hardcoded-render-defaults --self-test] block-scoped element pin\n\n' );
+	const rootRule = null; // a root or descendant selector: no BEM sub-element
+	assert(
+		'a block-scoped pin exempts a root rule for its own block',
+		isBemSubElementMismatch( 'fieldPadding', rootRule, 'sgs/account' ),
+		true
+	);
+	assert(
+		'the same attribute in another block is still checked on a root rule',
+		isBemSubElementMismatch( 'fieldPadding', rootRule, 'sgs/form' ),
+		false
+	);
+	assert(
+		'the pinned element still counts in the pinned block',
+		isBemSubElementMismatch( 'fieldPadding', new Set( [ 'input' ] ), 'sgs/account' ),
+		false
+	);
+	assert(
+		'labelGap pinned to wc exempts the tick-box label rule in account',
+		isBemSubElementMismatch( 'labelGap', new Set( [ 'label-for-checkbox', 'label', 'for', 'checkbox' ] ), 'sgs/account' ),
+		true
+	);
+	assert(
+		'labelGap pinned to its own element exempts the log-in layout gap (a wc rule) in account',
+		isBemSubElementMismatch( 'labelGap', new Set( [ 'wc' ] ), 'sgs/account' ),
+		true
+	);
+	assert(
+		'labelGap on a label element in another block is still checked',
+		isBemSubElementMismatch( 'labelGap', new Set( [ 'label' ] ), 'sgs/icon' ),
+		false
+	);
+	assert(
+		'a bare-key pin (submenuLinkPadding) still applies in every block',
+		isBemSubElementMismatch( 'submenuLinkPadding', new Set( [ 'link' ] ), 'sgs/nav-bar-menu' ),
+		true
+	);
 }
 
 function selfTestRequireHop( assert ) {
