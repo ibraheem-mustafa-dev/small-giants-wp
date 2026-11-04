@@ -1093,11 +1093,217 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "signedOutCardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "signedOutCopyColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "signedOutCopy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "signed-out-heading"
       }
     },
     {
@@ -32734,6 +32940,23 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
         "css_element": "signedOutCard"
       }
     },

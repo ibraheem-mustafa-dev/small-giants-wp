@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 97,
+    "count": 100,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -340,6 +340,25 @@
       },
       "qualifies": {
         "paintDeclarations": 2,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "title": "Commerce note",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": true,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
         "replacedCoreSupports": []
       }
     },
@@ -815,6 +834,25 @@
       }
     },
     {
+      "slug": "sgs/free-delivery-bar",
+      "title": "SGS Free-delivery Bar",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": true,
+        "colour": true,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 2,
+        "replacedCoreSupports": []
+      }
+    },
+    {
       "slug": "sgs/gallery",
       "title": "SGS Image Gallery",
       "category": "sgs-content",
@@ -836,6 +874,25 @@
           "color",
           "spacing"
         ]
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "title": "Gift order",
+      "category": "sgs-interactive",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": false,
+        "link": false,
+        "media": false,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
+        "replacedCoreSupports": []
       }
     },
     {
