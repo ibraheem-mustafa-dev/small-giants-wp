@@ -93,6 +93,7 @@ $sql  = "SELECT ID, post_type, post_status, post_content FROM {$wpdb->posts} WHE
 $rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL -- a one-off maintenance sweep with no variable input.
 
 $undo    = array();
+$writes  = array();
 $changed = 0;
 $total   = 0;
 foreach ( $rows as $row ) {
@@ -106,26 +107,38 @@ foreach ( $rows as $row ) {
 	}
 	++$changed;
 	$total                  += count( $found );
-	$undo[ (string) $row->ID ] = $row->post_content;
+	$undo[ (string) $row->ID ]   = $row->post_content;
+	$writes[ (string) $row->ID ] = $new;
 	foreach ( $found as $note ) {
 		WP_CLI::log( sprintf( '  #%d (%s, %s): %s', $row->ID, $row->post_type, $row->post_status, $note ) );
 	}
-	if ( 'apply' === $mode ) {
-		$wpdb->update( $wpdb->posts, array( 'post_content' => $new ), array( 'ID' => (int) $row->ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- see the file header.
-		clean_post_cache( (int) $row->ID );
-	}
 }
 
-WP_CLI::log( ( 'apply' === $mode ? 'Converted ' : 'Would convert ' ) . $total . ' hero block(s) in ' . $changed . ' post(s).' );
+WP_CLI::log( ( 'apply' === $mode ? 'Converting ' : 'Would convert ' ) . $total . ' hero block(s) in ' . $changed . ' post(s).' );
 WP_CLI::log( 'TOTAL_HEROES=' . $total . ' POSTS=' . $changed );
 
 if ( 'apply' !== $mode ) {
 	WP_CLI::success( 'Dry run: nothing written.' );
 	return;
 }
+// The undo file is written and read back before the first database write, so every changed post has its old
+// content on disk even if a write fails part-way.
 if ( array() !== $undo ) {
-	file_put_contents( $undo_file, wp_json_encode( $undo ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a CLI undo file the operator names.
+	$undo_json = (string) wp_json_encode( $undo );
+	file_put_contents( $undo_file, $undo_json ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a CLI undo file the operator names.
+	if ( ! is_readable( $undo_file ) || file_get_contents( $undo_file ) !== $undo_json ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- the local undo file just written.
+		WP_CLI::error( 'Could not write the undo file ' . $undo_file . '; nothing was changed.' );
+	}
 	WP_CLI::log( 'Old content of the changed posts saved to ' . $undo_file );
+}
+$written = 0;
+foreach ( $writes as $post_id => $new ) {
+	$ok = $wpdb->update( $wpdb->posts, array( 'post_content' => $new ), array( 'ID' => (int) $post_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- see the file header.
+	if ( false === $ok ) {
+		WP_CLI::error( sprintf( 'Writing post %d failed after %d of %d post(s); restore with: undo %s', (int) $post_id, $written, count( $writes ), $undo_file ) );
+	}
+	clean_post_cache( (int) $post_id );
+	++$written;
 }
 $remaining = 0;
 foreach ( $wpdb->get_results( $sql ) as $row ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL
