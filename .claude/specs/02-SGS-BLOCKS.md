@@ -325,7 +325,7 @@ Auto-scroll marquee behaviour: the badge row moves through the shared marquee ef
 
 ### Testimonial (`sgs/testimonial`)
 
-**Purpose:** Single testimonial card. **Typed-attr, 7-variant block.** All content rendered from typed attributes; no InnerBlocks in production. Variants: `classic-card` (default), `pull-quote-editorial`, `rating-led`, `avatar-spotlight`, `corporate-logo`, `case-study-media`, `minimal-quote`. Attributes: `/wp-blocks schema sgs/testimonial`. Per-element typography goes through the shared `TypographyControls` component.
+**Purpose:** Single testimonial card. **Typed-attr, 8-variant block.** All content rendered from typed attributes; no InnerBlocks in production. Variants: `classic-card` (default), `pull-quote-editorial`, `rating-led`, `review-card` (stars, title, quote, then the name and date on one line; `reviewDate`, and `reviewFooterBorder` draws a rule above the line through the shared tier border control), `avatar-spotlight`, `corporate-logo`, `case-study-media`, `minimal-quote`. Attributes: `/wp-blocks schema sgs/testimonial`. Per-element typography goes through the shared `TypographyControls` component.
 
 **Render:** Dynamic `render.php` (`save.js` returns `null`). `has_inner_blocks` is 0 for this block (a typed leaf; the slider parent has `has_inner_blocks=1`).
 
@@ -337,7 +337,7 @@ Auto-scroll marquee behaviour: the badge row moves through the shared marquee ef
 
 **Inner blocks:** REQUIRED. Slides are `sgs/testimonial` InnerBlocks. `render.php` iterates `$block->inner_blocks` and renders each child; it does NOT read the `testimonials` array attribute, so this block is **InnerBlocks-ONLY** in production.
 
-Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `split` (`split` shows a `sideImage` beside the carousel). Grid templates: a template-less tier takes the wider tier's template unless that tier's `columns` count was authored (then the count's `repeat(N,1fr)` applies); the defaults 2/2/1 never replace an authored template. Direct grid/flex children get a zero-specificity `min-width:0;min-height:0` backstop, so a child's own minimum size wins.
+Attributes: `/wp-blocks schema sgs/testimonial-slider`. `slidesVisible` is a `{desktop,tablet,mobile}` tier object (tablet inherits desktop, an unset mobile is one slide) and `slidePeek` is a per-device CSS length taken off the width the visible cards share so the next card shows at the edge (printed as `--sgs-slide-peek`). `layout` is `full` or `split` (`split` shows a `sideImage` beside the carousel). Grid templates: a template-less tier takes the wider tier's template unless that tier's `columns` count was authored (then the count's `repeat(N,1fr)` applies); the defaults 2/2/1 never replace an authored template. Direct grid/flex children get a zero-specificity `min-width:0;min-height:0` backstop, so a child's own minimum size wins.
 
 **Scroll sideways:** `scrollSideways` (tier on/off) and `scrollItemWidth` (tier length, 80% unset). At an ON tier the direct children sit in one native row on `.{uid}>.sgs-container__inner` that scrolls sideways and snaps (`plugins/sgs-blocks/includes/container-scroll-row-css.php::sgs_container_scroll_row_css`, emitted last by the wrapper in the tier's exact range; ON forces the uid and the inner element). No GSAP, no pin; hidden under the `horizontal-panel` effect. Band side padding becomes scroll padding. The row gains 8px of block padding, taken back by an equal negative block margin, so an item's focus ring is not clipped by the row's `overflow-y:hidden`; band padding on those sides is added to. The inline sides get no such room (it would override the row's `margin-inline:auto` centring), so at scroll position 0 the first item's ring is trimmed on its inline start; the other three sides stay visible, which meets WCAG 2.4.7, and Bean accepted this on 2026-09-25.
 
@@ -363,7 +363,7 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `layout` is `full` or `s
 
 **Purpose:** Expandable content sections (FAQ, details).
 
-**Inner blocks:** `sgs/accordion-item` inner blocks, each with a `title` (RichText) and content (any blocks). Attributes: `/wp-blocks schema sgs/accordion`.
+**Inner blocks:** `sgs/accordion-item` inner blocks, each with a `title` (RichText) and content (any blocks). Attributes: `/wp-blocks schema sgs/accordion`. `itemBackgroundOpen` fills the whole open item; `itemShadow` and `itemShadowOpen` (with `itemShadowColour` and `itemShadowOpenColour`) draw the shared box shadow round every item closed and open. All four are empty by default and print nothing.
 
 **Render:** Dynamic `render.php`; `save` returns `<InnerBlocks.Content />`. `viewScriptModule` enhances `<details>`/`<summary>` (no-JS fallback) with smooth animation. Each item's `<summary>` carries `sgs-on-dark` or `sgs-on-light` from its own header paint (resting, else open, else hover; `sgs_surface_tone_class()` as the container uses it), so the theme's on-dark focus ring applies on a dark header; no paint, no marker.
 

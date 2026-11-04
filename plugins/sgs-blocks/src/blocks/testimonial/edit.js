@@ -42,6 +42,7 @@ import {
 	SgsBoxControl,
 	LinkUnderlineControl,
 } from '../../components';
+import ReviewLineBorder from './ReviewLineBorder';
 import {
 	fontSizeVar,
 	resolveTextColourPreviewStyle,
@@ -201,6 +202,22 @@ const VARIANTS = [
 		),
 	},
 	{
+		value: 'review-card',
+		label: __( 'Review card', 'sgs-blocks' ),
+		thumb: (
+			<svg viewBox="0 0 48 32" aria-hidden="true">
+				<rect x="2" y="2" width="44" height="28" rx="3" fill="#fff" stroke="#cbd5d5" />
+				<text x="8" y="10" fontSize="7" fill="#F87A1F">
+					★★★★★
+				</text>
+				<rect x="8" y="13" width="20" height="2" rx="1" fill="#1E1E1E" />
+				<rect x="8" y="17" width="32" height="2" rx="1" fill="#9aa" />
+				<line x1="8" y1="22" x2="40" y2="22" stroke="#9aa" strokeDasharray="2 2" />
+				<rect x="8" y="25" width="20" height="2" rx="1" fill="#778" />
+			</svg>
+		),
+	},
+	{
 		value: 'avatar-spotlight',
 		label: __( 'Avatar spotlight', 'sgs-blocks' ),
 		thumb: (
@@ -324,6 +341,7 @@ export default function Edit( {
 		ratingScale,
 		ratingScaleMax,
 		reviewDate,
+		reviewFooterBorder,
 		verified,
 		sourcePlatform,
 		schemaEnabled,
@@ -531,6 +549,7 @@ export default function Edit( {
 
 	const showSummary =
 		effectiveVariant === 'pull-quote-editorial' ||
+		effectiveVariant === 'review-card' ||
 		effectiveVariant === 'case-study-media';
 	const showAvatar =
 		effectiveVariant === 'classic-card' ||
@@ -542,6 +561,7 @@ export default function Edit( {
 	const showWork = effectiveVariant === 'case-study-media';
 	const showStarsControl =
 		effectiveVariant === 'classic-card' ||
+		effectiveVariant === 'review-card' ||
 		effectiveVariant === 'rating-led';
 
 	return (
@@ -1100,9 +1120,46 @@ export default function Edit( {
 					</PanelBody>
 				) }
 
+				{ effectiveVariant === 'review-card' && (
+					<ToolsPanel
+						label={ __( 'Review line', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( { reviewDate: '', reviewFooterBorder: {} } )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Review date', 'sgs-blocks' ) }
+							hasValue={ () => reviewDate !== '' }
+							onDeselect={ () => setAttributes( { reviewDate: '' } ) }
+							isShownByDefault
+						>
+							<SgsFreeTextField type="rich" noLink
+								label={ __( 'Review date', 'sgs-blocks' ) }
+								value={ reviewDate }
+								onChange={ ( val ) => setAttributes( { reviewDate: val } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Rule above the name line', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! reviewFooterBorder &&
+								Object.keys( reviewFooterBorder ).length > 0
+							}
+							onDeselect={ () => setAttributes( { reviewFooterBorder: {} } ) }
+							isShownByDefault
+						>
+							<ReviewLineBorder
+								value={ reviewFooterBorder }
+								onChange={ ( next ) => setAttributes( { reviewFooterBorder: next } ) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+				) }
+
 				{ /* ── Rating — visibility + content (behaviour). Appearance
 				     [colour, size] moved to the Styles tab below. ── */ }
 				{ ( effectiveVariant === 'rating-led' ||
+					effectiveVariant === 'review-card' ||
 					effectiveVariant === 'classic-card' ) && (
 					<ToolsPanel
 						label={ __( 'Rating', 'sgs-blocks' ) }
@@ -1182,6 +1239,7 @@ export default function Edit( {
 						{ showRating &&
 							showStarsControl &&
 							( effectiveVariant === 'classic-card' ||
+								effectiveVariant === 'review-card' ||
 								ratingType === 'stars' ) && (
 								<ToolsPanelItem
 									label={ __( 'Stars', 'sgs-blocks' ) }
@@ -2216,7 +2274,14 @@ export default function Edit( {
 					allowedFormats={ RICH_TEXT_BODY }
 				/>
 
-				<footer className="sgs-testimonial__footer">
+				<footer
+					className={ [
+						'sgs-testimonial__footer',
+						'review-card' === effectiveVariant && 'sgs-testimonial__footer--review',
+					]
+						.filter( Boolean )
+						.join( ' ' ) }
+				>
 					{ showAvatar && (
 						<div className="sgs-testimonial__avatar">
 							<MediaUploadCheck>
@@ -2297,6 +2362,11 @@ export default function Edit( {
 							placeholder={ __( 'Organisation', 'sgs-blocks' ) }
 							allowedFormats={ RICH_TEXT_FREE_TEXT }
 						/>
+						{ 'review-card' === effectiveVariant && reviewDate && (
+							<span className="sgs-testimonial__date">
+								<AuthoredText value={ reviewDate } />
+							</span>
+						) }
 					</div>
 				</footer>
 			</div>

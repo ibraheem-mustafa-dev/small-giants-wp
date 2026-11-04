@@ -42,6 +42,15 @@
  * (--wp--preset--color--heading, named first here, is not a palette slug, so
  * this always fell through to the same text token.) */
 
+/* ===== Review card: name and date on one line ===== */
+.sgs-testimonial__footer--review {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.4em;
+	padding-top: var(--wp--preset--spacing--20, 0.75rem);
+}
+
 /* ===== Footer / attribution ===== */
 .sgs-testimonial__footer {
 	display: flex;
