@@ -319,14 +319,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "cardBorderStyle",
-      "fields": {
-        "css_property": "border-style",
-        "css_element": "cardBox"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "cardDescFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -661,6 +653,104 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldPlaceholderColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "fieldPlaceholder"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "guestLineFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -864,6 +954,87 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelGap",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_layer": "OUTER",
+        "css_element": "fieldLabel"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_layer": "OUTER",
+        "css_element": "wc"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_layer": "OUTER",
+        "css_element": "wc"
       }
     },
     {
@@ -1088,14 +1259,6 @@
       "attr": "signedOutCardBorderWidth",
       "fields": {
         "css_property": "border-width",
-        "css_element": "signedOutCard"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "signedOutCardPadding",
-      "fields": {
-        "css_property": "padding",
         "css_element": "signedOutCard"
       }
     },
@@ -32839,6 +33002,14 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "cardBox"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -32847,10 +33018,87 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "fieldBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "headingColourGradient",
       "fields": {
         "css_property": "color-gradient",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "fieldLabel"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelPosition",
+      "fields": {
+        "css_property": "display",
+        "css_layer": "OUTER",
+        "css_element": "fieldLabel"
       }
     },
     {
@@ -33036,6 +33284,14 @@
       "attr": "signedOutCardMaxWidth",
       "fields": {
         "css_property": "max-width",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "signedOutCard"
       }
     },
