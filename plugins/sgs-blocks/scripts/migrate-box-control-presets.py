@@ -75,7 +75,11 @@ sys.stderr.reconfigure(encoding='utf-8')
 
 REPO = Path(__file__).resolve().parents[3]
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
-DB_PATH = Path(os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db'))
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = framework_db_path()
 
 TAG_RE = re.compile(r'<ResponsiveBoxControl(?![A-Za-z])')
 PRESETS_ATTR_RE = re.compile(

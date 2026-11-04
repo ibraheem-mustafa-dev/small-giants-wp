@@ -6,10 +6,12 @@ that builds the shared database path by hand (`Path.home() / ".claude" / "skills
 reads the variable would open the shared database instead, so the guard in sgs-update-v2.py skips it and the reseed
 silently runs without it. This gate finds those scripts before they ship.
 
-Scope: sgs-update-v2.py and every script it names, followed transitively (a script that runs sub-gates brings them
-in), all under plugins/sgs-blocks/scripts/ and outside migrations/, tests/ and node_modules/. A script is in
-violation when its code (comments and docstrings removed) names the shared database path and neither reads
-SGS_FRAMEWORK_DB nor uses framework_db_path() / frameworkDbPath().
+Scope: every live script under plugins/sgs-blocks/scripts/ and the repository's scripts/ folder, outside migrations/,
+tests/, fixtures/ and node_modules/ (dated migrations run once and tests build their own databases). The reseed
+closure (sgs-update-v2.py and every script it names, followed transitively, a script that runs sub-gates bringing them
+in) is part of that scope and is reported separately, because a closure script a `--db` run would otherwise skip is the
+costlier failure. A script is in violation when its code (comments and docstrings removed) names the shared database
+path and neither reads SGS_FRAMEWORK_DB nor uses framework_db_path() / frameworkDbPath().
 
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey-all  # every script under scripts/, reseed or not
@@ -30,6 +32,8 @@ from framework_db import builds_default_db_by_hand, code_of, javascript_code, py
 ROOT_SCRIPT = "sgs-update-v2.py"
 MAX_DEPTH = 2
 EXCLUDED_DIRS = {"migrations", "tests", "node_modules", "__pycache__"}
+LIVE_EXCLUDED_DIRS = EXCLUDED_DIRS | {"fixtures"}
+REPO_SCRIPTS = HERE.parents[2] / "scripts"
 SCRIPT_EXTENSIONS = (".py", ".js", ".mjs")
 TOKEN = re.compile(r"""[\w./-]+\.(?:py|js|mjs)\b""")
 
@@ -101,6 +105,15 @@ def reseed_children(scripts_dir: Path) -> list[Path]:
     return sorted(seen)
 
 
+def live_scripts(roots: list[Path]) -> list[Path]:
+    """Every live script under the roots: no dated migrations, tests, fixtures or installed packages."""
+    found: set[Path] = set()
+    for root in roots:
+        if root.is_dir():
+            found.update(p for p in root.rglob("*") if p.suffix in SCRIPT_EXTENSIONS and p.is_file() and not (LIVE_EXCLUDED_DIRS & set(p.relative_to(root).parts)))
+    return sorted(found)
+
+
 def violations(files: list[Path]) -> list[Path]:
     return [f for f in files if builds_default_db_by_hand(code_of(f))]
 
@@ -135,9 +148,17 @@ def self_test() -> int:
         reached = {c.name for c in reseed_children(scripts)}
         followed = reached == {ROOT_SCRIPT, "helper_mod.py"}
         flagged = {v.name for v in violations(reseed_children(scripts))} == {"helper_mod.py"}
-    for label, ok in (("an imported helper is in the closure and an unrelated script is not", followed), ("an imported helper that builds the path by hand is flagged", flagged)):
-        failed += not ok
-        print(f"  {'ok  ' if ok else 'FAIL'} {label}")
+        for label, ok in (("an imported helper is in the closure and an unrelated script is not", followed), ("an imported helper that builds the path by hand is flagged", flagged)):
+            failed += not ok
+            print(f"  {'ok  ' if ok else 'FAIL'} {label}")
+        (scripts / "tests").mkdir()
+        (scripts / "tests" / "test_x.py").write_text("DB = '.claude/skills/sgs-wp-engine/sgs-framework.db'\n", encoding="utf-8")
+        (scripts / "clean.py").write_text("from framework_db import framework_db_path\nDB = framework_db_path()\n", encoding="utf-8")
+        planted = {v.name for v in violations(live_scripts([scripts]))} == {"helper_mod.py", "unrelated.py"}
+        clean = "clean.py" not in {v.name for v in violations(live_scripts([scripts]))}
+        for label, ok in (("a live script outside the closure that builds the path by hand is flagged (a test is not)", planted), ("a live script that uses the resolver is clean", clean)):
+            failed += not ok
+            print(f"  {'ok  ' if ok else 'FAIL'} {label}")
     children = reseed_children(HERE)
     in_scope = ROOT_SCRIPT in {c.name for c in children} and len(children) > 5
     failed += not in_scope
@@ -172,10 +193,11 @@ def main() -> int:
             for path in paths:
                 print(f"  {path.relative_to(HERE).as_posix()}")
         return 0
-    bad = violations(children)
-    print(f"{len(children)} script(s) in the reseed's closure; {len(bad)} build the shared database path by hand")
+    scope = sorted(set(children) | set(live_scripts([HERE, REPO_SCRIPTS])))
+    bad = violations(scope)
+    print(f"{len(children)} script(s) in the reseed's closure, {len(scope)} in scope; {len(bad)} build the shared database path by hand")
     for path in bad:
-        print(f"  {path.relative_to(HERE).as_posix()}")
+        print(f"  {path.relative_to(HERE).as_posix() if HERE in path.parents else path.relative_to(HERE.parents[2]).as_posix()}")
     if a.check and bad:
         print("FAIL: use lib/framework_db.py framework_db_path() (Python) or lib/framework-db.js frameworkDbPath() (JavaScript).")
         return 1

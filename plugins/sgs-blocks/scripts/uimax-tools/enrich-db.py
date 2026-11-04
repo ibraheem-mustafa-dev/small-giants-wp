@@ -37,8 +37,13 @@ sys.stdout.reconfigure(encoding="utf-8")
 # ---------------------------------------------------------------------------
 # DB paths
 # ---------------------------------------------------------------------------
-_CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
-_AGENTS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+_CLAUDE_DB = framework_db_path()
+# $SGS_FRAMEWORK_DB names one database copy, so the mirror under ~/.agents is left alone then.
+_AGENTS_DB = _CLAUDE_DB if _os.environ.get("SGS_FRAMEWORK_DB") else Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 BOTH_DBS = [_CLAUDE_DB, _AGENTS_DB]
 

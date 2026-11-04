@@ -44,7 +44,11 @@ from typing import Iterator, List, Tuple
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BLOCKS = PLUGIN_ROOT / "src" / "blocks"
-DB = Path(os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db"))
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB = framework_db_path()
 
 # (path suffix, selector fragment, reason). A CSS hit matching an entry is not reported.
 ALLOWLIST: List[Tuple[str, str, str]] = [

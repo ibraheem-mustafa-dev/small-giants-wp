@@ -53,6 +53,10 @@ SCRIPTS = HERE.parent
 REPO = SCRIPTS.parent.parent.parent
 sys.path.insert(0, str(HERE))
 from sandbox import sandbox  # noqa: E402
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 
 # Known to have no regenerative source -- Phase 1's scope, not Phase 0's.
 #
@@ -138,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
     opts = parser.parse_args(argv)
     today = datetime.date.today().isoformat()
 
-    live_path = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+    live_path = framework_db_path()
     live = counts(live_path)
     live_mtime = live_path.stat().st_mtime_ns
     print(f"live: {len(live)} tables, {sum(live.values())} rows total\n")

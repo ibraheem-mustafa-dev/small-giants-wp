@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { I_CLASSES } from './gap-classes.mjs';
 import { OWNERS } from './gaps-file.mjs';
+import { frameworkDbPath } from './framework-db.mjs';
 
 const KNOWN = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'instrument-debt-known.json' ), 'utf8' ) );
 
@@ -46,7 +47,7 @@ export function unroutedKnown( { db, isDiscovered = () => false } ) {
 		const row = db.prepare( 'SELECT block_slug, attr_name, css_property, role FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( k.block, k.attribute );
 		if ( row && null === row.css_property && ! isDiscovered( row ) ) {
 			out.push( { key: `${ k.block }:${ k.attribute }`, class: 'I-unrouted', gate: 'G3', block: k.block, attribute: k.attribute, property: null,
-				evidence: { file: 'sgs-framework.db', key: `block_attributes[${ k.block }][${ k.attribute }].css_property is NULL (role ${ row.role })` } } );
+				evidence: { file: path.basename( frameworkDbPath() ), key: `block_attributes[${ k.block }][${ k.attribute }].css_property is NULL (role ${ row.role })` } } );
 		}
 	}
 	return out;
