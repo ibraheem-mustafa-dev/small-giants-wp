@@ -104,7 +104,7 @@ describe( 'shared format lists', () => {
 	it( 'the lists hold what their roles promise', () => {
 		expect( formats.RICH_TEXT_BODY ).toEqual( [ 'core/bold', 'core/italic', 'core/link', 'core/strikethrough', 'sgs/highlight', 'sgs/inline-photo', 'sgs/basket-count' ] );
 		expect( formats.RICH_TEXT_BODY_NO_LINK ).toEqual( formats.RICH_TEXT_BODY.filter( ( f ) => 'core/link' !== f ) );
-		expect( formats.RICH_TEXT_EMPHASIS ).toEqual( [ 'core/bold', 'core/italic' ] );
+		expect( formats.RICH_TEXT_EMPHASIS ).toEqual( [ 'core/bold', 'core/italic', 'sgs/basket-count' ] );
 		expect( formats.RICH_TEXT_LINK_ONLY ).toEqual( [ 'core/link' ] );
 		expect( formats.RICH_TEXT_PLAIN ).toEqual( [] );
 		// Core's formats that save inline style are on no list.

@@ -25,10 +25,11 @@ export const RICH_TEXT_BODY_NO_LINK = Object.freeze(
 	RICH_TEXT_BODY.filter( ( name ) => 'core/link' !== name )
 );
 
-/** Short text whose fill, size or accessible name a stripe or photo would change (a button label). */
+/** Short text whose fill, size or accessible name a stripe or photo would change (a button label), which may also hold the basket count. */
 export const RICH_TEXT_EMPHASIS = Object.freeze( [
 	'core/bold',
 	'core/italic',
+	'sgs/basket-count',
 ] );
 
 /** Small tag text that may carry a link and nothing else. */
