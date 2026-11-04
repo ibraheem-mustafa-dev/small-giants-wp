@@ -720,7 +720,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					initialOpen={ false }
 				>
 					<ToolsPanel
-						label={ __( 'Appearance', 'sgs-blocks' ) }
+						label={ __( 'Layout and spacing', 'sgs-blocks' ) }
 						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line' } ) }
 					>
 						<ToolsPanelItem
