@@ -566,6 +566,10 @@ require_once SGS_BLOCKS_PATH . 'includes/product-template-fields.php';
 // below because both consult Gift_Card\Gift_Card_Product_Type / Gift_Card_Feed.
 require_once SGS_BLOCKS_PATH . 'includes/gift-card/load.php';
 
+// SGS gift order (Spec 27 FR-30-21): gift switch and checkout step, the cart-proxy write route's handler,
+// the order record, admin box, emails and privacy tools.
+require_once SGS_BLOCKS_PATH . 'includes/gift-order/load.php';
+
 // SGS Product Preflight — hard go-live gate + cart £0 guard + weekly health cron
 // (FR-27-PREFLIGHT / SEC-5). Blocks a variable product from publishing if it has
 // zero-priced variations, missing images, an over-cap manifest, no variesBy mapping,
