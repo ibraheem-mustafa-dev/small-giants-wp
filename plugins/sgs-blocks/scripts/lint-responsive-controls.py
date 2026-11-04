@@ -103,8 +103,8 @@ COMPONENTS_INDEX = COMPONENTS_SRC / "index.js"
 import os as _os
 import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
-from framework_db import framework_db_path  # noqa: E402
-SGS_DB_CLI = framework_db_path().parent / "scripts" / "sgs-db.py"
+from framework_db import skill_scripts_dir  # noqa: E402
+SGS_DB_CLI = skill_scripts_dir() / "sgs-db.py"
 
 # The two canonical primitives — named explicitly in FR-36-24 / FR-S9-6.
 # This is the ONE permitted structural constant (FP-1 exception, same

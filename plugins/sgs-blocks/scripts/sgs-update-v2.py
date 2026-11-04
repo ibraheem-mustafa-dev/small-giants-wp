@@ -79,11 +79,13 @@ Usage:
 """
 
 import argparse
+import atexit
 import base64
 import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import subprocess
 import sys
@@ -2004,6 +2006,21 @@ def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
 _ADOPTION_SCAN: dict = {}
 
 
+def _discard_component_scan() -> None:
+    """Reaps the early scan: stops it if it is still running, closes its output and removes its temp folder. Runs after the
+    seeder, when the seeder is missing, and at exit, so no path leaves a Node process or a temp folder behind."""
+    proc = _ADOPTION_SCAN.pop("proc", None)
+    out = _ADOPTION_SCAN.pop("out", None)
+    handle = _ADOPTION_SCAN.pop("handle", None)
+    if proc is not None and proc.poll() is None:
+        proc.kill()
+        proc.wait()
+    if handle is not None:
+        handle.close()
+    if out is not None:
+        shutil.rmtree(out.parent, ignore_errors=True)
+
+
 def _start_component_scan() -> None:
     """Starts the component-adoption scanner (a Node process that only reads files) at the top of Stage 1, so its
     minutes overlap the other steps. _run_component_adoption_seed collects it. Nothing here is fatal: if the scanner
@@ -2015,25 +2032,25 @@ def _start_component_scan() -> None:
         out = Path(tempfile.mkdtemp(prefix="sgs-adoption-")) / "scan.json"
         handle = out.open("wb")
         proc = subprocess.Popen(["node", str(scanner), "--json"], stdout=handle, stderr=subprocess.DEVNULL)
+        _discard_component_scan()  # a scan left over from an earlier call in this process
         _ADOPTION_SCAN.update(proc=proc, out=out, handle=handle)
+        atexit.register(_discard_component_scan)
     except OSError as exc:
         print(f"Stage 1 (component adoption): scan not started early ({exc}); the seeder will run it")
 
 
 def _collect_component_scan() -> list[str]:
     """Waits for the early scan; returns the seeder arguments that use it, or [] when the seeder must scan itself."""
-    proc = _ADOPTION_SCAN.pop("proc", None)
-    out = _ADOPTION_SCAN.pop("out", None)
-    handle = _ADOPTION_SCAN.pop("handle", None)
+    proc, out, handle = _ADOPTION_SCAN.get("proc"), _ADOPTION_SCAN.get("out"), _ADOPTION_SCAN.get("handle")
     if proc is None:
         return []
     try:
         returncode = proc.wait(timeout=600)
     except subprocess.TimeoutExpired:
         proc.kill()
+        proc.wait()
         returncode = None
-    finally:
-        handle.close()
+    handle.close()
     return ["--scan-json", str(out)] if returncode == 0 and out.stat().st_size > 0 else []
 
 
@@ -2058,6 +2075,7 @@ def _run_component_adoption_seed(conn) -> None:
     script = Path(__file__).resolve().parent / "seed-component-adoption.py"
     if not script.exists():
         print("Stage 1 tail (component adoption): WARN script missing — ledger NOT refreshed")
+        _discard_component_scan()
         return
     try:
         result = subprocess.run(
@@ -2075,6 +2093,8 @@ def _run_component_adoption_seed(conn) -> None:
             )
     except Exception as exc:
         print(f"Stage 1 tail (component adoption): WARN {exc}")
+    finally:
+        _discard_component_scan()
 
 
 def _run_motion_fx_registry_seed(conn: sqlite3.Connection) -> None:
