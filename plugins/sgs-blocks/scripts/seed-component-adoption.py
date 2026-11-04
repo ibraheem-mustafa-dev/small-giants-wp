@@ -73,18 +73,25 @@ def resolve_db() -> Path:
     )
 
 
-def run_scanner() -> list[dict]:
-    proc = subprocess.run(
-        ["node", str(SCANNER), "--json"],
-        capture_output=True, text=True, encoding="utf-8", errors="replace",
-    )
-    if proc.returncode != 0:
-        raise SystemExit(
-            f"FATAL: scanner exited {proc.returncode}. It fails closed on a duplicate\n"
-            f"surface name (the `name` column is the PRIMARY KEY), so this is a real\n"
-            f"stop, not a flake.\n--- stderr ---\n{proc.stderr[:4000]}"
+def run_scanner(scan_json: Path | None = None) -> list[dict]:
+    """The scanner's rows. `scan_json` is the output of a `node scan-component-adoption.js --json` run the caller
+    already did (sgs-update-v2.py starts it at the top of Stage 1 so it overlaps the other steps); without it the
+    scanner runs here."""
+    if scan_json is not None:
+        stdout = Path(scan_json).read_text(encoding="utf-8")
+    else:
+        proc = subprocess.run(
+            ["node", str(SCANNER), "--json"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
         )
-    data = json.loads(proc.stdout)
+        if proc.returncode != 0:
+            raise SystemExit(
+                f"FATAL: scanner exited {proc.returncode}. It fails closed on a duplicate\n"
+                f"surface name (the `name` column is the PRIMARY KEY), so this is a real\n"
+                f"stop, not a flake.\n--- stderr ---\n{proc.stderr[:4000]}"
+            )
+        stdout = proc.stdout
+    data = json.loads(stdout)
     rows = data["rows"]
     if not rows:
         raise SystemExit("FATAL: scanner returned zero surfaces — a broken probe, not a clean tree.")
@@ -126,9 +133,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--apply", action="store_true", help="write to the DB (default: dry run)")
     ap.add_argument("--check", action="store_true", help="exit 1 if the table is stale")
+    ap.add_argument("--scan-json", type=Path, help="use this scanner output instead of running the scanner")
     args = ap.parse_args()
 
-    rows = run_scanner()
+    rows = run_scanner(args.scan_json)
     db = resolve_db()
     conn = sqlite3.connect(db)
     ensure_schema(conn)
