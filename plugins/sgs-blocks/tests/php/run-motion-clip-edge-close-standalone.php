@@ -60,10 +60,10 @@ $close_css = static function ( array $from, array $to, array $close, array $devi
 $tier_decls = static function ( string $css, string $tier ): array {
 	$px = array( 'tablet' => '1023', 'mobile' => '767' );
 	if ( 'desktop' === $tier ) {
-		$css  = preg_replace( '/@media \([^)]*\)\{[^{}]*\{[^{}]*\}\}/', '', $css );
+		$css  = preg_replace( '/@media ?\([^)]*\)\{[^{}]*\{[^{}]*\}\}/', '', $css );
 		$body = preg_match( '/' . preg_quote( SEL, '/' ) . '\{([^{}]*)\}/', $css, $m ) ? $m[1] : '';
 	} else {
-		$body = preg_match( '/@media \(max-width:' . $px[ $tier ] . 'px\)\{' . preg_quote( SEL, '/' ) . '\{([^{}]*)\}\}/', $css, $m ) ? $m[1] : '';
+		$body = preg_match( '/@media ?\(max-width:' . $px[ $tier ] . 'px\)\{' . preg_quote( SEL, '/' ) . '\{([^{}]*)\}\}/', $css, $m ) ? $m[1] : '';
 	}
 	$out = array();
 	foreach ( array_filter( explode( ';', $body ), 'strlen' ) as $decl ) {

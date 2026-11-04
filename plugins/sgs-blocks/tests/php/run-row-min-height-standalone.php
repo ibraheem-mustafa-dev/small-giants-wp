@@ -75,8 +75,8 @@ $tiers = array(
 foreach ( array( 'sgs/site-header-row', 'sgs/site-footer-row' ) as $slug ) {
 	$out = render_row_block( $slug, array( 'minHeight' => $tiers ) );
 	ok( 1 === preg_match( '/\.sgs-container-[a-z0-9]+\{min-height:84px\}/', $out['css'] ), "$slug: desktop min-height 84px" );
-	ok( 1 === preg_match( '/@media \(max-width:1023px\)\{\.sgs-container-[a-z0-9]+\{min-height:72px\}\}/', $out['css'] ), "$slug: tablet min-height 72px" );
-	ok( 1 === preg_match( '/@media \(max-width:767px\)\{\.sgs-container-[a-z0-9]+\{min-height:72px\}\}/', $out['css'] ), "$slug: mobile min-height 72px" );
+	ok( 1 === preg_match( '/@media ?\(max-width:1023px\)\{\.sgs-container-[a-z0-9]+\{min-height:72px\}\}/', $out['css'] ), "$slug: tablet min-height 72px" );
+	ok( 1 === preg_match( '/@media ?\(max-width:767px\)\{\.sgs-container-[a-z0-9]+\{min-height:72px\}\}/', $out['css'] ), "$slug: mobile min-height 72px" );
 	ok( 1 === preg_match( '/\.sgs-container-[a-z0-9]+\{display:flex;flex-direction:column\}/', $out['css'] ), "$slug: the row becomes a flex column so its band fills the taller box" );
 	ok( 1 === preg_match( '/__inner\{[^}]*flex:1\}/', $out['css'] ), "$slug: the content band grows to fill the box (content stays aligned inside it)" );
 	ok( false === strpos( $out['html'], ' style="' ), "$slug: no inline style attribute" );

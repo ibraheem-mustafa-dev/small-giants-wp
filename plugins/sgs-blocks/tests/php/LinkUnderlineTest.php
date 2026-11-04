@@ -27,11 +27,11 @@ final class LinkUnderlineTest extends TestCase {
 		$css = $this->text( array( 'linkUnderline' => 'sweep' ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);[^}]*background-size:0 var\(--wp--custom--link-sweep--thickness, 1px\);/', $css );
-		$this->assertMatchesRegularExpression( '/@media \(hover: hover\)[^{]*\{[^{]* a:hover\{background-size:100% var\(--wp--custom--link-sweep--thickness, 1px\);?\}/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]* a:hover\{background-size:100% var\(--wp--custom--link-sweep--thickness, 1px\);?\}/', $css, 'hover sits behind the touch guard' );
 		$this->assertMatchesRegularExpression( '/ a:focus-visible\{background-size:100% /', $css, 'keyboard focus shows the line too' );
 		$this->assertStringContainsString( ' a:dir(rtl){background-position:100% 100%;}', $css );
-		$this->assertMatchesRegularExpression( '/@media \(prefers-reduced-motion: reduce\)\{[^{]* a\{transition:none;\}\}/', $css );
-		$this->assertMatchesRegularExpression( '/@media \(forced-colors: active\)\{[^{,]* a\{text-decoration:underline;\}\}/', $css, 'forced colours: the line shows at rest' );
+		$this->assertMatchesRegularExpression( '/@media ?\(prefers-reduced-motion: reduce\)\{[^{]* a\{transition:none;\}\}/', $css );
+		$this->assertMatchesRegularExpression( '/@media ?\(forced-colors: active\)\{[^{,]* a\{text-decoration:underline;\}\}/', $css, 'forced colours: the line shows at rest' );
 	}
 
 	public function test_a_set_thickness_replaces_the_theme_token(): void {
@@ -46,7 +46,7 @@ final class LinkUnderlineTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:underline;\}/', $this->text( array( 'linkUnderline' => 'always' ) )['css'] );
 		$none = $this->text( array( 'linkUnderline' => 'none' ) )['css'];
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration:none;\}/', $none );
-		$this->assertMatchesRegularExpression( '/@media \(forced-colors: active\)\{[^{]* a\{text-decoration:underline;\}\}/', $none, 'forced colours restore the line even for none' );
+		$this->assertMatchesRegularExpression( '/@media ?\(forced-colors: active\)\{[^{]* a\{text-decoration:underline;\}\}/', $none, 'forced colours restore the line even for none' );
 	}
 
 	public function test_unset_or_off_enum_prints_nothing(): void {
@@ -76,9 +76,9 @@ final class LinkUnderlineTest extends TestCase {
 		$css = $this->text( array( 'linkUnderline' => 'hover', 'linkUnderlineThickness' => '2px', 'linkUnderlineOffset' => '4px', 'linkUnderlineColour' => '#FFFAF0' ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:none;text-decoration-thickness:2px;text-decoration-color:#FFFAF0;text-underline-offset:4px;\}/', $css, 'no line at rest, the longhands set' );
-		$this->assertMatchesRegularExpression( '/@media \(hover: hover\)[^{]*\{[^{]* a:hover\{text-decoration-line:underline;?\}/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]* a:hover\{text-decoration-line:underline;?\}/', $css, 'hover sits behind the touch guard' );
 		$this->assertMatchesRegularExpression( '/ a:focus-visible\{text-decoration-line:underline;?\}/', $css, 'keyboard focus shows the line too' );
-		$this->assertMatchesRegularExpression( '/@media \(forced-colors: active\)\{[^{]* a\{text-decoration-line:underline;\}\}/', $css, 'forced colours: the line shows at rest, as longhands' );
+		$this->assertMatchesRegularExpression( '/@media ?\(forced-colors: active\)\{[^{]* a\{text-decoration-line:underline;\}\}/', $css, 'forced colours: the line shows at rest, as longhands' );
 	}
 
 	public function test_shows_on_hover_without_a_colour_prints_no_colour_or_offset(): void {

@@ -58,7 +58,7 @@ final class TimelineHorizontalPanelTest extends TestCase {
 		$this->assertStringNotContainsString( 'transition:color', $off['css'] );
 
 		$on = $this->block( array( 'panelTransitionMs' => 500 ) );
-		$this->assertMatchesRegularExpression( '/@media \(prefers-reduced-motion:no-preference\)\{[^@]*\.sgs-timeline__date\{transition:color 500ms ease,-webkit-text-stroke-color 500ms ease;\}[^@]*\.sgs-timeline__entry\{transition:opacity 500ms ease,scale 500ms ease;\}\}/', $on['css'] );
+		$this->assertMatchesRegularExpression( '/@media ?\(prefers-reduced-motion:no-preference\)\{[^@]*\.sgs-timeline__date\{transition:color 500ms ease,-webkit-text-stroke-color 500ms ease;\}[^@]*\.sgs-timeline__entry\{transition:opacity 500ms ease,scale 500ms ease;\}\}/', $on['css'] );
 
 		$capped = $this->block( array( 'panelTransitionMs' => 99999 ) );
 		$this->assertStringContainsString( 'transition:color 3000ms', $capped['css'] );

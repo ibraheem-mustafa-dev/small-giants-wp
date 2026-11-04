@@ -54,7 +54,7 @@ $parse = static function ( string $css ): array {
 	$counts   = array();
 	$media    = array( 'tablet' => '1023', 'mobile' => '767' );
 	foreach ( $media as $tier => $px ) {
-		$pattern = '/@media \(max-width:' . $px . 'px\)\{([^{}]+)\{([^{}]*)\}\}/';
+		$pattern = '/@media ?\(max-width:' . $px . 'px\)\{([^{}]+)\{([^{}]*)\}\}/';
 		if ( preg_match_all( $pattern, $css, $m, PREG_SET_ORDER ) ) {
 			foreach ( $m as $hit ) {
 				if ( preg_match( '/data-sgs-loop-i="(\d+)"/', $hit[1], $i ) && preg_match( '/--sgs-me-delay:(\d+)ms/', $hit[2], $d ) ) {

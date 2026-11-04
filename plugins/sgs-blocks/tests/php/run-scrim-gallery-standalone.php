@@ -181,7 +181,7 @@ ok(
 );
 ok( ! $has( $style_css, "max-width:  90vw;\n\tmax-height: 80vh;" ), 'NEGATIVE CONTROL shape: the old uncapped 90vw image rule is gone' );
 $mobile_block = '';
-if ( preg_match( '/@media \( max-width: 767px \) \{(.*?)\n\}/s', $style_css, $m ) ) {
+if ( preg_match( '/@media ?\( max-width: 767px \) \{(.*?)\n\}/s', $style_css, $m ) ) {
 	$mobile_block = $m[1];
 }
 ok(

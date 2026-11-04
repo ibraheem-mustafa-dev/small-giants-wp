@@ -239,7 +239,7 @@ namespace {
 	fx_render( 'sgs/team-member', fx_doc( 'image', array( 'effects' => array( $float ) ) ), $card );
 	$css = implode( '', $GLOBALS['sgs_collected_css'] );
 	fx_check( 1 === preg_match( '/\.sgs-m-[0-9a-f]{10} \.sgs-team-member__photo\{--sgs-float-travel:12px;--sgs-float-period:4000ms;--sgs-float-direction:alternate;--sgs-float-easing:ease-in-out;\}/', $css ), 'desktop rule writes travel, period, direction (a choice) and easing: ' . $css );
-	fx_check( 1 === preg_match( '/@media \(max-width:1023px\)\{\.sgs-m-[0-9a-f]{10} \.sgs-team-member__photo\{--sgs-float-travel:8px;\}\}/', $css ) && 1 === preg_match( '/@media \(max-width:767px\)\{[^}]*\{--sgs-float-period:var\(--wp--custom--duration--slow\);\}\}/', $css ), 'tablet and mobile overrides sit in their @media rules' );
+	fx_check( 1 === preg_match( '/@media ?\(max-width:1023px\)\{\.sgs-m-[0-9a-f]{10} \.sgs-team-member__photo\{--sgs-float-travel:8px;\}\}/', $css ) && 1 === preg_match( '/@media ?\(max-width:767px\)\{[^}]*\{--sgs-float-period:var\(--wp--custom--duration--slow\);\}\}/', $css ), 'tablet and mobile overrides sit in their @media rules' );
 	fx_render( 'sgs/team-member', fx_doc( 'root', array( 'effects' => array( array( 'id' => 'ken-burns', 'effect' => 'ken-burns', 'values' => array( 'zoomStart' => 104, 'zoomEnd' => 110 ) ) ) ) ), $card );
 	fx_check( false === strpos( implode( '', $GLOBALS['sgs_collected_css'] ), '--sgs-kb-s' ), 'a property two fields share (ken-burns --sgs-kb-s, a state pair) is not written here' );
 
@@ -260,7 +260,7 @@ namespace {
 	fx_check( false !== strpos( $css, '--sgs-glare-colour:var(--wp--preset--color--accent, currentColor);--sgs-glare-opacity:0.4;--sgs-glare-size:60%;' ), 'glare writes its colour (resolved to the palette variable), opacity and size: ' . $css );
 	fx_render( 'sgs/team-member', fx_doc( 'image', array( 'effects' => array( array( 'id' => 'scrub', 'effect' => 'scrub', 'values' => array( 'startElement' => 'top', 'startViewport' => 85, 'smoothing' => 800 ), 'devices' => array( 'mobile' => array( 'startViewport' => 95 ) ) ) ) ) ), $card );
 	$css = implode( '', $GLOBALS['sgs_collected_css'] );
-	fx_check( false !== strpos( $css, '--sgs-scrub-start:top 85%;--sgs-scrub-smoothing:800ms;' ) && 1 === preg_match( '/@media \(max-width:767px\)\{[^}]*\{--sgs-scrub-start:top 95%;\}\}/', $css ), 'scrub start as a whole position with the desktop edge, smoothing, and the mobile start in its @media: ' . $css );
+	fx_check( false !== strpos( $css, '--sgs-scrub-start:top 85%;--sgs-scrub-smoothing:800ms;' ) && 1 === preg_match( '/@media ?\(max-width:767px\)\{[^}]*\{--sgs-scrub-start:top 95%;\}\}/', $css ), 'scrub start as a whole position with the desktop edge, smoothing, and the mobile start in its @media: ' . $css );
 	fx_render( 'sgs/container', fx_doc( 'root', array( 'effects' => array( array( 'id' => 'pin-scrub', 'effect' => 'pin-scrub', 'values' => array( 'pinLength' => '150vh', 'hold' => 0.2, 'startElement' => 'top', 'startViewport' => 0 ), 'devices' => array( 'tablet' => array( 'pinLength' => '200vh' ) ) ) ) ) ), '<div class="wp-block-sgs-container sgs-container"><div class="sgs-container__inner"></div></div>' );
 	$css = implode( '', $GLOBALS['sgs_collected_css'] );
 	$pin = Emitter::layer_attrs( array( 'effect' => 'pin-scrub', 'values' => array( 'hold' => 0.2, 'startElement' => 'top', 'startViewport' => 0 ) ) );

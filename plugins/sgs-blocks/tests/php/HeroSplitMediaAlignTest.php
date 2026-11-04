@@ -29,6 +29,6 @@ final class HeroSplitMediaAlignTest extends TestCase {
 			array( 'variant' => 'split', 'headline' => 'Hi', 'splitMediaAlign' => array( 'mobile' => 'center' ) )
 		);
 		$this->assertMatchesRegularExpression( '/sgs-hero__media\{display:flex\}/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^{]*sgs-hero__media\{justify-content:center;?\}\}/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767px\)\{[^{]*sgs-hero__media\{justify-content:center;?\}\}/', $out['css'] );
 	}
 }

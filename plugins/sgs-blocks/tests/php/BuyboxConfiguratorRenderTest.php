@@ -192,7 +192,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__pill-label{font-size:26px;}', $html );
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__sub-label{font-size:14px;}', $html );
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__term-description{font-size:12px;}', $html );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^}]*pill-label\{font-size:20px;\}\}/', $html, 'the mobile tier prints inside the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767px\)\{[^}]*pill-label\{font-size:20px;\}\}/', $html, 'the mobile tier prints inside the mobile query' );
 	}
 
 	public function test_priced_pills_take_their_own_radius_padding_gap_and_size(): void {

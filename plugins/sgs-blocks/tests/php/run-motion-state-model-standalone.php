@@ -173,7 +173,7 @@ $check( sgs_accordion_icon_turn_on_model( $bar( $turn ) ) === false && sgs_accor
 
 // 5. Reduced motion: the animation name every rule sets comes from `--sgs-mt-in`, defined only under no-preference.
 $triggers_css = (string) file_get_contents( $root . '/assets/css/motion-triggers.css' );
-preg_match_all( '/@media \(prefers-reduced-motion: no-preference\) \{(.*?)\n\}\n/s', $triggers_css, $m );
+preg_match_all( '/@media ?\(prefers-reduced-motion: no-preference\) \{(.*?)\n\}\n/s', $triggers_css, $m );
 $no_pref = implode( "\n", $m[1] );
 $outside = str_replace( $no_pref, '', $triggers_css );
 $check( $has( $no_pref, '--sgs-mt-in:' ) && ! $has( $outside, '--sgs-mt-in:' ), 'reduced motion: --sgs-mt-in (the name list every state rule animates) is defined only inside prefers-reduced-motion: no-preference' );

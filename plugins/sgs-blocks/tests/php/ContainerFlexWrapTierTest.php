@@ -39,6 +39,6 @@ final class ContainerFlexWrapTierTest extends TestCase {
 		);
 		$all = $out['html'] . $out['css'];
 		$this->assertStringContainsString( 'flex-wrap:wrap', $all );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^}]*\{[^}]*flex-wrap:nowrap/', $all );
+		$this->assertMatchesRegularExpression( '/@media ?\(max-width:767px\)\{[^}]*\{[^}]*flex-wrap:nowrap/', $all );
 	}
 }
