@@ -1,0 +1,70 @@
+// Editor-canvas preview for the filter look extension (product-filter-look.js).
+// The front-end rules are emitted per instance by includes/product-filter-look.php; each modifier below is
+// added only when its setting is set, and reads the custom property the preview filter sets on the block wrapper.
+.sgs-filter-look-preview--chip-weight .wc-block-product-filter-chips__item {
+	font-weight: var(--sgs-fl-chip-weight);
+}
+
+.sgs-filter-look-preview--chip-border-width .wc-block-product-filter-chips__item {
+	border-width: var(--sgs-fl-chip-border-width);
+}
+
+.sgs-filter-look-preview--chip-fill .wc-block-product-filter-chips__item {
+	background: var(--sgs-fl-chip-fill);
+}
+
+.sgs-filter-look-preview--chip-edge .wc-block-product-filter-chips__item {
+	border-color: var(--sgs-fl-chip-edge);
+}
+
+.sgs-filter-look-preview--chip-text .wc-block-product-filter-chips__item {
+	color: var(--sgs-fl-chip-text);
+}
+
+.sgs-filter-look-preview--chip-chosen-fill .wc-block-product-filter-chips__item[aria-checked="true"] {
+	background: var(--sgs-fl-chip-chosen-fill);
+}
+
+.sgs-filter-look-preview--chip-chosen-edge .wc-block-product-filter-chips__item[aria-checked="true"] {
+	border-color: var(--sgs-fl-chip-chosen-edge);
+}
+
+.sgs-filter-look-preview--chip-chosen-text .wc-block-product-filter-chips__item[aria-checked="true"] {
+	color: var(--sgs-fl-chip-chosen-text);
+}
+
+.sgs-filter-look-preview--count-pill .wc-block-product-filter-chips__count {
+	padding-inline: 0.5em;
+	min-width: 1.5em;
+	text-align: center;
+	border-radius: var(--sgs-fl-count-radius, 999px);
+}
+
+.sgs-filter-look-preview--count-fill .wc-block-product-filter-chips__count {
+	background-color: var(--sgs-fl-count-fill);
+}
+
+.sgs-filter-look-preview--count-text .wc-block-product-filter-chips__count {
+	color: var(--sgs-fl-count-text);
+}
+
+.sgs-filter-look-preview--sort-fill select {
+	background-color: var(--sgs-fl-sort-fill);
+}
+
+.sgs-filter-look-preview--sort-border-width select {
+	border-style: solid;
+	border-width: var(--sgs-fl-sort-border-width);
+}
+
+.sgs-filter-look-preview--sort-edge select {
+	border-color: var(--sgs-fl-sort-edge);
+}
+
+.sgs-filter-look-preview--sort-radius select {
+	border-radius: var(--sgs-fl-sort-radius);
+}
+
+.sgs-filter-look-preview--sort-weight select {
+	font-weight: var(--sgs-fl-sort-weight);
+}

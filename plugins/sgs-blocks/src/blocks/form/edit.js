@@ -463,6 +463,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'savedNotice', `.${ formPreviewScope } .sgs-form__saved-notice`, previewTier ),
 		labelColourValue && `.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
 		requiredMarkValue && `.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
+		tierValueOf( attributes.requiredMarkHidden, previewTier ) && `.${ formPreviewScope } .sgs-form-field__required{display:none;}`,
 		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
 		trackColourValue && `.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,
 		( trackColourValue || trackHeightValue ) && `.${ formPreviewScope } .sgs-form__progress{border-radius:999px;overflow:hidden;}`,

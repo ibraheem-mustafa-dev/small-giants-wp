@@ -37,6 +37,7 @@ import {
 	tierBoxShorthand,
 	tierLengthPreview,
 	tierValueOf,
+	resolveShadowPreviewComposed,
 } from '../../utils';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -93,6 +94,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributes.backgroundColour && ! attributes.backgroundColourGradient
 			? attributes.backgroundColour
 			: '';
+
+	// A tile's border is judged against the tile's own fill, falling back to the field's fill behind it.
+	const formFieldTilesTileContrastAgainst = attributes.tileBackgroundColour || formFieldTilesContrastAgainst;
 
 
 	// columns is a TIER OBJECT (Spec 35 pass 4) — this control only ever edits
@@ -161,6 +165,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			delete style.borderStyle;
 			delete style.borderWidth;
 			delete style.borderColor;
+			const selectedFill = resolveColourToken( attributes.tileSelectedBackgroundColour, colourPalette );
+			if ( selectedFill ) {
+				style.backgroundColor = selectedFill;
+			}
+			const selectedBorder = resolveColourToken( attributes.tileSelectedBorderColour, colourPalette );
+			if ( selectedBorder ) {
+				style.borderColor = selectedBorder;
+			}
+			const selectedShadow = resolveShadowPreviewComposed( attributes.tileSelectedShadow, attributes.tileSelectedShadowColour );
+			if ( selectedShadow ) {
+				style.boxShadow = selectedShadow;
+			}
 		}
 		const padding = tierBoxShorthand( attributes.tilePadding, previewTier );
 		if ( padding ) {
@@ -176,6 +192,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		}
 		return style;
 	};
+	// The tile(s) named by defaultValue (one value, or a comma list on a multi-select field) show chosen; with no
+	// default, or one that matches no tile, the first tile previews the chosen state so its settings stay visible.
+	const defaultValues = String( attributes.defaultValue || '' ).split( ',' ).map( ( v ) => v.trim() ).filter( Boolean );
+	const defaultedIndexes = tiles
+		.map( ( tile, index ) => ( defaultValues.includes( String( tile.value || '' ) ) ? index : -1 ) )
+		.filter( ( index ) => index >= 0 )
+		.slice( 0, multiSelect ? undefined : 1 );
+	const chosenIndexes = defaultedIndexes.length ? defaultedIndexes : [ 0 ];
 	const tileLabelPaint = textPaintPreview( tileLabelColour, '', colourPalette );
 	const tileDescriptionPaint = textPaintPreview( tileDescriptionColour, '', colourPalette );
 
@@ -574,6 +598,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourValue={ attributes.tileBorderColour }
 						onColourChange={ ( val ) => setAttributes( { tileBorderColour: val ?? '' } ) }
 						colourLinked={ true }
+						contrastAgainst={ formFieldTilesTileContrastAgainst }
 						radiusValues={ {
 							base: attributes.tileRadius?.desktop ?? {},
 							tablet: attributes.tileRadius?.tablet ?? {},
@@ -676,15 +701,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								key={ index }
 								className={ [
 									'sgs-form-tile',
-									0 === index ? 'sgs-form-tile--selected' : '',
+									chosenIndexes.includes( index ) ? 'sgs-form-tile--selected' : '',
 								].filter( Boolean ).join( ' ' ) }
-								style={ tileSurface( 0 === index ) }
+								style={ tileSurface( chosenIndexes.includes( index ) ) }
 							>
 								<input
 									className="sgs-form-tile__input"
 									type={ multiSelect ? 'checkbox' : 'radio' }
 									name={ `preview-${ fieldName }` }
 									value={ tile.value || '' }
+									checked={ chosenIndexes.includes( index ) }
+									readOnly
 									disabled
 								/>
 								{ tile.icon && (

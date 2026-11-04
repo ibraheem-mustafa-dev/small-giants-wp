@@ -53,13 +53,15 @@
 					"order": 2,
 					"selector": ".sgs-form-tile--selected, .sgs-form-tile:has(input:checked)",
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "tileSelected",
 					"attrMap": {
 						"css:background-color": "tileSelectedBackgroundColour",
 						"css:border-color": "tileSelectedBorderColour",
-						"css:box-shadow": "tileSelectedShadow"
+						"css:box-shadow": "tileSelectedShadow",
+						"css:box-shadow-color": "tileSelectedShadowColour"
 					},
 					"_note": "The chosen tile (render.php, scoped to the field's uid class, after the stylesheet's selectedStyle rules so it outranks them on the same specificity). Empty keeps the selectedStyle look.",
 					"motion": false

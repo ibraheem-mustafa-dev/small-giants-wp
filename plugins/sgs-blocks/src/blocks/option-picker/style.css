@@ -99,6 +99,16 @@
 	appearance: none;
 }
 
+/* Resting and selected shadow and shift: editor preview of pillShadow, pillSelectedShadow and pillSelectedOffsetX/Y. */
+.sgs-option-picker__pill {
+	box-shadow: var(--sgs-op-shadow, none);
+}
+
+.sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
+	box-shadow: var(--sgs-op-sel-shadow, var(--sgs-op-shadow, none));
+	translate: var(--sgs-op-sel-translate, none);
+}
+
 /* ── Pill base ─────────────────────────────────────────────────────── */
 
 .sgs-option-picker__pill {
