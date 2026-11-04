@@ -6,7 +6,7 @@
  * that holds the block. This is the gate that loads it.
  *
  * Usage (repo root; the mirror must already hold the build under test, `scripts/local-wp/sync-build.sh <local-site>`):
- *   node plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs --site local-indus [--ids 90,149] [--limit 80] [--strict-invalid]
+ *   node plugins/sgs-blocks/scripts/editor-crash/check-editor-loads.mjs --site local-indus [--ids 90,149] [--limit N] [--strict-invalid]
  *
  * What it records for every target (each in its own editor load):
  *   crashed    elements the editor draws for a block whose edit() threw: "This block has encountered an error ..."
@@ -37,16 +37,25 @@ const option = ( name, fallback = null ) => {
 };
 const siteKey = option( 'site' );
 if ( ! siteKey || ! /^local-[a-z0-9-]+$/.test( siteKey ) ) {
-	console.error( 'Usage: check-editor-loads.mjs --site local-<name> [--ids 1,2] [--limit 80] [--strict-invalid]\nOnly a local mirror is accepted: this opens real content in the editor.' );
+	console.error( 'Usage: check-editor-loads.mjs --site local-<name> [--ids 1,2] [--limit N] [--strict-invalid]\nOnly a local mirror is accepted: this opens real content in the editor.' );
 	process.exit( 2 );
 }
 const onlyIds = option( 'ids' ) ? option( 'ids' ).split( ',' ).map( ( v ) => v.trim() ).filter( Boolean ) : null;
-const limit = Number( option( 'limit', '80' ) );
+const limit = Number( option( 'limit', '0' ) ); // 0 = every target
 const strictInvalid = args.includes( '--strict-invalid' );
 const reporter = makeReporter();
 const { verdict, control, note, attempt } = reporter;
 
 const CRASH_TEXT = /has encountered an error/i;
+const isContentWrite = ( entry ) => {
+	let decoded = entry;
+	try {
+		decoded = decodeURIComponent( entry );
+	} catch ( error ) {
+		// keep the raw text
+	}
+	return CONTENT_WRITE.test( decoded );
+};
 const CONTENT_WRITE = /\/wp\/v2\/(posts|pages|templates|template-parts|wp_template|wp_template_part|blocks|navigation|global-styles|menu-items)\b/;
 
 /** In page: the blocks the editor drew as crashed or invalid, searched in the editor document and its canvas iframe. */
@@ -108,6 +117,7 @@ const context = await browser.newContext( { viewport: { width: 1440, height: 900
 const page = await context.newPage();
 const writes = [];
 let consoleErrors = [];
+page.on( 'dialog', ( dialog ) => dialog.accept().catch( () => {} ) );
 page.on( 'pageerror', ( error ) => consoleErrors.push( `pageerror: ${ String( error.message ).slice( 0, 200 ) }` ) );
 page.on( 'console', ( message ) => {
 	if ( message.type() === 'error' && ! /Failed to load resource/i.test( message.text() ) ) consoleErrors.push( message.text().slice( 0, 200 ) );
@@ -120,7 +130,7 @@ const guardWrites = () => page.route( '**/*', ( route ) => {
 } );
 
 const finish = async () => {
-	verdict( ! writes.some( ( w ) => CONTENT_WRITE.test( w ) ), 'no-content-write', { aborted: writes.length, content: writes.filter( ( w ) => CONTENT_WRITE.test( w ) ).slice( 0, 3 ) } );
+	verdict( ! writes.some( isContentWrite ), 'no-content-write', { aborted: writes.length, content: writes.filter( isContentWrite ).slice( 0, 3 ) } );
 	await browser.close();
 	process.exit( reporter.exitCode() );
 };
@@ -166,8 +176,15 @@ const targets = await attempt( 'list-targets', async () => {
 		const nonce = window.wpApiSettings?.nonce;
 		const root = window.wpApiSettings?.root;
 		const get = async ( route ) => {
-			const response = await fetch( `${ root }${ route }${ route.includes( '?' ) ? '&' : '?' }per_page=100&context=edit&_fields=id,slug,title`, { headers: { 'X-WP-Nonce': nonce } } );
-			return response.ok ? response.json() : [];
+			const all = [];
+			for ( let pageNumber = 1; pageNumber <= 50; pageNumber++ ) {
+				const response = await fetch( `${ root }${ route }${ route.includes( '?' ) ? '&' : '?' }per_page=100&page=${ pageNumber }&context=edit&_fields=id,slug,title`, { headers: { 'X-WP-Nonce': nonce } } );
+				if ( ! response.ok ) break;
+				const batch = await response.json();
+				all.push( ...batch );
+				if ( batch.length < 100 ) break;
+			}
+			return all;
 		};
 		const [ pages, posts, templates, parts ] = await Promise.all( [ get( 'wp/v2/pages?status=any' ), get( 'wp/v2/posts?status=any' ), get( 'wp/v2/templates' ), get( 'wp/v2/template-parts' ) ] );
 		return { pages, posts, templates, parts };
@@ -178,8 +195,10 @@ const targets = await attempt( 'list-targets', async () => {
 		...found.templates.map( ( t ) => ( { label: `template ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template&postId=${ encodeURIComponent( t.id ) }&canvas=edit` } ) ),
 		...found.parts.map( ( t ) => ( { label: `part ${ t.id }`, id: t.id, url: `/wp-admin/site-editor.php?postType=wp_template_part&postId=${ encodeURIComponent( t.id ) }&canvas=edit` } ) ),
 	];
-	const chosen = ( onlyIds ? list.filter( ( t ) => onlyIds.includes( t.id ) ) : list ).slice( 0, limit );
+	const wanted = onlyIds ? list.filter( ( t ) => onlyIds.includes( t.id ) ) : list;
+	const chosen = limit > 0 ? wanted.slice( 0, limit ) : wanted;
 	if ( ! chosen.length ) throw new Error( 'no pages, posts, templates or template parts to open' );
+	if ( chosen.length < wanted.length ) note( 'truncated-by-limit', { opened: chosen.length, available: wanted.length } );
 	return chosen;
 } );
 if ( ! targets ) await finish();

@@ -36,7 +36,9 @@ import time
 from pathlib import Path
 from typing import Callable, Iterator
 
-DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+
 KEEP = 5
 ISOLATED_ENV = "SGS_DEPLOY_ISOLATED"
 # Folders the build's leftovers are collected from (the deploy roots), and what is never cached.
@@ -64,9 +66,14 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def run_key(repo: Path, *, isolated: bool, no_cache: bool, db: Path = DB_PATH) -> str | None:
+def run_key(repo: Path, *, isolated: bool, no_cache: bool, db: Path | None = None) -> str | None:
     """The cache key for this run, or None when the cache must not be used."""
     if no_cache or not isolated:
+        return None
+    # The database the gates read is the one framework_db_path() names ($SGS_FRAMEWORK_DB, else the shared one), so
+    # that is the one hashed; a missing file gives no key, because a pass for "no database" proves nothing.
+    db = db or framework_db_path()
+    if not db.is_file():
         return None
     tree = _git(repo, "rev-parse", "HEAD^{tree}")
     return hashlib.sha256(f"{tree}\n{_sha256(db)}".encode()).hexdigest()[:32]

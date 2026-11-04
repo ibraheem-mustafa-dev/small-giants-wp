@@ -4534,9 +4534,11 @@ def _mode_b_refresh_upstream(
 
     # --- Final metadata update ---
     now_ts = datetime.now(timezone.utc).isoformat()
+    recorded = False
     if not dry_run:
-        upsert_metadata(conn, "wp_version_indexed", wp_version)
-        upsert_metadata(conn, "last_full_refresh_ts", now_ts)
+        recorded = record_upstream_refresh(conn, wp_version, now_ts, sources_succeeded)
+        if not recorded:
+            print("\nStage 2 [Mode B]: every source failed, so the refresh is not recorded and the next run scrapes again.")
         print(
             f"\nStage 2 [Mode B]: complete. "
             f"Sources succeeded: {len(sources_succeeded)}, "
@@ -4558,11 +4560,22 @@ def _mode_b_refresh_upstream(
         "new_rows": new_rows,
         "items_per_source": items_per_source,
         "wp_version_indexed": wp_version,
-        "last_full_refresh_ts": now_ts if not dry_run else None,
+        "last_full_refresh_ts": now_ts if recorded else None,
         "dry_run": dry_run,
     }
 
+
 UPSTREAM_CACHE_HOURS = 24
+
+
+def record_upstream_refresh(conn: sqlite3.Connection, wp_version: str, now_ts: str, sources_succeeded: list[str]) -> bool:
+    """Stamps the refresh in schema_metadata unless every source failed (no network): a stamp over nothing would make
+    the next reseed skip the scrape as cached. One source that always fails (the field guide) does not block it."""
+    if not sources_succeeded:
+        return False
+    upsert_metadata(conn, "wp_version_indexed", wp_version)
+    upsert_metadata(conn, "last_full_refresh_ts", now_ts)
+    return True
 
 
 def _upstream_cache_hit(conn: sqlite3.Connection, wp_version: str, now: datetime | None = None) -> dict | None:
@@ -6404,6 +6417,8 @@ def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
 # ---------------------------------------------------------------------------
 
 SCANNER_WORKERS = 6
+# A scanner that takes 120s on its own gets twice that when six run at once.
+SCANNER_TIMEOUT_S = 240
 
 
 def _prerun_scanners(scripts_dir: Path, scanners: list[tuple[str, str, list[str]]], workers: int = SCANNER_WORKERS) -> dict[str, object]:
@@ -6420,7 +6435,7 @@ def _prerun_scanners(scripts_dir: Path, scanners: list[tuple[str, str, list[str]
             return label, None
         command = ["node" if rel_path.endswith(".js") else sys.executable, str(path)] + args
         try:
-            return label, subprocess.run(command, capture_output=True, text=True, timeout=120, encoding="utf-8", errors="replace")
+            return label, subprocess.run(command, capture_output=True, text=True, timeout=SCANNER_TIMEOUT_S, encoding="utf-8", errors="replace")
         except Exception as exc:  # re-raised in the caller's own try block
             return label, exc
 

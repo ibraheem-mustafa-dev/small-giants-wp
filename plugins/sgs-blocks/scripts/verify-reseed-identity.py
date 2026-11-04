@@ -38,6 +38,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -63,20 +64,22 @@ def norm_cell(value: object, roots: list[str]) -> object:
     return value
 
 
-def table_rows(conn: sqlite3.Connection, table: str, roots: list[str]) -> tuple[list[str], set[tuple]]:
+def table_rows(conn: sqlite3.Connection, table: str, roots: list[str]) -> tuple[list[str], Counter, list[str]]:
+    """(kept columns, rows as a multiset, every column name). Duplicate rows count; time columns are left out."""
     info = list(conn.execute(f'PRAGMA table_info("{table}")'))
+    every = [r[1] for r in info]
     keep = [r[1] for r in info if not TIME_COLUMN.search(r[1])]
     if not keep:
-        return [], set()
+        return [], Counter(), every
     rows = conn.execute(f'SELECT {", ".join(chr(34) + c + chr(34) for c in keep)} FROM "{table}"').fetchall()
     if table == "schema_metadata" and "key" in keep:
         k = keep.index("key")
         rows = [r for r in rows if not str(r[k]).startswith("last_")]
-    return keep, {tuple(norm_cell(v, roots) for v in r) for r in rows}
+    return keep, Counter(tuple(norm_cell(v, roots) for v in r) for r in rows), every
 
 
 def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[str]) -> list[str]:
-    """Differences between two databases; empty when identical. Rows are compared as sets (sorted order is moot)."""
+    """Differences between two databases; empty when identical. Rows are compared as multisets (order is moot, duplicates count)."""
     out: list[str] = []
     a = sqlite3.connect(f"file:{a_path.as_posix()}?mode=ro", uri=True)
     b = sqlite3.connect(f"file:{b_path.as_posix()}?mode=ro", uri=True)
@@ -85,14 +88,14 @@ def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[st
         for name in sorted(set(ta) ^ set(tb)):
             out.append(f"table {name}: only in {'baseline' if name in ta else 'candidate'}")
         for name in sorted(set(ta) & set(tb)):
-            cols_a, rows_a = table_rows(a, name, roots_a)
-            cols_b, rows_b = table_rows(b, name, roots_b)
-            if cols_a != cols_b:
-                out.append(f"table {name}: columns differ {cols_a} vs {cols_b}")
+            cols_a, rows_a, every_a = table_rows(a, name, roots_a)
+            cols_b, rows_b, every_b = table_rows(b, name, roots_b)
+            if every_a != every_b:
+                out.append(f"table {name}: columns differ {every_a} vs {every_b}")
                 continue
             if rows_a == rows_b:
                 continue
-            only_a, only_b = sorted(rows_a - rows_b, key=repr), sorted(rows_b - rows_a, key=repr)
+            only_a, only_b = sorted((rows_a - rows_b).elements(), key=repr), sorted((rows_b - rows_a).elements(), key=repr)
             out.append(f"table {name}: {len(only_a)} row(s) only in baseline, {len(only_b)} only in candidate")
             for label, rows in (("baseline", only_a), ("candidate", only_b)):
                 for row in rows[:SHOW]:
@@ -127,16 +130,22 @@ def compare_logs(base_log: Path, cand_log: Path, base: Path, cand: Path) -> list
     return out
 
 
-def changed_files(repo: Path) -> list[str]:
-    done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=repo, capture_output=True, text=True, check=True)
-    paths = []
-    for line in done.stdout.splitlines():
-        path = line[3:].strip().strip('"')
-        if " -> " in path:
-            path = path.split(" -> ", 1)[1]
-        if line[:2].strip() != "D":
-            paths.append(path)
-    return sorted(paths)
+def changed_files(repo: Path) -> dict[str, str]:
+    """{path: 'D' for a deleted file, 'M' for anything else changed or new}, from `git status -z` (no path quoting)."""
+    done = subprocess.run(["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"], cwd=repo, capture_output=True, check=True)
+    entries = done.stdout.decode("utf-8", "replace").split(chr(0))
+    changed: dict[str, str] = {}
+    i = 0
+    while i < len(entries):
+        entry = entries[i]
+        i += 1
+        if len(entry) < 4:
+            continue
+        status, path = entry[:2], entry[3:]
+        if "R" in status or "C" in status:
+            i += 1  # the original path of a rename or copy follows as its own entry
+        changed[path] = "D" if "D" in status else "M"
+    return dict(sorted(changed.items()))
 
 
 def norm_file(path: Path, root: str) -> str:
@@ -151,8 +160,14 @@ def compare_repos(base: Path, cand: Path) -> list[str]:
     for rel in sorted(set(fa) ^ set(fb)):
         out.append(f"file {rel}: changed only in {'baseline' if rel in fa else 'candidate'}")
     for rel in sorted(set(fa) & set(fb)):
+        if fa[rel] != fb[rel]:
+            out.append(f"file {rel}: deleted in {'baseline' if fa[rel] == 'D' else 'candidate'} only")
+            continue
+        if fa[rel] == "D":
+            continue
         pa, pb = base / rel, cand / rel
         if not pa.is_file() or not pb.is_file():
+            out.append(f"file {rel}: not a readable file in {'baseline' if not pa.is_file() else 'candidate'}")
             continue
         if norm_file(pa, str(base)) != norm_file(pb, str(cand)):
             out.append(f"file {rel}: contents differ")
@@ -194,7 +209,7 @@ def plant(cand: Path, db: Path | None) -> list[str]:
     if conn:
         conn.commit()
         conn.close()
-    files = [f for f in changed_files(cand) if (cand / f).is_file()]
+    files = [f for f, state in changed_files(cand).items() if state != "D" and (cand / f).is_file()]
     if files:
         with (cand / files[0]).open("ab") as fh:
             fh.write(b"\nPLANTED\n")
@@ -241,13 +256,30 @@ def self_test() -> int:
         log_b.write_text("Stage 12 (x): 4 finding(s)\nStage 13 Total: 3\n", encoding="utf-8")
         if not any("only in" in d for d in compare_logs(log_a, log_b, Path("A"), Path("B"))):
             failures.append("negative control: a changed finding count was not reported")
+        dup_a, dup_b = tmp_path / "dup_a.db", tmp_path / "dup_b.db"
+        for path, rows in ((dup_a, [(1, "x")]), (dup_b, [(1, "x"), (1, "x")])):
+            conn = sqlite3.connect(path)
+            conn.execute("CREATE TABLE t (id INTEGER, label TEXT)")
+            conn.executemany("INSERT INTO t VALUES (?,?)", rows)
+            conn.commit()
+            conn.close()
+        if not compare_dbs(dup_a, dup_b, [], []):
+            failures.append("negative control: a duplicated row was not reported")
+        col_a, col_b = tmp_path / "col_a.db", tmp_path / "col_b.db"
+        for path, column in ((col_a, "created_at"), (col_b, "made_at")):
+            conn = sqlite3.connect(path)
+            conn.execute(f"CREATE TABLE t (id INTEGER, {column} TEXT)")
+            conn.commit()
+            conn.close()
+        if not any("columns differ" in d for d in compare_dbs(col_a, col_b, [], [])):
+            failures.append("negative control: a renamed time column was not reported")
         if norm_cell("C:\\r\\x\\y", ["C:\\r\\x"]) != "<REPO>\\y":
             failures.append("repository path was not normalised")
         if CLOCK.sub("<TS>", "at 2026-11-04 03:39:12.5Z ok") != "at <TS> ok":
             failures.append("clock time was not normalised")
     for line in failures:
         print("FAIL", line)
-    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, path and clock normalisation)")
+    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, duplicated row, renamed column, path and clock normalisation)")
     return 1 if failures else 0
 
 
@@ -268,6 +300,8 @@ def main() -> int:
         return self_test()
     if not (a.baseline and a.candidate):
         ap.error("--baseline and --candidate are required")
+    if a.shared_readonly and not a.reuse and a.stage != 12:
+        ap.error("--shared-readonly runs on the shared database without --db, so it is limited to the report-only Stage 12 (--stage 12)")
     work = a.workdir
     work.mkdir(parents=True, exist_ok=True)
     db_a, db_b = work / "baseline.db", work / "candidate.db"
@@ -298,11 +332,15 @@ def main() -> int:
     for line in diffs:
         print(line)
     if a.plant_difference:
-        caught_table = a.shared_readonly or any(d.startswith("table ") for d in diffs)
-        caught_file = any(d.startswith("file ") and "contents differ" in d for d in diffs)
-        want_file = any(p.startswith("file ") for p in planted)
-        ok = caught_table and (caught_file or not want_file)
-        print("NEGATIVE CONTROL:", "both planted differences were caught" if ok else "a planted difference was MISSED")
+        planted_kinds = {p.split(" ", 1)[0] for p in planted}
+        expected = ({"file"} if a.shared_readonly else {"table"}) | ({"file"} if "file" in planted_kinds or a.shared_readonly else set())
+        missing_plant = sorted(expected - planted_kinds)
+        caught = {"table": any(d.startswith("table ") for d in diffs), "file": any(d.startswith("file ") and "contents differ" in d for d in diffs)}
+        missed = sorted(kind for kind in planted_kinds if not caught.get(kind, False))
+        ok = not missing_plant and not missed and bool(planted)
+        if missing_plant:
+            print("NEGATIVE CONTROL: could not plant " + ", ".join(missing_plant) + ", so it proves nothing")
+        print("NEGATIVE CONTROL:", "every planted difference was caught" if ok else "a planted difference was MISSED" if missed else "not valid")
         return 0 if ok else 1
     print(f"IDENTITY: {'IDENTICAL' if not diffs else str(len(diffs)) + ' difference line(s)'}")
     return 1 if diffs else 0

@@ -355,7 +355,19 @@ def main() -> int:
                 "--no-isolate, --skip-build, --dry-run or uncommitted payload")
             print("[ABORTED] reason: gate-only-needs-isolation", flush=True)
             return 1
+        refused = [flag for flag, on in (("--skip-gate-full", args.skip_gate_full), ("--no-cache", args.no_cache),
+                                         ("--built-by-parent", args.built_by_parent)) if on]
+        if refused:
+            err(f"--gate-only exists to record a gate:full pass; it cannot run with {', '.join(refused)}")
+            print("[ABORTED] reason: gate-only-conflicting-flags", flush=True)
+            return 1
         rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
+        recorded = deploy_cache.gate_pass(deploy_cache.run_key(REPO_ROOT, no_cache=False, isolated=True))
+        if rc == 0 and not recorded:
+            err("--gate-only finished but no gate:full pass is on record for this commit and framework DB "
+                "(the framework DB file may be missing)")
+            print("[ABORTED] reason: gate-only-nothing-recorded", flush=True)
+            return 1
         if rc == 0:
             log("[gate-only] gate:full passed and is recorded for this commit and framework DB; "
                 "a deploy of it will not run the full tier again")
