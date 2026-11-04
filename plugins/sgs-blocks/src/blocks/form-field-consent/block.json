@@ -65,6 +65,16 @@
 		    "default": "",
 		    "description": "Minimum height of the option row (the tap area). Empty keeps the stylesheet's 44px touch-target minimum."
 		},
+		"boxSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the tick box: a CSS length. Empty = 20px."
+		},
+		"boxMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around the tick box, a box {top,right,bottom,left}. When set it replaces the stylesheet's own margins and the browser's, so a side left empty is 0. Empty = the stylesheet's small top margin."
+		},
 		"required": {
 			"type": "boolean",
 			"default": false

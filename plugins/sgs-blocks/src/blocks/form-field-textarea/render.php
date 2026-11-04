@@ -29,6 +29,7 @@ $rows = absint( $attributes['rows'] ?? 4 );
 
 $sgs_ta_counter         = field_counter( $fid, $attributes );
 $sgs_ta_inside          = '' !== $sgs_ta_counter && 'inside' === ( $attributes['counterPlacement'] ?? 'below' );
+$sgs_ta_reserve         = false !== ( $attributes['counterReserve'] ?? true );
 $sgs_ta_uid             = 'sgs-ta-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
 $sgs_ta_css             = '';
 $sgs_ta_counter_text    = sgs_text_decls( $attributes, array( 'base' => 'counterColour' ) );
@@ -81,7 +82,7 @@ if ( is_array( $sgs_ta_padding ) && array() !== $sgs_ta_padding ) {
 		)
 	);
 }
-if ( $sgs_ta_inside && is_array( $sgs_ta_padding ) ) {
+if ( $sgs_ta_inside && $sgs_ta_reserve && is_array( $sgs_ta_padding ) ) {
 	$sgs_ta_bottoms = array();
 	foreach ( $sgs_ta_padding as $sgs_ta_tier => $sgs_ta_box ) {
 		$sgs_ta_bottom = is_array( $sgs_ta_box ) ? sgs_css_length_value( $sgs_ta_box['bottom'] ?? '' ) : '';
@@ -125,6 +126,9 @@ if ( '' !== $sgs_ta_css ) {
 }
 if ( $sgs_ta_inside ) {
 	$sgs_ta_classes[] = 'sgs-form-field--counter-inside';
+	if ( ! $sgs_ta_reserve ) {
+		$sgs_ta_classes[] = 'sgs-form-field--counter-unreserved';
+	}
 }
 
 $sgs_ta_markup = '<textarea class="sgs-form-field__input" rows="' . $rows . '" ' . field_input_attrs( $fid, $attributes, false ) . '>' . esc_html( field_default_value( $attributes, true ) ) . '</textarea>';

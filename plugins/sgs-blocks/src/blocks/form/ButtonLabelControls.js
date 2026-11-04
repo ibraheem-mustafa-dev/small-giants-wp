@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { ToggleControl } from '@wordpress/components';
+import { SelectControl, ToggleControl } from '@wordpress/components';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { IconPicker, ResponsiveOverride, SgsLengthControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
@@ -96,6 +96,30 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 						hideLabelFromVision
 						value={ ownValue ?? '' }
 						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
+			<ResponsiveOverride
+				label={ __( 'Align the buttons vertically', 'sgs-blocks' ) }
+				value={ attributes.actionsAlignItems }
+				onChange={ ( obj ) => setAttributes( { actionsAlignItems: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+					<SelectControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ __( 'Align the buttons vertically', 'sgs-blocks' ) }
+						hideLabelFromVision
+						value={ ownValue ?? '' }
+						options={ [
+							{ label: effectiveValue ? __( 'Same as the larger device', 'sgs-blocks' ) : __( 'Stretch to the tallest button', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Top', 'sgs-blocks' ), value: 'flex-start' },
+							{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+							{ label: __( 'Bottom', 'sgs-blocks' ), value: 'flex-end' },
+							{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+							{ label: __( 'Text baseline', 'sgs-blocks' ), value: 'baseline' },
+						] }
 						onChange={ ( val ) => setOwnValue( val || undefined ) }
 					/>
 				) }

@@ -6,7 +6,7 @@ import {
 	TextareaControl,
 	SelectControl,
 } from '@wordpress/components';
-import { SgsLengthControl } from '../../components';
+import { SgsBoxControl, SgsLengthControl, BOX_UNITS } from '../../components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses } from '../../components/form-field-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
@@ -23,7 +23,8 @@ const CONSENT_TYPE_OPTIONS = [
 	{ label: __( 'Marketing', 'sgs-blocks' ), value: 'marketing' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
+	const consentScope = `sgs-cn-preview-${ clientId }`;
 	const { fieldName, helpText, width, consentType, consentText } =
 		attributes;
 
@@ -34,7 +35,15 @@ export default function Edit( { attributes, setAttributes } ) {
 		...fieldLabelClasses( attributes ),
 	].join( ' ' );
 
-	const blockProps = useBlockProps( { className } );
+	const blockProps = useBlockProps( { className: `${ className } ${ consentScope }` } );
+	const boxSize = attributes.boxSize ? ( /^[\d.]+$/.test( attributes.boxSize ) ? `${ attributes.boxSize }px` : attributes.boxSize ) : '';
+	const boxMargin = attributes.boxMargin && 'object' === typeof attributes.boxMargin && Object.keys( attributes.boxMargin ).length
+		? [ 'top', 'right', 'bottom', 'left' ].map( ( side ) => attributes.boxMargin[ side ] || '0' ).join( ' ' )
+		: '';
+	const consentPreviewCss = [
+		boxSize && `.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{width:${ boxSize };height:${ boxSize };min-width:${ boxSize };}`,
+		boxMargin && `.${ consentScope } .sgs-form-field__consent input[type="checkbox"]{margin:${ boxMargin };}`,
+	].filter( Boolean ).join( '' );
 
 	const isRequired = [ 'terms', 'gdpr' ].includes( consentType );
 
@@ -110,6 +119,19 @@ export default function Edit( { attributes, setAttributes } ) {
 						value={ attributes.optionRowMinHeight ?? '' }
 						onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
 					/>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Tick box size', 'sgs-blocks' ) }
+						help={ __( 'Width and height of the box. Empty = 20px.', 'sgs-blocks' ) }
+						value={ attributes.boxSize ?? '' }
+						onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
+					/>
+					<SgsBoxControl
+						label={ __( 'Tick box margin', 'sgs-blocks' ) }
+						values={ attributes.boxMargin && 'object' === typeof attributes.boxMargin ? attributes.boxMargin : {} }
+						units={ BOX_UNITS }
+						onChange={ ( next ) => setAttributes( { boxMargin: next } ) }
+					/>
 				</PanelBody>
 				<FormFieldAdvancedPanel
 					attributes={ attributes }
@@ -119,6 +141,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ consentPreviewCss && <style>{ consentPreviewCss }</style> }
 				<label className="sgs-form-field__consent" style={ attributes.optionRowMinHeight ? { minHeight: attributes.optionRowMinHeight } : undefined }>
 					<input
 						type="checkbox"

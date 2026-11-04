@@ -710,6 +710,19 @@ if ( is_array( $sgs_actions_gap ) && array() !== $sgs_actions_gap ) {
 		)
 	);
 }
+$sgs_actions_align = $attributes['actionsAlignItems'] ?? null;
+if ( is_array( $sgs_actions_align ) && array() !== $sgs_actions_align ) {
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__actions',
+		array(
+			array(
+				'value'     => $sgs_actions_align,
+				'css'       => 'align-items',
+				'transform' => static fn( $raw ): string => in_array( $raw, array( 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' ), true ) ? $raw : '',
+			),
+		)
+	);
+}
 $sgs_next_fill = $attributes['nextButtonFill'] ?? null;
 if ( is_array( $sgs_next_fill ) && array() !== $sgs_next_fill ) {
 	foreach ( array( '.sgs-form__button--next', '.sgs-form__button--submit' ) as $sgs_fill_sel ) {

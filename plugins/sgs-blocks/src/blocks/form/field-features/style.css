@@ -89,6 +89,6 @@
 	pointer-events: none;
 }
 
-.sgs-form-field--counter-inside textarea.sgs-form-field__input {
+.sgs-form-field--counter-inside:not(.sgs-form-field--counter-unreserved) textarea.sgs-form-field__input {
 	padding-bottom: 2.75rem;
 }
