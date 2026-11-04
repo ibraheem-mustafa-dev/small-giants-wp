@@ -12,6 +12,7 @@ violation when its code (comments and docstrings removed) names the shared datab
 SGS_FRAMEWORK_DB nor uses framework_db_path() / frameworkDbPath().
 
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey
+  python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey-all  # every script under scripts/, reseed or not
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --check      # exit 1 on a violation
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --self-test  # fixtures incl. negative controls
 """
@@ -148,12 +149,29 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     mode = ap.add_mutually_exclusive_group(required=True)
     mode.add_argument("--survey", action="store_true")
+    mode.add_argument("--survey-all", action="store_true", help="the worklist for widening the gate: every script under scripts/ that builds the path by hand")
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
     if a.self_test:
         return self_test()
     children = reseed_children(HERE)
+    if a.survey_all:
+        in_closure = set(children)
+        everywhere = sorted(p for p in HERE.rglob("*") if p.suffix in SCRIPT_EXTENSIONS and p.is_file() and not ({"node_modules", "__pycache__"} & set(p.relative_to(HERE).parts)))
+        rows = violations(everywhere)
+        groups = {
+            "reseed closure": [p for p in rows if p in in_closure],
+            "dated migrations (run once, leave as they are)": [p for p in rows if p not in in_closure and "migrations" in p.relative_to(HERE).parts],
+            "tests": [p for p in rows if p not in in_closure and "tests" in p.relative_to(HERE).parts],
+        }
+        grouped = {p for paths in groups.values() for p in paths}
+        groups["live scripts outside the closure (the worklist)"] = [p for p in rows if p not in grouped]
+        for label, paths in groups.items():
+            print(f"{label}: {len(paths)}")
+            for path in paths:
+                print(f"  {path.relative_to(HERE).as_posix()}")
+        return 0
     bad = violations(children)
     print(f"{len(children)} script(s) in the reseed's closure; {len(bad)} build the shared database path by hand")
     for path in bad:

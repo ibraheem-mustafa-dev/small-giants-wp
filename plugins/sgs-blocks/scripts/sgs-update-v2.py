@@ -3601,8 +3601,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 #
 # Architecture-staging Phase 1 close-out (decisions.md D56) retired the Mode A
 # (cached-source-DB read) path along with the standalone source DB files. Stage
-# 2 now ALWAYS live-scrapes the 10 canonical sources every invocation; the
-# `--refresh-upstream` CLI flag was removed (the default IS the refresh).
+# 2 scrapes the 10 canonical sources live, and skips the scrape when the last
+# full refresh is under 24 hours old for the same WordPress version;
+# `--refresh-upstream` (or `--stage 2`) forces it.
 #
 # Sources:
 #   1. WordPress/gutenberg block-library block.json files (GitHub API)

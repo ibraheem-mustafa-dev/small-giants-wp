@@ -42,7 +42,10 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-SHARED_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+
+SHARED_DB = framework_db_path()
 UPDATE = Path("plugins") / "sgs-blocks" / "scripts" / "sgs-update-v2.py"
 # A column that records when a row was written, not what it says.
 TIME_COLUMN = re.compile(r"(_at$|^last_|timestamp|^created|^updated|date$|_time$|^ts$)", re.IGNORECASE)
