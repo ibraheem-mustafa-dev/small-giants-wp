@@ -124,6 +124,8 @@
 						"css:border-color-gradient": "pillBorderColourGradient",
 						"css:color-gradient": "pillTextColourGradient",
 						"css:gap": "tileGap",
+						"css:box-shadow": "pillShadow",
+						"css:box-shadow-color": "pillShadowColour",
 						"css:-webkit-text-stroke-width": "pillTextStrokeWidth",
 						"css:-webkit-text-stroke-color": "pillTextStrokeColour"
 					},
@@ -144,6 +146,8 @@
 								"css:border-radius": "pillSelectedBorderRadius",
 								"css:box-shadow": "pillSelectedShadow",
 								"css:translate": "pillSelectedOffsetX",
+								"css:translate-y": "pillSelectedOffsetY",
+								"css:box-shadow-color": "pillSelectedShadowColour",
 								"css:border-color-gradient": "pillSelectedBorderColourGradient"
 							}
 						}
@@ -419,6 +423,16 @@
 		"pillSelectedBorderRadius": {
 			"type": "string",
 			"default": ""
+		},
+		"pillShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow shape of every option while resting (the shared layered shadow control). Empty = no shadow."
+		},
+		"pillShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the resting option's shadow."
 		},
 		"pillSelectedShadow": {
 			"type": "string",

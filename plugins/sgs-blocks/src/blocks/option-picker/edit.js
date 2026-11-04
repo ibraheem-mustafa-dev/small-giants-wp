@@ -14,6 +14,7 @@
  * object + tiers), root width/spacing/border, and typography controls.
  */
 import { __ } from '@wordpress/i18n';
+import { composeShadow } from '../../utils/shadow-layers';
 import MediaPicker from '../../components/MediaPicker';
 import {
 	useBlockProps,
@@ -118,6 +119,12 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 		pillBorderRadius,
 		pillBorderWidth,
 		pillSelectedBorderRadius,
+		pillShadow,
+		pillShadowColour,
+		pillSelectedShadow,
+		pillSelectedShadowColour,
+		pillSelectedOffsetX,
+		pillSelectedOffsetY,
 		tileGap,
 	} = attributes;
 
@@ -177,6 +184,18 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 	}
 	if ( tileGap ) {
 		rootStyle[ '--sgs-option-picker-tile-gap' ] = tileGap;
+	}
+	// Resting and selected shadow and the selected shift, read by style.css (same channel as the colours above).
+	const restShadow = composeShadow( pillShadow, pillShadowColour );
+	if ( restShadow ) {
+		rootStyle[ '--sgs-op-shadow' ] = restShadow;
+	}
+	const selShadow = composeShadow( pillSelectedShadow, pillSelectedShadowColour );
+	if ( selShadow ) {
+		rootStyle[ '--sgs-op-sel-shadow' ] = selShadow;
+	}
+	if ( pillSelectedOffsetX || pillSelectedOffsetY ) {
+		rootStyle[ '--sgs-op-sel-translate' ] = ( pillSelectedOffsetX || '0' ) + ' ' + ( pillSelectedOffsetY || '0' );
 	}
 
 	return rootStyle;
@@ -1047,6 +1066,29 @@ export default function Edit( { attributes, setAttributes } ) {
 									} )
 								}
 								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Pill shadow', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! attributes.pillShadow ||
+								!! attributes.pillShadowColour
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									pillShadow: '',
+									pillShadowColour: '',
+								} )
+							}
+						>
+							<ShadowControl
+								label={ __( 'Pill shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									base: 'pillShadow',
+									colour: 'pillShadowColour',
+								} }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

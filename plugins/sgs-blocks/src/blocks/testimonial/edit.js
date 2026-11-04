@@ -55,6 +55,7 @@ import {
 	textPaintPreview,
 	sgsBorderPreview,
 	gapVar,
+	colourVar,
 } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -314,6 +315,40 @@ const VARIANTS = [
 		),
 	},
 ];
+
+/**
+ * Editor preview of the rule above the review-card's name line: the width, style and colour of the previewed
+ * device, each falling back to the tier above it (as sgs_tiered_border_specs() cascades them on the front end).
+ *
+ * @param {Object} border Stored `reviewFooterBorder` tier object.
+ * @param {string} tier   Previewed device tier.
+ * @return {Object|undefined} Style fragment, or undefined when no rule is set.
+ */
+function reviewFooterRulePreview( border, tier ) {
+	if ( ! border || 'object' !== typeof border ) {
+		return undefined;
+	}
+	const tiers = [ 'desktop', 'tablet', 'mobile' ];
+	const order = tiers.slice( 0, tiers.indexOf( tier ) + 1 );
+	const pick = ( member ) => order.reduce( ( found, t ) => border[ t ]?.[ member ] || found, '' );
+	const width = pick( 'width' );
+	const style = pick( 'style' );
+	const colour = pick( 'colour' );
+	if ( ! width && ! style && ! colour ) {
+		return undefined;
+	}
+	const out = {};
+	if ( width ) {
+		out.borderTopWidth = width;
+	}
+	if ( style ) {
+		out.borderTopStyle = style;
+	}
+	if ( colour ) {
+		out.borderTopColor = colourVar( colour );
+	}
+	return out;
+}
 
 export default function Edit( {
 	attributes,
@@ -2281,6 +2316,7 @@ export default function Edit( {
 					]
 						.filter( Boolean )
 						.join( ' ' ) }
+					style={ 'review-card' === effectiveVariant ? reviewFooterRulePreview( reviewFooterBorder, previewTier ) : undefined }
 				>
 					{ showAvatar && (
 						<div className="sgs-testimonial__avatar">
