@@ -49,6 +49,12 @@ if ( ! $filter_on ) {
 		}
 	}
 }
+// The item look settings stay out of the hash while unset, so an accordion that sets none keeps its class suffix.
+foreach ( array( 'itemBackgroundOpen', 'itemShadow', 'itemShadowColour', 'itemShadowOpen', 'itemShadowOpenColour' ) as $hash_key ) {
+	if ( isset( $hash_attrs[ $hash_key ] ) && '' === $hash_attrs[ $hash_key ] ) {
+		unset( $hash_attrs[ $hash_key ] );
+	}
+}
 $uid      = 'sgs-accordion-' . substr( md5( wp_json_encode( $hash_attrs ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion';
 
