@@ -98,7 +98,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
-from framework_db import builds_default_db_by_hand, code_of  # noqa: E402
+from framework_db import builds_default_db_by_hand, code_of, framework_db_path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
 from block_source import BlockSource, is_tier_object  # noqa: E402
@@ -7185,7 +7185,9 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
 
     The CSV folder at `~/.agents/skills/sgs-wp-engine/db data/` (note the space)
     holds flat copies of all DB tables. This stage regenerates them automatically
-    as the final `/sgs-update` step, ensuring they stay current.
+    as the final `/sgs-update` step, ensuring they stay current. A run on a database
+    copy (`--db`, $SGS_FRAMEWORK_DB) writes `<copy name> db data/` beside the copy
+    instead, so a private run never touches the shared folder.
 
     Tables enumerated from the live schema (DB-authoritative, not hardcoded).
     Retired tables no longer in the schema are removed from the CSV folder.
@@ -7196,6 +7198,9 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
     import csv
 
     CSV_FOLDER = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "db data"
+    if os.environ.get("SGS_FRAMEWORK_DB"):
+        copy = framework_db_path()
+        CSV_FOLDER = copy.with_name(f"{copy.stem} db data")
 
     # Induced failure mode for --self-test: raise on an unwritable target
     if self_test and not (CSV_FOLDER.parent.parent.exists()):
