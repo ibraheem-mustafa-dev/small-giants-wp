@@ -41,7 +41,7 @@ import {
 	InspectorControls,
 	useSettings,
 } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl, Notice, RangeControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, Notice, RangeControl, SelectControl } from '@wordpress/components';
 import {
 	ResponsiveControl,
 	ResponsiveBoxControl,
@@ -257,6 +257,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerLinkNumColour,
 		drawerLinkNumColourGradient,
 		drawerLinkNumSize,
+		drawerLinkNumWeight,
 		drawerLinkLabelColour,
 		drawerLinkLabelColourGradient,
 		drawerLinkLabelSize,
@@ -287,6 +288,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardTitleLineHeight,
 		drawerCardTagMargin,
 		drawerCardLinkSize,
+		drawerCardLinkBg,
+		drawerCardLinkColour,
 		drawerShellRadius,
 		drawerShellPadding,
 		drawerShellShadow,
@@ -551,6 +554,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerLinkNumColour,
 				drawerLinkNumColourGradient,
 				drawerLinkNumSize,
+				drawerLinkNumWeight,
 				drawerLinkLabelColour,
 				drawerLinkLabelColourGradient,
 				drawerLinkLabelSize,
@@ -577,6 +581,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerCardTitleLineHeight,
 				drawerCardTagMargin,
 				drawerCardLinkSize,
+				drawerCardLinkBg,
+				drawerCardLinkColour,
 				drawerShellRadius,
 				drawerShellPadding,
 				drawerShellShadow,
@@ -1407,6 +1413,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { drawerLinkNumSize: value || '' } )
 						}
 						presets={ false }
+					/>
+					<SelectControl
+						label={ __( 'Link number weight', 'sgs-blocks' ) }
+						value={ drawerLinkNumWeight || '' }
+						options={ [
+							{ label: __( 'Keep the number’s weight', 'sgs-blocks' ), value: '' },
+							{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
+							{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
+							{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
+							{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
+							{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { drawerLinkNumWeight: value || '' } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					<SgsLengthControl
 						scale="font-size"

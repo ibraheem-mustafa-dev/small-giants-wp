@@ -100,6 +100,20 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 			setAttributes,
 		} ),
 		fillRow( {
+			key: 'drawerCardLinkBg',
+			label: __( 'Card link background', 'sgs-blocks' ),
+			attrs: { base: 'drawerCardLinkBg' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'drawerCardLinkColour',
+			label: __( 'Card link colour', 'sgs-blocks' ),
+			attrs: { base: 'drawerCardLinkColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
 			key: 'drawerCardBorderColour',
 			label: __( 'Card border colour', 'sgs-blocks' ),
 			attrs: { base: 'drawerCardBorderColour', gradient: 'drawerCardBorderColourGradient' },

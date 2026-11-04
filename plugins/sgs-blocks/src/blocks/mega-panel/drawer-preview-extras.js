@@ -105,6 +105,25 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 }
 
 /**
+ * The aside card's link in every layout (twin of
+ * `sgs_mega_panel_drawer_card_link_css()`): its colours.
+ *
+ * @param {string} aside Aside selector.
+ * @param {Object} v     Enumerated drawer attributes.
+ * @return {string} CSS, or ''.
+ */
+export function drawerCardLinkPreviewCss( aside, v ) {
+	const bg = v.drawerCardLinkBg ? colourVar( v.drawerCardLinkBg ) || v.drawerCardLinkBg : '';
+	const colour = v.drawerCardLinkColour ? colourVar( v.drawerCardLinkColour ) || v.drawerCardLinkColour : '';
+	const paint = ( bg ? `background-color:${ bg };` : '' ) + ( colour ? `color:${ colour };` : '' );
+	let css = '';
+	if ( paint ) {
+		css += `${ aside } > :nth-child(5):not(.wp-block-sgs-container) .sgs-button,${ aside } > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(4) .sgs-button{${ paint }}`;
+	}
+	return css;
+}
+
+/**
  * The link rows' trailing arrow (`drawerLinkTrailingIcon` = arrow), twin of
  * `sgs_mega_panel_drawer_trailing_css()`.
  *

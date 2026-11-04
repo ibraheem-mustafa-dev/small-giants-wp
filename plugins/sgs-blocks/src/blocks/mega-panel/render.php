@@ -949,6 +949,7 @@ if ( $sgs_mm_in_drawer ) {
 		'drawerLinkNumColour'   => array(
 			'selector' => $sgs_dv_row . ' > .wp-block-sgs-text,' . $sgs_dv_row . ' > .sgs-container__inner > .wp-block-sgs-text',
 			'size'     => 'drawerLinkNumSize',
+			'weight'   => 'drawerLinkNumWeight',
 		),
 		'drawerLinkLabelColour' => array(
 			'selector' => $sgs_dv_row . ' .wp-block-sgs-heading',
@@ -966,7 +967,8 @@ if ( $sgs_mm_in_drawer ) {
 		);
 		$sgs_dv_text_decl = sgs_text_colour_decl( $sgs_dv_paint );
 		$sgs_dv_decls     = ( '' !== $sgs_dv_text_decl ? $sgs_dv_text_decl . ';' : '' )
-			. $sgs_dv_decl( 'font-size', $sgs_dv_len( $sgs_dv_part['size'] ) );
+			. $sgs_dv_decl( 'font-size', $sgs_dv_len( $sgs_dv_part['size'] ) )
+			. $sgs_dv_decl( 'font-weight', isset( $sgs_dv_part['weight'] ) ? sgs_font_weight_value( $attributes[ $sgs_dv_part['weight'] ] ?? '' ) : '' );
 		if ( '' !== $sgs_dv_decls ) {
 			$css .= $sgs_dv_part['selector'] . '{' . $sgs_dv_decls . '}'
 				. sgs_text_colour_gradient_fallback_rule( $sgs_dv_part['selector'], $sgs_dv_paint );
@@ -1054,6 +1056,8 @@ if ( $sgs_mm_in_drawer ) {
 			$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
 		}
 	}
+	// The card link's colours, in every layout.
+	$css .= sgs_mega_panel_drawer_card_link_css( $attributes, $sgs_dv_aside );
 }
 
 // ---------------------------------------------------------------------------

@@ -17,6 +17,8 @@
  *   holding only its icon (the label stays as the link's accessible name),
  *   from the mega-aside's five-slot order (media frame, tag, title,
  *   description, link).
+ * - The aside card's link in every layout: its colours (`drawerCardLinkBg`,
+ *   `drawerCardLinkColour`).
  *
  * Every unset attribute emits nothing. Rules are rooted on the panel's own
  * uid class, as the rest of the drawer copy's rules are.
@@ -204,6 +206,34 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 			$ratio = '2 / 1';
 		}
 		return $aside_sel . ' .sgs-media-box--fill{height:auto;aspect-ratio:' . $ratio . ';}';
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_card_link_css' ) ) {
+	/**
+	 * The aside card's link (fifth slot) in the drawer, in every card layout:
+	 * its own background and text/icon colour (`drawerCardLinkBg`,
+	 * `drawerCardLinkColour`).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $aside_sel  The in-drawer aside selector.
+	 * @return string CSS, or ''.
+	 */
+	function sgs_mega_panel_drawer_card_link_css( array $attributes, string $aside_sel ): string {
+		$sel_of = static function ( string $tail ) use ( $aside_sel ): string {
+			return $aside_sel . ' > :nth-child(5):not(.wp-block-sgs-container)' . $tail . ','
+				. $aside_sel . ' > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(4)' . $tail;
+		};
+		$css = '';
+
+		$bg     = sgs_colour_value( (string) ( $attributes['drawerCardLinkBg'] ?? '' ) );
+		$colour = sgs_colour_value( (string) ( $attributes['drawerCardLinkColour'] ?? '' ) );
+		$paint  = ( '' !== $bg ? 'background-color:' . $bg . ';' : '' ) . ( '' !== $colour ? 'color:' . $colour . ';' : '' );
+		if ( '' !== $paint ) {
+			$css .= $sel_of( ' .sgs-button' ) . '{' . $paint . '}';
+		}
+
+		return $css;
 	}
 }
 
