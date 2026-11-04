@@ -8162,14 +8162,6 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "decorMedia",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/decorative-image",
       "attr": "flipX",
       "fields": {}
     },
@@ -10090,11 +10082,26 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "navIconStrokeWidth",
+      "fields": {
+        "css_property": "stroke-width",
+        "css_element": "nav-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextButtonFill",
+      "fields": {
+        "css_property": "flex",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "nextColourBackground",
       "fields": {
         "css_property": "background-color",
-        "role": "color",
-        "css_element": "next-button"
+        "css_element": "button"
       }
     },
     {
@@ -10102,7 +10109,7 @@
       "attr": "nextColourBackgroundGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "next-button"
+        "css_element": "button"
       }
     },
     {
@@ -10110,8 +10117,7 @@
       "attr": "nextColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "role": "color",
-        "css_element": "next-button",
+        "css_element": "button",
         "css_state": "hover"
       }
     },
@@ -10120,7 +10126,7 @@
       "attr": "nextColourBackgroundHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "next-button",
+        "css_element": "button",
         "css_state": "hover"
       }
     },
@@ -10857,6 +10863,15 @@
       "fields": {
         "css_property": "font-weight",
         "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelFontWeightCompleted",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "step-label-completed",
+        "css_state": "completed"
       }
     },
     {
@@ -28388,24 +28403,6 @@
     },
     {
       "slug": "sgs/team-member",
-      "attr": "photoMobile",
-      "fields": {
-        "css_property": "max-width",
-        "css_tier": "mobile",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
-      "attr": "photoTablet",
-      "fields": {
-        "css_property": "max-width",
-        "css_tier": "tablet",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/team-member",
       "attr": "roleColour",
       "fields": {
         "css_property": "color",
@@ -34810,6 +34807,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "submit-actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "actionsNoteHidden",
       "fields": {
         "css_property": "display",
@@ -35027,6 +35033,16 @@
         "role": "color",
         "css_element": "step-label-active",
         "css_state": "active"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "stepLabelColourCompleted",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "step-label-completed",
+        "css_state": "completed"
       }
     },
     {
