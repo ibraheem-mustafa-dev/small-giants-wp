@@ -103,7 +103,7 @@ def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[st
     return out
 
 
-REPORT_LINE = re.compile(r"^Stage 1[23]")
+REPORT_LINE = re.compile(r"^Stage 1[23]\b")
 
 
 def report_lines(log: Path, root: str) -> list[str]:
