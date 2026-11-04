@@ -311,6 +311,10 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	if ( cartPaddingDecls.length ) {
 		css += `${ root } .buybox__add-to-cart{${ cartPaddingDecls.join( ';' ) };}`;
 	}
+	const thumbSizeValue = safeLength( tierValueOf( attributes.thumbSize, tier ) || '' );
+	if ( thumbSizeValue ) {
+		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSizeValue };}`;
+	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
 	const rawGap = String(
 		tierValueOf( attributes.thumbGap, tier ) || ''
@@ -466,6 +470,29 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( attributes.pickTileGap ) {
 			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__options{gap:${ attributes.pickTileGap };}`;
 		}
+		const tile = `${ root } .sgs-buybox__pick-box .sgs-option-picker--tile`;
+		const pill = `${ root } .sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile)`;
+		[
+			[ attributes.pickTileNumberSize, `${ tile } .sgs-option-picker__pill-label` ],
+			[ attributes.pickTilePriceSize, `${ tile } .sgs-option-picker__sub-label` ],
+			[ attributes.pickTileEachSize, `${ tile } .sgs-option-picker__term-description` ],
+			[ attributes.pickPricedFontSize, `${ pill } .sgs-option-picker__pill` ],
+		].forEach( ( [ sizes, sel ] ) => {
+			const size = tierValueOf( sizes, tier );
+			if ( size ) {
+				css += `${ sel }{font-size:${ safeLength( size ) };}`;
+			}
+		} );
+		const pricedPad = Object.entries( tierBoxLonghands( attributes.pickPricedPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		if ( pricedPad.length ) {
+			css += `${ pill } .sgs-option-picker__pill{${ pricedPad.join( ';' ) };}`;
+		}
+		if ( attributes.pickPricedGap ) {
+			css += `${ pill } .sgs-option-picker__options{gap:${ safeLength( attributes.pickPricedGap ) };}`;
+		}
+		if ( attributes.pickPricedRadius ) {
+			css += `${ pill }{--sgs-op-pill-radius:${ safeLength( attributes.pickPricedRadius ) };}${ pill } .sgs-option-picker__pill{border-radius:${ safeLength( attributes.pickPricedRadius ) };}`;
+		}
 		if ( attributes.pickOptionGap ) {
 			css += `${ root } .sgs-buybox-pick__options{gap:${ attributes.pickOptionGap };}`;
 		}
@@ -475,6 +502,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		}
 		if ( attributes.pickSelectedBorderColour ) {
 			selVars.push( `--sgs-pick-sel-border:${ resolve( attributes.pickSelectedBorderColour ) }` );
+		}
+		if ( attributes.pickSelectedTextColour ) {
+			selVars.push( `--sgs-pick-sel-text:${ resolve( attributes.pickSelectedTextColour ) }` );
 		}
 		if ( selVars.length ) {
 			css += `${ root }{${ selVars.join( ';' ) };}`;
