@@ -73,3 +73,12 @@ def test_scanner_pool_runs_build_roster_first_and_alone_and_the_rest_together(tm
     first_end = min(float(t) for n, e, t in events if n != "build-roster" and e == "end")
     assert starts[-1] < first_end  # all three overlapped; run one after another the last would start after the first ended
     assert elapsed < 6
+
+
+def test_a_refresh_where_every_source_failed_is_not_stamped(monkeypatch):
+    update = _load()
+    conn = _conn(None)
+    assert update.record_upstream_refresh(conn, "7.1", "2026-11-04T00:00:00+00:00", []) is False
+    assert update._upstream_cache_hit(conn, "7.1") is None
+    assert update.record_upstream_refresh(conn, "7.1", datetime.now(timezone.utc).isoformat(), ["gutenberg-block-library"]) is True
+    assert update._upstream_cache_hit(conn, "7.1") is not None

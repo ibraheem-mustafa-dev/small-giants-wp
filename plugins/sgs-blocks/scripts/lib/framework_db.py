@@ -20,8 +20,11 @@ ENV = "SGS_FRAMEWORK_DB"
 _SKILL_DB = Path("skills") / "sgs-wp-engine" / "sgs-framework.db"
 
 # A script that builds the default path by hand and neither reads the variable nor asks this module.
-_NAMES_DEFAULT_DB = re.compile(r"""["'][^"'\n]*sgs-wp-engine[^"'\n]*["']""")
-_HONOURS_ENV = ("SGS_FRAMEWORK_DB", "framework_db_path", "frameworkDbPath")
+# A quoted string that is the shared skill folder or a path ending in the database file (a message that merely mentions
+# the file name is not one).
+_NAMES_DEFAULT_DB = re.compile(r"""["'][^"'\n]*sgs-wp-engine[^"'\n]*["']|["'](?:[^"'\n]*[/\\])?sgs-framework\.db["']""")
+# Reading the variable, or calling the resolver (a bare import does not count).
+_HONOURS_ENV = re.compile(r"SGS_FRAMEWORK_DB|framework_db_path\s*\(|frameworkDbPath\s*\(")
 
 
 JS_STRIP = re.compile(r"""("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|//[^\n]*|/\*.*?\*/""", re.DOTALL)
@@ -41,7 +44,7 @@ def framework_db_path() -> Path:
 
 def builds_default_db_by_hand(code: str) -> bool:
     """True when `code` (comments already removed) names the shared database path and does not honour the override."""
-    if any(token in code for token in _HONOURS_ENV):
+    if _HONOURS_ENV.search(code):
         return False
     return bool(_NAMES_DEFAULT_DB.search(code))
 

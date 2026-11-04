@@ -21,6 +21,8 @@ from typing import Callable
 MIRROR = re.compile(r"local-[a-z0-9-]+")
 CHECKER = Path("plugins") / "sgs-blocks" / "scripts" / "editor-crash" / "check-editor-loads.mjs"
 SYNC = Path("scripts") / "local-wp" / "sync-build.sh"
+SYNC_TIMEOUT_S = 900
+CHECK_TIMEOUT_S = 2400
 
 
 def to_wsl(path: Path) -> str:
@@ -42,15 +44,23 @@ def run(repo: Path, site: str, log: Callable[[str], None]) -> int:
         log(f"[editor-check] refused: {site!r} is not a local mirror (local-<name>)")
         return 1
     log(f"[editor-check] syncing this build into {site}")
-    synced = subprocess.run(
-        ["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", to_wsl(repo / SYNC), site],
-        capture_output=True, text=True, encoding="utf-8", errors="replace",
-    )
+    try:
+        synced = subprocess.run(
+            ["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", to_wsl(repo / SYNC), site],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=SYNC_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        log(f"[editor-check] UNANSWERED: the sync into {site} took longer than {SYNC_TIMEOUT_S}s (not a pass)")
+        return 2
     if synced.returncode != 0:
         log(f"[editor-check] sync failed (exit {synced.returncode}): {(synced.stderr or synced.stdout).strip()[-300:]}")
         return 1
     log(f"[editor-check] opening {site}'s pages, posts and templates in the block editor")
-    checked = subprocess.run(["node", str(repo / CHECKER), "--site", site], cwd=repo, text=True, encoding="utf-8", errors="replace")
+    try:
+        checked = subprocess.run(["node", str(repo / CHECKER), "--site", site], cwd=repo, text=True, encoding="utf-8", errors="replace", timeout=CHECK_TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        log(f"[editor-check] UNANSWERED: the editor run on {site} took longer than {CHECK_TIMEOUT_S}s (not a pass)")
+        return 2
     if checked.returncode == 0:
         log("[editor-check] every target loaded with no crashed block and no console error")
     elif checked.returncode == 2:

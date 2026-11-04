@@ -119,7 +119,7 @@ Every Done-when names: the page and widths (375/768/1440), the properties compar
 
 ## Apply and verify
 
-1. Reseed from a clean worktree of `origin/main`; `npm run build`; `python scripts/run-gates.py --tier fast` and `--tier full` from `plugins/sgs-blocks`.
+1. Reseed from a clean worktree of `origin/main`; `npm run build` (runs the fast tier); then `python plugins/sgs-blocks/scripts/build-deploy.py --gate-only --blocks-only`, which runs and records the full tier once for the commit so the deploy skips it (`.claude/deploy-architecture.md`, Deploy cache).
 2. Peers' acknowledgement, then `build-deploy.py --target sandybrown,mamas-test` (its rollback restores the previous build if verification fails). The canary gets the generic checks (editor loads, a test order through the FR-30-0 gateway, no-settings negative control); the Mama's checks run on local-mamas and mamas-test.
 3. On local-mamas: shipping zone, registration, settings and content from the drafts' computed values; one throwaway guest cart; one test gift order on the mirror (gift meta, admin box, both emails captured by the mirror's mail block, order-received page, privacy export).
 4. `plugins/sgs-blocks/scripts/audit-post-content-blocks.py` 0 HIGH; `bash scripts/local-wp/push-to-remote.sh local-mamas mamas-test --dry-run`, then the real push.
