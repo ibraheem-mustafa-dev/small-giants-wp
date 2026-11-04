@@ -2674,7 +2674,7 @@ def _extension_applies(rule: dict, block_json: dict) -> bool:
         return not hidden and str(block_json.get("name", "")).startswith("sgs/")
     if mode == "flag":
         return bool(sgs.get(rule.get("flag")))
-    return False  # "named" targets non-sgs blocks; no rows are seeded for those
+    return False  # "named" targets non-sgs blocks; `seedRows` rules are handled in _seed_extension_attr_rows
 
 
 def _extension_rows_for_block(roster: list[dict], block_json: dict) -> dict[str, dict]:
@@ -2726,6 +2726,29 @@ def _seed_extension_attr_rows(
             continue
         for attr, spec in _extension_rows_for_block(roster, block_json).items():
             wanted[(slug, attr)] = spec
+    # A `named` rule with `seedRows` targets blocks SGS does not own (WooCommerce's Cart and Checkout): each
+    # gets a `blocks` row (source 'woocommerce', so no sgs-only stage touches it) so its attribute rows have
+    # a parent, and the cloning route can find the settings.
+    wanted_blocks: dict[str, str] = {}
+    for ext in roster:
+        rule = ext.get("rule") or {}
+        if rule.get("mode") != "named" or not rule.get("seedRows"):
+            continue
+        for slug in rule.get("blocks") or []:
+            wanted_blocks[slug] = slug.split("/", 1)[-1].replace("-", " ").title()
+            for attr, spec in (ext.get("attributes") or {}).items():
+                wanted[(slug, attr)] = spec
+    if not dry_run:
+        for slug, title in wanted_blocks.items():
+            c.execute(
+                "INSERT OR IGNORE INTO blocks (slug, title, category, type, source) "
+                "VALUES (?, ?, 'woocommerce', 'dynamic', 'woocommerce')",
+                (slug, title),
+            )
+        for (slug,) in c.execute("SELECT slug FROM blocks WHERE source = 'woocommerce'").fetchall():
+            if slug not in wanted_blocks:
+                c.execute("DELETE FROM block_attributes WHERE block_slug = ? AND source = 'sgs-ext'", (slug,))
+                c.execute("DELETE FROM blocks WHERE slug = ? AND source = 'woocommerce'", (slug,))
     existing = {
         (slug, attr): source
         for slug, attr, source in c.execute(

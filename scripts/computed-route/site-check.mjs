@@ -25,6 +25,7 @@ import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine, missingFlowRows } from './lib/site-check-parts.mjs';
 import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
+import { commerceLookDrift } from './lib/site-check-commerce-look.mjs';
 import { wpCommand } from './lib/calibration-refs.mjs';
 import { formSlug } from './lib/form-submit-run.mjs';
 import { loadChromium } from './lib/fill-read.mjs';
@@ -345,6 +346,12 @@ async function main() {
 				const item = await wooItem( s.page, role, { url: p.url, cartUrl: roles.cart?.finalUrl, withCart: !! added?.ok, shoot: s.shoot } );
 				items.push( { ...item, detail: [ item.detail, added?.detail ].filter( Boolean ).join( '; ' ) || undefined } );
 				await s.context.close();
+			}
+			// The Cart and Checkout look settings' selector table: warns on drift, never fails (lib/site-check-commerce-look.mjs).
+			for ( const block of [ 'cart', 'checkout' ] ) {
+				if ( roles[ block ] ) {
+					items.push( ...await commerceLookDrift( { block, url: roles[ block ].url, base, newPage } ) );
+				}
 			}
 			return checkRecord( 'woocommerce', items );
 		} );
