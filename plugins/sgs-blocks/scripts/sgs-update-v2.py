@@ -87,6 +87,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -2000,6 +2001,42 @@ def _run_css_property_classifier_seed(conn: sqlite3.Connection) -> None:
         print(f"Stage 1 tail (css-property classifier seed): WARN {exc}")
 
 
+_ADOPTION_SCAN: dict = {}
+
+
+def _start_component_scan() -> None:
+    """Starts the component-adoption scanner (a Node process that only reads files) at the top of Stage 1, so its
+    minutes overlap the other steps. _run_component_adoption_seed collects it. Nothing here is fatal: if the scanner
+    cannot start or fails, the seeder runs it itself."""
+    scanner = Path(__file__).resolve().parent / "scan-component-adoption.js"
+    if not scanner.exists():
+        return
+    try:
+        out = Path(tempfile.mkdtemp(prefix="sgs-adoption-")) / "scan.json"
+        handle = out.open("wb")
+        proc = subprocess.Popen(["node", str(scanner), "--json"], stdout=handle, stderr=subprocess.DEVNULL)
+        _ADOPTION_SCAN.update(proc=proc, out=out, handle=handle)
+    except OSError as exc:
+        print(f"Stage 1 (component adoption): scan not started early ({exc}); the seeder will run it")
+
+
+def _collect_component_scan() -> list[str]:
+    """Waits for the early scan; returns the seeder arguments that use it, or [] when the seeder must scan itself."""
+    proc = _ADOPTION_SCAN.pop("proc", None)
+    out = _ADOPTION_SCAN.pop("out", None)
+    handle = _ADOPTION_SCAN.pop("handle", None)
+    if proc is None:
+        return []
+    try:
+        returncode = proc.wait(timeout=600)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        returncode = None
+    finally:
+        handle.close()
+    return ["--scan-json", str(out)] if returncode == 0 and out.stat().st_size > 0 else []
+
+
 def _run_component_adoption_seed(conn) -> None:
     """Run seed-component-adoption.py as a Stage 1 tail step (2026-08-24, D763).
 
@@ -2024,7 +2061,7 @@ def _run_component_adoption_seed(conn) -> None:
         return
     try:
         result = subprocess.run(
-            [sys.executable, str(script), "--apply"],
+            [sys.executable, str(script), "--apply", *_collect_component_scan()],
             capture_output=True, text=True, timeout=300,
             encoding="utf-8", errors="replace",
         )
@@ -3393,6 +3430,15 @@ def _populate_allowed_blocks(
     }
 
 
+def _timed(timings: list, label: str, fn, *args, **kwargs):
+    """Runs fn, appends (label, seconds) to timings, returns fn's result."""
+    began = time.perf_counter()
+    try:
+        return fn(*args, **kwargs)
+    finally:
+        timings.append((label, time.perf_counter() - began))
+
+
 def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     """Walk src/blocks/*/block.json → INSERT-or-UPDATE blocks + block_attributes.
 
@@ -3415,7 +3461,10 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         return {"error": f"blocks dir not found: {blocks_dir}"}
 
     c = conn.cursor()
-    counts = _index_sgs_block_files(blocks_dir, c, dry_run)
+    timings: list = []
+    if not dry_run:
+        _start_component_scan()
+    counts = _timed(timings, "index block files", _index_sgs_block_files, blocks_dir, c, dry_run)
     scanned = counts["scanned"]
     new_blocks = counts["new_blocks"]
     new_attrs = counts["new_attrs"]
@@ -3430,7 +3479,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     pruned_selectors = counts["pruned_selectors"]
 
     # --- Stage 1 sub-step A: populate block_composition.accepts_allowed_blocks ---
-    ab_counts = _populate_allowed_blocks(blocks_dir, c, dry_run)
+    ab_counts = _timed(timings, "allowed blocks", _populate_allowed_blocks, blocks_dir, c, dry_run)
     ab_scanned = ab_counts["allowed_blocks_scanned"]
     ab_populated = ab_counts["allowed_blocks_populated"]
     ab_updated = ab_counts["allowed_blocks_updated"]
@@ -3438,7 +3487,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
     if not dry_run:
         conn.commit()
-        _run_canonical_assignment(conn)
+        _timed(timings, "canonical assignment", _run_canonical_assignment, conn)
 
         # --- Stage 1 sub-step B2: regenerate css-property-classifications.json ---
         # MUST run BEFORE sub-step C, which reads that file as its base layer.
@@ -3450,9 +3499,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # the pipeline lag by one run: sub-step C had already read the OLD file, so the
         # DB reflected the previous run's classification and /sgs-update had to be run
         # twice to converge. JSON-only, no DB mutation, so it is safe this early.
-        _run_css_property_classifier_seed(conn)
+        _timed(timings, "css-property classifier", _run_css_property_classifier_seed, conn)
 
-        ext_row_counts = _seed_extension_attr_rows(conn, blocks_dir, dry_run=False)
+        ext_row_counts = _timed(timings, "extension attr rows", _seed_extension_attr_rows, conn, blocks_dir, dry_run=False)
         print(
             f"Stage 1 (ext-attr-rows): inserted={ext_row_counts['ext_rows_inserted']} "
             f"updated={ext_row_counts['ext_rows_updated']} deleted={ext_row_counts['ext_rows_deleted']} "
@@ -3462,7 +3511,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # --- Stage 1 sub-step C: apply per-attr classification overrides ---
         # (AFTER canonical assignment so overrides are the final writer, and AFTER
         #  sub-step B2 so the derived layer it reads is THIS run's, not the last one's.)
-        ov_counts = _apply_attr_classification_overrides(conn, blocks_dir, dry_run=False)
+        ov_counts = _timed(timings, "attr overrides", _apply_attr_classification_overrides, conn, blocks_dir, dry_run=False)
         print(
             f"Stage 1 (attr-overrides): applied={ov_counts['override_applied']}, "
             f"missing_row={ov_counts['override_missing_row']}."
@@ -3471,7 +3520,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # --- Stage 1 sub-step C2: clear fossil css_tier off collapsed tier objects ---
         # MUST run AFTER sub-step C, which is the last writer of css_tier. See the
         # function docstring for the rule and why the Spec 35 migration needs it.
-        ot_counts = _reconcile_object_family_tiers(conn, dry_run=False)
+        ot_counts = _timed(timings, "object-tier fossils", _reconcile_object_family_tiers, conn, dry_run=False)
         print(
             f"Stage 1 (object-tier fossils): cleared={ot_counts['object_tier_fossils_cleared']}"
             + (f" -> {', '.join(ot_counts['detail'])}" if ot_counts["detail"] else "")
@@ -3480,7 +3529,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         # --- Stage 1 sub-step D: seed block_attributes.emit_shape (FR-31-2.6) ---
         # (AFTER canonical assignment + overrides so `role` is final — emit_shape is
         #  computed only for content-role attrs.)
-        es_counts = _populate_emit_shape(blocks_dir, conn, dry_run=False)
+        es_counts = _timed(timings, "emit_shape", _populate_emit_shape, blocks_dir, conn, dry_run=False)
         print(
             f"Stage 1 (emit_shape): scanned={es_counts['emit_scanned']}, "
             f"cleared={es_counts['emit_cleared']}, reseeded={es_counts['emit_updated']}, "
@@ -3489,7 +3538,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
         )
 
         # --- Stage 1 sub-step D2: seed block_attributes.meaning (U11, FR-2-12) ---
-        sm_counts = _populate_setting_meanings(blocks_dir, conn, dry_run=False)
+        sm_counts = _timed(timings, "setting meanings", _populate_setting_meanings, blocks_dir, conn, dry_run=False)
         print(
             f"Stage 1 (meaning): cleared={sm_counts['meaning_cleared']}, "
             f"seeded={sm_counts['meaning_seeded']}, no_row={len(sm_counts['meaning_no_row'])}."
@@ -3497,26 +3546,26 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
 
         # --- Stage 1 tail: apply composition_role corrections (seed data, no
         #     code populator) so a full reseed never silently reverts them. ---
-        _run_composition_role_seed(conn)
+        _timed(timings, "composition-role seed", _run_composition_role_seed, conn)
 
         # --- Stage 1 tail: regenerate inspector_control_type from edit.js (2026-07-21)
         #     — the SOLE writer now (enrich-db.py's stale writer removed); overwrite-
         #     on-disagreement policy, so this must run every reseed to stay durable. ---
-        _run_inspector_control_type_seed(conn)
-        _record_unlisted_choice_gaps(conn)
+        _timed(timings, "inspector-control-type seed", _run_inspector_control_type_seed, conn)
+        _timed(timings, "unlisted choice gaps", _record_unlisted_choice_gaps, conn)
 
         # --- Stage 1 tail: seed fx_effects from the motion-fx registry. ---
-        _run_motion_fx_registry_seed(conn)
+        _timed(timings, "motion-fx registry seed", _run_motion_fx_registry_seed, conn)
 
         # --- Stage 1 tail: seed motion_targets and motion_fields (Spec 38A
         #     FR-38A-3); the view motion_field_rows joins them at read time. ---
-        _run_motion_fields_seed(conn)
+        _timed(timings, "motion fields seed", _run_motion_fields_seed, conn)
 
         # --- Stage 1 tail: rebuild the `components` unification adoption ledger
         #     (D763, 2026-08-24). Runs last because it shells out to the Node
         #     scanner, which reads block.json/edit.js/render.php off DISK rather
         #     than through this connection — nothing above it needs its output. ---
-        _run_component_adoption_seed(conn)
+        _timed(timings, "component adoption", _run_component_adoption_seed, conn)
 
         # Update schema_metadata.indexed_blocks_count
         count_row = c.execute(
@@ -3559,6 +3608,9 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             "Stage 1 (declarative capabilities): "
             f"pruned_fossil_rows={counts.get('pruned_fossil_caps', 0)}."
         )
+        print("=== Stage 1 sub-step timings ===")
+        for label, secs in sorted(timings, key=lambda row: -row[1]):
+            print(f"  {secs:7.1f}s  {label}")
     else:
         print(
             f"Stage 1 [dry-run]: {scanned} blocks scanned. "

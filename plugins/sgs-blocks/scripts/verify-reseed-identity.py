@@ -48,7 +48,7 @@ from framework_db import framework_db_path  # noqa: E402
 SHARED_DB = framework_db_path()
 UPDATE = Path("plugins") / "sgs-blocks" / "scripts" / "sgs-update-v2.py"
 # A column that records when a row was written, not what it says.
-TIME_COLUMN = re.compile(r"(_at$|^last_|timestamp|^created|^updated|date$|_time$|^ts$)", re.IGNORECASE)
+TIME_COLUMN = re.compile(r"(_at$|^last_|timestamp|^created|^updated|date$|_time$|^ts$|mtime)", re.IGNORECASE)
 CLOCK = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?")
 SHOW = 5  # differing rows printed per table
 
