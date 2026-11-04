@@ -335,6 +335,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const stepNumberInactiveValue = resolveColourToken( attributes.stepNumberInactiveBackground, palette );
 	const stepNumberDoneBg = resolveColourToken( attributes.stepNumberCompletedBackground, palette );
 	const stepNumberDoneColour = resolveColourToken( attributes.stepNumberCompletedColour, palette );
+	// The device the canvas previews; every tier-aware preview below reads it.
+	const previewTier = usePreviewTier();
 	// The sticky buttons row at the previewed device, as render.php prints it where sticky is on.
 	const stickyOn = !! tierValueOf( attributes.actionsSticky, previewTier );
 	const stickyBg = resolveColourToken( attributes.actionsStickyBackground, palette );
@@ -408,7 +410,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		.join( '' );
 
 	// Typography, spacing, border, radius, max-width, layout and the content band the wrapper paints on the form's outer element.
-	const previewTier = usePreviewTier();
 	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
 	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
 	const actionsSpaceValue = tierLengthPreview( attributes.actionsTopPadding, previewTier );

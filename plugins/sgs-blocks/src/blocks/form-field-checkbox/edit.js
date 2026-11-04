@@ -39,8 +39,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		'card' === attributes.optionPresentation ? 'sgs-form-field--option-card' : '',
 	].filter( Boolean ).join( ' ' );
 
-	const blockProps = useBlockProps( { className, style: boxVars } );
-
 	// Card rows on the canvas, as render.php paints them: row box (background, border, radius, padding, gap) on each
 	// option, tick-box size and radius on the field, ticked fill on a ticked box.
 	const previewTier = usePreviewTier();
@@ -76,6 +74,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 		: undefined;
 	const tickedPaint = isCard ? backgroundPaintPreview( attributes.boxColourChecked, '', colourPalette ) : {};
+	const blockProps = useBlockProps( { className, style: boxVars } );
 
 	const updateOption = ( index, key, value ) => {
 		const newOptions = [ ...options ];
