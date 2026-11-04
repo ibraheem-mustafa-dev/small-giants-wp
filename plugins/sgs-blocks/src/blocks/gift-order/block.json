@@ -1,0 +1,53 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/gift-order",
+	"version": "0.1.0",
+	"title": "Gift order",
+	"category": "sgs-interactive",
+	"description": "A gift switch for the basket and a gift step for the checkout: recipient name and note, kept on the order.",
+	"keywords": [ "gift", "checkout", "basket", "note", "recipient" ],
+	"textdomain": "sgs-blocks",
+	"icon": "heart",
+	"parent": [
+		"woocommerce/cart-items-block",
+		"woocommerce/checkout-fields-block"
+	],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"inserter": true,
+		"sgs": {
+			"specRef": "30",
+			"elements": {}
+		}
+	},
+	"attributes": {
+		"basketLabel": { "type": "string", "default": "This is a gift" },
+		"basketHelp": { "type": "string", "default": "" },
+		"stepTitle": { "type": "string", "default": "Who is it for?" },
+		"optionMeLabel": { "type": "string", "default": "For me" },
+		"optionMeText": { "type": "string", "default": "" },
+		"optionGiftLabel": { "type": "string", "default": "It is a gift" },
+		"optionGiftText": { "type": "string", "default": "Send to someone else" },
+		"recipientLabel": { "type": "string", "default": "Recipient name" },
+		"messageLabel": { "type": "string", "default": "Your note" },
+		"messagePlaceholder": { "type": "string", "default": "" },
+		"giftOnlyLine": { "type": "string", "default": "" },
+		"characterCountText": {
+			"type": "string",
+			"default": "%1$d of %2$d characters"
+		},
+		"saveErrorText": {
+			"type": "string",
+			"default": "Your gift details could not be saved. Please try again."
+		},
+		"recipientLimit": { "type": "integer", "default": 0 },
+		"messageLimit": { "type": "integer", "default": 0 }
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

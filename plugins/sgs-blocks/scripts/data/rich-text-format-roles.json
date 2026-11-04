@@ -18,6 +18,7 @@
       "submitLabel": "RICH_TEXT_FREE_TEXT_NO_LINK"
     },
     "src/blocks/collapsible-text/edit.js": { "text": "RICH_TEXT_BODY" },
+    "src/blocks/commerce-note/edit.js": { "text": "RICH_TEXT_EMPHASIS" },
     "src/blocks/counter/edit.js": { "label": "RICH_TEXT_BODY" },
     "src/blocks/form-field-consent/edit.js": { "consentText": "RICH_TEXT_BODY" },
     "src/blocks/heading/edit.js": { "content": "RICH_TEXT_BODY" },
@@ -185,6 +186,7 @@
       "$body, true, 'body'": "rich-text"
     },
     "src/blocks/collapsible-text/render.php": { "$text, true, 'body'": "rich-text" },
+    "src/blocks/commerce-note/render.php": { "$sgs_note_text, false": "rich-text" },
     "src/blocks/counter/render.php": { "$label, true, 'body'": "rich-text" },
     "src/blocks/form-field-consent/render.php": { "$text, true, 'body'": "rich-text" },
     "src/blocks/heading/render.php": { "$content, true, 'body'": "rich-text" },

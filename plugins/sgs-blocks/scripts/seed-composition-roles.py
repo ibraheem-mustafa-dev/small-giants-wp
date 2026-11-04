@@ -415,6 +415,20 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Cart and Checkout inner blocks (2026-11-04, Spec 27 FR-30-21 and FR-30-22): the gift switch and
+    # step, and the one-line note. Each is drawn from its own attributes and holds no child blocks.
+    {
+        "block_slug": "sgs/gift-order",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
+    {
+        "block_slug": "sgs/commerce-note",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
