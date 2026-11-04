@@ -67,6 +67,7 @@
 						"css:padding": "padding",
 						"css:margin": "margin",
 						"css:gap": "stepGap",
+						"css:row-gap": "stepRowGap",
 						"css:flex-wrap": "flexWrap",
 						"css:border-radius": "borderRadius",
 						"css:border-width": "borderWidth",
@@ -161,6 +162,8 @@
 						"css:color": "numberColour",
 						"css:background-color": "numberBackground",
 						"css:background-image": "numberBackgroundGradient",
+						"css:width": "numberSize",
+						"css:height": "numberSize",
 						"css:font-family": "numberFontFamily",
 						"css:font-size": "numberFontSize",
 						"css:font-weight": "numberFontWeight",
@@ -545,6 +548,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Space between the steps (a CSS length). Empty keeps the stylesheet's spacing-30 gap."
+		},
+		"numberSize": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device size of the step number badge (a CSS length, desktop/tablet/mobile). Sets the badge width and height and the connector-line maths. Empty keeps the stylesheet's 64px (52px on mobile)."
+		},
+		"stepRowGap": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device space between rows of steps when they wrap or form a grid (a CSS length, desktop/tablet/mobile). Empty leaves the row gap to stepGap."
 		},
 		"numberGap": {
 			"type": "string",

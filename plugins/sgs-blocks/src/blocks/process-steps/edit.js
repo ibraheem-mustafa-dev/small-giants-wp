@@ -23,7 +23,7 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-import { FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
+import { ResponsiveControl, FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import {
 	backgroundPaintPreview,
@@ -32,6 +32,7 @@ import {
 	typographyPreviewStyle,
 	usePreviewTier,
 	boxPreview,
+	patchTier,
 } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
@@ -109,6 +110,29 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 	);
 }
 
+/**
+ * Effective value of a per-device length object at a tier, falling back up the
+ * tiers like the frontend emitter; a bare number is a pixel length.
+ *
+ * @param {Object} obj  The per-device object.
+ * @param {string} tier desktop, tablet or mobile.
+ * @return {string|undefined} CSS length, or undefined when unset.
+ */
+function tierValue( obj, tier ) {
+	if ( ! obj || typeof obj !== 'object' ) {
+		return undefined;
+	}
+	const chain = [ 'mobile', 'tablet', 'desktop' ];
+	const order = chain.slice( Math.max( 0, chain.indexOf( tier ) ) );
+	for ( const t of order ) {
+		const v = obj[ t ];
+		if ( v !== undefined && v !== null && v !== '' ) {
+			return /^-?\d+(\.\d+)?$/.test( String( v ) ) ? `${ v }px` : String( v );
+		}
+	}
+	return undefined;
+}
+
 export default function Edit( { attributes, setAttributes, name } ) {
 	const {
 		steps,
@@ -122,6 +146,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		numberBackground,
 		numberGap,
 		stepGap,
+		numberSize,
+		stepRowGap,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -301,6 +327,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			gap: stepGap || undefined,
+			rowGap: tierValue( stepRowGap, previewTier ),
+			'--sgs-step-number-size': tierValue( numberSize, previewTier ),
 			flexWrap: attributes.flexWrap || undefined,
 		},
 	} );
@@ -415,6 +443,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ResponsiveControl label={ __( 'Number size', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<SgsLengthControl
+								label={ __( 'Number size', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ numberSize?.[ breakpoint ] ?? '' }
+								onChange={ ( val ) => patchTier( attributes, setAttributes, 'numberSize', breakpoint, val || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveControl>
 					<DesignTokenPicker
 						label={ __( 'Number colour', 'sgs-blocks' ) }
 						states={ [
@@ -709,6 +748,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
 						presets={ false }
 					/>
+					<ResponsiveControl label={ __( 'Row gap between steps', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<SgsLengthControl
+								label={ __( 'Row gap between steps', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ stepRowGap?.[ breakpoint ] ?? '' }
+								onChange={ ( val ) => patchTier( attributes, setAttributes, 'stepRowGap', breakpoint, val || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveControl>
 					<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 					{ 'list' === layout && (
 						<SgsLengthControl
