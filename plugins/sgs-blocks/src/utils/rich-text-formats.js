@@ -5,7 +5,7 @@
  * here. Which field takes which list lives in `scripts/data/rich-text-format-roles.json`;
  * `scripts/survey-rich-text-formats.js --check` fails a RichText with an inline list or no `allowedFormats`.
  *
- * Every SGS format saves class-only markup (`sgs-highlight`, `sgs-inline-photo`), never inline style, which is why
+ * Every SGS format saves class-only markup (`sgs-highlight`, `sgs-inline-photo`, `sgs-basket-count`), never inline style, which is why
  * core's text-colour, underline and inline-image formats are on none of these lists.
  */
 
@@ -17,6 +17,7 @@ export const RICH_TEXT_BODY = Object.freeze( [
 	'core/strikethrough',
 	'sgs/highlight',
 	'sgs/inline-photo',
+	'sgs/basket-count',
 ] );
 
 /** Body copy printed inside an `<a>`, `<button>` or `<summary>`, where a nested link is invalid HTML. */

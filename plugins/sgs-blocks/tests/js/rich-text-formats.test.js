@@ -85,8 +85,8 @@ const registered = () => richText.registerFormatType.mock.calls.map( ( [ name ] 
 const settingsOf = ( name ) => richText.registerFormatType.mock.calls.find( ( [ n ] ) => n === name )[ 1 ];
 
 describe( 'shared format lists', () => {
-	it( 'registers the two SGS formats once each', () => {
-		expect( registered().sort() ).toEqual( [ 'sgs/highlight', 'sgs/inline-photo' ] );
+	it( 'registers the three SGS formats once each', () => {
+		expect( registered().sort() ).toEqual( [ 'sgs/basket-count', 'sgs/highlight', 'sgs/inline-photo' ] );
 	} );
 
 	it( 'every constant lists only registered names, and is frozen', () => {
@@ -102,7 +102,7 @@ describe( 'shared format lists', () => {
 	} );
 
 	it( 'the lists hold what their roles promise', () => {
-		expect( formats.RICH_TEXT_BODY ).toEqual( [ 'core/bold', 'core/italic', 'core/link', 'core/strikethrough', 'sgs/highlight', 'sgs/inline-photo' ] );
+		expect( formats.RICH_TEXT_BODY ).toEqual( [ 'core/bold', 'core/italic', 'core/link', 'core/strikethrough', 'sgs/highlight', 'sgs/inline-photo', 'sgs/basket-count' ] );
 		expect( formats.RICH_TEXT_BODY_NO_LINK ).toEqual( formats.RICH_TEXT_BODY.filter( ( f ) => 'core/link' !== f ) );
 		expect( formats.RICH_TEXT_EMPHASIS ).toEqual( [ 'core/bold', 'core/italic' ] );
 		expect( formats.RICH_TEXT_LINK_ONLY ).toEqual( [ 'core/link' ] );
@@ -193,9 +193,9 @@ describe( 'toolbar controls show only in SGS blocks', () => {
 		return { container, root };
 	}
 
-	it( 'renders the highlight and photo controls inside an sgs/ block', () => {
+	it( 'renders the highlight, photo and basket count controls inside an sgs/ block', () => {
 		mockSelectedBlockName = 'sgs/heading';
-		for ( const name of [ 'sgs/highlight', 'sgs/inline-photo' ] ) {
+		for ( const name of [ 'sgs/highlight', 'sgs/inline-photo', 'sgs/basket-count' ] ) {
 			const { container, root } = render( settingsOf( name ).edit );
 			expect( container.innerHTML ).not.toBe( '' );
 			act( () => root.unmount() );
@@ -204,16 +204,18 @@ describe( 'toolbar controls show only in SGS blocks', () => {
 
 	it( 'renders nothing inside a core block', () => {
 		mockSelectedBlockName = 'core/paragraph';
-		for ( const name of [ 'sgs/highlight', 'sgs/inline-photo' ] ) {
+		for ( const name of [ 'sgs/highlight', 'sgs/inline-photo', 'sgs/basket-count' ] ) {
 			const { container, root } = render( settingsOf( name ).edit );
 			expect( container.innerHTML ).toBe( '' );
 			act( () => root.unmount() );
 		}
 	} );
 
-	it( 'the module exports the two settings objects it registers', () => {
+	it( 'the module exports the settings objects it registers', () => {
 		expect( inlineFormats.highlightFormat ).toBe( settingsOf( 'sgs/highlight' ) );
 		expect( inlineFormats.inlinePhotoFormat ).toBe( settingsOf( 'sgs/inline-photo' ) );
+		expect( inlineFormats.basketCountFormat ).toBe( settingsOf( 'sgs/basket-count' ) );
+		expect( settingsOf( 'sgs/basket-count' ) ).toMatchObject( { tagName: 'span', className: 'sgs-basket-count' } );
 	} );
 } );
 
