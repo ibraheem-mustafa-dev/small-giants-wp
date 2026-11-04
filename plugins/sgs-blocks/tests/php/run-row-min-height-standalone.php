@@ -98,7 +98,7 @@ ok( 1 !== preg_match( '/\.sgs-container-[a-z0-9]+\{display:flex;flex-direction:c
 // A section block's output is unchanged: base, tablet and mobile rules on the outer, no flex fill without a band.
 $section = render_row_block( 'sgs/container', array( 'minHeight' => $tiers ) );
 $section_min = preg_replace( '/\.sgs-container-[a-z0-9]+/', '.U', $section['css'] );
-ok( 1 === preg_match( '/\.U\{min-height:84px\}@media \(max-width:1023px\)\{\.U\{min-height:72px\}\}@media \(max-width:767px\)\{\.U\{min-height:72px\}\}/', $section_min ), 'section block: min-height rules unchanged (base, tablet, mobile on the outer)' );
+ok( 1 === preg_match( '/\.U\{min-height:84px\}@media ?\(max-width:1023px\)\{\.U\{min-height:72px\}\}@media ?\(max-width:767px\)\{\.U\{min-height:72px\}\}/', $section_min ), 'section block: min-height rules unchanged (base, tablet, mobile on the outer)' );
 ok( 1 !== preg_match( '/display:flex;flex-direction:column/', $section['css'] ), 'section block: no flex-fill column without a content band' );
 
 // The declared attribute is a tier object with an empty default (saved headers stay valid) and carries no preset list.

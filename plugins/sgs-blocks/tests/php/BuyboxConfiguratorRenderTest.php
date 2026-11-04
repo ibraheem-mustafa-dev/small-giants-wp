@@ -247,7 +247,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 			)
 		);
 		$this->assertStringContainsString( '@media(min-width:768px){', $tiers );
-		$this->assertMatchesRegularExpression( '/\{gap:64px;\}@media \(max-width:1023px\)\{[^}]*\{gap:36px;\}\}\}/', $tiers );
+		$this->assertMatchesRegularExpression( '/\{gap:64px;\}@media ?\(max-width:1023px\)\{[^}]*\{gap:36px;\}\}\}/', $tiers );
 		$this->assertStringContainsString( '.product-card__thumbs:not([hidden]){gap:10px;}', $tiers );
 		$this->assertStringContainsString( '--sgs-buybox-thumb-size:88px;', $tiers );
 		$this->assertStringContainsString( '--sgs-buybox-thumb-size:76px;', $tiers );

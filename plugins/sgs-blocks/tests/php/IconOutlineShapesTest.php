@@ -326,7 +326,7 @@ final class IconOutlineShapesTest extends TestCase {
 				)
 			);
 			$this->assertMatchesRegularExpression(
-				'#@media \(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#',
+				'#@media ?\(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#',
 				$css,
 				$shape . ': hover stroke is the brand colour, behind the touch guard'
 			);
@@ -349,8 +349,8 @@ final class IconOutlineShapesTest extends TestCase {
 		$this->assertStringContainsString( 'stroke-width: calc(2 * var(--sgs-icon-outline-w, 0px));', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--has-bg \.sgs-icon__outline-path \{\s*fill: var\(--sgs-icon-bg, var\(--sgs-si-bg,#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--boxed\.sgs-icon--shape-star \.sgs-icon__shape \{\s*inline-size: var\(--sgs-icon-shape-w, var\(--sgs-si-shape-w, calc\(3\.2 \* var\(--sgs-icon-size-used\)\)\)\);#', $css, 'the star defaults to 3.2 times the icon' );
-		$this->assertMatchesRegularExpression( '#@media \(forced-colors: active\) \{.*stroke: CanvasText;#s', $css );
-		$this->assertMatchesRegularExpression( '#@media \(prefers-reduced-motion: reduce\) \{\s*\.sgs-icon__shape,\s*\.sgs-icon__link,\s*\.sgs-icon__outline-path \{#', $css );
+		$this->assertMatchesRegularExpression( '#@media ?\(forced-colors: active\) \{.*stroke: CanvasText;#s', $css );
+		$this->assertMatchesRegularExpression( '#@media ?\(prefers-reduced-motion: reduce\) \{\s*\.sgs-icon__shape,\s*\.sgs-icon__link,\s*\.sgs-icon__outline-path \{#', $css );
 	}
 
 	public function test_both_enums_list_exactly_the_shapes_the_registry_reader_gives(): void {

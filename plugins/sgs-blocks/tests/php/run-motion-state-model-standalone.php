@@ -181,7 +181,7 @@ $check( $has( $triggers_css, '@media (prefers-reduced-motion: reduce)' ) && $has
 $player = (string) file_get_contents( $root . '/assets/js/motion-keyframes.js' );
 $check( 1 === preg_match( '/function replay\( el \) \{\s*if \( reducedMotion\(\)/', $player ) && 1 === preg_match( '/function play\( el \) \{\s*if \( reducedMotion\(\)/', $player ), 'reduced motion: the keyframe player (the pop) returns before animating under reduce, on play and on every replay' );
 foreach ( array( 'cart/style.css', 'nav-bar-menu/style.css', 'accordion/style.css' ) as $file ) {
-	$check( 0 === preg_match( '/animation:\s*[^;]*\b\d+(\.\d+)?m?s\b[^;]*;/', preg_replace( '#@media \(prefers-reduced-motion: no-preference\) \{.*?\n\}\n#s', '', (string) file_get_contents( $root . '/src/blocks/' . $file ) ) ), "$file: no animation shorthand with a literal time outside the no-preference block" );
+	$check( 0 === preg_match( '/animation:\s*[^;]*\b\d+(\.\d+)?m?s\b[^;]*;/', preg_replace( '#@media ?\(prefers-reduced-motion: no-preference\) \{.*?\n\}\n#s', '', (string) file_get_contents( $root . '/src/blocks/' . $file ) ) ), "$file: no animation shorthand with a literal time outside the no-preference block" );
 }
 
 // 6. The renders on the model, through the QA harness.

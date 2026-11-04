@@ -194,7 +194,7 @@ $css = sgs_nav_drawer_menu_extras_css(
 	'.sgs-nav-drawer-menu.u2'
 );
 ok( false !== strpos( $css, '--sgs-ndm-orn-content:counter(sgs-ndm-item, decimal-leading-zero)' ), 'index at desktop sets the counter' );
-ok( 1 === preg_match( '#@media \(max-width:1023px\)\{[^}]*--sgs-ndm-orn-display:none#', $css ), 'index is dropped at the tablet tier (dogstudio 1440 only)' );
+ok( 1 === preg_match( '#@media ?\(max-width:1023px\)\{[^}]*--sgs-ndm-orn-display:none#', $css ), 'index is dropped at the tablet tier (dogstudio 1440 only)' );
 ok( false !== strpos( $css, '--sgs-ndm-expander-rotate:45deg' ), 'the expander open rotation is emitted' );
 $acc = sgs_nav_drawer_menu_accordion_html( $mega_item, 'x', 'u3', true, '<li>b</li>', $opts );
 ok( false !== strpos( $acc, 'data-icon="asterisk"' ), 'the accordion expander uses itemExpanderIcon' );
