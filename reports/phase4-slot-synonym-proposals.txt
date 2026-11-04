@@ -1,4 +1,4 @@
-# Slot Synonym Auto-Seed Proposals — 2026-11-04 02:06:20 UTC
+# Slot Synonym Auto-Seed Proposals — 2026-11-04 11:59:30 UTC
 
 ## Summary
 Unmapped rows: 64 | Auto-inserted (high confidence): 0 | Manual review (medium confidence): 3 | No match (low confidence): 61
@@ -68,7 +68,7 @@ _(none)_
 - slot='size' (no SGS block matches)
 - slot='position' (no SGS block matches)
 - slot='header' (ambiguous — 2 contains matches, no auto-seed)
-- slot='bar' (ambiguous — 2 contains matches, no auto-seed)
+- slot='bar' (ambiguous — 3 contains matches, no auto-seed)
 - slot='__form_instance__' (no SGS block matches)
 - slot='nav' (multiple prefix matches: sgs/nav-bar-menu, sgs/nav-drawer, sgs/nav-drawer-menu)
 - slot='progress' (no SGS block matches)

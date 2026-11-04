@@ -4002,6 +4002,23 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickPricedGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "pick-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickPricedRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "pick-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickSelectedBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -4619,13 +4636,6 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "savingBadge"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "stackBelow",
-      "fields": {
-        "css_property": "min-width"
       }
     },
     {
@@ -10324,7 +10334,7 @@
       "attr": "nextButtonFill",
       "fields": {
         "css_property": "flex",
-        "css_element": "next-button"
+        "css_element": "step-buttons"
       }
     },
     {
@@ -10332,7 +10342,8 @@
       "attr": "nextColourBackground",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button"
+        "role": "color",
+        "css_element": "next-button"
       }
     },
     {
@@ -10340,7 +10351,7 @@
       "attr": "nextColourBackgroundGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "button"
+        "css_element": "next-button"
       }
     },
     {
@@ -10348,7 +10359,8 @@
       "attr": "nextColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "css_element": "button",
+        "role": "color",
+        "css_element": "next-button",
         "css_state": "hover"
       }
     },
@@ -10357,7 +10369,7 @@
       "attr": "nextColourBackgroundHoverGradient",
       "fields": {
         "css_property": "background-image",
-        "css_element": "button",
+        "css_element": "next-button",
         "css_state": "hover"
       }
     },
@@ -19132,23 +19144,6 @@
     },
     {
       "slug": "sgs/nav-drawer",
-      "attr": "anchor",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "anchorOffset",
-      "fields": {
-        "css_property": "top",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
       "attr": "backgroundImage",
       "fields": {
         "css_property": "background-image",
@@ -19460,14 +19455,6 @@
         "role": "color",
         "css_layer": "GRID",
         "css_element": "body"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "modality",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "OUTER"
       }
     },
     {
@@ -23261,6 +23248,14 @@
       "attr": "numberLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "number"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberSize",
+      "fields": {
+        "css_property": "height,width",
         "css_element": "number"
       }
     },
@@ -29769,7 +29764,8 @@
       "slug": "sgs/testimonial-slider",
       "attr": "slidesVisible",
       "fields": {
-        "css_property": "flex"
+        "css_property": "flex",
+        "css_tier": "mobile"
       }
     },
     {
@@ -30332,6 +30328,22 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "contentMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "contentPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "counterFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -30436,6 +30448,14 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "dateMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "dateTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -30500,6 +30520,14 @@
       "fields": {
         "css_property": "text-decoration-thickness-link",
         "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "description-text"
       }
     },
     {
@@ -32618,6 +32646,49 @@
         "css_property": "stroke-width",
         "css_layer": "OUTER",
         "css_element": "icon"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemBackgroundOpen",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemShadowOpen",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "item",
+        "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "itemShadowOpenColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "item",
+        "css_state": "open"
       }
     },
     {
@@ -35323,6 +35394,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsAlignItems",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "submit-actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "actionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -35517,6 +35597,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "requiredMarkHidden",
+      "fields": {
+        "css_property": "display",
+        "css_element": "required-mark"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "statusRowWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -35679,6 +35767,56 @@
       "fields": {
         "css_property": "padding",
         "css_element": "option"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "input"
       }
     },
     {
@@ -35928,6 +36066,53 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "tileAlign",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "tileDescriptionColour",
       "fields": {
         "css_property": "color",
@@ -35988,6 +36173,15 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "tileInnerGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "tileLabelColour",
       "fields": {
         "css_property": "color",
@@ -36044,6 +36238,53 @@
       "fields": {
         "css_property": "-webkit-text-stroke-width",
         "css_element": "tile-label"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tilePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
       }
     },
     {
@@ -37223,6 +37464,15 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "splitMediaAlign",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID_AREA",
+        "css_element": "media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "splitMediaBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -38182,6 +38432,26 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardLinkBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardLink"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardLink"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardLinkSize",
       "fields": {
         "css_property": "font-size",
@@ -38407,6 +38677,15 @@
       "attr": "drawerLinkNumSize",
       "fields": {
         "css_property": "font-size",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkNumWeight",
+      "fields": {
+        "css_property": "font-weight",
         "css_layer": "CONTENT",
         "css_element": "drawerLinkNumber"
       }
@@ -39620,6 +39899,15 @@
       "fields": {
         "css_property": "z-index",
         "css_element": "detach-chip"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "anchorOffset",
+      "fields": {
+        "css_property": "top",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -41263,6 +41551,24 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillSelectedOffsetX",
+      "fields": {
+        "css_property": "translate",
+        "css_element": "pill",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "pill",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillTextColourGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -41406,6 +41712,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "contentPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "excerptColour",
       "fields": {
         "css_property": "color",
@@ -41418,6 +41732,14 @@
       "attr": "excerptColourGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_element": "excerpt"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "excerptMargin",
+      "fields": {
+        "css_property": "margin",
         "css_element": "excerpt"
       }
     },
@@ -41486,6 +41808,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "filterPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "filter"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "filterTextColour",
       "fields": {
         "css_property": "color",
@@ -41521,6 +41851,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "metaMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "meta"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "readMoreColour",
       "fields": {
         "css_property": "color",
@@ -41538,6 +41876,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "readMoreMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "read-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -41550,6 +41896,14 @@
       "attr": "titleColourGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
+      "attr": "titleMargin",
+      "fields": {
+        "css_property": "margin",
         "css_element": "title"
       }
     },
@@ -41756,6 +42110,15 @@
         "css_property": "color-gradient",
         "css_element": "number",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "stepRowGap",
+      "fields": {
+        "css_property": "row-gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
       }
     },
     {
@@ -43822,6 +44185,14 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "reviewFooterBorder",
+      "fields": {
+        "css_property": "border-top-color,border-top-style,border-top-width",
+        "css_element": "review-footer"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "roleColourHover",
       "fields": {
         "css_property": "color",
@@ -44076,6 +44447,14 @@
         "css_property": "color-link-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "linkFontWeight",
+      "fields": {
+        "css_property": "font-weight-link",
+        "css_element": "wrapper"
       }
     },
     {
