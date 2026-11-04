@@ -460,7 +460,8 @@ final class Sgs_Motion_Renderer {
 		// The targets holding an `<img fetchpriority="high">` change what the LCP rule emits, so they are part of the scope:
 		// two blocks with one document (the cards a delegating grid prints) share a scope only when their CSS is the same.
 		$priority = self::priority_targets( $name, $block_content, $doc['elements'] );
-		$scope    = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) . ( array() === $priority ? '' : '|' . implode( ',', array_keys( $priority ) ) ) ), 0, 10 );
+		$in_item  = Sgs_Motion_Loop_Delays::in_template_item();
+		$scope    = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) . ( array() === $priority ? '' : '|' . implode( ',', array_keys( $priority ) ) ) . ( $in_item ? '|item' : '' ) ), 0, 10 );
 		if ( self::uses_source( $doc, 'root' ) ) {
 			$root_attrs['data-sgs-mroot'] = '';
 		}
@@ -507,6 +508,7 @@ final class Sgs_Motion_Renderer {
 					'attributes'        => $attrs,
 					'parent_owned'      => $owned,
 					'match'             => $resolved['match'],
+					'in_item'           => $in_item,
 				)
 			);
 			$css      .= $emitted['css'];

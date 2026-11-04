@@ -173,12 +173,29 @@ final class Sgs_Motion_Rotation {
 	 * a wider tier is written as `:nth-child(n of .cls)` so it replaces the wider tier's positions.
 	 *
 	 * @param mixed             $value   The tier's normalised `restRotate` (one angle or a list).
+	 * When the element is the only child of a repeated list item (`$in_item`: a query or product template), siblings
+	 * cannot be counted, so each rule is `li:nth-child(...) > <selector>` and counts the list items instead (the third
+	 * entry is the selector wrapper, `%s` being the element's selector).
+	 *
 	 * @param array<int,string> $classes The item's classes.
-	 * @return array<int,array{0:string,1:array<string,string>}>
+	 * @param bool              $in_item Whether the element sits alone inside a repeated list item.
+	 * @return array<int,array{0:string,1:array<string,string>,2?:string}>
 	 */
-	public static function nth_rules( $value, array $classes ): array {
+	public static function nth_rules( $value, array $classes, bool $in_item = false ): array {
 		$prop  = (string) ( Sgs_Motion_Emitter::fields( self::DEF )['restRotate']['css'] ?? '' );
 		$of    = ' of .' . implode( '.', $classes ) . ')';
+		if ( $in_item ) {
+			$list = self::list_css( $value );
+			if ( null === $list ) {
+				$css = Sgs_Motion_Emitter::value_css( self::DEF, 'restRotate', $value );
+				return null === $css ? array() : array( array( '', array( $prop => $css ), 'li:nth-child(n) > %s' ) );
+			}
+			$rules = array();
+			foreach ( $list as $i => $css ) {
+				$rules[] = array( '', array( $prop => $css ), 'li:nth-child(' . count( $list ) . 'n+' . ( $i + 1 ) . ') > %s' );
+			}
+			return $rules;
+		}
 		$rules = array();
 		$list  = self::list_css( $value );
 		if ( null === $list ) {

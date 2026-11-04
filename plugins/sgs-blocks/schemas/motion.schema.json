@@ -963,13 +963,13 @@
 					"properties": [
 						{
 							"name": "--sgs-me-tx",
-							"syntax": "<length>",
+							"syntax": "<length-percentage>",
 							"initial": "0px",
 							"axis": "x"
 						},
 						{
 							"name": "--sgs-me-ty",
-							"syntax": "<length>",
+							"syntax": "<length-percentage>",
 							"initial": "0px",
 							"axis": "y"
 						}
@@ -980,13 +980,13 @@
 					"properties": [
 						{
 							"name": "--sgs-mh-tx",
-							"syntax": "<length>",
+							"syntax": "<length-percentage>",
 							"initial": "0px",
 							"axis": "x"
 						},
 						{
 							"name": "--sgs-mh-ty",
-							"syntax": "<length>",
+							"syntax": "<length-percentage>",
 							"initial": "0px",
 							"axis": "y"
 						}

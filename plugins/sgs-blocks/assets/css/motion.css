@@ -43,10 +43,10 @@
    Channel owners never inherit (a nested target must not pick up its parent's lift or pointer angles); paint-slot
    and layer properties inherit so the pseudo-elements and layers see them, and the glare layer takes Follow
    pointer's angles from its element explicitly (below). The one perspective is `<length> | none` with initial none, which perspective() reads as no perspective. ── */
-@property --sgs-me-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --sgs-me-ty { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --sgs-mh-tx { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --sgs-mh-ty { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --sgs-me-tx { syntax: '<length-percentage>'; inherits: false; initial-value: 0px; }
+@property --sgs-me-ty { syntax: '<length-percentage>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-tx { syntax: '<length-percentage>'; inherits: false; initial-value: 0px; }
+@property --sgs-mh-ty { syntax: '<length-percentage>'; inherits: false; initial-value: 0px; }
 @property --sgs-mag-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-mag-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-x { syntax: '<length>'; inherits: false; initial-value: 0px; }

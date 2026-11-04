@@ -370,6 +370,8 @@ final class Sgs_Motion_Emitter {
 		$origin      = array();
 		$list_seen   = false;
 		$item_class  = is_array( $context['match'] ?? null ) && empty( $context['match']['root'] ) ? (array) ( $context['match']['classes'] ?? array() ) : array();
+		// A root target inside a repeated list item (a query or product template) counts the list item's position.
+		$in_item     = ! empty( $context['in_item'] ) && array() === $item_class;
 		foreach ( self::TIERS as $tier ) {
 			$timing_changed = 'desktop' === $tier;
 			$angle_changed  = array();
@@ -409,7 +411,7 @@ final class Sgs_Motion_Emitter {
 					if ( 'restRotate' === $key ) {
 						// A list's angles are clamped and capped; a root target has no siblings to cycle through.
 						$rest_here = Sgs_Motion_Field_Types::sanitise( $fields[ $key ]['type'], $value, $fields[ $key ]['node'] );
-						if ( is_array( $rest_here ) && array() === $item_class ) {
+						if ( is_array( $rest_here ) && array() === $item_class && ! $in_item ) {
 							do_action(
 								'sgs_motion_layer_dropped',
 								(string) ( $context['block'] ?? '' ),
@@ -437,7 +439,7 @@ final class Sgs_Motion_Emitter {
 				Sgs_Motion_Rotation::hover_angles( $angles, $raw, $angle_changed, $tier, $decls, $owners );
 			}
 			if ( null !== $rest_here && ( is_array( $rest_here ) || $list_seen ) ) {
-				$extra[ $tier ] = array_merge( $extra[ $tier ], Sgs_Motion_Rotation::nth_rules( $rest_here, $item_class ) );
+				$extra[ $tier ] = array_merge( $extra[ $tier ], Sgs_Motion_Rotation::nth_rules( $rest_here, $item_class, $in_item ) );
 			}
 			$list_seen = $list_seen || is_array( $rest_here );
 			if ( $origin_changed ) {
@@ -703,7 +705,8 @@ final class Sgs_Motion_Emitter {
 				foreach ( $more[1] as $prop => $value ) {
 					$part .= $prop . ':' . $value . ';';
 				}
-				$rule .= $selector . $more[0] . '{' . $part . '}';
+				// A rule with a wrapper (`%s` is the element's selector) is keyed to the list item that holds the element.
+				$rule .= ( isset( $more[2] ) ? sprintf( $more[2], $selector ) : $selector . $more[0] ) . '{' . $part . '}';
 			}
 			$css .= null === $media[ $tier ] ? $rule : $media[ $tier ] . '{' . $rule . '}';
 		}
