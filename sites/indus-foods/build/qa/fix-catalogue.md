@@ -267,6 +267,8 @@ QC (three design reviewers on indus-test after round 4; captures E:/sgs-tmp/visi
 | R5-13 | site-check | one form a run fails "Clicking the checkbox did not change its state" | open, cause unproven |
 | R5-14 | lows | drawer X weight, social glyph size, WhatsApp pill width, food-service hero crop at 375, brands tile strips, testimonial avatar, heritage spacing, CTA band and footer heights | low |
 
+This table is the starting list as QC found it; outcomes are in the Round 5 register below (R5-14's lows carried to R6-11).
+
 ## Round 5 register (Bean approved 2026-11-03: "use the patched versions", proximity magnets, six posts, the post template carries the article styling; review pairs: E:/sgs-tmp/r5-pairs, E:/sgs-tmp/r5-mega, E:/sgs-tmp/r5-fix-drawer, E:/sgs-tmp/r5-post)
 
 Mega menus: the cloned panels were measured against the draft and against Bean's hand-built canary panels (sandybrown sgs_mega_menu 4426, 4443, 4440, 4430, built for the v1 draft). At 1440 the shells are the same (1px border, 12px radius, two-layer shadow); the clones carry v2's content and keep Sectors' four cards in one row (canary wraps to 3 + 1), so the clones stay and the drawer copies the canary's drawer mechanism.
@@ -282,14 +284,15 @@ Site settings (existing settings, applied on local-indus):
 | R5-02 | delivery 127 | FAQ with no questions | clone gap: icon-only rows | sgs/accordion with the draft's three questions (faqs page's settings) | Fill | done |
 | R5-05 | about 92, our-story 95 | pin 151px short; hint indent; tablet title 24px | panelPinTail 0; hint padding 40 at every width | panelPinTail 17; hint padding 40/32/20 with icon + text; titleFontSize 28/21/21 | Fill | done: 3858 vs 3856, 3904 vs 3902 |
 | R5-09 | shan, green-leaf, lemon-tree | no eyebrow dash; feature rows 75px pitch | round 3's sanam fix not copied | marker line 28x2 on the three eyebrows; feature grid gap 0 24px | Fill | done |
+| R5-10 | brand heroes 115, 117, 119, 121 | yellow bars beside the contained logo at 768/375; card 510 vs 555 at 1440 | no ground behind a contained split image; splitMediaWidth applied only under the 'custom' fit | splitMediaBackground #FFFFFF (F-H) and splitMediaWidth desktop 100% under contain (F-HM); the interim Custom CSS removed | Fill | done: 555x416 / 704x528 / 335x251 at 1440/768/375, white ground |
 | R5-11 | delivery, food-service | eyebrow gap, rows short | label has no bottom margin; row text no top margin | label margin bottom 16px; row text margin top 6px | Fill | done; food-service rows 4px short, delivery 5px short at 768 (open, low) |
 | R5-12 | blog 508; posts | pill plain text; grid-to-CTA gap at 768; no post content | label background unset; tablet padding 48; posts empty | label background #FFFFFF80 + margin top 40; CTA padding 64/52/40; six posts filled from the draft (excerpt, category, Unsplash photo, body), Hello world deleted | Fill + content | done; pill width waits on F-L |
 | R5-15 | single post (template 432) | default theme layout, comments | template 432 is the theme default with a full-width main | template rebuilt from the draft (hero, 740px article, meta row, keep-reading cards, CTA); article text styling on the template's article container (Bean: the template sets the default styling); comments closed | template | done; pill radius, card tag colour and date row, breadcrumb last crumb, read-time wording open |
-| R5-06 | apply 163, 123 | heading and intro gaps; panel short | form gap stacks on the heading and intro margins | heading margin 7/0, intro margin -13/7; panel list margin top 14 | Fill | done (within 1px); progress, completed step, sticky bar, checkbox row wait on F-F1 to F-F4 |
-| R5-07 | contact 133, 149 | icons 32px; lines tight; pills touch; tiles 95px | iconSize default; no line margins; pill gap mobile only; tile line-height 26px | iconSize 20; lines margin top 4; pill gap 12; tileLabelLineHeight 1.2 + tile gap 4; textarea rows 4 | Fill | done; textarea 172 vs 166 waits on F-F5 |
+| R5-06 | apply 163, 123 | heading and intro gaps; panel short | form gap stacks on the heading and intro margins | heading margin 7/0, intro margin -13/7; panel list margin top 14 | Fill | done: gaps within 1px; progress fill (completed, gold-to-blue gradient), gold completed tick and dark completed label, sticky Continue bar at 375 (Continue fills the row), Deliver card row all set on F-F1 to F-F4 and F-F6 |
+| R5-07 | contact 133, 149 | icons 32px; lines tight; pills touch; tiles 95px | iconSize default; no line margins; pill gap mobile only; tile line-height 26px | iconSize 20; lines margin top 4; pill gap 12; tileLabelLineHeight 1.2 + tile gap 4; textarea rows 4 | Fill | done; textarea 166 (rows 3, inputMinHeight 166); its bottom padding stays at the counter-inside clearance (R6-08) |
 | R5-08 | careers 103 | ring overflows; sublines tight | card overflow visible; no subline margin | overflow hidden; subline margin top 17 | Fill | done |
 | R5-17 | every page (56 buttons) | magnet only engages on the button and snaps back | the clone copied the draft's over-only magnet (5px pull, quick return) | proximity mode: radius 120, factor 0.35, up to 14x10px, return 600ms (Bean ruling, divergence D-27) | Fill | done |
-| R5-13 | site-check | one form a run fails "did not change its state" | probable: the filler clicks a computed point with force while smooth scroll and the entrance motion still move the checkbox (pointerdown landed 73px below it in a captured failure); not reproduced on demand | script click plus isChecked assertion, disabled controls skipped (form-submit-page.mjs::fillVisible), a cause-agnostic mitigation | gate | coded |
+| R5-13 | site-check | one form a run fails "did not change its state" | probable: the filler clicks a computed point with force while smooth scroll and the entrance motion still move the checkbox (pointerdown landed 73px below it in a captured failure); not reproduced on demand | script click plus isChecked assertion, disabled controls skipped (form-submit-page.mjs::fillVisible), a cause-agnostic mitigation | gate | done: the filler clicks by script; site-check forms 3 of 3 runs on indus-test with the current filler (a run from a checkout behind main still uses the old click) |
 
 Framework items (built in this round):
 
@@ -308,3 +311,32 @@ Framework items (built in this round):
 | F-D2 | mega-panel | no drawer row arrow | drawerLinkTrailingIcon, drawerLinkTrailingColour |
 | F-D3 | mega-panel | stacked-overlay needs flat aside children; tag radius not per presentation | slot detection reads one wrapping container level; drawerCardTagRadius |
 | F-D4 | nav-drawer-menu | open caret colour | caretColourOpen (caretBoxBgOpen already existed) |
+| F-F6 | form | completed label looks pending; Continue cannot fill the row; fixed button gap and arrow stroke | stepLabelColourCompleted, stepLabelFontWeightCompleted, nextButtonFill (per device), actionsGap, navIconStrokeWidth |
+| F-B1 | breadcrumbs | a single post's trail had no posts page and an always-on category crumb; the last crumb is always the title | posts page added on single posts, showTermCrumb, currentCrumbLabel (the first commit read showTermCrumb but did not use it; fixed in 3054d0a83) |
+| F-T1 | core/post-time-to-read | "1-2 minutes" only | sgsShortFormat ("2 min read") on WordPress's own block |
+| F-P1 | post-grid | full dates; empty columns collapse; teal chips in name order; one ratio for every device; a blog page hid its newest post | dateFormat, keepEmptyColumns, filter chip look, filterOrder term_order + filterTermIds, imageHeight per device; exclude-current only on single views |
+| F-BD | border control (all blocks) | border width one value for every device | per-device width in SgsBorderControl; four callers that dropped tablet/mobile wired; gate check-border-tiers-printed |
+| F-HM | hero | split width applied only under the 'custom' fit | width under every fit, width + height beat the ratio, 'custom' retired (sweep migrate-hero-custom-fit.php; the canary's one trashed probe page converted) |
+| F-GL | grid-layout-preview (editor) | per-device flexDirection crashed the editor canvas of every block holding a multi-button | flex direction, wrap and justify resolved for the previewed tier |
+| F-MN | mega-panel | drawerLinkNumColour/Size never reached the row number inside a content band | selector covers the band |
+
+Verified independently (2026-11-04, no Bean check needed, Bean ruling): a cold vision audit of 106 screenshots (12 pages at 375/768/1440, the drawer closed and each item expanded at 375 and 768, the four mega menus at 1440, the single post at three widths; E:/sgs-tmp/r5-vision/audit*.md), every doubtful finding re-measured on the live DOM, Playwright drawer checks, site-check 0 failed, an editor-load check of 12 posts and templates (0 crashes), and a three-rater QC council on the 19 framework commits (no claim without code; the hero sweep script hardened in a973b6723; the shared fit change handed to the Mama's stream to check mamas-test pages 104, 111 and template 160).
+
+## Round 5 QC and the round 6 starting list (2026-11-04)
+
+Indus-test: 0 high. The remaining mediums need framework settings; the site holds the draft's look meanwhile, some of it through per-block Custom CSS that round 6 replaces with settings.
+
+| Id | Where | Wrong compared with the draft | Proven cause | Kind |
+|---|---|---|---|---|
+| R6-01 | about, our-story timeline, 768 | cards beside the focused one fade (0.73, 0.58); the draft fades only at desktop | panelEdgeOpacity (0.58, copied from the desktop draft) has one value for every device | framework: per-device or desktop-only edge fade |
+| R6-02 | mega Sectors, About, Trade, Brands photos, 1440 | on the first hover the photos appear 2-3 s late on the live server | a cover-cropped lazy image drops sizes="auto" (includes/helpers-media.php::sgs_media_drop_auto_sizes) and keeps the attachment's 100vw hint, so a 205px card fetches the 1600px file | framework: sizes from the drawn width (box width x image/box ratio), keeping the crop sharp |
+| R6-03 | blog cards (508) and Keep reading (432) | held by per-block Custom CSS: card content padding 22/22/24 and gaps; the card image filling its frame | .sgs-media-el{height:var(--sgs-media-height,auto)} outranks .sgs-post-grid__img{height:100%} (image clipped from the top); post-grid has no card content padding or gap settings | framework: fix the cascade, add card padding/gap settings, remove the Custom CSS |
+| R6-04 | timeline end, 1440 | the draft ends with the last card 260px right of the first card's start; ours ends at the first card's position | horizontal-panel-geometry.js::travelDistance is fixed at first-to-last | framework: an end offset setting |
+| R6-05 | drawer link numbers | weight 700 vs the draft's 500 | mega-panel has no drawer number weight | framework: drawerLinkNumWeight |
+| R6-06 | Custom CSS still on the site from rounds 4-5 | Sectors drawer arrow buttons (cr-ref-mega-sectors-7/14/21/28), About/Trade drawer arrow circles (cr-ref-mega-about-39, cr-ref-mega-trade-34), Brands drawer pill (cr-ref-mega-brands-7), timeline date and content margins (92, 95), tiles gap (149) | no setting existed when fixed | framework settings, then remove each rule |
+| R6-07 | apply 375 | Back button 56 vs 52px tall | not traced | investigate |
+| R6-08 | contact textarea | bottom padding held at the counter-inside clearance (44 vs 14) | the counter-inside rule keeps max(2.75rem, authored) | design call: counter position vs padding |
+| R6-09 | careers consent row | 24 vs 21px | the checkbox's own margins have no setting | framework or accept |
+| R6-10 | blog filter chips | "All" chip ~8px wider than the draft | chip padding has no setting | framework: filter chip padding |
+| R6-11 | lows (R5-14 carried) | testimonial avatar chip, WhatsApp pill label size, food-service hero crop at 375, CTA band and footer heights, drawer close X weight, social glyph size, brands tile strips, heritage spacing | not traced | investigate |
+

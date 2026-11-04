@@ -170,6 +170,11 @@ def parse_args() -> argparse.Namespace:
                        help="Deploy only plugins/sgs-blocks.")
     p.add_argument("--dry-run", action="store_true",
                    help="Print commands; do not execute.")
+    p.add_argument("--gate-only", action="store_true",
+                   help="Build and run gate:full for HEAD in the isolated worktree, record the pass in the deploy "
+                        "cache, and stop: nothing is uploaded and no target is contacted. A later deploy of the "
+                        "same commit and framework DB then skips both, so the full tier runs once per commit. "
+                        "Use this instead of a hand-run `npm run gate:full`.")
     p.add_argument("--allow-dirty", action="store_true",
                    help="Permit deploy with a dirty git working tree.")
     p.add_argument("--skip-verify", action="store_true",
@@ -327,6 +332,19 @@ def main() -> int:
                 "deliberate")
             print("[ABORTED] reason: deployed-files-dirty", flush=True)
             return 1
+
+    if args.gate_only:
+        if os.environ.get(deploy_cache.ISOLATED_ENV) != "1":
+            err("--gate-only records a pass only from the isolated worktree at HEAD; it cannot run with "
+                "--no-isolate, --skip-build, --dry-run or uncommitted payload")
+            print("[ABORTED] reason: gate-only-needs-isolation", flush=True)
+            return 1
+        rc = build_and_gate(args, deploy_blocks)
+        if rc == 0:
+            log("[gate-only] gate:full passed and is recorded for this commit and framework DB; "
+                "a deploy of it will not run the full tier again")
+            print(f"[DONE] gate-only completed in {int(time.time() - t0)}s", flush=True)
+        return rc
 
     if len(target_keys) > 1:
         log(f"[multi] {len(target_keys)} sites: {', '.join(target_keys)}; one build and "

@@ -87,6 +87,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
@@ -7279,12 +7280,18 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
 FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 13]
 
 
+# Child scripts that never open any database. Under --db they run as normal: skipping one returns an empty
+# success, and the caller (motion_presets_seed.validate_presets reads the validator's JSON verdict) then fails.
+DB_FREE_CHILDREN = frozenset({"validate-motion-presets.mjs"})
+
+
 def _guard_children_for_db_override() -> None:
     """Under --db, a child script that would open the default DB is skipped.
 
     Every subprocess this run starts goes through `subprocess.run`; a Python or
     Node script that neither reads $SGS_FRAMEWORK_DB nor receives `--db` is
-    skipped with a warning instead of writing the shared DB."""
+    skipped with a warning instead of writing the shared DB, unless it is listed
+    in DB_FREE_CHILDREN (it opens no database at all)."""
     real_run = subprocess.run
 
     def guarded(cmd, *args, **kwargs):
@@ -7293,7 +7300,7 @@ def _guard_children_for_db_override() -> None:
             (Path(c) for c in parts if c.endswith((".py", ".js", ".mjs")) and Path(c).is_file()),
             None,
         )
-        if script is not None and "--db" not in parts:
+        if script is not None and script.name not in DB_FREE_CHILDREN and "--db" not in parts:
             text = script.read_text(encoding="utf-8", errors="ignore")
             if "SGS_FRAMEWORK_DB" not in text:
                 print(
@@ -7449,12 +7456,16 @@ def main() -> None:
     dispatch = _build_stage_dispatch(conn, args)
 
     results: dict[int, dict] = {}
+    stage_seconds: dict[int, float] = {}
+    run_began = time.perf_counter()
     for stage_num in stages_to_run:
         print(f"\n{'=' * 50}\n=== Stage {stage_num} ===\n{'=' * 50}")
         if stage_num not in dispatch:
             print(f"Unknown stage: {stage_num}. Valid: 1-14.")
             continue
+        stage_began = time.perf_counter()
         results[stage_num] = dispatch[stage_num]()
+        stage_seconds[stage_num] = time.perf_counter() - stage_began
         # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
         # 'scalar-media' anchor rows. Re-assert them straight after it, before any later stage reads the
         # DB: stage 12 runs check-element-manifest-conformance.js, which regenerates
@@ -7465,6 +7476,13 @@ def main() -> None:
             reassert_reference_roles(SGS_DB)
 
     conn.close()
+
+    # Per-stage wall time, in run order, so a speed-up is measured rather than estimated.
+    run_total = time.perf_counter() - run_began
+    print(f"\n{'=' * 50}\n=== Stage timings ===\n{'=' * 50}")
+    for stage_num, secs in stage_seconds.items():
+        print(f"  Stage {stage_num:>2}: {secs:8.1f}s  {secs / run_total * 100 if run_total else 0:5.1f}%")
+    print(f"  {'Total':>8}: {run_total:8.1f}s")
 
     # Summary
     print(f"\n{'=' * 50}")
