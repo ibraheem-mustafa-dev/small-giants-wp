@@ -66,6 +66,11 @@ Usage:
 """
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import os
@@ -91,7 +96,7 @@ SRC_BLOCKS = PLUGIN_ROOT / "src" / "blocks"
 REPO_ROOT = PLUGIN_ROOT.parent.parent        # small-giants-wp/
 
 DB_CANDIDATES = [
-    Path(os.path.expanduser("~/.agents/skills/sgs-wp-engine/sgs-framework.db")),
+    framework_db_path(),
     SCRIPT_DIR / "sgs-framework.db",
 ]
 

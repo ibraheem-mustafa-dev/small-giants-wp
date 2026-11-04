@@ -18,6 +18,11 @@ Run:
     python plugins/sgs-blocks/scripts/generate-markup-examples.py --reset-sgs
 
 """
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import sys
 import os
 import json
@@ -39,7 +44,7 @@ SRC_DIR = os.path.join(os.path.dirname(__file__), '..', 'src', 'blocks')
 # sandbox that a script can silently escape is worse than no sandbox, because
 # it is trusted. Measured: a sandboxed run moved live markup_examples 399->422.
 # Deriving from Path.home() makes the redirect actually bind.
-DB_PATH = str(Path.home() / '.agents' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db')
+DB_PATH = str(framework_db_path())
 
 # ---------------------------------------------------------------------------
 # Helper: content-bearing attribute detection

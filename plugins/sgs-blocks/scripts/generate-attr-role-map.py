@@ -18,6 +18,11 @@ Keyed on (block_slug, attr_name) — NOT attr name alone — because an attr nam
 like `iconSize` is ambiguous across blocks (per task brief).
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import json
 import os
 import sqlite3
@@ -25,7 +30,7 @@ import sqlite3
 HERE = os.path.dirname(os.path.abspath(__file__))
 # Same DB the sgs-db.py CLI uses (verified live: DB_PATH there resolves to
 # ~/.claude/skills/sgs-wp-engine/sgs-framework.db, 13MB, last written 2026-07-21).
-DB_PATH = os.path.join(os.path.expanduser('~'), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db')
+DB_PATH = str(framework_db_path())
 # Fall back to the copy vendored alongside this scripts dir, IF it is non-empty
 # (the repo copy at scripts/data/sgs-framework.db is a 0-byte placeholder as of
 # 2026-07-21 — a stale/empty file must not silently win over the real db).

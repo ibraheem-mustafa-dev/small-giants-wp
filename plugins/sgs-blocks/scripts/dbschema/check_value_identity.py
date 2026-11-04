@@ -47,13 +47,18 @@ Keep it that way: running a seeder here would blind the check completely.
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import sqlite3
 import sys
 import tempfile
 from pathlib import Path
 
-LIVE_DB_DEFAULT = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+LIVE_DB_DEFAULT = framework_db_path()
 
 
 VALUE_ASSERTIONS: list[dict] = [

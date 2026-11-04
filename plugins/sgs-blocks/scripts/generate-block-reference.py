@@ -7,13 +7,18 @@ Usage:
     python plugins/sgs-blocks/scripts/generate-block-reference.py
     python plugins/sgs-blocks/scripts/generate-block-reference.py --output some/other/path.md
 """
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import sqlite3
 import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
 
-DEFAULT_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DEFAULT_DB = framework_db_path()
 
 
 def find_repo_root() -> Path:

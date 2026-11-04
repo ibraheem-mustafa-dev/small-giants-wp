@@ -69,6 +69,11 @@ the same constraint ``check_value_identity.py`` carries, for the same reason.
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import sqlite3
@@ -80,7 +85,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 SEED_HISTORY_JSON = HERE / "seed-history.json"
 NOTINT = "name NOT LIKE 'sqlite@_%' ESCAPE '@'"
-LIVE_DB_DEFAULT = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+LIVE_DB_DEFAULT = framework_db_path()
 
 #: How many runs the ring buffer holds. Bean's spec: five — enough history to know
 #: what this DB's normal movement looks like, small enough that the file never

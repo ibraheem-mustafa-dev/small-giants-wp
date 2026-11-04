@@ -20,6 +20,11 @@ Usage (from repo root):
       --pairing core/image [--write] [--file patterns/team-section.php ...]
 """
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import difflib
 import fnmatch
@@ -37,7 +42,7 @@ REPO = pathlib.Path(__file__).resolve().parents[4]
 THEME = REPO / 'theme' / 'sgs-theme'
 BLOCKS_DIR = REPO / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 SCRATCH = REPO / '.claude' / 'scratch'
-DEFAULT_DB = pathlib.Path.home() / '.claude' / 'skills' / 'sgs-wp-engine' / 'sgs-framework.db'
+DEFAULT_DB = framework_db_path()
 REPLACEMENTS_JSON = (REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'data' / 'block-replacements.json')
 
 # Track A hands-off list (Track C prompt, 2026-07-15) — must match build_register.py.
