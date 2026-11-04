@@ -1,0 +1,46 @@
+/* ===== SGS Free-delivery Bar (FR-30-20) =====
+   Defaults sit inside :where() so any attribute-driven rule beats them. The fill's width is the
+   --sgs-free-delivery-bar-pct custom property (server-printed on cart and checkout, view.js elsewhere). */
+
+:where(.sgs-free-delivery-bar) {
+	box-sizing: border-box;
+}
+
+/* Reserved height: before the first basket reading the card is invisible but takes its final height, so filling it
+   moves nothing. A card that hides for an empty basket is `hidden` instead (no gap that then closes). */
+:where(.sgs-free-delivery-bar[data-reading="waiting"]) {
+	visibility: hidden;
+	min-height: calc(1.5em + 0.5rem + 6px);
+}
+
+:where(.sgs-free-delivery-bar) .sgs-free-delivery-bar__text {
+	margin: 0 0 0.5rem;
+	line-height: 1.5;
+}
+
+:where(.sgs-free-delivery-bar--complete) .sgs-free-delivery-bar__text {
+	font-weight: 600;
+}
+
+:where(.sgs-free-delivery-bar) .sgs-free-delivery-bar__track {
+	height: 6px;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--border-light, #e5e7eb);
+	border-radius: 999px;
+}
+
+:where(.sgs-free-delivery-bar) .sgs-free-delivery-bar__fill {
+	height: 100%;
+	width: var(--sgs-free-delivery-bar-pct, 0%);
+	background-color: var(--wp--preset--color--primary, #111);
+	border-radius: inherit;
+	transition-property: width;
+	transition-duration: var(--sgs-free-delivery-bar-duration, 0.6s);
+	transition-timing-function: var(--sgs-free-delivery-bar-easing, cubic-bezier(.2, .7, .2, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:where(.sgs-free-delivery-bar) .sgs-free-delivery-bar__fill {
+		transition: none;
+	}
+}

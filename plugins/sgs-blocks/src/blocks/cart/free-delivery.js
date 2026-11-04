@@ -15,23 +15,19 @@
  * the shared `includes/helpers-cart-panel.php` (outside this build's file
  * scope) and the totals only exist after a fetch.
  *
- * The remaining-amount text is formatted via `formatMoney()` (store-api.js) —
- * the same currency-aware formatter this panel already uses for the
- * subtotal — because `wc_price()` is PHP-only and cannot re-run on every
- * live cart change; this is its client-side equivalent (both read the same
- * Store API currency metadata).
+ * The live update (`updateFreeDeliveryProgress`) lives in `src/shared/cart-live/free-delivery-progress.js`, shared with
+ * sgs/free-delivery-bar; it formats the remaining amount with the shared `formatMoney()`, the client-side equivalent of
+ * `wc_price()` over the Store API's currency metadata.
  *
  * @package
  */
-
-import { formatMoney } from './store-api';
 
 /**
  * Build the free-delivery element once (if a threshold is configured) and
  * insert it into the panel skeleton, before the item list.
  *
- * @param {HTMLElement} panelRoot     The `[data-sgs-cart-panel]` element.
- * @param {HTMLElement} itemsEl       The `[data-sgs-cart-items]` element (insertion anchor).
+ * @param {HTMLElement} panelRoot      The `[data-sgs-cart-panel]` element.
+ * @param {HTMLElement} itemsEl        The `[data-sgs-cart-items]` element (insertion anchor).
  * @param {Object}      [freeDelivery] `{ threshold, message, successMessage, placement, hideWhenEmpty }` from view.js.
  * @return {HTMLElement|null} The inserted element, or null when no threshold is configured.
  */
@@ -63,112 +59,4 @@ export function initFreeDeliveryElement( panelRoot, itemsEl, freeDelivery ) {
 	return el;
 }
 
-/**
- * Set the fill's level. The first level is held at 0% until the bar is
- * actually on screen (it starts hidden, and may sit in a closed drawer), then
- * released on a following frame so the width transition runs from empty
- * instead of the fill appearing at its final width. Later levels apply
- * straight away and animate from the previous one.
- *
- * @param {HTMLElement} el  The free-delivery element.
- * @param {number}      pct Target percentage, 0 to 100.
- */
-function setFillLevel( el, pct ) {
-	el.sgsFillTarget = pct;
-	if ( el.sgsFillReleased ) {
-		el.style.setProperty( '--sgs-cart-free-delivery-pct', `${ pct }%` );
-		return;
-	}
-	if ( el.sgsFillPending ) {
-		return;
-	}
-	el.sgsFillPending = true;
-	el.style.setProperty( '--sgs-cart-free-delivery-pct', '0%' );
-
-	const release = () => {
-		el.sgsFillReleased = true;
-		window.requestAnimationFrame( () => {
-			el.style.setProperty(
-				'--sgs-cart-free-delivery-pct',
-				`${ el.sgsFillTarget }%`
-			);
-		} );
-	};
-
-	if ( 'function' !== typeof window.IntersectionObserver ) {
-		// Force a layout at 0% first so the next frame's change transitions.
-		// eslint-disable-next-line no-unused-expressions
-		el.offsetWidth;
-		release();
-		return;
-	}
-
-	const observer = new window.IntersectionObserver( ( entries ) => {
-		if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
-			observer.disconnect();
-			release();
-		}
-	} );
-	observer.observe( el );
-}
-
-/**
- * Recompute and render the free-delivery progress bar against a freshly
- * fetched cart. A no-op when the element wasn't created (no threshold).
- *
- * @param {HTMLElement|null} el            The element from `initFreeDeliveryElement()`.
- * @param {Object}           [cart]        The Store API cart response.
- * @param {Object}           [freeDelivery] `{ threshold, message, successMessage }`.
- */
-export function updateFreeDeliveryProgress( el, cart, freeDelivery ) {
-	if ( ! el ) {
-		return;
-	}
-
-	const threshold = Number( freeDelivery?.threshold );
-	const isEmpty = ! cart?.items?.length;
-	if (
-		! Number.isFinite( threshold ) ||
-		threshold <= 0 ||
-		( freeDelivery?.hideWhenEmpty && isEmpty )
-	) {
-		el.hidden = true;
-		return;
-	}
-
-	const totals = cart?.totals || {};
-	const minorUnit = Number( totals.currency_minor_unit ?? 2 );
-	const subtotalMinor =
-		Number( totals.total_items ?? 0 ) + Number( totals.total_items_tax ?? 0 );
-	const subtotal = subtotalMinor / 10 ** minorUnit;
-	const remaining = Math.max( 0, threshold - subtotal );
-	const pct = Math.max( 0, Math.min( 100, ( subtotal / threshold ) * 100 ) );
-
-	el.hidden = false;
-	setFillLevel( el, pct );
-	el.classList.toggle( 'sgs-cart__free-delivery--complete', remaining <= 0 );
-
-	const track = el.querySelector( '[data-sgs-cart-free-delivery-track]' );
-	if ( track ) {
-		track.setAttribute( 'aria-valuenow', String( Math.round( pct ) ) );
-	}
-
-	const textEl = el.querySelector( '[data-sgs-cart-free-delivery-text]' );
-	if ( ! textEl ) {
-		return;
-	}
-
-	if ( remaining <= 0 ) {
-		textEl.textContent =
-			freeDelivery.successMessage || "You've unlocked free delivery!";
-		return;
-	}
-
-	const remainingMinor = Math.round( remaining * 10 ** minorUnit );
-	const formattedRemaining = formatMoney( remainingMinor, totals );
-	const template =
-		freeDelivery.message || "You're %s away from free delivery";
-	textEl.textContent = template.includes( '%s' )
-		? template.replace( '%s', formattedRemaining )
-		: `${ template } ${ formattedRemaining }`;
-}
+export { updateFreeDeliveryProgress } from '../../shared/cart-live/free-delivery-progress';

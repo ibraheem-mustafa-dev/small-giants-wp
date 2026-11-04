@@ -27,6 +27,10 @@ export function isSafeHref( href ) {
 
 const PHOTO = 'sgs/inline-photo';
 const HIGHLIGHT = 'sgs/highlight';
+const BASKET_COUNT = 'sgs/basket-count';
+const BASKET_COUNT_CLASS = 'sgs-basket-count';
+// The basket count keeps exactly its one class: no other token of the span survives.
+const isBasketCount = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).includes( BASKET_COUNT_CLASS );
 
 // A highlight's class tokens: only `sgs-highlight` ones survive.
 const highlightClass = ( node ) => String( node.getAttribute( 'class' ) || '' ).split( /\s+/ ).filter( ( t ) => /^sgs-highlight/.test( t ) ).join( ' ' );
@@ -55,7 +59,10 @@ function copyInto( target, source, links, formats ) {
 			return;
 		}
 		let host = target;
-		if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
+		if ( 'span' === tag && formats.includes( BASKET_COUNT ) && isBasketCount( node ) ) {
+			host = target.appendChild( doc.createElement( 'span' ) );
+			host.setAttribute( 'class', BASKET_COUNT_CLASS );
+		} else if ( 'span' === tag && formats.includes( HIGHLIGHT ) && highlightClass( node ) ) {
 			host = target.appendChild( doc.createElement( 'span' ) );
 			host.setAttribute( 'class', highlightClass( node ) );
 		} else if ( FORMAT_TAGS[ tag ] ) {

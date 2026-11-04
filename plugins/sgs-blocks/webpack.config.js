@@ -282,6 +282,14 @@ if ( moduleConfig ) {
 				'accordion',
 				'filter.js'
 			),
+			// The basket-count format's view module: includes/helpers-inline-formats.php registers it as '@sgs/basket-count' and a page whose markup holds a basket-count span loads it.
+			'basket-count/index': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'cart-live',
+				'basket-count.js'
+			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),
 				'src',

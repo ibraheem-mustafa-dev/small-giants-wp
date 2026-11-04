@@ -1,10 +1,13 @@
 /**
- * The two SGS rich-text formats, on the toolbar beside bold, italic and link (Spec 02 FR-2-4, FR-2-5).
+ * The three SGS rich-text formats, on the toolbar beside bold, italic and link (Spec 02 FR-2-4, FR-2-5; Spec 27 FR-30-24).
  *
  * - `sgs/highlight` ("Highlight"): a stripe behind the selected words, saved as
  *   `<span class="sgs-highlight [sgs-highlight--{slug}]">`.
  * - `sgs/inline-photo` ("Inline photo"): a small photo inside a line of text, saved as
  *   `<img class="sgs-inline-photo wp-image-N" src alt>`.
+ * - `sgs/basket-count` ("Basket count"): the selected words stand for the number of items in the basket, saved as
+ *   `<span class="sgs-basket-count">`. The words show in the editor only; the front end prints the span empty and fills
+ *   it from the basket (`src/shared/cart-live/basket-count.js`).
  *
  * Both save class-only markup; the look comes from the client's theme snapshot through
  * `assets/css/inline-formats.css`. A block offers them by listing them in its RichText's `allowedFormats` (the shared
@@ -14,15 +17,21 @@
 import { __ } from '@wordpress/i18n';
 import { useEffect, useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { registerFormatType, insertObject } from '@wordpress/rich-text';
+import {
+	registerFormatType,
+	insertObject,
+	applyFormat,
+	removeFormat,
+} from '@wordpress/rich-text';
 import {
 	MediaUpload,
 	MediaUploadCheck,
 	RichTextToolbarButton,
 	store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { brush, image } from '@wordpress/icons';
+import { brush, cart, image } from '@wordpress/icons';
 import {
+	BASKET_COUNT_NAME,
 	HIGHLIGHT_NAME,
 	PHOTO_NAME,
 	HighlightPopover,
@@ -100,6 +109,27 @@ function HighlightEdit( {
 				/>
 			) }
 		</>
+	);
+}
+
+function BasketCountEdit( { isActive, value, onChange } ) {
+	const inSgsBlock = useInSgsBlock();
+	if ( ! inSgsBlock ) {
+		return null;
+	}
+	return (
+		<RichTextToolbarButton
+			icon={ cart }
+			title={ __( 'Basket count', 'sgs-blocks' ) }
+			isActive={ isActive }
+			onClick={ () =>
+				onChange(
+					isActive
+						? removeFormat( value, BASKET_COUNT_NAME )
+						: applyFormat( value, { type: BASKET_COUNT_NAME } )
+				)
+			}
+		/>
 	);
 }
 
@@ -187,5 +217,13 @@ export const inlinePhotoFormat = {
 	edit: InlinePhotoEdit,
 };
 
+export const basketCountFormat = {
+	title: __( 'Basket count', 'sgs-blocks' ),
+	tagName: 'span',
+	className: 'sgs-basket-count',
+	edit: BasketCountEdit,
+};
+
 registerFormatType( HIGHLIGHT_NAME, highlightFormat );
+registerFormatType( BASKET_COUNT_NAME, basketCountFormat );
 registerFormatType( PHOTO_NAME, inlinePhotoFormat );

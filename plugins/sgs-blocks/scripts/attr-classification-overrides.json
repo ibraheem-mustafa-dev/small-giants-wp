@@ -6486,6 +6486,30 @@
 			"_why": "2026-09-24 (optician client Wave B). A content/behaviour attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors the block's own sibling attr (pillLabel = text-content)."
 		},
 		{
+			"slug": "sgs/free-delivery-bar",
+			"attr": "freeDeliveryMessage",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-04 (commerce build, lane A). A content attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors sgs/cart's own freeDelivery message attributes."
+		},
+		{
+			"slug": "sgs/free-delivery-bar",
+			"attr": "freeDeliverySuccessMessage",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-04 (commerce build, lane A). A content attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors sgs/cart's own freeDelivery message attributes."
+		},
+		{
+			"slug": "sgs/free-delivery-bar",
+			"attr": "freeDeliveryLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-04 (commerce build, lane A). A content attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors sgs/cart's own freeDelivery message attributes."
+		},
+		{
 			"slug": "sgs/product-card",
 			"attr": "attributeTagTerm",
 			"fields": {

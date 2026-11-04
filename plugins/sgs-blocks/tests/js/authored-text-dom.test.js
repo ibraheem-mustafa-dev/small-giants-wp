@@ -42,4 +42,11 @@ describe( 'appendAuthoredText', () => {
 		expect( fill( html, { formats: [ 'sgs/inline-photo' ] } ) ).toBe( '<img src="/a.jpg" alt="a">Hi hot' );
 		expect( fill( html, { formats: [ 'sgs/highlight' ] } ) ).toBe( 'Hi <span class="sgs-highlight">hot</span>' );
 	} );
+
+	test( 'the basket count keeps its one class, only where the setting holds the format', () => {
+		const html = 'Basket (<span class="sgs-basket-count other sgs-evil">0</span>)';
+		expect( fill( html ) ).toBe( 'Basket (0)' );
+		expect( fill( html, { formats: [ 'sgs/highlight' ] } ) ).toBe( 'Basket (0)' );
+		expect( fill( html, { formats: [ 'sgs/basket-count' ] } ) ).toBe( 'Basket (<span class="sgs-basket-count">0</span>)' );
+	} );
 } );

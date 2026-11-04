@@ -50,6 +50,9 @@
  *                                     sgs_end_shape_border_box_decls (label end shapes
  *                                     cut from the shape-divider library)
  *
+ *   helpers-free-delivery.php       — sgs_free_delivery_threshold (sgs/cart and
+ *                                     sgs/free-delivery-bar)
+ *
  *   helpers-inline-formats.php      — sgs_rich_text_kses, sgs_inline_format_palette_css,
  *                                     sgs_inline_formats_enqueue,
  *                                     sgs_inline_formats_maybe_enqueue (the highlight
@@ -196,6 +199,7 @@ require_once __DIR__ . '/helpers-link.php';
 require_once __DIR__ . '/helpers-stretched-link.php';
 require_once __DIR__ . '/helpers-preselect-url.php';
 require_once __DIR__ . '/helpers-cart-panel.php';
+require_once __DIR__ . '/helpers-free-delivery.php';
 require_once __DIR__ . '/helpers-list-markers.php';
 require_once __DIR__ . '/helpers-mega-render.php';
 require_once __DIR__ . '/helpers-row-behaviour.php';

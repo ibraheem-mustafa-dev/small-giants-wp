@@ -11608,6 +11608,131 @@
       }
     },
     {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "message"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/gallery",
       "attr": "alignContent",
       "fields": {
@@ -35789,6 +35914,55 @@
         "css_layer": "CONTENT",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryBarMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
       }
     },
     {
