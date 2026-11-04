@@ -234,7 +234,7 @@
 			}
 		},
 		"slidesVisible": {
-			"type": "object",
+			"type": [ "number", "object" ],
 			"default": {
 				"desktop": 3
 			},
