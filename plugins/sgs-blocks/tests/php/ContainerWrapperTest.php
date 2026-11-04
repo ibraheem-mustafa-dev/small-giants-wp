@@ -217,7 +217,7 @@ final class ContainerWrapperTest extends TestCase {
 		$html = SGS_Container_Wrapper::render( $this->section_attrs(), null, '<p>inner</p>', 'section' );
 
 		$this->assertStringContainsString( '<style id="sgs-container-', $html, 'scoped <style> tag present' );
-		$this->assertStringContainsString( '<section class="sgs-container sgs-container--flex sgs-container-', $html, 'exact class-list prefix (a horizontal padding replaces the core gutter class; flex + uid)' );
+		$this->assertStringContainsString( '<section class="sgs-container sgs-band-gutter sgs-container--flex sgs-container-', $html, 'exact class-list prefix (a horizontal padding replaces has-global-padding and keeps the core nesting reset through sgs-band-gutter; flex + uid)' );
 		$this->assertStringContainsString( '>.sgs-container__inner{padding-top:40px;padding-right:20px;padding-bottom:40px;padding-left:20px;}', $html, 'base spacing golden rule (painted on the content band)' );
 		$this->assertStringContainsString( '{max-width:1200px;margin-inline:auto}', $html, 'base outer max-width golden rule' );
 		$this->assertStringContainsString( '>.sgs-container__inner{max-width:var(--wp--style--global--content-size,1200px);margin-inline:auto}', $html, 'base content-band golden rule' );

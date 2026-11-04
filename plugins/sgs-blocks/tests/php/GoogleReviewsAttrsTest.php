@@ -417,7 +417,9 @@ final class GoogleReviewsAttrsTest extends TestCase {
 			)
 		)['css'];
 		$this->assertStringContainsString( self::R . '.sgs-google-reviews{background-color:#ffffff;}', $css );
-		$this->assertStringContainsString( self::R . '.sgs-google-reviews{padding-top:28px;padding-right:28px;padding-bottom:28px;padding-left:28px;}', $css );
+		// Padding prints once, through SGS_Container_Wrapper, never also on the block root.
+		$this->assertStringNotContainsString( self::R . '.sgs-google-reviews{padding-top:28px;', $css );
+		$this->assertMatchesRegularExpression( '/\.sgs-container-[0-9a-f]{8}[^{]*\{padding-top:28px;padding-right:28px;padding-bottom:28px;padding-left:28px;\}/', $css );
 		$this->assertSame( 3, $this->classCount( self::R . '.sgs-google-reviews' ) );
 
 		// NEGATIVE CONTROL.
