@@ -23,6 +23,7 @@
  *
  * @package SGS\Blocks
  */
+import { execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { chromium } from 'playwright';
@@ -129,7 +130,12 @@ function loadMirror( key ) {
 	try {
 		return loadSite( key );
 	} catch ( first ) {
-		const file = path.resolve( `.claude/secrets/${ key }.env` );
+		// Same lookup as loadSite(): this checkout's secrets folder, else the main checkout's (a worktree has none).
+		let file = path.resolve( `.claude/secrets/${ key }.env` );
+		if ( ! fs.existsSync( file ) ) {
+			const common = execFileSync( 'git', [ 'rev-parse', '--path-format=absolute', '--git-common-dir' ], { encoding: 'utf8' } ).trim();
+			file = path.join( path.dirname( common ), '.claude', 'secrets', `${ key }.env` );
+		}
 		if ( ! fs.existsSync( file ) ) throw first;
 		const env = Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).filter( ( l ) => l && ! l.startsWith( '#' ) && l.includes( '=' ) )
 			.map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ).trim(), l.slice( l.indexOf( '=' ) + 1 ).trim().replace( /^['"]|['"]$/g, '' ) ] ) );
