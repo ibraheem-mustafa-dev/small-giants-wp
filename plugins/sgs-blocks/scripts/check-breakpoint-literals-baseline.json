@@ -1,12 +1,8 @@
 {
   "files": {
-    "plugins/sgs-blocks/src/blocks/breadcrumbs/render.php": 4,
     "plugins/sgs-blocks/src/blocks/buybox/render.php": 4,
-    "plugins/sgs-blocks/src/blocks/filter-search/render.php": 2,
-    "plugins/sgs-blocks/src/blocks/form-field-checkbox/render.php": 2,
     "plugins/sgs-blocks/src/blocks/form/edit.js": 4,
     "plugins/sgs-blocks/src/blocks/form/render.php": 4,
-    "plugins/sgs-blocks/src/blocks/post-grid/render-scoped-css.php": 4,
     "theme/sgs-theme/assets/js/sgs-shop-load-more.js": 1
   }
 }

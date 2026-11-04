@@ -211,8 +211,8 @@ $post_grid_category_sel   = $root_sel . ' .sgs-post-grid__category';
 $post_grid_category_tiers = sgs_responsive_normalise_object( $attributes['categoryPadding'] ?? null, true );
 $post_grid_category_pad   = array(
 	''                         => $post_grid_category_tiers['desktop'],
-	'@media(max-width:1023px)' => $post_grid_category_tiers['tablet'],
-	'@media(max-width:767px)'  => $post_grid_category_tiers['mobile'],
+	SGS_Breakpoints::media( 'tablet' ) => $post_grid_category_tiers['tablet'],
+	SGS_Breakpoints::media( 'mobile' )  => $post_grid_category_tiers['mobile'],
 );
 foreach ( $post_grid_category_pad as $post_grid_category_media => $post_grid_category_box ) {
 	$post_grid_category_decls = sgs_box_object_longhands( is_array( $post_grid_category_box ) ? $post_grid_category_box : array(), 'padding' );
@@ -393,10 +393,10 @@ if ( $border['base'] ) {
 	$responsive_css .= $root_sel . '{' . implode( ';', $border['base'] ) . ';}';
 }
 if ( $border['tablet'] ) {
-	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$responsive_css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 $responsive_css .= implode( '', $border['rules'] );
 

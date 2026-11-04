@@ -69,10 +69,10 @@ if ( 'card' === ( $attributes['optionPresentation'] ?? 'plain' ) ) {
 		$sgs_cb_css .= $sgs_cb_row . '{' . implode( ';', $sgs_cb_decls ) . ';}';
 	}
 	if ( $sgs_cb_border['tablet'] ) {
-		$sgs_cb_css .= '@media(max-width:1023px){' . $sgs_cb_row . '{' . implode( ';', $sgs_cb_border['tablet'] ) . ';}}';
+		$sgs_cb_css .= sgs_emit_tier_decls( $sgs_cb_row, array( 'tablet' => $sgs_cb_border['tablet'] ) );
 	}
 	if ( $sgs_cb_border['mobile'] ) {
-		$sgs_cb_css .= '@media(max-width:767px){' . $sgs_cb_row . '{' . implode( ';', $sgs_cb_border['mobile'] ) . ';}}';
+		$sgs_cb_css .= sgs_emit_tier_decls( $sgs_cb_row, array( 'mobile' => $sgs_cb_border['mobile'] ) );
 	}
 	$sgs_cb_css .= implode( '', $sgs_cb_border['rules'] );
 	if ( is_array( $attributes['rowPadding'] ?? null ) && array() !== $attributes['rowPadding'] ) {

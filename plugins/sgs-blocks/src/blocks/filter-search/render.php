@@ -198,10 +198,10 @@ $margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$margin_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$margin_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{{$margin_mob_val};}}";
 }
 
 $is_terms_mode = ( 'taxonomy-terms' === $search_mode );
