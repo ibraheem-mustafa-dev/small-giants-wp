@@ -696,3 +696,24 @@ if ( ! function_exists( 'sgs_link_colour_css' ) ) {
 		return $css;
 	}
 }
+
+if ( ! function_exists( 'sgs_link_weight_css' ) ) {
+	/**
+	 * CSS for the font weight of the links inside a text field.
+	 *
+	 * Same selector contract as `sgs_link_colour_css()`: `$selector` is the RichText element, and the rule
+	 * suffixes ` a` onto it.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $attr       The block's own attribute name holding the weight (e.g. 'linkFontWeight').
+	 * @param string $selector   Fully-formed, already-safe selector of the element holding the links.
+	 * @return string CSS text; '' when no weight is set.
+	 */
+	function sgs_link_weight_css( array $attributes, $attr, $selector ) {
+		$weight = sgs_font_weight_value( $attributes[ $attr ] ?? '' );
+		if ( '' === $weight || '' === trim( (string) $selector ) ) {
+			return '';
+		}
+		return $selector . ' a{font-weight:' . $weight . ';}';
+	}
+}

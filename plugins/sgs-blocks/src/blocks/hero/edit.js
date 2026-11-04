@@ -13,7 +13,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl } from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, AlignItemsTierControl } from '../../components';
 import {
 	HeroSplitMediaSourceSection,
 	HeroSplitMediaStylingSection,
@@ -50,7 +50,7 @@ import {
 	ShapeDividersPanel,
 } from '../container/components/ContainerWrapperControls';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
+import { tierValueOf, sanitiseSvg, svgBackgroundPreview, backgroundPreview, wrapperToneClass, surfaceBackdropPreview, OVERLAY_BLEND_MODES } from '../../utils';
 import { heroCanvasPreview, splitMediaAtTier } from './canvas-preview';
 import { motionNamesBand } from '../extensions/motion/canvas/resolve-target';
 import { getBlockType } from '@wordpress/blocks';
@@ -240,6 +240,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
 		// splitMediaWidthTablet/Mobile siblings no longer exist.
 		splitMediaWidth,
+		splitMediaAlign,
 		// splitMediaHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
 		// the splitMediaHeightTablet/splitMediaHeightMobile siblings no longer exist.
 		splitMediaHeight,
@@ -558,6 +559,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		...backgroundPaintPreview( mediaBackground, mediaBackgroundGradient, colourPalette ),
 	};
 	Object.assign( mediaWrapperStyle, heroPreview.media );
+	// Where a narrower image sits in its column (render.php prints display:flex once any device is set).
+	if ( splitMediaAlign && Object.keys( splitMediaAlign ).length > 0 ) {
+		const splitAlignValue = tierValueOf( splitMediaAlign, previewTier );
+		mediaWrapperStyle.display = 'flex';
+		mediaWrapperStyle.justifyContent = { start: 'flex-start', center: 'center', end: 'flex-end' }[ splitAlignValue ];
+	}
 	// Wave 6 — object-fit + focal-point (prefix 'splitMedia', attachesTo:
 	// 'element') target `.sgs-media-el` directly, so this element carries the
 	// universal marker + its own scope class.
@@ -1638,6 +1645,24 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								blockSlug="sgs/hero"
 								insertion="element"
 								atoms={ [ 'box-shape', 'media-padding', 'shadow' ] }
+							/>
+						</ToolsPanelItem>
+
+						<ToolsPanelItem
+							label={ __( 'Image position in column', 'sgs-blocks' ) }
+							hasValue={ () => Object.keys( splitMediaAlign ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { splitMediaAlign: {} } ) }
+						>
+							<AlignItemsTierControl
+								label={ __( 'Image position in column', 'sgs-blocks' ) }
+								help={ __( 'Where an image narrower than its column sits. Set Centre on mobile to centre it on phones.', 'sgs-blocks' ) }
+								value={ splitMediaAlign }
+								onChange={ ( obj ) => setAttributes( { splitMediaAlign: obj } ) }
+								options={ [
+									{ label: __( 'Left', 'sgs-blocks' ), value: 'start' },
+									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+									{ label: __( 'Right', 'sgs-blocks' ), value: 'end' },
+								] }
 							/>
 						</ToolsPanelItem>
 

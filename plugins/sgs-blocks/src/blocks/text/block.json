@@ -67,6 +67,7 @@
 						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:text-decoration-color-link": "linkUnderlineColour",
 						"css:text-decoration-offset-link": "linkUnderlineOffset",
+						"css:font-weight-link": "linkFontWeight",
 						"css:color": "textColour",
 						"css:text-align": "textAlign",
 						"css:text-wrap": "textWrap",
@@ -240,6 +241,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Gap between the link text and its underline for always and hover (a CSS length); empty uses the browser's. The sweep is a background line, so it ignores the gap. sgs_link_underline_css()."
+		},
+		"linkFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of the links inside the text (100 to 900); empty keeps the surrounding text's weight. sgs_link_weight_css()."
 		},
 		"fontSize": {
 			"type": "object",

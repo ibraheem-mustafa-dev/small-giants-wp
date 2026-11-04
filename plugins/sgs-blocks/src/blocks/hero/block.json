@@ -94,6 +94,7 @@
 					"splitMediaObjectFit",
 					"splitMediaObjectPosition",
 					"splitMediaWidth",
+					"splitMediaAlign",
 					"splitMediaHeight",
 					"splitMediaBorderRadius",
 					"splitMediaBorderRadiusTablet",
@@ -277,7 +278,8 @@
 					],
 					"prefix": "image",
 					"attrMap": {
-						"css:background-color": "mediaBackground"
+						"css:background-color": "mediaBackground",
+						"css:justify-content": "splitMediaAlign"
 					},
 					"_note": "The `media` grid-area. Most box/border members resolve via the default `image{Suffix}` convention (splitMediaBorderWidth/Style/Colour/Radius/Padding). `mediaBackground` (a second, plainer background attr alongside `mediaBackgroundColour`) is a genuine ORPHAN — two overlapping attrs for one concept, not modelled here. The motion of the split media is the sgsMotion model's `media` part, not attributes."
 				},
@@ -699,6 +701,11 @@
 		"splitMediaWidth": {
 			"type": "object",
 			"default": {}
+		},
+		"splitMediaAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Per device tier: where the split image sits inside its column when it is narrower than the column ('start', 'center' or 'end'). Unset prints nothing."
 		},
 		"splitMediaHeight": {
 			"type": "object",

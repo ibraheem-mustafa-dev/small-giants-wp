@@ -382,6 +382,7 @@ $css_base_and_tiers = sgs_typography_css_rule(
 // `core/link`, so a linked selection needs its own colour.
 $css_base_and_tiers .= sgs_link_colour_css( $attributes, '', $scope );
 $css_base_and_tiers .= sgs_link_underline_css( $attributes, '', $scope );
+$css_base_and_tiers .= sgs_link_weight_css( $attributes, 'linkFontWeight', $scope );
 
 // All other non-responsive declarations (colour, font, border, box-shadow,
 // width) — one scoped rule, never inline (Spec 32 FR-32-1 / step 4).

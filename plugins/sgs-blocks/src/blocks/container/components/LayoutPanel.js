@@ -92,6 +92,22 @@ const ALIGN_CONTENT_OPTIONS = [
 	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
+/**
+ * A saved flexWrap (the plain string every existing container stores, or a tier object) as a tier object.
+ * A string becomes the desktop tier, so the first per-device edit keeps the wrapping already in force.
+ *
+ * @param {string|Object|undefined} value The stored flexWrap.
+ * @return {Object} The tier object.
+ */
+function flexWrapTierValue( value ) {
+	if ( value && 'object' === typeof value ) {
+		return value;
+	}
+	return {
+		desktop: 'string' === typeof value && '' !== value ? value : 'wrap',
+	};
+}
+
 export function LayoutPanel( {
 	attributes,
 	setAttributes,
@@ -114,6 +130,9 @@ export function LayoutPanel( {
 	// writing one attribute is the silent-data-loss trap `showLayout`'s own
 	// docblock warns about two panels up.
 	enableColumnShapePicker = false,
+	// OPT-IN: the caller's block.json declares `flexWrap` as `["string","object"]`, so the control
+	// writes a {desktop,tablet,mobile} object. Off keeps the single Wrap / No wrap toggle.
+	enableFlexWrapTier = false,
 } ) {
 	const {
 		// '' (Default / normal flow) — must MATCH the block.json default. A
@@ -269,25 +288,60 @@ export function LayoutPanel( {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ToggleGroupControl
-						label={ __( 'Flex wrap', 'sgs-blocks' ) }
-						value={ attributes.flexWrap || 'wrap' }
-						onChange={ ( val ) =>
-							setAttributes( { flexWrap: val } )
-						}
-						isBlock
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					>
-						<ToggleGroupControlOption
-							value="wrap"
-							label={ __( 'Wrap', 'sgs-blocks' ) }
-						/>
-						<ToggleGroupControlOption
-							value="nowrap"
-							label={ __( 'No wrap', 'sgs-blocks' ) }
-						/>
-					</ToggleGroupControl>
+					{ enableFlexWrapTier ? (
+						<ResponsiveOverride
+							label={ __( 'Flex wrap', 'sgs-blocks' ) }
+							value={ flexWrapTierValue( attributes.flexWrap ) }
+							onChange={ ( obj ) =>
+								setAttributes( { flexWrap: obj } )
+							}
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<ToggleGroupControl
+									label={ __( 'Flex wrap', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue || '' }
+									onChange={ ( val ) => setOwnValue( val ) }
+									isBlock
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								>
+									<ToggleGroupControlOption
+										value=""
+										label={ __( 'Same', 'sgs-blocks' ) }
+									/>
+									<ToggleGroupControlOption
+										value="wrap"
+										label={ __( 'Wrap', 'sgs-blocks' ) }
+									/>
+									<ToggleGroupControlOption
+										value="nowrap"
+										label={ __( 'No wrap', 'sgs-blocks' ) }
+									/>
+								</ToggleGroupControl>
+							) }
+						</ResponsiveOverride>
+					) : (
+						<ToggleGroupControl
+							label={ __( 'Flex wrap', 'sgs-blocks' ) }
+							value={ attributes.flexWrap || 'wrap' }
+							onChange={ ( val ) =>
+								setAttributes( { flexWrap: val } )
+							}
+							isBlock
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						>
+							<ToggleGroupControlOption
+								value="wrap"
+								label={ __( 'Wrap', 'sgs-blocks' ) }
+							/>
+							<ToggleGroupControlOption
+								value="nowrap"
+								label={ __( 'No wrap', 'sgs-blocks' ) }
+							/>
+						</ToggleGroupControl>
+					) }
 				</>
 			) }
 

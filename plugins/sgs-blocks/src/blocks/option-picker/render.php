@@ -458,6 +458,25 @@ if ( '' !== $pill_sel_border_gradient ) {
 	);
 }
 
+// --- Selected pill shadow + offset. Unset prints nothing. The shadow goes through the shared
+// emitter; the offset uses the individual `translate` property so a hover `transform` is untouched. ---
+$sel_pill_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'   => 'pillSelectedShadow',
+		'colour' => 'pillSelectedShadowColour',
+	),
+	'sgs/option-picker'
+)['normal'];
+$sel_offset_x   = sgs_css_length_value( (string) ( $attributes['pillSelectedOffsetX'] ?? '' ) );
+$sel_offset_y   = sgs_css_length_value( (string) ( $attributes['pillSelectedOffsetY'] ?? '' ) );
+if ( '' !== $sel_offset_x || '' !== $sel_offset_y ) {
+	$sel_pill_decls[] = 'translate:' . ( '' !== $sel_offset_x ? $sel_offset_x : '0' ) . ' ' . ( '' !== $sel_offset_y ? $sel_offset_y : '0' );
+}
+if ( $sel_pill_decls ) {
+	$scoped_css[] = "{$root_sel} .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill{" . implode( ';', $sel_pill_decls ) . ';}';
+}
+
 // --- Base WP-native style.* — skip-serialised, emitted scoped (contract §A/§b) ---
 
 $base_style_engine_args = array();
