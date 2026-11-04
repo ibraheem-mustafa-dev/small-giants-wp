@@ -30,7 +30,31 @@
 					"layer": "CONTENT",
 					"order": 1,
 					"selector": ".sgs-form-tile",
-					"clusters": []
+					"clusters": [
+						"fill"
+					],
+					"prefix": "tile",
+					"attrMap": {
+						"css:background-color": "tileBackgroundColour"
+					},
+					"_note": "The tile's resting fill (render.php, scoped to the field's uid class). Empty keeps the stylesheet default (no fill). The selected tile's fill, border colour and shadow are the tile-selected element."
+				},
+				"tile-selected": {
+					"label": "Selected tile",
+					"layer": "CONTENT",
+					"order": 2,
+					"selector": ".sgs-form-tile--selected, .sgs-form-tile:has(input:checked)",
+					"clusters": [
+						"fill"
+					],
+					"prefix": "tileSelected",
+					"attrMap": {
+						"css:background-color": "tileSelectedBackgroundColour",
+						"css:border-color": "tileSelectedBorderColour",
+						"css:box-shadow": "tileSelectedShadow"
+					},
+					"_note": "The chosen tile (render.php, scoped to the field's uid class, after the stylesheet's selectedStyle rules so it outranks them on the same specificity). Empty keeps the selectedStyle look.",
+					"motion": false
 				},
 				"tile-label": {
 					"selector": ".sgs-form-tile__label",
@@ -588,6 +612,30 @@
 			"default": ""
 		},
 		"tileDescriptionTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"tileBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedBackgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"tileSelectedShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"defaultValue": {
 			"type": "string",
 			"default": ""
 		},

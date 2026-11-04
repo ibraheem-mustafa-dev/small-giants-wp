@@ -40,6 +40,9 @@
  * - Filter chips "Gap between chips": adds a per-device `sgsChipGap` length control
  *   to WooCommerce's `woocommerce/product-filter-chips` block only — see
  *   product-filter-chips-gap.js (frontend rule: includes/product-filter-chips-gap.php).
+ * - Filter chips and sort "look": chip font weight, border width, painted colours and a count pill on
+ *   `woocommerce/product-filter-chips`, and a border, radius, fill and weight on `woocommerce/catalog-sorting`
+ *   — see product-filter-look.js (frontend rule: includes/product-filter-look.php).
  * - Product Collection "Minimum card width": adds a per-device `sgsCardMinWidth` length
  *   control to `woocommerce/product-collection` only — see product-collection-card-min.js
  *   (frontend rule: includes/product-collection-card-min.php).
@@ -58,6 +61,7 @@ import './cpt-default-panel';
 import './mega-section-page-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
+import './product-filter-look';
 import './product-collection-card-min';
 import './post-content-lists';
 import './post-time-to-read-short';

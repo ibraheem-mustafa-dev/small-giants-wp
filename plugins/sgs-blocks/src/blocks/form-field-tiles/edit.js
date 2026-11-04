@@ -13,6 +13,7 @@ import ContainerWrapperControls from '../container/components/ContainerWrapperCo
 import MediaPicker from '../../components/MediaPicker';
 import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
+	ShadowControl,
 	TypographyControls,
 	resolveColourToken,
 } from '../../components';
@@ -184,6 +185,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
+					fillRow( {
+						key: 'tileBackground',
+						label: __( 'Tile fill', 'sgs-blocks' ),
+						attrs: { base: 'tileBackgroundColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'tileSelectedBackground',
+						label: __( 'Chosen tile fill', 'sgs-blocks' ),
+						attrs: { base: 'tileSelectedBackgroundColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'tileSelectedBorder',
+						label: __( 'Chosen tile border colour', 'sgs-blocks' ),
+						attrs: { base: 'tileSelectedBorderColour' },
+						attributes,
+						setAttributes,
+					} ),
 					textRow( {
 						key: 'tileDescription',
 						label: __( 'Tile description colour', 'sgs-blocks' ),
@@ -210,6 +232,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								columns: { desktop: 3, tablet: 2, mobile: 1 },
 								width: 'full',
 								selectedStyle: 'checkmark',
+								defaultValue: '',
+								tileSelectedShadow: '',
+								tileSelectedShadowColour: '',
 							} )
 						}
 					>
@@ -336,6 +361,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Starts chosen', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.defaultValue }
+							onDeselect={ () => setAttributes( { defaultValue: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Starts chosen', 'sgs-blocks' ) }
+								value={ attributes.defaultValue || '' }
+								onChange={ ( val ) => setAttributes( { defaultValue: val } ) }
+								help={ __( 'The value of the tile to start chosen. Separate several values with commas on a multi-select field.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.tileSelectedShadow }
+							onDeselect={ () => setAttributes( { tileSelectedShadow: '', tileSelectedShadowColour: '' } ) }
+						>
+							<ShadowControl
+								label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ { base: 'tileSelectedShadow', colour: 'tileSelectedShadowColour' } }
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

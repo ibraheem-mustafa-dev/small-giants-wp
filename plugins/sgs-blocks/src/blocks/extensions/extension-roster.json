@@ -151,6 +151,25 @@
 			}
 		},
 		{
+			"id": "filterLook",
+			"file": "product-filter-look.js",
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips", "woocommerce/catalog-sorting" ] },
+			"attributes": {
+				"sgsChipFontWeight": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipBorderWidth": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipPaintButtons": { "type": "boolean", "default": false, "role": "visual" },
+				"sgsChipCountPill": { "type": "boolean", "default": false, "role": "visual" },
+				"sgsChipCountBackground": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipCountColour": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipCountRadius": { "type": "string", "default": "", "role": "visual" },
+				"sgsSortBackground": { "type": "string", "default": "", "role": "visual" },
+				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual" },
+				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual" },
+				"sgsSortBorderRadius": { "type": "string", "default": "", "role": "visual" },
+				"sgsSortFontWeight": { "type": "string", "default": "", "role": "visual" }
+			}
+		},
+		{
 			"id": "postTimeToReadShort",
 			"file": "post-time-to-read-short.js",
 			"rule": { "mode": "named", "blocks": [ "core/post-time-to-read" ] },

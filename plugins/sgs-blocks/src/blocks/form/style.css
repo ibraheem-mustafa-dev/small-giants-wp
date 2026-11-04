@@ -374,6 +374,31 @@
 	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
 }
 
+/* A leading icon inside the control (sgs/form-field-text leadingIcon). The wrapper exists only when an icon is set. The size
+   rides on --sgs-field-icon-size (set on the field by field_own_style_css), so the text clears the icon. */
+.sgs-form-field__control {
+	position: relative;
+	display: block;
+}
+
+.sgs-form-field__leading-icon {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 1rem;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+}
+
+.sgs-form-field__leading-icon svg {
+	width: var(--sgs-field-icon-size, 1.25rem);
+	height: var(--sgs-field-icon-size, 1.25rem);
+}
+
+.sgs-form-field__control--has-icon .sgs-form-field__input {
+	padding-inline-start: calc(1rem + var(--sgs-field-icon-size, 1.25rem) + 0.75rem);
+}
+
 textarea.sgs-form-field__input {
 	resize: vertical;
 	min-height: 100px;

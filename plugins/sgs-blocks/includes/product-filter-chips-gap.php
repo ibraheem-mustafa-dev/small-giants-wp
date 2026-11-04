@@ -24,6 +24,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/product-filter-look.php';
+
 const SGS_CHIP_GAP_BLOCK_NAME = 'woocommerce/product-filter-chips';
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_inject_chip_gap', 10, 2 );
@@ -82,35 +84,9 @@ function sgs_inject_chip_gap( $block_content, $block ) {
 		return $block_content;
 	}
 
-	require_once __DIR__ . '/render-helpers.php';
-	require_once __DIR__ . '/helpers-scoped-instance-vars.php';
-
-	$root_tag = sgs_extract_root_opening_tag( ltrim( $block_content ) );
-	if ( '' === $root_tag ) {
-		return $block_content;
-	}
-	$scope = sgs_scope_class_for_root( $root_tag, 'sgs-chip-gap' );
-	$css   = sgs_chip_gap_css( $value, $scope );
-	if ( '' === $css ) {
-		return $block_content;
-	}
-
-	// The scope reuses an existing uid class; add it only when it was freshly minted.
-	$has_uid = (bool) preg_match( '/\bclass=["\'][^"\']*\b' . preg_quote( $scope, '/' ) . '\b/', $root_tag );
-	$classes = $has_uid ? 'sgs-chip-gap' : 'sgs-chip-gap ' . $scope;
-
-	if ( preg_match( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', $block_content ) ) {
-		$block_content = preg_replace( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', '$1' . $classes . ' ', $block_content, 1 );
-	} else {
-		$block_content = preg_replace( '/^(\s*<\w+)(\b)/', '$1 class="' . $classes . '"$2', $block_content, 1 );
-	}
-
-	// The collector's lift filter takes `<style>` tags out of sgs/* blocks only, so this WooCommerce block hands its
-	// rule to the collector directly on the front end (one flushed stylesheet, FR-32-11); the editor and REST renders
-	// keep it beside the block, as the collector does for every block there.
-	if ( function_exists( __NAMESPACE__ . '\sgs_is_frontend_render' ) && sgs_is_frontend_render() ) {
-		sgs_collect_css( wp_strip_all_tags( $css ) );
-		return $block_content;
-	}
-	return $block_content . '<style>' . wp_strip_all_tags( $css ) . '</style>';
+	return sgs_inject_scoped_block_css(
+		$block_content,
+		'sgs-chip-gap',
+		static fn( string $scope ): string => sgs_chip_gap_css( $value, $scope )
+	);
 }
