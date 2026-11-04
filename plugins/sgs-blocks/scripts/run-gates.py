@@ -57,6 +57,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -575,8 +576,13 @@ def main() -> int:
     ap.add_argument("--assert-wired", action="store_true")
     ap.add_argument("--self-test", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true", help="stream output of passing gates too")
-    ap.add_argument("--jobs", type=int, default=1, metavar="N",
-                    help="run N gates at once (gate:full uses this; the total is wall-clock)")
+    # Gates run side by side by default: each is its own process writing only to its own temp
+    # paths, and a full-tier run at 1, 4 and 6 at once gave identical verdicts (720s, 242s,
+    # 151s on a 12-thread machine). Half the logical CPUs, at most 6, leaves room for the
+    # gates that spawn their own workers. --jobs 1 runs them one at a time for debugging.
+    default_jobs = max(1, min(6, (os.cpu_count() or 2) // 2))
+    ap.add_argument("--jobs", type=int, default=default_jobs, metavar="N",
+                    help=f"run N gates at once (default {default_jobs}: half the CPUs, at most 6; 1 = one at a time)")
     args = ap.parse_args()
 
     if args.self_test:
