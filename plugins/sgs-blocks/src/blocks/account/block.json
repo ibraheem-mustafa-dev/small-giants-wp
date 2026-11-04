@@ -72,6 +72,7 @@
 					"selector": ".sgs-account__wc form label",
 					"motion": false,
 					"label": "Account field labels",
+					"layer": "OUTER",
 					"order": 22,
 					"clusters": [
 						"text",

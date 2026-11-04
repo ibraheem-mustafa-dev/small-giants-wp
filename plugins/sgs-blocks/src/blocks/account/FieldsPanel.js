@@ -8,7 +8,7 @@
  * its uid class and WooCommerce's look.
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import {
 	BOX_UNITS,
 	ResponsiveControl,
@@ -22,7 +22,6 @@ import {
 	textRow,
 	normaliseResponsiveBox,
 } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { patchTier } from '../../utils';
 
 /**
@@ -144,19 +143,19 @@ export default function FieldsPanel( { attributes, setAttributes } ) {
 				</ResponsiveOverride>
 			</PanelBody>
 			<PanelBody title={ __( 'Field labels', 'sgs-blocks' ) } initialOpen={ false }>
-				<ToggleGroupControl
+				<SelectControl
 					__next40pxDefaultSize
 					__nextHasNoMarginBottom
-					isBlock
 					label={ __( 'Label position', 'sgs-blocks' ) }
-					value={ 'above' === attributes.labelPosition ? 'above' : 'default' }
+					value={ 'above' === attributes.labelPosition ? 'above' : '' }
+					options={ [
+						{ label: __( 'WooCommerce default', 'sgs-blocks' ), value: '' },
+						{ label: __( 'Above the field', 'sgs-blocks' ), value: 'above' },
+					] }
 					onChange={ ( value ) =>
 						setAttributes( { labelPosition: 'above' === value ? 'above' : undefined } )
 					}
-				>
-					<ToggleGroupControlOption value="default" label={ __( 'WooCommerce default', 'sgs-blocks' ) } />
-					<ToggleGroupControlOption value="above" label={ __( 'Above the field', 'sgs-blocks' ) } />
-				</ToggleGroupControl>
+				/>
 				{ 'above' === attributes.labelPosition && (
 					<ResponsiveControl label={ __( 'Space under the label', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
