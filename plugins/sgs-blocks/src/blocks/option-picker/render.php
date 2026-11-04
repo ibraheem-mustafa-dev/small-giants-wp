@@ -458,6 +458,19 @@ if ( '' !== $pill_sel_border_gradient ) {
 	);
 }
 
+// --- Resting pill shadow (the base the selected shadow replaces). Unset prints nothing. ---
+$rest_pill_decls = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'   => 'pillShadow',
+		'colour' => 'pillShadowColour',
+	),
+	'sgs/option-picker'
+)['normal'];
+if ( $rest_pill_decls ) {
+	$scoped_css[] = "{$root_sel} .sgs-option-picker__pill{" . implode( ';', $rest_pill_decls ) . ';}';
+}
+
 // --- Selected pill shadow + offset. Unset prints nothing. The shadow goes through the shared
 // emitter; the offset uses the individual `translate` property so a hover `transform` is untouched. ---
 $sel_pill_decls = sgs_shadow_decls(
