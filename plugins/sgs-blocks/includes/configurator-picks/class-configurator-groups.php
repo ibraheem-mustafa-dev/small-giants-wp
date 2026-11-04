@@ -91,9 +91,17 @@ final class Configurator_Groups {
 	private static function terms( int $product_id, \WC_Product_Attribute $attribute ): array {
 		$out = array();
 		if ( $attribute->is_taxonomy() ) {
+			$orders = array();
 			$terms = \wc_get_product_terms( $product_id, (string) $attribute->get_name(), array( 'fields' => 'all' ) );
 			foreach ( \is_array( $terms ) ? $terms : array() as $term ) {
 				$id    = (int) $term->term_id;
+				$order = get_term_meta( $id, 'order', true );
+				if ( '' === $order || false === $order ) {
+					$order = get_term_meta( $id, 'order_' . (string) $attribute->get_name(), true );
+				}
+				if ( '' !== $order && false !== $order && is_numeric( $order ) ) {
+					$orders[ $id ] = (int) $order;
+				}
 				$out[] = array(
 					'id'          => $id,
 					'slug'        => (string) $term->slug,
@@ -103,6 +111,9 @@ final class Configurator_Groups {
 					'badge'       => (string) get_term_meta( $id, '_sgs_term_badge', true ),
 					'description' => (string) get_term_meta( $id, '_sgs_term_description', true ),
 				);
+			}
+			if ( array() !== $orders ) {
+				return sgs_picks_order_by_menu_order( $out, $orders );
 			}
 			return sgs_picks_order_terms( $out, array_map( 'intval', (array) $attribute->get_options() ) );
 		}

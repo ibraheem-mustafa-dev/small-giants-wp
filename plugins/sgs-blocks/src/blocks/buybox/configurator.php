@@ -111,25 +111,49 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_configurator_tier_css' ) ) {
 	/**
-	 * A per-device box setting (`{desktop, tablet, mobile}` of top/right/bottom/left) as scoped padding rules.
+	 * A per-device setting (`{desktop, tablet, mobile}`) as scoped rules for one property: a top/right/bottom/left box
+	 * (padding by default) or, with `$box` false, a single length (font-size, gap).
 	 *
 	 * @param mixed  $value    The attribute value.
 	 * @param string $selector Scoped selector.
+	 * @param string $property CSS property.
+	 * @param bool   $box      True when the value is a four-side box per device.
 	 * @return string[] CSS rules (desktop, then the tablet and mobile media rules).
 	 */
-	function sgs_buybox_configurator_tier_css( $value, string $selector ): array {
+	function sgs_buybox_configurator_tier_css( $value, string $selector, string $property = 'padding', bool $box = true ): array {
 		$css = sgs_emit_responsive_css(
 			$selector,
 			array(
 				array(
 					'value'        => is_array( $value ) ? $value : array(),
-					'css'          => 'padding',
-					'box'          => true,
+					'css'          => $property,
+					'box'          => $box,
 					'unit_default' => 'px',
 				),
 			)
 		);
 		return '' === $css ? array() : array( $css );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_configurator_selected_text' ) ) {
+	/**
+	 * The text colour of a selected option: the author's own colour, else black or white, whichever reads best (4.5:1)
+	 * on the selected fill, so a light fill never carries the option picker's white default.
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @return string A CSS colour, or '' when neither a text colour nor a readable fill exists.
+	 */
+	function sgs_buybox_configurator_selected_text( array $attributes ): string {
+		$own = sgs_colour_value( (string) ( $attributes['pickSelectedTextColour'] ?? '' ) );
+		if ( '' !== $own ) {
+			return $own;
+		}
+		if ( ! function_exists( 'sgs_colour_hex_for_contrast' ) || ! function_exists( 'sgs_wcag_text_colour_for_bg' ) ) {
+			return '';
+		}
+		$hex = sgs_colour_hex_for_contrast( (string) ( $attributes['pickSelectedBackgroundColour'] ?? '' ) );
+		return '' === $hex ? '' : sgs_wcag_text_colour_for_bg( $hex );
 	}
 }
 
@@ -178,6 +202,11 @@ if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
 			$vars[] = '--sgs-pick-sel-border:' . $sel_border;
 			$vars[] = '--sgs-op-sel-border:' . $sel_border;
 		}
+		$sel_text = sgs_buybox_configurator_selected_text( $attributes );
+		if ( '' !== $sel_text ) {
+			$vars[] = '--sgs-pick-sel-text:' . $sel_text;
+			$vars[] = '--sgs-op-sel-text:' . $sel_text;
+		}
 		if ( $vars ) {
 			$css[] = $root_sel . '{' . implode( ';', $vars ) . ';}';
 		}
@@ -201,6 +230,27 @@ if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
 		if ( '' !== $t_gap ) {
 			$css[] = $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker__options{gap:' . $t_gap . ';}';
 		}
+
+		// Pack tile text: the number, the price line and the each-line size independently.
+		$tile = $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker--tile';
+		$css  = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickTileNumberSize'] ?? null, $tile . ' .sgs-option-picker__pill-label', 'font-size', false ) );
+		$css  = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickTilePriceSize'] ?? null, $tile . ' .sgs-option-picker__sub-label', 'font-size', false ) );
+		$css  = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickTileEachSize'] ?? null, $tile . ' .sgs-option-picker__term-description', 'font-size', false ) );
+
+		// Pill-style priced groups (base, chips): their own radius, padding, gap and text size.
+		$pill  = $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile)';
+		$p_rad = sgs_css_length_value( (string) ( $attributes['pickPricedRadius'] ?? '' ) );
+		$p_gap = sgs_css_length_value( (string) ( $attributes['pickPricedGap'] ?? '' ) );
+		if ( '' !== $p_rad ) {
+			// The selected pill reads the custom property; the resting pill takes the declaration.
+			$css[] = $pill . '{--sgs-op-pill-radius:' . $p_rad . ';}';
+			$css[] = $pill . ' .sgs-option-picker__pill{border-radius:' . $p_rad . ';}';
+		}
+		if ( '' !== $p_gap ) {
+			$css[] = $pill . ' .sgs-option-picker__options{gap:' . $p_gap . ';}';
+		}
+		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickPricedPadding'] ?? null, $pill . ' .sgs-option-picker__pill' ) );
+		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickPricedFontSize'] ?? null, $pill . ' .sgs-option-picker__pill', 'font-size', false ) );
 		return $css;
 	}
 }

@@ -180,4 +180,77 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/buybox/render.php' );
 		$this->assertStringNotContainsString( "'_sgs_term_description'", $source, 'the option picker already prints the term description; a sub-label key would print it twice' );
 	}
+
+	public function test_pack_tile_number_price_and_each_line_take_their_own_sizes(): void {
+		$html = self::html(
+			array(
+				'pickTileNumberSize' => array( 'desktop' => '26px', 'mobile' => '20px' ),
+				'pickTilePriceSize'  => array( 'desktop' => '14px' ),
+				'pickTileEachSize'   => array( 'desktop' => '12px' ),
+			)
+		);
+		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__pill-label{font-size:26px;}', $html );
+		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__sub-label{font-size:14px;}', $html );
+		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__term-description{font-size:12px;}', $html );
+		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^}]*pill-label\{font-size:20px;\}\}/', $html, 'the mobile tier prints inside the mobile query' );
+	}
+
+	public function test_priced_pills_take_their_own_radius_padding_gap_and_size(): void {
+		$html = self::html(
+			array(
+				'pickPricedRadius'   => '999px',
+				'pickPricedGap'      => '8px',
+				'pickPricedPadding'  => array( 'desktop' => array( 'top' => '0', 'right' => '18px', 'bottom' => '0', 'left' => '12px' ) ),
+				'pickPricedFontSize' => array( 'desktop' => '16px' ),
+			)
+		);
+		$pill = '.sgs-option-picker:not(.sgs-option-picker--tile)';
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__pill{border-radius:999px;}', $html );
+		$this->assertStringContainsString( $pill . '{--sgs-op-pill-radius:999px;}', $html, 'the selected pill reads the property' );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__options{gap:8px;}', $html );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__pill{padding-top:0px;padding-right:18px;padding-bottom:0px;padding-left:12px;}', $html );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__pill{font-size:16px;}', $html );
+	}
+
+	public function test_a_configurator_with_none_of_the_new_settings_prints_none_of_them(): void {
+		$html = self::html();
+		foreach ( array( 'pill-label{font-size', 'sub-label{font-size', 'term-description{font-size', 'sgs-op-pill-radius', '--sgs-op-sel-text', '--sgs-pick-sel-text', '--sgs-buybox-thumb-size' ) as $needle ) {
+			$this->assertStringNotContainsString( $needle, $html, $needle );
+		}
+	}
+
+	public function test_the_selected_text_reads_4_5_to_1_on_the_selected_fill(): void {
+		foreach ( array( '#F5C518', '#1F3A5F', '#FFFFFF', '#000000' ) as $fill ) {
+			$html = self::html( array( 'pickSelectedBackgroundColour' => $fill ) );
+			$this->assertMatchesRegularExpression( '/--sgs-op-sel-text:(#000|#fff);/', $html, $fill );
+			preg_match( '/--sgs-op-sel-text:(#000|#fff);/', $html, $m );
+			$text = '#000' === $m[1] ? '#000000' : '#ffffff';
+			$this->assertGreaterThanOrEqual( 4.5, sgs_wcag_contrast_ratio( $text, $fill ), "text $text on $fill" );
+		}
+		$own = self::html( array( 'pickSelectedBackgroundColour' => '#F5C518', 'pickSelectedTextColour' => '#222222' ) );
+		$this->assertStringContainsString( '--sgs-op-sel-text:#222222;', $own, 'the author text colour wins' );
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/buybox/configurator.css' );
+		$this->assertMatchesRegularExpression( '/:checked ~ \.sgs-option-picker__pill \.sgs-option-picker__term-description\s*\{\s*opacity: 1;/', $css, 'the selected each-line is not muted' );
+	}
+
+	public function test_the_gallery_gaps_are_per_device_and_a_saved_string_still_works(): void {
+		$string = self::html( array( 'galleryColumnGap' => '60px', 'thumbGap' => '6px' ) );
+		$this->assertStringContainsString( '@media(min-width:768px){', $string );
+		$this->assertStringContainsString( '{gap:60px;}}', $string, 'a saved string is the desktop value, unchanged' );
+		$this->assertStringContainsString( '.product-card__thumbs:not([hidden]){gap:6px;}', $string );
+
+		$tiers = self::html(
+			array(
+				'galleryColumnGap' => array( 'desktop' => '64px', 'tablet' => '36px' ),
+				'thumbGap'         => array( 'desktop' => '10px', 'mobile' => '4px' ),
+				'thumbSize'        => array( 'desktop' => '88px', 'tablet' => '76px', 'mobile' => '64px' ),
+			)
+		);
+		$this->assertStringContainsString( '@media(min-width:768px){', $tiers );
+		$this->assertMatchesRegularExpression( '/\{gap:64px;\}@media \(max-width:1023px\)\{[^}]*\{gap:36px;\}\}\}/', $tiers );
+		$this->assertStringContainsString( '.product-card__thumbs:not([hidden]){gap:10px;}', $tiers );
+		$this->assertStringContainsString( '--sgs-buybox-thumb-size:88px;', $tiers );
+		$this->assertStringContainsString( '--sgs-buybox-thumb-size:76px;', $tiers );
+		$this->assertStringContainsString( '--sgs-buybox-thumb-size:64px;', $tiers );
+	}
 }

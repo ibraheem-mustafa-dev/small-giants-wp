@@ -320,3 +320,26 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_picks_order_terms' ) ) {
 		return array_map( static fn( array $row ): array => $row[2], $indexed );
 	}
 }
+
+if ( ! function_exists( __NAMESPACE__ . '\sgs_picks_order_by_menu_order' ) ) {
+	/**
+	 * Put terms in WooCommerce's custom term order (the drag order on the attribute's Configure terms screen, stored as
+	 * the `order` term meta). Terms with no stored order keep their given order after the ordered ones.
+	 *
+	 * @param array<int,array<string,mixed>> $terms  Terms, each with an `id`.
+	 * @param array<int,int|null>            $orders Term ID => stored order (null or absent when none).
+	 * @return array<int,array<string,mixed>>
+	 */
+	function sgs_picks_order_by_menu_order( array $terms, array $orders ): array {
+		$indexed = array();
+		foreach ( array_values( $terms ) as $i => $term ) {
+			$order     = $orders[ (int) ( $term['id'] ?? 0 ) ] ?? null;
+			$indexed[] = array( null === $order ? PHP_INT_MAX : (int) $order, $i, $term );
+		}
+		usort(
+			$indexed,
+			static fn( array $a, array $b ): int => array( $a[0], $a[1] ) <=> array( $b[0], $b[1] )
+		);
+		return array_map( static fn( array $row ): array => $row[2], $indexed );
+	}
+}

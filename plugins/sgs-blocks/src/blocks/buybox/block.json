@@ -1387,9 +1387,12 @@
 			"description": "The gallery column's share of the grid against the configurator column's fixed 1fr (e.g. 1.353 for a gallery ~1.35x the configurator's width). 0 (default/empty) keeps today's 1.15. Applies only at the width where the two columns actually sit side by side for this instance's own stackBelow setting (768px for 'mobile', 1024px for 'tablet')."
 		},
 		"galleryColumnGap": {
-			"type": "string",
+			"type": [
+				"string",
+				"object"
+			],
 			"default": "",
-			"description": "Gap between the gallery and configurator columns: a spacing preset slug (e.g. \"50\") or a custom length (e.g. \"60px\"), validated by sgs_css_length_value(). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio."
+			"description": "Gap between the gallery and configurator columns: a spacing preset slug (e.g. \"50\") or a custom length (e.g. \"60px\"), validated by sgs_css_length_value(), or a per-device {desktop, tablet, mobile} object of those (a saved string is the desktop value). Empty (default) keeps today's clamp(1.5rem, 4vw, 3rem). Same breakpoint rule as galleryColumnRatio: a tier applies only while the columns sit side by side."
 		},
 		"rrpMetaKey": {
 			"type": "string",
@@ -1436,9 +1439,17 @@
 			"description": "Thumbnails per row at each device tier, {desktop, tablet, mobile}, each 0 to 8. 0 (or unset on desktop) keeps the fixed-size scrolling strip at that tier. 1 to 8 turns the strip into a grid of that many equal columns that fill the gallery width, each thumbnail square; extra images wrap onto more rows, and a column never shrinks below the 48px touch-target floor. An unset tablet or mobile tier inherits the next larger one."
 		},
 		"thumbGap": {
-			"type": "string",
+			"type": [
+				"string",
+				"object"
+			],
 			"default": "",
-			"description": "CSS length of the gap between gallery thumbnails (e.g. \"2px\"). Empty keeps the stylesheet's 0.5rem."
+			"description": "CSS length of the gap between gallery thumbnails (e.g. \"2px\"), or a per-device {desktop, tablet, mobile} object of lengths (a saved string is the desktop value). Empty keeps the stylesheet's 0.5rem."
+		},
+		"thumbSize": {
+			"type": "object",
+			"default": {},
+			"description": "Width and height of each gallery thumbnail in the fixed-size strip, per device {desktop, tablet, mobile}, each a CSS length (e.g. \"88px\"). A thumbnail never goes below the 48px touch-target floor. Empty keeps the stylesheet's 64px. Ignored at a tier where Thumbnails per row is 1 to 8."
 		},
 		"thumbStripOffset": {
 			"type": "string",
@@ -3072,6 +3083,46 @@
 			"type": "string",
 			"default": "",
 			"description": "Pick a set only: space between the priced option tiles (CSS length)."
+		},
+		"pickPricedRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: corner radius of the pill-style priced options (for example base and chips; not the pack tiles), CSS length such as 999px. Empty keeps the option picker's radius."
+		},
+		"pickPricedPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside each pill-style priced option (not the pack tiles), per device."
+		},
+		"pickPricedGap": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: space between the pill-style priced options (CSS length, for example 8px)."
+		},
+		"pickPricedFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the pill-style priced options (not the pack tiles), per device {desktop, tablet, mobile}, each a CSS length such as 16px."
+		},
+		"pickTileNumberSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the number on a pack tile (for example the 20 in a pack of 20), per device {desktop, tablet, mobile}, each a CSS length such as 26px. Empty keeps today's single tile size."
+		},
+		"pickTilePriceSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the price line on a pack tile, per device {desktop, tablet, mobile}, each a CSS length such as 14px. Empty keeps today's single tile size."
+		},
+		"pickTileEachSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: text size of the each-line (for example the price per cookie) on a pack tile, per device {desktop, tablet, mobile}, each a CSS length such as 12px. Empty keeps today's single tile size."
+		},
+		"pickSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: text colour on a selected option in every group, including the pack tile's small lines. Empty picks black or white, whichever reads best on the selected fill (4.5:1) when a selected fill is set."
 		},
 		"mainPhotoBackgroundColour": {
 			"type": "string",

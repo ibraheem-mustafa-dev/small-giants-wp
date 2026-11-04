@@ -112,7 +112,7 @@
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked) {
 	background: var(--sgs-pick-sel-bg, var(--wp--preset--color--accent));
-	color: var(--wp--preset--color--accent-text, var(--wp--preset--color--text));
+	color: var(--sgs-pick-sel-text, var(--wp--preset--color--accent-text, var(--wp--preset--color--text)));
 	border-color: var(--sgs-pick-sel-border, var(--wp--preset--color--text));
 }
 
@@ -162,6 +162,13 @@
 .sgs-buybox--configurator .sgs-option-picker__pill {
 	position: relative;
 	overflow: visible;
+}
+
+/* The selected tile's small lines paint at the full selected text colour: the muted 0.72 opacity on a pale selected
+   fill drops the each-line below 4.5:1. */
+
+.sgs-buybox--configurator .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill .sgs-option-picker__term-description {
+	opacity: 1;
 }
 
 .sgs-buybox--configurator .sgs-option-picker__term-badge {

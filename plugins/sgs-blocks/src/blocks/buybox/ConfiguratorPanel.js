@@ -5,7 +5,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { fillRow, ResponsiveBoxControl, SgsLengthControl } from '../../components';
+import { fillRow, textRow, ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl } from '../../components';
 
 const STYLE_OPTIONS = [
 	{ value: '', label: __( 'Same as the picker style', 'sgs-blocks' ) },
@@ -262,7 +262,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				</ToolsPanel>
 			</PanelBody>
 			<PanelBody title={ __( 'Options and tiles', 'sgs-blocks' ) } initialOpen={ false }>
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { pickOptionRadius: '', pickOptionPadding: {}, pickOptionGap: '', pickTilePadding: {}, pickTileGap: '' } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { pickOptionRadius: '', pickOptionPadding: {}, pickOptionGap: '', pickTilePadding: {}, pickTileGap: '', pickPricedRadius: '', pickPricedPadding: {}, pickPricedGap: '', pickPricedFontSize: {}, pickTileNumberSize: {}, pickTilePriceSize: {}, pickTileEachSize: {} } ) }>
 				<Item label={ __( 'Option pill corner radius', 'sgs-blocks' ) } name="pickOptionRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
 					<SgsLengthControl
 						presets
@@ -291,6 +291,57 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						label={ __( 'Space between priced tiles', 'sgs-blocks' ) }
 						value={ attributes.pickTileGap || '' }
 						onChange={ ( val ) => setAttributes( { pickTileGap: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Priced pill corner radius', 'sgs-blocks' ) } name="pickPricedRadius" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Priced pill corner radius', 'sgs-blocks' ) }
+						value={ attributes.pickPricedRadius || '' }
+						onChange={ ( val ) => setAttributes( { pickPricedRadius: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Priced pill inner spacing', 'sgs-blocks' ) } name="pickPricedPadding" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<TierBox label={ __( 'Priced pill inner spacing', 'sgs-blocks' ) } name="pickPricedPadding" attributes={ attributes } setAttributes={ setAttributes } />
+				</Item>
+				<Item label={ __( 'Space between priced pills', 'sgs-blocks' ) } name="pickPricedGap" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<SgsLengthControl
+						presets
+						label={ __( 'Space between priced pills', 'sgs-blocks' ) }
+						value={ attributes.pickPricedGap || '' }
+						onChange={ ( val ) => setAttributes( { pickPricedGap: val ?? '' } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Priced pill text size', 'sgs-blocks' ) } name="pickPricedFontSize" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<ResponsiveLengthControl
+						label={ __( 'Priced pill text size', 'sgs-blocks' ) }
+						scale="font-size"
+						value={ attributes.pickPricedFontSize }
+						onChange={ ( obj ) => setAttributes( { pickPricedFontSize: obj } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Pack tile number size', 'sgs-blocks' ) } name="pickTileNumberSize" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<ResponsiveLengthControl
+						label={ __( 'Pack tile number size', 'sgs-blocks' ) }
+						scale="font-size"
+						value={ attributes.pickTileNumberSize }
+						onChange={ ( obj ) => setAttributes( { pickTileNumberSize: obj } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Pack tile price size', 'sgs-blocks' ) } name="pickTilePriceSize" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<ResponsiveLengthControl
+						label={ __( 'Pack tile price size', 'sgs-blocks' ) }
+						scale="font-size"
+						value={ attributes.pickTilePriceSize }
+						onChange={ ( obj ) => setAttributes( { pickTilePriceSize: obj } ) }
+					/>
+				</Item>
+				<Item label={ __( 'Pack tile each-line size', 'sgs-blocks' ) } name="pickTileEachSize" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
+					<ResponsiveLengthControl
+						label={ __( 'Pack tile each-line size', 'sgs-blocks' ) }
+						scale="font-size"
+						value={ attributes.pickTileEachSize }
+						onChange={ ( obj ) => setAttributes( { pickTileEachSize: obj } ) }
 					/>
 				</Item>
 				</ToolsPanel>
@@ -339,5 +390,6 @@ export function configuratorColourRows( { attributes, setAttributes } ) {
 		fillRow( { key: 'pickSummary', label: __( 'Summary colour', 'sgs-blocks' ), attrs: { base: 'pickSummaryColour' }, attributes, setAttributes } ),
 		fillRow( { key: 'pickSelectedFill', label: __( 'Selected option fill', 'sgs-blocks' ), attrs: { base: 'pickSelectedBackgroundColour' }, attributes, setAttributes } ),
 		fillRow( { key: 'pickSelectedBorder', label: __( 'Selected option border colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedBorderColour' }, attributes, setAttributes } ),
+		textRow( { key: 'pickSelectedText', label: __( 'Selected option text colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedTextColour' }, attributes, setAttributes } ),
 	];
 }
