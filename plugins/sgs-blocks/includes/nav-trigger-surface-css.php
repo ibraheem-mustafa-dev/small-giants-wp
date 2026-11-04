@@ -66,6 +66,6 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_surface_css' ) ) {
 		$rules .= $magnet . '>.sgs-nav-bar-menu__burger-icon,' . $magnet . '>.sgs-nav-bar-menu__burger-text{--sgs-mag-x:inherit;--sgs-mag-y:inherit;translate:var(--sgs-mag-x,0px) var(--sgs-mag-y,0px);}';
 		$rules .= ':where(' . $others . '){position:relative;}' . $others . '{z-index:1;}';
 
-		return sgs_tier_exact_media_css( $tiers, $rules, '(max-width:' . ( max( 1, $collapse_point ) - 1 ) . 'px)' );
+		return sgs_tier_exact_media_css( $tiers, $rules, SGS_Breakpoints::query_width( 'max', max( 1, $collapse_point ) - 1 ) );
 	}
 }

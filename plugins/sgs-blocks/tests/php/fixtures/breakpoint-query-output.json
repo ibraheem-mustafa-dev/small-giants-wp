@@ -1,0 +1,47 @@
+{
+  "query": {
+    "tablet": "(max-width:1023px) | @media(max-width:1023px)",
+    "mobile": "(max-width:767px) | @media(max-width:767px)",
+    "tablet-up": "(min-width:768px) | @media(min-width:768px)",
+    "desktop": "(min-width:1024px) | @media(min-width:1024px)",
+    "tablet-only": "(min-width:768px) and (max-width:1023px) | @media(min-width:768px) and (max-width:1023px)"
+  },
+  "tier_at_rules": [
+    "@media(max-width:767px){",
+    "@container(max-width:479px){",
+    "@media(max-width:1023px){",
+    "@media(max-width:900px){",
+    "@container(max-width:900px){"
+  ],
+  "emit_tier_decls": ".a{x:1;}@media(max-width:1023px){.a{x:2;}}@media(max-width:767px){.a{x:3;}}",
+  "tier_exact": [
+    "@media(min-width:768px) and (max-width:1023px){.a{x:1}}",
+    "@media(min-width:1024px) and (max-width:1059px),(max-width:767px) and (max-width:1059px){.a{x:1}}"
+  ],
+  "responsive_css": [
+    ".a{width:10px;}@media(max-width:1023px){.a{width:20px;}}@media(max-width:767px){.a{width:30px;}}",
+    ".a{width:10px;}@media(max-width:1023px){.a{width:20px;}}@media(max-width:767px){.a{width:30px;}}@container(max-width:479px){.a{width:30px;}}"
+  ],
+  "origin_css": ".nd{--sgs-nd-anim-origin:top center;}@media(max-width:1023px){.nd{--sgs-nd-anim-origin:top right;}}@media(max-width:767px){.nd{--sgs-nd-anim-origin:top center;}}",
+  "fluid": ":root{--sgs-header-fluid-scale:1;}@media(min-width:1500px){:root{--sgs-header-fluid-scale:max(1,tan(atan2(100vw,1500px)));}}@media(min-width:1500px){.h{zoom:var(--sgs-header-fluid-scale,1);}}",
+  "collapse": "@media(max-width:899px){.h .sgs-hide-collapsed{display:none !important;}}@media(min-width:900px){.h .sgs-only-collapsed{display:none !important;}}",
+  "ink": {
+    "css": "@media(min-width:1024px){.h.is-header-on-dark{color:#ffffff !important;}.h.is-header-on-light{color:#111111 !important;}@media(hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .h.is-header-on-dark .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible),:where(:root:not(.sgs-touch-input)) .h.is-header-on-dark .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible),:where(:root:not(.sgs-touch-input)) .h.is-header-on-dark .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:hover):not(:focus-visible){color:inherit !important;-webkit-text-fill-color:currentColor !important;}}@media not all and (hover: hover) and (pointer: fine){.h.is-header-on-dark .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:focus-visible),.h.is-header-on-dark .sgs-nav-bar-menu__burger:not(:focus-visible),.h.is-header-on-dark .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:focus-visible){color:inherit !important;-webkit-text-fill-color:currentColor !important;}}.h.is-header-on-dark .wp-block-sgs-business-info:not(.is-style-button),.h.is-header-on-dark .sgs-cart,.h.is-header-on-dark .sgs-social-icons .sgs-icon:not(.sgs-icon--has-bg){--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-icon-colour:currentColor !important;}@media(hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .h.is-header-on-light .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:hover):not(:focus-visible),:where(:root:not(.sgs-touch-input)) .h.is-header-on-light .sgs-nav-bar-menu__burger:not(:hover):not(:focus-visible),:where(:root:not(.sgs-touch-input)) .h.is-header-on-light .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:hover):not(:focus-visible){color:inherit !important;-webkit-text-fill-color:currentColor !important;}}@media not all and (hover: hover) and (pointer: fine){.h.is-header-on-light .sgs-nav-bar-menu__item>.sgs-nav-bar-menu__link:not(:focus-visible),.h.is-header-on-light .sgs-nav-bar-menu__burger:not(:focus-visible),.h.is-header-on-light .wp-block-sgs-business-info:not(.is-style-button) .sgs-business-info__link:not(:focus-visible){color:inherit !important;-webkit-text-fill-color:currentColor !important;}}.h.is-header-on-light .wp-block-sgs-business-info:not(.is-style-button),.h.is-header-on-light .sgs-cart,.h.is-header-on-light .sgs-social-icons .sgs-icon:not(.sgs-icon--has-bg){--sgs-bi-icon-colour:currentColor !important;--sgs-cart-icon-colour:currentColor !important;--sgs-icon-colour:currentColor !important;}}@media(max-width:767px){.h{isolation:isolate;color:#fff !important;}.h .sgs-site-header-row{mix-blend-mode:difference;}}",
+    "transition": "color 400ms ease",
+    "any_adapt": true,
+    "live": "desktop:rest"
+  },
+  "fade": {
+    "css": "@media(min-width:1024px){.h{background:transparent !important;}}@media(min-width:1024px){.h::after{content:\"\";position:absolute;inset:0;z-index:-1;pointer-events:none;background-color:#fff;background-image:none;opacity:1;transition:opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);}.h.is-header-scrolled::after{opacity:0;}}@media(max-width:767px){.h{background:transparent !important;}}@media(max-width:767px){.h::after{content:\"\";position:absolute;inset:0;z-index:-1;pointer-events:none;background-color:#fff;background-image:none;opacity:1;transition:opacity var(--wp--custom--duration--medium, 300ms) var(--wp--custom--easing--ease, ease);}.h.is-header-scrolled::after{opacity:0;}}@media(prefers-reduced-motion: reduce) {.h::after{transition:none !important;}}",
+    "toggle_effective": {
+      "desktop": "off",
+      "tablet": "off",
+      "mobile": "off"
+    },
+    "any_fade": true
+  },
+  "scrolled": {
+    "css": "@media(min-width:1024px){.h.is-header-scrolled{background:var(--wp--preset--color--surface,#ffffff) !important;color:#ffffff !important;}}@media(min-width:768px) and (max-width:1023px){.h.is-header-scrolled{color:#ffffff !important;}}@media(max-width:767px){.h.is-header-scrolled{background:var(--wp--preset--color--surface,#ffffff) !important;color:#ffffff !important;}}",
+    "explicit": true
+  }
+}

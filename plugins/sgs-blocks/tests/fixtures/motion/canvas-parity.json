@@ -1,7 +1,7 @@
 [
 	{
 		"name": "hover part per device",
-		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;transition:--sgs-mh-s 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ty 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.02;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:-3px;}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;transition:--sgs-mh-s 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ty 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-s:1.02;}}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:-3px;}}",
 		"plans": [
 			{
 				"target": "media",
@@ -39,7 +39,7 @@
 	},
 	{
 		"name": "hover tokens and paint timing",
-		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-op:0.8;transition:--sgs-mh-ty var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, --sgs-mh-op var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty 150ms var(--wp--custom--easing--spring) 40ms, --sgs-mh-op 150ms var(--wp--custom--easing--spring) 40ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms;}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-op:0.8;transition:--sgs-mh-ty var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, --sgs-mh-op var(--wp--custom--duration--medium) var(--wp--custom--easing--spring) 40ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms;}@media(max-width:1023px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty 150ms var(--wp--custom--easing--spring) 40ms, --sgs-mh-op 150ms var(--wp--custom--easing--spring) 40ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 40ms;}}",
 		"plans": [
 			{
 				"target": "content",
@@ -191,7 +191,7 @@
 	},
 	{
 		"name": "entrance per device",
-		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;--sgs-me-delay:100ms;--sgs-me-ease:var(--wp--custom--easing--emphasised);--sgs-me-start:10%;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-me-from-ty:16px;--sgs-me-dur:400ms;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-ty:8px;}}",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;--sgs-me-delay:100ms;--sgs-me-ease:var(--wp--custom--easing--emphasised);--sgs-me-start:10%;}@media(max-width:1023px){.sgs-m-0123456789{--sgs-me-from-ty:16px;--sgs-me-dur:400ms;}}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-ty:8px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -314,7 +314,7 @@
 	},
 	{
 		"name": "rotate pairs, follow pointer and an entrance flip",
-		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-tilt-max:8deg;--sgs-rot-rest:-1deg;--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;--sgs-mh-to-ry:5deg;--sgs-me-from-op:0;--sgs-me-from-rx:90deg;--sgs-me-to-ry:0deg;transition:--sgs-mh-rx var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ry var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-tilt-max:8deg;--sgs-rot-rest:-1deg;--sgs-rx-rest:10deg;--sgs-mh-to-rx:-6deg;--sgs-mh-to-ry:5deg;--sgs-me-from-op:0;--sgs-me-from-rx:90deg;--sgs-me-to-ry:0deg;transition:--sgs-mh-rx var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ry var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}@media(max-width:767px){.sgs-m-0123456789{--sgs-persp-self:500px;--sgs-rx-rest:6deg;--sgs-mh-to-rx:-2deg;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -333,7 +333,7 @@
 	},
 	{
 		"name": "rotate Z with a rest angle per device",
-		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:2deg;--sgs-mh-to-rot:6deg;transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:5deg;--sgs-mh-to-rot:3deg;}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:2deg;--sgs-mh-to-rot:6deg;transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:5deg;--sgs-mh-to-rot:3deg;}}",
 		"plans": [
 			{
 				"target": "media",
@@ -352,7 +352,7 @@
 	},
 	{
 		"name": "three panels stacked",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-tilt-max:8deg;--sgs-tilt-lock:none;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-tilt-max:6deg;--sgs-me-from-ty:16px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--sm));--sgs-mh-to-s:1.04;--sgs-persp-self:1000px;--sgs-tilt-max:8deg;--sgs-tilt-lock:none;--sgs-rx-rest:4deg;--sgs-mh-to-ry:6deg;--sgs-me-from-op:0;--sgs-me-from-ty:var(--wp--custom--entrance--distance);--sgs-me-from-rx:-12deg;--sgs-me-to-op:1;--sgs-me-to-ty:0px;--sgs-me-to-rx:0deg;--sgs-me-dur:var(--wp--custom--entrance--duration);--sgs-me-delay:0ms;--sgs-me-ease:var(--wp--custom--entrance--easing);--sgs-me-start:6%;transition:--sgs-mh-ty var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-s var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ry var(--wp--custom--duration--fast) var(--wp--custom--easing--emphasised) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-tilt-y calc(600ms * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring-gentle) 0ms, --sgs-mag-x var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-mag-y var(--sgs-mag-dur, 0ms) var(--sgs-mag-ease, cubic-bezier(0.16, 0.84, 0.32, 1)) 0ms, --sgs-sheen-x 750ms ease-out 0ms;}@media(max-width:1023px){.sgs-m-0123456789{--sgs-tilt-max:6deg;--sgs-me-from-ty:16px;}}@media(max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ty:-2px;--sgs-me-from-ty:8px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -454,7 +454,7 @@
 	},
 	{
 		"name": "per-device on a part entrance only tablet to",
-		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-op:0;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-to-op:0.5;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-ty:calc(-1 * var(--wp--custom--distance--md));}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-op:0;}@media(max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-to-op:0.5;}}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-me-from-ty:calc(-1 * var(--wp--custom--distance--md));}}",
 		"plans": [
 			{
 				"target": "media",
@@ -471,7 +471,7 @@
 	},
 	{
 		"name": "negative distance tokens",
-		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--lg));--sgs-mh-to-tx:var(--wp--custom--distance--xs);transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-tx var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--xs));}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--lg));--sgs-mh-to-tx:var(--wp--custom--distance--xs);transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-tx var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-mh-to-ty:calc(-1 * var(--wp--custom--distance--xs));}}",
 		"plans": [
 			{
 				"target": "media",
@@ -724,7 +724,7 @@
 	},
 	{
 		"name": "open trigger one-edge clip close",
-		"css": ".sgs-m-0123456789{--sgs-me-to-clip:0%;--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:100%;--sgs-me-from-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:100%;}}.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:100%;--sgs-me-close-to-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:0%;--sgs-me-close-to-clip-l:60%;}}",
+		"css": ".sgs-m-0123456789{--sgs-me-to-clip:0%;--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:100%;--sgs-me-from-clip-l:0%;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:0%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:100%;}}.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:100%;--sgs-me-close-to-clip-l:0%;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-close-to-clip-t:0%;--sgs-me-close-to-clip-r:0%;--sgs-me-close-to-clip-b:0%;--sgs-me-close-to-clip-l:60%;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -851,7 +851,7 @@
 	},
 	{
 		"name": "form focus state per device",
-		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 50ms, background-color 150ms ease 50ms;}}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:#0A7EA8;background-color:#FFFFFF;}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
+		"css": ".sgs-m-0123456789 .sgs-form-field__input{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms;}@media(max-width:1023px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}@media(max-width:767px){.sgs-m-0123456789 .sgs-form-field__input{transition:border-color 150ms ease 50ms, background-color 150ms ease 50ms;}}.sgs-m-0123456789 .sgs-form-field__input:focus-visible:not(:is([aria-invalid=\"true\"],:user-invalid)){border-color:#0A7EA8;background-color:#FFFFFF;}@media (prefers-reduced-motion: reduce){.sgs-m-0123456789 .sgs-form-field__input{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -917,7 +917,7 @@
 	},
 	{
 		"name": "clip reveal, top edge per device",
-		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:100%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:60%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}}",
+		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:100%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:60%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -968,7 +968,7 @@
 	},
 	{
 		"name": "per-axis scale, expand-down with a Mobile scaleY",
-		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-s:0.95;--sgs-me-from-sy:0.85;--sgs-me-to-sx:1;--sgs-me-dur:400ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-me-from-sy:0.9;}}",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-s:0.95;--sgs-me-from-sy:0.85;--sgs-me-to-sx:1;--sgs-me-dur:400ms;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-sy:0.9;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -1128,7 +1128,7 @@
 	},
 	{
 		"name": "hover ring with a preset colour slug and a per-device spread",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:3px;--sgs-mh-to-ring-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-ring var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ring-c var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-ring:2px;}}@media (max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ring:0px;}}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-ring:3px;--sgs-mh-to-ring-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-ring var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ring-c var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-ring:2px;}}@media(max-width:767px){.sgs-m-0123456789{--sgs-mh-to-ring:0px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -1570,7 +1570,7 @@
 	},
 	{
 		"name": "grayscale to colour: a mobile rest amount rewrites that tier",
-		"css": ".sgs-m-0123456789{--sgs-gray-rest:1;--sgs-mh-to-gray:calc(0 - 1);transition:--sgs-mh-gray var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:767px){.sgs-m-0123456789{--sgs-gray-rest:0.5;--sgs-mh-to-gray:calc(0 - 0.5);}}",
+		"css": ".sgs-m-0123456789{--sgs-gray-rest:1;--sgs-mh-to-gray:calc(0 - 1);transition:--sgs-mh-gray var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:767px){.sgs-m-0123456789{--sgs-gray-rest:0.5;--sgs-mh-to-gray:calc(0 - 0.5);}}",
 		"plans": [
 			{
 				"target": "root",
@@ -1606,7 +1606,7 @@
 	},
 	{
 		"name": "border accent line on an unshadowed block",
-		"css": ".sgs-m-0123456789{--sgs-mh-to-accent:3px;--sgs-mh-to-accent-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-accent 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-accent-c 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-accent:2px;}}",
+		"css": ".sgs-m-0123456789{--sgs-mh-to-accent:3px;--sgs-mh-to-accent-c:var(--wp--preset--color--accent, currentColor);transition:--sgs-mh-accent 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-accent-c 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:1023px){.sgs-m-0123456789{--sgs-mh-to-accent:2px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -1784,7 +1784,7 @@
 	},
 	{
 		"name": "perspective on the parent per device where the parent is an SGS block",
-		"css": ".sgs-m-0123456789{--sgs-persp-self:none;--sgs-mh-to-s:1.04;--sgs-tilt-max:8deg;transition:--sgs-mh-s var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}:has(> .sgs-m-0123456789){perspective:1100px;}@media (max-width:1023px){:has(> .sgs-m-0123456789){perspective:900px;}}@media (max-width:767px){:has(> .sgs-m-0123456789){perspective:600px;}}",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:none;--sgs-mh-to-s:1.04;--sgs-tilt-max:8deg;transition:--sgs-mh-s var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, --sgs-tilt-x calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms, --sgs-tilt-y calc(var(--wp--custom--duration--medium) * (1 - var(--sgs-mh-on, 0))) var(--wp--custom--easing--spring) 0ms;}:has(> .sgs-m-0123456789){perspective:1100px;}@media(max-width:1023px){:has(> .sgs-m-0123456789){perspective:900px;}}@media(max-width:767px){:has(> .sgs-m-0123456789){perspective:600px;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -1822,7 +1822,7 @@
 	},
 	{
 		"name": "hover shadow timing apart from the colour timing",
-		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:-6px;transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 250ms ease-in 0ms;}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 100ms ease-in 0ms;}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__content{--sgs-mh-to-ty:-6px;transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 250ms ease-in 0ms;}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__content{transition:--sgs-mh-ty var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color 200ms linear 0ms, background-color 200ms linear 0ms, border-color 200ms linear 0ms, box-shadow 100ms ease-in 0ms;}}",
 		"plans": [
 			{
 				"target": "content",
@@ -1860,7 +1860,7 @@
 	},
 	{
 		"name": "rest rotate list then a scalar on mobile",
-		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:-2deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+1 of .sgs-hero__media){--sgs-rot-rest:-2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+2 of .sgs-hero__media){--sgs-rot-rest:1.5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+3 of .sgs-hero__media){--sgs-rot-rest:-1deg;}@media (max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:3deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+1 of .sgs-hero__media){--sgs-rot-rest:3deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+2 of .sgs-hero__media){--sgs-rot-rest:-3deg;}}@media (max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:0deg;--sgs-mh-to-rot:0deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(n of .sgs-hero__media){--sgs-rot-rest:0deg;}}",
+		"css": ".sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:-2deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));transition:--sgs-mh-rot var(--wp--custom--hover--duration, var(--wp--custom--duration--fast)) var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+1 of .sgs-hero__media){--sgs-rot-rest:-2deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+2 of .sgs-hero__media){--sgs-rot-rest:1.5deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(3n+3 of .sgs-hero__media){--sgs-rot-rest:-1deg;}@media(max-width:1023px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:3deg;--sgs-mh-to-rot:calc(0deg - var(--sgs-rot-rest));}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+1 of .sgs-hero__media){--sgs-rot-rest:3deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(2n+2 of .sgs-hero__media){--sgs-rot-rest:-3deg;}}@media(max-width:767px){.sgs-m-0123456789 .sgs-hero__media{--sgs-rot-rest:0deg;--sgs-mh-to-rot:0deg;}.sgs-m-0123456789 .sgs-hero__media:nth-child(n of .sgs-hero__media){--sgs-rot-rest:0deg;}}",
 		"plans": [
 			{
 				"target": "media",
@@ -1934,7 +1934,7 @@
 	},
 	{
 		"name": "rest pivot left and a custom pivot per device",
-		"css": ".sgs-m-0123456789{--sgs-rot-rest:-2deg;transform-origin:left;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media (max-width:1023px){.sgs-m-0123456789{transform-origin:10% 90%;}}@media (max-width:767px){.sgs-m-0123456789{transform-origin:center;}}",
+		"css": ".sgs-m-0123456789{--sgs-rot-rest:-2deg;transform-origin:left;transition:color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, background-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, border-color var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms, box-shadow var(--wp--custom--transition--fast, var(--wp--custom--duration--fast) ease) 0ms;}@media(max-width:1023px){.sgs-m-0123456789{transform-origin:10% 90%;}}@media(max-width:767px){.sgs-m-0123456789{transform-origin:center;}}",
 		"plans": [
 			{
 				"target": "root",

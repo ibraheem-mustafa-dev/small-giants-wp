@@ -159,7 +159,7 @@ if ( ! function_exists( 'sgs_nav_detach_chip_css' ) ) {
 				$wrap . '{--sgs-nav-detach-size:' . $values['size'] . 'px;--sgs-nav-detach-x:' . $values['x'] . 'px;--sgs-nav-detach-y:' . $values['y'] . 'px;}'
 			);
 		}
-		$css .= sgs_tier_exact_media_css( $on, $wrap . '.is-detached{display:block;}', '(max-width:' . ( max( 1, $collapse_point ) - 1 ) . 'px)' );
+		$css .= sgs_tier_exact_media_css( $on, $wrap . '.is-detached{display:block;}', SGS_Breakpoints::query_width( 'max', max( 1, $collapse_point ) - 1 ) );
 
 		return $css;
 	}

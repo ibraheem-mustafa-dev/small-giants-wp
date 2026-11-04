@@ -133,7 +133,7 @@ if ( ! function_exists( 'sgs_header_collapse_visibility_css' ) ) {
 		if ( null === $point ) {
 			return '';
 		}
-		return '@media (max-width:' . ( $point - 1 ) . 'px){' . $root_sel . ' .sgs-hide-collapsed{display:none !important;}}'
-			. '@media (min-width:' . $point . 'px){' . $root_sel . ' .sgs-only-collapsed{display:none !important;}}';
+		return SGS_Breakpoints::media_width( 'max', ( $point - 1 ) ) . '{' . $root_sel . ' .sgs-hide-collapsed{display:none !important;}}'
+			. SGS_Breakpoints::media_width( 'min', $point ) . '{' . $root_sel . ' .sgs-only-collapsed{display:none !important;}}';
 	}
 }

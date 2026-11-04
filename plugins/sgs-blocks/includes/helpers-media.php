@@ -308,8 +308,9 @@ if ( ! function_exists( 'sgs_render_media' ) ) {
 
 		if ( '' !== $mobile_url ) {
 			return sprintf(
-				'<picture class="sgs-media-picture%s"><source media="(max-width: 767px)" srcset="%s" />%s</picture>',
+				'<picture class="sgs-media-picture%s"><source media="%s" srcset="%s" />%s</picture>',
 				esc_attr( $context_cls ),
+				esc_attr( SGS_Breakpoints::query( 'mobile' ) ),
 				esc_url( $mobile_url ),
 				$img_tag
 			);

@@ -320,7 +320,7 @@ foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
 		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;
 	}
 	if ( $sgs_di_tier_decls ) {
-		$scoped_css[] = '@media(max-width:' . $sgs_di_max . 'px){' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';
+		$scoped_css[] = SGS_Breakpoints::media_width( 'max', $sgs_di_max ) . '{' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';
 	}
 }
 if ( $sgs_di_border['hover'] ) {

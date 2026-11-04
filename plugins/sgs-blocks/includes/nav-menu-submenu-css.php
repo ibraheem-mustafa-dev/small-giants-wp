@@ -99,8 +99,8 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 		// is the control that opens the navigation. A named landmark containing the
 		// disclosure button is the W3C APG disclosure-navigation shape; hiding the root
 		// would remove the burger from the accessibility tree along with the list.
-		$css .= '@media (max-width:' . ( $collapse_point - 1 ) . 'px){' . $uid_sel . ' .' . $bem_root . '__bar{display:none;}' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:flex;}}';
-		$css .= '@media (min-width:' . $collapse_point . 'px){' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:none;}}';
+		$css .= SGS_Breakpoints::media_width( 'max', ( $collapse_point - 1 ) ) . '{' . $uid_sel . ' .' . $bem_root . '__bar{display:none;}' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:flex;}}';
+		$css .= SGS_Breakpoints::media_width( 'min', $collapse_point ) . '{' . $uid_sel . ' .' . $bem_root . '__toggle-wrap{display:none;}}';
 		
 		// 4g. Mega-menu disclosure — caret rotation + panel positioning (U9). The
 		// trigger is a <button>, not an <a>, so it needs a minimal reset to inherit

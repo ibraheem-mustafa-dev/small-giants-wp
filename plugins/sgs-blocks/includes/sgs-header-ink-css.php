@@ -70,9 +70,9 @@ if ( ! function_exists( 'sgs_header_ink_css' ) ) {
 		}
 
 		$media_by_tier = array(
-			'desktop' => '@media (min-width:' . ( SGS_Breakpoints::TABLET_MAX + 1 ) . 'px)',
-			'tablet'  => '@media (min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px) and (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)',
-			'mobile'  => '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)',
+			'desktop' => SGS_Breakpoints::media( 'desktop' ),
+			'tablet'  => SGS_Breakpoints::media( 'tablet-only' ),
+			'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 		);
 
 		// Each tier's rule sits in its own exact-range query, so a tier with

@@ -115,9 +115,9 @@ if ( ! function_exists( 'sgs_header_scroll_fade_css' ) ) {
 		}
 
 		$media_by_tier = array(
-			'desktop' => '@media (min-width:' . ( SGS_Breakpoints::TABLET_MAX + 1 ) . 'px)',
-			'tablet'  => '@media (min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px) and (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)',
-			'mobile'  => '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)',
+			'desktop' => SGS_Breakpoints::media( 'desktop' ),
+			'tablet'  => SGS_Breakpoints::media( 'tablet-only' ),
+			'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 		);
 
 		$css              = '';
@@ -252,9 +252,9 @@ if ( ! function_exists( 'sgs_header_scrolled_colour_css' ) ) {
 			// narrower Transparent-off tier (an unwrapped or max-width-only rule
 			// would apply below its own breakpoint as well).
 			$media_by_tier = array(
-				'desktop' => '@media (min-width:' . ( SGS_Breakpoints::TABLET_MAX + 1 ) . 'px)',
-				'tablet'  => '@media (min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px) and (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)',
-				'mobile'  => '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)',
+				'desktop' => SGS_Breakpoints::media( 'desktop' ),
+				'tablet'  => SGS_Breakpoints::media( 'tablet-only' ),
+				'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 			);
 			foreach ( $media_by_tier as $tier => $media ) {
 				if ( '' !== $decls_by_tier[ $tier ] ) {

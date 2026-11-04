@@ -75,7 +75,7 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$out = $this->gallery( array( 'desktop' => 'grid', 'mobile' => 'scroll' ), array( 'scrollItemWidth' => array( 'mobile' => '78%' ), 'scrollInset' => array( 'mobile' => '20px' ) ) );
 		$css = $out['css'];
 
-		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
 		$this->assertMatchesRegularExpression( '/@container \(max-width:479px\)\{[^{]*\.sgs-gallery__grid\{display:grid;grid-template-columns:none;grid-auto-flow:column;/', $css );
 		$this->assertStringContainsString( '--sgs-scroll-item-width:78%;', $css );
 		$this->assertStringContainsString( 'padding-inline:20px;scroll-padding-inline:20px;', $css );
@@ -128,12 +128,12 @@ final class GalleryLayoutTiersTest extends TestCase {
 		$map   = array( 'a' => 'x:1;', 'b' => 'x:2;', 'c' => 'x:3;' );
 
 		$this->assertSame(
-			'.s{x:1;}@media (max-width:1023px){.s{x:2;}}@media (max-width:767px){.s{x:3;}}',
+			'.s{x:1;}@media(max-width:1023px){.s{x:2;}}@media(max-width:767px){.s{x:3;}}',
 			sgs_emit_tier_rules_map( '.s', $value, $map ),
 			'option off: the original output, byte for byte'
 		);
 		$this->assertSame(
-			'.s{x:1;}@media (max-width:1023px){.s{x:2;}}@media (max-width:767px){.s{x:3;}}@container (max-width:479px){.s{x:3;}}',
+			'.s{x:1;}@media(max-width:1023px){.s{x:2;}}@media(max-width:767px){.s{x:3;}}@container (max-width:479px){.s{x:3;}}',
 			sgs_emit_tier_rules_map( '.s', $value, $map, '', 'off', array( 'container' => true ) )
 		);
 	}

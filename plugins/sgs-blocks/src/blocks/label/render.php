@@ -404,13 +404,9 @@ foreach ( $border_parts['rules'] as $border_rule ) {
 // resolved paint) and the cut. The tablet and mobile widths move the layer with the root.
 if ( $has_end_shape ) {
 	$scoped_css[]  = "{$root_sel}::after{" . sgs_end_shape_layer_decls( $end_ends, $border_parts['base'], $border_parts['facts']['paint'] ) . '}';
-	$layer_queries = array(
-		'tablet' => 1023,
-		'mobile' => 767,
-	);
-	foreach ( $layer_queries as $layer_tier => $layer_max ) {
+	foreach ( array( 'tablet', 'mobile' ) as $layer_tier ) {
 		if ( array() !== $border_parts[ $layer_tier ] ) {
-			$scoped_css[] = "@media(max-width:{$layer_max}px){{$root_sel}::after{" . sgs_end_shape_border_box_decls( $end_ends, $border_parts[ $layer_tier ], '' ) . '}}';
+			$scoped_css[] = SGS_Breakpoints::media( $layer_tier ) . "{{$root_sel}::after{" . sgs_end_shape_border_box_decls( $end_ends, $border_parts[ $layer_tier ], '' ) . '}}';
 		}
 	}
 }

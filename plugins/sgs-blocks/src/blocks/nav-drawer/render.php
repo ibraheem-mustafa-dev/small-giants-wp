@@ -548,10 +548,10 @@ if ( '' !== $sgs_nd_geom_desktop ) {
 // Tier-diff: only emit a tier's @media rule when it genuinely differs from
 // the tier above (mirrors sgs_emit_tier_rules()'s own convention).
 if ( $sgs_nd_geom_tablet !== $sgs_nd_geom_desktop ) {
-	$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_tablet . '}}';
+	$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . '{' . $sgs_nd_geom_tablet . '}}';
 }
 if ( $sgs_nd_geom_mobile !== $sgs_nd_geom_tablet ) {
-	$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
+	$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{' . $sgs_nd_geom_mobile . '}}';
 }
 
 // ── Scrim: the see-through layer that dims the page behind the open drawer
@@ -687,7 +687,7 @@ foreach ( array(
 		continue;
 	}
 	$sgs_nd_edge_rule = $root_sel . '{' . $sgs_nd_edge_decls( $sgs_nd_edge ) . '}';
-	$css             .= null === $sgs_nd_edge_bp ? $sgs_nd_edge_rule : '@media (max-width:' . $sgs_nd_edge_bp . 'px){' . $sgs_nd_edge_rule . '}';
+	$css             .= null === $sgs_nd_edge_bp ? $sgs_nd_edge_rule : SGS_Breakpoints::media_width( 'max', $sgs_nd_edge_bp ) . '{' . $sgs_nd_edge_rule . '}';
 	$sgs_nd_edge_prev = $sgs_nd_edge;
 }
 
@@ -890,7 +890,7 @@ if ( '' !== $sgs_nd_close_size ) {
 		$sgs_nd_size_tier_decls = ( $sgs_nd_size_tier_text_bearing ? 'width:auto;' : 'width:' . $sgs_nd_close_size . ';' )
 			. 'height:' . $sgs_nd_close_size . ';min-width:' . $sgs_nd_close_size . ';min-height:' . $sgs_nd_close_size . ';'
 			. ( $sgs_nd_size_tier_text_bearing ? 'padding:0 12px;' : 'padding:0;' );
-		$css                     .= '@media (max-width:' . $sgs_nd_size_tier_bp . 'px){' . $close_sel . '{' . $sgs_nd_size_tier_decls . '}}';
+		$css                     .= SGS_Breakpoints::media_width( 'max', $sgs_nd_size_tier_bp ) . '{' . $close_sel . '{' . $sgs_nd_size_tier_decls . '}}';
 		$sgs_nd_size_prev_bearing = $sgs_nd_size_tier_text_bearing;
 	}
 }
@@ -921,7 +921,7 @@ foreach ( array(
 		. '.' . $uid . '[data-sgs-nav-opener-live]:has(> .sgs-nav-drawer__chrome--close-only){--sgs-nd-close-room:clamp(16px, 6vw, 32px);}';
 	$css                  .= null === $sgs_nd_predicate_bp
 		? $sgs_nd_predicate_rule
-		: '@media (max-width:' . $sgs_nd_predicate_bp . 'px){' . $sgs_nd_predicate_rule . '}';
+		: SGS_Breakpoints::media_width( 'max', $sgs_nd_predicate_bp ) . '{' . $sgs_nd_predicate_rule . '}';
 }
 
 // ── closePlacement (§4.3) — top-row-end (default) | top-row-start | same-slot.
@@ -1020,10 +1020,10 @@ if ( ! $sgs_nd_placement_default ) {
 	$css .= $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_desktop, $sgs_nd_offset_desktop ) . '}';
 }
 if ( $sgs_nd_placement_tablet !== $sgs_nd_placement_desktop || $sgs_nd_offset_tablet !== $sgs_nd_offset_desktop ) {
-	$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_tablet, $sgs_nd_offset_tablet ) . '}}';
+	$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_tablet, $sgs_nd_offset_tablet ) . '}}';
 }
 if ( $sgs_nd_placement_mobile !== $sgs_nd_placement_tablet || $sgs_nd_offset_mobile !== $sgs_nd_offset_tablet ) {
-	$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_mobile, $sgs_nd_offset_mobile ) . '}}';
+	$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $close_sel . '{' . $sgs_nd_placement_decls_for( $sgs_nd_placement_mobile, $sgs_nd_offset_mobile ) . '}}';
 }
 
 // closeRadius (§4.10, Bean 2026-09-24) — tier object of CSS lengths, default
@@ -1216,12 +1216,12 @@ if ( 1 === count( $sgs_nd_distinct_render_styles ) ) {
 	$css .= $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}';
 	$css .= $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_desktop . '{display:inline-flex;align-items:center;}';
 	if ( $sgs_nd_render_style_tablet !== $sgs_nd_render_style_desktop ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){'
+		$css .= SGS_Breakpoints::media( 'tablet' ) . '{'
 			. $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}'
 			. $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_tablet . '{display:inline-flex;align-items:center;}}';
 	}
 	if ( $sgs_nd_render_style_mobile !== $sgs_nd_render_style_tablet ) {
-		$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){'
+		$css .= SGS_Breakpoints::media( 'mobile' ) . '{'
 			. $close_sel . ' .sgs-nav-drawer__close-variant{display:none;}'
 			. $close_sel . ' .sgs-nav-drawer__close-variant--' . $sgs_nd_render_style_mobile . '{display:inline-flex;align-items:center;}}';
 	}

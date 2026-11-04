@@ -33,8 +33,8 @@ final class HeroBackgroundTiersTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'sgs-hero__bg-img', $out['html'] );
 		$this->assertStringContainsString( 'https://example.com/desk.jpg', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:1023px\)\{[^}]*::before\{background-image:url\(https:\/\/example\.com\/tab\.jpg\)/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^}]*::before\{background-image:url\(https:\/\/example\.com\/mob\.jpg\)/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{[^}]*::before\{background-image:url\(https:\/\/example\.com\/tab\.jpg\)/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{[^}]*::before\{background-image:url\(https:\/\/example\.com\/mob\.jpg\)/', $out['css'] );
 	}
 
 	public function test_desktop_only_image_stays_a_bare_img(): void {

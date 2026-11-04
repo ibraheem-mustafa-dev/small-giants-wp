@@ -23,8 +23,8 @@ final class TextAlignTiersTest extends TestCase {
 		$css = $this->render_block( 'sgs/text', array( 'text' => 'Hello', 'textAlign' => array( 'desktop' => 'left', 'mobile' => 'center' ) ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/\{[^}]*text-align:left;[^}]*\}/', $css, 'desktop is the base rule' );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, 'mobile overrides' );
-		$this->assertDoesNotMatchRegularExpression( '/@media \(max-width:\s*1023px\)\s*\{[^{}]*\{[^}]*text-align/', $css, 'tablet inherits desktop, so it prints nothing' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, 'mobile overrides' );
+		$this->assertDoesNotMatchRegularExpression( '/@media\(max-width:\s*1023px\)\s*\{[^{}]*\{[^}]*text-align/', $css, 'tablet inherits desktop, so it prints nothing' );
 	}
 
 	public function test_a_desktop_only_value_prints_one_base_rule_and_no_media_query(): void {

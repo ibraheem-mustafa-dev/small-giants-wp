@@ -207,8 +207,8 @@ if ( ! function_exists( 'sgs_choice_flow_media_size_css' ) ) {
 		$sizes = isset( $attributes['optionMediaSize'] ) && is_array( $attributes['optionMediaSize'] ) ? $attributes['optionMediaSize'] : array();
 		$media = array(
 			'desktop' => '',
-			'tablet'  => '@media(max-width:1023px){',
-			'mobile'  => '@media(max-width:767px){',
+			'tablet'  => SGS_Breakpoints::media( 'tablet' ) . '{',
+			'mobile'  => SGS_Breakpoints::media( 'mobile' ) . '{',
 		);
 		$css = '';
 		foreach ( $media as $tier => $open ) {

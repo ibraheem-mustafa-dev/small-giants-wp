@@ -103,7 +103,7 @@ if ( ! function_exists( 'sgs_header_z_index_css' ) ) {
 				$rule .= ':root{--sgs-header-z:' . $value . ';}';
 			}
 			$max_width = $bp_by_tier[ $tier ];
-			$css      .= null === $max_width ? $rule : '@media (max-width:' . $max_width . 'px){' . $rule . '}';
+			$css      .= null === $max_width ? $rule : SGS_Breakpoints::media_width( 'max', $max_width ) . '{' . $rule . '}';
 			$prev      = $value;
 		}
 		return $css;

@@ -385,9 +385,9 @@ if ( ! function_exists( 'sgs_tier_media_toggle_css' ) ) {
 		);
 
 		$queries = array(
-			'mobile'  => '@media (max-width:767px)',
-			'tablet'  => '@media (min-width:768px) and (max-width:1023px)',
-			'desktop' => '@media (min-width:1024px)',
+			'mobile'  => SGS_Breakpoints::media( 'mobile' ),
+			'tablet'  => SGS_Breakpoints::media( 'tablet-only' ),
+			'desktop' => SGS_Breakpoints::media( 'desktop' ),
 		);
 
 		$scope    = '.' . $uid . ' .' . $base_class;

@@ -573,7 +573,7 @@ foreach ( array(
 		$rules .= $shape_sel . '{' . implode( ';', $tier_decls_shape[ $tier ] ) . ';}';
 	}
 	if ( '' !== $rules ) {
-		$scoped_css[] = '@media(max-width:' . $max . '){' . $rules . '}';
+		$scoped_css[] = SGS_Breakpoints::media_width( 'max', $max ) . '{' . $rules . '}';
 	}
 }
 

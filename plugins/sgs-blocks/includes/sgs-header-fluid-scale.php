@@ -91,12 +91,12 @@ if ( ! function_exists( 'sgs_header_fluid_scale_css' ) ) {
 		// at 1 so a viewport narrower than the breakpoint (a media-query edge
 		// case, e.g. a zoomed-out desktop) never SHRINKS the header.
 		$css .= ':root{--sgs-header-fluid-scale:1;}';
-		$css .= '@media (min-width:' . $bp . 'px){:root{--sgs-header-fluid-scale:max(1,tan(atan2(100vw,' . $bp . 'px)));}}';
+		$css .= SGS_Breakpoints::media_width( 'min', $bp ) . '{:root{--sgs-header-fluid-scale:max(1,tan(atan2(100vw,' . $bp . 'px)));}}';
 
 		// The header reads the same variable back as its own `zoom` — one
 		// factor, two consumers (this rule, and whatever external element
 		// reads the custom property), so they can never disagree.
-		$css .= '@media (min-width:' . $bp . 'px){' . $root_sel . '{zoom:var(--sgs-header-fluid-scale,1);}}';
+		$css .= SGS_Breakpoints::media_width( 'min', $bp ) . '{' . $root_sel . '{zoom:var(--sgs-header-fluid-scale,1);}}';
 
 		return $css;
 	}

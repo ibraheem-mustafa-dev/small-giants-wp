@@ -23,14 +23,12 @@ if ( ! function_exists( 'sgs_tier_media_queries' ) ) {
 	 * @return string[] Media conditions, in desktop, tablet, mobile order.
 	 */
 	function sgs_tier_media_queries( array $tiers, string $extra = '' ): array {
-		$mobile_max = (int) SGS_Breakpoints::MOBILE_MAX;
-		$tablet_max = (int) SGS_Breakpoints::TABLET_MAX;
-		$queries    = array(
-			'desktop' => '(min-width:' . ( $tablet_max + 1 ) . 'px)',
-			'tablet'  => '(min-width:' . ( $mobile_max + 1 ) . 'px) and (max-width:' . $tablet_max . 'px)',
-			'mobile'  => '(max-width:' . $mobile_max . 'px)',
+		$queries = array(
+			'desktop' => SGS_Breakpoints::query( 'desktop' ),
+			'tablet'  => SGS_Breakpoints::query( 'tablet-only' ),
+			'mobile'  => SGS_Breakpoints::query( 'mobile' ),
 		);
-		$list       = array();
+		$list    = array();
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 			if ( in_array( $tier, $tiers, true ) ) {
 				$list[] = $queries[ $tier ] . ( '' !== $extra ? ' and ' . $extra : '' );

@@ -9,6 +9,7 @@
  */
 import { isCssGradient, borderRadiusLonghands, sgsBorderPreview } from '../../utils';
 import { brandBySlug } from '../../utils/brand-registry';
+import { mediaWidth } from '../../utils/breakpoints';
 import { resolveShadowPreviewComposed } from '../../utils/tokens';
 
 /**
@@ -112,7 +113,7 @@ export function floatingHideLabelPreviewCss( rootSelector, hideBelow, hasVisible
 		return '';
 	}
 	// "Below N" stops just under N, like every other below-N setting.
-	return `@media(max-width:${ below - 1 }px){`
+	return `${ mediaWidth( 'max', below - 1 ) }{`
 		+ `${ rootSelector } .sgs-whatsapp-cta__label--floating{display:none}`
 		+ '}';
 }

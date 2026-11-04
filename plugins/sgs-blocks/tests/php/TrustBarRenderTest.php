@@ -273,7 +273,7 @@ final class TrustBarRenderTest extends TestCase {
 		$out                  = $this->render( $attrs );
 
 		$this->assertStringContainsString( '.sgs-tb-1.wp-block-sgs-trust-bar .sgs-trust-bar__badge{gap:9px;}', $out['css'] );
-		$this->assertStringContainsString( '@media (max-width:767px){.sgs-tb-1.wp-block-sgs-trust-bar .sgs-trust-bar__badge{padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px;}}', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:767px){.sgs-tb-1.wp-block-sgs-trust-bar .sgs-trust-bar__badge{padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:20px;}}', $out['css'] );
 		$this->assertStringNotContainsString( ' style="', $out['html'] );
 	}
 

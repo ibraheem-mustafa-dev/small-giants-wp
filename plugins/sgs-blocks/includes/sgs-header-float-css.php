@@ -224,7 +224,7 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 				$css .= $root_sel . '{' . $decls . '}';
 			} else {
 				$max  = ( 'tablet' === $tier ) ? SGS_Breakpoints::TABLET_MAX : SGS_Breakpoints::MOBILE_MAX;
-				$css .= '@media (max-width:' . $max . 'px){' . $root_sel . '{' . $decls . '}}';
+				$css .= SGS_Breakpoints::media_width( 'max', $max ) . '{' . $root_sel . '{' . $decls . '}}';
 			}
 		}
 
@@ -289,7 +289,7 @@ if ( ! function_exists( 'sgs_header_float_css' ) ) {
 		// and without reaching for `!important`.
 		$collapse = sgs_header_float_collapse( $attributes );
 		if ( $collapse['enabled'] ) {
-			$css .= '@media (max-width:' . ( $collapse['breakpoint'] - 1 ) . 'px){' . $root_sel
+			$css .= SGS_Breakpoints::media_width( 'max', ( $collapse['breakpoint'] - 1 ) ) . '{' . $root_sel
 				. '{--sgs-header-float-inset-top:0px;--sgs-header-float-inset-right:0px;'
 				. '--sgs-header-float-inset-left:0px;width:100%;border-radius:0;}}';
 		}

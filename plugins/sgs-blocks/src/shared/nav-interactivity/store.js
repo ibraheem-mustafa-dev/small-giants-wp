@@ -78,6 +78,7 @@ import {
 	crossedScrollDistance,
 } from './close-control';
 import { isTouchInput } from '../effects/motion-utils';
+import { queryWidth } from '../../utils/breakpoints';
 import { initDetachChips } from './detach-chip';
 import { announceDrawer, whenAnimationsSettle } from './drawer-lifecycle';
 import { carryCustomCssScope } from './custom-css-scope';
@@ -1023,7 +1024,7 @@ function openDrawerFor( ctx, trigger ) {
 		typeof window.matchMedia === 'function'
 	) {
 		const collapseMql = window.matchMedia(
-			`(min-width: ${ sgsNdCollapseWidth }px)`
+			queryWidth( 'min', sgsNdCollapseWidth )
 		);
 		const onCollapseChange = () => {
 			const live = updateOpenerLiveness();

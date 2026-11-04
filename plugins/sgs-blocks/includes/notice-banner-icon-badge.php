@@ -153,10 +153,10 @@ if ( ! function_exists( 'sgs_notice_banner_icon_badge_css' ) ) {
 			$css[] = $badge_sel . '{' . implode( ';', $border['base'] ) . ';}';
 		}
 		if ( $border['tablet'] ) {
-			$css[] = '@media(max-width:1023px){' . $badge_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+			$css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . $badge_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 		}
 		if ( $border['mobile'] ) {
-			$css[] = '@media(max-width:767px){' . $badge_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+			$css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $badge_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 		}
 		$css = array_merge( $css, $border['rules'] );
 

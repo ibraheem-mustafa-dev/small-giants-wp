@@ -101,7 +101,7 @@ if ( ! function_exists( 'sgs_container_scroll_row_css' ) ) {
 			$css  .= sgs_tier_exact_media_css( array( $tier ), $rules );
 			// Tiers follow the screen; only the Mobile tier also applies in a box narrower than 480px (FW-H).
 			if ( $with_container && 'mobile' === $tier ) {
-				$css .= '@container (max-width:' . SGS_Breakpoints::CONTAINER_MOBILE_MAX . 'px){' . $rules . '}';
+				$css .= SGS_Breakpoints::container_width( SGS_Breakpoints::CONTAINER_MOBILE_MAX ) . '{' . $rules . '}';
 			}
 		}
 		return $css;

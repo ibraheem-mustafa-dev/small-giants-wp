@@ -190,7 +190,7 @@ if ( ! function_exists( 'sgs_grb_hide_below_css' ) ) {
 			return '';
 		}
 		$max = rtrim( rtrim( number_format( $hide_below - 0.02, 2, '.', '' ), '0' ), '.' );
-		return '@media (max-width:' . $max . 'px){' . $root_sel . '{display:none;}}';
+		return SGS_Breakpoints::media_width( 'max', $max ) . '{' . $root_sel . '{display:none;}}';
 	}
 }
 
@@ -221,6 +221,6 @@ if ( ! function_exists( 'sgs_grb_compact_css' ) ) {
 		if ( ! $keep_caption ) {
 			$css .= $root_sel . ' ' . $block . 'caption{display:none;}';
 		}
-		return '@media (max-width:' . $max . 'px){' . $css . '}';
+		return SGS_Breakpoints::media_width( 'max', $max ) . '{' . $css . '}';
 	}
 }

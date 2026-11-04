@@ -180,7 +180,7 @@ foreach ( array(
 		$grb_tier_decls[] = 'gap:' . $grb_tier_gap;
 	}
 	if ( $grb_tier_decls ) {
-		$grb_css[] = '@media(max-width:' . $grb_max . '){' . $grb_link_sel . '{' . implode( ';', $grb_tier_decls ) . ';}}';
+		$grb_css[] = SGS_Breakpoints::media_width( 'max', $grb_max ) . '{' . $grb_link_sel . '{' . implode( ';', $grb_tier_decls ) . ';}}';
 	}
 }
 
@@ -209,7 +209,7 @@ if ( 'floating' === $grb_position ) {
 	) as $grb_tier => $grb_max ) {
 		$grb_tier_offset = sgs_css_length_value( is_scalar( $grb_offset[ $grb_tier ] ?? null ) ? $grb_offset[ $grb_tier ] : '' );
 		if ( '' !== $grb_tier_offset ) {
-			$grb_css[] = '@media(max-width:' . $grb_max . '){' . $grb_root_sel . '{--sgs-grb-offset:' . $grb_tier_offset . ';}}';
+			$grb_css[] = SGS_Breakpoints::media_width( 'max', $grb_max ) . '{' . $grb_root_sel . '{--sgs-grb-offset:' . $grb_tier_offset . ';}}';
 		}
 	}
 }
