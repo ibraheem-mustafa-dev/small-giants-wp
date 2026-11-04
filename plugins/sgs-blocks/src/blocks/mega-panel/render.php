@@ -944,8 +944,10 @@ if ( $sgs_mm_in_drawer ) {
 	// and size, one rule per part. Keyed by the colour attribute, the way
 	// sgs/post-grid keys its text parts.
 	$sgs_dv_text_parts = array(
+		// The number is the row's own text block: a direct child of the row, or of the
+		// row's content band (.sgs-container__inner) when the container renders one.
 		'drawerLinkNumColour'   => array(
-			'selector' => $sgs_dv_row . ' > .wp-block-sgs-text',
+			'selector' => $sgs_dv_row . ' > .wp-block-sgs-text,' . $sgs_dv_row . ' > .sgs-container__inner > .wp-block-sgs-text',
 			'size'     => 'drawerLinkNumSize',
 		),
 		'drawerLinkLabelColour' => array(

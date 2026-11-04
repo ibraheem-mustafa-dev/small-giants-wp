@@ -104,7 +104,12 @@ export default function drawerPreviewCss( scope, v ) {
 
 	// Number / label / description.
 	const parts = [
-		[ `${ row } > .wp-block-sgs-text`, v.drawerLinkNumColour, v.drawerLinkNumColourGradient, v.drawerLinkNumSize ],
+		[
+			`${ row } > .wp-block-sgs-text,${ row } > .sgs-container__inner > .wp-block-sgs-text`,
+			v.drawerLinkNumColour,
+			v.drawerLinkNumColourGradient,
+			v.drawerLinkNumSize,
+		],
 		[ `${ row } .wp-block-sgs-heading`, v.drawerLinkLabelColour, v.drawerLinkLabelColourGradient, v.drawerLinkLabelSize ],
 		[
 			`${ row } .wp-block-sgs-container .wp-block-sgs-text`,
