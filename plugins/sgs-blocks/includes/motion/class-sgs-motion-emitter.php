@@ -684,8 +684,8 @@ final class Sgs_Motion_Emitter {
 	public static function rules( string $selector, array $decls, array $extra = array() ): string {
 		$media = array(
 			'desktop' => null,
-			'tablet'  => '@media (max-width:' . ( class_exists( '\SGS_Breakpoints' ) ? \SGS_Breakpoints::TABLET_MAX : 1023 ) . 'px)',
-			'mobile'  => '@media (max-width:' . ( class_exists( '\SGS_Breakpoints' ) ? \SGS_Breakpoints::MOBILE_MAX : 767 ) . 'px)',
+			'tablet'  => \SGS_Breakpoints::media( 'tablet' ),
+			'mobile'  => \SGS_Breakpoints::media( 'mobile' ),
 		);
 		$css   = '';
 		foreach ( self::TIERS as $tier ) {

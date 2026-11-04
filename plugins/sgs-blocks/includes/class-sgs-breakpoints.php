@@ -75,6 +75,44 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		}
 
 		/**
+		 * The at-rule prefix (no opening brace) for a single width edge at a width the caller computed: a per-instance
+		 * collapse point, a custom-px tier, or a width already carrying its unit. The same grammar as media(), with the
+		 * value supplied.
+		 *
+		 * @param string     $edge  'max' or 'min'.
+		 * @param int|float|string $width Width: a number is taken as px; a string such as '767.98px' is used as given.
+		 * @return string e.g. '@media(max-width:1023px)'; '' for an unknown edge or an empty width.
+		 */
+		public static function media_width( $edge, $width ) {
+			$query = self::query_width( $edge, $width );
+			return '' === $query ? '' : '@media' . $query;
+		}
+
+		/**
+		 * The bare media condition for a single width edge at a width the caller computed (see media_width()).
+		 *
+		 * @param string           $edge  'max' or 'min'.
+		 * @param int|float|string $width Width: a number is taken as px; a string such as '767.98px' is used as given.
+		 * @return string e.g. '(max-width:1023px)'; '' for an unknown edge or an empty width.
+		 */
+		public static function query_width( $edge, $width ) {
+			if ( ( 'max' !== $edge && 'min' !== $edge ) || '' === (string) $width ) {
+				return '';
+			}
+			return '(' . $edge . '-width:' . ( is_numeric( $width ) ? $width . 'px' : $width ) . ')';
+		}
+
+		/**
+		 * The at-rule prefix for a tier's `@container` copy (a box narrower than the Mobile container width).
+		 *
+		 * @param int|string $width Container max-width in px (or with unit).
+		 * @return string e.g. '@container (max-width:479px)'.
+		 */
+		public static function container_width( $width ) {
+			return '@container ' . self::query_width( 'max', $width );
+		}
+
+		/**
 		 * Return the max-width (px, integer) for a named device tier.
 		 *
 		 * @param string $tier 'tablet' | 'mobile'.
@@ -127,15 +165,15 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		 *
 		 * @param int  $max_px        Max-width in px.
 		 * @param bool $with_container Also emit an @container variant.
-		 * @return array<int,string> At-rule prefixes, e.g. ['@media (max-width:767px){'].
+		 * @return array<int,string> At-rule prefixes, e.g. ['@media(max-width:767px){'].
 		 */
 		public static function tier_at_rules( $max_px, $with_container = false ) {
 			$max_px = (int) $max_px;
-			$rules  = array( '@media (max-width:' . $max_px . 'px){' );
+			$rules  = array( self::media_width( 'max', $max_px ) . '{' );
 			if ( $with_container ) {
 				$container = self::container_max( $max_px );
 				if ( null !== $container ) {
-					$rules[] = '@container (max-width:' . $container . 'px){';
+					$rules[] = self::container_width( $container ) . '{';
 				}
 			}
 			return $rules;

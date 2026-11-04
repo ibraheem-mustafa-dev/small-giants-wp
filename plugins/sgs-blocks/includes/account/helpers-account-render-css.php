@@ -280,8 +280,8 @@ if ( ! function_exists( 'sgs_account_tier_custom_property_css' ) ) {
 		foreach (
 			array(
 				'desktop' => '',
-				'tablet'  => '@media(max-width:1023px)',
-				'mobile'  => '@media(max-width:767px)',
+				'tablet'  => SGS_Breakpoints::media( 'tablet' ),
+				'mobile'  => SGS_Breakpoints::media( 'mobile' ),
 			) as $tier => $media
 		) {
 			$raw = $tiers[ $tier ] ?? null;

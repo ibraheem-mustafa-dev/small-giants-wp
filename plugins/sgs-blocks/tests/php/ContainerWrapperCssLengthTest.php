@@ -298,7 +298,7 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( 'max-width:max-content;', $html );
-		$this->assertStringContainsString( '@media (max-width:767px){', $html );
+		$this->assertStringContainsString( '@media(max-width:767px){', $html );
 		$this->assertStringContainsString( 'max-width:fit-content(320px);', $html );
 		$this->assertStringNotContainsString( 'maxcontent', $html, 'the hyphen is no longer stripped' );
 		$this->assertStringNotContainsString( 'fitcontent', $html );
@@ -350,7 +350,7 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( 'max-width:1200px;', $html );
-		$this->assertStringContainsString( '@media (max-width:1023px){', $html );
+		$this->assertStringContainsString( '@media(max-width:1023px){', $html );
 		$this->assertStringContainsString( 'max-width:90%;', $html );
 		$this->assertStringContainsString( 'max-width:100%;', $html );
 		$this->assertStringContainsString( 'min-height:400px', $html );

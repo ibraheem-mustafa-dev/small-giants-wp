@@ -43,7 +43,7 @@ final class TextAlignPrefixedTiersTest extends TestCase {
 		$css = $out['css'];
 
 		$this->assertMatchesRegularExpression( '/\{[^}]*text-align:left;[^}]*\}/', $css, $block . ' ' . $attr . ': desktop base rule' );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, $block . ' ' . $attr . ': mobile rule' );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*text-align:center/', $css, $block . ' ' . $attr . ': mobile rule' );
 
 		$unset = $this->render_block( $block, $attrs )['css'];
 		$this->assertDoesNotMatchRegularExpression( '/text-align:(left|center)/', $unset, 'negative control: unset prints nothing' );

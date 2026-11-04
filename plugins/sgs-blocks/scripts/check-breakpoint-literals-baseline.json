@@ -1,3 +1,10 @@
 {
-  "files": {}
+  "files": {
+    "plugins/sgs-blocks/src/blocks/buybox/canvas-mock.js": 1,
+    "plugins/sgs-blocks/src/blocks/buybox/render.php": 1
+  },
+  "notes": {
+    "plugins/sgs-blocks/src/blocks/buybox/canvas-mock.js": "fixed on feature/a-configurator; the main session removes this entry when merging",
+    "plugins/sgs-blocks/src/blocks/buybox/render.php": "fixed on feature/a-configurator; the main session removes this entry when merging"
+  }
 }

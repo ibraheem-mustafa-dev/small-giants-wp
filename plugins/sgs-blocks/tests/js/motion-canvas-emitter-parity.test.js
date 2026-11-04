@@ -154,7 +154,7 @@ describe( 'motion editor-canvas emitter parity', () => {
 
 	it( 'the cases cover the shapes the canvas must match', () => {
 		const all = js.map( ( r ) => r.css ).join( '' );
-		[ '@media (max-width:1023px)', '@media (max-width:767px)', '--sgs-mh-to-', '--sgs-me-from-', '--sgs-me-close-to-' ].forEach(
+		[ '@media(max-width:1023px)', '@media(max-width:767px)', '--sgs-mh-to-', '--sgs-me-from-', '--sgs-me-close-to-' ].forEach(
 			( needle ) => expect( all ).toContain( needle )
 		);
 		const plans = js.flatMap( ( r ) => r.plans );
@@ -172,7 +172,7 @@ describe( 'motion editor-canvas emitter parity', () => {
 		expect( owned ).toContain( '--sgs-persp-self:none;' );
 		expect( owned ).toContain( ':has(> .sgs-m-0123456789){perspective:1100px;}' );
 		expect( css( 'perspective on the parent per device where the parent is an SGS block' ) ).toMatch(
-			/@media \(max-width:1023px\)\{:has\(> \.sgs-m-0123456789\)\{perspective:900px;\}\}/
+			/@media\(max-width:1023px\)\{:has\(> \.sgs-m-0123456789\)\{perspective:900px;\}\}/
 		);
 		const refused = css( 'perspective on the parent refused where the parent is not an SGS block' );
 		expect( refused ).toContain( '--sgs-persp-self:1100px;' );
@@ -191,7 +191,7 @@ describe( 'motion editor-canvas emitter parity', () => {
 			js.find( ( r ) => r.name === 'hover ring on an unshadowed block' ).plans[ 0 ].attrs[ 'data-sgs-mc' ]
 		).toContain( 'box-shadow' );
 		expect( css( 'hover ring with a preset colour slug and a per-device spread' ) ).toMatch(
-			/@media \(max-width:767px\)\{[^}]*--sgs-mh-to-ring:0px/
+			/@media\(max-width:767px\)\{[^}]*--sgs-mh-to-ring:0px/
 		);
 		[
 			'hover ring dropped at a zero spread',

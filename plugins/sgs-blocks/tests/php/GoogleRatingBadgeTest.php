@@ -148,9 +148,9 @@ final class GoogleRatingBadgeTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression( '#::before\s*\{[^}]*inset-inline-start:\s*-1px#', $css );
 		// Compact mode is opt-in: off by default, so a footer or body badge never compacts on its own.
 		$this->assertSame( 0, $json['attributes']['compactBelow']['default'] );
-		$this->assertStringNotContainsString( '@media (max-width:', $this->render_full( self::MANUAL )['css'] );
+		$this->assertStringNotContainsString( '@media(max-width:', $this->render_full( self::MANUAL )['css'] );
 		// Negative control: an explicit breakpoint still emits the compact rule.
-		$this->assertStringContainsString( '@media (max-width:1199.98px)', $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'] );
+		$this->assertStringContainsString( '@media(max-width:1199.98px)', $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'] );
 	}
 
 	public function test_the_link_text_colour_outranks_the_theme_link_colour(): void {
@@ -162,7 +162,7 @@ final class GoogleRatingBadgeTest extends TestCase {
 
 	public function test_hide_below_hides_the_badge_under_the_chosen_width(): void {
 		$css = $this->render_full( self::MANUAL + array( 'hideBelow' => 1290 ) )['css'];
-		$this->assertMatchesRegularExpression( '#@media \(max-width:1289\.98px\)\{\.sgs-grb-[0-9a-f]+\.wp-block-sgs-google-rating-badge\{display:none;\}\}#', $css );
+		$this->assertMatchesRegularExpression( '#@media\(max-width:1289\.98px\)\{\.sgs-grb-[0-9a-f]+\.wp-block-sgs-google-rating-badge\{display:none;\}\}#', $css );
 		// Negative control: off by default.
 		$this->assertStringNotContainsString( 'display:none;}}', $this->render_full( self::MANUAL )['css'] );
 	}
@@ -349,14 +349,14 @@ final class GoogleRatingBadgeTest extends TestCase {
 
 	public function test_compact_rule_uses_the_breakpoint_and_can_be_switched_off(): void {
 		$css = $this->render_full( self::MANUAL + array( 'compactBelow' => 1200 ) )['css'];
-		$this->assertStringContainsString( '@media (max-width:1199.98px){', $css );
+		$this->assertStringContainsString( '@media(max-width:1199.98px){', $css );
 		$this->assertStringContainsString( 'sgs-google-rating-badge__count{display:none;}', $css );
 		$this->assertStringContainsString( 'sgs-google-rating-badge__stars svg:nth-child(n+2){display:none;}', $css );
 		$this->assertStringNotContainsString( 'container-type', $css );
 		$this->assertStringNotContainsString( '@container', $css );
 
 		$custom = $this->render_full( self::MANUAL + array( 'compactBelow' => 768 ) )['css'];
-		$this->assertStringContainsString( '@media (max-width:767.98px){', $custom );
+		$this->assertStringContainsString( '@media(max-width:767.98px){', $custom );
 
 		// Negative control: 0 turns it off.
 		$off = $this->render_full( self::MANUAL + array( 'compactBelow' => 0 ) )['css'];

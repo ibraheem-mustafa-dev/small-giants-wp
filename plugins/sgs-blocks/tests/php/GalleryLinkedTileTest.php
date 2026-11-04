@@ -205,7 +205,7 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertStringContainsString( $item . ':hover{background-color:#ffffff}', $css );
 		$this->assertStringContainsString( 'border-width:1px 1px 1px 1px;border-color:#1e2a3c;border-top-left-radius:12px', $css );
 		$this->assertStringContainsString( $item . '{min-height:64px;--sgs-gallery-tap-min:0px;padding-top:8px;padding-right:12px;padding-bottom:8px;padding-left:12px;}', $css );
-		$this->assertStringContainsString( '@media (max-width:767px){', $css );
+		$this->assertStringContainsString( '@media(max-width:767px){', $css );
 		$this->assertStringContainsString( 'min-height:56px;', $css );
 		$this->assertStringContainsString( '.sgs-gallery__img-wrap img,', $css );
 		$this->assertStringContainsString( 'object-fit:contain;object-position:center;', $css );

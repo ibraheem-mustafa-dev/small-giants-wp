@@ -6,7 +6,12 @@ emitted through `sgs_emit_responsive_css`) or `SGS_BREAKPOINTS` (JS: src/utils/r
 `@media (max-width:1023px)` / `(max-width:767px)` / `(min-width:768px)` / `(min-width:1024px)` in PHP or JS is a
 second source of the same number. Static .css/.scss are NOT scanned (no custom-media mechanism exists; see --survey-css).
 
-KINDS: tablet-max (max 1023), mobile-max (max 767), tablet-min (min 768), desktop-min (min 1024).
+RULE 2: a query ASSEMBLED from a constant or variable is the same defect in another shape: `'@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)'`,
+`` `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)` ``, `'(min-width:' . $bp . 'px)'`. Named ranges come from `SGS_Breakpoints::media()` / `::query()`
+(PHP) and the `QUERY_*` exports of src/utils/breakpoints.js (JS); a per-instance width comes from `SGS_Breakpoints::media_width()` / `mediaWidth()`.
+Test files (tests/, which describe printed output) are not scanned.
+
+KINDS: tablet-max (max 1023), mobile-max (max 767), tablet-min (min 768), desktop-min (min 1024), built-query (rule 2).
 BASELINE: check-breakpoint-literals-baseline.json = file -> count. Fails when a count RISES or a file is new;
 fails when a count FALLS without the baseline being lowered (ratchet only tightens).
 
@@ -39,19 +44,58 @@ EXCEPTIONS = {
     "must not depend on the blocks plugin's SGS_Breakpoints; the query also joins the width to `(pointer: fine)`",
 }
 LIT = re.compile(r"\(\s*(max|min)-width\s*:\s*(767|768|1023|1024)(?:\.98)?px\s*\)")
+# Rule 2: a width condition whose value is concatenated (`' .`, `' +`), interpolated (`${`) or a variable (`$x`).
+BUILT = re.compile(r"""\(\s*(?:max|min)-width\s*:\s*(?:['"`]\s*[.+]|\$\{|\{?\$[A-Za-z_])""")
 KIND = {("max", "1023"): "tablet-max", ("max", "767"): "mobile-max", ("min", "768"): "tablet-min", ("min", "1024"): "desktop-min"}
 COMMENT_LINE = re.compile(r"^\s*(//|\*|/\*|#)")
 
 
+def strip_comments(text: str) -> str:
+    """Blank `//` and `/* */` comments, keeping strings and newlines (so a `/*` inside a `//` comment or a string cannot swallow code)."""
+    out, i, n, quote = [], 0, len(text), ""
+    while i < n:
+        c = text[i]
+        two = text[i:i + 2]
+        if quote:
+            if c == "\\":
+                out.append(text[i:i + 2])
+                i += 2
+                continue
+            if c == quote or (c == "\n" and quote != "`"):
+                quote = ""
+            out.append(c)
+            i += 1
+        elif c in "'\"`":
+            quote = c
+            out.append(c)
+            i += 1
+        elif two == "//":
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            out.append(" " * (j - i))
+            i = j
+        elif two == "/*":
+            j = text.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append("".join("\n" if ch == "\n" else " " for ch in text[i:j]))
+            i = j
+        else:
+            out.append(c)
+            i += 1
+    return "".join(out)
+
+
 def scan_text(text: str) -> list[tuple[int, str]]:
     hits = []
-    text = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), text, flags=re.S)
+    text = strip_comments(text)
     for n, line in enumerate(text.splitlines(), 1):
         if COMMENT_LINE.match(line):
             continue
         for m in LIT.finditer(line):
             hits.append((n, KIND.get((m.group(1), m.group(2)), m.group(1) + "-" + m.group(2))))
-    return hits
+    for m in BUILT.finditer(text):
+        hits.append((text.count("\n", 0, m.start()) + 1, "built-query"))
+    return sorted(hits)
 
 
 def files(exts: tuple[str, ...]) -> list[Path]:
@@ -65,7 +109,7 @@ def files(exts: tuple[str, ...]) -> list[Path]:
             parts = f.relative_to(root).parts
             if SKIP_DIRS.intersection(parts) or f.name.endswith(".min.js") or f.name.endswith(".asset.php"):
                 continue
-            if ".js" in exts and root == PLUGIN and parts[0] != "src":
+            if f.suffix == ".js" and root == PLUGIN and parts[0] != "src":
                 continue
             out.append(f)
     return sorted(out)
@@ -87,12 +131,45 @@ def collect() -> dict[str, list[tuple[int, str]]]:
     return res
 
 
+def skipped(r: str) -> bool:
+    """True when a repo-relative path is not scanned: a test file, a build artefact, a shared source or an exception."""
+    return bool(SKIP_DIRS.intersection(r.split("/"))) or r.removeprefix("plugins/sgs-blocks/") in ALLOW or r in EXCEPTIONS
+
+
 def self_test() -> int:
     pos = "$c = '@media (max-width:1023px){a{b:c}}';"
     pos2 = "window.matchMedia( '(max-width: 767px)' )"
     pos3 = "'@media (min-width:768px) and (max-width:1023px){'"
-    neg = "// @media (max-width:767px) in a comment\n/* (min-width:1024px) */\n$x = '@media (max-width:' . $px . 'px){';\n$y='(max-width:600px)';"
+    neg = "// @media (max-width:767px) in a comment\n/* (min-width:1024px) */\n$y='(max-width:600px)';"
+    # A `/*` inside a `//` comment or a string must not swallow the code after it.
+    swallow = "// see /*Mobile siblings\n$c = '@media (max-width:767px){a{b:c}}';\n$d = 'uploads/*';\n/* real */ $e = '(min-width:1024px)';"
+    # Rule 2: queries assembled from a constant, an interpolation or a variable.
+    built = [
+        "$c = '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $x . '}';",
+        "$c = '@media(min-width:' . ( SGS_Breakpoints::MOBILE_MAX + 1 ) . 'px)';",
+        "$c = '@media (max-width:' . $bp . 'px){}';",
+        '$c = "@media(max-width:{$bp}px){}";',
+        "const q = `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)`;",
+        "const q = '@media (max-width:' + bp + 'px)';",
+        "window.matchMedia( `(min-width: ${ w }px)` )",
+        "$c = '@container (max-width:' . SGS_Breakpoints::CONTAINER_MOBILE_MAX . 'px){'",
+    ]
+    clean = [
+        "$c = SGS_Breakpoints::media( 'tablet' ) . '{' . $x . '}';",
+        "$c = SGS_Breakpoints::media_width( 'max', $bp ) . '{}';",
+        "const q = `${ MEDIA_TABLET }{a{b:c}}`;",
+        "const q = mediaWidth( 'min', bp );",
+        "$d = '.a{max-width:' . $w . 'px}';",
+        "const d = `.a{max-width:${ w }px}`;",
+        "$f = '@media (prefers-reduced-motion:no-preference){' . $css . '}';",
+    ]
     ok = len(scan_text(pos)) == 1 and len(scan_text(pos2)) == 1 and len(scan_text(pos3)) == 2 and scan_text(neg) == []
+    ok = ok and len(scan_text(swallow)) == 2
+    ok = ok and all([h[1] for h in scan_text(t)] == ["built-query"] for t in built)
+    ok = ok and all(scan_text(t) == [] for t in clean)
+    # Test files describe printed output and are not scanned; shared sources are allowlisted.
+    ok = ok and skipped("plugins/sgs-blocks/tests/php/FooTest.php") and skipped("plugins/sgs-blocks/includes/class-sgs-breakpoints.php")
+    ok = ok and not skipped("plugins/sgs-blocks/includes/nav-menu.php")
     print("[check-breakpoint-literals] self-test", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
@@ -124,7 +201,7 @@ def main() -> int:
     bad = []
     for k, c in counts.items():
         if c > base.get(k, 0):
-            bad.append(f"{k}: {c} hand-typed tier queries (baseline {base.get(k, 0)}): use sgs_emit_responsive_css / SGS_Breakpoints / SGS_BREAKPOINTS")
+            bad.append(f"{k}: {c} hand-typed or assembled tier queries (baseline {base.get(k, 0)}): use sgs_emit_responsive_css / SGS_Breakpoints::media() / ::media_width() / breakpoints.js")
     for k, c in base.items():
         if counts.get(k, 0) < c:
             bad.append(f"{k}: baseline {c} but now {counts.get(k, 0)}: lower the baseline (--write-baseline)")

@@ -555,10 +555,10 @@ if ( $is_split ) {
 		$responsive_css .= '.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template ) ) . '}';
 	}
 	if ( '' !== trim( (string) $grid_row_template_tablet ) ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_tablet ) ) . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_tablet ) ) . '}}';
 	}
 	if ( '' !== trim( (string) $grid_row_template_mobile ) ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_mobile ) ) . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{grid-template-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_row_template_mobile ) ) . '}}';
 	}
 
 	// ── Content-band cap (grid-aware) ──
@@ -626,10 +626,10 @@ if ( ! empty( $min_height ) ) {
 	$responsive_css .= '.' . $uid . '{min-height:' . esc_attr( $min_height ) . '}';
 }
 if ( $min_height_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{min-height:' . esc_attr( $min_height_tablet ) . '}}';
 }
 if ( $min_height_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{min-height:' . esc_attr( $min_height_mobile ) . '}}';
 }
 
 // ── Split variant: grid-template-columns + gap (base + tablet + mobile) ────
@@ -658,7 +658,7 @@ if ( $is_split ) {
 	if ( $split_col_ratio_tablet ) {
 		$safe_ratio_tab = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $split_col_ratio_tablet ) ? $split_col_ratio_tablet : '';
 		if ( $safe_ratio_tab ) {
-			$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-columns:' . $safe_ratio_tab . '}}';
+			$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{grid-template-columns:' . $safe_ratio_tab . '}}';
 		}
 	}
 	// Mobile grid-template-columns override. When splitColumnRatioMobile is
@@ -671,17 +671,17 @@ if ( $is_split ) {
 	}
 	$safe_ratio_mob = preg_match( '/^[\d.\s%a-zA-Z()+\-*\/]+$/', $ratio_mob ) ? $ratio_mob : '';
 	if ( $safe_ratio_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{grid-template-columns:' . $safe_ratio_mob . '}}';
 	}
 	// Tablet gap override — shared gapTablet.
 	$hero_gap_tablet = sgs_container_gap_value( $hero_gap_obj['tablet'] ?? '' );
 	if ( '' !== $hero_gap_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . '{gap:' . $hero_gap_tablet . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{gap:' . $hero_gap_tablet . '}}';
 	}
 	// Mobile gap override — shared gapMobile.
 	$hero_gap_mobile = sgs_container_gap_value( $hero_gap_obj['mobile'] ?? '' );
 	if ( '' !== $hero_gap_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{gap:' . $hero_gap_mobile . '}}';
 	}
 	// Split-image height is NOT emitted here. The `splitImageHeight` family wrote
 	// `height` to `.sgs-hero__split-image` — the exact same property on the exact
@@ -703,19 +703,19 @@ if ( $is_split ) {
 	// ABOVE/BELOW if stacked.
 	if ( $split_order_tablet ) {
 		if ( 'content-first' === $split_order_tablet ) {
-			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
+			$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
 		} else {
 			// media-first.
-			$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
+			$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
 		}
 	}
 	// Mobile column order. Mobile always stacks to a single column, so this is
 	// an ABOVE/BELOW decision, not LEFT/RIGHT.
 	if ( 'content-first' === $split_order_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__content{order:1}.' . $uid . ' .sgs-hero__media{order:2}}';
 	} else {
 		// media-first (default).
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__media{order:1}.' . $uid . ' .sgs-hero__content{order:2}}';
 	}
 } else {
 	// ── Flex-axis controls (non-split variants) — justifyContent/flexDirection/
@@ -746,11 +746,11 @@ if ( $is_split ) {
 	}
 	$img_pad_tab = sgs_box_object_longhands( $image_padding_tablet_obj, 'padding' );
 	if ( null !== $img_pad_tab ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{' . $img_pad_tab . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__split-media{' . $img_pad_tab . '}}';
 	}
 	$img_pad_mob = sgs_box_object_longhands( $image_padding_mobile_obj, 'padding' );
 	if ( null !== $img_pad_mob ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{' . $img_pad_mob . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__split-media{' . $img_pad_mob . '}}';
 	}
 }
 
@@ -782,8 +782,8 @@ if ( $is_split ) {
 	// element. The desktop rule prints before the tier rules.
 	$split_media_radius = array(
 		''                          => sgs_corner_object_longhands( $attributes['splitMediaBorderRadius'] ?? null ),
-		'@media (max-width:1023px)' => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusTablet'] ?? null ),
-		'@media (max-width:767px)'  => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusMobile'] ?? null ),
+		SGS_Breakpoints::media( 'tablet' ) => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusTablet'] ?? null ),
+		SGS_Breakpoints::media( 'mobile' )  => sgs_corner_object_longhands( $attributes['splitMediaBorderRadiusMobile'] ?? null ),
 	);
 	foreach ( $split_media_radius as $split_media_query => $split_media_decls ) {
 		if ( null === $split_media_decls ) {
@@ -944,7 +944,7 @@ foreach ( $image_min_height_bp as $sgs_hero_min_height_tier => $sgs_hero_min_hei
 	$sgs_hero_min_height_decl = '.' . $uid . ' .sgs-hero__split-media{min-height:' . esc_attr( $sgs_hero_min_height_css ) . '}';
 	$responsive_css          .= '' === $sgs_hero_min_height_bp
 		? $sgs_hero_min_height_decl
-		: '@media (max-width:' . $sgs_hero_min_height_bp . '){' . $sgs_hero_min_height_decl . '}';
+		: SGS_Breakpoints::media_width( 'max', $sgs_hero_min_height_bp ) . '{' . $sgs_hero_min_height_decl . '}';
 }
 
 // splitMediaMaxWidth / splitMediaMaxHeight — per-device length strings.
@@ -971,11 +971,11 @@ if ( null !== $media_pad_base ) {
 }
 $media_pad_tab = sgs_box_object_longhands( $media_padding_tablet_obj, 'padding' );
 if ( null !== $media_pad_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__media{' . $media_pad_tab . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__media{' . $media_pad_tab . '}}';
 }
 $media_pad_mob = sgs_box_object_longhands( $media_padding_mobile_obj, 'padding' );
 if ( null !== $media_pad_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__media{' . $media_pad_mob . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__media{' . $media_pad_mob . '}}';
 }
 
 // mediaBackground — moved here from the inline style="" on the media wrapper
@@ -1013,11 +1013,11 @@ if ( null !== $content_pad_base ) {
 }
 $content_pad_tab = sgs_box_object_longhands( $content_padding_tablet_obj, 'padding' );
 if ( null !== $content_pad_tab ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{' . $content_pad_tab . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__content{' . $content_pad_tab . '}}';
 }
 $content_pad_mob = sgs_box_object_longhands( $content_padding_mobile_obj, 'padding' );
 if ( null !== $content_pad_mob ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{' . $content_pad_mob . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__content{' . $content_pad_mob . '}}';
 }
 
 // ── .sgs-hero__content base layout + background — moved here from the inline
@@ -1053,10 +1053,10 @@ if ( in_array( $text_align_desktop, $allowed_text_align, true ) ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_desktop . '}';
 }
 if ( in_array( $text_align_tablet, $allowed_text_align, true ) ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_tablet . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_tablet . '}}';
 }
 if ( in_array( $text_align_mobile, $allowed_text_align, true ) ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_mobile . '}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__content{text-align:' . $text_align_mobile . '}}';
 }
 
 // Build wrapper classes.
@@ -1285,10 +1285,10 @@ if ( $border['base'] ) {
 }
 $responsive_css .= implode( '', $border['rules'] );
 if ( $border['tablet'] ) {
-	$responsive_css .= '@media(max-width:1023px){' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+	$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
 }
 if ( $border['mobile'] ) {
-	$responsive_css .= '@media(max-width:767px){' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+	$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
 }
 
 // the scoped <style> ($responsive_css, appended below) — the element carries
@@ -1333,10 +1333,10 @@ if ( '' !== $overlay_decls ) {
 	// so restating them here would make the @media rule a second owner of those
 	// properties and it would silently outrank a later desktop edit.
 	if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
 	}
 	if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
+		$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-hero__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
 	}
 }
 

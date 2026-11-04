@@ -138,10 +138,10 @@ if ( ! function_exists( 'sgs_nav_drawer_motion_origin_css' ) ) {
 		}
 		$css = $root_sel . '{--sgs-nd-anim-origin:' . $origins['desktop'] . ';}';
 		if ( $origins['tablet'] !== $origins['desktop'] ) {
-			$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['tablet'] . ';}}';
+			$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['tablet'] . ';}}';
 		}
 		if ( $origins['mobile'] !== $origins['tablet'] ) {
-			$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['mobile'] . ';}}';
+			$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{--sgs-nd-anim-origin:' . $origins['mobile'] . ';}}';
 		}
 		return $css;
 	}

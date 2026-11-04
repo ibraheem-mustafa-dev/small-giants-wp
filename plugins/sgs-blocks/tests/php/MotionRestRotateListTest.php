@@ -52,7 +52,7 @@ final class MotionRestRotateListTest extends TestCase {
 	public function test_a_narrower_tier_replaces_the_wider_lists_positions(): void {
 		$css = $this->emit( array( 'restRotate' => array( 1, 2, 3 ) ), array( 'tablet' => array( 'restRotate' => array( 4, 5 ) ), 'mobile' => array( 'restRotate' => 0 ) ) );
 
-		$this->assertStringContainsString( '@media (max-width:1023px){', $css );
+		$this->assertStringContainsString( '@media(max-width:1023px){', $css );
 		$this->assertStringContainsString( ':nth-child(2n+2 of .sgs-hero__media){--sgs-rot-rest:5deg;}', $css );
 		$this->assertStringContainsString( ':nth-child(n of .sgs-hero__media){--sgs-rot-rest:0deg;}', $css, 'a single angle after a list replaces every position' );
 	}
@@ -69,7 +69,7 @@ final class MotionRestRotateListTest extends TestCase {
 	public function test_a_pivot_prints_transform_origin_per_tier_and_unset_prints_none(): void {
 		$set = $this->emit( array( 'restRotate' => -2, 'restOrigin' => 'left' ), array( 'tablet' => array( 'restOrigin' => 'custom', 'restOriginCustom' => '10% 90%' ), 'mobile' => array( 'restOrigin' => 'centre' ) ) );
 		$this->assertStringContainsString( 'transform-origin:left;', $set );
-		$this->assertStringContainsString( '@media (max-width:1023px){', $set );
+		$this->assertStringContainsString( '@media(max-width:1023px){', $set );
 		$this->assertStringContainsString( 'transform-origin:10% 90%;', $set );
 		$this->assertStringContainsString( 'transform-origin:center;', $set );
 

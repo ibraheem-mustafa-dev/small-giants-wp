@@ -102,8 +102,8 @@ final class MotionFocusStateTest extends TestCase {
 
 		$this->assertStringContainsString( $field . '{transition:border-color 200ms ease 0ms, background-color 200ms ease 0ms;}', $css );
 		$this->assertStringContainsString( $field . self::FOCUS . '{border-color:#0A7EA8;background-color:#FFFFFF;}', $css );
-		$this->assertStringContainsString( '@media (max-width:1023px){' . $field . '{transition:border-color 180ms ease 0ms, background-color 180ms ease 0ms;}}', $css );
-		$this->assertStringContainsString( '@media (max-width:767px){' . $field . '{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}', $css );
+		$this->assertStringContainsString( '@media(max-width:1023px){' . $field . '{transition:border-color 180ms ease 0ms, background-color 180ms ease 0ms;}}', $css );
+		$this->assertStringContainsString( '@media(max-width:767px){' . $field . '{transition:border-color 150ms ease 0ms, background-color 150ms ease 0ms;}}', $css );
 		$this->assertStringNotContainsString( 'box-shadow', $css, 'the focus system owns a focused field box-shadow' );
 		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce){' . $field . '{transition-duration:var(--wp--custom--duration--instant, 0ms);transition-delay:initial;}}', $css );
 		$this->assertStringNotContainsString( 'outline', $css, 'the form keeps its own focus outline' );

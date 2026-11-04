@@ -112,8 +112,8 @@ final class MotionRingTest extends TestCase {
 		$this->render( 'sgs/text', self::ring_motion( array( 'ringSpread' => 4, 'ringColour' => '#0A7EA8' ), array( 'mobile' => array( 'ringSpread' => 0 ) ) ), self::TEXT );
 		$css = $this->css();
 		$this->assertStringContainsString( '--sgs-mh-to-ring:4px;', $css );
-		$this->assertStringContainsString( '@media (max-width:767px){', $css );
-		$this->assertMatchesRegularExpression( '/@media \\(max-width:767px\\)\\{[^}]*--sgs-mh-to-ring:0px;/', $css, 'a tier can turn the ring off' );
+		$this->assertStringContainsString( '@media(max-width:767px){', $css );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\\)\\{[^}]*--sgs-mh-to-ring:0px;/', $css, 'a tier can turn the ring off' );
 	}
 
 	public function test_zero_spread_and_a_missing_colour_write_no_ring(): void {

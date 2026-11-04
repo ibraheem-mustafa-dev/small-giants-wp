@@ -216,7 +216,7 @@ foreach ( array(
 		}
 	}
 	if ( $decls ) {
-		$scoped_css[] = '@media(max-width:' . $max . '){' . $root_sel . '{' . implode( ';', $decls ) . ';}}';
+		$scoped_css[] = SGS_Breakpoints::media_width( 'max', $max ) . '{' . $root_sel . '{' . implode( ';', $decls ) . ';}}';
 	}
 }
 

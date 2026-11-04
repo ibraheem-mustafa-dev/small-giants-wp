@@ -101,7 +101,7 @@ final class MotionHoverPresetFieldsTest extends TestCase {
 
 	public function test_a_device_rest_grayscale_rewrites_that_tiers_hover_amount(): void {
 		$this->render( 'sgs/text', self::state( array( 'restGrayscale' => 1, 'grayscale' => 0 ), array( 'mobile' => array( 'restGrayscale' => 0.5 ) ) ), self::TEXT );
-		$this->assertMatchesRegularExpression( '/@media \\(max-width:767px\\)\\{[^}]*--sgs-gray-rest:0\\.5;--sgs-mh-to-gray:calc\\(0 - 0\\.5\\);/', $this->css() );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\\)\\{[^}]*--sgs-gray-rest:0\\.5;--sgs-mh-to-gray:calc\\(0 - 0\\.5\\);/', $this->css() );
 	}
 
 	public function test_border_accent_writes_its_owner_values_the_box_shadow_channel_and_its_transition(): void {

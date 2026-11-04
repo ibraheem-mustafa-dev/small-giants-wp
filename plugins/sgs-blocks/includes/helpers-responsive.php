@@ -129,10 +129,10 @@ if ( ! function_exists( 'sgs_responsive_css_rule' ) ) {
 			$css .= $selector . '{' . implode( '', $base_decls ) . '}';
 		}
 		if ( $tablet_decls ) {
-			$css .= '@media (max-width:1023px){' . $selector . '{' . implode( '', $tablet_decls ) . '}}';
+			$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $selector . '{' . implode( '', $tablet_decls ) . '}}';
 		}
 		if ( $mobile_decls ) {
-			$css .= '@media (max-width:767px){' . $selector . '{' . implode( '', $mobile_decls ) . '}}';
+			$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $selector . '{' . implode( '', $mobile_decls ) . '}}';
 		}
 
 		return $css;
@@ -196,10 +196,10 @@ if ( ! function_exists( 'sgs_responsive_box_shorthand_rule' ) ) {
 			$css .= $selector . '{' . $css_prop . ':' . $base_val . ';}';
 		}
 		if ( null !== $tab_val ) {
-			$css .= '@media (max-width:1023px){' . $selector . '{' . $css_prop . ':' . $tab_val . ';}}';
+			$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $selector . '{' . $css_prop . ':' . $tab_val . ';}}';
 		}
 		if ( null !== $mob_val ) {
-			$css .= '@media (max-width:767px){' . $selector . '{' . $css_prop . ':' . $mob_val . ';}}';
+			$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $selector . '{' . $css_prop . ':' . $mob_val . ';}}';
 		}
 
 		return $css;

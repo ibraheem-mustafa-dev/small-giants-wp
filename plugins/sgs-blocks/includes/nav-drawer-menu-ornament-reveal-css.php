@@ -130,13 +130,13 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_ornament_stroke_draw_css' ) ) {
 		}
 		if ( $tablet['value'] !== $desktop['value'] ) {
 			$css .= 'hover-draw' === $tablet['value']
-				? $on( '(max-width: ' . SGS_Breakpoints::TABLET_MAX . 'px)' )
-				: $off( '(max-width: ' . SGS_Breakpoints::TABLET_MAX . 'px)' );
+				? $on( SGS_Breakpoints::query( 'tablet' ) )
+				: $off( SGS_Breakpoints::query( 'tablet' ) );
 		}
 		if ( $mobile['value'] !== $tablet['value'] ) {
 			$css .= 'hover-draw' === $mobile['value']
-				? $on( '(max-width: ' . SGS_Breakpoints::MOBILE_MAX . 'px)' )
-				: $off( '(max-width: ' . SGS_Breakpoints::MOBILE_MAX . 'px)' );
+				? $on( SGS_Breakpoints::query( 'mobile' ) )
+				: $off( SGS_Breakpoints::query( 'mobile' ) );
 		}
 
 		if ( '' === $css ) {

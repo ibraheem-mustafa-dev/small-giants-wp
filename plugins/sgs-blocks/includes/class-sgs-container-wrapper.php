@@ -2542,10 +2542,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// later desktop edit at the same specificity. Two owners for one
 				// property is the defect, not the fix.
 				if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
-					$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
 				}
 				if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
-					$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
 				}
 			}
 
@@ -2659,9 +2659,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					$order_decl = '.' . $uid . '{order:' . intval( $order_val ) . '}';
 					if ( 'tablet' === $order_tier ) {
-						$order_decl = '@media (max-width:1023px){' . $order_decl . '}';
+						$order_decl = SGS_Breakpoints::media( 'tablet' ) . '{' . $order_decl . '}';
 					} elseif ( 'mobile' === $order_tier ) {
-						$order_decl = '@media (max-width:767px){' . $order_decl . '}';
+						$order_decl = SGS_Breakpoints::media( 'mobile' ) . '{' . $order_decl . '}';
 					}
 					$responsive_css .= $order_decl;
 				}
@@ -2680,10 +2680,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= $grid_sel . '{gap:' . sgs_container_gap_value( $gap ) . '}';
 				}
 				if ( $gap_tablet ) {
-					$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_tablet ) . '}}';
 				}
 				if ( $gap_mobile ) {
-					$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $grid_sel . '{gap:' . sgs_container_gap_value( $gap_mobile ) . '}}';
 				}
 
 				// Responsive min-height — section kind. Base + variants all emit via
@@ -2695,10 +2695,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= '.' . $uid . '{min-height:' . $min_height . '}';
 					}
 					if ( '' !== $min_height_tablet ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{min-height:' . $min_height_tablet . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{min-height:' . $min_height_tablet . '}}';
 					}
 					if ( '' !== $min_height_mobile ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{min-height:' . $min_height_mobile . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{min-height:' . $min_height_mobile . '}}';
 					}
 				}
 
@@ -2710,10 +2710,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= '.' . $uid . '{max-width:' . $sgs_css_length( $max_width ) . ';margin-inline:auto}';
 				}
 				if ( '' !== $max_width_tablet ) {
-					$responsive_css .= '@media (max-width:1023px){.' . $uid . '{max-width:' . $max_width_tablet . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{max-width:' . $max_width_tablet . '}}';
 				}
 				if ( '' !== $max_width_mobile ) {
-					$responsive_css .= '@media (max-width:767px){.' . $uid . '{max-width:' . $max_width_mobile . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{max-width:' . $max_width_mobile . '}}';
 				}
 
 				// Responsive padding — all kinds. Base padding is handled by WP's spacing.padding
@@ -2739,7 +2739,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						// lands INLINE on the wrapper — a plain @media class rule can
 						// never beat it. Tiers are viewport-scoped overrides; at ≤767px
 						// the mobile rule (same importance, later source) wins.
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_padding_decls ) . ' !important}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{' . implode( ' !important;', $tablet_padding_decls ) . ' !important}}';
 					}
 
 					// Mobile (≤767px).
@@ -2757,7 +2757,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_padding_decls[] = 'padding-left:' . $padding_left_mobile;
 					}
 					if ( $mobile_padding_decls ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . implode( ' !important;', $mobile_padding_decls ) . ' !important}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{' . implode( ' !important;', $mobile_padding_decls ) . ' !important}}';
 					}
 				}
 
@@ -2780,7 +2780,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					if ( $tablet_margin_decls ) {
 						// !important for the same reason as padding: WP-native base
 						// margin is inline on the wrapper.
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{' . implode( ' !important;', $tablet_margin_decls ) . ' !important}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{' . implode( ' !important;', $tablet_margin_decls ) . ' !important}}';
 					}
 
 					// Mobile (≤767px).
@@ -2798,7 +2798,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$mobile_margin_decls[] = 'margin-left:' . $margin_left_mobile;
 					}
 					if ( $mobile_margin_decls ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{' . implode( ' !important;', $mobile_margin_decls ) . ' !important}}';
 					}
 				}
 
@@ -2809,10 +2809,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// D6: universal, was section-only (the `if ( true )` wrapper this was
 				// left inside of has been removed as dead-conditional cleanup).
 				if ( ! empty( $bg_image_tablet['url'] ) ) {
-					$responsive_css .= '@media (max-width:1023px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 				}
 				if ( ! empty( $bg_image_mobile['url'] ) ) {
-					$responsive_css .= '@media (max-width:767px){.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
+					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
 				}
 
 				// QB-2: Responsive gridTemplateColumns — section + layout kinds.
@@ -2826,10 +2826,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						$responsive_css .= $grid_sel . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows ) . '}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_tablet ) ) {
-						$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_tablet ) . '}}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_mobile ) ) {
-						$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $grid_sel . '{grid-template-columns:' . sgs_sanitize_grid_template( $grid_template_mobile ) . '}}';
 					}
 
 					// Tier COUNT fallback — replaces the removed `sgs-cols-*` shorthand
@@ -2862,22 +2862,22 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 							$tablet_track    = $intrinsic_columns
 								? sgs_intrinsic_columns_track( absint( $columns_tablet ), sgs_container_tier_gap( $attributes, 'tablet' ), sgs_container_tier_min_column_width( $attributes, 'tablet' ) )
 								: 'repeat(' . absint( $columns_tablet ) . ',1fr)';
-							$responsive_css .= '@media (max-width:1023px){' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
+							$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $grid_sel . '{grid-template-columns:' . $tablet_track . '}}';
 						}
 						if ( $columns_mobile && '' === trim( (string) $grid_template_mobile ) ) {
 							$mobile_track    = $intrinsic_columns
 								? sgs_intrinsic_columns_track( absint( $columns_mobile ), sgs_container_tier_gap( $attributes, 'mobile' ), sgs_container_tier_min_column_width( $attributes, 'mobile' ) )
 								: 'repeat(' . absint( $columns_mobile ) . ',1fr)';
-							$responsive_css .= '@media (max-width:767px){' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
+							$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $grid_sel . '{grid-template-columns:' . $mobile_track . '}}';
 						}
 					}
 
 					// QB-1: Responsive gridTemplateRows — section + layout kinds.
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_tablet ) ) {
-						$responsive_css .= '@media (max-width:1023px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_tablet ) . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_tablet ) . '}}';
 					}
 					if ( '' !== sgs_sanitize_grid_template( $grid_template_rows_mobile ) ) {
-						$responsive_css .= '@media (max-width:767px){.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '{grid-template-rows:' . sgs_sanitize_grid_template( $grid_template_rows_mobile ) . '}}';
 					}
 				}
 
@@ -2908,10 +2908,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 					// Responsive content-width overrides for the band max-width.
 					if ( '' !== $content_width_tablet ) {
-						$responsive_css .= '@media (max-width:1023px){' . $band_sel . '{max-width:' . $content_width_tablet . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $band_sel . '{max-width:' . $content_width_tablet . '}}';
 					}
 					if ( '' !== $content_width_mobile ) {
-						$responsive_css .= '@media (max-width:767px){' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
+						$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $band_sel . '{max-width:' . $content_width_mobile . '}}';
 					}
 				}
 			}
@@ -3537,7 +3537,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 							continue; // No change from the tier above (or an uncapped base).
 						}
 						$sgs_cw_rule    = $band_obj_sel . '{margin-inline:' . ( $sgs_cw_is_cap ? 'auto' : '0' ) . '}';
-						$responsive_css .= null === $sgs_cw_bp ? $sgs_cw_rule : '@media (max-width:' . $sgs_cw_bp . 'px){' . $sgs_cw_rule . '}';
+						$responsive_css .= null === $sgs_cw_bp ? $sgs_cw_rule : SGS_Breakpoints::media_width( 'max', $sgs_cw_bp ) . '{' . $sgs_cw_rule . '}';
 						$sgs_cw_capped   = $sgs_cw_is_cap;
 					}
 				}

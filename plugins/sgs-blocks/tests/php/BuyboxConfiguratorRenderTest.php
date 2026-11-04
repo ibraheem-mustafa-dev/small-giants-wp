@@ -141,7 +141,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		);
 		$this->assertMatchesRegularExpression( '/\.sgs-buybox__pick-preview\{background:#FFFAF0;border-color:#3A2A22;border-width:2px;border-radius:28px;\}/', $html );
 		$this->assertStringContainsString( '.sgs-buybox__pick-preview{padding-top:28px;padding-right:20px;}', $html );
-		$this->assertStringContainsString( '@media (max-width:767px){', $html );
+		$this->assertStringContainsString( '@media(max-width:767px){', $html );
 		$this->assertStringContainsString( 'padding-top:12px', $html );
 		$this->assertStringContainsString( 'class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview', $html );
 	}

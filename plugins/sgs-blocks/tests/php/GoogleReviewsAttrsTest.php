@@ -208,7 +208,7 @@ final class GoogleReviewsAttrsTest extends TestCase {
 					"{$r} .sgs-google-reviews__review{background-color:#ffffff;}",
 					"{$r} .sgs-google-reviews__review{gap:12px;}",
 					"{$r} .sgs-google-reviews__review{flex-basis:340px;}",
-					'@media (max-width:767px){' . "{$r} .sgs-google-reviews__review{flex-basis:270px;}}",
+					'@media(max-width:767px){' . "{$r} .sgs-google-reviews__review{flex-basis:270px;}}",
 				),
 			),
 			'avatar'  => array(

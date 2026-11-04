@@ -41,8 +41,8 @@ final class MotionRendererTest extends TestCase {
 		$sel   = '.' . $scope . ' .sgs-hero__media';
 
 		$this->assertSame( 1, substr_count( $css, $sel . '{--sgs-mh-to-s:1.04;--sgs-mh-to-ty:-6px;transition:' ), $css );
-		$this->assertSame( 1, substr_count( $css, '@media (max-width:1023px){' . $sel . '{--sgs-mh-to-s:1.02;}}' ), $css );
-		$this->assertSame( 1, substr_count( $css, '@media (max-width:767px){' . $sel . '{--sgs-mh-to-ty:-3px;}}' ), $css );
+		$this->assertSame( 1, substr_count( $css, '@media(max-width:1023px){' . $sel . '{--sgs-mh-to-s:1.02;}}' ), $css );
+		$this->assertSame( 1, substr_count( $css, '@media(max-width:767px){' . $sel . '{--sgs-mh-to-ty:-3px;}}' ), $css );
 		$this->assertSame( 1, substr_count( $css, 'transition:' ) );
 		// Movement reads the client's hover easing token first; colour and shadow run on transition.fast (decision 3, 2026-10-24).
 		$this->assertStringContainsString( 'transition:--sgs-mh-s 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ty 250ms', $css );
@@ -66,8 +66,8 @@ final class MotionRendererTest extends TestCase {
 	public function test_edge_tablet_only_override_writes_only_the_1023px_block(): void {
 		$this->render( self::media_hover( array( 'scale' => 1.04 ), array( 'tablet' => array( 'scale' => 1.1 ) ) ) );
 		$css = $this->css();
-		$this->assertStringContainsString( '@media (max-width:1023px)', $css );
-		$this->assertStringNotContainsString( '@media (max-width:767px)', $css, 'a blank Mobile tier inherits; no block' );
+		$this->assertStringContainsString( '@media(max-width:1023px)', $css );
+		$this->assertStringNotContainsString( '@media(max-width:767px)', $css, 'a blank Mobile tier inherits; no block' );
 	}
 
 	public function test_edge_blank_devices_write_no_media_block(): void {

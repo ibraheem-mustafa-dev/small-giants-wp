@@ -169,7 +169,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 					$sgs_nm_size_prev_decl = $sgs_nm_size_tier_decl;
 					continue;
 				}
-				$css .= '@media (max-width:' . $sgs_nm_size_tier_bp . 'px){' . $burger_sel . '{' . $sgs_nm_size_tier_decl . '}}';
+				$css .= SGS_Breakpoints::media_width( 'max', $sgs_nm_size_tier_bp ) . '{' . $burger_sel . '{' . $sgs_nm_size_tier_decl . '}}';
 
 				$sgs_nm_size_prev_decl = $sgs_nm_size_tier_decl;
 			}
@@ -252,7 +252,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 					continue;
 				}
 				if ( '' !== $sgs_nm_icon_tier_decl ) {
-					$css .= '@media (max-width:' . $sgs_nm_icon_tier_bp . 'px){' . $sgs_nm_icon_sel . '{' . $sgs_nm_icon_tier_decl . '}}';
+					$css .= SGS_Breakpoints::media_width( 'max', $sgs_nm_icon_tier_bp ) . '{' . $sgs_nm_icon_sel . '{' . $sgs_nm_icon_tier_decl . '}}';
 				}
 
 				$sgs_nm_icon_prev_decl = $sgs_nm_icon_tier_decl;
@@ -452,7 +452,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_trigger_css' ) ) {
 					$sgs_nm_split_prev_mode = $sgs_nm_split_tier_mode;
 					continue;
 				}
-				$css .= '@media (max-width:' . $sgs_nm_split_tier_bp . 'px){' . $decls_for( $sgs_nm_split_tier_mode ) . '}';
+				$css .= SGS_Breakpoints::media_width( 'max', $sgs_nm_split_tier_bp ) . '{' . $decls_for( $sgs_nm_split_tier_mode ) . '}';
 
 				$sgs_nm_split_prev_mode = $sgs_nm_split_tier_mode;
 			}

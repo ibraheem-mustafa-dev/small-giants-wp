@@ -10,7 +10,7 @@
  */
 
 import defs from '../../../../components/motion/motion-defs';
-import { SGS_BREAKPOINTS } from '../../../../utils/responsive';
+import { MEDIA_TABLET, MEDIA_MOBILE } from '../../../../utils/breakpoints';
 import {
 	fieldCss,
 	resolveToken,
@@ -258,8 +258,8 @@ export function isNumber( v ) {
 export function rules( selector, decls, extra = {} ) {
 	const media = {
 		desktop: null,
-		tablet: `@media (max-width:${ SGS_BREAKPOINTS.TABLET_MAX }px)`,
-		mobile: `@media (max-width:${ SGS_BREAKPOINTS.MOBILE_MAX }px)`,
+		tablet: MEDIA_TABLET,
+		mobile: MEDIA_MOBILE,
 	};
 	return TIERS.map( ( tier ) => {
 		const entries = Object.entries( decls[ tier ] || {} );

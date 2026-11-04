@@ -436,13 +436,13 @@ if ( ! function_exists( 'sgs_label_box_css_rule' ) ) {
 		if ( isset( $box['paddingTablet'] ) && is_array( $box['paddingTablet'] ) ) {
 			$padding_tab = sgs_box_object_longhands( $box['paddingTablet'], 'padding' );
 			if ( null !== $padding_tab ) {
-				$css .= '@media(max-width:1023px){' . $selector . '{' . $padding_tab . ';}}';
+				$css .= SGS_Breakpoints::media( 'tablet' ) . '{' . $selector . '{' . $padding_tab . ';}}';
 			}
 		}
 		if ( isset( $box['paddingMobile'] ) && is_array( $box['paddingMobile'] ) ) {
 			$padding_mob = sgs_box_object_longhands( $box['paddingMobile'], 'padding' );
 			if ( null !== $padding_mob ) {
-				$css .= '@media(max-width:767px){' . $selector . '{' . $padding_mob . ';}}';
+				$css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $selector . '{' . $padding_mob . ';}}';
 			}
 		}
 

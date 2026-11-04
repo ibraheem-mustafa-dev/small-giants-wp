@@ -35,7 +35,7 @@ final class ButtonIconSizeTiersTest extends TestCase {
 			)
 		);
 
-		$this->assertStringContainsString( '@media (max-width:767px)', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:767px)', $out['css'] );
 		$this->assertStringContainsString( '--sgs-btn-icon-size:32px', $out['css'] );
 		$this->assertMatchesRegularExpression( '/\.sgs-button__icon svg\{width:var\(--sgs-btn-icon-size,1em\);height:var\(--sgs-btn-icon-size,1em\);\}/', $out['css'] );
 		$this->assertStringNotContainsString( 'svg{width:20px', $out['css'] );
