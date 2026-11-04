@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
 import { fillRow, textRow, SgsLengthControl, ResponsiveLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
 import { patchTier } from '../../utils';
-import { tierValue } from './tier-value';
+import { asTierObject } from '../../utils/responsive';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
@@ -222,7 +222,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				</ResponsiveControl>
 				<ResponsiveLengthControl
 					label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
-					value={ tierValue( thumbGap ) }
+					value={ asTierObject( thumbGap ) }
 					units={ THUMB_BORDER_UNITS }
 					onChange={ ( obj ) => setAttributes( { thumbGap: obj } ) }
 					help={ __(

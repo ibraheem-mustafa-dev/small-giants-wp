@@ -25,11 +25,11 @@ import {
 	typographyPreviewCss,
 	gapVar,
 	resolveResponsiveTier,
+	tierValueOf,
 } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
 import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
-import { tierValue } from './tier-value';
 import { composeShadow } from '../../utils/shadow-layers';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
@@ -231,7 +231,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
 	const gap = String(
-		resolveResponsiveTier( tierValue( attributes.galleryColumnGap ), tier ).value || ''
+		tierValueOf( attributes.galleryColumnGap, tier ) || ''
 	).trim();
 	const decls = [];
 	if ( ratio > 0 ) {
@@ -313,7 +313,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
 	const rawGap = String(
-		resolveResponsiveTier( tierValue( attributes.thumbGap ), tier ).value || ''
+		tierValueOf( attributes.thumbGap, tier ) || ''
 	).trim();
 	const thumbGap = /^\d+(\.\d+)?$/.test( rawGap ) ? `${ rawGap }px` : rawGap;
 	// thumbsPerRow is a tier object; an unset tablet or mobile tier follows the next larger one.

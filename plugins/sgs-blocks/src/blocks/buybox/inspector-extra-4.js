@@ -9,7 +9,7 @@ import { SgsLengthControl, ResponsiveLengthControl, SgsBoxControl, SgsBorderCont
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
-import { tierValue } from './tier-value';
+import { asTierObject } from '../../utils/responsive';
 /**
  * Settings-tab (default InspectorControls group) extra panels for
  * sgs/buybox, size-band tiles (F1), a picker-label link
@@ -350,7 +350,7 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 				<ResponsiveLengthControl
 					presets
 					label={ __( 'Gap between columns', 'sgs-blocks' ) }
-					value={ tierValue( galleryColumnGap ) }
+					value={ asTierObject( galleryColumnGap ) }
 					onChange={ ( obj ) =>
 						setAttributes( { galleryColumnGap: obj } )
 					}

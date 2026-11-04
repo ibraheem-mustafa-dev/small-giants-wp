@@ -34,6 +34,22 @@ export function makeResponsive( obj = {} ) {
 }
 
 /**
+ * A stored value as a `{desktop,tablet,mobile}` object for a per-device control: a tier object passes through, a
+ * plain saved value (an attribute that held one value before it went per-device) becomes the desktop tier, and an
+ * empty value becomes `{}`.
+ *
+ * @param {*} value The stored attribute value.
+ * @return {Object} A tier object.
+ */
+export function asTierObject( value ) {
+	if ( value && 'object' === typeof value && ! Array.isArray( value ) ) {
+		return value;
+	}
+	const text = 'string' === typeof value ? value.trim() : value;
+	return undefined === text || null === text || '' === text ? {} : { desktop: text };
+}
+
+/**
  * Build a box side object `{top,right,bottom,left}` in CANONICAL side order.
  * Omits sides that are undefined/'' so per-side inheritance stays exact.
  *
