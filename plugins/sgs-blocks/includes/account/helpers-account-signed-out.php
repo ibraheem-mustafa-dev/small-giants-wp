@@ -217,7 +217,7 @@ if ( ! function_exists( 'sgs_account_auth_card_css' ) ) {
 			$sel,
 			array(
 				'colour' => array( 'base' => 'signedOutCardBorderColour' ),
-				'radius' => 'signedOutCardCorners',
+				'radius' => 'signedOutCardBorderRadius',
 			)
 		);
 
@@ -237,17 +237,19 @@ if ( ! function_exists( 'sgs_account_auth_card_css' ) ) {
 			$sel,
 			array(
 				array(
-					'value' => $attributes['signedOutCardInnerSpacing'] ?? array(),
+					'value' => $attributes['signedOutCardPadding'] ?? array(),
 					'css'   => 'padding',
 					'box'   => true,
 				),
 			)
 		);
+		$css[] = sgs_typography_css_rule( $attributes, 'signedOutHeading', $root_sel . ' .sgs-account__signed-out .sgs-account__heading', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+		$css[] = sgs_typography_css_rule( $attributes, 'signedOutCopy', $root_sel . ' .sgs-account__signed-out .sgs-account__card-desc', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
 		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__signed-out .sgs-account__card-desc', $attributes, array( 'base' => 'signedOutCopyColour' ) );
 		$css[] = sgs_flex_wrap_css( $attributes, $root_sel, array( 'signedOutActionsFlexWrap' => '.sgs-account__signed-out-actions' ) );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutButtonGap', '--sgs-account-signed-out-actions-gap', $root_sel, true );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutCardMaxWidth', '--sgs-account-signed-out-max-width', $root_sel );
-		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutItemGap', '--sgs-account-signed-out-gap', $root_sel, true );
+		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutCardGap', '--sgs-account-signed-out-gap', $root_sel, true );
 
 		return implode( '', array_filter( $css ) );
 	}

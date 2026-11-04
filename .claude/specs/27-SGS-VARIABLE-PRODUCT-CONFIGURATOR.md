@@ -901,7 +901,7 @@ A shopper marks an order as a gift, names the recipient and writes a note, in th
 
 **Done when:** on local-mamas a note placed in the basket and in the checkout renders where placed at 375/768/1440, its text and link are editable in the editor, and pages without it load no new script (negative control).
 
-#### FR-30-23 -- Postcode lookup -- built (none for now, Bean 2026-11-04)
+#### FR-30-23 -- Postcode lookup -- not built (none for now, Bean 2026-11-04)
 
 Customers type their address in WooCommerce's own fields. Research (2026-11-04): a house-level lookup needs Royal Mail's licensed PAF data, which every service and self-hosted tool (for example the MIT-licensed paf-monorepo) depends on; open data (postcodes.io, MIT, ONS open data) checks a postcode and returns its town but lists no houses, and OpenStreetMap's UK house numbers are patchy. Paid options: Ideal Postcodes (official block-checkout plugin, 4.5p to 2.8p per address, no monthly fee), Swiftcomplete (3p, £10 minimum), Loqate (7.3p to 4.2p; its official plugin is retired). getAddress.io stopped trading on 4 February 2026. `sgs/form-field-address`'s `enableLookup` printed a "Find Address" button with nothing behind it; the setting and the button are removed until a provider is chosen. No saved block on any reachable site had `enableLookup` on (a read-only scan of every post type's content on the four local mirrors and the canary and four test sites found none), so no migration was needed.
 
@@ -913,7 +913,7 @@ A "Basket count" inline format (`plugins/sgs-blocks/src/blocks/extensions/inline
 
 **Done when:** on local-mamas the basket heading pill shows the item count at load, updates when a quantity changes on the cart page and when an item is added from a product card elsewhere, and pages without the format load no new script (negative control).
 
-#### FR-30-25 -- Account signed-out card and sign-in tabs -- built
+#### FR-30-25 -- Account signed-out card and sign-in tabs -- not built
 
 `sgs/account` gains a signed-out view setting (`signedOutView`): WooCommerce's log-in form (absent, today's behaviour) or a card with a heading, text, a sign-in button and a create-account button, whose links are link controls (an empty sign-in link opens the same page with the form, `?sgs-login=1`; an empty create-account link adds `mode=register`). The card is the account page's front door only: WooCommerce's lost-password and reset pages still show its own forms. The card is painted by `sgs_account_auth_card_css()` through the shared fill, border, per-device corner, shadow and per-device padding emitters; its heading and text take the block's existing heading and card-description typography; its buttons are rendered by `sgs/button` (primary and secondary presets, with the card's own button height, shadow, hover shadow and gap settings). The create-account button hides while WooCommerce registration is off. The log-in layout (`authLayout`) gains `tabs`: Sign in and Create account as an ARIA tabs pattern (roving tabindex, arrow keys, Home and End), `?mode=register` opening the second, the container taking the same card settings; the tabs are real links so the right form shows with no script, and the small view module loads only when tabs are on. Forgotten and reset password stay WooCommerce's own pages. New attributes carry no `default`, so existing blocks keep their uid class.
 

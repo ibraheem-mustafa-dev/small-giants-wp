@@ -262,6 +262,24 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTextAlign: true,
 							},
 							{
+								key: 'signedOutHeading',
+								label: __( 'Signed-out card heading', 'sgs-blocks' ),
+								prefix: 'signedOutHeading',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
+								key: 'signedOutCopy',
+								label: __( 'Signed-out card text', 'sgs-blocks' ),
+								prefix: 'signedOutCopy',
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showTextAlign: true,
+							},
+							{
 								key: 'guestLine',
 								label: __(
 									'Guest checkout line',

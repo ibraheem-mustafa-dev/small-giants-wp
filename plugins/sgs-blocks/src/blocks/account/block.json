@@ -203,8 +203,20 @@
 					},
 					"_note": "The card's two buttons are rendered by sgs/button, which paints these three values; their colours, radius, type and hover come from the site's button presets."
 				},
+				"signed-out-heading": {
+					"selector": ".sgs-account__signed-out .sgs-account__heading",
+					"motion": false,
+					"label": "Signed-out card heading",
+					"order": 19,
+					"clusters": [
+						"text"
+					],
+					"prefix": "signedOutHeading",
+					"_note": "The card's own heading type settings; unset, the heading takes the block's shared heading look."
+				},
 				"signedOutCopy": {
 					"motion": false,
+					"prefix": "signedOutCopy",
 					"selector": ".sgs-account__signed-out .sgs-account__card-desc",
 					"label": "Signed-out card text",
 					"order": 15,
@@ -231,12 +243,12 @@
 						"css:border-color": "signedOutCardBorderColour",
 						"css:border-width": "signedOutCardBorderWidth",
 						"css:border-style": "signedOutCardBorderStyle",
-						"css:border-radius": "signedOutCardCorners",
+						"css:border-radius": "signedOutCardBorderRadius",
 						"css:box-shadow": "signedOutCardShadow",
 						"css:box-shadow-color": "signedOutCardShadowColour",
-						"css:padding": "signedOutCardInnerSpacing",
+						"css:padding": "signedOutCardPadding",
 						"css:max-width": "signedOutCardMaxWidth",
-						"css:gap": "signedOutItemGap"
+						"css:gap": "signedOutCardGap"
 					},
 					"_note": "The card a signed-out visitor sees when signedOutView is card, and the card holding the sign-in tabs when authLayout is tabs. Its shadow is the signedOutCardShadow family (ShadowControl)."
 				},
@@ -453,6 +465,96 @@
 			"type": "string",
 			"role": "content"
 		},
+		"signedOutHeadingFontSize": {
+			"type": "number"
+		},
+		"signedOutHeadingFontSizeUnit": {
+			"type": "string"
+		},
+		"signedOutHeadingFontSizeTablet": {
+			"type": "number"
+		},
+		"signedOutHeadingFontSizeMobile": {
+			"type": "number"
+		},
+		"signedOutHeadingFontFamily": {
+			"type": "string"
+		},
+		"signedOutHeadingFontWeight": {
+			"type": "string"
+		},
+		"signedOutHeadingFontStyle": {
+			"type": "string"
+		},
+		"signedOutHeadingLineHeight": {
+			"type": "number"
+		},
+		"signedOutHeadingLineHeightUnit": {
+			"type": "string"
+		},
+		"signedOutHeadingLetterSpacing": {
+			"type": "number"
+		},
+		"signedOutHeadingLetterSpacingUnit": {
+			"type": "string"
+		},
+		"signedOutHeadingTextTransform": {
+			"type": "string"
+		},
+		"signedOutHeadingTextDecoration": {
+			"type": "string"
+		},
+		"signedOutHeadingTextAlign": {
+			"type": "object"
+		},
+		"signedOutHeadingTextWrap": {
+			"type": "string"
+		},
+		"signedOutCopyFontSize": {
+			"type": "number"
+		},
+		"signedOutCopyFontSizeUnit": {
+			"type": "string"
+		},
+		"signedOutCopyFontSizeTablet": {
+			"type": "number"
+		},
+		"signedOutCopyFontSizeMobile": {
+			"type": "number"
+		},
+		"signedOutCopyFontFamily": {
+			"type": "string"
+		},
+		"signedOutCopyFontWeight": {
+			"type": "string"
+		},
+		"signedOutCopyFontStyle": {
+			"type": "string"
+		},
+		"signedOutCopyLineHeight": {
+			"type": "number"
+		},
+		"signedOutCopyLineHeightUnit": {
+			"type": "string"
+		},
+		"signedOutCopyLetterSpacing": {
+			"type": "number"
+		},
+		"signedOutCopyLetterSpacingUnit": {
+			"type": "string"
+		},
+		"signedOutCopyTextTransform": {
+			"type": "string"
+		},
+		"signedOutCopyTextDecoration": {
+			"type": "string"
+		},
+		"signedOutCopyTextAlign": {
+			"type": "object"
+		},
+		"signedOutCopyTextWrap": {
+			"type": "string"
+		},
 		"signedOutCopyColour": {
 			"type": "string"
 		},
@@ -477,16 +579,16 @@
 		"signedOutCardBorderWidth": {
 			"type": "object"
 		},
-		"signedOutCardCorners": {
+		"signedOutCardBorderRadius": {
 			"type": "object"
 		},
-		"signedOutCardInnerSpacing": {
+		"signedOutCardPadding": {
 			"type": "object"
 		},
 		"signedOutCardMaxWidth": {
 			"type": "object"
 		},
-		"signedOutItemGap": {
+		"signedOutCardGap": {
 			"type": "object"
 		},
 		"authTabMinHeight": {

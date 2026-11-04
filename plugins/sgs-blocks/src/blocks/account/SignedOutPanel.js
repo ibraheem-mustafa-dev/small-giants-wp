@@ -124,7 +124,7 @@ export function SignedOutCardPanel( { attributes, setAttributes } ) {
 	if ( 'card' !== attributes.signedOutView && 'tabs' !== attributes.authLayout ) {
 		return null;
 	}
-	const radius = attributes.signedOutCardCorners;
+	const radius = attributes.signedOutCardBorderRadius;
 
 	return (
 		<>
@@ -144,7 +144,7 @@ export function SignedOutCardPanel( { attributes, setAttributes } ) {
 					} }
 					onRadiusChange={ ( tier, next ) => {
 						const key = 'base' === tier ? 'desktop' : tier;
-						setAttributes( { signedOutCardCorners: { ...radius, [ key ]: next } } );
+						setAttributes( { signedOutCardBorderRadius: { ...radius, [ key ]: next } } );
 					} }
 				/>
 				<ShadowControl
@@ -156,8 +156,8 @@ export function SignedOutCardPanel( { attributes, setAttributes } ) {
 			</PanelBody>
 			<PanelBody title={ __( 'Sign-in card spacing', 'sgs-blocks' ) } initialOpen={ false }>
 				<ResponsiveOverride
-					value={ attributes.signedOutCardInnerSpacing }
-					onChange={ ( obj ) => setAttributes( { signedOutCardInnerSpacing: obj } ) }
+					value={ attributes.signedOutCardPadding }
+					onChange={ ( obj ) => setAttributes( { signedOutCardPadding: obj } ) }
 				>
 					{ ( { ownValue, setOwnValue } ) => (
 						<SgsBoxControl
@@ -194,9 +194,9 @@ export function SignedOutCardPanel( { attributes, setAttributes } ) {
 							presets
 							label={ __( 'Gap between card items', 'sgs-blocks' ) }
 							hideLabelFromVision
-							value={ attributes.signedOutItemGap?.[ breakpoint ] ?? '' }
+							value={ attributes.signedOutCardGap?.[ breakpoint ] ?? '' }
 							onChange={ ( value ) =>
-								patchTier( attributes, setAttributes, 'signedOutItemGap', breakpoint, value )
+								patchTier( attributes, setAttributes, 'signedOutCardGap', breakpoint, value )
 							}
 						/>
 					) }
