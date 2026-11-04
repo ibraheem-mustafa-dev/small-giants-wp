@@ -59,8 +59,47 @@ export default function ButtonLabelControls( { attributes, setAttributes } ) {
 						value={ attributes.navIconGap ?? '10px' }
 						onChange={ ( value ) => setAttributes( { navIconGap: value || '10px' } ) }
 					/>
+					<NumberControl
+						label={ __( 'Button icon stroke width', 'sgs-blocks' ) }
+						value={ attributes.navIconStrokeWidth ?? '' }
+						min={ 0.5 }
+						step={ 0.1 }
+						help={ __( 'Line thickness of the icon. Empty keeps 2.', 'sgs-blocks' ) }
+						onChange={ ( value ) => setAttributes( { navIconStrokeWidth: value ? parseFloat( value ) : '' } ) }
+						__next40pxDefaultSize
+					/>
 				</>
 			) }
+			<ResponsiveOverride
+				label={ __( 'Next button fills the row', 'sgs-blocks' ) }
+				value={ attributes.nextButtonFill }
+				onChange={ ( obj ) => setAttributes( { nextButtonFill: obj } ) }
+			>
+				{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+					<ToggleControl
+						label={ __( 'Next and Submit fill the row on this device', 'sgs-blocks' ) }
+						checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
+						onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+						__nextHasNoMarginBottom
+					/>
+				) }
+			</ResponsiveOverride>
+			<ResponsiveOverride
+				label={ __( 'Gap between the buttons', 'sgs-blocks' ) }
+				value={ attributes.actionsGap }
+				onChange={ ( obj ) => setAttributes( { actionsGap: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Gap between the buttons', 'sgs-blocks' ) }
+						hideLabelFromVision
+						value={ ownValue ?? '' }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
 			<SgsFreeTextField
 				type="rich"
 				noLink

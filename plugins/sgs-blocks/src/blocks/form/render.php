@@ -626,6 +626,15 @@ $sgs_label_on = sgs_text_decls( $attributes, array( 'base' => 'stepLabelColourAc
 if ( ! empty( $sgs_label_on['normal'] ) ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step--active .sgs-form__progress-step-label{' . implode( ';', $sgs_label_on['normal'] ) . ';}';
 }
+$sgs_label_done       = sgs_text_decls( $attributes, array( 'base' => 'stepLabelColourCompleted' ) );
+$sgs_label_done_decls = (array) ( $sgs_label_done['normal'] ?? array() );
+$sgs_label_done_wt    = sgs_font_weight_value( $attributes['stepLabelFontWeightCompleted'] ?? '' );
+if ( '' !== $sgs_label_done_wt ) {
+	$sgs_label_done_decls[] = 'font-weight:' . $sgs_label_done_wt;
+}
+if ( array() !== $sgs_label_done_decls ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step.sgs-form__progress-step--completed .sgs-form__progress-step-label{' . implode( ';', $sgs_label_done_decls ) . ';}';
+}
 $sgs_number_off = sgs_colour_value( (string) ( $attributes['stepNumberInactiveBackground'] ?? '' ) );
 if ( '' !== $sgs_number_off ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:' . $sgs_number_off . ';}';
@@ -688,6 +697,34 @@ if ( is_array( $sgs_actions_space ) && array() !== $sgs_actions_space ) {
 		)
 	);
 }
+$sgs_actions_gap = $attributes['actionsGap'] ?? null;
+if ( is_array( $sgs_actions_gap ) && array() !== $sgs_actions_gap ) {
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__actions',
+		array(
+			array(
+				'value'     => $sgs_actions_gap,
+				'css'       => 'gap',
+				'transform' => $sgs_form_length,
+			),
+		)
+	);
+}
+$sgs_next_fill = $attributes['nextButtonFill'] ?? null;
+if ( is_array( $sgs_next_fill ) && array() !== $sgs_next_fill ) {
+	foreach ( array( '.sgs-form__button--next', '.sgs-form__button--submit' ) as $sgs_fill_sel ) {
+		$sgs_field_css .= sgs_emit_responsive_css(
+			'.' . $sgs_form_uid . ' ' . $sgs_fill_sel,
+			array(
+				array(
+					'value'     => $sgs_next_fill,
+					'css'       => 'flex',
+					'transform' => static fn( $raw ): string => is_bool( $raw ) || is_numeric( $raw ) ? ( $raw ? '1 1 0%' : 'initial' ) : '',
+				),
+			)
+		);
+	}
+}
 $sgs_status_margin = sgs_css_single_length_value( $attributes['statusRowMarginBottom'] ?? '' );
 if ( '' !== $sgs_status_margin ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__status-row{margin-bottom:' . $sgs_status_margin . ';}';
@@ -712,6 +749,9 @@ if ( '' !== $sgs_nav_icon_svg ) {
 	$sgs_nav_icon_gap  = '' !== $sgs_nav_icon_gap ? $sgs_nav_icon_gap : '10px';
 	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button--has-icon{gap:' . $sgs_nav_icon_gap . ';}';
 	$sgs_field_css    .= '.' . $sgs_form_uid . ' .sgs-form__button-icon{width:' . $sgs_nav_icon_size . 'px;height:' . $sgs_nav_icon_size . 'px;}';
+	if ( is_numeric( $attributes['navIconStrokeWidth'] ?? null ) && (float) $attributes['navIconStrokeWidth'] > 0 ) {
+		$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__button-icon svg{stroke-width:' . (float) $attributes['navIconStrokeWidth'] . ';}';
+	}
 }
 
 // A note at the left of the buttons row ("Takes about 5 minutes"). With actionsNoteFirstStepOnly

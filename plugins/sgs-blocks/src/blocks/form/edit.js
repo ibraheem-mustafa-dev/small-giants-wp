@@ -414,6 +414,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
 	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
 	const actionsSpaceValue = tierLengthPreview( attributes.actionsTopPadding, previewTier );
+	const actionsGapValue = tierLengthPreview( attributes.actionsGap, previewTier );
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
 	const wrapper = wrapperPreview( attributes, previewTier, palette );
 
@@ -475,6 +476,10 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
 		resolveColourToken( attributes.stepLabelColour, palette ) && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColour, palette ) };}`,
 		resolveColourToken( attributes.stepLabelColourActive, palette ) && `.${ formPreviewScope } .sgs-form__progress-step--active .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColourActive, palette ) };}`,
+		( resolveColourToken( attributes.stepLabelColourCompleted, palette ) || attributes.stepLabelFontWeightCompleted ) && `.${ formPreviewScope } .sgs-form__progress-step.sgs-form__progress-step--completed .sgs-form__progress-step-label{${ resolveColourToken( attributes.stepLabelColourCompleted, palette ) ? `color:${ resolveColourToken( attributes.stepLabelColourCompleted, palette ) };` : '' }${ attributes.stepLabelFontWeightCompleted ? `font-weight:${ attributes.stepLabelFontWeightCompleted };` : '' }}`,
+		actionsGapValue && `.${ formPreviewScope } .sgs-form__actions{gap:${ actionsGapValue };}`,
+		tierValueOf( attributes.nextButtonFill, previewTier ) && `.${ formPreviewScope } .sgs-form__button--next,.${ formPreviewScope } .sgs-form__button--submit{flex:1 1 0%;}`,
+		attributes.navIconStrokeWidth > 0 && `.${ formPreviewScope } .sgs-form__button-icon svg{stroke-width:${ attributes.navIconStrokeWidth };}`,
 	]
 		.filter( Boolean )
 		.join( '' );
@@ -798,6 +803,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'step-label-inactive',
 						label: __( 'Inactive step label colour', 'sgs-blocks' ),
 						attrs: { base: 'stepLabelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'step-label-completed',
+						label: __( 'Completed step label colour', 'sgs-blocks' ),
+						attrs: { base: 'stepLabelColourCompleted' },
 						attributes,
 						setAttributes,
 					} ),

@@ -62,6 +62,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
 				actionsTopPadding: undefined,
+				stepLabelFontWeightCompleted: undefined,
 				statusRowMarginBottom: undefined,
 				progressTrackHeight: undefined,
 				progressFill: undefined,
@@ -165,6 +166,16 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 					/>
 				</>
 			), true ) }
+			{ item( __( 'Completed step label weight', 'sgs-blocks' ), [ 'stepLabelFontWeightCompleted' ], (
+				<SelectControl __next40pxDefaultSize __nextHasNoMarginBottom
+					label={ __( 'Completed step label weight', 'sgs-blocks' ) }
+					help={ __( 'Font weight of the label of a step the visitor has passed. Its colour sits in the Colours panel.', 'sgs-blocks' ) }
+					value={ attributes.stepLabelFontWeightCompleted ?? '' }
+					options={ [ { label: __( 'Same as the other labels', 'sgs-blocks' ), value: '' }, ...[ '400', '500', '600', '700', '800' ].map( ( w ) => ( { label: w, value: w } ) ) ] }
+					onChange={ ( val ) => setAttributes( { stepLabelFontWeightCompleted: val || undefined } ) }
+					__nextHasNoMarginBottom
+				/>
+			) ) }
 			{ item( __( 'Space above buttons', 'sgs-blocks' ), [ 'actionsTopPadding' ], (
 				<ResponsiveOverride
 					label={ __( 'Space above buttons', 'sgs-blocks' ) }

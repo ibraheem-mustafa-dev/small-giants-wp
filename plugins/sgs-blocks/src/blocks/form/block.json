@@ -89,6 +89,21 @@
 					"absentIn": [ "single-step" ],
 					"absentWhy": "The step navigation, progress bar and step labels print only for a multi-step form (more than one sgs/form-step)."
 				},
+				"step-label-completed": {
+					"selector": ".sgs-form__progress-step--completed .sgs-form__progress-step-label",
+					"motion": false,
+					"state": "completed",
+					"label": "Completed step label",
+					"order": 34,
+					"clusters": [ "text" ],
+					"attrMap": {
+						"css:color": "stepLabelColourCompleted",
+						"css:font-weight": "stepLabelFontWeightCompleted"
+					},
+					"_note": "Colour and weight of the label of a step the visitor has passed (view.js toggles sgs-form__progress-step--completed). Unset keeps the not-active label colour.",
+					"absentIn": [ "single-step" ],
+					"absentWhy": "The step navigation and step labels print only for a multi-step form (more than one sgs/form-step)."
+				},
 				"progress-track": {
 					"selector": ".sgs-form__progress",
 					"motion": false,
@@ -458,7 +473,8 @@
 					],
 					"attrMap": {
 						"css:justify-content": "submitAlign",
-						"css:padding": "actionsTopPadding"
+						"css:padding": "actionsTopPadding",
+						"css:gap": "actionsGap"
 					}
 				},
 				"tile-icon": {
@@ -904,6 +920,17 @@
 					},
 					"_note": "The asterisk beside a required field's label, emitted by includes/forms/field-render-helpers.php::field_label and by the checkbox field."
 				},
+				"next-button": {
+					"selector": ".sgs-form__button--next, .sgs-form__button--submit",
+					"motion": false,
+					"label": "Next and Submit buttons",
+					"order": 31,
+					"clusters": [ "layout" ],
+					"attrMap": {
+						"css:flex": "nextButtonFill"
+					},
+					"_note": "nextButtonFill (per device, true) makes the Next and Submit buttons share the remaining width of the buttons row (flex 1 1 0%)."
+				},
 				"nav-icon-gap": {
 					"selector": ".sgs-form__button--has-icon",
 					"motion": false,
@@ -926,7 +953,8 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:width": "navIconSize"
+						"css:width": "navIconSize",
+						"css:stroke-width": "navIconStrokeWidth"
 					},
 					"_note": "Lucide icon on Next and Submit, mirrored before the label on Previous. The same size sets the height."
 				},
@@ -3452,6 +3480,31 @@
 			"type": "string",
 			"default": "10px",
 			"description": "Gap between a step button's icon and its label: a spacing token number or a length such as 10px."
+		},
+		"navIconStrokeWidth": {
+			"type": [ "number", "string" ],
+			"default": "",
+			"description": "Stroke width of the step-button icon. Empty = the icon's own 2."
+		},
+		"nextButtonFill": {
+			"type": "object",
+			"default": {},
+			"description": "Makes the Next and Submit buttons fill the rest of the buttons row, per device: {desktop,tablet,mobile}, each true (fill) or false (content width). A blank device follows the one above it. Empty = content width everywhere."
+		},
+		"actionsGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between the buttons in the buttons row, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's own gap."
+		},
+		"stepLabelColourCompleted": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the label of a completed step: a palette slug or a custom colour. Empty = the not-active label colour."
+		},
+		"stepLabelFontWeightCompleted": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of the label of a completed step. Empty = the label's own weight."
 		},
 		"actionsNote": {
 			"type": "string",
