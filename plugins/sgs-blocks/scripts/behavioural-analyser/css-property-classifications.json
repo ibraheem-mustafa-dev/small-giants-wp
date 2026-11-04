@@ -8506,9 +8506,8 @@
       "slug": "sgs/form",
       "attr": "actionsTopPadding",
       "fields": {
-        "css_property": "padding-top",
-        "css_layer": "OUTER",
-        "css_element": "actions"
+        "css_property": "padding",
+        "css_element": "submit-actions"
       }
     },
     {
