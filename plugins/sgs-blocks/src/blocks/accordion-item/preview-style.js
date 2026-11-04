@@ -14,6 +14,7 @@ import {
 	backgroundPaintPreview,
 	textPaintPreview,
 	colourVar,
+	resolveShadowPreviewComposed,
 } from '../../utils';
 import { parseSvgGradient } from '../../utils/svg-gradient-preview';
 
@@ -38,6 +39,26 @@ export function itemWrapperPreview( attributes, tier, palette ) {
 		textPaintPreview( attributes.textColour, attributes.textColourGradient, palette )
 	);
 	return wrapper;
+}
+
+/**
+ * The shadow round the item (itemShadow and itemShadowColour from the parent accordion), as render.php prints it on the item root; the open shadow replaces it while the item previews open.
+ *
+ * @param {Object}  context Block context from sgs/accordion.
+ * @param {boolean} open    Whether the item previews open.
+ * @return {Object} Style for the item root; empty while no shadow is set.
+ */
+export function itemShadowPreview( context, open ) {
+	const colour = context[ 'sgs/accordionItemShadowColour' ];
+	const resting = resolveShadowPreviewComposed( context[ 'sgs/accordionItemShadow' ], colour );
+	const openShadow = open
+		? resolveShadowPreviewComposed(
+				context[ 'sgs/accordionItemShadowOpen' ],
+				context[ 'sgs/accordionItemShadowOpenColour' ] || colour
+		  )
+		: undefined;
+	const shadow = openShadow || resting;
+	return shadow ? { boxShadow: shadow } : {};
 }
 
 /**

@@ -195,8 +195,8 @@ if ( ! window.__sgsFilterLookRegistered ) {
 		if ( ( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) || ! attributes ) {
 			return <BlockListBlock { ...props } />;
 		}
-		const colour = ( ...keys ) => {
-			const raw = keys.map( ( k ) => attributes[ k ] ).find( Boolean );
+		const colour = ( ...values ) => {
+			const raw = values.find( Boolean );
 			return raw ? resolveColourToken( raw, palette ) : '';
 		};
 		let rows;
@@ -206,21 +206,21 @@ if ( ! window.__sgsFilterLookRegistered ) {
 			rows = [
 				[ 'chip-weight', attributes.sgsChipFontWeight ],
 				[ 'chip-border-width', attributes.sgsChipBorderWidth ],
-				[ 'chip-fill', paint && colour( 'customChipBackground', 'chipBackground' ) ],
-				[ 'chip-edge', paint && colour( 'customChipBorder', 'chipBorder' ) ],
-				[ 'chip-text', paint && colour( 'customChipText', 'chipText' ) ],
-				[ 'chip-chosen-fill', paint && colour( 'customSelectedChipBackground', 'selectedChipBackground' ) ],
-				[ 'chip-chosen-edge', paint && colour( 'customSelectedChipBorder', 'selectedChipBorder' ) ],
-				[ 'chip-chosen-text', paint && colour( 'customSelectedChipText', 'selectedChipText' ) ],
+				[ 'chip-fill', paint && colour( attributes.customChipBackground, attributes.chipBackground ) ],
+				[ 'chip-edge', paint && colour( attributes.customChipBorder, attributes.chipBorder ) ],
+				[ 'chip-text', paint && colour( attributes.customChipText, attributes.chipText ) ],
+				[ 'chip-chosen-fill', paint && colour( attributes.customSelectedChipBackground, attributes.selectedChipBackground ) ],
+				[ 'chip-chosen-edge', paint && colour( attributes.customSelectedChipBorder, attributes.selectedChipBorder ) ],
+				[ 'chip-chosen-text', paint && colour( attributes.customSelectedChipText, attributes.selectedChipText ) ],
 				[ 'count-pill', pill && 'on' ],
-				[ 'count-fill', pill && colour( 'sgsChipCountBackground' ) ],
-				[ 'count-text', pill && colour( 'sgsChipCountColour' ) ],
+				[ 'count-fill', pill && colour( attributes.sgsChipCountBackground ) ],
+				[ 'count-text', pill && colour( attributes.sgsChipCountColour ) ],
 			];
 		} else {
 			rows = [
-				[ 'sort-fill', colour( 'sgsSortBackground' ) ],
+				[ 'sort-fill', colour( attributes.sgsSortBackground ) ],
 				[ 'sort-border-width', attributes.sgsSortBorderWidth ],
-				[ 'sort-edge', colour( 'sgsSortBorderColour' ) ],
+				[ 'sort-edge', colour( attributes.sgsSortBorderColour ) ],
 				[ 'sort-radius', attributes.sgsSortBorderRadius ],
 				[ 'sort-weight', attributes.sgsSortFontWeight ],
 			];

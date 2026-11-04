@@ -30,6 +30,16 @@ $sgs_ft_uid   = array() === $sgs_ft_own ? '' : 'sgs-fo-' . substr( md5( wp_json_
 $sgs_ft_css   = field_own_style_css( $attributes, $sgs_ft_uid );
 $sgs_ft_icon  = '' !== $sgs_ft_uid && '' !== (string) ( $attributes['leadingIcon'] ?? '' ) ? sgs_get_lucide_icon( (string) $attributes['leadingIcon'] ) : '';
 
+// A gradient wins over the flat icon colour: the Lucide icon is an SVG, so it paints through a stroke gradient def.
+$sgs_ft_icon_gradient = (string) ( $attributes['leadingIconColourGradient'] ?? '' );
+if ( '' !== $sgs_ft_icon && '' !== $sgs_ft_icon_gradient ) {
+	$sgs_ft_icon_paint = sgs_icon_gradient_css( 'lucide', $sgs_ft_icon_gradient, $sgs_ft_uid . '-icon', '.' . $sgs_ft_uid . ' .sgs-form-field__leading-icon svg' );
+	if ( '' !== $sgs_ft_icon_paint['css'] ) {
+		$sgs_ft_css .= '.' . $sgs_ft_uid . ' .sgs-form-field__leading-icon svg{' . $sgs_ft_icon_paint['css'] . ';}';
+		$sgs_ft_icon = sgs_svg_inject_defs( $sgs_ft_icon, $sgs_ft_icon_paint['defs'] );
+	}
+}
+
 if ( '' !== $sgs_ft_css ) {
 	echo '<style>' . wp_strip_all_tags( $sgs_ft_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- scoped CSS built from sanitised values.
 }

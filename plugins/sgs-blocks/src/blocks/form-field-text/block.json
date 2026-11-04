@@ -60,6 +60,7 @@
                     "prefix": "leadingIcon",
                     "attrMap": {
                         "css:color": "leadingIconColour",
+                        "css:stroke": "leadingIconColourGradient",
                         "css:width": "leadingIconSize"
                     },
                     "motion": false,
@@ -216,6 +217,11 @@
         "leadingIconColour": {
             "type": "string",
             "default": ""
+        },
+        "leadingIconColourGradient": {
+            "type": "string",
+            "default": "",
+            "description": "CSS gradient string painting the leading icon's stroke instead of a flat colour. Non-empty wins over leadingIconColour at render time."
         },
         "leadingIconSize": {
             "type": "string",

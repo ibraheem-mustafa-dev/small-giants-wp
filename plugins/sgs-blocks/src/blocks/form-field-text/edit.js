@@ -175,7 +175,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					fillRow( {
 						key: 'leadingIconColour',
 						label: __( 'Leading icon colour', 'sgs-blocks' ),
-						attrs: { base: 'leadingIconColour' },
+						attrs: { base: 'leadingIconColour', gradient: 'leadingIconColourGradient' },
 						attributes,
 						setAttributes,
 					} ),
@@ -196,7 +196,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				{ attributes.leadingIcon ? (
 					<span className="sgs-form-field__control sgs-form-field__control--has-icon">
 						<span className="sgs-form-field__leading-icon" style={ iconColour ? { color: iconColour } : undefined } aria-hidden="true">
-							<IconPreview source="lucide" name={ attributes.leadingIcon } />
+							<IconPreview source="lucide" name={ attributes.leadingIcon } gradient={ attributes.leadingIconColourGradient || '' } />
 						</span>
 						{ inputControl }
 					</span>
