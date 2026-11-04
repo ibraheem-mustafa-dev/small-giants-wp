@@ -35870,6 +35870,15 @@
     },
     {
       "slug": "sgs/form-field-text",
+      "attr": "leadingIconColourGradient",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "leading-icon"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
       "attr": "leadingIconSize",
       "fields": {
         "css_property": "width",

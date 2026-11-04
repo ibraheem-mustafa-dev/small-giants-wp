@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 10063,
+    "row_count": 10064,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -3368,6 +3368,7 @@
     "sgs/form-field-text::label": "text-content",
     "sgs/form-field-text::leadingIcon": "enum-class-probe",
     "sgs/form-field-text::leadingIconColour": "color",
+    "sgs/form-field-text::leadingIconColourGradient": "color",
     "sgs/form-field-text::leadingIconSize": "select-from-enum",
     "sgs/form-field-text::maxLength": null,
     "sgs/form-field-text::msgInvalid": "technical",
