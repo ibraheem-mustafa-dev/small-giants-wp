@@ -15,6 +15,7 @@ import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import { DesignTokenPicker, ResponsiveBoxControl, SgsLengthControl } from '../../../components';
 import { patchTier } from '../../../utils';
+import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
 import { PAGINATION_OPTIONS, FILTER_TAXONOMY_OPTIONS } from './constants';
 
 const WEIGHT_OPTIONS = [
@@ -200,6 +201,7 @@ export default function PaginationFiltersPanel( { attributes, setAttributes, set
 									<ResponsiveBoxControl
 										label={ __( 'Filter padding', 'sgs-blocks' ) }
 										presets
+										defaults={ spacingDefaultsFor( 'sgs/post-grid', 'filterPadding' ) }
 										values={ {
 											base: attributes.filterPadding?.desktop ?? {},
 											tablet: attributes.filterPadding?.tablet ?? {},

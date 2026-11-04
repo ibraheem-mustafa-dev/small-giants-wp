@@ -55,7 +55,11 @@ def _find_repo_root(start):
 ROOT = _find_repo_root(os.path.dirname(__file__))
 SRC = os.path.join(ROOT, 'plugins', 'sgs-blocks', 'src')
 BLOCKS_DIR = os.path.join(SRC, 'blocks')
-DB_PATH = os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = str(framework_db_path())
 
 MOUNT = '<SgsLengthControl'
 # ResponsiveLengthControl and google-reviews' TierLength wrap SgsLengthControl for a per-device value; their callers choose the scale too.

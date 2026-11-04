@@ -35870,6 +35870,15 @@
     },
     {
       "slug": "sgs/form-field-text",
+      "attr": "leadingIconColourGradient",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_element": "leading-icon"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
       "attr": "leadingIconSize",
       "fields": {
         "css_property": "width",
@@ -41649,6 +41658,22 @@
         "css_property": "box-shadow-color",
         "css_element": "pill",
         "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "pill"
       }
     },
     {

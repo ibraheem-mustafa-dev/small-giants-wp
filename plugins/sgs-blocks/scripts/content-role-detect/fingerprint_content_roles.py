@@ -116,6 +116,7 @@ import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
 from framework_db import framework_db_path  # noqa: E402
 import argparse
+import concurrent.futures
 import json
 import os
 import shutil
@@ -279,13 +280,19 @@ def run_detectors(root: Path | None = None) -> dict[str, list[dict]]:
     the failure mode that makes a rule read green forever. _run raises on non-zero exit.
     """
     cwd = root or SCRIPT_DIR
-    with tempfile.TemporaryDirectory() as tmp:
-        raw = Path(tmp) / "d1_raw.ndjson"
-        raw.write_text(_run(["php", "detector1_render_escaping.php", "--glob"], cwd), encoding="utf-8")
-        d1 = _ndjson(_run([sys.executable, "classify_detector1.py", str(raw)], cwd))
-    d2 = _ndjson(_run([sys.executable, "detector2_editjs_controls.py"], cwd))
-    d3 = _ndjson(_run([sys.executable, "detector3_i18n_default.py"], cwd))
-    return {"D1": d1, "D2": d2, "D3": d3}
+
+    def detector1() -> list[dict]:
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = Path(tmp) / "d1_raw.ndjson"
+            raw.write_text(_run(["php", "detector1_render_escaping.php", "--glob"], cwd), encoding="utf-8")
+            return _ndjson(_run([sys.executable, "classify_detector1.py", str(raw)], cwd))
+
+    # The three detectors only read files, so they run side by side; .result() re-raises a crash from any of them.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:
+        first = pool.submit(detector1)
+        second = pool.submit(lambda: _ndjson(_run([sys.executable, "detector2_editjs_controls.py"], cwd)))
+        third = pool.submit(lambda: _ndjson(_run([sys.executable, "detector3_i18n_default.py"], cwd)))
+        return {"D1": first.result(), "D2": second.result(), "D3": third.result()}
 
 
 BLOCKS_DIR = PLUGIN_SCRIPTS.parent / "src" / "blocks"

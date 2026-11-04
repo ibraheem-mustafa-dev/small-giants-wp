@@ -164,7 +164,11 @@ from pathlib import Path
 # output. Standing repo rule for Python scripts on this machine.
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+SGS_DB = framework_db_path()
 
 _TIER_SUFFIX_RE = re.compile(r"^(.*)(Tablet|Mobile)$")
 _SCALAR_TYPES = {"string", "number", "boolean", "integer", "array", "rich-text", "string|boolean"}

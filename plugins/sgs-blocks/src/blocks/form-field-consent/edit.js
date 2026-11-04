@@ -8,6 +8,7 @@ import {
 } from '@wordpress/components';
 import { SgsBoxControl, SgsLengthControl, BOX_UNITS } from '../../components';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { fieldLabelClasses } from '../../components/form-field-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
@@ -95,44 +96,81 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						) }
 						__nextHasNoMarginBottom
 					/>
-					<TextControl
-						label={ __( 'Help text', 'sgs-blocks' ) }
-						value={ helpText }
-						onChange={ ( val ) =>
-							setAttributes( { helpText: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SelectControl
-						label={ __( 'Width', 'sgs-blocks' ) }
-						value={ width }
-						options={ WIDTH_OPTIONS }
-						onChange={ ( val ) => setAttributes( { width: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SgsLengthControl
-						presets={ false }
-						label={ __( 'Row minimum height', 'sgs-blocks' ) }
-						help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
-						value={ attributes.optionRowMinHeight ?? '' }
-						onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
-					/>
-					<SgsLengthControl
-						presets={ false }
-						label={ __( 'Tick box size', 'sgs-blocks' ) }
-						help={ __( 'Width and height of the box. Empty = 20px.', 'sgs-blocks' ) }
-						value={ attributes.boxSize ?? '' }
-						onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
-					/>
-					<SgsBoxControl
-						presets
-						label={ __( 'Tick box margin', 'sgs-blocks' ) }
-						values={ attributes.boxMargin && 'object' === typeof attributes.boxMargin ? attributes.boxMargin : {} }
-						units={ BOX_UNITS }
-						onChange={ ( next ) => setAttributes( { boxMargin: next } ) }
-					/>
+					<ToolsPanel
+						label={ __( 'More field settings', 'sgs-blocks' ) }
+						resetAll={ () => setAttributes( { helpText: '', width: 'full', optionRowMinHeight: undefined, boxSize: undefined, boxMargin: {} } ) }
+					>
+						<ToolsPanelItem
+							label={ __( 'Help text', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => !! helpText }
+							onDeselect={ () => setAttributes( { helpText: '' } ) }
+						>
+							<TextControl
+								label={ __( 'Help text', 'sgs-blocks' ) }
+								value={ helpText }
+								onChange={ ( val ) =>
+									setAttributes( { helpText: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Width', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => 'full' !== width }
+							onDeselect={ () => setAttributes( { width: 'full' } ) }
+						>
+							<SelectControl
+								label={ __( 'Width', 'sgs-blocks' ) }
+								value={ width }
+								options={ WIDTH_OPTIONS }
+								onChange={ ( val ) => setAttributes( { width: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Row minimum height', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.optionRowMinHeight }
+							onDeselect={ () => setAttributes( { optionRowMinHeight: undefined } ) }
+						>
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Row minimum height', 'sgs-blocks' ) }
+								help={ __( 'Empty keeps 44px, the touch-target minimum. Smaller only to match a supplied design.', 'sgs-blocks' ) }
+								value={ attributes.optionRowMinHeight ?? '' }
+								onChange={ ( val ) => setAttributes( { optionRowMinHeight: val || undefined } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tick box size', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.boxSize }
+							onDeselect={ () => setAttributes( { boxSize: undefined } ) }
+						>
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Tick box size', 'sgs-blocks' ) }
+								help={ __( 'Width and height of the box. Empty = 20px.', 'sgs-blocks' ) }
+								value={ attributes.boxSize ?? '' }
+								onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tick box margin', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.boxMargin && Object.keys( attributes.boxMargin ).length > 0 }
+							onDeselect={ () => setAttributes( { boxMargin: {} } ) }
+						>
+							<SgsBoxControl
+								presets
+								label={ __( 'Tick box margin', 'sgs-blocks' ) }
+								values={ attributes.boxMargin && 'object' === typeof attributes.boxMargin ? attributes.boxMargin : {} }
+								units={ BOX_UNITS }
+								onChange={ ( next ) => setAttributes( { boxMargin: next } ) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 				<FormFieldAdvancedPanel
 					attributes={ attributes }

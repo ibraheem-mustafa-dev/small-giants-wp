@@ -90,7 +90,11 @@ sys.stderr.reconfigure(encoding='utf-8')
 
 PLUGIN = Path(__file__).resolve().parent.parent
 REPO = PLUGIN.parent.parent
-DB_PATH = Path(os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db'))
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = framework_db_path()
 BASELINE = PLUGIN / 'scripts' / 'data' / 'spacing-defaults-census.json'
 FIXTURES = PLUGIN / 'scripts' / 'tests' / 'fixtures' / 'spacing-defaults'
 SIDES = ('top', 'right', 'bottom', 'left')

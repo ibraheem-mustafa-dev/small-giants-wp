@@ -34,7 +34,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import state_exhaustiveness as se  # noqa: E402
 import state_vocabulary  # noqa: E402
 
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+SGS_DB = framework_db_path()
 LIVE_SCANNER = Path(__file__).resolve().parent / "state-cssom-scan.mjs"
 BASELINE_REASON = se.GENERIC_REASON
 

@@ -55,7 +55,11 @@ sys.stdout.reconfigure(encoding="utf-8")
 PLUGIN = Path(__file__).resolve().parents[1]
 BLOCKS = PLUGIN / "src" / "blocks"
 REGISTER = PLUGIN / "scripts" / "data" / "tap-floors.json"
-DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB = framework_db_path()
 
 SIZE_PROPS = re.compile(r"^(min-|max-)?(width|height|inline-size|block-size)$")
 MATH_FNS = {"calc", "min", "max", "clamp"}

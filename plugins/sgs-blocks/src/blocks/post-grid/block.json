@@ -414,6 +414,14 @@
           "reason": "textColourHover is one shared ancestor-hover accent overriding four independently-based colours (titleColour/excerptColour/metaColour/readMoreColour on title-link/excerpt/meta/read-more, render.php:660-696) on card hover — not paired 1:1 by name, by design (Bean 2026-09-07): a single hover accent for the whole card, not four independent per-element hovers. Confirmed via investigation, not a missing per-element hover state."
         }
       },
+      "spacingDefaults": {
+        "filterPadding": {
+          "top": "var(--wp--preset--spacing--20)",
+          "right": "var(--wp--preset--spacing--30)",
+          "bottom": "var(--wp--preset--spacing--20)",
+          "left": "var(--wp--preset--spacing--30)"
+        }
+      },
       "boxFamilies": {
         "borderRadius": [
           "borderRadius"

@@ -45,7 +45,11 @@ from typing import Iterable, NamedTuple
 SCRIPTS = Path(__file__).resolve().parent
 BLOCKS_DIR = SCRIPTS.parent / "src" / "blocks"
 ALLOWLIST = SCRIPTS / "data" / "state-classification-allowlist.json"
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+SGS_DB = framework_db_path()
 
 sys.path.insert(0, str(SCRIPTS / "behavioural-analyser"))
 import state_vocabulary  # noqa: E402

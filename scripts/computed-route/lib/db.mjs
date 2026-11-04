@@ -2,11 +2,11 @@
 // every write; the route never seeds, migrates or writes it.
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
-import os from 'os';
-import path from 'path';
 import { reachedBy, storedKeys } from './css-families.mjs';
 
-export const DB_PATH = path.join( os.homedir(), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db' );
+import { frameworkDbPath } from './framework-db.mjs';
+
+export const DB_PATH = frameworkDbPath();
 
 const COLS = 'block_slug, attr_name, attr_type, default_value, enum_values, is_responsive, css_property, css_element, css_state, css_tier, tier_shape, box_family, source, role';
 

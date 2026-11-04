@@ -1543,6 +1543,11 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
+   "selector": ".sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill",
+   "reason": "editor-canvas preview channel for the pillSelectedShadow, pillSelectedShadowColour and pillSelectedOffsetX/Y settings (state current): edit.js writes --sgs-op-sel-shadow and --sgs-op-sel-translate onto the canvas root; the front end paints the same settings through the scoped rule render.php emits for the same selector"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
    "selector": ".sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill::before",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },

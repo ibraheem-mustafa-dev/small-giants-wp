@@ -385,14 +385,25 @@
 		},
 		{
 			"slug": "sgs/option-picker",
-			"attr": "pillSelectedOffsetY",
+			"attr": "pillSelectedOffsetX",
 			"fields": {
 				"role": "styling",
 				"css_property": "translate",
 				"css_element": "pill",
 				"css_state": "current"
 			},
-			"_reason": "2026-11-04: the vertical half of the selected pill shift; render.php prints it in the same `translate` declaration as pillSelectedOffsetX, so it classifies exactly as that attribute does."
+			"_reason": "2026-11-04: the horizontal half of the selected pill shift, and the owner of the (translate, pill, current) slot; pillSelectedOffsetY is its companion on translate-y. Without a role the manifest gate counts it UNCLASSIFIED."
+		},
+		{
+			"slug": "sgs/option-picker",
+			"attr": "pillSelectedOffsetY",
+			"fields": {
+				"role": "styling",
+				"css_property": "translate-y",
+				"css_element": "pill",
+				"css_state": "current"
+			},
+			"_reason": "2026-11-04: the vertical half of the selected pill shift. render.php prints both halves in one `translate` declaration, and pillSelectedOffsetX owns the (translate, pill, current) slot, so this attribute is its declared companion on `translate-y` (the block.json attrMap key) and the two never contend for one routing slot."
 		},
 		{
 			"slug": "sgs/option-picker",

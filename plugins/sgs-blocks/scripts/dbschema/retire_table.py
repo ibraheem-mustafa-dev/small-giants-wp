@@ -61,7 +61,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 RETIRED_DIR = HERE.parent / "data" / "retired"
 
-DEFAULT_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DEFAULT_DB = framework_db_path()
 
 
 def table_ddl(con: sqlite3.Connection, table: str) -> str | None:

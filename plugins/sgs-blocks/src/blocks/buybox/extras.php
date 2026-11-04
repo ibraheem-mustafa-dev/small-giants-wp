@@ -361,8 +361,8 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		if ( is_array( $thumb_gap_raw ) ) {
 			$thumb_tier_css .= sgs_emit_responsive_css( $thumbs_sel, array( array( 'value' => $thumb_gap_raw, 'css' => 'gap', 'unit_default' => 'px' ) ) );
 		}
-		if ( is_array( $attributes['thumbSize'] ?? null ) ) {
-			$thumb_tier_css .= sgs_emit_responsive_css( $root_sel, array( array( 'value' => $attributes['thumbSize'], 'css' => '--sgs-buybox-thumb-size', 'unit_default' => 'px' ) ) );
+		if ( is_array( $attributes['galleryThumbSize'] ?? null ) ) {
+			$thumb_tier_css .= sgs_emit_responsive_css( $root_sel, array( array( 'value' => $attributes['galleryThumbSize'], 'css' => '--sgs-buybox-thumb-size', 'unit_default' => 'px' ) ) );
 		}
 		if ( '' !== $thumb_tier_css ) {
 			$css[] = $thumb_tier_css;

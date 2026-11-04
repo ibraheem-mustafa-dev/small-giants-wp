@@ -13,7 +13,7 @@ import { useState } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { BandWrap, tierBoxProperties, usePreviewTier, gapVar } from '../../utils';
 import { SvgGradientDefs } from '../../utils/svg-gradient-preview';
-import { itemWrapperPreview, headerPreview, iconRingPreview } from './preview-style';
+import { itemWrapperPreview, itemShadowPreview, headerPreview, iconRingPreview } from './preview-style';
 import { SgsColourPanel, fillRow, textRow,
 	SgsBorderControl,
 	resolveColourToken,
@@ -145,6 +145,7 @@ export default function Edit( { attributes, setAttributes, context, clientId } )
 		className,
 		style: {
 			...wrapper.style,
+			...itemShadowPreview( context, editorOpen ),
 			...slotVars,
 		},
 	} );

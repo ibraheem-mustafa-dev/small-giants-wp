@@ -60,7 +60,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.a
 BLOCKS_GLOB = 'plugins/sgs-blocks/src/blocks/*/block.json'
 BASELINE = 'plugins/sgs-blocks/scripts/check-container-band-layers-baseline.json'
 CENSUS = 'reports/migrations/container-band-layers-census.json'
-DB_PATH = os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db')
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+DB_PATH = str(framework_db_path())
 TOKENS = ('contentBandPadding', 'contentBandMargin')
 TOKEN = TOKENS[0]
 TOKEN_RE = re.compile('|'.join(re.escape(t) for t in TOKENS).encode())

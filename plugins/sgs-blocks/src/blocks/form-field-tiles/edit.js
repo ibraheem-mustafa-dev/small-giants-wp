@@ -610,7 +610,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						} }
 					/>
 					<ResponsiveOverride
-						label={ __( 'Tile padding', 'sgs-blocks' ) }
 						value={ attributes.tilePadding }
 						onChange={ ( obj ) => setAttributes( { tilePadding: obj } ) }
 					>

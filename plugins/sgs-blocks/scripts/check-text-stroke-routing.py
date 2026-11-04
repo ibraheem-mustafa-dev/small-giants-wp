@@ -48,7 +48,11 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 BLOCKS_DIR = ROOT / "src" / "blocks"
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
+from framework_db import framework_db_path  # noqa: E402
+SGS_DB = framework_db_path()
 
 STROKE_RE = re.compile(r"^(?P<stem>.*?)textstroke(?P<kind>width|colourhover|colour)$", re.IGNORECASE)
 KEY_FOR_KIND = {

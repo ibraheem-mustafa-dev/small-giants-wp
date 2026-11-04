@@ -334,7 +334,7 @@ async function main() {
 	// finds nothing and silently draws nothing (e.g. borderWidth on sgs/container).
 	let flatAttrs = {};
 	try {
-		const db = path.join( os.homedir(), '.agents', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ).split( path.sep ).join( '/' );
+		const db = String( require( '../plugins/sgs-blocks/scripts/lib/framework-db.js' ).frameworkDbPath() ).split( path.sep ).join( '/' );
 		const query = "SELECT block_slug, attr_name FROM block_attributes WHERE is_responsive = 0 AND block_slug LIKE 'sgs/%'";
 		const out = execFileSync( 'python', [ '-c',
 			'import sqlite3,json,sys;c=sqlite3.connect("file:"+sys.argv[1]+"?mode=ro",uri=True);' +

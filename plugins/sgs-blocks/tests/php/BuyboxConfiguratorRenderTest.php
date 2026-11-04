@@ -243,7 +243,7 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 			array(
 				'galleryColumnGap' => array( 'desktop' => '64px', 'tablet' => '36px' ),
 				'thumbGap'         => array( 'desktop' => '10px', 'mobile' => '4px' ),
-				'thumbSize'        => array( 'desktop' => '88px', 'tablet' => '76px', 'mobile' => '64px' ),
+				'galleryThumbSize' => array( 'desktop' => '88px', 'tablet' => '76px', 'mobile' => '64px' ),
 			)
 		);
 		$this->assertStringContainsString( '@media(min-width:768px){', $tiers );

@@ -24,7 +24,7 @@ const HEADING_LEVEL_OPTIONS = [
 ];
 
 import { ResponsiveControl, FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	backgroundPaintPreview,
 	colourVar,
@@ -719,68 +719,111 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					title={ __( 'Appearance', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<ToggleGroupControl
-						label={ __( 'Layout', 'sgs-blocks' ) }
-						value={ layout || 'row' }
-						isBlock
-						onChange={ ( val ) =>
-							setAttributes( { layout: val } )
-						}
-						help={ __(
-							'Row draws the existing badge-and-connector timeline. List stacks steps vertically with a plain number beside the text — no badge, no connector — for plain numbered copy.',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
+					<ToolsPanel
+						label={ __( 'Layout and spacing', 'sgs-blocks' ) }
+						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line' } ) }
 					>
-						{ LAYOUT_OPTIONS.map( ( opt ) => (
-							<ToggleGroupControlOption
-								key={ opt.value }
-								value={ opt.value }
-								label={ opt.label }
-							/>
-						) ) }
-					</ToggleGroupControl>
-					<SgsLengthControl
-						label={ __( 'Space between steps', 'sgs-blocks' ) }
-						help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
-						value={ stepGap || '' }
-						onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
-						presets={ false }
-					/>
-					<ResponsiveControl label={ __( 'Row gap between steps', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
+						<ToolsPanelItem
+							label={ __( 'Layout', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => 'row' !== ( layout || 'row' ) }
+							onDeselect={ () => setAttributes( { layout: 'row' } ) }
+						>
+							<ToggleGroupControl
+								label={ __( 'Layout', 'sgs-blocks' ) }
+								value={ layout || 'row' }
+								isBlock
+								onChange={ ( val ) =>
+									setAttributes( { layout: val } )
+								}
+								help={ __(
+									'Row draws the existing badge-and-connector timeline. List stacks steps vertically with a plain number beside the text — no badge, no connector — for plain numbered copy.',
+									'sgs-blocks'
+								) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+						>
+								{ LAYOUT_OPTIONS.map( ( opt ) => (
+									<ToggleGroupControlOption
+										key={ opt.value }
+										value={ opt.value }
+										label={ opt.label }
+									/>
+								) ) }
+							</ToggleGroupControl>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space between steps', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => !! stepGap }
+							onDeselect={ () => setAttributes( { stepGap: '' } ) }
+						>
 							<SgsLengthControl
-								label={ __( 'Row gap between steps', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ stepRowGap?.[ breakpoint ] ?? '' }
-								onChange={ ( val ) => patchTier( attributes, setAttributes, 'stepRowGap', breakpoint, val || '' ) }
+								label={ __( 'Space between steps', 'sgs-blocks' ) }
+								help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+								value={ stepGap || '' }
+								onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
 								presets={ false }
 							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Row gap between steps', 'sgs-blocks' ) }
+							hasValue={ () => !! stepRowGap && Object.keys( stepRowGap ).length > 0 }
+							onDeselect={ () => setAttributes( { stepRowGap: {} } ) }
+						>
+							<ResponsiveControl label={ __( 'Row gap between steps', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => (
+									<SgsLengthControl
+										label={ __( 'Row gap between steps', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ stepRowGap?.[ breakpoint ] ?? '' }
+										onChange={ ( val ) => patchTier( attributes, setAttributes, 'stepRowGap', breakpoint, val || '' ) }
+										presets={ false }
+									/>
+								) }
+							</ResponsiveControl>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Wrap steps', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.flexWrap }
+							onDeselect={ () => setAttributes( { flexWrap: '' } ) }
+						>
+							<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+						</ToolsPanelItem>
+						{ 'list' === layout && (
+							<ToolsPanelItem
+								label={ __( 'Space between number and text', 'sgs-blocks' ) }
+								hasValue={ () => !! numberGap }
+								onDeselect={ () => setAttributes( { numberGap: '' } ) }
+							>
+								<SgsLengthControl
+									label={ __( 'Space between number and text', 'sgs-blocks' ) }
+									help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
+									value={ numberGap || '' }
+									onChange={ ( val ) => setAttributes( { numberGap: val || '' } ) }
+									presets={ false }
+								/>
+							</ToolsPanelItem>
 						) }
-					</ResponsiveControl>
-					<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
-					{ 'list' === layout && (
-						<SgsLengthControl
-							label={ __( 'Space between number and text', 'sgs-blocks' ) }
-							help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
-							value={ numberGap || '' }
-							onChange={ ( val ) => setAttributes( { numberGap: val || '' } ) }
-							presets={ false }
-						/>
-					) }
-					{ 'list' !== layout && (
-						<SelectControl
-							label={ __( 'Connector style', 'sgs-blocks' ) }
-							value={ connectorStyle }
-							options={ CONNECTOR_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { connectorStyle: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
+						{ 'list' !== layout && (
+							<ToolsPanelItem
+								label={ __( 'Connector style', 'sgs-blocks' ) }
+								hasValue={ () => 'line' !== connectorStyle }
+								onDeselect={ () => setAttributes( { connectorStyle: 'line' } ) }
+							>
+								<SelectControl
+									label={ __( 'Connector style', 'sgs-blocks' ) }
+									value={ connectorStyle }
+									options={ CONNECTOR_OPTIONS }
+									onChange={ ( val ) =>
+										setAttributes( { connectorStyle: val } )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							</ToolsPanelItem>
+						) }
+					</ToolsPanel>
 				</PanelBody>
 
 				<PanelBody

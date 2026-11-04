@@ -2728,6 +2728,12 @@
       "variant": "minimal-quote"
      }
     },
+    "review-card": {
+     "why": "variant review-card: rating, summary phrase, quote, then the name and date line in a review footer (no avatar, logo, work media, role or organisation)",
+     "attrs": {
+      "variant": "review-card"
+     }
+    },
     "rating-scale": {
      "why": "ratingType scale in the classic card: the numeric score replaces the stars inside the same rating element",
      "attrs": {

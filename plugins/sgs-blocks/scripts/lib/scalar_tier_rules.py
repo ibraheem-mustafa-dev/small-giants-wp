@@ -17,11 +17,13 @@ import re
 import sqlite3
 from pathlib import Path
 
+from framework_db import framework_db_path  # sibling in lib/, which every importer has on sys.path
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
 BLOCKS_DIR = ROOT / 'plugins' / 'sgs-blocks' / 'src' / 'blocks'
 FAMILIES_FILE = HERE.parent / 'data' / 'scalar-tier-families.json'
-DB_PATH = Path(os.path.expanduser('~/.claude/skills/sgs-wp-engine/sgs-framework.db'))
+DB_PATH = framework_db_path()
 SCALAR_TYPES = ('string', 'boolean', 'number', 'integer')
 BOX_RULES_FILE = HERE.parent / 'data' / 'box-string-rules.json'
 TIER_KEYS = ('desktop', 'tablet', 'mobile')

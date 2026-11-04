@@ -537,7 +537,7 @@
 }
 
 :where(.sgs-post-grid__filter) {
-	padding: 8px 20px;
+	padding: var(--wp--preset--spacing--20) var(--wp--preset--spacing--30);
 }
 
 .sgs-post-grid__filter {

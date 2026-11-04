@@ -111,7 +111,7 @@ def _identity(channel: dict, prop: dict) -> str | None:
     if comp == "product":
         return "1"
     if comp in ("sum", "sum-per-axis"):
-        return {"<length>": "0px", "<angle>": "0deg"}.get(prop.get("syntax"))
+        return {"<length>": "0px", "<length-percentage>": "0px", "<angle>": "0deg"}.get(prop.get("syntax"))
     if comp == "function-list":
         m = re.search(r"(\w+)\((?:calc\()?[^()]*var\(" + re.escape(prop.get("name", "")) + r"\)", channel.get("formula") or "")
         return {"blur": "0px", "grayscale": "0", "brightness": "1"}.get(m.group(1)) if m else None

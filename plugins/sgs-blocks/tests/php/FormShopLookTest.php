@@ -134,6 +134,31 @@ final class FormShopLookTest extends TestCase {
 		$this->assertStringContainsString( 'display:revert', $out['css'] );
 	}
 
+	public function test_leading_icon_gradient_paints_the_icon_stroke_and_unset_prints_none(): void {
+		$set = $this->render_block(
+			'sgs/form-field-text',
+			array(
+				'fieldName'                 => 'q',
+				'leadingIcon'               => 'search',
+				'leadingIconColourGradient' => 'linear-gradient(90deg, #ff0000 0%, #0000ff 100%)',
+			)
+		);
+		$this->assertStringContainsString( 'sgs-form-field__leading-icon svg{', $set['css'] );
+		$this->assertStringContainsString( 'stroke:url(#', $set['css'] );
+		$this->assertStringContainsString( '<linearGradient', $set['html'] );
+
+		$unset = $this->render_block(
+			'sgs/form-field-text',
+			array(
+				'fieldName'         => 'q',
+				'leadingIcon'       => 'search',
+				'leadingIconColour' => '#3a2a22',
+			)
+		);
+		$this->assertStringNotContainsString( 'stroke:url(#', $unset['css'] );
+		$this->assertStringNotContainsString( '<linearGradient', $unset['html'] );
+	}
+
 	public function test_required_mark_is_untouched_when_unset(): void {
 		$out = $this->render_block( 'sgs/form', array( 'formName' => 'x' ) );
 		$this->assertStringNotContainsString( 'sgs-form-field__required', $out['css'] );
