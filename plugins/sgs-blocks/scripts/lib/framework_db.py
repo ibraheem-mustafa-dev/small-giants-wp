@@ -42,6 +42,12 @@ def framework_db_path() -> Path:
     return Path.home() / ".claude" / _SKILL_DB
 
 
+def skill_scripts_dir() -> Path:
+    """The skill's own tools (sgs-db.py, sgs-update.py). They live in the shared skill folder whatever database copy
+    $SGS_FRAMEWORK_DB names, so a script that runs one asks here, not at the database's folder."""
+    return Path.home() / ".claude" / _SKILL_DB.parent / "scripts"
+
+
 def builds_default_db_by_hand(code: str) -> bool:
     """True when `code` (comments already removed) names the shared database path and does not honour the override."""
     if _HONOURS_ENV.search(code):

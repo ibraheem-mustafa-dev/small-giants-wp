@@ -44,9 +44,9 @@ _PATTERNS_DIR = _SCRIPTS_DIR.parent / "patterns"
 import os as _os
 import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
-from framework_db import framework_db_path  # noqa: E402
+from framework_db import framework_db_path, skill_scripts_dir  # noqa: E402
 _DB_PATH = framework_db_path()
-_SGS_UPDATE_PATH = _DB_PATH.parent / "scripts" / "sgs-update.py"
+_SGS_UPDATE_PATH = skill_scripts_dir() / "sgs-update.py"
 
 # ---------------------------------------------------------------------------
 # DB migration — columns added in Step 1 of the pipeline.

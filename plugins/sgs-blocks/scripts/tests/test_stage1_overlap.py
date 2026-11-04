@@ -3,6 +3,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from pathlib import Path
@@ -27,12 +28,16 @@ class _Done:
     def wait(self, timeout=None):
         return self.returncode
 
+    def poll(self):
+        return self.returncode
+
     def kill(self):
         pass
 
 
 def _stage(update, tmp_path, returncode, body):
-    out = tmp_path / "scan.json"
+    folder = Path(tempfile.mkdtemp(dir=tmp_path))
+    out = folder / "scan.json"
     out.write_text(body, encoding="utf-8")
     update._ADOPTION_SCAN.update(proc=_Done(returncode), out=out, handle=out.open("rb"))
     return out
@@ -48,9 +53,26 @@ def test_a_failed_empty_or_missing_early_scan_leaves_the_seeder_to_scan_itself(t
     update = _load("update_overlap_b", "sgs-update-v2.py")
     _stage(update, tmp_path, 1, '{"rows": []}')
     assert update._collect_component_scan() == []
+    update._discard_component_scan()
     _stage(update, tmp_path, 0, "")
     assert update._collect_component_scan() == []
+    update._discard_component_scan()
     assert update._collect_component_scan() == []
+
+
+def test_discarding_the_scan_stops_a_running_process_and_removes_its_folder(tmp_path):
+    update = _load("update_overlap_c", "sgs-update-v2.py")
+    folder = tmp_path / "scan-folder"
+    folder.mkdir()
+    out = folder / "scan.json"
+    handle = out.open("wb")
+    proc = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    update._ADOPTION_SCAN.update(proc=proc, out=out, handle=handle)
+    update._discard_component_scan()
+    assert proc.poll() is not None, "the scan process was left running"
+    assert not folder.exists(), "the scan's temp folder was left behind"
+    assert handle.closed
+    update._discard_component_scan()  # a second call with nothing to reap is harmless
 
 
 def test_the_seeder_reads_a_given_scan_without_running_node(tmp_path, monkeypatch):

@@ -46,7 +46,7 @@ from pathlib import Path
 import os as _os
 import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "lib"))
-from framework_db import framework_db_path  # noqa: E402
+from framework_db import skill_scripts_dir  # noqa: E402
 
 # Windows consoles default to cp1252, which raises UnicodeEncodeError on the
 # em-dashes and arrows in this script's output. Force UTF-8 so a cosmetic
@@ -139,7 +139,7 @@ def _db_suffix_map() -> dict:
     import os
     import re as _re
     import subprocess as _sp
-    script = str(framework_db_path().parent / 'scripts' / 'sgs-db.py')
+    script = str(skill_scripts_dir() / 'sgs-db.py')
     if not os.path.isfile(script):
         return {}
     try:

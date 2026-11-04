@@ -45,7 +45,7 @@ _CLAUDE_DB = framework_db_path()
 # $SGS_FRAMEWORK_DB names one database copy, so the mirror under ~/.agents is left alone then.
 _AGENTS_DB = _CLAUDE_DB if _os.environ.get("SGS_FRAMEWORK_DB") else Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
-BOTH_DBS = [_CLAUDE_DB, _AGENTS_DB]
+BOTH_DBS = [_CLAUDE_DB] if _AGENTS_DB == _CLAUDE_DB else [_CLAUDE_DB, _AGENTS_DB]
 
 
 def get_conn(path: Path) -> sqlite3.Connection:
@@ -754,6 +754,8 @@ def target_29_hooks(conn: sqlite3.Connection, repo_path: Path | None, dry_run: b
 def target_210_health_check(dry_run: bool) -> bool:
     """Write /sgs-update post-flight health summary JSON."""
     health_path = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-update-health.json"
+    if _os.environ.get("SGS_FRAMEWORK_DB"):
+        health_path = _CLAUDE_DB.with_name(f"{_CLAUDE_DB.stem}-update-health.json")  # a copy gets its own health file
 
     # Gather live counts from agents DB
     summary: dict = {"status": "ok", "tables": {}, "warnings": []}
@@ -903,7 +905,7 @@ def run_all(repo_path: Path | None, dry_run: bool, only: str | None = None) -> N
     once = [t for t in selected if t["scope"] == "once"]
 
     if per_db:
-        for label, db_path in [("sgs-claude", _CLAUDE_DB), ("sgs-agents", _AGENTS_DB)]:
+        for label, db_path in ([("sgs-claude", _CLAUDE_DB)] + ([("sgs-agents", _AGENTS_DB)] if _AGENTS_DB != _CLAUDE_DB else [])):
             if not db_path.exists():
                 print(f"  SKIP {label}: DB not found at {db_path}")
                 continue
