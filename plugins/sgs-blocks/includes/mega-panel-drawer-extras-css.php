@@ -166,7 +166,8 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 		$css .= $slot( 4 ) . '{grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:' . $pad . ';padding-inline-start:' . $pad . ';}';
 		// Slot 5, the link, is a 40px circle beside them holding only its icon.
 		$css .= $slot( 5 ) . '{grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:' . $pad . ';}';
-		$css .= $slot( 5, ' .sgs-button' ) . '{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
+		// The slot is the button itself, or a wrapper holding it.
+		$css .= $slot( 5, '.sgs-button' ) . ',' . $slot( 5, ' .sgs-button' ) . '{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
 		$css .= $slot( 5, ' .sgs-button__label' ) . '{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}';
 
 		$tag_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTagSize' );
@@ -211,8 +212,9 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 
 if ( ! function_exists( 'sgs_mega_panel_drawer_card_link_css' ) ) {
 	/**
-	 * The aside card's link (fifth slot) in the drawer, in every card layout:
-	 * its own background and text/icon colour (`drawerCardLinkBg`,
+	 * The aside card's link button in the drawer, wherever it sits in the card
+	 * (its own slot, inside a wrapper, or among fewer slots), in every card
+	 * layout: its own background and text/icon colour (`drawerCardLinkBg`,
 	 * `drawerCardLinkColour`).
 	 *
 	 * @param array  $attributes Block attributes.
@@ -220,17 +222,13 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_card_link_css' ) ) {
 	 * @return string CSS, or ''.
 	 */
 	function sgs_mega_panel_drawer_card_link_css( array $attributes, string $aside_sel ): string {
-		$sel_of = static function ( string $tail ) use ( $aside_sel ): string {
-			return $aside_sel . ' > :nth-child(5):not(.wp-block-sgs-container)' . $tail . ','
-				. $aside_sel . ' > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(4)' . $tail;
-		};
 		$css = '';
 
 		$bg     = sgs_colour_value( (string) ( $attributes['drawerCardLinkBg'] ?? '' ) );
 		$colour = sgs_colour_value( (string) ( $attributes['drawerCardLinkColour'] ?? '' ) );
 		$paint  = ( '' !== $bg ? 'background-color:' . $bg . ';' : '' ) . ( '' !== $colour ? 'color:' . $colour . ';' : '' );
 		if ( '' !== $paint ) {
-			$css .= $sel_of( ' .sgs-button' ) . '{' . $paint . '}';
+			$css .= $aside_sel . ' .sgs-button{' . $paint . '}';
 		}
 
 		return $css;
