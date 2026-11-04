@@ -15,6 +15,11 @@ writes:
   python plugins/sgs-blocks/scripts/verify-reseed-identity.py --baseline A --candidate B --plant-difference
   python plugins/sgs-blocks/scripts/verify-reseed-identity.py --self-test
 
+--stage N runs only that stage in both trees. --shared-readonly is for a report-only stage (Stage 12): a --db run
+skips every child script that does not read $SGS_FRAMEWORK_DB, so the scanners never run there. This mode runs the
+stage without --db, on the shared database, and compares only the repository files; it fails if the shared
+database's sha256 changed during the run (a peer's reseed makes it inconclusive, so repeat it).
+
 Both repositories must be separate worktrees (a reseed writes files into its own tree), each with node_modules
 installed in plugins/sgs-blocks and scripts/computed-route. The seed database is a copy of the shared one unless
 --seed-db names another; the shared database is only read.
@@ -26,6 +31,7 @@ the candidate, and the run passes only if the comparison reports both. Exit 0 = 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import re
 import shutil
 import sqlite3
@@ -97,6 +103,30 @@ def compare_dbs(a_path: Path, b_path: Path, roots_a: list[str], roots_b: list[st
     return out
 
 
+REPORT_LINE = re.compile(r"^Stage 1[23]\b")
+
+
+def report_lines(log: Path, root: str) -> list[str]:
+    """The Stage 12 per-scanner finding lines and the Stage 13 total, repository path and clock times normalised."""
+    if not log.is_file():
+        return []
+    out = []
+    for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+        if REPORT_LINE.match(line):
+            out.append(CLOCK.sub("<TS>", line.replace(root, "<REPO>").replace(root.replace("\\", "/"), "<REPO>")))
+    return out
+
+
+def compare_logs(base_log: Path, cand_log: Path, base: Path, cand: Path) -> list[str]:
+    a, b = report_lines(base_log, str(base)), report_lines(cand_log, str(cand))
+    out = []
+    if not a or not b:
+        return ["log: no Stage 12/13 lines in " + ("baseline" if not a else "candidate") + " log, so the findings were not compared"]
+    for line in sorted(set(a) ^ set(b)):
+        out.append(f"log line only in {'baseline' if line in a else 'candidate'}: {line[:200]}")
+    return out
+
+
 def changed_files(repo: Path) -> list[str]:
     done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=repo, capture_output=True, text=True, check=True)
     paths = []
@@ -129,26 +159,41 @@ def compare_repos(base: Path, cand: Path) -> list[str]:
     return out
 
 
-def seed(repo: Path, db: Path, log: Path) -> int:
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def seed(repo: Path, db: Path | None, log: Path, stage: int | None = None) -> int:
+    """Runs sgs-update-v2.py in `repo`: on the copy `db`, or on the shared database when `db` is None."""
     began = time.perf_counter()
+    cmd = [sys.executable, str(repo / UPDATE), "--allow-stale-tree"]
+    if db is not None:
+        cmd += ["--db", str(db)]
+    if stage is not None:
+        cmd += ["--stage", str(stage)]
     with log.open("w", encoding="utf-8") as fh:
-        code = subprocess.run([sys.executable, str(repo / UPDATE), "--db", str(db), "--allow-stale-tree"], cwd=repo, stdout=fh, stderr=subprocess.STDOUT).returncode
+        code = subprocess.run(cmd, cwd=repo, stdout=fh, stderr=subprocess.STDOUT).returncode
     print(f"  seeded {repo.name}: exit {code} in {time.perf_counter() - began:.0f}s (log {log})", flush=True)
     return code
 
 
-def plant(cand: Path, db: Path) -> list[str]:
+def plant(cand: Path, db: Path | None) -> list[str]:
     """One changed database cell and one changed repository file, in the candidate."""
-    conn = sqlite3.connect(db)
     planted: list[str] = []
-    for name in tables(conn):
+    conn = sqlite3.connect(db) if db is not None else None
+    for name in (tables(conn) if conn else []):
         text_cols = [r[1] for r in conn.execute(f'PRAGMA table_info("{name}")') if "TEXT" in (r[2] or "").upper() and not TIME_COLUMN.search(r[1])]
         if text_cols and conn.execute(f'SELECT 1 FROM "{name}" WHERE "{text_cols[0]}" IS NOT NULL LIMIT 1').fetchone():
             conn.execute(f'UPDATE "{name}" SET "{text_cols[0]}" = "{text_cols[0]}" || \'-PLANTED\' WHERE rowid = (SELECT MIN(rowid) FROM "{name}" WHERE "{text_cols[0]}" IS NOT NULL)')
             planted.append(f"table {name}")
             break
-    conn.commit()
-    conn.close()
+    if conn:
+        conn.commit()
+        conn.close()
     files = [f for f in changed_files(cand) if (cand / f).is_file()]
     if files:
         with (cand / files[0]).open("ab") as fh:
@@ -188,13 +233,21 @@ def self_test() -> int:
         conn.close()
         if not any("only in baseline" in d for d in compare_dbs(dbs[0], dbs[1], [], [])):
             failures.append("negative control: a missing row was not reported")
+        log_a, log_b = tmp_path / "a.log", tmp_path / "b.log"
+        log_a.write_text("Stage 12 (x): 3 finding(s)\nStage 13 Total: 3\nnoise\n", encoding="utf-8")
+        log_b.write_text("Stage 12 (x): 3 finding(s)\nStage 13 Total: 3\nother noise\n", encoding="utf-8")
+        if compare_logs(log_a, log_b, Path("A"), Path("B")):
+            failures.append("positive control: equal Stage 12/13 lines reported as different")
+        log_b.write_text("Stage 12 (x): 4 finding(s)\nStage 13 Total: 3\n", encoding="utf-8")
+        if not any("only in" in d for d in compare_logs(log_a, log_b, Path("A"), Path("B"))):
+            failures.append("negative control: a changed finding count was not reported")
         if norm_cell("C:\\r\\x\\y", ["C:\\r\\x"]) != "<REPO>\\y":
             failures.append("repository path was not normalised")
         if CLOCK.sub("<TS>", "at 2026-11-04 03:39:12.5Z ok") != "at <TS> ok":
             failures.append("clock time was not normalised")
     for line in failures:
         print("FAIL", line)
-    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, path and clock normalisation)")
+    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, path and clock normalisation)")
     return 1 if failures else 0
 
 
@@ -206,6 +259,8 @@ def main() -> int:
     ap.add_argument("--seed-db", type=Path, default=SHARED_DB, help="starting database; copied, never written")
     ap.add_argument("--workdir", type=Path, default=Path("E:/sgs-tmp/identity"))
     ap.add_argument("--plant-difference", action="store_true", help="negative control: plant a database and a file difference and require them to be caught")
+    ap.add_argument("--stage", type=int, help="run only this stage in both trees")
+    ap.add_argument("--shared-readonly", action="store_true", help="run on the shared database without --db and compare repository files only (report-only stages)")
     ap.add_argument("--reuse", action="store_true", help="compare the databases and trees already in --workdir without reseeding")
     ap.add_argument("--self-test", action="store_true")
     a = ap.parse_args()
@@ -216,24 +271,34 @@ def main() -> int:
     work = a.workdir
     work.mkdir(parents=True, exist_ok=True)
     db_a, db_b = work / "baseline.db", work / "candidate.db"
+    shared_before = sha256(a.seed_db) if a.shared_readonly else ""
     if not a.reuse:
-        for db in (db_a, db_b):
-            shutil.copy2(a.seed_db, db)
-        print("Seeding both copies side by side...", flush=True)
+        if a.shared_readonly:
+            targets = [(a.baseline, None, work / "baseline.log", a.stage), (a.candidate, None, work / "candidate.log", a.stage)]
+        else:
+            for db in (db_a, db_b):
+                shutil.copy2(a.seed_db, db)
+            targets = [(a.baseline, db_a, work / "baseline.log", a.stage), (a.candidate, db_b, work / "candidate.log", a.stage)]
+        print("Running both trees side by side...", flush=True)
         with ThreadPoolExecutor(max_workers=2) as pool:
-            codes = list(pool.map(lambda args: seed(*args), [(a.baseline, db_a, work / "baseline.log"), (a.candidate, db_b, work / "candidate.log")]))
+            codes = list(pool.map(lambda args: seed(*args), targets))
         if any(codes):
             print("A reseed itself failed; no comparison is meaningful.")
             return 1
+    if a.shared_readonly and sha256(a.seed_db) != shared_before:
+        print("INCONCLUSIVE: the shared database changed during the run (a peer reseeded, or the stage wrote to it). Repeat the run.")
+        return 1
     planted: list[str] = []
     if a.plant_difference:
-        planted = plant(a.candidate, db_b)
+        planted = plant(a.candidate, None if a.shared_readonly else db_b)
         print("Planted:", ", ".join(planted))
-    diffs = compare_dbs(db_a, db_b, [str(a.baseline)], [str(a.candidate)]) + compare_repos(a.baseline, a.candidate)
+    db_diffs = [] if a.shared_readonly else compare_dbs(db_a, db_b, [str(a.baseline)], [str(a.candidate)])
+    log_diffs = compare_logs(work / "baseline.log", work / "candidate.log", a.baseline, a.candidate) if (a.stage in (None, 12)) else []
+    diffs = db_diffs + compare_repos(a.baseline, a.candidate) + log_diffs
     for line in diffs:
         print(line)
     if a.plant_difference:
-        caught_table = any(d.startswith("table ") for d in diffs)
+        caught_table = a.shared_readonly or any(d.startswith("table ") for d in diffs)
         caught_file = any(d.startswith("file ") and "contents differ" in d for d in diffs)
         want_file = any(p.startswith("file ") for p in planted)
         ok = caught_table and (caught_file or not want_file)

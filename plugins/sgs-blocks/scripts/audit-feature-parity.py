@@ -28,6 +28,11 @@ MODES
    previously said "NOT YET WIRED" after the wiring step landed; corrected 2026-08-24 —
    verify against `package.json` before trusting a wiring claim in a header again.
 """
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import json
 import sqlite3
 import sys
@@ -39,7 +44,7 @@ if sys.stderr.encoding is None or sys.stderr.encoding.lower() != "utf-8":
     sys.stderr.reconfigure(encoding="utf-8")
 
 HERE = Path(__file__).parent
-DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DB_PATH = framework_db_path()
 ROSTER = HERE / "consistency" / "roster.json"
 EXCEPTIONS = HERE / "feature-parity-exceptions.json"
 

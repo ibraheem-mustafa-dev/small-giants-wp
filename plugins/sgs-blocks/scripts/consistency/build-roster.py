@@ -25,6 +25,11 @@ Surface flags (a block is "in scope" for an audit dimension if the flag is true)
                            (it has no access to core block.json). See `support_enabled()` below
                            for the exact "enabled" rule per family.
 """
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import json
 import re
 import sqlite3
@@ -32,7 +37,7 @@ import sys
 from pathlib import Path
 
 # Same DB the sgs-db.py CLI uses: skills/sgs-wp-engine/scripts/../sgs-framework.db
-DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DB_PATH = framework_db_path()
 OUT = Path(__file__).parent / "roster.json"
 BLOCKS_DIR = Path(__file__).parent.parent.parent / "src" / "blocks"
 

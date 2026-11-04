@@ -97,6 +97,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
+from framework_db import builds_default_db_by_hand, code_of  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
 from block_source import BlockSource, is_tier_object  # noqa: E402
@@ -4561,10 +4562,34 @@ def _mode_b_refresh_upstream(
         "dry_run": dry_run,
     }
 
+UPSTREAM_CACHE_HOURS = 24
+
+
+def _upstream_cache_hit(conn: sqlite3.Connection, wp_version: str, now: datetime | None = None) -> dict | None:
+    """The last full refresh's record when it is under UPSTREAM_CACHE_HOURS old and indexed this WordPress version."""
+    rows = dict(conn.execute(
+        "SELECT key, value FROM schema_metadata WHERE key IN ('wp_version_indexed', 'last_full_refresh_ts')"
+    ).fetchall())
+    stamp = rows.get("last_full_refresh_ts")
+    if not stamp or rows.get("wp_version_indexed") != wp_version:
+        return None
+    try:
+        refreshed = datetime.fromisoformat(stamp)
+    except ValueError:
+        return None
+    if refreshed.tzinfo is None:
+        refreshed = refreshed.replace(tzinfo=timezone.utc)
+    age_hours = ((now or datetime.now(timezone.utc)) - refreshed).total_seconds() / 3600
+    if age_hours < 0 or age_hours >= UPSTREAM_CACHE_HOURS:
+        return None
+    return {"last_full_refresh_ts": stamp, "age_hours": round(age_hours, 2)}
+
+
 def stage_2_core_gutenberg_cache_refresh(
     conn: sqlite3.Connection,
     wp_version: str = WP_VERSION_DEFAULT,
     dry_run: bool = False,
+    force: bool = False,
 ) -> dict:
     """Stage 2 — live-scrape 10 canonical upstream sources (Decision 30).
 
@@ -4586,6 +4611,13 @@ def stage_2_core_gutenberg_cache_refresh(
     5,000 req/hr limit — effectively unlimited for normal usage.
     """
     ensure_schema_metadata(conn)
+    hit = None if (force or dry_run) else _upstream_cache_hit(conn, wp_version)
+    if hit:
+        print(
+            f"Stage 2: upstream scrape skipped; the last full refresh was {hit['age_hours']}h ago "
+            f"(under {UPSTREAM_CACHE_HOURS}h) for WordPress {wp_version}. --refresh-upstream or --stage 2 forces it."
+        )
+        return {"status": "cached", "wp_version_indexed": wp_version, **hit}
     return _mode_b_refresh_upstream(conn, dry_run=dry_run, wp_version=wp_version)
 
 
@@ -6371,6 +6403,37 @@ def stage_11_motion_fx_artefact_regen(dry_run: bool = False) -> dict:
 # Stage 12 — Run DB/roster-keyed audit scanners (report-only)
 # ---------------------------------------------------------------------------
 
+SCANNER_WORKERS = 6
+
+
+def _prerun_scanners(scripts_dir: Path, scanners: list[tuple[str, str, list[str]]], workers: int = SCANNER_WORKERS) -> dict[str, object]:
+    """Runs every scanner's subprocess and returns label -> CompletedProcess, or the exception it raised.
+
+    build-roster runs first and alone (it writes roster.json, which the others read); the rest run side by side.
+    Parsing stays serial in the caller, in scanner order, so the printed report and the summary do not change."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def run_one(item: tuple[str, str, list[str]]) -> tuple[str, object]:
+        rel_path, label, args = item
+        path = scripts_dir / rel_path
+        if not path.exists():
+            return label, None
+        command = ["node" if rel_path.endswith(".js") else sys.executable, str(path)] + args
+        try:
+            return label, subprocess.run(command, capture_output=True, text=True, timeout=120, encoding="utf-8", errors="replace")
+        except Exception as exc:  # re-raised in the caller's own try block
+            return label, exc
+
+    outcomes: dict[str, object] = {}
+    for item in [s for s in scanners if s[1] == "build-roster"]:
+        label, outcome = run_one(item)
+        outcomes[label] = outcome
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for label, outcome in pool.map(run_one, [s for s in scanners if s[1] != "build-roster"]):
+            outcomes[label] = outcome
+    return outcomes
+
+
 def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) -> dict:
     """Run audit scanners keyed to DB and roster state (report-only, never fail).
 
@@ -6651,6 +6714,7 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
 
     findings_by_scanner: dict[str, dict] = {}
     total_findings = 0
+    prerun = _prerun_scanners(scripts_dir, scanners)
 
     for rel_path, label, args in scanners:
         script_path = scripts_dir / rel_path
@@ -6659,19 +6723,11 @@ def stage_12_run_audit_scanners(dry_run: bool = False, self_test: bool = False) 
             findings_by_scanner[label] = {"status": "SKIP", "reason": "script not found"}
             continue
 
-        # Determine invocation: Python or Node.js
-        is_js = rel_path.endswith(".js")
-        interpreter = ["node" if is_js else sys.executable]
-
         try:
-            result = subprocess.run(
-                interpreter + [str(script_path)] + args,
-                capture_output=True,
-                text=True,
-                timeout=120,
-                encoding="utf-8",
-                errors="replace",
-            )
+            outcome = prerun[label]
+            if isinstance(outcome, Exception):
+                raise outcome
+            result = outcome
 
             # Parse output for findings count (scanners vary in format)
             stdout = result.stdout or ""
@@ -7258,7 +7314,8 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
     return {
         1: lambda: stage_1_sgs_codebase_scan(conn, dry_run=args.dry_run),
         2: lambda: stage_2_core_gutenberg_cache_refresh(
-            conn, wp_version=args.wp_version, dry_run=args.dry_run
+            conn, wp_version=args.wp_version, dry_run=args.dry_run,
+            force=bool(getattr(args, "refresh_upstream", False)) or args.stage == 2,
         ),
         3: lambda: stage_3_style_variation_sync(conn, dry_run=args.dry_run),
         4: lambda: stage_4_slot_synonym_auto_seed(conn, dry_run=args.dry_run),
@@ -7280,18 +7337,16 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
 FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 13]
 
 
-# Child scripts that never open any database. Under --db they run as normal: skipping one returns an empty
-# success, and the caller (motion_presets_seed.validate_presets reads the validator's JSON verdict) then fails.
-DB_FREE_CHILDREN = frozenset({"validate-motion-presets.mjs"})
-
-
 def _guard_children_for_db_override() -> None:
     """Under --db, a child script that would open the default DB is skipped.
 
     Every subprocess this run starts goes through `subprocess.run`; a Python or
     Node script that neither reads $SGS_FRAMEWORK_DB nor receives `--db` is
-    skipped with a warning instead of writing the shared DB, unless it is listed
-    in DB_FREE_CHILDREN (it opens no database at all)."""
+    skipped with a warning instead of writing the shared DB. "Would open the
+    default DB" means its code (comments removed) builds the shared database path
+    by hand and neither reads the variable nor uses lib/framework_db; a script
+    that names no database at all (validate-motion-presets.mjs) runs as normal.
+    check-framework-db-resolver.py keeps the reseed's children out of that skip."""
     real_run = subprocess.run
 
     def guarded(cmd, *args, **kwargs):
@@ -7300,9 +7355,8 @@ def _guard_children_for_db_override() -> None:
             (Path(c) for c in parts if c.endswith((".py", ".js", ".mjs")) and Path(c).is_file()),
             None,
         )
-        if script is not None and script.name not in DB_FREE_CHILDREN and "--db" not in parts:
-            text = script.read_text(encoding="utf-8", errors="ignore")
-            if "SGS_FRAMEWORK_DB" not in text:
+        if script is not None and "--db" not in parts:
+            if builds_default_db_by_hand(code_of(script)):
                 print(
                     f"  [--db] WARN skipped {script.name}: it does not read $SGS_FRAMEWORK_DB, "
                     "so it would write the default sgs-framework.db"
@@ -7365,6 +7419,14 @@ def main() -> None:
         "--dry-run",
         action="store_true",
         help="Compute row counts without writing to DB or files",
+    )
+    parser.add_argument(
+        "--refresh-upstream",
+        action="store_true",
+        help=(
+            "Stage 2: scrape the upstream sources even when the last full refresh is under "
+            "24h old for this WordPress version (the default skips the scrape then)."
+        ),
     )
     parser.add_argument(
         "--allow-stale-tree",

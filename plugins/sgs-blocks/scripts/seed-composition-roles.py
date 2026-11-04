@@ -41,6 +41,11 @@ Corrections (2026-06-02, Workstream A — D150):
 """
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import sqlite3
 import sys
 from pathlib import Path
@@ -48,7 +53,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Canonical SGS DB (hard-linked between ~/.agents and ~/.claude — same physical file).
-DB_PATH = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+DB_PATH = framework_db_path()
 
 CORRECTIONS: dict[str, str] = {
     # sgs/notice-banner (2026-08-07) — block.json declares `supports.sgs.is_section_root:

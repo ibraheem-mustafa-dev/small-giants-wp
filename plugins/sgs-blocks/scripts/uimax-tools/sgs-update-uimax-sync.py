@@ -41,6 +41,11 @@ Defaults to --stage all and --repo = repo root inferred from script location.
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import os
@@ -53,7 +58,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 # Resolve fixed paths.
-SGS_DB = Path(os.path.expanduser("~/.agents/skills/sgs-wp-engine/sgs-framework.db"))
+SGS_DB = framework_db_path()
 UIMAX_DB = Path(
     os.path.expanduser("~/.agents/skills/ui-ux-pro-max/scripts/ui-ux-pro-max.db")
 )

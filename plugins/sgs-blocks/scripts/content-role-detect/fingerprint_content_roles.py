@@ -110,6 +110,11 @@ READ-ONLY. This module PROPOSES; it never writes to sgs-framework.db. Step 3 own
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import os
@@ -128,7 +133,7 @@ PLUGIN_SCRIPTS = SCRIPT_DIR.parent
 # `find` across the whole repo returns zero hits. Search a candidate list and FAIL LOUD if
 # none exists — a missing DB must never look like an empty result set.
 _DB_CANDIDATES = [
-    Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db",
+    framework_db_path(),
     PLUGIN_SCRIPTS / "sgs-framework.db",
 ]
 

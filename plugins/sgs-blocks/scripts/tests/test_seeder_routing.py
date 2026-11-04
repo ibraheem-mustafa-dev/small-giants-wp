@@ -341,7 +341,7 @@ def test_update_db_flag_skips_children_that_ignore_the_env(tmp_path, monkeypatch
     update = _load("sgs_update_v2_db_under_test", PLUGIN_ROOT / "scripts" / "sgs-update-v2.py")
     marker = tmp_path / "ran.txt"
     blind = tmp_path / "blind_child.py"
-    blind.write_text(f"open(r'{marker}', 'w').write('x')\n", encoding="utf-8")
+    blind.write_text(f"DB = '.claude/skills/sgs-wp-engine/sgs-framework.db'\nopen(r'{marker}', 'w').write('x')\n", encoding="utf-8")
     aware = tmp_path / "aware_child.py"
     aware.write_text(f"import os\nos.environ.get('SGS_FRAMEWORK_DB')\nopen(r'{marker}', 'w').write('y')\n", encoding="utf-8")
     monkeypatch.setattr(subprocess, "run", subprocess.run)
@@ -352,13 +352,23 @@ def test_update_db_flag_skips_children_that_ignore_the_env(tmp_path, monkeypatch
     assert marker.read_text() == "y"
 
 
-def test_update_db_flag_runs_listed_db_free_children(tmp_path, monkeypatch):
+def test_update_db_flag_runs_children_that_name_no_database(tmp_path, monkeypatch):
     update = _load("sgs_update_v2_db_free_under_test", PLUGIN_ROOT / "scripts" / "sgs-update-v2.py")
     marker = tmp_path / "ran.txt"
     free = tmp_path / "validate-motion-presets.mjs"
     free.write_text(f"import fs from 'fs'; fs.writeFileSync(String.raw`{marker}`, 'z');", encoding="utf-8")
     monkeypatch.setattr(subprocess, "run", subprocess.run)
     update._guard_children_for_db_override()
-    assert "validate-motion-presets.mjs" in update.DB_FREE_CHILDREN
     done = subprocess.run(["node", str(free)], capture_output=True, text=True)
     assert done.returncode == 0 and marker.read_text() == "z"
+
+
+def test_update_db_flag_ignores_the_shared_path_named_only_in_a_comment(tmp_path, monkeypatch):
+    update = _load("sgs_update_v2_comment_under_test", PLUGIN_ROOT / "scripts" / "sgs-update-v2.py")
+    marker = tmp_path / "ran.txt"
+    child = tmp_path / "commented_child.py"
+    child.write_text(f"# reads ~/.claude/skills/sgs-wp-engine/sgs-framework.db when run by hand\nopen(r'{marker}', 'w').write('c')\n", encoding="utf-8")
+    monkeypatch.setattr(subprocess, "run", subprocess.run)
+    update._guard_children_for_db_override()
+    subprocess.run([sys.executable, str(child)], check=True)
+    assert marker.read_text() == "c"

@@ -66,6 +66,11 @@ Usage:
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import re
@@ -77,7 +82,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SRC_BLOCKS = SCRIPT_DIR.parent / "src" / "blocks"
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+SGS_DB = framework_db_path()
 OVERRIDES_PATH = SCRIPT_DIR / "attr-classification-overrides.json"
 FINGERPRINT_DIR = SCRIPT_DIR / "content-role-detect"
 

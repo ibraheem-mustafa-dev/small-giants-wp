@@ -30,6 +30,7 @@
 
 const fs = require( 'fs' );
 const path = require( 'path' );
+const { frameworkDbPath } = require( '../../lib/framework-db' );
 
 const COMPONENTS_DIR = path.resolve( __dirname, '..', '..', '..', 'src', 'components' );
 const COMPONENTS_INDEX = path.join( COMPONENTS_DIR, 'index.js' );
@@ -369,7 +370,7 @@ function getSharedOwnerScan( ctx ) {
 // pairs with a real CSS dimension and must never be treated as the reason a
 // mixed panel is exempt.
 const DB_CANDIDATES = [
-	path.join( require( 'os' ).homedir(), '.agents', 'skills', 'sgs-wp-engine', 'sgs-framework.db' ),
+	frameworkDbPath(),
 	path.resolve( __dirname, '..', 'sgs-framework.db' ),
 ];
 
