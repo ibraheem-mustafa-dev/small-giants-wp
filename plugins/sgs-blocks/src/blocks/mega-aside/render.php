@@ -117,10 +117,10 @@ if ( $aside_border['hover'] ) {
 }
 $css .= implode( '', $aside_border['rules'] );
 if ( $aside_border['tablet'] ) {
-	$css .= '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . '{' . implode( ';', $aside_border['tablet'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'tablet' => $aside_border['tablet'] ) );
 }
 if ( $aside_border['mobile'] ) {
-	$css .= '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . '{' . implode( ';', $aside_border['mobile'] ) . ';}}';
+	$css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $aside_border['mobile'] ) );
 }
 
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {

@@ -686,10 +686,10 @@ $margin_tab_val = sgs_box_object_longhands( $margin_tablet_obj, 'margin' );
 $margin_mob_val = sgs_box_object_longhands( $margin_mobile_obj, 'margin' );
 
 if ( null !== $margin_tab_val ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{{$margin_tab_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet' ) . '{' . "{$root_sel}{{$margin_tab_val};}}";
 }
 if ( null !== $margin_mob_val ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{{$margin_mob_val};}}";
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{{$margin_mob_val};}}";
 }
 
 // FR-Wave-B: sticky configurator column (extras.php). Off by default — every
@@ -749,10 +749,10 @@ if ( $border['base'] ) {
 }
 $scoped_css = array_merge( $scoped_css, $border['rules'] );
 if ( $border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$root_sel}{" . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$root_sel}{" . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $border['mobile'] ) );
 }
 
 // FR-Wave-B: sticky column / RRP pill / stock-status scoped CSS (extras.php).
@@ -789,10 +789,10 @@ if ( ! empty( $sgs_bb_photo_decls ) ) {
 }
 $scoped_css[] = implode( '', $sgs_bb_photo_border['rules'] );
 if ( $sgs_bb_photo_border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sgs_bb_photo_sel, array( 'tablet' => $sgs_bb_photo_border['tablet'] ) );
 }
 if ( $sgs_bb_photo_border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $sgs_bb_photo_sel . '{' . implode( ';', $sgs_bb_photo_border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( $sgs_bb_photo_sel, array( 'mobile' => $sgs_bb_photo_border['mobile'] ) );
 }
 $sgs_bb_photo_radius = sgs_css_length_value( (string) ( $attributes['mainPhotoRadius'] ?? '' ) );
 if ( '' !== $sgs_bb_photo_radius ) {

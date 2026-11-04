@@ -244,10 +244,10 @@ $scoped_css_rules[] = sgs_emit_responsive_css(
 // none override.
 $scoped_css_rules = array_merge( $scoped_css_rules, $border['rules'] );
 if ( $border['tablet'] ) {
-	$scoped_css_rules[] = '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $root_sel . ' .sgs-modal__dialog{' . implode( ';', $border['tablet'] ) . ';}}';
+	$scoped_css_rules[] = sgs_emit_tier_decls( $root_sel . ' .sgs-modal__dialog', array( 'tablet' => $border['tablet'] ) );
 }
 if ( $border['mobile'] ) {
-	$scoped_css_rules[] = '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $root_sel . ' .sgs-modal__dialog{' . implode( ';', $border['mobile'] ) . ';}}';
+	$scoped_css_rules[] = sgs_emit_tier_decls( $root_sel . ' .sgs-modal__dialog', array( 'mobile' => $border['mobile'] ) );
 }
 // Dialog shadow — only when the operator has set one; empty leaves
 // style.css's hardcoded box-shadow untouched

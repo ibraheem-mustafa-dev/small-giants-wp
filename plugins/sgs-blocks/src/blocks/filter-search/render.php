@@ -158,10 +158,10 @@ if ( $input_border['hover'] ) {
 }
 $scoped_css = array_merge( $scoped_css, $input_border['rules'] );
 if ( $input_border['tablet'] ) {
-	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . "{$root_sel} .sgs-filter-search__input{" . implode( ';', $input_border['tablet'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( "{$root_sel} .sgs-filter-search__input", array( 'tablet' => $input_border['tablet'] ) );
 }
 if ( $input_border['mobile'] ) {
-	$scoped_css[] = '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . "{$root_sel} .sgs-filter-search__input{" . implode( ';', $input_border['mobile'] ) . ';}}';
+	$scoped_css[] = sgs_emit_tier_decls( "{$root_sel} .sgs-filter-search__input", array( 'mobile' => $input_border['mobile'] ) );
 }
 
 // Base margin — `margin` is a single block-owned TIER-of-BOXES envelope attr

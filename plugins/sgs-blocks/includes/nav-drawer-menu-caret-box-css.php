@@ -113,10 +113,10 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 			)
 		);
 		if ( $border['tablet'] ) {
-			$css .= '@media (max-width:' . SGS_Breakpoints::TABLET_MAX . 'px){' . $box_sel . '{' . implode( ';', $border['tablet'] ) . ';}}';
+			$css .= sgs_emit_tier_decls( $box_sel, array( 'tablet' => $border['tablet'] ) );
 		}
 		if ( $border['mobile'] ) {
-			$css .= '@media (max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px){' . $box_sel . '{' . implode( ';', $border['mobile'] ) . ';}}';
+			$css .= sgs_emit_tier_decls( $box_sel, array( 'mobile' => $border['mobile'] ) );
 		}
 		if ( $on_all ) {
 			// The trailing icon draws its glyph at 1em of its own font size (itemTrailingIconSize).

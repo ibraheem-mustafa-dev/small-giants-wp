@@ -457,10 +457,10 @@ if ( ! empty( $sgs_field_decls ) ) {
 	$sgs_field_css .= $sgs_field_sel . '{' . implode( ';', $sgs_field_decls ) . ';}';
 }
 if ( $sgs_field_border['tablet'] ) {
-	$sgs_field_css .= '@media(max-width:1023px){' . $sgs_field_sel . '{' . implode( ';', $sgs_field_border['tablet'] ) . ';}}';
+	$sgs_field_css .= sgs_emit_tier_decls( $sgs_field_sel, array( 'tablet' => $sgs_field_border['tablet'] ) );
 }
 if ( $sgs_field_border['mobile'] ) {
-	$sgs_field_css .= '@media(max-width:767px){' . $sgs_field_sel . '{' . implode( ';', $sgs_field_border['mobile'] ) . ';}}';
+	$sgs_field_css .= sgs_emit_tier_decls( $sgs_field_sel, array( 'mobile' => $sgs_field_border['mobile'] ) );
 }
 // The explicit `none` override, so a chosen "no border" also clears the stylesheet's field border.
 $sgs_field_css .= implode( '', $sgs_field_border['rules'] );
@@ -1168,10 +1168,10 @@ if ( $sgs_form_border['base'] ) {
 }
 $sgs_form_supports_css .= implode( '', $sgs_form_border['rules'] );
 if ( $sgs_form_border['tablet'] ) {
-	$sgs_form_supports_css .= '@media(max-width:1023px){' . $sgs_form_sel . '{' . implode( ';', $sgs_form_border['tablet'] ) . ';}}';
+	$sgs_form_supports_css .= sgs_emit_tier_decls( $sgs_form_sel, array( 'tablet' => $sgs_form_border['tablet'] ) );
 }
 if ( $sgs_form_border['mobile'] ) {
-	$sgs_form_supports_css .= '@media(max-width:767px){' . $sgs_form_sel . '{' . implode( ';', $sgs_form_border['mobile'] ) . ';}}';
+	$sgs_form_supports_css .= sgs_emit_tier_decls( $sgs_form_sel, array( 'mobile' => $sgs_form_border['mobile'] ) );
 }
 
 // ── WS-4 wrapper via SGS_Container_Wrapper ─────────────────────────────────

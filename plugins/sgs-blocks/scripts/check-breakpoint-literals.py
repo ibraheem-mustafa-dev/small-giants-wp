@@ -32,7 +32,12 @@ REPO = PLUGIN.parents[1]
 BASELINE = Path(__file__).resolve().with_name("check-breakpoint-literals-baseline.json")
 ROOTS = [PLUGIN, REPO / "theme" / "sgs-theme", REPO / "plugins" / "sgs-booking", REPO / "plugins" / "sgs-client-notes"]
 SKIP_DIRS = {"node_modules", "build", "vendor", "tests", "scripts", ".phpunit.cache", "reports", "pipeline-state", "stackable"}
-ALLOW = {"includes/class-sgs-breakpoints.php", "includes/helpers-responsive.php", "src/utils/responsive.js"}
+ALLOW = {"includes/class-sgs-breakpoints.php", "includes/helpers-responsive.php", "src/utils/responsive.js", "src/utils/breakpoints.js"}
+# Whole-repo path -> why a literal is legitimate there. Keep this list to cases with no shared source reachable.
+EXCEPTIONS = {
+    "theme/sgs-theme/assets/js/sgs-shop-load-more.js": "a classic, unbundled theme script (it cannot import src/utils/breakpoints.js) and the theme "
+    "must not depend on the blocks plugin's SGS_Breakpoints; the query also joins the width to `(pointer: fine)`",
+}
 LIT = re.compile(r"\(\s*(max|min)-width\s*:\s*(767|768|1023|1024)(?:\.98)?px\s*\)")
 KIND = {("max", "1023"): "tablet-max", ("max", "767"): "mobile-max", ("min", "768"): "tablet-min", ("min", "1024"): "desktop-min"}
 COMMENT_LINE = re.compile(r"^\s*(//|\*|/\*|#)")
@@ -74,7 +79,7 @@ def collect() -> dict[str, list[tuple[int, str]]]:
     res = {}
     for f in files((".php", ".js")):
         r = rel(f)
-        if r.removeprefix("plugins/sgs-blocks/") in ALLOW:
+        if r.removeprefix("plugins/sgs-blocks/") in ALLOW or r in EXCEPTIONS:
             continue
         h = scan_text(f.read_text(encoding="utf-8", errors="replace"))
         if h:
