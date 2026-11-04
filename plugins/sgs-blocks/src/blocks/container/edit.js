@@ -844,6 +844,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						setAttributes={ setAttributes }
 						enableIntrinsicColumns
 						enableColumnShapePicker
+						enableFlexWrapTier
 					/>
 					<hr style={ { margin: '16px 0' } } />
 					{ /* showContentBand={false} — Bean-reported placement fix, 2026-09-07:

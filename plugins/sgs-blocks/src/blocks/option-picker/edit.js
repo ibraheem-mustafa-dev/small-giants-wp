@@ -44,6 +44,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBoxControl,
 	FlexWrapControl,
+	ShadowControl,
 } from '../../components';
 import {
 	colourVar,
@@ -1008,6 +1009,10 @@ export default function Edit( { attributes, setAttributes } ) {
 						resetAll={ () =>
 							setAttributes( {
 								pillSelectedBorderRadius: '',
+								pillSelectedShadow: '',
+								pillSelectedShadowColour: '',
+								pillSelectedOffsetX: '',
+								pillSelectedOffsetY: '',
 								showSelectedTick: false,
 							} )
 						}
@@ -1040,6 +1045,65 @@ export default function Edit( { attributes, setAttributes } ) {
 									setAttributes( {
 										pillSelectedBorderRadius: val ?? '',
 									} )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill shadow', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! attributes.pillSelectedShadow ||
+								!! attributes.pillSelectedShadowColour
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									pillSelectedShadow: '',
+									pillSelectedShadowColour: '',
+								} )
+							}
+						>
+							<ShadowControl
+								label={ __( 'Selected pill shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ {
+									base: 'pillSelectedShadow',
+									colour: 'pillSelectedShadowColour',
+								} }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill shift (across)', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.pillSelectedOffsetX }
+							onDeselect={ () =>
+								setAttributes( { pillSelectedOffsetX: '' } )
+							}
+						>
+							<SgsLengthControl
+								label={ __( 'Selected pill shift (across)', 'sgs-blocks' ) }
+								help={ __( 'Moves the selected pill sideways. Negative moves it left.', 'sgs-blocks' ) }
+								value={ attributes.pillSelectedOffsetX || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) =>
+									setAttributes( { pillSelectedOffsetX: val ?? '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Selected pill shift (down)', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.pillSelectedOffsetY }
+							onDeselect={ () =>
+								setAttributes( { pillSelectedOffsetY: '' } )
+							}
+						>
+							<SgsLengthControl
+								label={ __( 'Selected pill shift (down)', 'sgs-blocks' ) }
+								help={ __( 'Moves the selected pill up or down. Negative moves it up.', 'sgs-blocks' ) }
+								value={ attributes.pillSelectedOffsetY || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) =>
+									setAttributes( { pillSelectedOffsetY: val ?? '' } )
 								}
 								presets={ false }
 							/>

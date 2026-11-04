@@ -142,6 +142,8 @@
 								"css:color": "pillSelectedTextColour",
 								"css:border-color": "pillSelectedBorderColour",
 								"css:border-radius": "pillSelectedBorderRadius",
+								"css:box-shadow": "pillSelectedShadow",
+								"css:translate": "pillSelectedOffsetX",
 								"css:border-color-gradient": "pillSelectedBorderColourGradient"
 							}
 						}
@@ -417,6 +419,26 @@
 		"pillSelectedBorderRadius": {
 			"type": "string",
 			"default": ""
+		},
+		"pillSelectedShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow shape of the selected pill (the shared layered shadow control). Empty = no shadow."
+		},
+		"pillSelectedShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the selected pill's shadow."
+		},
+		"pillSelectedOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal offset of the selected pill (CSS length, e.g. \"-2px\"). Empty = no shift."
+		},
+		"pillSelectedOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Vertical offset of the selected pill (CSS length, e.g. \"-2px\"). Empty = no shift."
 		},
 		"pillPadding": {
 			"type": "object",

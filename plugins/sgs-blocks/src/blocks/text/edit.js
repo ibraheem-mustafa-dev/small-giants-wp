@@ -34,7 +34,7 @@ import {
 // ⛔ ResponsiveControl is deliberately NOT imported any more: the only mount was
 // the bolted-on "Line height (tablet / mobile)" pair, now replaced by the shared
 // TypographyControls' own tier-aware line-height field.
-import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
+import { TypographyControls, ResponsiveBoxControl, SgsColourPanel, SgsLengthControl, SgsBorderControl, DesignTokenPicker, GradientCapableColourControl, ShadowControl, shadowAttrKeys, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl, SGS_FONT_WEIGHT_OPTIONS } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	colourVar,
@@ -311,6 +311,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlineColour,
 		linkUnderlineColourHover,
 		linkUnderlineOffset,
+		linkFontWeight,
 		customWidth,
 		inheritStyle,
 	} = attributes;
@@ -345,7 +346,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			colourHover: linkUnderlineColourHover,
 			offset: linkUnderlineOffset,
 			linkGradient: linkColourGradient,
-		} );
+		} ) +
+		( linkFontWeight && /^[1-9]00$/.test( linkFontWeight )
+			? `.${ linkPreviewUid } a{font-weight:${ linkFontWeight };}`
+			: '' );
 
 	// Contrast check for text colour — warn if text fails WCAG AA contrast
 	// against the text block's own background. When the text has no background
@@ -437,6 +441,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							},
 						],
 						after: (
+							<>
+							<SelectControl
+								label={ __( 'Link font weight', 'sgs-blocks' ) }
+								value={ linkFontWeight || '' }
+								options={ SGS_FONT_WEIGHT_OPTIONS }
+								onChange={ ( val ) => setAttributes( { linkFontWeight: val } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
 							<LinkUnderlineControl
 								mode={ linkUnderline }
 								thickness={ linkUnderlineThickness }
@@ -449,6 +462,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onColourHoverChange={ ( val ) => setAttributes( { linkUnderlineColourHover: val } ) }
 								onOffsetChange={ ( val ) => setAttributes( { linkUnderlineOffset: val } ) }
 							/>
+							</>
 						),
 					},
 				] }

@@ -852,6 +852,29 @@ $responsive_css .= sgs_emit_responsive_css(
 	)
 );
 
+// ── splitMediaAlign: per device, where a narrower-than-column image sits ──────
+// The media column becomes a flex row only when a tier is set, so an unset hero prints nothing.
+$split_align_map   = array(
+	'start'  => 'flex-start',
+	'center' => 'center',
+	'end'    => 'flex-end',
+);
+$split_align_css   = sgs_emit_responsive_css(
+	'.' . $uid . ' .sgs-hero__media',
+	array(
+		array(
+			'value'     => $attributes['splitMediaAlign'] ?? null,
+			'css'       => 'justify-content',
+			'transform' => static function ( $raw ) use ( $split_align_map ) {
+				return $split_align_map[ (string) $raw ] ?? '';
+			},
+		),
+	)
+);
+if ( '' !== $split_align_css ) {
+	$responsive_css .= '.' . $uid . ' .sgs-hero__media{display:flex}' . $split_align_css;
+}
+
 // ── splitMediaHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
 // Height, like width, applies under every object-fit.
 // Emitted base -> tablet -> mobile so the later, narrower @media rule wins at

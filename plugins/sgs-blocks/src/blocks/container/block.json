@@ -674,12 +674,12 @@
 			]
 		},
 		"flexWrap": {
-			"type": "string",
+			"type": [
+				"string",
+				"object"
+			],
 			"default": "wrap",
-			"enum": [
-				"wrap",
-				"nowrap"
-			]
+			"description": "Flex wrap. A plain 'wrap' or 'nowrap' string, or a per-device tier object {desktop,tablet,mobile} of the same two values (a chip row that scrolls sideways on phones and wraps on desktop)."
 		},
 		"scrollSideways": {
 			"type": "object",
