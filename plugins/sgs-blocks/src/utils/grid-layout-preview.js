@@ -39,9 +39,9 @@ import { resolveResponsiveTier } from './responsive';
  * @param {*}      [params.columns]            Grid-only fallback column count; a TIER OBJECT
  *                                              (or legacy number) — resolved via
  *                                              `resolveResponsiveTier()`, desktop tier.
- * @param {string} [params.flexDirection='']   Flex-only.
- * @param {string} [params.flexWrap='wrap']    Flex-only.
- * @param {string} [params.justifyContent='']  Flex/stack.
+ * @param {string|Object} [params.flexDirection='']   Flex-only; a string or a tier object.
+ * @param {string|Object} [params.flexWrap='wrap']    Flex-only; a string or a tier object.
+ * @param {string|Object} [params.justifyContent='']  Flex/stack; a string or a tier object.
  * @return {Object} The same `style` object, mutated, for convenient chaining.
  */
 export function applyGridLayoutPreview( style, {
@@ -53,11 +53,24 @@ export function applyGridLayoutPreview( style, {
 	gridAutoRows = '',
 	gridTemplateColumns = '',
 	columns,
-	flexDirection = '',
-	flexWrap = 'wrap',
-	justifyContent = '',
+	flexDirection: flexDirectionValue = '',
+	flexWrap: flexWrapValue = 'wrap',
+	justifyContent: justifyContentValue = '',
 } ) {
 	const alignItems = resolveResponsiveTier( alignItemsObject, tier )?.value || undefined;
+	// flexDirection, flexWrap and justifyContent arrive as a plain string or as a tier object
+	// ({desktop,tablet,mobile}, e.g. multi-button's {desktop:'row',mobile:'column'}); the
+	// previewed tier's string is what the flex branch reads.
+	const tierString = ( value, fallback ) => {
+		if ( value && 'object' === typeof value ) {
+			const resolved = resolveResponsiveTier( value, tier )?.value;
+			return 'string' === typeof resolved ? resolved : fallback;
+		}
+		return 'string' === typeof value ? value : fallback;
+	};
+	const flexDirection = tierString( flexDirectionValue, '' );
+	const flexWrap = tierString( flexWrapValue, 'wrap' );
+	const justifyContent = tierString( justifyContentValue, '' );
 	if ( layout === 'grid' ) {
 		style.display = 'grid';
 		// gridTemplateColumns is a TIER OBJECT — calling .trim() on it bare throws
