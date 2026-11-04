@@ -464,5 +464,29 @@
     },
     "reason": "The draft pins the timeline and fades the side cards only at 1024px and wider, and is a plain swipe row below that. Bean prefers the pinned, focus-faded timeline on tablet too, so it keeps the desktop treatment from 768px.",
     "decided": "2026-11-04 Bean ruling (Indus round 6)"
+  },
+  {
+    "id": "D-30",
+    "scope": "home testimonials, all widths",
+    "node": "testimonial avatar",
+    "state": "*",
+    "property": "content",
+    "expected": {
+      "rule": "draft-placeholder"
+    },
+    "reason": "The draft's avatar is an empty image slot (placeholder 'logo') inside a 58px white ring: a design-tool placeholder, not a design. No avatar is shown until the client supplies photos.",
+    "decided": "2026-11-04 (Indus round 6, Bean's rule that brief artefacts are not cloned)"
+  },
+  {
+    "id": "D-31",
+    "scope": "footer bottom bar, all widths",
+    "node": "copyright row",
+    "state": "*",
+    "property": "content",
+    "expected": {
+      "rule": "draft-placeholder"
+    },
+    "reason": "The draft's copyright row carries a third item, '| Placeholder photograph', a credit for the draft's stock imagery; it is not cloned, so the bar is 23px shorter at 375 and 13px at 768.",
+    "decided": "2026-11-04 (Indus round 6)"
   }
 ]
