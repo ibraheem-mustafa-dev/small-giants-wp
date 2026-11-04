@@ -17,6 +17,7 @@ import json
 import subprocess
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -65,9 +66,12 @@ class BlockSource:
 
     @classmethod
     def read(cls, plugin_dir: Path = PLUGIN_DIR) -> "BlockSource":
-        js = _run(["node", str(CHOICES_JS), str(plugin_dir / "src" / "blocks")], plugin_dir)
-        php = _run(["php", str(SOURCE_PHP), str(plugin_dir)], plugin_dir)
-        return cls(js, php)
+        # The two readers only read source files, so they run side by side; .result() re-raises either one's
+        # BlockSourceError (the JS reader's first, as when they ran in turn).
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            js_job = pool.submit(_run, ["node", str(CHOICES_JS), str(plugin_dir / "src" / "blocks")], plugin_dir)
+            php_job = pool.submit(_run, ["php", str(SOURCE_PHP), str(plugin_dir)], plugin_dir)
+            return cls(js_job.result(), php_job.result())
 
     def choices(self, folder: str, attr: str, attr_def: dict) -> tuple[list | None, str | None, list[str]]:
         """(values, gap, files). values is the union of the editor list, the PHP allow-list and the default;
