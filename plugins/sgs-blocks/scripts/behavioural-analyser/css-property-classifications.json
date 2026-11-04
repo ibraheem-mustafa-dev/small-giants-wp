@@ -1077,6 +1077,237 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "signedOutCardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "signedOutCopy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "signed-out-copy"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "desktop",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSizeMobile",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "mobile",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontSizeTablet",
+      "fields": {
+        "css_property": "font-size",
+        "css_tier": "tablet",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutHeadingTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "trackColour",
       "fields": {
         "css_property": "border-color",
@@ -11605,6 +11836,131 @@
       "attr": "writingMode",
       "fields": {
         "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryFillEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "fill"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "message"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "text"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
       }
     },
     {
@@ -32370,6 +32726,48 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "authTabGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "auth-tabs"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabsSpaceBelow",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_layer": "OUTER",
+        "css_element": "auth-tabs"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -32457,6 +32855,133 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "order-thumbs"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "OUTER",
+        "css_element": "signed-out-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "signed-out-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "signed-out-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "signedOutCard"
       }
     },
     {
@@ -35789,6 +36314,55 @@
         "css_layer": "CONTENT",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryBarMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "margin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "wrapper"
       }
     },
     {

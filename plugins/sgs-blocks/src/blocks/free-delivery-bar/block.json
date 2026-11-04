@@ -1,0 +1,267 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/free-delivery-bar",
+	"version": "0.1.0",
+	"title": "SGS Free-delivery Bar",
+	"category": "sgs-interactive",
+	"description": "A progress card toward free delivery: how much more to spend, a progress bar and a success line. Server-rendered; the amount comes from WooCommerce's free-shipping minimum (or a setting) and the bar follows the basket live (Spec 27 Part 3, FR-30-20).",
+	"keywords": [
+		"free delivery",
+		"free shipping",
+		"progress",
+		"basket",
+		"threshold",
+		"woocommerce"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "cart",
+	"supports": {
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": false,
+			"text": false
+		},
+		"sgs": {
+			"motion": true,
+			"specRef": "30",
+			"boxFamilies": {
+				"padding": [
+					"padding"
+				],
+				"margin": [
+					"margin"
+				],
+				"borderRadius": [
+					"borderRadius"
+				],
+				"borderWidth": [
+					"borderWidth"
+				],
+				"freeDeliveryBarMargin": [
+					"freeDeliveryBarMargin"
+				]
+			},
+			"elements": {
+				"card": {
+					"label": "Free-delivery card",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"isWrapper": true,
+					"attrMap": {
+						"css:background-color": "backgroundColour",
+						"css:background-image": "backgroundColourGradient",
+						"css:padding": "padding",
+						"css:margin": "margin",
+						"css:border-width": "borderWidth",
+						"css:border-style": "borderStyle",
+						"css:border-color": "borderColour",
+						"css:border-radius": "borderRadius",
+						"css:box-shadow": "boxShadow",
+						"css:border-color-gradient": "borderColourGradient",
+						"css:box-shadow-color": "boxShadowColour"
+					}
+				},
+				"message": {
+					"selector": ".sgs-free-delivery-bar__text",
+					"motion": false,
+					"label": "Free-delivery message",
+					"order": 2,
+					"clusters": [
+						"text"
+					],
+					"prefix": "freeDeliveryText",
+					"attrMap": {
+						"css:color": "freeDeliveryTextColour"
+					},
+					"contentAttrs": [
+						"freeDeliveryMessage",
+						"freeDeliverySuccessMessage"
+					]
+				},
+				"track": {
+					"selector": ".sgs-free-delivery-bar__track",
+					"motion": false,
+					"label": "Free-delivery progress track",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryTrackColour",
+						"css:height": "freeDeliveryTrackHeight",
+						"css:margin": "freeDeliveryBarMargin",
+						"css:border-radius": "freeDeliveryTrackRadius"
+					}
+				},
+				"fill": {
+					"selector": ".sgs-free-delivery-bar__fill",
+					"motion": false,
+					"label": "Free-delivery progress fill",
+					"order": 4,
+					"clusters": [
+						"fill",
+						"motion"
+					],
+					"prefix": "freeDelivery",
+					"attrMap": {
+						"css:background-color": "freeDeliveryFillColour",
+						"css:transition-duration": "freeDeliveryFillDuration",
+						"css:transition-timing-function": "freeDeliveryFillEasing"
+					}
+				}
+			}
+		}
+	},
+	"attributes": {
+		"freeDeliveryThresholdOverride": {
+			"type": "string",
+			"default": "",
+			"description": "Manual free-delivery threshold, in the store's currency major unit (e.g. \"35\"). Empty uses the WooCommerce free-shipping method's minimum order amount for the store's base-country shipping zone. With neither, the block prints nothing."
+		},
+		"freeDeliveryMessage": {
+			"type": "string",
+			"default": "Add %s more for free delivery"
+		},
+		"freeDeliverySuccessMessage": {
+			"type": "string",
+			"default": "You have free delivery"
+		},
+		"freeDeliveryHideWhenEmpty": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hide the card while the basket is empty."
+		},
+		"freeDeliveryFillColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTrackColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextColour": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"freeDeliveryTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"freeDeliveryTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"freeDeliveryTrackHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Free-delivery progress track height per device (CSS length). Empty keeps 6px."
+		},
+		"freeDeliveryBarMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around the free-delivery progress track: tier object of boxes."
+		},
+		"freeDeliveryTrackRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Free-delivery track corner radius (CSS length). Empty keeps fully rounded."
+		},
+		"freeDeliveryFillDuration": {
+			"type": "number",
+			"default": 0.6,
+			"description": "Seconds the free-delivery bar takes to fill to its new level (0 to 3)."
+		},
+		"freeDeliveryFillEasing": {
+			"type": "string",
+			"default": "smooth",
+			"enum": [
+				"smooth",
+				"ease",
+				"ease-in-out",
+				"linear"
+			],
+			"description": "How the free-delivery bar's fill speeds up and slows down: 'smooth' is a quick start and a gentle finish."
+		},
+		"freeDeliveryLabel": {
+			"type": "string",
+			"default": "Progress towards free delivery"
+		},
+		"backgroundColour": {
+			"type": "string",
+			"default": ""
+		},
+		"backgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"borderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"borderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"borderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"boxShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"padding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		},
+		"margin": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style.css",
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js"
+}

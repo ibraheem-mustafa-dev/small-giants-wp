@@ -1,0 +1,13 @@
+/*
+ * Commerce note (Spec 27, FR-30-22). It renders in WooCommerce's text style; the
+ * panel look comes from the Cart and Checkout look settings (FR-30-18).
+ */
+.sgs-commerce-note {
+	margin: 0 0 1em;
+}
+
+.sgs-commerce-note__link {
+	display: inline-block;
+	min-height: 44px;
+	line-height: 44px;
+}

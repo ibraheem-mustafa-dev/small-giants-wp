@@ -14,6 +14,9 @@
  *                                         (registered in class-sgs-blocks.php) only for markup holding a highlight or
  *                                         an inline photo
  *   sgs_inline_formats_enqueue()       — enqueues that stylesheet with its palette rules, once per request
+ *   sgs_basket_count_enqueue()         — enqueues the basket-count view module (Spec 27 FR-30-24), only for markup
+ *                                         holding a `sgs-basket-count` span
+ *   sgs_basket_count_print()           — empties each such span, or fills it with the basket's count on cart/checkout
  *
  * The button label keeps its own narrower allowlist (src/blocks/button/render.php).
  *
@@ -168,15 +171,58 @@ if ( ! function_exists( 'sgs_inline_formats_enqueue' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_basket_count_enqueue' ) ) {
+	/**
+	 * Load the basket-count view module, once per request; called only for markup holding a `sgs-basket-count` span.
+	 *
+	 * @return void
+	 */
+	function sgs_basket_count_enqueue(): void {
+		$base = defined( 'SGS_BLOCKS_PATH' ) ? SGS_BLOCKS_PATH : dirname( __DIR__ ) . '/';
+		$url  = defined( 'SGS_BLOCKS_URL' ) ? SGS_BLOCKS_URL : '';
+		$js   = 'build/basket-count/index.js';
+		if ( is_file( $base . $js ) ) {
+			wp_enqueue_script_module( '@sgs/basket-count', $url . $js, array(), (string) filemtime( $base . $js ) );
+		}
+	}
+}
+
+if ( ! function_exists( 'sgs_basket_count_print' ) ) {
+	/**
+	 * Empty each basket-count span, or fill it with the basket's item count on cart and checkout.
+	 *
+	 * The words an author selects to stand for the number show in the editor only, so the span is printed empty and the
+	 * page never flashes a wrong figure. Cart and checkout are never page-cached, so there the server prints the real
+	 * count (the script then keeps it current); every other page is cached for everyone and is filled by the script.
+	 *
+	 * @param string $html The block's rendered markup.
+	 * @return string The markup with each text-only basket-count span emptied or filled.
+	 */
+	function sgs_basket_count_print( string $html ): string {
+		$count = '';
+		if ( function_exists( 'is_cart' ) && function_exists( 'is_checkout' ) && ( is_cart() || is_checkout() )
+			&& function_exists( 'WC' ) && WC() && WC()->cart ) {
+			$count = (string) (int) WC()->cart->get_cart_contents_count();
+		}
+		$printed = preg_replace(
+			'#(<span\b[^>]*\bclass="[^"]*\bsgs-basket-count\b[^"]*"[^>]*>)[^<]*(</span>)#',
+			'${1}' . $count . '${2}',
+			$html
+		);
+		return is_string( $printed ) ? $printed : $html;
+	}
+}
+
 if ( ! function_exists( 'sgs_inline_formats_maybe_enqueue' ) ) {
 	/**
-	 * `render_block` filter: load the inline-format stylesheet when the block's markup holds a highlight or a photo.
+	 * `render_block` filter: load the inline-format assets the block's markup needs. A highlight or a photo loads the
+	 * stylesheet; a basket count loads its view module and prints its span empty (or filled on cart and checkout).
 	 *
 	 * Parameters stay untyped: a hook callback typed `string` fatals on the null some blocks pass.
 	 *
 	 * @param mixed $block_content The block's rendered markup.
 	 * @param mixed $block         The parsed block (unused).
-	 * @return mixed The markup, unchanged.
+	 * @return mixed The markup.
 	 */
 	function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() ) {
 		unset( $block );
@@ -185,6 +231,10 @@ if ( ! function_exists( 'sgs_inline_formats_maybe_enqueue' ) ) {
 		}
 		if ( false !== strpos( $block_content, 'sgs-highlight' ) || false !== strpos( $block_content, 'sgs-inline-photo' ) ) {
 			sgs_inline_formats_enqueue();
+		}
+		if ( false !== strpos( $block_content, 'sgs-basket-count' ) && ! is_admin() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			sgs_basket_count_enqueue();
+			$block_content = sgs_basket_count_print( $block_content );
 		}
 		return $block_content;
 	}

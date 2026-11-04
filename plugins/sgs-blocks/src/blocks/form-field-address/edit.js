@@ -30,7 +30,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		fieldName,
 		label,
 		required,
-		enableLookup,
 		fields,
 		width,
 	} = attributes;
@@ -88,18 +87,6 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					<ToggleControl
-						label={ __( 'Enable postcode lookup', 'sgs-blocks' ) }
-						checked={ enableLookup }
-						onChange={ ( val ) =>
-							setAttributes( { enableLookup: val } )
-						}
-						help={ __(
-							'Auto-complete address from postcode',
-							'sgs-blocks'
-						) }
-						__nextHasNoMarginBottom
-					/>
 					<p>
 						{ __(
 							'Select which address fields to show:',
@@ -130,26 +117,6 @@ export default function Edit( { attributes, setAttributes } ) {
 					</label>
 				) }
 				<div className="sgs-form-field__address-fields">
-					{ enableLookup && fields.includes( 'postcode' ) && (
-						<div className="sgs-form-field__address-lookup">
-							<input
-								type="text"
-								className="sgs-form-field__input"
-								placeholder={ __(
-									'Enter postcode',
-									'sgs-blocks'
-								) }
-								disabled
-							/>
-							<button
-								type="button"
-								className="sgs-form-field__lookup-button"
-								disabled
-							>
-								{ __( 'Find Address', 'sgs-blocks' ) }
-							</button>
-						</div>
-					) }
 					{ fields.includes( 'line1' ) && (
 						<input
 							type="text"
@@ -190,7 +157,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 						) }
 					</div>
-					{ fields.includes( 'postcode' ) && ! enableLookup && (
+					{ fields.includes( 'postcode' ) && (
 						<input
 							type="text"
 							className="sgs-form-field__input"

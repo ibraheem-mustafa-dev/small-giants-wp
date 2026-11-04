@@ -143,6 +143,24 @@
 		"sheen",
 		"split-reveal"
 	],
+	"sgs/commerce-note": [
+		"ambient-float",
+		"curtain",
+		"follow-pointer",
+		"glare",
+		"lottie",
+		"magnet",
+		"morph",
+		"motion-path",
+		"parallax",
+		"particles",
+		"ripple",
+		"scramble",
+		"scroll-progress",
+		"scrub",
+		"sheen",
+		"split-reveal"
+	],
 	"sgs/container": [
 		"ambient-float",
 		"cursor-field",

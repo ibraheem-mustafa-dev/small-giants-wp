@@ -178,24 +178,21 @@ names_check( 'fieldName is cleaned to a key the endpoint accepts', array( 'busin
 names_check( 'text: label names the field when fieldName is empty', array( 'your-name' ) === names_all( names_render( $harness, 'sgs/form-field-text', array_merge( $shared, array( 'label' => 'Your name' ) ) ) ) );
 names_check( 'consent: unnamed and unlabelled submits as consent', array( 'consent' ) === names_all( names_render( $harness, 'sgs/form-field-consent', array( 'fieldName' => '', 'consentText' => 'I agree' ) ) ) );
 
-// 5. Address sub-fields submit as <name>-<part>; the postcode lookup box submits the postcode.
+// 5. Address sub-fields submit as <name>-<part>.
 $addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => 'site' ) ) ) );
 names_check( 'address: sub-fields are <name>-<part>', array( 'site-line1', 'site-postcode' ) === $addr );
-$addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => 'site', 'enableLookup' => true ) ) ) );
-names_check( 'address: the lookup box submits the postcode', in_array( 'site-postcode', $addr, true ) );
 
 // 5a. A long address name (MUST FAIL before the suffix reserve): a 60-character fieldName gave "<60 chars>-postcode",
 // which the endpoint refused, so every submission of the form failed with 400.
 $long_name = str_repeat( 'a', 60 );
 $all_parts = array( 'line1', 'line2', 'city', 'county', 'postcode', 'country' );
-foreach ( array( false, true ) as $lookup ) {
-	$addr  = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => $long_name, 'fields' => $all_parts, 'enableLookup' => $lookup ) ) ) );
-	$label = $lookup ? 'with the lookup box' : 'without the lookup box';
-	names_check( "address: a 60-character fieldName renders every part ($label)", 6 === count( $addr ) );
+{
+	$addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => $long_name, 'fields' => $all_parts ) ) ) );
+	names_check( "address: a 60-character fieldName renders every part", 6 === count( $addr ) );
 	$bad = array_filter( $addr, static fn( string $n ): bool => 1 !== preg_match( NAMES_SERVER_KEY, $n ) );
-	names_check( "address: a 60-character fieldName submits keys the endpoint accepts ($label): " . implode( ',', $bad ), array() === $bad );
-	names_check( "address: a 60-character fieldName keeps its parts distinct ($label)", count( array_unique( $addr ) ) === count( $addr ) );
-	names_check( "address: a 60-character fieldName keeps as much of the name as fits ($label)", in_array( substr( $long_name, 0, 55 ) . '-postcode', $addr, true ) );
+	names_check( "address: a 60-character fieldName submits keys the endpoint accepts: " . implode( ',', $bad ), array() === $bad );
+	names_check( "address: a 60-character fieldName keeps its parts distinct", count( array_unique( $addr ) ) === count( $addr ) );
+	names_check( "address: a 60-character fieldName keeps as much of the name as fits", in_array( substr( $long_name, 0, 55 ) . '-postcode', $addr, true ) );
 }
 $addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'label' => str_repeat( 'Where should we send it ', 5 ), 'fields' => $all_parts ) ) ) );
 $bad  = array_filter( $addr, static fn( string $n ): bool => 1 !== preg_match( NAMES_SERVER_KEY, $n ) );

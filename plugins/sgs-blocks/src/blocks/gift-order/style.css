@@ -1,0 +1,131 @@
+/*
+ * Gift order (Spec 27, FR-30-21). Structure only: the shop's look is set by
+ * the Cart and Checkout look settings (FR-30-18), so colour here is inherited
+ * from WooCommerce's own text style. No viewport breakpoints: the tiles stack
+ * when their column is too narrow for two. Focus rings come from the theme's
+ * shared focus system (focus.css): inputs through :focus-visible, the tiles
+ * through .sgs-focus-card around the hidden .sgs-focus-source radio.
+ */
+.sgs-gift-order {
+	box-sizing: border-box;
+	margin: 0 0 1.5em;
+	min-width: 0;
+}
+
+.sgs-gift-order--checkout {
+	border: 0;
+	padding: 0;
+}
+
+.sgs-gift-order__title {
+	padding: 0;
+	margin: 0 0 0.75em;
+}
+
+.sgs-gift-order__tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+	gap: 0.75rem;
+	margin: 0 0 1em;
+}
+
+.sgs-gift-order__tile {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.125rem;
+	min-height: 44px;
+	padding: 0.75rem 1rem;
+	border: 2px solid currentcolor;
+	border-radius: 0.5rem;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sgs-gift-order__tile--selected {
+	outline: 2px solid currentcolor;
+	outline-offset: 2px;
+}
+
+.sgs-gift-order__radio {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.sgs-gift-order__tile-label {
+	font-weight: 700;
+}
+
+.sgs-gift-order__switch {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	min-height: 44px;
+	cursor: pointer;
+}
+
+.sgs-gift-order__checkbox {
+	flex: none;
+	width: 24px;
+	height: 24px;
+	margin: 0.25rem 0 0;
+}
+
+.sgs-gift-order__switch-label {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.sgs-gift-order__switch-text {
+	font-weight: 700;
+}
+
+.sgs-gift-order__fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-top: 0.75rem;
+}
+
+.sgs-gift-order__field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.sgs-gift-order__label {
+	font-weight: 700;
+}
+
+.sgs-gift-order__input,
+.sgs-gift-order__textarea {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	min-height: 44px;
+	padding: 0.5rem 0.75rem;
+	font: inherit;
+}
+
+.sgs-gift-order__count {
+	font-size: 0.875em;
+	opacity: 0.85;
+}
+
+.sgs-gift-order__gift-only {
+	margin: 0.75rem 0 0;
+	font-weight: 700;
+}
+
+.sgs-gift-order__error {
+	margin: 0.75rem 0 0;
+	font-weight: 700;
+}

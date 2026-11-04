@@ -24,6 +24,7 @@ import {
 import DesignTokenPicker from '../../../components/DesignTokenPicker';
 
 export const HIGHLIGHT_NAME = 'sgs/highlight';
+export const BASKET_COUNT_NAME = 'sgs/basket-count';
 export const PHOTO_NAME = 'sgs/inline-photo';
 
 const HIGHLIGHT_MODIFIER = 'sgs-highlight--';

@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/commerce-note",
+	"version": "0.1.0",
+	"title": "Commerce note",
+	"category": "sgs-content",
+	"description": "A line of text with an optional link inside the Cart and Checkout blocks: an allergen note, a delivery promise, a Keep shopping link.",
+	"keywords": [ "cart", "checkout", "note", "allergen", "link" ],
+	"textdomain": "sgs-blocks",
+	"icon": "info-outline",
+	"parent": [
+		"woocommerce/cart-items-block",
+		"woocommerce/cart-totals-block",
+		"woocommerce/checkout-fields-block",
+		"woocommerce/checkout-totals-block"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"inserter": true,
+		"sgs": {
+			"specRef": "30",
+			"elements": {}
+		}
+	},
+	"attributes": {
+		"text": { "type": "string", "default": "" },
+		"linkLabel": { "type": "string", "default": "" },
+		"linkUrl": { "type": "string", "default": "" },
+		"linkTarget": { "type": "string", "enum": [ "_self", "_blank" ], "default": "_self" },
+		"linkRel": { "type": "string", "default": "" },
+		"linkUrlSource": { "type": "string", "default": "" }
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

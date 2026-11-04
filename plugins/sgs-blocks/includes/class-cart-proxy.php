@@ -43,6 +43,7 @@ final class Cart_Proxy {
 	const REST_NAMESPACE   = 'sgs/v1';
 	const REST_ROUTE       = 'cart/add-item';
 	const REST_ROUTE_AVAIL = 'cart/availability';
+	const REST_ROUTE_GIFT  = 'cart/gift';
 
 	/**
 	 * Rate-limit window in seconds.
@@ -92,6 +93,19 @@ final class Cart_Proxy {
 						'description'       => \__( 'WooCommerce variable product ID.', 'sgs-blocks' ),
 					),
 				),
+			)
+		);
+
+		// POST /sgs/v1/cart/gift: the gift-order value (Spec 27, FR-30-21). The handler
+		// enforces the nonce, sanitisation and rate limit; guests may use it.
+		\register_rest_route(
+			self::REST_NAMESPACE,
+			'/' . self::REST_ROUTE_GIFT,
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( \SGS\Blocks\Gift_Order\Gift_Order_Rest::class, 'handle' ),
+				'permission_callback' => '__return_true',
+				'args'                => \SGS\Blocks\Gift_Order\Gift_Order_Rest::args(),
 			)
 		);
 

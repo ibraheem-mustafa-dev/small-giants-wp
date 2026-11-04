@@ -41,6 +41,13 @@ const MOTION_DEFS_REQUEST = '@sgs/motion-defs';
 const MOTION_DEFS_GLOBAL = 'sgsMotionDefs';
 const MOTION_DEFS_HANDLE = 'sgs-motion-defs';
 
+// WooCommerce exposes its checkout extension API as `wc.blocksCheckout`
+// (script handle `wc-blocks-checkout`); sgs/gift-order and sgs/commerce-note
+// register their inner blocks through it, so the bundle never copies it.
+const WC_CHECKOUT_REQUEST = '@woocommerce/blocks-checkout';
+const WC_CHECKOUT_GLOBAL = [ 'wc', 'blocksCheckout' ];
+const WC_CHECKOUT_HANDLE = 'wc-blocks-checkout';
+
 if ( scriptConfig && Array.isArray( scriptConfig.plugins ) ) {
 	const extractionIndex = scriptConfig.plugins.findIndex(
 		( plugin ) =>
@@ -66,6 +73,9 @@ if ( scriptConfig && Array.isArray( scriptConfig.plugins ) ) {
 			if ( request === MOTION_DEFS_REQUEST ) {
 				return MOTION_DEFS_GLOBAL;
 			}
+			if ( request === WC_CHECKOUT_REQUEST ) {
+				return WC_CHECKOUT_GLOBAL;
+			}
 			return typeof previousOptions.requestToExternal === 'function'
 				? previousOptions.requestToExternal( request )
 				: undefined;
@@ -73,6 +83,9 @@ if ( scriptConfig && Array.isArray( scriptConfig.plugins ) ) {
 		requestToHandle( request ) {
 			if ( request === MOTION_DEFS_REQUEST ) {
 				return MOTION_DEFS_HANDLE;
+			}
+			if ( request === WC_CHECKOUT_REQUEST ) {
+				return WC_CHECKOUT_HANDLE;
 			}
 			return typeof previousOptions.requestToHandle === 'function'
 				? previousOptions.requestToHandle( request )
@@ -282,6 +295,14 @@ if ( moduleConfig ) {
 				'accordion',
 				'filter.js'
 			),
+			// The basket-count format's view module: includes/helpers-inline-formats.php registers it as '@sgs/basket-count' and a page whose markup holds a basket-count span loads it.
+			'basket-count/index': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'cart-live',
+				'basket-count.js'
+			),
 			'shared/effects/motion-state': path.resolve(
 				process.cwd(),
 				'src',
@@ -464,6 +485,17 @@ if ( ! scriptConfig ) {
 					'motion',
 					'motion-defs-global.js'
 				),
+				// Cart and Checkout inner blocks (sgs/gift-order, sgs/commerce-note):
+				// one classic script registering both with WooCommerce's
+				// registerCheckoutBlock, enqueued by the blocks' render files.
+				// NOT auto-discovered: it is shared by two blocks and is a classic
+				// script because wc.blocksCheckout is a global, not a module.
+				'commerce-blocks/frontend': path.resolve(
+					process.cwd(),
+					'src',
+					'commerce-blocks',
+					'frontend.js'
+				),
 			} ) );
 		}
 
@@ -503,6 +535,13 @@ if ( ! scriptConfig ) {
 				'components',
 				'motion',
 				'motion-defs-global.js'
+			),
+			// Cart and Checkout inner blocks - see the identical entry above.
+			'commerce-blocks/frontend': path.resolve(
+				process.cwd(),
+				'src',
+				'commerce-blocks',
+				'frontend.js'
 			),
 		};
 	};

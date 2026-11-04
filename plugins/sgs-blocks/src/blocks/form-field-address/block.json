@@ -33,7 +33,7 @@
                     "label": "Address sub-inputs",
                     "order": 2,
                     "clusters": [],
-                    "_note": "The compound address group (line1/line2/city/county/postcode/country, plus the optional postcode-lookup input) renders as repeated <input class=\"sgs-form-field__input sgs-form-field__address-{field}\"> inside a <div class=\"sgs-form-field__address-fields\">. Every sub-input shares the same framework-CSS `sgs-form-field__input` styling; there is no per-sub-field or per-instance style attribute (`fields`/`enableLookup` select WHICH sub-fields render, not how they look), so one 'input' element honestly represents the whole group rather than fabricating a separate styleable element per sub-input. clusters: [] is a genuine gap."
+                    "_note": "The compound address group (line1/line2/city/county/postcode/country, plus the postcode input) renders as repeated <input class=\"sgs-form-field__input sgs-form-field__address-{field}\"> inside a <div class=\"sgs-form-field__address-fields\">. Every sub-input shares the same framework-CSS `sgs-form-field__input` styling; there is no per-sub-field or per-instance style attribute (`fields` selects WHICH sub-fields render, not how they look), so one 'input' element honestly represents the whole group rather than fabricating a separate styleable element per sub-input. clusters: [] is a genuine gap."
                 },
                 "help": {
                     "label": "Help text",
@@ -61,10 +61,6 @@
             "role": "content"
         },
         "required": {
-            "type": "boolean",
-            "default": false
-        },
-        "enableLookup": {
             "type": "boolean",
             "default": false
         },
