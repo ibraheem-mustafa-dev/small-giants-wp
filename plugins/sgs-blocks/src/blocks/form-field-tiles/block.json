@@ -30,7 +30,22 @@
 					"layer": "CONTENT",
 					"order": 1,
 					"selector": ".sgs-form-tile",
-					"clusters": []
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "tile",
+					"attrMap": {
+						"css:background-color": "tileBackgroundColour",
+						"css:border-width": "tileBorderWidth",
+						"css:border-style": "tileBorderStyle",
+						"css:border-color": "tileBorderColour",
+						"css:border-radius": "tileRadius",
+						"css:padding": "tilePadding",
+						"css:gap": "tileInnerGap",
+						"css:align-items": "tileAlign"
+					},
+					"_note": "Each tile's own surface, painted by render.php into the field's scoped style. The selected state (checked or --selected) keeps its own border colour and width: the tile border rule excludes it, and the hover colour stays the stylesheet's."
 				},
 				"tile-label": {
 					"selector": ".sgs-form-tile__label",
@@ -153,10 +168,15 @@
 			},
 			"boxFamilies": {
 				"borderRadius": [
-					"borderRadius"
+					"borderRadius",
+					"tileRadius"
 				],
 				"borderWidth": [
-					"borderWidth"
+					"borderWidth",
+					"tileBorderWidth"
+				],
+				"padding": [
+					"tilePadding"
 				]
 			}
 		},
@@ -598,6 +618,58 @@
 		"tileDescriptionColour": {
 			"type": "string",
 			"default": ""
+		},
+		"tileBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Background of each tile (slug or CSS colour). Empty = transparent. A selected tile keeps the selected-style background."
+		},
+		"tileBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of each tile as a {top,right,bottom,left} box or a {desktop,tablet,mobile} object of boxes. Empty = the stylesheet's 2px. A selected tile keeps its own 3px."
+		},
+		"tileBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid"
+		},
+		"tileBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of each tile (slug or CSS colour). Empty = the stylesheet's border colour. The hover and selected colours still apply."
+		},
+		"tileRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Corner radius of each tile as {desktop,tablet,mobile} corner objects {topLeft,topRight,bottomRight,bottomLeft}. Empty = the stylesheet's radius."
+		},
+		"tilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding inside each tile as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 1rem."
+		},
+		"tileInnerGap": {
+			"type": "object",
+			"default": {},
+			"description": "Gap between a tile's icon, label and description as a {desktop,tablet,mobile} object of lengths or spacing preset slugs. Empty = the stylesheet's 0.5rem."
+		},
+		"tileAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Cross-axis alignment of a tile's contents as a {desktop,tablet,mobile} object of start, center, end or stretch. Empty = centre."
 		}
 	},
 	"render": "file:./render.php",
