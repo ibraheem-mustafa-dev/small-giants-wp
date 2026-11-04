@@ -456,7 +456,7 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	align-items: center;
 }
 
-.sgs-account__wc > #customer_login.u-columns.col2-set > div,
+:where(.sgs-account:not([data-auth-layout="tabs"])) .sgs-account__wc > #customer_login.u-columns.col2-set > div,
 .sgs-account__wc > form.woocommerce-form-login,
 .sgs-account__wc > form.woocommerce-ResetPassword {
 	background: var(--wp--preset--color--surface-alt, #f7f7f7);
@@ -465,6 +465,114 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	padding: 1.5rem;
 	max-width: var(--sgs-account-auth-card-max-width, 480px);
 	width: 100%;
+	margin-inline: auto;
+}
+
+/* -- Signed-out card (signedOutView "card") -------------------------------- */
+/* The auth card carries the card chrome: the signed-out card, and in tabs layout the container holding the tabs and
+   the open form. Fill, border colour, corner radius, shadow and padding are its own settings (render.php scoped CSS);
+   these are the defaults an unset control falls back to. */
+.sgs-account__auth-card {
+	width: 100%;
+	max-width: var(--sgs-account-signed-out-max-width, 40rem);
+	box-sizing: border-box;
+	border: 0 solid var(--wp--preset--color--border, #e2e2e2);
+	background: var(--wp--preset--color--surface-alt, #f7f7f7);
+}
+
+:where(.sgs-account__auth-card) {
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+	border-radius: 10px;
+}
+
+.sgs-account__signed-out {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--sgs-account-signed-out-gap, var(--wp--preset--spacing--30, 1rem));
+}
+
+.sgs-account__signed-out .sgs-account__heading,
+.sgs-account__signed-out .sgs-account__card-desc {
+	margin: 0;
+}
+
+.sgs-account__signed-out-actions {
+	display: flex;
+	gap: var(--sgs-account-signed-out-actions-gap, var(--wp--preset--spacing--20, 0.75rem));
+}
+
+:where(.sgs-account__signed-out-actions) {
+	flex-wrap: wrap;
+}
+
+/* -- Sign in / Create account tabs (authLayout "tabs") ---------------------- */
+.sgs-account__auth-tabs {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--sgs-account-tab-gap, var(--wp--preset--spacing--20, 0.5rem));
+	margin-block-end: var(--sgs-account-tabs-space-below, var(--wp--preset--spacing--30, 1rem));
+}
+
+/* Each tab takes the site's button presets: the open tab the primary look, the other the secondary. */
+.sgs-account__auth-tab {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: var(--sgs-account-tab-min-height, 44px);
+	padding: 0 var(--wp--preset--spacing--30, 1rem);
+	border-style: solid;
+	border-width: var(--wp--custom--button-presets--secondary--border-width, 2px);
+	border-radius: var(--wp--custom--button-presets--secondary--border-radius, 10px);
+	border-color: var(--wp--custom--button-presets--secondary--border, var(--wp--preset--color--primary));
+	background: var(--wp--custom--button-presets--secondary--background, transparent);
+	color: var(--wp--custom--button-presets--secondary--text, var(--wp--preset--color--text));
+	text-decoration: none;
+	cursor: pointer;
+}
+
+:where(.sgs-account__auth-tab) {
+	font-weight: var(--wp--custom--button-presets--secondary--font-weight, 600);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.sgs-account__auth-tab {
+		transition: transform var(--wp--custom--button-presets--secondary--hover-transition, 0.2s) var(--wp--custom--button-presets--secondary--hover-easing, ease);
+	}
+}
+
+@media (hover: hover) {
+	.sgs-account__auth-tab:hover {
+		transform: var(--wp--custom--button-presets--secondary--hover-transform, none);
+	}
+}
+
+.sgs-account__auth-tab[aria-selected="true"] {
+	border-width: var(--wp--custom--button-presets--primary--border-width, 2px);
+	border-radius: var(--wp--custom--button-presets--primary--border-radius, 10px);
+	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary));
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+}
+
+/* Tabs name the forms, so WooCommerce's own Login / Register headings stay for assistive tech only. */
+.sgs-account__auth-panel > h2 {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sgs-account__auth-panel[hidden] {
+	display: none;
+}
+
+/* In tabs layout the container is the one card; the forms inside it are not cards of their own. */
+.sgs-account[data-auth-layout="tabs"] .sgs-account__wc > #customer_login.u-columns.col2-set {
+	display: block;
 	margin-inline: auto;
 }
 

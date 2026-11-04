@@ -54,7 +54,7 @@ sgs/form                          # Form wrapper (handles submission, validation
 │   ├── sgs/form-field-number     # Number input
 │   ├── sgs/form-field-hidden     # Hidden field
 │   ├── sgs/form-field-consent    # GDPR/T&C consent checkbox
-│   ├── sgs/form-field-address    # Address with postcode lookup
+│   ├── sgs/form-field-address    # Address (line 1, line 2, city, county, postcode, country)
 │   └── (any SGS block)           # Informational content between fields
 ├── sgs/form-step                 # Another step...
 │   └── ...
@@ -189,11 +189,10 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 
 **Additional attributes:** `min`, `max`, `step`, and for boxes laid out as a small table (a prescription's SPH / CYL / AXIS): `columnHeading` (a short heading above the box, set on the first row) and `rowHeading` (a short heading in a 32px gutter to the left, set on the first box of each row). Both are visual only; the label stays the accessible name. Row-headed boxes sit 8px apart with no spinner arrows (`plugins/sgs-blocks/includes/forms/field-render-helpers.php::field_headings`).
 
-### Address with Postcode Lookup (`sgs/form-field-address`)
+### Address (`sgs/form-field-address`)
 
 **Additional attributes:**
-- `enableLookup` — boolean (enable postcode auto-complete)
-- `lookupProvider` — getaddress.io | ideal-postcodes (API key stored in settings) — **not built** (no address-lookup provider is wired in)
+- No postcode-lookup setting: customers type their address (Spec 27 FR-30-23).
 - `fields` — which sub-fields to show (line1, line2, city, county, postcode, country)
 
 ### Consent (`sgs/form-field-consent`)
@@ -327,7 +326,7 @@ These items are specified above and have no implementation yet. Each stays in th
 | Item | Status |
 |---|---|
 | Payment collection (`paymentEnabled`, `paymentAmount`, `paymentDescription`, submission-flow step 7, Stripe Payment Intent) | Not built. The `payment_*` and `stripe_payment_id` columns exist and hold `none` / null. |
-| Address-lookup provider (`lookupProvider` on `sgs/form-field-address`) | Not built. |
+| Address-lookup provider | Not built; no lookup setting exists on `sgs/form-field-address` (Spec 27 FR-30-23). |
 | Multi-file upload cap (`maxFiles` on `sgs/form-field-file`) | Not built. |
 | Retention auto-delete (GDPR) | Not built. Data export and erasure are built. |
 | Admin bulk actions | Not built. |

@@ -351,6 +351,11 @@ function extractBemElements( selector ) {
  */
 const ATTR_ELEMENT_OVERRIDES = {
 	submenuLinkPadding: [ 'sublink' ],
+	// sgs/account: the sign-in card's chrome belongs to `.sgs-account__auth-card` alone (the card and the container
+	// of the sign-in tabs), never to the block's other cards or WooCommerce's own notices and forms.
+	signedOutCardBorderRadius: [ 'auth-card' ],
+	signedOutCardPadding: [ 'auth-card' ],
+	signedOutCardGap: [ 'signed-out' ],
 };
 
 /**
@@ -372,12 +377,14 @@ const ATTR_ELEMENT_OVERRIDES = {
  *   attrName = "gap"         selector tokens = null (root) → NOT exempt (checked normally)
  */
 function isBemSubElementMismatch( attrName, bemElements ) {
-	if ( bemElements === null ) {
-		return false; // root selector — apply full checking
-	}
+	// A pinned attr (ATTR_ELEMENT_OVERRIDES) names the one element it paints, so a rule with no sub-element
+	// (a root or descendant selector) is not its element either.
 	const override = ATTR_ELEMENT_OVERRIDES[ attrName ];
 	if ( override ) {
-		return ! override.some( ( token ) => bemElements.has( token ) );
+		return bemElements === null || ! override.some( ( token ) => bemElements.has( token ) );
+	}
+	if ( bemElements === null ) {
+		return false; // root selector — apply full checking
 	}
 	const lowerAttr = attrName.toLowerCase();
 	for ( const token of bemElements ) {

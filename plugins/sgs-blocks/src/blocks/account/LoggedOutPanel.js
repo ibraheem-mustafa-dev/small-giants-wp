@@ -36,7 +36,23 @@ export default function LoggedOutPanel( { attributes, setAttributes } ) {
 			>
 				<ToggleGroupControlOption value="side-by-side" label={ __( 'Side by side', 'sgs-blocks' ) } />
 				<ToggleGroupControlOption value="stacked" label={ __( 'Stacked', 'sgs-blocks' ) } />
+				<ToggleGroupControlOption value="tabs" label={ __( 'Tabs', 'sgs-blocks' ) } />
 			</ToggleGroupControl>
+			{ 'tabs' === authLayout && (
+				<>
+					<SgsFreeTextField
+						label={ __( 'Sign in tab label', 'sgs-blocks' ) }
+						value={ attributes.authTabSignInLabel }
+						onChange={ ( value ) => setAttributes( { authTabSignInLabel: value } ) }
+					/>
+					<SgsFreeTextField
+						label={ __( 'Create account tab label', 'sgs-blocks' ) }
+						help={ __( 'The tabs show only while WooCommerce registration is on.', 'sgs-blocks' ) }
+						value={ attributes.authTabRegisterLabel }
+						onChange={ ( value ) => setAttributes( { authTabRegisterLabel: value } ) }
+					/>
+				</>
+			) }
 
 			<ToggleControl
 				__nextHasNoMarginBottom

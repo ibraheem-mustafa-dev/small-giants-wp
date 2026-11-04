@@ -361,6 +361,7 @@
     "wp_tempnam",
     "wp_get_image_editor",
     "wp_dequeue_script",
+    "wp_dequeue_script_module",
     "wp_deregister_script",
     "wp_deregister_style",
     "wp_die",
