@@ -97,6 +97,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from block_source_files import edit_source  # noqa: E402
+from framework_db import builds_default_db_by_hand, code_of  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "dbschema"))
 from block_source import BlockSource, is_tier_object  # noqa: E402
@@ -7336,18 +7337,16 @@ def _build_stage_dispatch(conn: sqlite3.Connection, args: argparse.Namespace) ->
 FULL_RUN_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 13]
 
 
-# Child scripts that never open any database. Under --db they run as normal: skipping one returns an empty
-# success, and the caller (motion_presets_seed.validate_presets reads the validator's JSON verdict) then fails.
-DB_FREE_CHILDREN = frozenset({"validate-motion-presets.mjs"})
-
-
 def _guard_children_for_db_override() -> None:
     """Under --db, a child script that would open the default DB is skipped.
 
     Every subprocess this run starts goes through `subprocess.run`; a Python or
     Node script that neither reads $SGS_FRAMEWORK_DB nor receives `--db` is
-    skipped with a warning instead of writing the shared DB, unless it is listed
-    in DB_FREE_CHILDREN (it opens no database at all)."""
+    skipped with a warning instead of writing the shared DB. "Would open the
+    default DB" means its code (comments removed) builds the shared database path
+    by hand and neither reads the variable nor uses lib/framework_db; a script
+    that names no database at all (validate-motion-presets.mjs) runs as normal.
+    check-framework-db-resolver.py keeps the reseed's children out of that skip."""
     real_run = subprocess.run
 
     def guarded(cmd, *args, **kwargs):
@@ -7356,9 +7355,8 @@ def _guard_children_for_db_override() -> None:
             (Path(c) for c in parts if c.endswith((".py", ".js", ".mjs")) and Path(c).is_file()),
             None,
         )
-        if script is not None and script.name not in DB_FREE_CHILDREN and "--db" not in parts:
-            text = script.read_text(encoding="utf-8", errors="ignore")
-            if "SGS_FRAMEWORK_DB" not in text:
+        if script is not None and "--db" not in parts:
+            if builds_default_db_by_hand(code_of(script)):
                 print(
                     f"  [--db] WARN skipped {script.name}: it does not read $SGS_FRAMEWORK_DB, "
                     "so it would write the default sgs-framework.db"

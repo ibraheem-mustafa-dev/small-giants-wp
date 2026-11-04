@@ -339,7 +339,7 @@ def _self_test() -> int:
     good = mdir / "2026-01-01-good.py"
     good.write_text(
         "import sqlite3, pathlib\n"
-        "db = pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db'\n"
+        "import os\ndb = os.environ.get('SGS_FRAMEWORK_DB') or str(pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db')\n"
         "c = sqlite3.connect(str(db))\n"
         "c.execute('CREATE TABLE IF NOT EXISTS canary(x INTEGER)')\n"
         "c.execute('INSERT INTO canary VALUES (1)')\n"
@@ -356,7 +356,7 @@ def _self_test() -> int:
     never = mdir / "2026-01-03-never-runs.py"
     never.write_text(
         "import sqlite3, pathlib\n"
-        "db = pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db'\n"
+        "import os\ndb = os.environ.get('SGS_FRAMEWORK_DB') or str(pathlib.Path.home()/'.claude'/'skills'/'sgs-wp-engine'/'sgs-framework.db')\n"
         "c = sqlite3.connect(str(db))\n"
         "c.execute('CREATE TABLE IF NOT EXISTS should_not_exist(x INTEGER)')\n"
         "c.commit(); c.close()\n",

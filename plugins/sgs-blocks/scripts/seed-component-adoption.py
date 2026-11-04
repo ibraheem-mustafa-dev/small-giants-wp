@@ -32,6 +32,11 @@ UK English throughout.
 """
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 0), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import json
 import sqlite3
@@ -56,8 +61,7 @@ def resolve_db() -> Path:
     repo's signature failure mode.
     """
     candidates = [
-        Path.home() / ".agents/skills/sgs-wp-engine/sgs-framework.db",
-        Path.home() / ".claude/skills/sgs-wp-engine/sgs-framework.db",
+        framework_db_path(),
     ]
     for p in candidates:
         if p.exists() and p.stat().st_size > 100_000:

@@ -52,6 +52,11 @@ them would manufacture false drift on every single run.
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import datetime
 import shutil
@@ -398,7 +403,7 @@ def main() -> int:
                     help="committed schema.sql to compare against (default: sibling file)")
     ap.add_argument(
         "--live-db", type=Path,
-        default=Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db",
+        default=framework_db_path(),
         help="live database, opened READ-ONLY (default: the real knowledge base)",
     )
     ap.add_argument("--check", action="store_true",

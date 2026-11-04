@@ -32,6 +32,11 @@ Note on the directory name
 """
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import importlib
 import importlib.util
@@ -88,7 +93,7 @@ _check_fx_qualifying_blocks_stale_mod = _load_sibling("check_fx_qualifying_block
 
 Violation = _models_mod.Violation
 
-_DB_PATH = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+_DB_PATH = framework_db_path()
 # ---------------------------------------------------------------------------
 # Report formatting
 # ---------------------------------------------------------------------------

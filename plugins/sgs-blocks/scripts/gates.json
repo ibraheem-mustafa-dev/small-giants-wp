@@ -2105,5 +2105,23 @@
     "added_commit": null,
     "budget_ms": null,
     "order": 240
+  },
+  {
+    "id": "check-framework-db-resolver",
+    "cmd": "python scripts/check-framework-db-resolver.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 241
+  },
+  {
+    "id": "check-framework-db-resolver-selftest",
+    "cmd": "python scripts/check-framework-db-resolver.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1200,
+    "order": 242
   }
 ]

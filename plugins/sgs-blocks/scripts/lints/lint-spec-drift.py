@@ -43,6 +43,11 @@ Usage:
 
 from __future__ import annotations
 
+import os as _os
+import sys as _sys
+
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
+from framework_db import framework_db_path  # noqa: E402
 import argparse
 import re
 import sqlite3
@@ -57,7 +62,7 @@ SPECS = REPO / ".claude" / "specs"
 SRC_BLOCKS = REPO / "plugins" / "sgs-blocks" / "src" / "blocks"
 BUILD_BLOCKS = REPO / "plugins" / "sgs-blocks" / "build" / "blocks"
 SEARCH_ROOTS = [REPO / "plugins", REPO / "theme"]
-SGS_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+SGS_DB = framework_db_path()
 
 # Checks that report but do NOT fail --check (see the BLOCK-SLUG note in the docstring).
 #
