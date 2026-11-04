@@ -78,7 +78,19 @@ $sgs_pba_rebuild_inner_content = static function ( array $block ): array {
 	return $block;
 };
 
-$sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba_ops, &$sgs_pba_hits, $sgs_pba_matches, $sgs_pba_rebuild_inner_content ): array {
+// The attribute names a block type declares (supports-added ones such as className and anchor are registered
+// attributes too). lock and metadata are block-comment keys every block accepts. A name outside this set is stored
+// in the comment, never read by the block and silently does nothing, so a `set` of one is refused.
+$sgs_pba_undeclared = array();
+$sgs_pba_declared   = static function ( string $block_name ): ?array {
+	$type = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+	if ( ! $type ) {
+		return null;
+	}
+	return array_merge( array_keys( (array) $type->attributes ), array( 'lock', 'metadata' ) );
+};
+
+$sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba_ops, &$sgs_pba_hits, &$sgs_pba_undeclared, $sgs_pba_declared, $sgs_pba_matches, $sgs_pba_rebuild_inner_content ): array {
 	$out = array();
 	foreach ( $blocks as $block ) {
 		$drop = false;
@@ -94,7 +106,13 @@ $sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba
 			if ( isset( $op['replace'] ) ) {
 				$swap = array_values( array_filter( parse_blocks( (string) $op['replace'] ), static fn( $b ) => ! empty( $b['blockName'] ) ) );
 			}
+			$declared = $sgs_pba_declared( (string) $block['blockName'] );
 			foreach ( (array) ( $op['set'] ?? array() ) as $key => $value ) {
+				if ( null === $declared ) {
+					$sgs_pba_undeclared[] = sprintf( '%s: %s is not a registered block type', (string) $op['match'], (string) $block['blockName'] );
+				} elseif ( ! in_array( (string) $key, $declared, true ) ) {
+					$sgs_pba_undeclared[] = sprintf( '%s: %s declares no attribute "%s"', (string) $op['match'], (string) $block['blockName'], (string) $key );
+				}
 				$block['attrs'][ $key ] = $value;
 			}
 			foreach ( (array) ( $op['unset'] ?? array() ) as $key ) {
@@ -139,6 +157,9 @@ foreach ( $sgs_pba_ops as $i => $op ) {
 }
 if ( $sgs_pba_bad ) {
 	WP_CLI::error( 'Nothing written. ' . implode( '; ', $sgs_pba_bad ) );
+}
+if ( $sgs_pba_undeclared ) {
+	WP_CLI::error( 'Nothing written (dry run included). Refused undeclared setting(s): ' . implode( '; ', array_unique( $sgs_pba_undeclared ) ) );
 }
 
 $sgs_pba_content = serialize_blocks( $sgs_pba_new );
