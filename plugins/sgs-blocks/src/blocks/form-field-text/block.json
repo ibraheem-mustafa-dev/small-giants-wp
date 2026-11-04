@@ -33,7 +33,8 @@
                     "label": "Text input",
                     "order": 2,
                     "clusters": [
-                        "fill"
+                        "fill",
+                        "layout"
                     ],
                     "prefix": "field",
                     "attrMap": {
@@ -42,7 +43,8 @@
                         "css:border-style": "fieldBorderStyle",
                         "css:border-color": "fieldBorderColour",
                         "css:border-radius": "fieldBorderRadius",
-                        "css:box-shadow": "fieldShadow"
+                        "css:box-shadow": "fieldShadow",
+                        "css:box-shadow-color": "fieldShadowColour"
                     },
                     "motion": false,
                     "_note": "Renders as <input class=\"sgs-form-field__input\">. Fill, border, corner radius and shadow are this field's own (includes/forms/field-own-style.php, scoped to the field's uid class), for a field outside an sgs/form such as a search box; the names are the form's own field* names. Typography has no per-field attribute."
@@ -51,7 +53,15 @@
                     "label": "Leading icon",
                     "order": 5,
                     "selector": ".sgs-form-field__leading-icon",
-                    "clusters": [],
+                    "clusters": [
+                        "text",
+                        "layout"
+                    ],
+                    "prefix": "leadingIcon",
+                    "attrMap": {
+                        "css:color": "leadingIconColour",
+                        "css:width": "leadingIconSize"
+                    },
                     "motion": false,
                     "_note": "A Lucide icon inside the control's start edge (leadingIcon, leadingIconColour, leadingIconSize); the input's start padding clears it."
                 },

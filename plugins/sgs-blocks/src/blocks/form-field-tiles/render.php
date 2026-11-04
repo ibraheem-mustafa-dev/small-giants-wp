@@ -288,8 +288,9 @@ $sgs_ft_supports_css .= sgs_emit_responsive_css(
 			'unit_default' => 'px',
 		),
 		array(
-			'value' => $attributes['tileInnerGap'] ?? null,
-			'css'   => 'gap',
+			'value'        => $attributes['tileInnerGap'] ?? null,
+			'css'          => 'gap',
+			'unit_default' => 'px',
 		),
 		array(
 			'value' => $sgs_ft_tile_align,
