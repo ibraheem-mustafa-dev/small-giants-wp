@@ -58,7 +58,8 @@ function sgs_commerce_look_has_any( array $attrs, array $prefixes ): bool {
  * One card's rules: fill, border (per-device width and corner radius), shadow and per-device padding.
  *
  * The border declarations arrive already built: the caller reads each card's border through
- * sgs_border_element_decls() with a literal prefix and colour map (the border gates read those literals).
+ * sgs_border_element_decls() with a literal prefix and colour map (the border gates read those literals) and prints
+ * the per-device border lists itself (cards.php::sgs_commerce_look_border_tiers).
  *
  * @param array<string, mixed> $attrs    Set attributes.
  * @param string               $prefix   Attribute prefix (`sgsItem`, `sgsSummary`, ...).
@@ -81,13 +82,6 @@ function sgs_commerce_look_card_css( array $attrs, string $prefix, string $selec
 	$decls  = array_merge( $decls, $border['base'], $shadow['normal'] );
 
 	$css = array() === $decls ? '' : $selector . '{' . implode( ';', $decls ) . ';}';
-	$css .= sgs_emit_tier_decls(
-		$selector,
-		array(
-			'tablet' => $border['tablet'],
-			'mobile' => $border['mobile'],
-		)
-	);
 	$css .= implode( '', $border['rules'] );
 	$css .= sgs_emit_responsive_css(
 		$selector,
