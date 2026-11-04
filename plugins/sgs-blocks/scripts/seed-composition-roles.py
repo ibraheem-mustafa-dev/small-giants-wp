@@ -434,6 +434,13 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Free-delivery progress card (2026-11-04, Spec 27 FR-30-20): a leaf drawn from its own attributes.
+    {
+        "block_slug": "sgs/free-delivery-bar",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 

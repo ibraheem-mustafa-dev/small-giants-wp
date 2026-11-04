@@ -159,8 +159,8 @@ if ( ! function_exists( 'sgs_account_signed_out_html' ) ) {
 		}
 
 		$html  = '<div class="sgs-account__signed-out sgs-account__auth-card">';
-		$html .= '<h2 class="sgs-account__heading">' . sgs_rich_text_kses( $heading ) . '</h2>';
-		$html .= '<p class="sgs-account__card-desc">' . sgs_rich_text_kses( $copy ) . '</p>';
+		$html .= '<h2 class="sgs-account__heading sgs-account__signed-out-heading">' . sgs_rich_text_kses( $heading ) . '</h2>';
+		$html .= '<p class="sgs-account__card-desc sgs-account__signed-out-copy">' . sgs_rich_text_kses( $copy ) . '</p>';
 		$html .= '<div class="sgs-account__signed-out-actions">';
 		$html .= sgs_account_signed_out_button( $sign_in_label, $sign_in_url, 'primary', $look );
 
@@ -243,9 +243,9 @@ if ( ! function_exists( 'sgs_account_auth_card_css' ) ) {
 				),
 			)
 		);
-		$css[] = sgs_typography_css_rule( $attributes, 'signedOutHeading', $root_sel . ' .sgs-account__signed-out .sgs-account__heading', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
-		$css[] = sgs_typography_css_rule( $attributes, 'signedOutCopy', $root_sel . ' .sgs-account__signed-out .sgs-account__card-desc', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
-		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__signed-out .sgs-account__card-desc', $attributes, array( 'base' => 'signedOutCopyColour' ) );
+		$css[] = sgs_typography_css_rule( $attributes, 'signedOutHeading', $root_sel . ' .sgs-account__signed-out .sgs-account__signed-out-heading', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+		$css[] = sgs_typography_css_rule( $attributes, 'signedOutCopy', $root_sel . ' .sgs-account__signed-out .sgs-account__signed-out-copy', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__signed-out .sgs-account__signed-out-copy', $attributes, array( 'base' => 'signedOutCopyColour' ) );
 		$css[] = sgs_flex_wrap_css( $attributes, $root_sel, array( 'signedOutActionsFlexWrap' => '.sgs-account__signed-out-actions' ) );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutButtonGap', '--sgs-account-signed-out-actions-gap', $root_sel, true );
 		$css[] = sgs_account_tier_custom_property_css( $attributes, 'signedOutCardMaxWidth', '--sgs-account-signed-out-max-width', $root_sel );

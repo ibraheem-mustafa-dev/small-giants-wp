@@ -204,7 +204,7 @@
 					"_note": "The card's two buttons are rendered by sgs/button, which paints these three values; their colours, radius, type and hover come from the site's button presets."
 				},
 				"signed-out-heading": {
-					"selector": ".sgs-account__signed-out .sgs-account__heading",
+					"selector": ".sgs-account__signed-out .sgs-account__signed-out-heading",
 					"motion": false,
 					"label": "Signed-out card heading",
 					"order": 19,
@@ -217,7 +217,7 @@
 				"signedOutCopy": {
 					"motion": false,
 					"prefix": "signedOutCopy",
-					"selector": ".sgs-account__signed-out .sgs-account__card-desc",
+					"selector": ".sgs-account__signed-out .sgs-account__signed-out-copy",
 					"label": "Signed-out card text",
 					"order": 15,
 					"clusters": [
@@ -226,7 +226,7 @@
 					"attrMap": {
 						"css:color": "signedOutCopyColour"
 					},
-					"_note": "The signed-out card's paragraph. Its type settings are the shared card-description typography (cardDesc)."
+					"_note": "The signed-out card's paragraph. Its own type settings (signedOutCopy); unset, it takes the shared card-description look."
 				},
 				"signedOutCard": {
 					"motion": false,
