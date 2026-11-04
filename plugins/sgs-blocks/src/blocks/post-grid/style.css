@@ -335,6 +335,9 @@
 	gap: 8px;
 	align-items: center;
 	color: var( --sgs-pg-meta-colour, var( --wp--preset--color--text-muted, #555 ) );
+}
+
+:where(.sgs-post-grid__meta) {
 	margin-bottom: 8px;
 }
 
@@ -345,6 +348,9 @@
 	gap: 8px;
 	align-items: center;
 	justify-content: space-between;
+}
+
+:where(.sgs-post-grid__meta-row) {
 	margin-bottom: 8px;
 }
 
@@ -392,7 +398,7 @@
    Card title
    ========================================================================== */
 
-.sgs-post-grid__title {
+:where(.sgs-post-grid__title) {
 	margin: 0 0 10px;
 }
 
@@ -425,6 +431,9 @@
 
 .sgs-post-grid__excerpt {
 	color: var( --sgs-pg-excerpt-colour, var( --wp--preset--color--text-muted, #555 ) );
+}
+
+:where(.sgs-post-grid__excerpt) {
 	margin: 0 0 12px;
 }
 
@@ -631,6 +640,9 @@
 .sgs-post-grid__load-more-wrap {
 	display: flex;
 	justify-content: center;
+}
+
+:where(.sgs-post-grid__load-more-wrap) {
 	margin-top: 40px;
 }
 

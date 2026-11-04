@@ -127,6 +127,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( val ) => setAttributes( { boxSize: val || undefined } ) }
 					/>
 					<SgsBoxControl
+						presets
 						label={ __( 'Tick box margin', 'sgs-blocks' ) }
 						values={ attributes.boxMargin && 'object' === typeof attributes.boxMargin ? attributes.boxMargin : {} }
 						units={ BOX_UNITS }
