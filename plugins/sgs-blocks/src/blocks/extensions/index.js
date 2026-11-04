@@ -62,6 +62,7 @@ import './mega-section-page-panel';
 import './product-collection-same-term';
 import './product-filter-chips-gap';
 import './product-filter-look';
+import './commerce-look';
 import './product-collection-card-min';
 import './post-content-lists';
 import './post-time-to-read-short';

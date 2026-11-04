@@ -85,6 +85,10 @@ ROLE_EXCEPTIONS = {
     'extension/sgsChipCountRadius': ('spacing', 'extension attribute: a count pill corner radius'),
     'extension/sgsSortBorderWidth': ('spacing', 'extension attribute: the sort select border width'),
     'extension/sgsSortBorderRadius': ('spacing', 'extension attribute: the sort select corner radius'),
+    'extension/sgsFieldMinHeight': ('spacing', 'extension attribute: the minimum height of a Cart or Checkout form field'),
+    'extension/sgsItemGap': ('spacing', 'extension attribute: the space between Cart line-item cards'),
+    'extension/sgsItemThumbSize': ('spacing', 'extension attribute: the width of a line-item picture'),
+    'extension/sgsItemStepperRadius': ('spacing', 'extension attribute: the corner radius of the quantity stepper'),
 }
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {

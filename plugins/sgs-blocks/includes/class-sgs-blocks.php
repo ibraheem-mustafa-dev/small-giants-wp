@@ -167,6 +167,11 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-chips-gap.php';
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-look.php';
 
+		// Cart and Checkout look settings (FR-30-18) -- `woocommerce/cart` and `woocommerce/checkout` only.
+		// One writer for the front end (render_block) and the editor canvas (GET sgs/v1/commerce-look/css).
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/writer.php';
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/rest.php';
+
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
 		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.
 		require_once SGS_BLOCKS_PATH . 'includes/product-collection-card-min.php';

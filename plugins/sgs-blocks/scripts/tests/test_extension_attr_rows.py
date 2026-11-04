@@ -74,7 +74,8 @@ def _make_db(blocks: list[str]) -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:")
     conn.executescript(
         """
-        CREATE TABLE blocks (slug TEXT PRIMARY KEY, source TEXT, is_stale INTEGER DEFAULT 0);
+        CREATE TABLE blocks (slug TEXT PRIMARY KEY, source TEXT, is_stale INTEGER DEFAULT 0,
+                             title TEXT, category TEXT, type TEXT);
         CREATE TABLE block_supports (id INTEGER PRIMARY KEY, block_slug TEXT, support_name TEXT,
                                      source TEXT DEFAULT 'sgs', is_stale INTEGER DEFAULT 0);
         CREATE TABLE block_capabilities (id INTEGER PRIMARY KEY, block_slug TEXT);
@@ -291,3 +292,29 @@ def test_no_two_roster_attributes_share_a_css_slot():
             slot = (spec["css_property"], spec.get("css_element"), spec.get("css_state"), spec.get("css_tier"))
             assert slot not in seen, f"{name} and {seen[slot]} both claim {slot}"
             seen[slot] = name
+
+
+def test_named_rule_with_seed_rows_seeds_the_woocommerce_blocks(tmp_path):
+    """The Cart and Checkout look extension targets blocks SGS does not own: the seeder adds a `blocks` row
+    (source 'woocommerce') for each and an sgs-ext row for each attribute, so the cloning route finds them."""
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    for slug in ("woocommerce/cart", "woocommerce/checkout"):
+        assert conn.execute("SELECT source FROM blocks WHERE slug = ?", (slug,)).fetchone() == ("woocommerce",)
+        attrs = _attrs(conn, slug)
+        assert {"sgsFieldBackground", "sgsItemBorderRadius", "sgsStepTitleFontSize", "sgsBarBackground"} <= attrs
+        row = _row(conn, slug, "sgsFieldBackground")
+        assert row["default_value"] is None, "the look settings carry no default: absent is WooCommerce's look"
+    # Positive control: another named extension without seedRows still seeds nothing for its block.
+    assert not _attrs(conn, "woocommerce/product-filter-chips")
+
+
+def test_seed_rows_rows_are_removed_when_the_rule_goes(tmp_path):
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    without = [e for e in _REAL_LOAD_ROSTER() if e.get("id") != "commerceLook"]
+    with patch.object(SGS, "_load_extension_roster", return_value=without):
+        counts = SGS._seed_extension_attr_rows(conn, tmp_path)
+    assert counts["ext_rows_deleted"] > 0
+    assert not _attrs(conn, "woocommerce/cart")
+    assert conn.execute("SELECT COUNT(*) FROM blocks WHERE source = 'woocommerce'").fetchone() == (0,)

@@ -1,0 +1,228 @@
+{
+	"_comment": "The one table of WooCommerce selectors the Cart and Checkout look settings paint. Read by includes/woocommerce/commerce-look/selectors.php (the writer) and scripts/computed-route/lib/site-check-commerce-look.mjs (the drift probe). Selectors are read from the DOM WooCommerce renders on wc_version, never guessed. cart / checkout: selector list relative to the block root (a missing key means the row does not apply to that block; no comma inside a functional pseudo-class). state: prose. needs: machine-readable state for the probe (basket filled; viewport any|wide|narrow; action none|open-coupon-on-cart|tick-order-note|optional).",
+	"rows": {
+		"field_text": {
+			"cart": ".wc-block-components-text-input input[type]",
+			"checkout": ".wc-block-components-text-input input[type]",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; on the cart the coupon panel must be open",
+			"needs": {
+				"basket": "filled",
+				"action": "open-coupon-on-cart"
+			}
+		},
+		"field_select": {
+			"checkout": ".wc-blocks-components-select__select",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the country field shows once the address form is open",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"field_textarea": {
+			"checkout": ".wc-block-components-textarea",
+			"wc_version": "11.2.1",
+			"state": "basket filled; the order-note checkbox ticked",
+			"needs": {
+				"basket": "filled",
+				"action": "tick-order-note"
+			}
+		},
+		"field_label": {
+			"cart": ".wc-block-components-text-input label",
+			"checkout": ".wc-block-components-text-input label, .wc-blocks-components-select__label",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; on the cart the coupon panel must be open",
+			"needs": {
+				"basket": "filled",
+				"action": "open-coupon-on-cart"
+			}
+		},
+		"field_wrap": {
+			"cart": ".wc-block-components-text-input",
+			"checkout": ".wc-block-components-text-input, .wc-blocks-components-select__container",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; on the cart the coupon panel must be open",
+			"needs": {
+				"basket": "filled",
+				"action": "open-coupon-on-cart"
+			}
+		},
+		"item": {
+			"cart": ".wc-block-cart-items__row",
+			"checkout": ".wc-block-components-order-summary-item",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_wide": {
+			"cart": ".is-large .wc-block-cart-items__row",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; wide cart block (WooCommerce adds is-large to the layout)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "wide"
+			}
+		},
+		"item_list": {
+			"cart": ".wc-block-cart-items",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_header": {
+			"cart": ".wc-block-cart-items__header",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; wide (WooCommerce hides the header row on narrow cart blocks)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "wide"
+			}
+		},
+		"item_image": {
+			"cart": ".wc-block-cart-item__image",
+			"checkout": ".wc-block-components-order-summary-item__image",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_image_img": {
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__image img",
+			"checkout": ".wc-block-components-order-summary-item__image img",
+			"wc_version": "11.2.1",
+			"state": "basket filled with a product that has an image; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_stepper": {
+			"cart": ".wc-block-components-quantity-selector",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_name": {
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-components-product-name",
+			"checkout": ".wc-block-components-product-name",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the cart name rule is table-qualified in WooCommerce's cart.css, so the row repeats it)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_price": {
+			"cart": ".wc-block-components-product-price",
+			"checkout": ".wc-block-components-product-price",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary": {
+			"cart": ".wc-block-cart__sidebar .wp-block-woocommerce-cart-order-summary-block",
+			"checkout": ".wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_heading": {
+			"cart": ".wc-block-cart__totals-title",
+			"checkout": ".wc-block-components-checkout-order-summary__title-text",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; checkout title shows at narrow widths only",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"total_row": {
+			"cart": ".wc-block-components-totals-footer-item, .wc-block-components-totals-footer-item .wc-block-components-totals-item__label, .wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
+			"checkout": ".wc-block-components-totals-footer-item, .wc-block-components-totals-footer-item .wc-block-components-totals-item__label, .wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"step": {
+			"checkout": ".wc-block-components-checkout-step",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"step_title": {
+			"checkout": ".wc-block-components-checkout-step__title",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"option": {
+			"checkout": "label.wc-block-components-radio-control__option",
+			"wc_version": "11.2.1",
+			"state": "basket filled; a shipping zone with a rate; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"option_chosen": {
+			"checkout": "label.wc-block-components-radio-control__option-checked.wc-block-components-radio-control__option--checked-option-highlighted",
+			"wc_version": "11.2.1",
+			"state": "basket filled; a shipping zone with a rate; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"notice": {
+			"cart": ".wc-block-components-notice-banner, .sgs-commerce-note",
+			"checkout": ".wc-block-components-notice-banner, .sgs-commerce-note",
+			"wc_version": "11.2.1",
+			"state": "a notice is showing (an invalid coupon, a stock message) or a commerce note is placed",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"summary_bar": {
+			"checkout": ".wc-block-components-checkout-order-summary__title",
+			"wc_version": "11.2.1",
+			"state": "basket filled; narrow viewport (375 to 700px)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "narrow"
+			}
+		},
+		"terms": {
+			"checkout": ".wc-block-checkout__terms",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"field_label_active": {
+			"cart": ".wc-block-components-text-input.is-active label",
+			"checkout": ".wc-block-components-text-input.is-active label",
+			"wc_version": "11.2.1",
+			"state": "a field holds a value or has focus (WooCommerce adds is-active and shrinks the floating label)",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		}
+	}
+}
