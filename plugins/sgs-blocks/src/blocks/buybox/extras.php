@@ -343,9 +343,10 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		// it keep that padded, scrolling rail. Tiers are exact (no cascade between them),
 		// so a tier set to 0 needs no reset rule.
 		$thumbs_sel   = $root_sel . ' .product-card__thumbs:not([hidden])';
-		$thumb_gap    = sgs_css_length_value( $attributes['thumbGap'] ?? '' );
-		$thumb_offset = sgs_css_length_value( $attributes['thumbStripOffset'] ?? '' );
-		$thumbs_decls = '';
+		$thumb_gap_raw = $attributes['thumbGap'] ?? '';
+		$thumb_gap     = is_array( $thumb_gap_raw ) ? '' : sgs_css_length_value( $thumb_gap_raw );
+		$thumb_offset  = sgs_css_length_value( $attributes['thumbStripOffset'] ?? '' );
+		$thumbs_decls  = '';
 		if ( '' !== $thumb_offset ) {
 			$thumbs_decls .= '--sgs-buybox-thumb-offset:' . $thumb_offset . ';';
 		}
@@ -354,6 +355,17 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 		}
 		if ( '' !== $thumbs_decls ) {
 			$css[] = $thumbs_sel . '{' . $thumbs_decls . '}';
+		}
+		// Per-device gap and thumbnail size: the shared emitter, tier by tier.
+		$thumb_tier_css = '';
+		if ( is_array( $thumb_gap_raw ) ) {
+			$thumb_tier_css .= sgs_emit_responsive_css( $thumbs_sel, array( array( 'value' => $thumb_gap_raw, 'css' => 'gap', 'unit_default' => 'px' ) ) );
+		}
+		if ( is_array( $attributes['thumbSize'] ?? null ) ) {
+			$thumb_tier_css .= sgs_emit_responsive_css( $root_sel, array( array( 'value' => $attributes['thumbSize'], 'css' => '--sgs-buybox-thumb-size', 'unit_default' => 'px' ) ) );
+		}
+		if ( '' !== $thumb_tier_css ) {
+			$css[] = $thumb_tier_css;
 		}
 
 		$per_row_tiers = sgs_responsive_normalise_object( $attributes['thumbsPerRow'] ?? array() );

@@ -21,6 +21,7 @@ namespace SGS\Blocks\Tests {
 	use function SGS\Blocks\sgs_picks_distribute;
 	use function SGS\Blocks\sgs_picks_parse_pack_number;
 	use function SGS\Blocks\sgs_picks_order_terms;
+	use function SGS\Blocks\sgs_picks_order_by_menu_order;
 	use function SGS\Blocks\sgs_picks_per_unit_pence;
 	use function SGS\Blocks\sgs_picks_sanitise_flags;
 
@@ -255,6 +256,18 @@ namespace SGS\Blocks\Tests {
 			$ordered = sgs_picks_order_terms( $alphabetical, array( 2, 7, 5 ) );
 			$this->assertSame( array( 'vanilla', 'mango', 'banana', 'coconut' ), array_column( $ordered, 'slug' ), 'named options first, in order; the rest keep their order after' );
 			$this->assertSame( array_column( $alphabetical, 'slug' ), array_column( sgs_picks_order_terms( $alphabetical, array() ), 'slug' ), 'no option list changes nothing' );
+		}
+
+		public function test_terms_follow_woocommerces_custom_term_order_not_the_alphabet(): void {
+			$alphabetical = array(
+				array( 'id' => 5, 'slug' => 'banana' ),
+				array( 'id' => 9, 'slug' => 'coconut' ),
+				array( 'id' => 2, 'slug' => 'vanilla' ),
+				array( 'id' => 7, 'slug' => 'mango' ),
+			);
+			$ordered = sgs_picks_order_by_menu_order( $alphabetical, array( 2 => 0, 7 => 1, 5 => 2 ) );
+			$this->assertSame( array( 'vanilla', 'mango', 'banana', 'coconut' ), array_column( $ordered, 'slug' ), 'ordered terms first; unordered keep their order after' );
+			$this->assertSame( array_column( $alphabetical, 'slug' ), array_column( sgs_picks_order_by_menu_order( $alphabetical, array() ), 'slug' ), 'no stored order changes nothing' );
 		}
 
 		public function test_active_groups_need_two_options(): void {

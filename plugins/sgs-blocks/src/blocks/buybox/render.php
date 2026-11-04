@@ -1038,17 +1038,22 @@ if ( 'above' === $buybox_stock_position && ! empty( $attributes['stockLineHairli
 // range at equal specificity — same breakpoint logic $buybox_wrapper_classes
 // already reads stackBelow for, above.
 $sgs_bb_gallery_ratio = (float) ( $attributes['galleryColumnRatio'] ?? 0 );
-$sgs_bb_gallery_gap   = sgs_css_length_value( (string) ( $attributes['galleryColumnGap'] ?? '' ) );
-if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap ) {
-	$sgs_bb_gallery_breakpoint = 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ? '1024px' : '768px';
-	$sgs_bb_gallery_decls      = array();
+// A saved string is the one desktop-wide value; a {desktop,tablet,mobile} object is emitted per device through the
+// shared responsive emitter, inside the same side-by-side media query.
+$sgs_bb_gallery_gap_raw   = $attributes['galleryColumnGap'] ?? '';
+$sgs_bb_gallery_gap_tiers = is_array( $sgs_bb_gallery_gap_raw ) ? sgs_emit_responsive_css( $root_sel, array( array( 'value' => $sgs_bb_gallery_gap_raw, 'css' => 'gap', 'unit_default' => 'px' ) ) ) : '';
+$sgs_bb_gallery_gap       = is_array( $sgs_bb_gallery_gap_raw ) ? '' : sgs_css_length_value( (string) $sgs_bb_gallery_gap_raw );
+if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_gallery_gap_tiers ) {
+	$sgs_bb_gallery_media = SGS_Breakpoints::media( 'tablet' === ( $attributes['stackBelow'] ?? 'mobile' ) ? 'desktop' : 'tablet-up' );
+	$sgs_bb_gallery_decls = array();
 	if ( $sgs_bb_gallery_ratio > 0 ) {
 		$sgs_bb_gallery_decls[] = 'grid-template-columns:minmax(0,' . $sgs_bb_gallery_ratio . 'fr) minmax(0,1fr)';
 	}
 	if ( '' !== $sgs_bb_gallery_gap ) {
 		$sgs_bb_gallery_decls[] = 'gap:' . $sgs_bb_gallery_gap;
 	}
-	$scoped_css[] = '@media(min-width:' . $sgs_bb_gallery_breakpoint . '){' . $root_sel . '{' . implode( ';', $sgs_bb_gallery_decls ) . ';}}';
+	$sgs_bb_gallery_rules = $sgs_bb_gallery_decls ? $root_sel . '{' . implode( ';', $sgs_bb_gallery_decls ) . ';}' : '';
+	$scoped_css[]         = $sgs_bb_gallery_media . '{' . $sgs_bb_gallery_rules . $sgs_bb_gallery_gap_tiers . '}';
 }
 ?>
 <?php if ( $scoped_css ) : ?>

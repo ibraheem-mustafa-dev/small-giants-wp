@@ -5,10 +5,11 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
-import { SgsLengthControl, SgsBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
+import { SgsLengthControl, ResponsiveLengthControl, SgsBoxControl, SgsBorderControl, ShadowControl, shadowAttrKeys } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { tierValue } from './tier-value';
 /**
  * Settings-tab (default InspectorControls group) extra panels for
  * sgs/buybox, size-band tiles (F1), a picker-label link
@@ -346,12 +347,12 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					__unstableInputWidth="100%"
 					__next40pxDefaultSize
 				/>
-				<SgsLengthControl
+				<ResponsiveLengthControl
 					presets
 					label={ __( 'Gap between columns', 'sgs-blocks' ) }
-					value={ galleryColumnGap || '' }
-					onChange={ ( val ) =>
-						setAttributes( { galleryColumnGap: val ?? '' } )
+					value={ tierValue( galleryColumnGap ) }
+					onChange={ ( obj ) =>
+						setAttributes( { galleryColumnGap: obj } )
 					}
 				/>
 				<p className="components-base-control__help">

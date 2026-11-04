@@ -28,6 +28,8 @@ import {
 } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
+import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
+import { tierValue } from './tier-value';
 import { composeShadow } from '../../utils/shadow-layers';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
@@ -228,7 +230,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		css += `${ root } .sgs-buybox-guided__meter-btn{justify-content:${ justify[ meterAlign ] };}`;
 	}
 	const ratio = parseFloat( attributes.galleryColumnRatio ) || 0;
-	const gap = String( attributes.galleryColumnGap || '' ).trim();
+	const gap = String(
+		resolveResponsiveTier( tierValue( attributes.galleryColumnGap ), tier ).value || ''
+	).trim();
 	const decls = [];
 	if ( ratio > 0 ) {
 		decls.push(
@@ -239,11 +243,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		decls.push( `gap:${ gapVar( gap ) }` );
 	}
 	if ( decls.length ) {
-		const breakpoint =
-			'tablet' === attributes.stackBelow ? '1024px' : '768px';
-		css += `@media(min-width:${ breakpoint }){${ root }{${ decls.join(
-			';'
-		) };}}`;
+		const query =
+			'tablet' === attributes.stackBelow ? QUERY_DESKTOP : QUERY_TABLET_UP;
+		css += `@media ${ query }{${ root }{${ decls.join( ';' ) };}}`;
 	}
 	[
 		[ 'in-stock', attributes.stockInStockColour ],
@@ -310,7 +312,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		css += `${ root } .buybox__add-to-cart{${ cartPaddingDecls.join( ';' ) };}`;
 	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
-	const rawGap = String( attributes.thumbGap || '' ).trim();
+	const rawGap = String(
+		resolveResponsiveTier( tierValue( attributes.thumbGap ), tier ).value || ''
+	).trim();
 	const thumbGap = /^\d+(\.\d+)?$/.test( rawGap ) ? `${ rawGap }px` : rawGap;
 	// thumbsPerRow is a tier object; an unset tablet or mobile tier follows the next larger one.
 	const perRowTiers =

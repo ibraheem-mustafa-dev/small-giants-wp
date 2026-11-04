@@ -1,7 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
-import { fillRow, textRow, SgsLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
+import { fillRow, textRow, SgsLengthControl, ResponsiveLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
 import { patchTier } from '../../utils';
+import { tierValue } from './tier-value';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
@@ -42,6 +43,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		extrasBeforeCount,
 		thumbsPerRow,
 		thumbGap,
+		thumbSize,
 		thumbStripOffset,
 		thumbSelectedScale,
 		galleryThumbBorderWidth,
@@ -218,15 +220,23 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 						/>
 					) }
 				</ResponsiveControl>
-				<SgsLengthControl
+				<ResponsiveLengthControl
 					label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
-					value={ thumbGap }
+					value={ tierValue( thumbGap ) }
 					units={ THUMB_BORDER_UNITS }
-					onChange={ ( val ) =>
-						setAttributes( { thumbGap: val ?? '' } )
-					}
+					onChange={ ( obj ) => setAttributes( { thumbGap: obj } ) }
 					help={ __(
-						'Space between thumbnails. Empty keeps the default 0.5rem.',
+						'Space between thumbnails, per device. Empty keeps the default 0.5rem.',
+						'sgs-blocks'
+					) }
+				/>
+				<ResponsiveLengthControl
+					label={ __( 'Thumbnail size', 'sgs-blocks' ) }
+					value={ thumbSize }
+					units={ THUMB_BORDER_UNITS }
+					onChange={ ( obj ) => setAttributes( { thumbSize: obj } ) }
+					help={ __(
+						'Width and height of each thumbnail in the fixed-size strip, per device. Never below 48px. Empty keeps the default 64px.',
 						'sgs-blocks'
 					) }
 				/>
