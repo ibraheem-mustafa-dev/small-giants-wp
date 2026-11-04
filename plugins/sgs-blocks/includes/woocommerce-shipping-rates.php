@@ -9,6 +9,9 @@
  * free_shipping rate is available, every rate that costs money is dropped;
  * free options (free delivery, free collection) stay. A shop that wants its
  * paid options shown anyway returns false from `sgs_hide_paid_rates_when_free`.
+ * A free-shipping rate whose "Hide these rates when free shipping applies" setting lists rates
+ * (Free_Shipping_Hide_Rates, Spec 27 FR-30-26) decides for its zone instead: only the listed
+ * rates go and the other paid rates stay.
  *
  * @package SGS\Blocks
  */
@@ -30,6 +33,10 @@ function sgs_hide_paid_rates_when_free( $rates ) {
 	 * @param bool $hide Default true.
 	 */
 	if ( ! is_array( $rates ) || ! apply_filters( 'sgs_hide_paid_rates_when_free', true ) ) {
+		return $rates;
+	}
+	// A free-shipping rate that names the rates it hides (Free_Shipping_Hide_Rates, FR-30-26) decides for the zone.
+	if ( class_exists( Free_Shipping_Hide_Rates::class ) && Free_Shipping_Hide_Rates::governs( $rates ) ) {
 		return $rates;
 	}
 	$has_free = false;

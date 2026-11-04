@@ -567,7 +567,7 @@ require_once SGS_BLOCKS_PATH . 'includes/product-template-fields.php';
 require_once SGS_BLOCKS_PATH . 'includes/gift-card/load.php';
 
 // SGS gift order (Spec 27 FR-30-21): gift switch and checkout step, the cart-proxy write route's handler,
-// the order record, admin box, emails and privacy tools.
+// the order record, admin box, emails and privacy tools; also the free-shipping rate-hiding setting (FR-30-26).
 require_once SGS_BLOCKS_PATH . 'includes/gift-order/load.php';
 
 // SGS Product Preflight — hard go-live gate + cart £0 guard + weekly health cron
