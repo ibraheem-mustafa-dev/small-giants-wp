@@ -91,6 +91,13 @@ function sgs_commerce_look_fields_css( array $attrs, string $block, string $root
 	);
 	$css .= (string) sgs_typography_css_rule( $attrs, 'sgsField', $controls );
 
+	// The resting edge colour: the form's helper keeps it as a custom property for the form's own stylesheet, which
+	// WooCommerce's inputs do not read, so it is painted here.
+	$edge = sgs_colour_value( (string) ( $attrs['sgsFieldBorderColour'] ?? '' ) );
+	if ( '' !== $edge ) {
+		$css .= $controls . '{border-color:' . $edge . ';}';
+	}
+
 	// A set resting edge must not hide the focus edge: the focus state keeps the theme's focus colour.
 	if ( isset( $attrs['sgsFieldBorderColour'] ) ) {
 		$css .= sgs_commerce_look_field_controls( $block, $root, ':focus' )
@@ -115,7 +122,7 @@ function sgs_commerce_look_label_position_css( array $attrs, string $block, stri
 		return '';
 	}
 	$wrap  = sgs_commerce_look_selector( 'field_wrap', $block, $root );
-	$label = sgs_commerce_look_selector( 'field_label', $block, $root );
+	$label = implode( ',', array_filter( array( sgs_commerce_look_selector( 'field_label', $block, $root ), sgs_commerce_look_selector( 'field_label_active', $block, $root ) ) ) );
 	$input = sgs_commerce_look_field_controls( $block, $root );
 	if ( '' === $wrap || '' === $label ) {
 		return '';

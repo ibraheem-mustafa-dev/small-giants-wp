@@ -29,13 +29,11 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= $header . '{display:none;}';
 	}
 
-	// Thumbnail size: the cell and its picture.
+	// Thumbnail size: the picture.
 	$size  = sgs_css_single_length_value( (string) ( $attrs['sgsItemThumbSize'] ?? '' ) );
-	$image = sgs_commerce_look_selector( 'item_image', $block, $root );
-	$img   = sgs_commerce_look_selector( 'item_image_img', $block, $root );
-	if ( '' !== $size && '' !== $image && '' !== $img ) {
-		$css .= $image . '{width:' . $size . ';min-width:' . $size . ';}';
-		$css .= $img . '{width:100%;height:auto;}';
+	$img = sgs_commerce_look_selector( 'item_image_img', $block, $root );
+	if ( '' !== $size && '' !== $img ) {
+		$css .= $img . '{width:' . $size . ';max-width:100%;height:auto;}';
 	}
 
 	// Quantity stepper corners; the buttons inherit the radius, so the stepper clips them.
@@ -73,7 +71,6 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 	if ( '' === $wide ) {
 		return '';
 	}
-	$size = sgs_css_single_length_value( (string) ( $attrs['sgsItemThumbSize'] ?? '' ) );
-	$cols = ( '' !== $size ? $size : 'auto' ) . ' minmax(0,1fr) auto';
+	$cols = 'auto minmax(0,1fr) auto';
 	return $wide . '{display:grid;grid-template-columns:' . $cols . ';align-items:center;column-gap:16px;}';
 }

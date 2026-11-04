@@ -33941,10 +33941,42 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickPricedFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-priced-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTileEachSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-tile-each"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTileNumberSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-tile-number"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickTilePadding",
       "fields": {
         "css_property": "padding",
         "css_element": "pick-tile"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTilePriceSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-tile-price"
       }
     },
     {
@@ -35397,8 +35429,8 @@
       "attr": "actionsAlignItems",
       "fields": {
         "css_property": "align-items",
-        "css_layer": "GRID",
-        "css_element": "submit-actions"
+        "css_layer": "OUTER",
+        "css_element": "actions"
       }
     },
     {
@@ -35817,6 +35849,31 @@
       "fields": {
         "css_property": "box-shadow",
         "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "fieldShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "input"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "leadingIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "leading-icon"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "leadingIconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "leading-icon"
       }
     },
     {
@@ -36283,6 +36340,15 @@
       "attr": "tileSelectedShadow",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_layer": "CONTENT",
         "css_element": "tile-selected"
       }
@@ -41560,9 +41626,27 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillSelectedOffsetY",
+      "fields": {
+        "css_property": "translate-y",
+        "css_element": "pill",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillSelectedShadow",
       "fields": {
         "css_property": "box-shadow",
+        "css_element": "pill",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "pill",
         "css_state": "current"
       }

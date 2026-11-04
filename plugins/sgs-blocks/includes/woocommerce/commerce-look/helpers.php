@@ -57,22 +57,20 @@ function sgs_commerce_look_has_any( array $attrs, array $prefixes ): bool {
 /**
  * One card's rules: fill, border (per-device width and corner radius), shadow and per-device padding.
  *
+ * The border declarations arrive already built: the caller reads each card's border through
+ * sgs_border_element_decls() with a literal prefix and colour map (the border gates read those literals).
+ *
  * @param array<string, mixed> $attrs    Set attributes.
  * @param string               $prefix   Attribute prefix (`sgsItem`, `sgsSummary`, ...).
  * @param string               $selector Scoped selector list of the card.
+ * @param array                $border   The card's sgs_border_element_decls() result.
  * @return string CSS text; '' when nothing is set or the selector is empty.
  */
-function sgs_commerce_look_card_css( array $attrs, string $prefix, string $selector ): string {
+function sgs_commerce_look_card_css( array $attrs, string $prefix, string $selector, array $border ): string {
 	if ( '' === $selector ) {
 		return '';
 	}
 	$decls  = sgs_fill_decls( $attrs, array( 'base' => $prefix . 'Background' ) )['normal'];
-	$border = sgs_border_element_decls(
-		$attrs,
-		$prefix,
-		$selector,
-		array( 'colour' => array( 'base' => $prefix . 'BorderColour' ) )
-	);
 	$shadow = sgs_shadow_decls(
 		$attrs,
 		array(

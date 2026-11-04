@@ -54,6 +54,9 @@ async function probeGroup( rows, { block, url, base, newPage, width, action } ) 
 			return null;
 		}
 		await page.waitForSelector( '.wc-block-components-sidebar-layout', { state: 'visible', timeout: 8000 } ).catch( () => {} );
+		// The line items and totals mount after the layout does.
+		await page.waitForSelector( '.wc-block-components-product-name', { state: 'attached', timeout: 20000 } ).catch( () => {} );
+		await page.waitForTimeout( 1500 );
 		if ( ACTIONS[ action ] ) {
 			await ACTIONS[ action ]( page, block );
 		}

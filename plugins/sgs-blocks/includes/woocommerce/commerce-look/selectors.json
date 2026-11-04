@@ -94,7 +94,7 @@
 			}
 		},
 		"item_image_img": {
-			"cart": ".wc-block-cart-item__image img",
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__image img",
 			"checkout": ".wc-block-components-order-summary-item__image img",
 			"wc_version": "11.2.1",
 			"state": "basket filled with a product that has an image; any width",
@@ -111,10 +111,10 @@
 			}
 		},
 		"item_name": {
-			"cart": ".wc-block-components-product-name",
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-components-product-name",
 			"checkout": ".wc-block-components-product-name",
 			"wc_version": "11.2.1",
-			"state": "basket filled; any user; any width",
+			"state": "basket filled; any user; any width (the cart name rule is table-qualified in WooCommerce's cart.css, so the row repeats it)",
 			"needs": {
 				"basket": "filled"
 			}
@@ -172,7 +172,7 @@
 			}
 		},
 		"option": {
-			"checkout": ".wc-block-components-radio-control__option",
+			"checkout": "label.wc-block-components-radio-control__option",
 			"wc_version": "11.2.1",
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {
@@ -180,7 +180,7 @@
 			}
 		},
 		"option_chosen": {
-			"checkout": ".wc-block-components-radio-control__option-checked",
+			"checkout": "label.wc-block-components-radio-control__option-checked.wc-block-components-radio-control__option--checked-option-highlighted",
 			"wc_version": "11.2.1",
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {
@@ -212,6 +212,16 @@
 			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
+			}
+		},
+		"field_label_active": {
+			"cart": ".wc-block-components-text-input.is-active label",
+			"checkout": ".wc-block-components-text-input.is-active label",
+			"wc_version": "11.2.1",
+			"state": "a field holds a value or has focus (WooCommerce adds is-active and shrinks the floating label)",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
 			}
 		}
 	}

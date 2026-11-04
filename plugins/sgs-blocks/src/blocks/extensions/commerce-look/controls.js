@@ -102,6 +102,7 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
 			/>
 			{ ! noPadding && (
 				<ResponsiveBoxControl
+					presets
 					label={ __( 'Padding', 'sgs-blocks' ) }
 					values={ boxTiers( attributes[ a( 'Padding' ) ] ) }
 					onChange={ ( tier, next ) => setAttributes( { [ a( 'Padding' ) ]: writeTier( attributes[ a( 'Padding' ) ], tier, next ) } ) }

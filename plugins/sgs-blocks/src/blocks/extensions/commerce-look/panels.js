@@ -20,17 +20,6 @@ const LABEL_POSITIONS = [
 	{ value: 'floating', label: __( 'Floating', 'sgs-blocks' ) },
 ];
 
-const LengthRow = ( { label, attributes, setAttributes, name, help } ) => (
-	<SgsLengthControl
-		scale="spacing"
-		label={ label }
-		value={ attributes[ name ] || '' }
-		units={ LENGTH_UNITS }
-		onChange={ ( val ) => setAttributes( { [ name ]: val || undefined } ) }
-		help={ help }
-	/>
-);
-
 /**
  * Form fields: fill, border, shadow, padding, height, text, label position.
  *
@@ -41,7 +30,14 @@ export function FieldsPanel( { attributes, setAttributes } ) {
 	return (
 		<PanelBody title={ __( 'Form fields', 'sgs-blocks' ) } initialOpen={ false }>
 			<CardControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsField" />
-			<LengthRow label={ __( 'Minimum height', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name="sgsFieldMinHeight" help={ __( 'Leave empty to keep the default.', 'sgs-blocks' ) } />
+			<SgsLengthControl
+				scale="spacing"
+				label={ __( 'Minimum height', 'sgs-blocks' ) }
+				value={ attributes.sgsFieldMinHeight || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( val ) => setAttributes( { sgsFieldMinHeight: val || undefined } ) }
+				help={ __( 'Leave empty to keep the default.', 'sgs-blocks' ) }
+			/>
 			<SelectControl
 				label={ __( 'Label position', 'sgs-blocks' ) }
 				value={ attributes.sgsFieldLabelPosition || '' }
@@ -66,9 +62,27 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 	return (
 		<PanelBody title={ __( 'Line items', 'sgs-blocks' ) } initialOpen={ false }>
 			<CardControls { ...shared } prefix="sgsItem" />
-			{ isCart && <LengthRow { ...shared } label={ __( 'Space between items', 'sgs-blocks' ) } name="sgsItemGap" /> }
-			<LengthRow { ...shared } label={ __( 'Picture width', 'sgs-blocks' ) } name="sgsItemThumbSize" />
-			{ isCart && <LengthRow { ...shared } label={ __( 'Quantity stepper corner radius', 'sgs-blocks' ) } name="sgsItemStepperRadius" /> }
+			{ isCart && <SgsLengthControl
+				scale="spacing"
+				label={ __( 'Space between items', 'sgs-blocks' ) }
+				value={ attributes.sgsItemGap || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( val ) => setAttributes( { sgsItemGap: val || undefined } ) }
+			/> }
+			<SgsLengthControl
+				scale="spacing"
+				label={ __( 'Picture width', 'sgs-blocks' ) }
+				value={ attributes.sgsItemThumbSize || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( val ) => setAttributes( { sgsItemThumbSize: val || undefined } ) }
+			/>
+			{ isCart && <SgsLengthControl
+				scale="spacing"
+				label={ __( 'Quantity stepper corner radius', 'sgs-blocks' ) }
+				value={ attributes.sgsItemStepperRadius || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( val ) => setAttributes( { sgsItemStepperRadius: val || undefined } ) }
+			/> }
 			{ isCart && (
 				<ToggleControl
 					label={ __( 'Hide the header row', 'sgs-blocks' ) }
