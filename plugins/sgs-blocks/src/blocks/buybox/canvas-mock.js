@@ -311,9 +311,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	if ( cartPaddingDecls.length ) {
 		css += `${ root } .buybox__add-to-cart{${ cartPaddingDecls.join( ';' ) };}`;
 	}
-	const thumbSizeValue = safeLength( tierValueOf( attributes.thumbSize, tier ) || '' );
-	if ( thumbSizeValue ) {
-		css += `${ root }{--sgs-buybox-thumb-size:${ thumbSizeValue };}`;
+	const galleryThumbSizeValue = safeLength( tierValueOf( attributes.galleryThumbSize, tier ) || '' );
+	if ( galleryThumbSizeValue ) {
+		css += `${ root }{--sgs-buybox-thumb-size:${ galleryThumbSizeValue };}`;
 	}
 	// Thumbnail rail layout: the same rules extras.php writes for thumbGap and thumbsPerRow.
 	const rawGap = String(

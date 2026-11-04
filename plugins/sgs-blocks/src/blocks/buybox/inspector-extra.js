@@ -3,12 +3,51 @@ import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } fr
 import { fillRow, textRow, SgsLengthControl, ResponsiveLengthControl, ResponsiveControl, ResponsiveOverride, SgsBorderControl } from '../../components';
 import { patchTier } from '../../utils';
 import { asTierObject } from '../../utils/responsive';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 
 const THUMB_BORDER_UNITS = [
 	{ value: 'px', label: 'px', default: 1 },
 	{ value: 'rem', label: 'rem', default: 0.0625 },
 ];
+
+const GALLERY_THUMB_DEFAULTS = {
+	thumbsPerRow: {},
+	thumbGap: '',
+	galleryThumbSize: {},
+	thumbStripOffset: '',
+	thumbSelectedScale: 105,
+	galleryThumbBorderWidth: {},
+	galleryThumbBorderStyle: 'solid',
+	galleryThumbBorderColour: '',
+	galleryThumbBorderColourHover: '',
+	galleryThumbBorderColourCurrent: '',
+	galleryThumbBorderRadius: {},
+};
+
+/**
+ * One ToolsPanel item for the gallery thumbnail panel: a reset dot when any of its attributes
+ * differs from the block.json default, and a reset to those defaults.
+ *
+ * @param {Object}   props               Props.
+ * @param {string}   props.label         Item label.
+ * @param {string[]} props.names         Attribute names the item controls.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @param {Element}  props.children      The control(s).
+ * @return {Element} The item.
+ */
+function ThumbItem( { label, names, attributes, setAttributes, children } ) {
+	return (
+		<ToolsPanelItem
+			label={ label }
+			hasValue={ () => names.some( ( n ) => JSON.stringify( attributes[ n ] ?? GALLERY_THUMB_DEFAULTS[ n ] ) !== JSON.stringify( GALLERY_THUMB_DEFAULTS[ n ] ) ) }
+			onDeselect={ () => setAttributes( Object.fromEntries( names.map( ( n ) => [ n, GALLERY_THUMB_DEFAULTS[ n ] ] ) ) ) }
+			isShownByDefault
+		>
+			{ children }
+		</ToolsPanelItem>
+	);
+}
 
 const STICKY_BAR_OPTIONS = [
 	{ label: __( 'Off', 'sgs-blocks' ), value: 'off' },
@@ -43,7 +82,7 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 		extrasBeforeCount,
 		thumbsPerRow,
 		thumbGap,
-		thumbSize,
+		galleryThumbSize,
 		thumbStripOffset,
 		thumbSelectedScale,
 		galleryThumbBorderWidth,
@@ -199,116 +238,135 @@ export function BuyboxExtraPanels( { attributes, setAttributes } ) {
 				title={ __( 'Gallery thumbnails', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<ResponsiveControl label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }>
-					{ ( bp ) => (
-						<RangeControl
-							label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
-							hideLabelFromVision
-							help={ __(
-								'0 keeps the fixed-size, scrolling strip on this device. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px. An unset tablet or mobile value follows the next larger device.',
-								'sgs-blocks'
-							) }
-							value={ thumbsPerRow?.[ bp ] ?? 0 }
-							min={ 0 }
-							max={ 8 }
-							step={ 1 }
-							onChange={ ( val ) =>
-								patchTier( attributes, setAttributes, 'thumbsPerRow', bp, val ?? 0 )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
-				</ResponsiveControl>
-				<ResponsiveLengthControl
-					label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
-					value={ asTierObject( thumbGap ) }
-					units={ THUMB_BORDER_UNITS }
-					onChange={ ( obj ) => setAttributes( { thumbGap: obj } ) }
-					help={ __(
-						'Space between thumbnails, per device. Empty keeps the default 0.5rem.',
-						'sgs-blocks'
-					) }
-				/>
-				<ResponsiveLengthControl
-					label={ __( 'Thumbnail size', 'sgs-blocks' ) }
-					value={ thumbSize }
-					units={ THUMB_BORDER_UNITS }
-					onChange={ ( obj ) => setAttributes( { thumbSize: obj } ) }
-					help={ __(
-						'Width and height of each thumbnail in the fixed-size strip, per device. Never below 48px. Empty keeps the default 64px.',
-						'sgs-blocks'
-					) }
-				/>
-				<SgsLengthControl
-					label={ __( 'Space above thumbnails', 'sgs-blocks' ) }
-					value={ thumbStripOffset }
-					units={ THUMB_BORDER_UNITS }
-					onChange={ ( val ) =>
-						setAttributes( { thumbStripOffset: val ?? '' } )
-					}
-					help={ __(
-						'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
-						'sgs-blocks'
-					) }
-				/>
-				<SgsBorderControl
-					label={ __( 'Thumbnail border width', 'sgs-blocks' ) }
-					widthValues={ galleryThumbBorderWidth ?? {} }
-					onWidthChange={ ( next ) => setAttributes( { galleryThumbBorderWidth: next } ) }
-					styleValue={ galleryThumbBorderStyle }
-					onStyleChange={ ( val ) => setAttributes( { galleryThumbBorderStyle: val } ) }
-					colourLabel={ __( 'Thumbnail border colour', 'sgs-blocks' ) }
-					colourStates={ [
-						{
-							key: 'normal',
-							label: __( 'Normal', 'sgs-blocks' ),
-							value: galleryThumbBorderColour,
-							onChange: ( val ) => setAttributes( { galleryThumbBorderColour: val ?? '' } ),
-							linked: true,
-						},
-						{
-							key: 'hover',
-							label: __( 'Hover', 'sgs-blocks' ),
-							value: galleryThumbBorderColourHover,
-							onChange: ( val ) => setAttributes( { galleryThumbBorderColourHover: val ?? '' } ),
-							linked: true,
-						},
-						{
-							key: 'current',
-							label: __( 'Selected', 'sgs-blocks' ),
-							value: galleryThumbBorderColourCurrent,
-							onChange: ( val ) => setAttributes( { galleryThumbBorderColourCurrent: val ?? '' } ),
-							linked: true,
-						},
-					] }
-					contrastAgainst={ thumbContrastAgainst }
-					radiusLabel={ __( 'Thumbnail corner radius', 'sgs-blocks' ) }
-					radiusValues={ { base: galleryThumbBorderRadius ?? {} } }
-					showRadiusResponsive={ false }
-					onRadiusChange={ ( _tier, next ) => setAttributes( { galleryThumbBorderRadius: next } ) }
-				/>
-				<p className="components-base-control__help">
-					{ __(
-						'Empty width keeps the default 2px transparent border; an empty selected colour keeps the theme primary colour; an empty radius follows the main image.',
-						'sgs-blocks'
-					) }
-				</p>
-				<RangeControl
-					label={ __( 'Selected thumbnail scale (%)', 'sgs-blocks' ) }
-					help={ __(
-						'105 gently enlarges the selected thumbnail. 100 turns the enlargement off; the selected thumbnail is then shown by its border colour alone, so keep the two border colours clearly different.',
-						'sgs-blocks'
-					) }
-					value={ thumbSelectedScale ?? 105 }
-					min={ 90 }
-					max={ 120 }
-					onChange={ ( val ) =>
-						setAttributes( { thumbSelectedScale: val ?? 105 } )
-					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
-				/>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { ...GALLERY_THUMB_DEFAULTS } ) }>
+					<ThumbItem label={ __( 'Thumbnails per row', 'sgs-blocks' ) } names={ [ 'thumbsPerRow' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<ResponsiveControl label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }>
+						{ ( bp ) => (
+							<RangeControl
+								label={ __( 'Thumbnails per row (0 = fixed size)', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __(
+									'0 keeps the fixed-size, scrolling strip on this device. 1 to 8 lays the thumbnails out as that many equal square columns across the gallery width, wrapping onto more rows. A thumbnail never goes below 48px. An unset tablet or mobile value follows the next larger device.',
+									'sgs-blocks'
+								) }
+								value={ thumbsPerRow?.[ bp ] ?? 0 }
+								min={ 0 }
+								max={ 8 }
+								step={ 1 }
+								onChange={ ( val ) =>
+									patchTier( attributes, setAttributes, 'thumbsPerRow', bp, val ?? 0 )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveControl>
+				
+					</ThumbItem>
+					<ThumbItem label={ __( 'Thumbnail gap', 'sgs-blocks' ) } names={ [ 'thumbGap' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<ResponsiveLengthControl
+						label={ __( 'Thumbnail gap', 'sgs-blocks' ) }
+						value={ asTierObject( thumbGap ) }
+						units={ THUMB_BORDER_UNITS }
+						onChange={ ( obj ) => setAttributes( { thumbGap: obj } ) }
+						help={ __(
+							'Space between thumbnails, per device. Empty keeps the default 0.5rem.',
+							'sgs-blocks'
+						) }
+					/>
+				
+					</ThumbItem>
+					<ThumbItem label={ __( 'Thumbnail size', 'sgs-blocks' ) } names={ [ 'galleryThumbSize' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<ResponsiveLengthControl
+						label={ __( 'Thumbnail size', 'sgs-blocks' ) }
+						value={ galleryThumbSize }
+						units={ THUMB_BORDER_UNITS }
+						onChange={ ( obj ) => setAttributes( { galleryThumbSize: obj } ) }
+						help={ __(
+							'Width and height of each thumbnail in the fixed-size strip, per device. Never below 48px. Empty keeps the default 64px.',
+							'sgs-blocks'
+						) }
+					/>
+				
+					</ThumbItem>
+					<ThumbItem label={ __( 'Space above thumbnails', 'sgs-blocks' ) } names={ [ 'thumbStripOffset' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<SgsLengthControl
+						label={ __( 'Space above thumbnails', 'sgs-blocks' ) }
+						value={ thumbStripOffset }
+						units={ THUMB_BORDER_UNITS }
+						onChange={ ( val ) =>
+							setAttributes( { thumbStripOffset: val ?? '' } )
+						}
+						help={ __(
+							'Space between the main image and the thumbnail strip. Empty keeps the default 0.75rem.',
+							'sgs-blocks'
+						) }
+					/>
+				
+					</ThumbItem>
+					<ThumbItem label={ __( 'Thumbnail border', 'sgs-blocks' ) } names={ [ 'galleryThumbBorderWidth','galleryThumbBorderStyle','galleryThumbBorderColour','galleryThumbBorderColourHover','galleryThumbBorderColourCurrent','galleryThumbBorderRadius' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<SgsBorderControl
+						label={ __( 'Thumbnail border width', 'sgs-blocks' ) }
+						widthValues={ galleryThumbBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { galleryThumbBorderWidth: next } ) }
+						styleValue={ galleryThumbBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { galleryThumbBorderStyle: val } ) }
+						colourLabel={ __( 'Thumbnail border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: galleryThumbBorderColour,
+								onChange: ( val ) => setAttributes( { galleryThumbBorderColour: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: galleryThumbBorderColourHover,
+								onChange: ( val ) => setAttributes( { galleryThumbBorderColourHover: val ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'current',
+								label: __( 'Selected', 'sgs-blocks' ),
+								value: galleryThumbBorderColourCurrent,
+								onChange: ( val ) => setAttributes( { galleryThumbBorderColourCurrent: val ?? '' } ),
+								linked: true,
+							},
+						] }
+						contrastAgainst={ thumbContrastAgainst }
+						radiusLabel={ __( 'Thumbnail corner radius', 'sgs-blocks' ) }
+						radiusValues={ { base: galleryThumbBorderRadius ?? {} } }
+						showRadiusResponsive={ false }
+						onRadiusChange={ ( _tier, next ) => setAttributes( { galleryThumbBorderRadius: next } ) }
+					/>
+					<p className="components-base-control__help">
+						{ __(
+							'Empty width keeps the default 2px transparent border; an empty selected colour keeps the theme primary colour; an empty radius follows the main image.',
+							'sgs-blocks'
+						) }
+					</p>
+				
+					</ThumbItem>
+					<ThumbItem label={ __( 'Selected thumbnail scale', 'sgs-blocks' ) } names={ [ 'thumbSelectedScale' ] } attributes={ attributes } setAttributes={ setAttributes }>
+	<RangeControl
+						label={ __( 'Selected thumbnail scale (%)', 'sgs-blocks' ) }
+						help={ __(
+							'105 gently enlarges the selected thumbnail. 100 turns the enlargement off; the selected thumbnail is then shown by its border colour alone, so keep the two border colours clearly different.',
+							'sgs-blocks'
+						) }
+						value={ thumbSelectedScale ?? 105 }
+						min={ 90 }
+						max={ 120 }
+						onChange={ ( val ) =>
+							setAttributes( { thumbSelectedScale: val ?? 105 } )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					</ThumbItem>
+				</ToolsPanel>
 			</PanelBody>
 
 			<PanelBody
