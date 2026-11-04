@@ -104,6 +104,10 @@ class PaintClassifier:
             return "css", "role:" + role
         hit = self.suffix_hit(attr)
         if hit:
+            # An explicit `behaviour` role is a deliberate verdict that the setting drives logic, not paint: a CSS-bearing
+            # name (`displayWidth`) alone must not override it. A class rule or custom-property reader still shows paint.
+            if role == "behaviour" and not (signals.get("class_rule") or signals.get("cp_reader")):
+                return "not", "role:behaviour"
             return "css", "suffix:" + hit
         if role in CONTENT_ROLES:
             return "not", "content-role:" + role
