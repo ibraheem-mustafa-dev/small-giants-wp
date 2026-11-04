@@ -385,6 +385,17 @@
 		},
 		{
 			"slug": "sgs/option-picker",
+			"attr": "pillSelectedOffsetX",
+			"fields": {
+				"role": "styling",
+				"css_property": "translate",
+				"css_element": "pill",
+				"css_state": "current"
+			},
+			"_reason": "2026-11-04: the horizontal half of the selected pill shift, and the owner of the (translate, pill, current) slot; pillSelectedOffsetY is its companion on translate-y. Without a role the manifest gate counts it UNCLASSIFIED."
+		},
+		{
+			"slug": "sgs/option-picker",
 			"attr": "pillSelectedOffsetY",
 			"fields": {
 				"role": "styling",
