@@ -2,10 +2,9 @@
 /**
  * Server-side render for Address Field block.
  *
- * Renders a compound address field with optional postcode auto-lookup.
+ * Renders a compound address field.
  * Sub-fields submit as <name>-line1, <name>-postcode, etc. (<name> from field_submission_name(), which leaves room
- * for the longest "-<part>" so every sub-field name stays within the submit endpoint's 64-character key); the
- * postcode lookup box, when shown, submits the postcode.
+ * for the longest "-<part>" so every sub-field name stays within the submit endpoint's 64-character key).
  *
  * @package SGS\Blocks
  */
@@ -22,11 +21,10 @@ use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_name_suffix_reserve;
 use const SGS\Blocks\Forms\ADDRESS_FIELD_PARTS;
 
-$base_fid      = field_id( $attributes['fieldName'] ?? 'unnamed' );
+$base_fid  = field_id( $attributes['fieldName'] ?? 'unnamed' );
 // Each sub-field submits as <name>-<part> ("site-postcode").
-$base_name     = field_submission_name( $base_fid, $attributes, field_name_suffix_reserve( 'sgs/form-field-address' ) );
-$enable_lookup = $attributes['enableLookup'] ?? false;
-$fields        = $attributes['fields'] ?? ADDRESS_FIELD_PARTS;
+$base_name = field_submission_name( $base_fid, $attributes, field_name_suffix_reserve( 'sgs/form-field-address' ) );
+$fields    = $attributes['fields'] ?? ADDRESS_FIELD_PARTS;
 
 $field_labels = array(
 	'line1'    => __( 'Address line 1', 'sgs-blocks' ),
@@ -41,25 +39,6 @@ echo field_open( $attributes, 'address' );
 echo field_label( $base_fid, $attributes );
 echo '<div class="sgs-form-field__address-fields">';
 
-// Postcode lookup widget (rendered before the standard sub-fields).
-if ( $enable_lookup && in_array( 'postcode', $fields, true ) ) {
-	echo '<div class="sgs-form-field__address-lookup">';
-	printf(
-		'<label for="%1$s-postcode-lookup" class="screen-reader-text">%2$s</label>
-		 <input type="text" id="%1$s-postcode-lookup" name="%4$s" class="sgs-form-field__input" placeholder="%3$s" autocomplete="postal-code" />',
-		esc_attr( $base_fid ),
-		esc_html__( 'Postcode for address lookup', 'sgs-blocks' ),
-		esc_attr__( 'Enter postcode to find address', 'sgs-blocks' ),
-		esc_attr( $base_name . '-postcode' )
-	);
-	printf(
-		'<button type="button" class="sgs-form-field__lookup-button" data-field-id="%s">%s</button>',
-		esc_attr( $base_fid ),
-		esc_html__( 'Find Address', 'sgs-blocks' )
-	);
-	echo '</div>';
-}
-
 // Render each enabled address sub-field.
 foreach ( $fields as $field ) {
 	if ( ! isset( $field_labels[ $field ] ) ) {
@@ -72,11 +51,6 @@ foreach ( $fields as $field ) {
 
 	// line1 and postcode inherit the parent `required` flag; all others are optional.
 	$is_required = in_array( $field, array( 'line1', 'postcode' ), true ) && ! empty( $attributes['required'] );
-
-	// Skip the postcode sub-field when the lookup widget already rendered it.
-	if ( 'postcode' === $field && $enable_lookup ) {
-		continue;
-	}
 
 	// Map sub-field names to HTML autocomplete attribute tokens.
 	$autocomplete_map = array(

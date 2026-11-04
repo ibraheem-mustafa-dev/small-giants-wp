@@ -39,7 +39,6 @@
         "dragToScroll",
         "dropCap",
         "enableLightbox",
-        "enableLookup",
         "evergreenMode",
         "excludeCurrent",
         "fadeEdges",
@@ -3093,7 +3092,6 @@
         "conditionalValue"
       ],
       "root": [
-        "enableLookup",
         "fields",
         "helpText",
         "placeholder"
@@ -5659,16 +5657,6 @@
       "element": "root",
       "blocks": [
         "sgs/gallery"
-      ],
-      "n_blocks": 1,
-      "why": "attr_type=boolean"
-    },
-    "enableLookup": {
-      "input_type": "boolean-toggle",
-      "behaviour_family": null,
-      "element": "root",
-      "blocks": [
-        "sgs/form-field-address"
       ],
       "n_blocks": 1,
       "why": "attr_type=boolean"
