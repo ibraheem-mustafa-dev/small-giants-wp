@@ -1077,6 +1077,39 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "signedOutCardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardInnerSpacing",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCopyColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "signedOutCopy"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "trackColour",
       "fields": {
         "css_property": "border-color",
@@ -32370,6 +32403,48 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "authTabGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "auth-tabs"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "auth-tab"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "authTabsSpaceBelow",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_layer": "OUTER",
+        "css_element": "auth-tabs"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardBorderWidth",
       "fields": {
         "css_property": "border-width",
@@ -32457,6 +32532,115 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "order-thumbs"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutActionsFlexWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "OUTER",
+        "css_element": "signed-out-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutButtonShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "signed-out-button"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardCorners",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutCardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "signedOutCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutItemGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "signedOutCard"
       }
     },
     {

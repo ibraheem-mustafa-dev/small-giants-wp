@@ -26,6 +26,7 @@ import { patchTier } from '../../utils';
 import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
 import LoggedOutPanel from './LoggedOutPanel';
+import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
 
 /**
  * @param {Object}   props               Block props.
@@ -68,6 +69,23 @@ export default function Edit( { attributes, setAttributes } ) {
 			attrs: {
 				base: 'menuActiveBackgroundColour',
 				gradient: 'menuActiveBackgroundColourGradient',
+			},
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'signedOutCopy',
+			label: __( 'Signed-out card text', 'sgs-blocks' ),
+			attrs: { base: 'signedOutCopyColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
+			key: 'signedOutCardBackground',
+			label: __( 'Sign-in card background', 'sgs-blocks' ),
+			attrs: {
+				base: 'signedOutCardBackgroundColour',
+				gradient: 'signedOutCardBackgroundColourGradient',
 			},
 			attributes,
 			setAttributes,
@@ -147,6 +165,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 				/>
 				<LoggedOutPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<SignedOutContentPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<SignedOutCardPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<AuthTabsPanel
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

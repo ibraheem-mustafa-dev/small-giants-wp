@@ -35,6 +35,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-defaults.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-render-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-signed-out.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-endpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-dashboard.php';
 
@@ -61,7 +62,7 @@ $menu_layout     = array(
 	'mobile'  => in_array( $menu_layout_raw['mobile'] ?? null, $allowed_layouts, true ) ? $menu_layout_raw['mobile'] : 'tabs',
 );
 
-$auth_layout = in_array( $attributes['authLayout'] ?? '', array( 'side-by-side', 'stacked' ), true ) ? $attributes['authLayout'] : 'side-by-side';
+$auth_layout = in_array( $attributes['authLayout'] ?? '', array( 'side-by-side', 'stacked', 'tabs' ), true ) ? $attributes['authLayout'] : 'side-by-side';
 
 // Menu icons — client overrides merged over the framework defaults.
 $show_menu_icons = ! isset( $attributes['showMenuIcons'] ) || ! empty( $attributes['showMenuIcons'] );
@@ -73,6 +74,7 @@ $menu_icons      = wp_parse_args(
 // -- Scoped CSS ---------------------------------------------------------
 $scoped_css   = array();
 $scoped_css[] = sgs_account_scoped_css( $attributes, $root_sel );
+$show_card    = sgs_account_signed_out_card_active( $attributes );
 if ( $show_menu_icons ) {
 	$scoped_css[] = sgs_account_menu_icon_css( $menu_icons, $root_sel );
 }
@@ -80,11 +82,33 @@ if ( $show_menu_icons ) {
 // -- Render WooCommerce's own output, flag set for its full duration ----
 \SGS\Blocks\Account_Endpoints::$active = $attributes;
 ob_start();
-if ( class_exists( 'WC_Shortcode_My_Account' ) ) {
+if ( $show_card ) {
+	echo sgs_account_signed_out_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper.
+} elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
 	\WC_Shortcode_My_Account::output( array() );
 }
 $wc_output = ob_get_clean();
 \SGS\Blocks\Account_Endpoints::$active = null;
+
+// Sign in / Create account tabs: only the two-column log-in form, never the card or an endpoint.
+$use_tabs = 'tabs' === $auth_layout && ! $show_card && sgs_account_registration_enabled() && ! is_user_logged_in();
+if ( $use_tabs ) {
+	$wc_output = sgs_account_apply_tabs(
+		$wc_output,
+		sgs_account_register_mode_requested(),
+		$uid,
+		(string) ( $attributes['authTabSignInLabel'] ?? __( 'Sign in', 'sgs-blocks' ) ),
+		(string) ( $attributes['authTabRegisterLabel'] ?? __( 'Create account', 'sgs-blocks' ) )
+	);
+	$use_tabs  = false !== strpos( $wc_output, 'role="tablist"' );
+}
+sgs_account_view_module( $block, $use_tabs );
+if ( $show_card || $use_tabs ) {
+	$scoped_css[] = sgs_account_auth_card_css( $attributes, $root_sel );
+}
+if ( $use_tabs ) {
+	$scoped_css[] = sgs_account_auth_tabs_css( $attributes, $root_sel );
+}
 
 $logged_out = ! is_user_logged_in();
 
@@ -105,9 +129,12 @@ $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $
 </style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?> data-auth-layout="<?php echo esc_attr( $auth_layout ); ?>">
+<?php if ( $show_card ) : echo $wc_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the signed-out card, escaped in sgs_account_signed_out_html(); it sits outside .sgs-account__wc so WooCommerce's content-link rules do not restyle its buttons.
+else : ?>
 	<div class="sgs-account__wc">
 		<?php echo $wc_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's own already-escaped shortcode output. ?>
 	</div>
+<?php endif; ?>
 
 	<?php if ( $logged_out && ! empty( $attributes['showOrderTracking'] ) && class_exists( 'WC_Shortcode_Order_Tracking' ) ) : ?>
 		<div class="sgs-account__card sgs-account__tracking-card">

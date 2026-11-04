@@ -2840,6 +2840,21 @@
    "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
    "selector": ".sgs-accordion-item[hidden]",
    "reason": "an item the filter has hidden leaves layout (display none); the hidden attribute is behaviour set by the filter script, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-tab[aria-selected=\"true\"]",
+   "reason": "the open sign-in tab takes the site's primary button preset tokens and the other tab the secondary tokens, so the selected look is the site's button look, not a block setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-panel[hidden]",
+   "reason": "the closed sign-in tab panel is removed from view; hidden is the tab pattern itself, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-tab:hover",
+   "reason": "a sign-in tab lifts on hover by the site's button-preset hover transform, so the hover look is the site's button look, not a block setting"
   }
  ]
 }
