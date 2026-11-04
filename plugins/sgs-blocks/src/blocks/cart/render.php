@@ -198,48 +198,13 @@ $effective_mode      = ( $hide_on_cart_pages && $on_cart_or_checkout ) ? 'link' 
 $has_panel           = $wc_active && in_array( $effective_mode, array( 'flyout', 'drawer' ), true );
 
 // ── Wave B, U-2 — free-delivery progress bar threshold ───────────────────────
-// Manual override wins outright; otherwise read the WooCommerce free-shipping
-// method's `min_amount` from the shipping zone matching the STORE'S OWN base
-// country (never the visitor's — the panel is generic chrome, not a per-visitor
-// shipping quote, and Store API doesn't expose the zone match pre-checkout).
-// Both empty → null → the bar is hidden entirely (panel-render.js). As a
-// CLOSURE assigned to a local variable, never a top-level `function` — this
-// file is `require`d fresh per block instance (see the BUILD-SAFETY note
-// above); a second `sgs/cart` on the same page would fatal on redeclaration.
-$sgs_cart_resolve_free_shipping_min_amount = function () {
-	if ( ! class_exists( 'WC_Shipping_Zones' ) || ! function_exists( 'wc_get_base_location' ) ) {
-		return null;
-	}
-	$base_location = wc_get_base_location();
-	$package       = array(
-		'destination' => array(
-			'country'  => is_array( $base_location ) ? (string) ( $base_location['country'] ?? '' ) : '',
-			'state'    => is_array( $base_location ) ? (string) ( $base_location['state'] ?? '' ) : '',
-			'postcode' => '',
-		),
-	);
-	$zone          = WC_Shipping_Zones::get_zone_matching_package( $package );
-	if ( ! $zone ) {
-		return null;
-	}
-	foreach ( $zone->get_shipping_methods( true ) as $method ) {
-		if ( 'free_shipping' !== $method->id || ! $method->is_enabled() ) {
-			continue;
-		}
-		$min_amount = $method->get_option( 'min_amount', '' );
-		if ( is_numeric( $min_amount ) && (float) $min_amount > 0 ) {
-			return (float) $min_amount;
-		}
-	}
-	return null;
-};
-
+// A manual override wins outright; otherwise the shared resolver reads the WooCommerce free-shipping method's
+// `min_amount` for the store's base country (includes/helpers-free-delivery.php). The zone lookup runs only when the
+// panel exists. Both empty → null → the bar is hidden entirely (panel-render.js).
 $free_delivery_threshold_override = trim( (string) ( $attributes['freeDeliveryThresholdOverride'] ?? '' ) );
 $free_delivery_threshold          = null;
-if ( '' !== $free_delivery_threshold_override && is_numeric( $free_delivery_threshold_override ) ) {
-	$free_delivery_threshold = (float) $free_delivery_threshold_override;
-} elseif ( $has_panel ) {
-	$free_delivery_threshold = $sgs_cart_resolve_free_shipping_min_amount();
+if ( ( '' !== $free_delivery_threshold_override && is_numeric( $free_delivery_threshold_override ) ) || $has_panel ) {
+	$free_delivery_threshold = sgs_free_delivery_threshold( $free_delivery_threshold_override );
 }
 $free_delivery_message = sanitize_text_field(
 	$attributes['freeDeliveryMessage'] ?? sprintf(
