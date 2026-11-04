@@ -44,10 +44,14 @@
 			},
 			"boxFamilies": {
 				"padding": [
-					"padding"
+					"padding",
+					"contentPadding"
 				],
 				"margin": [
-					"margin"
+					"margin",
+					"dateMargin",
+					"contentMargin",
+					"descriptionMargin"
 				],
 				"borderRadius": [
 					"borderRadius"
@@ -168,10 +172,12 @@
 					"label": "Entry date",
 					"order": 4,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "date",
 					"attrMap": {
+						"css:margin": "dateMargin",
 						"css:color": "dateColour",
 						"css:color-gradient": "dateColourGradient",
 						"css:text-transform": "dateTextTransform"
@@ -192,10 +198,12 @@
 					"label": "Description",
 					"order": 1,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "descriptionText",
 					"attrMap": {
+						"css:margin": "descriptionMargin",
 						"css:color": "descriptionTextColour",
 						"css:color-gradient": "descriptionTextColourGradient"
 					},
@@ -229,6 +237,19 @@
 						"text"
 					],
 					"_note": "The links inside each entry's description: descriptionLinkColourHover and its gradient paint them on hover (the DB names their element `description`). The resting link colour and underline sit on the `entry` element's link members. The selector is the element calibration hovers."
+				},
+				"content": {
+					"selector": ".sgs-timeline__content",
+					"motion": false,
+					"label": "Entry text area",
+					"order": 1,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:margin": "contentMargin",
+						"css:padding": "contentPadding"
+					}
 				},
 				"entry-odd": {
 					"selector": ".sgs-timeline__entry:nth-child(odd)",
@@ -1062,6 +1083,45 @@
 					}
 				}
 			}
+		},
+		"panelTravelEnd": {
+			"type": "string",
+			"enum": [
+				"first-start",
+				"track-end"
+			],
+			"default": "first-start",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses where the pinned row stops travelling: the last card's left edge at the first card's starting position, or the end of the strip (trailing padding included) at the right edge of the section.",
+					"trigger": "scrolling while the horizontal timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "first-start or track-end"
+						}
+					}
+				}
+			}
+		},
+		"dateMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's date, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"contentMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's text area (title and description), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"contentPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding inside each entry's text area (title and description), per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet padding."
+		},
+		"descriptionMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin around each entry's description, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
 		},
 		"dateActiveColour": {
 			"type": "string",

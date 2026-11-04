@@ -702,6 +702,31 @@ if ( 'carousel' === $mobile_layout ) {
 	$wrapper_args['data-carousel-label'] = __( 'Timeline milestones', 'sgs-blocks' );
 }
 
+// Per-device spacing boxes of the entry parts: the date, the text area and the description. An unset side keeps the
+// stylesheet's own value.
+foreach (
+	array(
+		'dateMargin'        => array( '.sgs-timeline__date', 'margin' ),
+		'contentMargin'     => array( '.sgs-timeline__content', 'margin' ),
+		'contentPadding'    => array( '.sgs-timeline__content', 'padding' ),
+		'descriptionMargin' => array( '.sgs-timeline__description', 'margin' ),
+	) as $part_attr => $part_target
+) {
+	if ( empty( $attributes[ $part_attr ] ) || ! is_array( $attributes[ $part_attr ] ) ) {
+		continue;
+	}
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . ' ' . $part_target[0],
+		array(
+			array(
+				'value' => $attributes[ $part_attr ],
+				'css'   => $part_target[1],
+				'box'   => true,
+			),
+		)
+	);
+}
+
 require __DIR__ . '/horizontal-panel.php';
 $wrapper_args = array_merge( $wrapper_args, $hp_wrapper_args );
 

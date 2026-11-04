@@ -43,6 +43,14 @@ import {
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { pinnedColourRows } from './horizontal-panel-controls';
 
+// Per-device spacing boxes of the entry parts: [ attribute, label ].
+const ENTRY_PART_BOXES = [
+	[ 'dateMargin', __( 'Date margin', 'sgs-blocks' ) ],
+	[ 'contentMargin', __( 'Text area margin', 'sgs-blocks' ) ],
+	[ 'contentPadding', __( 'Text area padding', 'sgs-blocks' ) ],
+	[ 'descriptionMargin', __( 'Description margin', 'sgs-blocks' ) ],
+];
+
 // ── Select options ──────────────────────────────────────────────────────────
 
 // D649 — no JSON `enum` reliance in the UI list order; mirrors sgs/icon-list's
@@ -1671,6 +1679,29 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					{ ENTRY_PART_BOXES.map( ( [ attrName, label ] ) => (
+						<ResponsiveOverride
+							key={ attrName }
+							value={ attributes[ attrName ] }
+							onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
+						>
+							{ ( { ownValue, setOwnValue } ) => (
+								<SgsBoxControl
+									label={ label }
+									values={
+										ownValue && typeof ownValue === 'object'
+											? ownValue
+											: {}
+									}
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) =>
+										setOwnValue( normaliseResponsiveBox( next ) )
+									}
+								/>
+							) }
+						</ResponsiveOverride>
+					) ) }
 					{ /* Task 0 codemod (migrate-border-control.js) -- one composite row
 					   (width/style/colour) mirroring native's BorderBoxControl layout,
 					   matching sgs/product-card + sgs/quote. Border-radius is unchanged
@@ -1772,6 +1803,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							className="sgs-timeline__date"
 							style={ {
 								...dateColourStyle,
+								...tierBoxLonghands( attributes.dateMargin, previewTier, 'margin' ),
 								...( [ 'none', 'uppercase', 'lowercase', 'capitalize' ].includes( attributes.dateTextTransform )
 									? { textTransform: attributes.dateTextTransform }
 									: {} ),
@@ -1820,7 +1852,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							className="sgs-timeline__node"
 							aria-hidden="true"
 						/>
-						<div className="sgs-timeline__content">
+						<div
+							className="sgs-timeline__content"
+							style={ {
+								...tierBoxLonghands( attributes.contentMargin, previewTier, 'margin' ),
+								...tierBoxLonghands( attributes.contentPadding, previewTier, 'padding' ),
+							} }
+						>
 							<RichText.Content
 								tagName={ HeadingTag }
 								className="sgs-timeline__title"
@@ -1834,7 +1872,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								<RichText.Content
 									tagName="div"
 									className="sgs-timeline__description"
-									style={ descriptionColourStyle }
+									style={ {
+										...descriptionColourStyle,
+										...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
+									} }
 									value={ entry.description }
 								/>
 							) }

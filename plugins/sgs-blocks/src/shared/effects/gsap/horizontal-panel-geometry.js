@@ -60,13 +60,21 @@ export function layoutPanels( track ) {
  * part of the last panel off-screen, so the row always travels at least far enough to bring the last panel's right
  * edge to the host's right edge.
  *
- * @param {HTMLElement} el    The pinned panel container.
- * @param {HTMLElement} track The row.
+ * TRACK-END MODE (`travelEnd` is `track-end`): the row travels until its own end, trailing padding included, sits at the
+ * host's right edge: `track.scrollWidth - el.clientWidth`, floored at 0. The transform does not change `scrollWidth`, so
+ * the value stays correct when GSAP re-measures on refresh. The first-to-last rule above applies in `first-start` mode.
+ *
+ * @param {HTMLElement} el        The pinned panel container.
+ * @param {HTMLElement} track     The row.
+ * @param {string}      travelEnd `first-start` (default) or `track-end`.
  * @return {number} Pixels; 0 when there is no first-to-last distance (fewer than two panels, or panels that do not
  *                  share an offsetParent, where `offsetLeft` values are not comparable), which leaves the CSS
  *                  scroll-snap fallback as the only behaviour.
  */
-export function travelDistance( el, track ) {
+export function travelDistance( el, track, travelEnd = 'first-start' ) {
+	if ( 'track-end' === travelEnd ) {
+		return Math.max( 0, track.scrollWidth - el.clientWidth );
+	}
 	const panels = layoutPanels( track );
 	if ( panels.length < 2 ) {
 		return 0;

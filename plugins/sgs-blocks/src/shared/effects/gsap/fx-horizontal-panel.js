@@ -64,7 +64,7 @@ function pinLengths( el, track, params, count ) {
 	const viewport = window.innerHeight;
 	const travel = params.pinLength
 		? lengthPx( params.pinLength, viewport ) * count
-		: travelDistance( el, track );
+		: travelDistance( el, track, params.travelEnd );
 	const total = travel + lengthPx( params.pinTail, viewport );
 	return {
 		travel,
@@ -104,7 +104,7 @@ function pin( gsap, el, track, params ) {
 		);
 
 	tween = gsap.to( track, {
-		x: () => -travelDistance( el, track ),
+		x: () => -travelDistance( el, track, params.travelEnd ),
 		// The row moves over `share` of the pin and rests for the rest, so the stored ease shapes the travel only.
 		ease: ( progress ) =>
 			curve(
