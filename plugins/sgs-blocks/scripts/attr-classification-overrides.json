@@ -932,6 +932,22 @@
 			}
 		},
 		{
+			"slug": "sgs/media",
+			"attr": "displayWidth",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_reason": "2026-11-04: the width the image is drawn at per device, read by sgs_media_cover_crop_plan to print the `sizes` attribute; it paints no CSS, so the name-derived layout role is wrong."
+		},
+		{
+			"slug": "sgs/timeline",
+			"attr": "contentLayout",
+			"fields": {
+				"role": "enum-mode"
+			},
+			"_reason": "2026-11-04: chooses how entries line up (alternating, same-side, single-column), a markup and CSS branch selector; its name carries the content element prefix but it is not a CSS value of that element."
+		},
+		{
 			"slug": "sgs/timeline",
 			"attr": "entries",
 			"fields": {

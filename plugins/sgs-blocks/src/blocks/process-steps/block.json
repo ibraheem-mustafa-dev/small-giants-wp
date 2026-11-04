@@ -240,6 +240,7 @@
 				"step": {
 					"label": "Each process step",
 					"order": 1,
+					"prefix": "number",
 					"clusters": [
 						"layout",
 						"motion"

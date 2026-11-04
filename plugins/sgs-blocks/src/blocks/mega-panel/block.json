@@ -252,7 +252,8 @@
 					"layer": "CONTENT",
 					"order": 5.9,
 					"clusters": [
-						"text"
+						"text",
+						"fill"
 					],
 					"attrMap": {
 						"css:font-size": "drawerCardLinkSize",
