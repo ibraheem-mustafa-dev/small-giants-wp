@@ -58,7 +58,8 @@ const OUT_FILE = path.join(
 const SUPPORT_DRIVEN = [ 'sgsMotion' ];
 
 const ATTR_RE = /\b(sgs[A-Za-z0-9]*)\s*:\s*\{([^}]*)\}/g;
-const TYPE_RE = /\btype\s*:\s*["'](string|number|boolean|array|object)["']/;
+// `type: 'string'`, or a union `type: [ 'string', 'object' ]` carried as 'string|object'.
+const TYPE_RE = /\btype\s*:\s*(?:["'](string|number|boolean|array|object)["']|\[\s*((?:["'](?:string|number|boolean|array|object)["']\s*,?\s*)+)\])/;
 
 function listExtensionFiles() {
 	// Recursive: an extension split into a folder (extensions/hover-effects/)
@@ -116,7 +117,7 @@ function collectAttributes() {
 				// but it is almost certainly a definition that needs a type.
 				continue;
 			}
-			const type = typeMatch[ 1 ];
+			const type = typeMatch[ 1 ] || typeMatch[ 2 ].match( /[a-z]+/g ).join( '|' );
 			if ( map.has( name ) && map.get( name ) !== type ) {
 				conflicts.push(
 					`${ name }: ${ map.get( name ) } vs ${ type } (${ file })`
@@ -158,7 +159,8 @@ function renderPhp( attrs ) {
 	lines.push( '' );
 	lines.push( 'return array(' );
 	for ( const [ name, type ] of attrs ) {
-		lines.push( `\t'${ name }' => array( 'type' => '${ type }' ),` );
+		const phpType = type.includes( '|' ) ? `array( ${ type.split( '|' ).map( ( t ) => `'${ t }'` ).join( ', ' ) } )` : `'${ type }'`;
+		lines.push( `\t'${ name }' => array( 'type' => ${ phpType } ),` );
 	}
 	lines.push( ');' );
 	lines.push( '' );

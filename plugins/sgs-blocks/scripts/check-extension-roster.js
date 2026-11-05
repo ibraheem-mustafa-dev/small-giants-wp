@@ -76,7 +76,11 @@ function checkRoster( rosterFile = ROSTER_FILE ) {
 			if ( ! /^sgs[A-Z]/.test( name ) ) {
 				problems.push( `${ ext.id }.${ name }: roster attributes are sgs* only` );
 			}
-			if ( ! TYPES.includes( def.type ) ) {
+			// A union is written as an array in the roster and compared as 'a|b'.
+			if ( Array.isArray( def.type ) ) {
+				def.type = def.type.join( '|' );
+			}
+			if ( ! def.type.split( '|' ).every( ( t ) => TYPES.includes( t ) ) ) {
 				problems.push( `${ ext.id }.${ name }: type "${ def.type }" is not one of ${ TYPES.join( ', ' ) }` );
 			}
 			if ( declared.has( name ) ) {

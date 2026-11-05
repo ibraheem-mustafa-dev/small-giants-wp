@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the line items (header row, thumbnail size, quantity stepper, spacing between cards).
+ * Cart and Checkout look: the line items (header row, thumbnail size, cell padding, quantity stepper, spacing between cards).
  *
  * @package SGS\Blocks
  */
@@ -29,11 +29,35 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= $header . '{display:none;}';
 	}
 
-	// Thumbnail size: the picture.
-	$size  = sgs_css_single_length_value( (string) ( $attrs['sgsItemThumbSize'] ?? '' ) );
+	// Hide the unit price under the product name (cart only: the line total stays in its own column).
+	$unit = sgs_commerce_look_selector( 'item_unit_price', $block, $root );
+	if ( '' !== $unit && true === ( $attrs['sgsItemHideUnitPrice'] ?? false ) ) {
+		$css .= $unit . '{display:none;}';
+	}
+
+	// Thumbnail size: the picture. A plain length (the shape saved before the setting became per-device) prints the one
+	// rule it always printed; a per-device object prints a rule per device and widens the checkout picture box.
 	$img = sgs_commerce_look_selector( 'item_image_img', $block, $root );
-	if ( '' !== $size && '' !== $img ) {
-		$css .= $img . '{width:' . $size . ';max-width:100%;height:auto;}';
+	$thumb = $attrs['sgsItemThumbSize'] ?? null;
+	if ( '' !== $img && is_string( $thumb ) ) {
+		$size = sgs_css_single_length_value( $thumb );
+		if ( '' !== $size ) {
+			$css .= $img . '{width:' . $size . ';max-width:100%;height:auto;}';
+		}
+	} elseif ( '' !== $img && ! empty( $thumb ) ) {
+		$width = array( array( 'value' => $thumb, 'css' => 'width', 'unit_default' => 'px' ) );
+		$css  .= sgs_emit_responsive_css( $img, $width ) . $img . '{max-width:100%;height:auto;}';
+		$box   = sgs_commerce_look_selector( 'item_thumb_box', $block, $root );
+		if ( '' !== $box ) {
+			$css .= sgs_emit_responsive_css( $box, $width ) . $box . '{flex-shrink:0;}';
+		}
+	}
+
+	// Padding of the row's cells per device: WooCommerce's table cells carry their own vertical padding, which sets
+	// the row's height.
+	$cell = sgs_commerce_look_selector( 'item_cell', $block, $root );
+	if ( '' !== $cell ) {
+		$css .= sgs_emit_responsive_css( $cell, array( array( 'value' => $attrs['sgsItemCellPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 	}
 
 	// Quantity stepper corners; the buttons inherit the radius, so the stepper clips them.

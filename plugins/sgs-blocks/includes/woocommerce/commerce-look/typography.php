@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart and Checkout look: the text styles (step titles, line-item name and price, summary heading, total row, terms).
+ * Cart and Checkout look: the text styles (step titles, field labels, line-item name, price, variant text and remove link, summary heading, summary rows, total label and value, terms).
  *
  * @package SGS\Blocks
  */
@@ -22,16 +22,29 @@ require_once __DIR__ . '/selectors.php';
  */
 function sgs_commerce_look_typography_css( array $attrs, string $block, string $root ): string {
 	$styles = array(
-		'sgsStepTitle'      => 'step_title',
-		'sgsItemName'       => 'item_name',
-		'sgsItemPrice'      => 'item_price',
-		'sgsSummaryHeading' => 'summary_heading',
-		'sgsTotalRow'       => 'total_row',
-		'sgsTerms'          => 'terms',
+		'sgsStepTitle'       => array( 'step_title' ),
+		'sgsFieldLabel'      => array( 'field_label', 'field_label_active' ),
+		'sgsItemName'        => array( 'item_name' ),
+		'sgsItemPrice'       => array( 'item_price' ),
+		'sgsItemVariant'     => array( 'item_variant' ),
+		'sgsItemRemove'      => array( 'item_remove' ),
+		'sgsSummaryHeading'  => array( 'summary_heading' ),
+		'sgsSummaryRowLabel' => array( 'summary_row_label' ),
+		'sgsSummaryRowValue' => array( 'summary_row_value' ),
+		'sgsTotalLabel'      => array( 'total_label' ),
+		'sgsTotalValue'      => array( 'total_value' ),
+		'sgsTerms'           => array( 'terms' ),
 	);
 	$css    = '';
-	foreach ( $styles as $prefix => $row ) {
-		$css .= sgs_commerce_look_text_css( $attrs, $prefix, sgs_commerce_look_selector( $row, $block, $root ) );
+	foreach ( $styles as $prefix => $rows ) {
+		$list = array();
+		foreach ( $rows as $row ) {
+			$one = sgs_commerce_look_selector( $row, $block, $root );
+			if ( '' !== $one ) {
+				$list[] = $one;
+			}
+		}
+		$css .= sgs_commerce_look_text_css( $attrs, $prefix, implode( ',', $list ) );
 	}
 	return $css;
 }

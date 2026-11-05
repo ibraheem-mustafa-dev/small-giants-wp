@@ -17,7 +17,7 @@ const TIERS = [ 'desktop', 'tablet', 'mobile' ];
  * @param {Object|undefined} value Stored tier object.
  * @return {{base: Object, tablet: Object, mobile: Object}} The box per device.
  */
-const boxTiers = ( value ) => ( {
+export const boxTiers = ( value ) => ( {
 	base: value?.desktop ?? {},
 	tablet: value?.tablet ?? {},
 	mobile: value?.mobile ?? {},
