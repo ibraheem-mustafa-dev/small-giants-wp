@@ -5,6 +5,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
+import ConfiguratorLookPanel from './ConfiguratorLookPanel';
 import { fillRow, textRow, ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl } from '../../components';
 
 const STYLE_OPTIONS = [
@@ -396,6 +397,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				</Item>
 				</ToolsPanel>
 			</PanelBody>
+			<ConfiguratorLookPanel attributes={ attributes } setAttributes={ setAttributes } list={ state.list } />
 		</InspectorControls>
 	);
 }
@@ -422,6 +424,11 @@ export function configuratorColourRows( { attributes, setAttributes } ) {
 		fillRow( { key: 'pickSelectedBorder', label: __( 'Selected option border colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedBorderColour' }, attributes, setAttributes } ),
 		fillRow( { key: 'pickBadgeFill', label: __( 'Term badge fill', 'sgs-blocks' ), attrs: { base: 'pickBadgeBackgroundColour' }, attributes, setAttributes } ),
 		textRow( { key: 'pickBadgeText', label: __( 'Term badge text colour', 'sgs-blocks' ), attrs: { base: 'pickBadgeTextColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerPillFill', label: __( 'Option fill (resting)', 'sgs-blocks' ), attrs: { base: 'pickerPillBackgroundColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerPillBorder', label: __( 'Option border colour (resting)', 'sgs-blocks' ), attrs: { base: 'pickerPillBorderColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerDotRing', label: __( 'Colour dot ring colour', 'sgs-blocks' ), attrs: { base: 'pickerDotRingColour' }, attributes, setAttributes } ),
+		textRow( { key: 'pickerDotTick', label: __( 'Tick colour inside the colour dot', 'sgs-blocks' ), attrs: { base: 'pickerDotTickColour' }, attributes, setAttributes } ),
+		textRow( { key: 'pickerHint', label: __( 'Heading hint colour', 'sgs-blocks' ), attrs: { base: 'pickerHintColour' }, attributes, setAttributes } ),
 		textRow( { key: 'pickSelectedText', label: __( 'Selected option text colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedTextColour' }, attributes, setAttributes } ),
 	];
 }

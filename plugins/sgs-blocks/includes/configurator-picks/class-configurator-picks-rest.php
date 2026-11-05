@@ -71,7 +71,7 @@ final class Configurator_Picks_Rest {
 	 * The checklist for a product.
 	 *
 	 * @param int $product_id Product ID.
-	 * @return array{pack:array,groups:array,issues:array,editUrl:string}
+	 * @return array{pack:array,groups:array,headingGroups:array,issues:array,editUrl:string}
 	 */
 	public static function checklist( int $product_id ): array {
 		$all    = Configurator_Groups::for_product( $product_id );
@@ -97,6 +97,13 @@ final class Configurator_Picks_Rest {
 				'unparseable' => array_map( 'wp_strip_all_tags', $pack['unparseable'] ),
 			),
 			'groups'  => $groups,
+			'headingGroups' => array_map(
+				static fn( array $group ): array => array(
+					'key'   => (string) $group['key'],
+					'label' => wp_strip_all_tags( (string) $group['label'] ),
+				),
+				$all
+			),
 			'issues'  => array_column( sgs_picks_preflight_issues( $all, $pack ), 'message' ),
 			'editUrl' => (string) get_edit_post_link( $product_id, 'raw' ),
 		);

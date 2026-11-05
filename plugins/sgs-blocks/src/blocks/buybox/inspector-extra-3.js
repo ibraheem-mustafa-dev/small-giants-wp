@@ -152,7 +152,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							label: __( 'Picker label', 'sgs-blocks' ),
 							prefix: 'pickerLabel',
 							showFontFamily: false,
-							showWeight: false,
+							showWeight: true,
 							showStyle: false,
 							showLineHeight: false,
 							showLetterSpacing: true,
