@@ -475,7 +475,6 @@ if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
 	if ( ! $border['hover'] ) {
 		$ring_decls[] = 'border-color:var(--sgs-si-border-colour-hover,' . sgs_colour_value( $brand_paint['border_hover'] ) . ')';
 	}
-	// sgs-shadow-fallback: a 1px state ring on the border, not a drop shadow: it takes no lift and carries its own forced-colours outline.
 	// The ring takes the icon's own border hover colour when it sets one (read from the border helper's hover
 	// declarations); otherwise the brand's.
 	$ring_colour = sgs_colour_value( $brand_paint['ring'] );
@@ -484,6 +483,7 @@ if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
 			$ring_colour = $border_hover_match[1];
 		}
 	}
+	// sgs-shadow-fallback: a 1px state ring on the border, not a drop shadow: it takes no lift and carries its own forced-colours outline.
 	$ring_decls[] = 'box-shadow:0 0 0 1px ' . $ring_colour;
 	if ( $show_bg ) {
 		$ring_decls[] = 'background-color:var(--sgs-icon-bg-hover,var(--sgs-si-bg-hover,var(--sgs-icon-bg,var(--sgs-si-bg,var(--wp--preset--color--surface-alt)))))';
