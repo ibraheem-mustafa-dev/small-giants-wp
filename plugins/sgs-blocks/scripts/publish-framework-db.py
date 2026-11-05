@@ -3,17 +3,26 @@
 
 Sessions no longer queue behind one long shared reseed. The flow is compare-and-swap:
 
-  1. begin     python publish-framework-db.py begin --copy E:/sgs-tmp/my-reseed.db
-               Copies the shared DB (SQLite backup, so a consistent snapshot) and records the shared file's sha256 in
-               <copy>.base.json.
-  2. reseed    python sgs-update-v2.py --db E:/sgs-tmp/my-reseed.db   (then gate on the copy: SGS_FRAMEWORK_DB=<copy>)
-  3. publish   python publish-framework-db.py publish --copy E:/sgs-tmp/my-reseed.db
-               Takes a lock for a few seconds, and replaces the shared DB only when it still has the sha256 the copy
-               started from. Exit 3 means another session published first: run `begin` and reseed again.
-  4. rebase    git pull --rebase (restore the three generated files first, see step 5).
-  5. regenerate  python publish-framework-db.py regenerate --restore-first
-               Restores consistency/attr-role-map.json, consistency/roster.json and dbschema/seed-history.json from HEAD
-               (so the rebase never merges them) and rebuilds each from the published shared DB.
+  1. begin       python publish-framework-db.py begin --copy E:/sgs-tmp/my-reseed.db
+                 Copies the shared DB (SQLite backup, so a consistent snapshot) and records the shared file's sha256 in
+                 <copy>.base.json.
+  2. reseed      python sgs-update-v2.py --db E:/sgs-tmp/my-reseed.db
+  3. regenerate  python publish-framework-db.py regenerate --copy E:/sgs-tmp/my-reseed.db [--restore-first]
+                 Rebuilds consistency/attr-role-map.json, consistency/roster.json and dbschema/seed-history.json from the
+                 copy (the generators run with SGS_FRAMEWORK_DB=<copy>); --restore-first checks them out from HEAD first.
+  4. commit      Commit the regenerated files and the reseed's own output (behavioural-analyser/css-property-classifications.json)
+                 before gating, so the gated tree is the tree that gets pushed. If origin/main moved, rebase now, before gating.
+  5. gate        SGS_FRAMEWORK_DB=E:/sgs-tmp/my-reseed.db python build-deploy.py --gate-only --blocks-only [--editor-check local-<site>]
+                 Builds and runs gate:full in an isolated worktree at HEAD and records a pass for (HEAD's tree, the copy's sha256).
+  6. publish     python publish-framework-db.py publish --copy E:/sgs-tmp/my-reseed.db
+                 Refused (exit 2) unless that pass is on record for HEAD and the tracked files are clean. Takes a lock for a few
+                 seconds and replaces the shared DB only when it still has the sha256 the copy started from (exit 3 means another
+                 session published first: run `begin` and reseed again). Then carries the pass to the key for (same tree, published
+                 sha256): the published DB is a SQLite backup of the gated copy, identical content, so the gates already ran on it.
+  7. push, then deploy with build-deploy.py: it restores the cached build and skips build and gate:full.
+
+A rebase onto a moved origin/main after gating changes the tree, so the pass no longer matches HEAD and publish refuses with
+the gate command: rebase before gating.
 
 Every publish is logged in <shared>.publish.log (JSON lines: who, which tree, sha before and after). `begin`, `publish` and
 `status` compare the shared DB's sha256 with the last one the log knows; a different sha means something wrote the file
@@ -37,8 +46,10 @@ import uuid
 from pathlib import Path
 from urllib.parse import quote
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from framework_db import framework_db_path  # noqa: E402
+import deploy_cache  # noqa: E402
 
 SCRIPTS = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPTS.parents[2]
@@ -256,6 +267,30 @@ def replace_with_retry(staged: Path, shared: Path) -> None:
             time.sleep(0.5)
 
 
+def gate_command(copy: Path) -> str:
+    return (f"SGS_FRAMEWORK_DB={copy} python plugins/sgs-blocks/scripts/build-deploy.py --gate-only --blocks-only "
+            "[--editor-check local-<site>]")
+
+
+def tracked_changes() -> list[str]:
+    done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=str(REPO_ROOT),
+                          capture_output=True, text=True, check=True)
+    return [line for line in done.stdout.splitlines() if line.strip()]
+
+
+def require_gate_pass(copy: Path) -> str:
+    """The cache key of the recorded gate:full pass for (HEAD's tree, the copy's sha256); refuses when there is none or
+    when tracked files differ from HEAD (the pass would describe different code)."""
+    dirty = tracked_changes()
+    if dirty:
+        raise PublishRefused(f"{len(dirty)} tracked file(s) differ from HEAD ({dirty[0].strip()}): commit them, then gate. "
+                             f"Run: {gate_command(copy)}")
+    key = deploy_cache.run_key(REPO_ROOT, isolated=True, no_cache=False, db=copy)
+    if not deploy_cache.gate_pass(key):
+        raise PublishRefused(f"no gate:full pass is recorded for HEAD's tree and this copy. Run: {gate_command(copy)}")
+    return key
+
+
 def publish(copy: Path, shared: Path) -> dict:
     marker = base_file(copy)
     if not marker.is_file():
@@ -265,6 +300,7 @@ def publish(copy: Path, shared: Path) -> dict:
         raise PublishRefused(f"--copy is the shared DB itself ({shared}): SGS_FRAMEWORK_DB still names the copy; unset it for publish")
     if Path(base["shared"]) != shared:
         raise PublishRefused(f"the copy started from {base['shared']}, not {shared}")
+    pass_key = require_gate_pass(copy)  # before check_copy, which may checkpoint (rewrite) the copy
     check_copy(copy)
     staged = shared.with_name(shared.name + ".publishing")
     with PublishLock(shared):
@@ -290,6 +326,8 @@ def publish(copy: Path, shared: Path) -> dict:
                 pass  # the new DB is already live; an empty sidecar is rebuilt by SQLite
         published = sha256_of(shared)
         record_event(shared, "publish", sha_before=current, sha_after=published, copy=str(copy))
+    # The published DB is a SQLite backup of the gated copy (identical content), so the pass for the copy holds for it.
+    deploy_cache.carry_pass(pass_key, deploy_cache.run_key(REPO_ROOT, isolated=True, no_cache=False, db=shared))
     marker.write_text(json.dumps({**base, "published_sha256": published, "published_at": time.time()}, indent=2), encoding="utf-8")
     return {"sha256": published, "warning": warning}
 
@@ -310,10 +348,17 @@ def status(shared: Path) -> list[str]:
     return lines
 
 
-def regenerate(restore_first: bool) -> None:
-    """Rebuild the three generated files from the shared DB (SGS_FRAMEWORK_DB must be unset)."""
-    if os.environ.get("SGS_FRAMEWORK_DB"):
-        raise PublishRefused("unset SGS_FRAMEWORK_DB: the generated files are rebuilt from the shared DB")
+def regenerate(restore_first: bool, copy: Path | None = None) -> None:
+    """Rebuild the three generated files from `copy` (the generators run with SGS_FRAMEWORK_DB=<copy>), or from the shared
+    DB when no copy is named (SGS_FRAMEWORK_DB must then be unset)."""
+    env = dict(os.environ)
+    if copy is None:
+        if os.environ.get("SGS_FRAMEWORK_DB"):
+            raise PublishRefused("unset SGS_FRAMEWORK_DB: the generated files are rebuilt from the shared DB (or name a private copy with --copy)")
+    else:
+        if not copy.is_file():
+            raise PublishRefused(f"copy not found: {copy}")
+        env["SGS_FRAMEWORK_DB"] = str(copy.resolve())
     if restore_first:
         subprocess.run(["git", "checkout", "HEAD", "--", *GENERATED], cwd=str(REPO_ROOT), check=True)
     steps = (
@@ -322,7 +367,7 @@ def regenerate(restore_first: bool) -> None:
         [sys.executable, str(SCRIPTS / "dbschema" / "seed_history.py"), "--record"],
     )
     for command in steps:
-        done = subprocess.run(command, cwd=str(REPO_ROOT))
+        done = subprocess.run(command, cwd=str(REPO_ROOT), env=env)
         if done.returncode != 0:
             raise PublishRefused(f"{Path(command[1]).name} exited {done.returncode}")
 
@@ -335,6 +380,7 @@ def main(argv: list[str] | None = None) -> int:
         step.add_argument("--copy", type=Path, required=True)
     sub.add_parser("status")
     regen = sub.add_parser("regenerate")
+    regen.add_argument("--copy", type=Path, default=None, help="rebuild from this private copy instead of the shared DB")
     regen.add_argument("--restore-first", action="store_true", help="git checkout HEAD -- the three generated files first")
     args = parser.parse_args(argv)
     shared = framework_db_path()
@@ -346,14 +392,15 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"[begin] WARNING: {record['warning']}", file=sys.stderr)
         elif args.command == "publish":
             result = publish(args.copy, shared)
-            print(f"[publish] shared DB replaced (sha256 {result['sha256'][:12]}). Next: git pull --rebase, then `regenerate --restore-first`.")
+            print(f"[publish] shared DB replaced (sha256 {result['sha256'][:12]}). The gate pass is carried to it. Next: push, then deploy.")
             if result["warning"]:
                 print(f"[publish] WARNING: {result['warning']}", file=sys.stderr)
         elif args.command == "status":
             print("\n".join(status(shared)))
         else:
-            regenerate(args.restore_first)
-            print("[regenerate] attr-role-map.json, roster.json and seed-history.json rebuilt from the shared DB")
+            regenerate(args.restore_first, args.copy)
+            source = args.copy or "the shared DB"
+            print(f"[regenerate] attr-role-map.json, roster.json and seed-history.json rebuilt from {source}")
     except SharedChanged as exc:
         print(f"[publish] REFUSED, the shared DB changed since the copy started: {exc}. Run `begin` and reseed again.", file=sys.stderr)
         return EXIT_CONFLICT
