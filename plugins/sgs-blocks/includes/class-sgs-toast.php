@@ -70,7 +70,7 @@ final class Sgs_Toast {
 			'sgs-toast',
 			\plugins_url( 'assets/toast/toast.css', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
 			array(),
-			SGS_BLOCKS_VERSION
+			\defined( 'SGS_BLOCKS_VERSION' ) ? \SGS_BLOCKS_VERSION : false
 		);
 	}
 
