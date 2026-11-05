@@ -149,12 +149,15 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 		$colour = static function ( string $key ) use ( $attributes ): string {
 			return sgs_colour_value( (string) ( $attributes[ $key ] ?? '' ) );
 		};
-		$rules  = array(
+		require_once __DIR__ . '/helpers-typography.php';
+		$icon_offset = sgs_css_single_length_value( (string) ( $attributes['filterSearchIconOffset'] ?? '' ) );
+		$rules       = array(
 			'.sgs-accordion__chip'                      => array(
 				'color'            => $colour( 'filterChipColour' ),
 				'background-color' => $colour( 'filterChipBackground' ),
 				'border-color'     => $colour( 'filterChipBorderColour' ),
 				'border-radius'    => sgs_css_length_value( $attributes['filterChipRadius'] ?? '' ),
+				'font-family'      => sgs_font_family_sanitise( $attributes['filterChipFontFamily'] ?? '' ),
 			),
 			'.sgs-accordion__chip[aria-pressed="true"]' => array(
 				'color'            => $colour( 'filterChipColourPressed' ),
@@ -164,10 +167,13 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 				'color' => $colour( 'filterCountColour' ),
 			),
 			'.sgs-accordion__search-input'              => array(
-				'background-color' => $colour( 'filterSearchBackground' ),
+				'background-color'     => $colour( 'filterSearchBackground' ),
+				'font-family'          => sgs_font_family_sanitise( $attributes['filterSearchFontFamily'] ?? '' ),
+				'padding-inline-start' => '' !== $icon_offset && '' !== trim( (string) ( $attributes['filterSearchIcon'] ?? '' ) ) ? 'calc(' . $icon_offset . ' + var(--sgs-accordion-search-icon-size,1.25rem) + 0.75rem)' : '',
 			),
 			'.sgs-accordion__search-icon'               => array(
-				'color' => $colour( 'filterSearchIconColour' ),
+				'color'               => $colour( 'filterSearchIconColour' ),
+				'inset-inline-start' => $icon_offset,
 			),
 			'.sgs-accordion__search'                    => array(
 				'--sgs-accordion-search-icon-size' => sgs_css_single_length_value( (string) ( $attributes['filterSearchIconSize'] ?? '' ) ),

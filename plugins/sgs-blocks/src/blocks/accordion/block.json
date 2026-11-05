@@ -280,6 +280,7 @@
             "css:border-color": "filterChipBorderColour",
             "css:border-radius": "filterChipRadius",
             "css:font-size": "filterChipFontSize",
+            "css:font-family": "filterChipFontFamily",
             "css:box-shadow": "filterChipShadow",
             "css:box-shadow-color": "filterChipShadowColour"
           },
@@ -327,6 +328,7 @@
             "css:min-height": "filterSearchHeight",
             "css:padding": "filterSearchPadding",
             "css:font-size": "filterSearchFontSize",
+            "css:font-family": "filterSearchFontFamily",
             "css:box-shadow": "filterSearchShadow",
             "css:box-shadow-color": "filterSearchShadowColour"
           }
@@ -356,7 +358,8 @@
           "prefix": "filterSearchIcon",
           "attrMap": {
             "css:color": "filterSearchIconColour",
-            "css:width": "filterSearchIconSize"
+            "css:width": "filterSearchIconSize",
+            "css:inset-inline-start": "filterSearchIconOffset"
           },
           "_note": "A Lucide icon inside the search box's start edge (filterSearchIcon, filterSearchIconColour, filterSearchIconSize); the input's start padding clears it."
         },
@@ -546,6 +549,21 @@
       "type": "object",
       "default": {},
       "description": "Chip text size per device {desktop,tablet,mobile}, each a CSS length. Empty inherits the accordion's text size."
+    },
+    "filterChipFontFamily": {
+      "type": "string",
+      "default": "",
+      "description": "Font family of the filter chips: a theme font preset slug or a CSS font-family list. Empty inherits the accordion's font."
+    },
+    "filterSearchFontFamily": {
+      "type": "string",
+      "default": "",
+      "description": "Font family of the filter search box text: a theme font preset slug or a CSS font-family list. Empty inherits the accordion's font."
+    },
+    "filterSearchIconOffset": {
+      "type": "string",
+      "default": "",
+      "description": "Distance from the search box's start edge to the search icon, one CSS length (for example \"1.25rem\"). The text clears the icon by the same distance. Empty = 1rem."
     },
     "filterChipShadow": {
       "type": "string",

@@ -9,6 +9,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
+import { useSettings } from '@wordpress/block-editor';
 import { alignLeft, alignCenter, alignRight } from '@wordpress/icons';
 import {
 	BOX_UNITS,
@@ -22,7 +23,8 @@ import {
 	TextAlignTierControl,
 	normaliseResponsiveBox,
 } from '../../components';
-import { ToolsPanelItem } from '../../components/primitives';
+import { FontFamilyControl, ToolsPanelItem } from '../../components/primitives';
+import { fontFamilyPickerValue, fontFamilyStoredValue, flattenPresetSetting } from '../../utils';
 
 const OFFSET_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -94,6 +96,26 @@ function BoxItem( { label, attribute, attributes, setAttributes } ) {
 	);
 }
 
+/** A font family picker that stores a theme preset slug (or a raw list), like the shared typography controls. */
+function FontFamilyItem( { label, attribute, attributes, setAttributes } ) {
+	const [ familiesRaw ] = useSettings( 'typography.fontFamilies' );
+	const families = flattenPresetSetting( familiesRaw );
+	return (
+		<ToolsPanelItem
+			label={ label }
+			hasValue={ () => !! attributes[ attribute ] }
+			onDeselect={ () => setAttributes( { [ attribute ]: '' } ) }
+			isShownByDefault
+		>
+			<FontFamilyControl
+				fontFamilies={ families }
+				value={ fontFamilyPickerValue( attributes[ attribute ], families ) }
+				onChange={ ( val ) => setAttributes( { [ attribute ]: fontFamilyStoredValue( val, families, attributes[ attribute ] ) || '' } ) }
+			/>
+		</ToolsPanelItem>
+	);
+}
+
 /** Chip row layout, the chips' text size and the selected chip's shadow and shift. */
 export function ChipLookFields( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
@@ -133,6 +155,7 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 					onChange={ ( obj ) => setAttributes( { filterChipFontSize: obj } ) }
 				/>
 			</TierItem>
+			<FontFamilyItem label={ __( 'Chip font', 'sgs-blocks' ) } attribute="filterChipFontFamily" { ...shared } />
 			<ShadowItem
 				label={ __( 'Chip shadow', 'sgs-blocks' ) }
 				base="filterChipShadow"
@@ -219,6 +242,7 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 					onChange={ ( obj ) => setAttributes( { filterSearchFontSize: obj } ) }
 				/>
 			</TierItem>
+			<FontFamilyItem label={ __( 'Search text font', 'sgs-blocks' ) } attribute="filterSearchFontFamily" { ...shared } />
 			<ShadowItem
 				label={ __( 'Search box shadow', 'sgs-blocks' ) }
 				base="filterSearchShadow"
@@ -251,6 +275,23 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 						label={ __( 'Search icon size', 'sgs-blocks' ) }
 						value={ attributes.filterSearchIconSize ?? '' }
 						onChange={ ( val ) => setAttributes( { filterSearchIconSize: val || '' } ) }
+					/>
+				</ToolsPanelItem>
+			) }
+			{ !! attributes.filterSearchIcon && (
+				<ToolsPanelItem
+					label={ __( 'Search icon offset', 'sgs-blocks' ) }
+					hasValue={ () => !! attributes.filterSearchIconOffset }
+					onDeselect={ () => setAttributes( { filterSearchIconOffset: '' } ) }
+					isShownByDefault
+				>
+					<SgsLengthControl
+						scale="spacing"
+						presets={ false }
+						label={ __( 'Search icon offset', 'sgs-blocks' ) }
+						help={ __( 'Distance from the start edge of the search box to the icon. The text clears the icon by the same distance. Empty = 1rem.', 'sgs-blocks' ) }
+						value={ attributes.filterSearchIconOffset ?? '' }
+						onChange={ ( val ) => setAttributes( { filterSearchIconOffset: val || '' } ) }
 					/>
 				</ToolsPanelItem>
 			) }

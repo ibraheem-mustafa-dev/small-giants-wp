@@ -223,6 +223,32 @@ namespace {
 			$this->assertStringContainsString( '.sgs-filter-look__all[aria-current="true"]{', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipAllLabel' => 'All' ), 'sgs-look-1a2b3c4d' ) );
 		}
 
+		public function test_chosen_chip_shadow_and_shift_print_on_the_chosen_chip_and_the_current_all_chip(): void {
+			$set = array(
+				'sgsChipAllLabel'             => 'All',
+				'sgsChipSelectedShadow'       => '3px 3px 0 0',
+				'sgsChipSelectedShadowColour' => '#3A2A22',
+				'sgsChipSelectedOffsetX'      => '-2px',
+				'sgsChipSelectedOffsetY'      => '-2px',
+			);
+			$css = \SGS\Blocks\sgs_filter_look_chips_css( $set, 'sgs-look-1a2b3c4d' );
+			$this->assertMatchesRegularExpression( '~__item\[aria-checked="true"\]\{box-shadow:3px 3px 0px 0px \#3A2A22;.*?translate:-2px -2px;\}~s', $css );
+			$this->assertMatchesRegularExpression( '~__all\[aria-current="true"\]\{[^}]*box-shadow:3px 3px 0px 0px \#3A2A22;.*?translate:-2px -2px;\}~s', $css );
+			$this->assertStringContainsString( 'translate:-2px 0;}', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipSelectedOffsetX' => '-2px' ), 'sgs-look-1a2b3c4d' ) );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipSelectedShadow' => '', 'sgsChipSelectedOffsetX' => '' ), 'sgs-look-1a2b3c4d' ), 'unset prints nothing' );
+		}
+
+		public function test_all_count_markup_follows_the_pill_setting(): void {
+			$this->assertSame( '<span class="wc-block-product-filter-chips__count">(5)</span>', \SGS\Blocks\sgs_filter_look_all_count_markup( 5, false ) );
+			$this->assertSame( '<span class="wc-block-product-filter-chips__count">5</span>', \SGS\Blocks\sgs_filter_look_all_count_markup( 5, true ) );
+			$block = array( 'blockName' => 'woocommerce/product-filter-chips', 'attrs' => array( 'sgsChipAllLabel' => 'All' ) );
+			$inst  = (object) array( 'context' => array( 'woocommerce/selectableItems' => array( 'items' => array( array( 'type' => 'taxonomy/product_cat', 'selected' => false ) ) ) ) );
+			$off   = \SGS\Blocks\sgs_filter_look_chips_markup( self::COUNTED, $block, $inst );
+			$this->assertSame( 2, substr_count( $off, 'wc-block-product-filter-chips__count' ), 'no count on the All chip without sgsChipAllCount' );
+			$on = \SGS\Blocks\sgs_filter_look_chips_markup( self::COUNTED, array( 'blockName' => $block['blockName'], 'attrs' => $block['attrs'] + array( 'sgsChipAllCount' => true ) ), $inst );
+			$this->assertSame( 3, substr_count( $on, 'wc-block-product-filter-chips__count' ), 'the All chip gains its count span' );
+		}
+
 		public function test_group_parameters_follow_the_filter_kind(): void {
 			$this->assertSame( array( 'tags' ), \SGS\Blocks\sgs_chip_group_param_keys( 'taxonomy/product_tag' ) );
 			$this->assertSame( array( 'filter_pa_x' ), \SGS\Blocks\sgs_chip_group_param_keys( 'taxonomy/pa_x' ) );

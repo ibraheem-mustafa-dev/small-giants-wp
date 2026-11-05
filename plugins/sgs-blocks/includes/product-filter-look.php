@@ -22,6 +22,8 @@
  * the bare number (the `data-wp-text` span, which the Interactivity store updates, is untouched); the pill is centred and
  * `sgsChipCountSize` / `sgsChipCountFontSize` size it.
  *
+ * Chosen chip shadow and shift (`sgsChipSelected*`) and the All chip's count (`sgsChipAllCount`): product-filter-chip-chosen.php.
+ *
  * All chip (`sgsChipAllLabel`): a non-empty label adds a first chip, a plain link to this page with the group's filter
  * parameters removed, marked `aria-current="true"` while nothing in the group is chosen. A group with a start term links
  * to the page with that parameter set to empty, so the start term is not applied again.
@@ -45,6 +47,8 @@
 namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/product-filter-chip-chosen.php';
 
 const SGS_FILTER_LOOK_CHIPS_BLOCK = 'woocommerce/product-filter-chips';
 const SGS_FILTER_LOOK_SORT_BLOCK  = 'woocommerce/catalog-sorting';
@@ -154,7 +158,8 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 		$rest[] = 'border-width:' . $border_width;
 	}
 
-	$chosen = array();
+	$chosen_look = sgs_filter_look_chosen_decls( $attrs );
+	$chosen      = array();
 	if ( true === ( $attrs['sgsChipPaintButtons'] ?? false ) ) {
 		$fill   = sgs_filter_look_colour( $attrs, array( 'customChipBackground', 'chipBackground' ) );
 		$edge   = sgs_filter_look_colour( $attrs, array( 'customChipBorder', 'chipBorder' ) );
@@ -181,6 +186,7 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 			$chosen[] = 'color:' . $c_text;
 		}
 	}
+	$chosen = array_merge( $chosen, $chosen_look );
 
 	$count = array();
 	if ( true === ( $attrs['sgsChipCountPill'] ?? false ) ) {
@@ -217,6 +223,9 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 		'border-color:var(--wc-product-filter-chips-selected-border,var(--wc-product-filter-chips-text,CanvasText))',
 		'color:var(--wc-product-filter-chips-selected-text,var(--wc-product-filter-chips-background,Canvas))',
 	) : array();
+	if ( $has_all ) {
+		$all_current = array_merge( $all_current, $chosen_look );
+	}
 
 	return sgs_filter_look_rule( $item, $rest )
 		. sgs_filter_look_rule( $item . '[aria-checked="true"]', $chosen )
@@ -340,12 +349,13 @@ function sgs_chip_group_param_keys( string $type ): array {
  * @param string $label   Chip text.
  * @param string $href    Page address with the group's parameters removed.
  * @param bool   $current True while nothing in the group is chosen.
+ * @param string $count   Count span markup, or '' for none.
  * @return string Markup.
  */
-function sgs_chip_all_markup( string $label, string $href, bool $current ): string {
+function sgs_chip_all_markup( string $label, string $href, bool $current, string $count = '' ): string {
 	return '<a class="wc-block-product-filter-chips__item sgs-filter-look__all" href="' . esc_url( $href ) . '"'
 		. ( $current ? ' aria-current="true"' : '' ) . '><span class="wc-block-product-filter-chips__label"><span class="wc-block-product-filter-chips__text">'
-		. esc_html( $label ) . '</span></span></a>';
+		. esc_html( $label ) . '</span>' . $count . '</span></a>';
 }
 
 /**
@@ -396,7 +406,10 @@ function sgs_filter_look_chips_markup( $block_content, $block, $instance = null 
 	if ( '' !== trim( (string) ( $attrs['sgsChipStartTerm'] ?? '' ) ) ) {
 		$href = add_query_arg( $keys[0], '', $href );
 	}
-	return substr_replace( $block_content, $anchor . sgs_chip_all_markup( $label, $href, $current ), $at, strlen( $anchor ) );
+	$count = true === ( $attrs['sgsChipAllCount'] ?? false )
+		? sgs_filter_look_all_count_markup( sgs_filter_look_all_count(), true === ( $attrs['sgsChipCountPill'] ?? false ) )
+		: '';
+	return substr_replace( $block_content, $anchor . sgs_chip_all_markup( $label, $href, $current, $count ), $at, strlen( $anchor ) );
 }
 
 /**
