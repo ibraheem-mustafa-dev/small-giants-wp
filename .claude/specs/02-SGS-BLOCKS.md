@@ -432,7 +432,7 @@ Variant background, border and colour are overridable via `:where()` (E9). `icon
 
 ### Modal (`sgs/modal`)
 
-**Purpose:** Lightbox/modal overlay, opened by its own trigger button or by any link to its anchor. Attributes: `/wp-blocks schema sgs/modal`. `triggerStyle` `none` renders no button: the dialog opens only from `#<anchor>` links or `data-sgs-modal-open`. `modalRef` points at an `sgs_modal` post whose content (and title, as the accessible name) the dialog shows; `triggerText` is the dialog's accessible name when no post is referenced.
+**Purpose:** Lightbox/modal overlay, opened by its own trigger button or by any link to its anchor. Attributes: `/wp-blocks schema sgs/modal`. `triggerStyle` `none` renders no button and the block's wrapper (`sgs-modal--no-trigger`) takes no block gap: the dialog opens only from `#<anchor>` links or `data-sgs-modal-open`. `modalRef` points at an `sgs_modal` post whose content (and title, as the accessible name) the dialog shows; `triggerText` is the dialog's accessible name when no post is referenced.
 
 **Inner blocks:** Yes. Modal content accepts any blocks (used when no `modalRef` is set).
 
@@ -1066,7 +1066,7 @@ Semantics: visually-hidden `<input type=radio>` + `<label>` + pill `<span>` per 
 
 Attributes: `/wp-blocks schema sgs/option-picker`. `variant` is the source toggle (`typed` | `bound`); `display_as` is `pills` | `static-list` | `hidden`; `pillStyle` is `filled` | `outlined`.
 
-`pillBorderWidth` sets the pill border width (empty = the framework default of 2px; buybox forwards it as `pickerPillBorderWidth`). Selected pill: `pillSelectedShadow` + `pillSelectedShadowColour` (the shared `ShadowControl` and `sgs_shadow_decls()`) and `pillSelectedOffsetX` / `pillSelectedOffsetY` (CSS `translate`, so a hover `transform` is untouched), all printed on the `:checked` pill only. Status: built; each prints nothing while unset. **Group-label controls:** group-label font-size + colour (legend inline style; `sgs_colour_value()`). Typography via the shared `TypographyControls` component.
+`pillBorderWidth` sets the pill border width (empty = the framework default of 2px; buybox forwards it as `pickerPillBorderWidth`). `pillSelectedTextColour` sets the selected pill's text colour (buybox forwards it as `pickerPillSelectedTextColour`). Selected pill: `pillSelectedShadow` + `pillSelectedShadowColour` (the shared `ShadowControl` and `sgs_shadow_decls()`) and `pillSelectedOffsetX` / `pillSelectedOffsetY` (CSS `translate`, so a hover `transform` is untouched), all printed on the `:checked` pill only. Status: built; each prints nothing while unset. **Group-label controls:** group-label font-size + colour (legend inline style; `sgs_colour_value()`). Typography via the shared `TypographyControls` component.
 
 Render: Dynamic `render.php`. `viewScriptModule` bubbles `sgs:option-selected`. No-JS default state: options render as visible static labels.
 
@@ -1079,7 +1079,7 @@ SGS-BEM: `.sgs-option-picker` root + `__option` / `__input` / `__label` / `__pil
 
 WooCommerce cart count badge. Category: `sgs-interactive`. Displays a live item count from the WC cart; intended for use in headers/navigation alongside `sgs/nav-bar-menu` or `core/navigation`. Gracefully absent (renders nothing) when WooCommerce is not active.
 
-Attributes: `/wp-blocks schema sgs/cart`. The badge is hidden at a count of 0 unless `showWhenEmpty` is on.  `freeDeliveryTextFontWeight` sets the weight of the free-delivery message. A bag line's "Add my prescription" link is a plain text link flush with the product name; its 44px tap area is a `::after`, so it adds no padding and does not move Remove.
+Attributes: `/wp-blocks schema sgs/cart`. The badge is hidden at a count of 0 unless `showWhenEmpty` is on.  `freeDeliveryTextFontWeight` sets the weight of the free-delivery message. `itemNameLineHeight` and `itemDetailLineHeight` set the line height of a bag line's name and its detail rows. A bag line's "Add my prescription" link is a plain text link flush with the product name; its 44px tap area is a `::after`, so it adds no padding and does not move Remove.
 
 Render: dynamic `render.php`; the free-delivery threshold comes from `includes/helpers-free-delivery.php::sgs_free_delivery_threshold`, shared with `sgs/free-delivery-bar`. `view.js` takes the live cart from the page-wide reader `src/shared/cart-live/index.js::onCartChange` (one load request, one refetch per WooCommerce add and remove event, shared with `sgs/free-delivery-bar`), so the count updates without a page reload; the drawer reads and mutates the cart through `src/shared/cart-live/request.js` (`store-api.js` re-exports it for the wishlist) and publishes each result with `index.js::publishCart`.
 
@@ -1104,7 +1104,7 @@ WooCommerce single-product buybox: wires `sgs/option-picker` pill axes to the sh
 
 **Category:** `sgs-content`.
 
-Attributes: `/wp-blocks schema sgs/buybox`. Labels for sold-out and unavailable pills are screen-reader suffixes. `notifyMeLabel` is the Notify me label on sold-out combinations; the capture posts to `/sgs/v1/notify/subscribe` and the list is sent once on restock by `plugins/sgs-blocks/includes/class-stock-notify-dispatch.php`. `showLadder` defaults to `true` (switch off in narrow sidebars); `framingMode` is savings | loss-aversion | neutral (default loss-aversion); `decoyEnabled` (default `false`) targets the second-largest pack with a "Best value" badge.
+Attributes: `/wp-blocks schema sgs/buybox`. Labels for sold-out and unavailable pills are screen-reader suffixes. `notifyMeLabel` is the Notify me label on sold-out combinations; the capture posts to `/sgs/v1/notify/subscribe` and the list is sent once on restock by `plugins/sgs-blocks/includes/class-stock-notify-dispatch.php`. The main photo eases on hover (a hover setting on the photo; the crossfade selector `:where(.sgs-buybox) img.sgs-buybox__main-photo` keeps the crossfade on sites with no saved hover). `showLadder` defaults to `true` (switch off in narrow sidebars); `framingMode` is savings | loss-aversion | neutral (default loss-aversion); `decoyEnabled` (default `false`) targets the second-largest pack with a "Best value" badge.
 
 **Context:** `usesContext: ["postId"]` — reads the WC product from the surrounding post context.
 
