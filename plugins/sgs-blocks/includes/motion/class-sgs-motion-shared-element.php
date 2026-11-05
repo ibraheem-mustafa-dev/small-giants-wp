@@ -59,7 +59,7 @@ final class Sgs_Motion_Shared_Element {
 		$parts   = Sgs_Motion_Targets::parts( $name );
 		$matches = array();
 		foreach ( $elements as $target => $element ) {
-			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, (string) $target, (array) $element );
+			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, (string) $target, (array) $element, $html );
 			if ( null !== $resolved ) {
 				$matches[ (string) $target ] = $resolved['match'];
 			}

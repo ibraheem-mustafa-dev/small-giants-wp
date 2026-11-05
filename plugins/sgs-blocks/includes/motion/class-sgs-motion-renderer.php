@@ -406,7 +406,7 @@ final class Sgs_Motion_Renderer {
 			return $out;
 		}
 		foreach ( $elements as $target => $element ) {
-			$resolved = Sgs_Motion_Targets::resolve( $name, 'sgs-m-0000000000', (string) $target, (array) $element );
+			$resolved = Sgs_Motion_Targets::resolve( $name, 'sgs-m-0000000000', (string) $target, (array) $element, $html );
 			if ( null !== $resolved && Sgs_Motion_Markup::is_priority_image( $html, $resolved['match'] ) ) {
 				$out[ (string) $target ] = true;
 			}
@@ -473,7 +473,7 @@ final class Sgs_Motion_Renderer {
 		$parent_owned  = self::parent_owned( $name, $frame );
 		foreach ( $doc['elements'] as $target => $element ) {
 			$target   = (string) $target;
-			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element );
+			$resolved = Sgs_Motion_Targets::resolve( $name, $scope, $target, (array) $element, $block_content );
 			if ( null === $resolved ) {
 				continue;
 			}
