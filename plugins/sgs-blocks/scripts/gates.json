@@ -2141,5 +2141,23 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 244
+  },
+  {
+    "id": "check-json-duplicate-keys",
+    "cmd": "python scripts/check-json-duplicate-keys.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 245
+  },
+  {
+    "id": "check-json-duplicate-keys-selftest",
+    "cmd": "python scripts/check-json-duplicate-keys.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 246
   }
 ]
