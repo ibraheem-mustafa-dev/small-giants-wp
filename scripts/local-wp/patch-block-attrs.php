@@ -12,6 +12,7 @@
  *   { "match": "cr-ref-home-96", "replace": "<!-- wp:sgs/multi-button {...} --> ... <!-- /wp:sgs/multi-button -->" }
  *   { "match": "cr-ref-home-74", "remove": true }
  *   { "match": "cr-ref-home-91", "append": "<!-- wp:sgs/text {...} /-->" }   (adds inner blocks at the end)
+ *   { "match": "*", "block": "woocommerce/cart", "set": { ... } }   (a block with no className, by type; it must be the only block of that type in the post)
  * `set` replaces each named top-level attribute whole (a box padding object is written whole, never merged). An empty
  * JSON object `{}` decodes to an empty array and serialises as `[]`, so unset an attribute rather than setting it to `{}`.
  * Every operation must match exactly one block unless it says "all": true; otherwise nothing is written.
@@ -59,6 +60,11 @@ $sgs_pba_matches = static function ( array $block, array $op ): bool {
 	}
 	if ( ! empty( $op['block'] ) && $op['block'] !== $block['blockName'] ) {
 		return false;
+	}
+	// A block with no className (a WooCommerce core block, a filter chips block) is matched by its type: "match": "*"
+	// with a `block`; the exactly-one rule below refuses it when the post holds several of that type.
+	if ( '*' === (string) $op['match'] ) {
+		return ! empty( $op['block'] );
 	}
 	$classes = preg_split( '/\s+/', (string) ( $block['attrs']['className'] ?? '' ) );
 	return in_array( (string) $op['match'], $classes, true );
