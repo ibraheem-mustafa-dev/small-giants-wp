@@ -452,7 +452,8 @@ $icon_and_badge_html = sprintf(
 );
 
 // Wave B, U-1 — 'pill' trigger style: the word (pillLabel) replaces the icon;
-// the count keeps the SAME `.sgs-cart__badge` element/attribute (style.css
+// a space text node sits between the word and the count (the trigger is a flex container, so it paints nothing, but the
+// accessible text reads "Basket 0"); the count keeps the SAME `.sgs-cart__badge` element/attribute (style.css
 // restyles it inline, not as an overlay), so badgeColour/badgeTextColour
 // keep governing the count's colours in both trigger styles — one control,
 // not two.
@@ -462,7 +463,7 @@ $pill_icon_html      = ( $pill_show_icon || $trigger_mixed )
 	? '<span class="sgs-cart__icon" aria-hidden="true">' . $icon_svg . '</span>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted Lucide SVG.
 	: '';
 $pill_and_badge_html = $pill_icon_html . sprintf(
-	'<span class="sgs-cart__pill-label">%1$s</span><span class="sgs-cart__badge sgs-cart__badge--pill%2$s" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-count>%3$d</span>',
+	'<span class="sgs-cart__pill-label">%1$s</span> <span class="sgs-cart__badge sgs-cart__badge--pill%2$s" role="status" aria-live="polite" aria-atomic="true" data-sgs-cart-count>%3$d</span>',
 	sgs_rich_text_kses( $pill_label, false ),
 	( $ssr_count > 0 || $show_zero ) ? ' sgs-cart__badge--visible' : '',
 	absint( $ssr_count )

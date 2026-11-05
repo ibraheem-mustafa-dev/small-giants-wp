@@ -73,4 +73,18 @@ final class CartPillAccessibleNameTest extends TestCase {
 	public function test_icon_only_prints_no_templates(): void {
 		$this->assertSame( 'Open bag (0 items in cart)', $this->trigger_name( array( 'ariaLabel' => 'Open bag', 'pillLabel' => 'Basket' ) ) );
 	}
+
+	/** The word and the count are separated by a space text node, so the visible text reads "Basket 0" (WCAG 2.5.3). */
+	public function test_pill_word_and_count_are_separated(): void {
+		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
+		$file    = tempnam( sys_get_temp_dir(), 'sgscn' );
+		file_put_contents( $file, json_encode( (object) array( 'pillLabel' => 'Basket', 'triggerStyle' => 'pill' ), JSON_THROW_ON_ERROR ) );
+		try {
+			$out = (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness ) . ' --slug sgs/cart --attrs-file ' . escapeshellarg( $file ) . ' --context-file ' . escapeshellarg( $file ) . ' --global-settings-file ' . escapeshellarg( $file ) . ' --stub-woocommerce 2>&1' );
+		} finally {
+			@unlink( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- temp file.
+		}
+		$decoded = json_decode( substr( $out, (int) strpos( $out, '{"ok"' ) ), true );
+		$this->assertStringContainsString( 'Basket</span> <span class="sgs-cart__badge', (string) $decoded['html'] );
+	}
 }
