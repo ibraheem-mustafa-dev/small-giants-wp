@@ -10,9 +10,14 @@
  * classes of its ancestors onto the moved element keeps every rule aimed at
  * its contents matching; a rule aimed at the moved element itself is written
  * `&.sgs-cart__panel`.
+ *
+ * The motion system scopes its per-instance rules the same way, under the
+ * block's `sgs-m-<hex>` class (`.sgs-m-x .sgs-cart__panel-checkout`), so that
+ * class travels too: a hover or entrance set on a part inside the moved panel
+ * keeps playing while it is open.
  */
 
-const SCOPE_CLASS = /^sgs-c-[a-z0-9-]+$/;
+const SCOPE_CLASS = /^(?:sgs-c-[a-z0-9-]+|sgs-m-[0-9a-f]+)$/;
 
 /**
  * Add the Custom CSS scope classes of `el`'s ancestors to `el`. Call before the move.

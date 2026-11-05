@@ -33,6 +33,22 @@ describe( 'carryCustomCssScope', () => {
 		expect( dialog.matches( '.sgs-c-r1bag.sgs-c-r1bag.sgs-cart__panel' ) ).toBe( true );
 	} );
 
+	test( 'carries the block motion class too, so a part hover inside the moved panel still matches', () => {
+		document.body.innerHTML =
+			'<div class="sgs-cart cr-ref-header-13 sgs-m-4f61809c16"><dialog class="sgs-cart__panel"><a class="sgs-cart__panel-checkout" data-sgs-mh="self"></a></dialog></div>';
+		const dialog = document.querySelector( 'dialog' );
+		const checkout = dialog.querySelector( 'a' );
+		const rule = '.sgs-m-4f61809c16 .sgs-cart__panel-checkout';
+		const moved = dialog.cloneNode( true );
+		document.body.appendChild( moved );
+		expect( moved.querySelector( 'a' ).matches( rule ) ).toBe( false );
+		const added = carryCustomCssScope( dialog );
+		expect( added ).toEqual( [ 'sgs-m-4f61809c16' ] );
+		expect( dialog.classList.contains( 'cr-ref-header-13' ) ).toBe( false );
+		document.body.appendChild( dialog );
+		expect( checkout.matches( rule ) ).toBe( true );
+	} );
+
 	test( 'dropCustomCssScope removes only what was added', () => {
 		const dialog = mount();
 		dialog.classList.add( 'sgs-c-own' );
