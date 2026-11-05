@@ -70,6 +70,7 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 	};
 	const searchWrapStyle = {
 		maxWidth: length( attributes.filterSearchMaxWidth ),
+		width: length( attributes.filterSearchMaxWidth ) || tierValueOf( attributes.filterSearchAlign, tier ) ? '100%' : undefined,
 		marginInline: tierValueOf( attributes.filterSearchAlign, tier, ( v ) => MARGIN_CSS[ v ] ),
 	};
 	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();

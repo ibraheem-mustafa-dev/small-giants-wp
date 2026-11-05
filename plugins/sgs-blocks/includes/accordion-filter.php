@@ -253,6 +253,14 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 			};
 		};
 		$wrap = $tier( 'filterChipsWrap' );
+		// Auto margins in the bar's flex column shrink a box to its content, so a box with a cap or an alignment also takes the full width up to the cap.
+		$search_fill = array();
+		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
+			$capped = '' !== trim( (string) ( $tier( 'filterSearchMaxWidth' )[ $device ] ?? '' ) ) || '' !== trim( (string) ( $tier( 'filterSearchAlign' )[ $device ] ?? '' ) );
+			if ( $capped ) {
+				$search_fill[ $device ] = 'fill';
+			}
+		}
 
 		$rules = array(
 			'.sgs-accordion__chips'        => array(
@@ -321,6 +329,11 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 				),
 			),
 			'.sgs-accordion__search'       => array(
+				array(
+					'value'     => $search_fill,
+					'css'       => 'width',
+					'transform' => $pick( array( 'fill' => '100%' ) ),
+				),
 				array(
 					'value' => $tier( 'filterSearchMaxWidth' ),
 					'css'   => 'max-width',
