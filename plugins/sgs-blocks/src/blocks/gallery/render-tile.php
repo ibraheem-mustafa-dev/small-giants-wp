@@ -154,7 +154,7 @@ if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
 	 * The item's image or video markup, shared by the linked, lightbox and plain branches.
 	 *
 	 * @param array  $img            The mediaItems entry.
-	 * @param int    $index          Position in the gallery (the first four load eagerly).
+	 * @param int    $index          Position in the gallery (only the first can claim the page priority slot).
 	 * @param string $image_size     Registered image size.
 	 * @param string $img_class      Class list for the attachment <img>.
 	 * @param bool   $decorative     Whether the image is hidden from assistive tech.
@@ -167,14 +167,19 @@ if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
 		if ( 'image' !== $img_type || ! $img_id ) {
 			return $fallback_html;
 		}
+		// Only the page's likely LCP image loads eagerly at high priority (helpers-media.php): the gallery's first
+		// image when the gallery sits in the page's first section. An explicit fetchpriority stops core's own
+		// first-images heuristic, which would otherwise prioritise a gallery inside a hidden header menu panel.
+		$priority = 0 === $index && sgs_content_image_claims_priority();
 		return (string) wp_get_attachment_image(
 			$img_id,
 			$image_size,
 			false,
 			array_merge(
 				array(
-					'class'   => $img_class,
-					'loading' => $index < 4 ? 'eager' : 'lazy',
+					'class'         => $img_class,
+					'loading'       => $priority ? 'eager' : 'lazy',
+					'fetchpriority' => $priority ? 'high' : 'auto',
 				),
 				$decorative ? array(
 					'alt'         => '',
