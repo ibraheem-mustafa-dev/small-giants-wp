@@ -371,10 +371,15 @@ def _brand_names(b: dict) -> set:
     return {str(x).lower() for x in own + label + list(b.get("aliases") or [])}
 
 
-def _derive(conn: sqlite3.Connection, paths: Paths | None = None) -> tuple[list[tuple], Extractor]:
-    db = load_db_inputs(conn)
+def derive_from(db, paths: Paths | None = None) -> tuple[list[tuple], Extractor]:
+    """The code read, from database inputs already loaded (`load_db_inputs`). It touches no connection, only source files,
+    so the seeder runs it in a worker thread beside Stage 12's scanners."""
     x = Extractor(paths, db)
     return Rows(x, db).build(), x
+
+
+def _derive(conn: sqlite3.Connection, paths: Paths | None = None) -> tuple[list[tuple], Extractor]:
+    return derive_from(load_db_inputs(conn), paths)
 
 
 def derive_rows(conn: sqlite3.Connection, paths: Paths | None = None) -> list[tuple]:
@@ -433,10 +438,11 @@ def live_rows(code_rows: list[tuple], path: Path) -> tuple[list[tuple], dict]:
     return out, stats
 
 
-def seed(conn: sqlite3.Connection, dry_run: bool = False, paths: Paths | None = None) -> dict:
+def seed(conn: sqlite3.Connection, dry_run: bool = False, paths: Paths | None = None, derived: tuple | None = None) -> dict:
     """Replace every row with a fresh derivation (the seeder's stage 14): the source='code' rows from the code read, the
-    source='live' rows from the live read's file (`live_rows`)."""
-    rows, x = _derive(conn, paths)
+    source='live' rows from the live read's file (`live_rows`). `derived` is a finished `derive_from` result (the seeder
+    starts it during Stage 12); without it the code read runs here."""
+    rows, x = derived if derived is not None else _derive(conn, paths)
     live, stats = live_rows(rows, x.p.live)
     counts = Counter((r[1], r[3]) for r in rows)
     unknown_by_cause, settled_by_cause = Counter(), Counter()
