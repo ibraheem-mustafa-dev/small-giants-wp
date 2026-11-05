@@ -1421,248 +1421,391 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							label={ __( 'Below links', 'sgs-blocks' ) }
 						/>
 					</ToggleGroupControl>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Link number size', 'sgs-blocks' ) }
-						value={ drawerLinkNumSize || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerLinkNumSize: value || '' } )
-						}
-						presets={ false }
-					/>
-					<FontFamilyControl
-						fontFamilies={ drawerFontFamilies }
-						value={ fontFamilyPickerValue( drawerLinkNumFontFamily, drawerFontFamilies ) }
-						onChange={ ( value ) =>
-							setAttributes( {
-								drawerLinkNumFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerLinkNumFontFamily ) || '',
-							} )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Link number weight', 'sgs-blocks' ) }
-						value={ drawerLinkNumWeight || '' }
-						options={ [
-							{ label: __( 'Keep the number’s weight', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
-							{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
-							{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
-							{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
-							{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { drawerLinkNumWeight: value || '' } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Link label size', 'sgs-blocks' ) }
-						value={ drawerLinkLabelSize || '' }
-						onChange={ ( value ) =>
-							setAttributes( {
-								drawerLinkLabelSize: value || '',
-							} )
-						}
-						presets={ false }
-					/>
-					<SgsLengthControl
-						scale="font-size"
-						label={ __( 'Link description size', 'sgs-blocks' ) }
-						value={ drawerLinkDescSize || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerLinkDescSize: value || '' } )
-						}
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Link row minimum height', 'sgs-blocks' ) }
-						value={ drawerLinkMinHeight || '' }
-						onChange={ ( value ) =>
-							setAttributes( {
-								drawerLinkMinHeight: value || '',
-							} )
-						}
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __(
-							'Link row vertical padding',
-							'sgs-blocks'
-						) }
-						value={ drawerLinkPaddingY || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerLinkPaddingY: value || '' } )
-						}
-						presets={ false }
-					/>
+					<ToolsPanel
+						label={ __( 'Link text and rows', 'sgs-blocks' ) }
+						resetAll={ () => setAttributes( { drawerLinkNumSize: '', drawerLinkNumFontFamily: '', drawerLinkNumWeight: '', drawerLinkLabelSize: '', drawerLinkDescSize: '', drawerLinkMinHeight: '', drawerLinkPaddingY: '' } ) }
+					>
+						<ToolsPanelItem
+							label={ __( 'Link number size', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => !! drawerLinkNumSize }
+							onDeselect={ () => setAttributes( { drawerLinkNumSize: '' } ) }
+						>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Link number size', 'sgs-blocks' ) }
+								value={ drawerLinkNumSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerLinkNumSize: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link number font', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerLinkNumFontFamily }
+							onDeselect={ () => setAttributes( { drawerLinkNumFontFamily: '' } ) }
+						>
+							<FontFamilyControl
+								fontFamilies={ drawerFontFamilies }
+								value={ fontFamilyPickerValue( drawerLinkNumFontFamily, drawerFontFamilies ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerLinkNumFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerLinkNumFontFamily ) || '',
+									} )
+								}
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link number weight', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerLinkNumWeight }
+							onDeselect={ () => setAttributes( { drawerLinkNumWeight: '' } ) }
+						>
+							<SelectControl
+								label={ __( 'Link number weight', 'sgs-blocks' ) }
+								value={ drawerLinkNumWeight || '' }
+								options={ [
+									{ label: __( 'Keep the number’s weight', 'sgs-blocks' ), value: '' },
+									{ label: __( 'Regular (400)', 'sgs-blocks' ), value: '400' },
+									{ label: __( 'Medium (500)', 'sgs-blocks' ), value: '500' },
+									{ label: __( 'Semi-bold (600)', 'sgs-blocks' ), value: '600' },
+									{ label: __( 'Bold (700)', 'sgs-blocks' ), value: '700' },
+									{ label: __( 'Extra bold (800)', 'sgs-blocks' ), value: '800' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( { drawerLinkNumWeight: value || '' } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link label size', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => !! drawerLinkLabelSize }
+							onDeselect={ () => setAttributes( { drawerLinkLabelSize: '' } ) }
+						>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Link label size', 'sgs-blocks' ) }
+								value={ drawerLinkLabelSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerLinkLabelSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link description size', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerLinkDescSize }
+							onDeselect={ () => setAttributes( { drawerLinkDescSize: '' } ) }
+						>
+							<SgsLengthControl
+								scale="font-size"
+								label={ __( 'Link description size', 'sgs-blocks' ) }
+								value={ drawerLinkDescSize || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerLinkDescSize: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link row minimum height', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerLinkMinHeight }
+							onDeselect={ () => setAttributes( { drawerLinkMinHeight: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Link row minimum height', 'sgs-blocks' ) }
+								value={ drawerLinkMinHeight || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerLinkMinHeight: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Link row vertical padding', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerLinkPaddingY }
+							onDeselect={ () => setAttributes( { drawerLinkPaddingY: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __(
+									'Link row vertical padding',
+									'sgs-blocks'
+								) }
+								value={ drawerLinkPaddingY || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerLinkPaddingY: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 					<DrawerShellControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
-					<ToggleControl
-						label={ __( 'Compact side card', 'sgs-blocks' ) }
-						help={ __(
-							'Shows the side panel as a thumbnail, tag, title and link in a row. The description is hidden.',
-							'sgs-blocks'
-						) }
-						checked={ !! drawerCardCompact }
-						onChange={ ( value ) =>
-							setAttributes( { drawerCardCompact: !! value } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SgsLengthControl
-						label={ __( 'Card spacing from links', 'sgs-blocks' ) }
-						value={ drawerCardSpacing || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerCardSpacing: value || '' } )
-						}
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Card corner radius', 'sgs-blocks' ) }
-						value={ drawerCardRadius || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerCardRadius: value || '' } )
-						}
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Card padding', 'sgs-blocks' ) }
-						value={ drawerCardPadding || '' }
-						onChange={ ( value ) =>
-							setAttributes( { drawerCardPadding: value || '' } )
-						}
-						presets={ false }
-					/>
+					<ToolsPanel
+						label={ __( 'Side card', 'sgs-blocks' ) }
+						resetAll={ () => setAttributes( { drawerCardCompact: false, drawerCardSpacing: '', drawerCardRadius: '', drawerCardPadding: '' } ) }
+					>
+						<ToolsPanelItem
+							label={ __( 'Compact side card', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => drawerCardCompact }
+							onDeselect={ () => setAttributes( { drawerCardCompact: false } ) }
+						>
+							<ToggleControl
+								label={ __( 'Compact side card', 'sgs-blocks' ) }
+								help={ __(
+									'Shows the side panel as a thumbnail, tag, title and link in a row. The description is hidden.',
+									'sgs-blocks'
+								) }
+								checked={ !! drawerCardCompact }
+								onChange={ ( value ) =>
+									setAttributes( { drawerCardCompact: !! value } )
+								}
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Card spacing from links', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerCardSpacing }
+							onDeselect={ () => setAttributes( { drawerCardSpacing: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Card spacing from links', 'sgs-blocks' ) }
+								value={ drawerCardSpacing || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerCardSpacing: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Card corner radius', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerCardRadius }
+							onDeselect={ () => setAttributes( { drawerCardRadius: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Card corner radius', 'sgs-blocks' ) }
+								value={ drawerCardRadius || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerCardRadius: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Card padding', 'sgs-blocks' ) }
+							hasValue={ () => !! drawerCardPadding }
+							onDeselect={ () => setAttributes( { drawerCardPadding: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Card padding', 'sgs-blocks' ) }
+								value={ drawerCardPadding || '' }
+								onChange={ ( value ) =>
+									setAttributes( { drawerCardPadding: value || '' } )
+								}
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 					{ drawerCardCompact && (
-						<>
-							<SgsLengthControl
-								label={ __(
-									'Card thumbnail gap',
-									'sgs-blocks'
-								) }
-								value={ drawerCardGap || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardGap: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<SgsLengthControl
-								label={ __(
-									'Card thumbnail size',
-									'sgs-blocks'
-								) }
-								value={ drawerCardThumbSize || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardThumbSize: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<SgsLengthControl
-								scale="font-size"
+						<ToolsPanel
+							label={ __( 'Compact card details', 'sgs-blocks' ) }
+							resetAll={ () => setAttributes( { drawerCardGap: '', drawerCardThumbSize: '', drawerCardTagSize: '', drawerCardTagFontFamily: '', drawerCardTagLetterSpacing: '', drawerCardTagPadding: {}, drawerCardTagMargin: {}, drawerCardTitleSize: '', drawerCardTitleLineHeight: '', drawerCardLinkSize: '' } ) }
+						>
+							<ToolsPanelItem
+								label={ __( 'Card thumbnail gap', 'sgs-blocks' ) }
+								hasValue={ () => !! drawerCardGap }
+								onDeselect={ () => setAttributes( { drawerCardGap: '' } ) }
+							>
+								<SgsLengthControl
+									label={ __(
+										'Card thumbnail gap',
+										'sgs-blocks'
+									) }
+									value={ drawerCardGap || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardGap: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Card thumbnail size', 'sgs-blocks' ) }
+								hasValue={ () => !! drawerCardThumbSize }
+								onDeselect={ () => setAttributes( { drawerCardThumbSize: '' } ) }
+							>
+								<SgsLengthControl
+									label={ __(
+										'Card thumbnail size',
+										'sgs-blocks'
+									) }
+									value={ drawerCardThumbSize || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardThumbSize: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card tag size', 'sgs-blocks' ) }
-								value={ drawerCardTagSize || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardTagSize: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<FontFamilyControl
-								fontFamilies={ drawerFontFamilies }
-								value={ fontFamilyPickerValue( drawerCardTagFontFamily, drawerFontFamilies ) }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardTagFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerCardTagFontFamily ) || '',
-									} )
-								}
-							/>
-							<SgsLengthControl
+								hasValue={ () => !! drawerCardTagSize }
+								onDeselect={ () => setAttributes( { drawerCardTagSize: '' } ) }
+							>
+								<SgsLengthControl
+									scale="font-size"
+									label={ __( 'Card tag size', 'sgs-blocks' ) }
+									value={ drawerCardTagSize || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardTagSize: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Card tag font', 'sgs-blocks' ) }
+								hasValue={ () => !! drawerCardTagFontFamily }
+								onDeselect={ () => setAttributes( { drawerCardTagFontFamily: '' } ) }
+							>
+								<FontFamilyControl
+									fontFamilies={ drawerFontFamilies }
+									value={ fontFamilyPickerValue( drawerCardTagFontFamily, drawerFontFamilies ) }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardTagFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerCardTagFontFamily ) || '',
+										} )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card tag letter spacing', 'sgs-blocks' ) }
-								value={ drawerCardTagLetterSpacing || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardTagLetterSpacing: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<SgsBoxControl
+								hasValue={ () => !! drawerCardTagLetterSpacing }
+								onDeselect={ () => setAttributes( { drawerCardTagLetterSpacing: '' } ) }
+							>
+								<SgsLengthControl
+									label={ __( 'Card tag letter spacing', 'sgs-blocks' ) }
+									value={ drawerCardTagLetterSpacing || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardTagLetterSpacing: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card tag padding', 'sgs-blocks' ) }
-								values={
-									drawerCardTagPadding &&
-									'object' === typeof drawerCardTagPadding
-										? drawerCardTagPadding
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setAttributes( {
-										drawerCardTagPadding: next || {},
-									} )
-								}
-							/>
-							<SgsBoxControl
+								hasValue={ () => !! drawerCardTagPadding && Object.keys( drawerCardTagPadding ).length > 0 }
+								onDeselect={ () => setAttributes( { drawerCardTagPadding: {} } ) }
+							>
+								<SgsBoxControl
+									label={ __( 'Card tag padding', 'sgs-blocks' ) }
+									values={
+										drawerCardTagPadding &&
+										'object' === typeof drawerCardTagPadding
+											? drawerCardTagPadding
+											: {}
+									}
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) =>
+										setAttributes( {
+											drawerCardTagPadding: next || {},
+										} )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card tag spacing', 'sgs-blocks' ) }
-								values={
-									drawerCardTagMargin &&
-									'object' === typeof drawerCardTagMargin
-										? drawerCardTagMargin
-										: {}
-								}
-								units={ BOX_UNITS }
-								presets
-								onChange={ ( next ) =>
-									setAttributes( {
-										drawerCardTagMargin: next || {},
-									} )
-								}
-							/>
-							<SgsLengthControl
-								scale="font-size"
+								hasValue={ () => !! drawerCardTagMargin && Object.keys( drawerCardTagMargin ).length > 0 }
+								onDeselect={ () => setAttributes( { drawerCardTagMargin: {} } ) }
+							>
+								<SgsBoxControl
+									label={ __( 'Card tag spacing', 'sgs-blocks' ) }
+									values={
+										drawerCardTagMargin &&
+										'object' === typeof drawerCardTagMargin
+											? drawerCardTagMargin
+											: {}
+									}
+									units={ BOX_UNITS }
+									presets
+									onChange={ ( next ) =>
+										setAttributes( {
+											drawerCardTagMargin: next || {},
+										} )
+									}
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card title size', 'sgs-blocks' ) }
-								value={ drawerCardTitleSize || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardTitleSize: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<SgsLengthControl
-								label={ __(
-									'Card title line height',
-									'sgs-blocks'
-								) }
-								value={ drawerCardTitleLineHeight || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardTitleLineHeight: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-							<SgsLengthControl
-								scale="font-size"
+								hasValue={ () => !! drawerCardTitleSize }
+								onDeselect={ () => setAttributes( { drawerCardTitleSize: '' } ) }
+							>
+								<SgsLengthControl
+									scale="font-size"
+									label={ __( 'Card title size', 'sgs-blocks' ) }
+									value={ drawerCardTitleSize || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardTitleSize: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
+								label={ __( 'Card title line height', 'sgs-blocks' ) }
+								hasValue={ () => !! drawerCardTitleLineHeight }
+								onDeselect={ () => setAttributes( { drawerCardTitleLineHeight: '' } ) }
+							>
+								<SgsLengthControl
+									label={ __(
+										'Card title line height',
+										'sgs-blocks'
+									) }
+									value={ drawerCardTitleLineHeight || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardTitleLineHeight: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+							</ToolsPanelItem>
+							<ToolsPanelItem
 								label={ __( 'Card link size', 'sgs-blocks' ) }
-								value={ drawerCardLinkSize || '' }
-								onChange={ ( value ) =>
-									setAttributes( {
-										drawerCardLinkSize: value || '',
-									} )
-								}
-								presets={ false }
-							/>
-						</>
+								hasValue={ () => !! drawerCardLinkSize }
+								onDeselect={ () => setAttributes( { drawerCardLinkSize: '' } ) }
+							>
+								<SgsLengthControl
+									scale="font-size"
+									label={ __( 'Card link size', 'sgs-blocks' ) }
+									value={ drawerCardLinkSize || '' }
+									onChange={ ( value ) =>
+										setAttributes( {
+											drawerCardLinkSize: value || '',
+										} )
+									}
+									presets={ false }
+								/>
+				
+							</ToolsPanelItem>
+						</ToolsPanel>
 					) }
 				</PanelBody>
 
