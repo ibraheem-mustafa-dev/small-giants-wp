@@ -75,6 +75,48 @@ export function fieldValueText( field ) {
 }
 
 /**
+ * The question a field asks: the group legend or field label, never an option's label, with the required marker
+ * and its screen-reader "(required)" text stripped.
+ *
+ * @param {HTMLElement} field A `.sgs-form-field` element.
+ * @return {string} Clean label text, or '' when the field has none.
+ */
+export function fieldLabelText( field ) {
+	const consentText = field.querySelector( '.sgs-form-field__consent-text' );
+	let source = consentText || field.querySelector( 'legend.sgs-form-field__label, .sgs-form-field__label' );
+	if ( ! source ) {
+		const group = field.querySelector( '[aria-labelledby]' );
+		const ids = group ? group.getAttribute( 'aria-labelledby' ).split( /\s+/ ) : [];
+		source = ids.map( ( id ) => document.getElementById( id ) ).find( Boolean ) || null;
+	}
+	if ( ! source ) {
+		source = field.querySelector( 'legend' ) ||
+			field.querySelector( 'label:not(.sgs-form-field__option):not(.sgs-form-tile):not(.screen-reader-text)' );
+	}
+	if ( ! source ) {
+		return '';
+	}
+	const clone = source.cloneNode( true );
+	clone.querySelectorAll( '.sgs-form-field__required, .sgs-sr-only, .screen-reader-text' ).forEach( ( node ) => node.remove() );
+	return clone.textContent.replace( /\s+/g, ' ' ).trim();
+}
+
+/**
+ * Whether a field is hidden by conditional logic: applyConditionalLogic() puts `sgs-form-field--hidden` on the
+ * wrapper and disables its inputs, which is also what takes it out of step validation.
+ *
+ * @param {HTMLElement} field A `.sgs-form-field` element.
+ * @return {boolean} True when the field is out of the form.
+ */
+function isFieldHidden( field ) {
+	if ( field.closest( '.sgs-form-field--hidden' ) ) {
+		return true;
+	}
+	const inputs = field.querySelectorAll( 'input, select, textarea' );
+	return inputs.length > 0 && Array.from( inputs ).every( ( input ) => input.disabled );
+}
+
+/**
  * Label/value rows for the answered fields inside a container.
  *
  * @param {HTMLElement} scope Step or form element.
@@ -83,8 +125,10 @@ export function fieldValueText( field ) {
 function answeredRows( scope ) {
 	const rows = [];
 	scope.querySelectorAll( '.sgs-form-field' ).forEach( ( field ) => {
-		const labelEl = field.querySelector( 'label' );
-		const label = labelEl ? labelEl.textContent.trim() : '';
+		if ( isFieldHidden( field ) ) {
+			return;
+		}
+		const label = fieldLabelText( field );
 		const value = label ? fieldValueText( field ) : '';
 		if ( label && value ) {
 			rows.push( { label, value } );
@@ -199,8 +243,10 @@ export function populateReview( formRoot, review ) {
 
 		const list = el( 'dl', 'sgs-form-review__list' );
 		rows.forEach( ( row ) => {
-			list.appendChild( el( 'dt', 'sgs-form-review__term', row.label ) );
-			list.appendChild( el( 'dd', 'sgs-form-review__detail', row.value ) );
+			const item = el( 'div', 'sgs-form-review__row' );
+			item.appendChild( el( 'dt', 'sgs-form-review__term', row.label ) );
+			item.appendChild( el( 'dd', 'sgs-form-review__detail', row.value ) );
+			list.appendChild( item );
 		} );
 		card.appendChild( list );
 		mount.appendChild( card );

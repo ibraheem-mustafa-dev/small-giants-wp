@@ -54,6 +54,107 @@ if ( $sgs_fr_border['mobile'] ) {
 }
 
 $sgs_fr_css .= sgs_typography_css_rule( $attributes, 'cardTitle', $sgs_fr_scope . ' .sgs-form-review__card-title' );
+
+// The cards mount, the list inside each card and each row: how many rows sit side by side, the gaps between
+// them, and whether an answer sits beside or under its label. An unset attribute prints nothing.
+$sgs_fr_columns = static function ( $count ): string {
+	$count = (int) $count;
+	return $count > 0 ? 'repeat(' . min( $count, 6 ) . ',minmax(0,1fr))' : '';
+};
+$sgs_fr_css .= sgs_emit_responsive_css(
+	$sgs_fr_scope . ' .sgs-form-review__cards',
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['cardsGap'] ?? null ),
+			'css'          => 'gap',
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['cardsMarginTop'] ?? null ),
+			'css'          => 'margin-top',
+			'unit_default' => 'px',
+		),
+	)
+);
+$sgs_fr_css .= sgs_emit_responsive_css(
+	$sgs_fr_scope . ' .sgs-form-review__list',
+	array(
+		array(
+			'value'     => sgs_responsive_normalise_object( $attributes['listColumns'] ?? null ),
+			'css'       => 'grid-template-columns',
+			'cast'      => 'int',
+			'transform' => $sgs_fr_columns,
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['listRowGap'] ?? null ),
+			'css'          => 'row-gap',
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['listColumnGap'] ?? null ),
+			'css'          => 'column-gap',
+			'unit_default' => 'px',
+		),
+	)
+);
+if ( 'stacked' === ( $attributes['rowLayout'] ?? 'side' ) ) {
+	$sgs_fr_css .= $sgs_fr_scope . ' .sgs-form-review__row{grid-template-columns:minmax(0,1fr);}';
+}
+
+// The Edit button: colours, border, radius, padding and typography, each with its own control.
+$sgs_fr_edit_sel   = $sgs_fr_scope . ' .sgs-form-review__edit';
+$sgs_fr_edit_decls = array();
+$sgs_fr_edit_text  = sgs_colour_value( (string) ( $attributes['editButtonColour'] ?? '' ) );
+if ( '' !== $sgs_fr_edit_text ) {
+	$sgs_fr_edit_decls[] = 'color:' . $sgs_fr_edit_text;
+}
+$sgs_fr_edit_bg = sgs_colour_value( (string) ( $attributes['editButtonBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_fr_edit_bg ) {
+	$sgs_fr_edit_decls[] = 'background-color:' . $sgs_fr_edit_bg;
+}
+$sgs_fr_edit_border = sgs_border_element_decls(
+	$attributes,
+	'editButton',
+	$sgs_fr_edit_sel,
+	array(
+		'colour' => array(
+			'base'  => 'editButtonBorderColour',
+			'hover' => 'editButtonBorderColourHover',
+		),
+	)
+);
+$sgs_fr_edit_decls = array_merge( $sgs_fr_edit_decls, $sgs_fr_edit_border['base'] );
+if ( $sgs_fr_edit_decls ) {
+	$sgs_fr_css .= $sgs_fr_edit_sel . '{' . implode( ';', $sgs_fr_edit_decls ) . ';}';
+}
+$sgs_fr_css .= implode( '', $sgs_fr_edit_border['rules'] );
+foreach ( array( 'tablet', 'mobile' ) as $sgs_fr_tier ) {
+	if ( $sgs_fr_edit_border[ $sgs_fr_tier ] ) {
+		$sgs_fr_css .= sgs_emit_tier_decls( $sgs_fr_edit_sel, array( $sgs_fr_tier => $sgs_fr_edit_border[ $sgs_fr_tier ] ) );
+	}
+}
+$sgs_fr_edit_hover = $sgs_fr_edit_border['hover'];
+$sgs_fr_hover_text = sgs_colour_value( (string) ( $attributes['editButtonColourHover'] ?? '' ) );
+if ( '' !== $sgs_fr_hover_text ) {
+	$sgs_fr_edit_hover[] = 'color:' . $sgs_fr_hover_text;
+}
+$sgs_fr_hover_bg = sgs_colour_value( (string) ( $attributes['editButtonBackgroundColourHover'] ?? '' ) );
+if ( '' !== $sgs_fr_hover_bg ) {
+	$sgs_fr_edit_hover[] = 'background-color:' . $sgs_fr_hover_bg;
+}
+$sgs_fr_css .= sgs_hover_state_rules( $sgs_fr_edit_sel, implode( ';', $sgs_fr_edit_hover ) );
+$sgs_fr_css .= sgs_emit_responsive_css(
+	$sgs_fr_edit_sel,
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['editButtonPadding'] ?? null, true ),
+			'css'          => 'padding',
+			'box'          => true,
+			'unit_default' => 'px',
+		),
+	)
+);
+$sgs_fr_css .= sgs_typography_css_rule( $attributes, 'editButton', $sgs_fr_edit_sel, '', false, false, sgs_object_attr_keys( $block ) );
 foreach ( array(
 	'termColour'  => '.sgs-form-review__term',
 	'valueColour' => '.sgs-form-review__detail',

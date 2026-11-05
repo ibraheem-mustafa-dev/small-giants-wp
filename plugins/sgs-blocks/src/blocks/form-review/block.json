@@ -42,8 +42,41 @@
                 "list": {
                     "label": "Review summary list",
                     "order": 3,
-                    "clusters": [],
-                    "_note": "Renders as an empty cards mount <div class=\"sgs-form-review__cards\"> — populated client-side by view.js (review-cards.js) with one card per section, each holding a <dl class=\"sgs-form-review__list\"> of the answered field rows. No per-instance style attribute exists on this block for the list or its rows; styling is shared framework CSS. clusters: [] is a genuine gap."
+                    "clusters": [
+                        "layout"
+                    ],
+                    "prefix": "list",
+                    "attrMap": {
+                        "css:grid-template-columns": "listColumns",
+                        "css:row-gap": "listRowGap",
+                        "css:column-gap": "listColumnGap"
+                    },
+                    "_note": "The <dl class=\"sgs-form-review__list\"> inside each card, built client-side by view.js (review-cards.js): one row per answered field. listColumns is how many rows sit side by side per device; the gaps are per device. Painted by render.php under the scoped uid class."
+                },
+                "row": {
+                    "label": "Review row",
+                    "order": 9,
+                    "clusters": [
+                        "layout"
+                    ],
+                    "prefix": "row",
+                    "attrMap": {
+                        "css:grid-template-columns": "rowLayout"
+                    },
+                    "_note": "One answered field, <div class=\"sgs-form-review__row\"> holding the label (dt) and the answer (dd). rowLayout 'side' sets them side by side, 'stacked' puts the answer under the label."
+                },
+                "cards": {
+                    "label": "Review cards",
+                    "order": 10,
+                    "clusters": [
+                        "layout"
+                    ],
+                    "prefix": "cards",
+                    "attrMap": {
+                        "css:gap": "cardsGap",
+                        "css:margin-top": "cardsMarginTop"
+                    },
+                    "_note": "The <div class=\"sgs-form-review__cards\"> mount that holds one card per section: the space between cards and above the first."
                 },
                 "card": {
                     "label": "Review card",
@@ -107,6 +140,42 @@
                         "css:color-gradient": "valueColourGradient"
                     },
                     "_note": "The <dd class=\"sgs-form-review__detail\"> answer in each card row; typography is the parent form's reviewDetail family."
+                },
+                "edit-button": {
+                    "label": "Edit button",
+                    "order": 8,
+                    "clusters": [
+                        "text",
+                        "fill",
+                        "layout"
+                    ],
+                    "prefix": "editButton",
+                    "attrMap": {
+                        "css:color": "editButtonColour",
+                        "css:background-color": "editButtonBackgroundColour",
+                        "css:border-color": "editButtonBorderColour",
+                        "css:border-style": "editButtonBorderStyle",
+                        "css:border-width": "editButtonBorderWidth",
+                        "css:border-radius": "editButtonBorderRadius",
+                        "css:padding": "editButtonPadding",
+                        "css:font-size": "editButtonFontSize",
+                        "css:font-weight": "editButtonFontWeight",
+                        "css:font-style": "editButtonFontStyle",
+                        "css:font-family": "editButtonFontFamily",
+                        "css:text-transform": "editButtonTextTransform",
+                        "css:line-height": "editButtonLineHeight",
+                        "css:letter-spacing": "editButtonLetterSpacing"
+                    },
+                    "states": {
+                        "hover": {
+                            "attrMap": {
+                                "css:color": "editButtonColourHover",
+                                "css:background-color": "editButtonBackgroundColourHover",
+                                "css:border-color": "editButtonBorderColourHover"
+                            }
+                        }
+                    },
+                    "_note": "The section's Edit button, <button class=\"sgs-form-review__edit\">, built client-side by review-cards.js. Its text is editLabel."
                 }
             }
         }
@@ -239,6 +308,129 @@
             "default": {}
         },
         "cardTitleLetterSpacingUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "listColumns": {
+            "type": "object",
+            "default": {}
+        },
+        "listRowGap": {
+            "type": "object",
+            "default": {}
+        },
+        "listColumnGap": {
+            "type": "object",
+            "default": {}
+        },
+        "rowLayout": {
+            "type": "string",
+            "enum": [
+                "side",
+                "stacked"
+            ],
+            "default": "side"
+        },
+        "cardsGap": {
+            "type": "object",
+            "default": {}
+        },
+        "cardsMarginTop": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonColour": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonColourHover": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonBackgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonBackgroundColourHover": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonBorderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonBorderColourHover": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonBorderStyle": {
+            "type": "string",
+            "enum": [
+                "none",
+                "solid",
+                "dashed",
+                "dotted"
+            ],
+            "default": "solid"
+        },
+        "editButtonBorderWidth": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonBorderRadius": {
+            "type": "object",
+            "default": {
+                "desktop": {}
+            }
+        },
+        "editButtonPadding": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonFontSize": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonFontSizeUnit": {
+            "type": "string",
+            "default": "px"
+        },
+        "editButtonFontWeight": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonFontStyle": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonFontFamily": {
+            "type": "string",
+            "default": ""
+        },
+        "editButtonTextTransform": {
+            "type": "string",
+            "enum": [
+                "",
+                "none",
+                "uppercase",
+                "lowercase",
+                "capitalize"
+            ],
+            "default": ""
+        },
+        "editButtonLineHeight": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonLineHeightUnit": {
+            "type": "string",
+            "default": "em"
+        },
+        "editButtonLetterSpacing": {
+            "type": "object",
+            "default": {}
+        },
+        "editButtonLetterSpacingUnit": {
             "type": "string",
             "default": "em"
         }
