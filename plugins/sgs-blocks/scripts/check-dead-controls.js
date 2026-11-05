@@ -895,18 +895,75 @@ const PREFIXED_HELPER_SUFFIXES = {
  */
 function collectPrefixedHelperConsumed( corpus ) {
 	const consumed = new Set();
+	const addPrefix = ( prefix, suffixes ) => {
+		for ( const suffix of suffixes ) {
+			const attrName = '' !== prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 );
+			consumed.add( attrName );
+		}
+	};
 	for ( const [ fnName, suffixes ] of Object.entries( PREFIXED_HELPER_SUFFIXES ) ) {
 		const re = new RegExp( fnName + '\\s*\\(\\s*[^,]+,\\s*[\'"]([A-Za-z0-9_]*)[\'"]', 'g' );
 		let m;
 		while ( ( m = re.exec( corpus ) ) !== null ) {
-			const prefix = m[ 1 ];
-			for ( const suffix of suffixes ) {
-				const attrName = '' !== prefix ? prefix + suffix : suffix.charAt( 0 ).toLowerCase() + suffix.slice( 1 );
-				consumed.add( attrName );
+			addPrefix( m[ 1 ], suffixes );
+		}
+		// The prefix as a foreach KEY variable over a literal array map:
+		//   $typography = array( 'itemName' => '.sel', ... );
+		//   foreach ( $typography as $prefix => $sel ) { fnName( $attributes, $prefix, ... ); }
+		// Each literal key of that array is a prefix the helper reads (sgs/cart's
+		// includes/helpers-cart-panel-css.php::sgs_cart_panel_css).
+		const varRe = new RegExp( fnName + '\\s*\\(\\s*[^,]+,\\s*\\$(\\w+)\\s*[,)]', 'g' );
+		while ( ( m = varRe.exec( corpus ) ) !== null ) {
+			for ( const prefix of foreachKeyLiterals( corpus, m[ 1 ] ) ) {
+				addPrefix( prefix, suffixes );
 			}
 		}
 	}
 	return consumed;
+}
+
+/**
+ * The literal string keys of every array a `foreach ( $arr as $keyVar => ... )`
+ * iterates, where `$arr = array( 'key' => ..., ... );` is a literal in `corpus`.
+ * Only top-level `'key' =>` pairs of that one array literal count, so a value
+ * that is itself an array contributes no keys.
+ *
+ * @param {string} corpus PHP source (comments already stripped).
+ * @param {string} keyVar The foreach key variable's name, without `$`.
+ * @return {Set<string>} The literal keys.
+ */
+function foreachKeyLiterals( corpus, keyVar ) {
+	const keys = new Set();
+	const loopRe = new RegExp( 'foreach\\s*\\(\\s*\\$(\\w+)\\s+as\\s+\\$' + keyVar + '\\s*=>', 'g' );
+	let lm;
+	while ( ( lm = loopRe.exec( corpus ) ) !== null ) {
+		const arrRe = new RegExp( '\\$' + lm[ 1 ] + '\\s*=\\s*array\\s*\\(', 'g' );
+		let am;
+		while ( ( am = arrRe.exec( corpus ) ) !== null ) {
+			let depth = 1;
+			let i = am.index + am[ 0 ].length;
+			let top = '';
+			for ( ; i < corpus.length && depth > 0; i++ ) {
+				const ch = corpus[ i ];
+				if ( '(' === ch ) {
+					depth++;
+				} else if ( ')' === ch ) {
+					depth--;
+				}
+				if ( 1 === depth || ( 0 === depth && ')' !== ch ) ) {
+					top += ch;
+				} else if ( 2 === depth && '(' === ch ) {
+					top += ' ';
+				}
+			}
+			const keyRe = /['"]([A-Za-z0-9_]+)['"]\s*=>/g;
+			let km;
+			while ( ( km = keyRe.exec( top ) ) !== null ) {
+				keys.add( km[ 1 ] );
+			}
+		}
+	}
+	return keys;
 }
 
 // A generalised version of the FP-13 prefixed-attribute-set pattern above,

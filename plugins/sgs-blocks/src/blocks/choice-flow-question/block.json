@@ -269,6 +269,11 @@
 			"default": "",
 			"description": "FR-43-19: the stage line's label for this unpriced question's answer, e.g. 'Prescription'. Empty uses the step's label."
 		},
+		"showInBagLine": {
+			"type": "boolean",
+			"default": true,
+			"description": "Whether this unpriced question's answer is named in the bag, cart, checkout and email line summary. Off keeps the answer on the order for the shop owner and leaves it off the shopper's line, e.g. an arrangement such as 'Send it later'."
+		},
 		"optionDescriptionFontSize": {
 			"type": "object",
 			"default": {}

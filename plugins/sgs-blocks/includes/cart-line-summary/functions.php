@@ -237,6 +237,10 @@ if ( ! function_exists( __NAMESPACE__ . '\\sgs_cart_line_summary_answers' ) ) {
 			if ( ! \is_array( $entry ) || ! isset( $entry['value'] ) || ! \is_scalar( $entry['value'] ) ) {
 				continue;
 			}
+			// A question set to "Show in the bag line: off" keeps its answer on the order, not on the line.
+			if ( isset( $entry['bag_line'] ) && false === $entry['bag_line'] ) {
+				continue;
+			}
 			$value = \trim( (string) $entry['value'] );
 			if ( '' === $value ) {
 				continue;

@@ -19,7 +19,7 @@ import { chosenButtons, joinAnswerLabels } from './flow-multi.js';
  * `summaryText`); `product` marks an answer to one of the product's own
  * attributes, which the stage names beside the product instead of as a line.
  *
- * @type {WeakMap<HTMLElement, Array<{stepIndex: number, label: string, value: string, stageLabel: string, stageValue: string, product: boolean, effect: string}>>}
+ * @type {WeakMap<HTMLElement, Array<{stepIndex: number, label: string, value: string, stageLabel: string, stageValue: string, product: boolean, effect: string, bagLine: boolean}>>}
  */
 const plainAnswers = new WeakMap();
 
@@ -58,6 +58,7 @@ export function recordPlainAnswer( flowRoot, stepIndex, stepEl, buttonEl ) {
 		stageValue: chosen.length > 1 ? value : buttonEl.getAttribute( 'data-summary-text' ) || value,
 		product: buttonEl.hasAttribute( 'data-product-attribute' ),
 		effect: buttonEl.getAttribute( 'data-stage-effect' ) || '',
+		bagLine: ! ( questionEl && '0' === questionEl.getAttribute( 'data-bag-line' ) ),
 	};
 	plainAnswers.set( flowRoot, [ ...rest, answer ] );
 }
@@ -152,10 +153,10 @@ export function validateTerminalFields( resultEl ) {
  *
  * @param {HTMLElement} flowRoot Flow wrapper element.
  * @param {HTMLElement} resultEl The `.sgs-choice-flow-result`.
- * @return {Array<{label: string, value?: string, file_id?: number}>} Entries.
+ * @return {Array<{label: string, value?: string, file_id?: number, bag_line?: boolean}>} Entries.
  */
 export function collectFlowFields( flowRoot, resultEl ) {
-	const entries = ( plainAnswers.get( flowRoot ) || [] ).map( ( { label, value } ) => ( { label, value } ) );
+	const entries = ( plainAnswers.get( flowRoot ) || [] ).map( ( { label, value, bagLine } ) => ( bagLine ? { label, value } : { label, value, bag_line: false } ) );
 	for ( const fieldEl of terminalFields( resultEl ) ) {
 		const label = fieldLabel( fieldEl );
 		if ( ! label ) {

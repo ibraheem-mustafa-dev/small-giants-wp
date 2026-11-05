@@ -33,7 +33,7 @@ final class BuyboxSnapshotTest extends TestCase {
 	}
 
 	/** Render a fixture through the real render.php in a child process. */
-	public static function render_fixture( string $name, array $attr_overrides = array(), ?array $context_override = null, array $product_overrides = array() ): string {
+	public static function render_fixture( string $name, array $attr_overrides = array(), ?array $context_override = null, array $product_overrides = array(), bool $render_children = false ): string {
 		$fixture = json_decode( (string) file_get_contents( self::DIR . "/$name.json" ), true, 512, JSON_THROW_ON_ERROR );
 		$fixture['attrs'] = array_merge( $fixture['attrs'], $attr_overrides );
 		if ( null !== $context_override ) {
@@ -42,7 +42,7 @@ final class BuyboxSnapshotTest extends TestCase {
 		$fixture['product'] = array_merge( $fixture['product'], $product_overrides );
 		$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$files   = array();
-		$cmd     = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness ) . ' --slug sgs/buybox --motion-targets';
+		$cmd     = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $harness ) . ' --slug sgs/buybox --motion-targets' . ( $render_children ? ' --render-children' : '' );
 		foreach ( array( 'attrs', 'product', 'manifest', 'context', 'queried' ) as $key ) {
 			if ( ! array_key_exists( $key, $fixture ) ) {
 				continue;

@@ -30,6 +30,13 @@ namespace {
 		13 => array( '_sgs_form_upload' => 1, '_sgs_flow_upload_owner' => 'abc' ),
 	);
 
+	class WC_Order {}
+	class WC_Order_Item_Product {
+		public $meta = array();
+		public function add_meta_data( $key, $value, $unique = false ) {
+			$this->meta[] = array( $key, $value );
+		}
+	}
 	class WP_Error {
 		public $code;
 		public function __construct( $code, $message = '' ) {
@@ -53,6 +60,7 @@ namespace {
 	}
 
 	require dirname( __DIR__, 2 ) . '/includes/flow-fields/functions.php';
+	require dirname( __DIR__, 2 ) . '/includes/flow-fields/class-flow-fields-cart.php';
 
 	$failures = 0;
 	function check( bool $cond, string $label ) {
@@ -96,6 +104,21 @@ namespace {
 	// FR-43-27: a multi-answer question travels as ONE row, its picks joined in the order shown.
 	$multi = $f( array( array( 'label' => 'Flavour', 'value' => 'Chocolate chip, Biscoff, Oreo' ) ), 'abc' );
 	check( is_array( $multi ) && 1 === count( $multi ) && 'Flavour' === $multi[0]['label'] && 'Chocolate chip, Biscoff, Oreo' === $multi[0]['value'], 'a multi-answer value is one row with its joined labels intact' );
+
+	// "Show in the bag line" off: the flag survives the clean-up and the order line still gets both answers.
+	$bag = $f(
+		array(
+			array( 'label' => 'Flavour', 'value' => 'Oreo' ),
+			array( 'label' => 'Your prescription', 'value' => 'Send it later', 'bag_line' => false ),
+			array( 'label' => 'Gift note', 'value' => 'Hello', 'bag_line' => true ),
+			array( 'label' => 'Wrapped', 'value' => 'Yes', 'bag_line' => 'false' ),
+		),
+		'abc'
+	);
+	check( ! isset( $bag[0]['bag_line'] ) && false === $bag[1]['bag_line'] && ! isset( $bag[2]['bag_line'] ) && false === $bag[3]['bag_line'], 'only an explicit off keeps a bag_line flag' );
+	$line = new WC_Order_Item_Product();
+	\SGS\Blocks\Flow_Fields_Cart::copy_to_order_line_item( $line, 'key', array( \SGS\Blocks\Flow_Fields_Cart::KEY => $bag ), new WC_Order() );
+	check( array( 'Flavour', 'Your prescription', 'Gift note', 'Wrapped' ) === array_column( $line->meta, 0 ), 'the order line keeps every answer, hidden ones included' );
 
 	echo PHP_EOL, '==== ', ( 0 === $failures ? 'all passed' : "$failures failed" ), ' ====', PHP_EOL;
 	exit( 0 === $failures ? 0 : 1 );

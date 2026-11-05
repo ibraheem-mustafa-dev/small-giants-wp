@@ -174,7 +174,7 @@ $dialog_rules = array_merge( $dialog_rules, $border['base'] );
 $scrim_css = sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-modal__dialog:modal' ) );
 
 $wrapper_args = array(
-	'class' => 'sgs-modal ' . $uid,
+	'class' => 'sgs-modal ' . $uid . ( 'none' === $trigger_style ? ' sgs-modal--no-trigger' : '' ),
 );
 
 // The block's own HTML anchor (supports.anchor:true) doubles as the id a

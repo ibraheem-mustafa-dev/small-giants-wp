@@ -949,9 +949,19 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 		'pickerPill',
 		tier
 	);
-	const pillStyleVars = attributes.pickerPillBorderWidth
-		? { '--sgs-op-border-width': attributes.pickerPillBorderWidth }
-		: undefined;
+	const pillSelTextColour = attributes.pickerPillSelectedTextColour
+		? resolveColourToken( attributes.pickerPillSelectedTextColour, palette ) ||
+		  attributes.pickerPillSelectedTextColour
+		: '';
+	const pillStyleVars =
+		attributes.pickerPillBorderWidth || pillSelTextColour
+			? {
+					...( attributes.pickerPillBorderWidth
+						? { '--sgs-op-border-width': attributes.pickerPillBorderWidth }
+						: {} ),
+					...( pillSelTextColour ? { '--sgs-op-sel-text': pillSelTextColour } : {} ),
+			  }
+			: undefined;
 	// The label-row link, shown on the Size sample group.
 	const linkText = attributes.pickerLabelLinkAxis
 		? attributes.pickerLabelLinkText || ''

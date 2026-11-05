@@ -2974,6 +2974,11 @@
 			"default": "",
 			"description": "Border width of every option pill and tile in the pickers (CSS length, e.g. \"1px\"), forwarded to sgs/option-picker's pillBorderWidth. Empty = the option picker's own 2px."
 		},
+		"pickerPillSelectedTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of a selected option pill or tile in the pickers, forwarded to sgs/option-picker's pillSelectedTextColour. Empty = the option picker default."
+		},
 		"groupStyles": {
 			"type": "object",
 			"default": {},
