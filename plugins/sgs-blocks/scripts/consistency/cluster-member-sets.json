@@ -722,6 +722,28 @@
 					]
 				},
 				{
+					"key": "css:row-gap",
+					"label": "Row gap",
+					"suffixes": [
+						"RowGap"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
+					"key": "css:column-gap",
+					"label": "Column gap",
+					"suffixes": [
+						"ColumnGap"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					]
+				},
+				{
 					"key": "css:grid-template-rows",
 					"label": "Grid rows",
 					"suffixes": [

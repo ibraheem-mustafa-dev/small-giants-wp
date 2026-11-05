@@ -113,6 +113,13 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 			attributes,
 			setAttributes,
 		} ),
+		textRow( {
+			key: 'drawerCardDescColour',
+			label: __( 'Card description colour', 'sgs-blocks' ),
+			attrs: { base: 'drawerCardDescColour' },
+			attributes,
+			setAttributes,
+		} ),
 		fillRow( {
 			key: 'drawerCardBorderColour',
 			label: __( 'Card border colour', 'sgs-blocks' ),

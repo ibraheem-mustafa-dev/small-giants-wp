@@ -6021,6 +6021,8 @@ def stage_8_drift_gate(
 # opened by `open_db()` / the `conn` argument.  Stage 9 also writes to this
 # secondary path so both stores stay in sync.
 _CLAUDE_DB = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+# The shared framework DB's own path. SGS_DB is reassigned to a private copy by --db.
+_SHARED_SGS_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
 
 # Prune mode constants
 # 'aggressive'   — DELETE stale support rows (default; source of truth is block.json).
@@ -6039,6 +6041,15 @@ def _open_claude_db() -> sqlite3.Connection | None:
     a second write-lock on the same file, which is unnecessary and risks busy
     errors.  In that case we return None (the primary conn already covers both paths).
     """
+    # A run redirected to another database (--db, or $SGS_FRAMEWORK_DB through the resolver) must never write the
+    # shared files: the .claude path is a second name for the shared DB, so pruning it from a private reseed deleted
+    # every attribute the running tree does not declare from the shared DB (the 2026-11-04 13:00 and 2026-11-05 00:29
+    # attribute losses) and switched it to WAL mode, which publish-framework-db.py refuses.
+    try:
+        if SGS_DB.resolve() != _SHARED_SGS_DB.resolve():
+            return None
+    except OSError:
+        return None
     if not _CLAUDE_DB.exists():
         print(f"  WARNING: .claude DB not found at {_CLAUDE_DB} — skipping secondary DB writes.")
         return None

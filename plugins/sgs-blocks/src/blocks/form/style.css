@@ -1201,12 +1201,20 @@ select.sgs-form-field__input {
 	margin-bottom: 1rem;
 }
 
-.sgs-form-review__list {
+:where(.sgs-form-review__list) {
 	display: grid;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0.5rem 1rem;
 	padding: 0;
 	margin: 0;
+}
+
+/* One answered field: the question (dt) beside its answer (dd). The list lays the rows out in its columns. */
+:where(.sgs-form-review__row) {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 0.5rem 1rem;
+	min-width: 0;
 }
 
 .sgs-form-review__term {
@@ -1234,7 +1242,7 @@ select.sgs-form-field__input {
 }
 
 @container sgs-form (max-width: 480px) {
-	.sgs-form-review__list {
+	:where(.sgs-form-review__row) {
 		grid-template-columns: 1fr;
 	}
 

@@ -1,7 +1,8 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
-import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls } from '../../components';
+import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls, ResponsiveControl, ResponsiveLengthControl, ResponsiveBoxControl } from '../../components';
+import { patchTier } from '../../utils/patch-tier';
 import { backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
 
 import AuthoredText from '../../components/AuthoredText';
@@ -35,6 +36,35 @@ export default function Edit( { attributes, setAttributes } ) {
 		),
 	};
 	const titleStyle = typographyPreviewStyle( attributes, 'cardTitle', tier );
+	const pickTier = ( value ) => value?.[ tier ] ?? value?.desktop;
+	const editStyle = {
+		...typographyPreviewStyle( attributes, 'editButton', tier ),
+		...backgroundPaintPreview( attributes.editButtonBackgroundColour, '', colourPalette ),
+		...textPaintPreview( attributes.editButtonColour, '', colourPalette ),
+		...sgsBorderPreview(
+			{
+				widthValues: attributes.editButtonBorderWidth,
+				styleValue: attributes.editButtonBorderStyle,
+				colourValue: attributes.editButtonBorderColour,
+				radiusValues: attributes.editButtonBorderRadius,
+			},
+			tier
+		),
+	};
+	const editPad = pickTier( attributes.editButtonPadding );
+	if ( editPad ) {
+		editStyle.padding = [ editPad.top, editPad.right, editPad.bottom, editPad.left ].map( ( side ) => side || 0 ).join( ' ' );
+	}
+	const listStyle = {
+		gridTemplateColumns: `repeat(${ parseInt( pickTier( attributes.listColumns ), 10 ) || 1 }, minmax(0, 1fr))`,
+		rowGap: sgsLengthPreview( pickTier( attributes.listRowGap ) ) || undefined,
+		columnGap: sgsLengthPreview( pickTier( attributes.listColumnGap ) ) || undefined,
+	};
+	const rowStyle = 'stacked' === attributes.rowLayout ? { gridTemplateColumns: 'minmax(0, 1fr)' } : undefined;
+	const cardsStyle = {
+		gap: sgsLengthPreview( pickTier( attributes.cardsGap ) ) || undefined,
+		marginTop: sgsLengthPreview( pickTier( attributes.cardsMarginTop ) ) || undefined,
+	};
 	const termStyle = textPaintPreview( attributes.termColour, attributes.termColourGradient, colourPalette );
 	const valueStyle = textPaintPreview( attributes.valueColour, attributes.valueColourGradient, colourPalette );
 
@@ -118,6 +148,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							attributes,
 							setAttributes,
 						} ),
+						textRow( {
+							key: 'editText',
+							label: __( 'Edit button text', 'sgs-blocks' ),
+							attrs: { base: 'editButtonColour', hover: 'editButtonColourHover' },
+							attributes,
+							setAttributes,
+						} ),
+						fillRow( {
+							key: 'editFill',
+							label: __( 'Edit button background', 'sgs-blocks' ),
+							attrs: { base: 'editButtonBackgroundColour', hover: 'editButtonBackgroundColourHover' },
+							attributes,
+							setAttributes,
+						} ),
 					] }
 				/>
 				<PanelBody title={ __( 'Card border and spacing', 'sgs-blocks' ) } initialOpen={ false }>
@@ -164,27 +208,138 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix="cardTitle"
 					/>
 				</PanelBody>
+				<PanelBody title={ __( 'Rows and layout', 'sgs-blocks' ) } initialOpen={ false }>
+					<SelectControl
+						label={ __( 'Answer position', 'sgs-blocks' ) }
+						value={ attributes.rowLayout || 'side' }
+						options={ [
+							{ label: __( 'Beside the label', 'sgs-blocks' ), value: 'side' },
+							{ label: __( 'Under the label', 'sgs-blocks' ), value: 'stacked' },
+						] }
+						onChange={ ( val ) => setAttributes( { rowLayout: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+					<ResponsiveControl label={ __( 'Rows side by side', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<SelectControl
+								label={ __( 'Rows side by side', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ String( attributes.listColumns?.[ breakpoint ] ?? '' ) }
+								options={ [
+									{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+									{ label: '1', value: '1' },
+									{ label: '2', value: '2' },
+									{ label: '3', value: '3' },
+									{ label: '4', value: '4' },
+								] }
+								onChange={ ( val ) => patchTier( attributes, setAttributes, 'listColumns', breakpoint, val ? parseInt( val, 10 ) : '' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveControl>
+					<ResponsiveLengthControl
+						label={ __( 'Space between rows', 'sgs-blocks' ) }
+						value={ attributes.listRowGap }
+						onChange={ ( next ) => setAttributes( { listRowGap: next } ) }
+					/>
+					<ResponsiveLengthControl
+						label={ __( 'Space between columns', 'sgs-blocks' ) }
+						value={ attributes.listColumnGap }
+						onChange={ ( next ) => setAttributes( { listColumnGap: next } ) }
+					/>
+					<ResponsiveLengthControl
+						label={ __( 'Space between cards', 'sgs-blocks' ) }
+						value={ attributes.cardsGap }
+						onChange={ ( next ) => setAttributes( { cardsGap: next } ) }
+					/>
+					<ResponsiveLengthControl
+						label={ __( 'Space above the cards', 'sgs-blocks' ) }
+						value={ attributes.cardsMarginTop }
+						onChange={ ( next ) => setAttributes( { cardsMarginTop: next } ) }
+					/>
+				</PanelBody>
+				<PanelBody title={ __( 'Edit button', 'sgs-blocks' ) } initialOpen={ false }>
+					<SgsBorderControl
+						widthValues={ attributes.editButtonBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { editButtonBorderWidth: next } ) }
+						widthPresets={ [ '10', '20', '30' ] }
+						styleValue={ attributes.editButtonBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { editButtonBorderStyle: val } ) }
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourStates={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes.editButtonBorderColour,
+								onChange: ( val ) => setAttributes( { editButtonBorderColour: val ?? '' } ),
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes.editButtonBorderColourHover,
+								onChange: ( val ) => setAttributes( { editButtonBorderColourHover: val ?? '' } ),
+							},
+						] }
+						radiusValues={ {
+							base: attributes.editButtonBorderRadius?.desktop ?? {},
+							tablet: attributes.editButtonBorderRadius?.tablet ?? {},
+							mobile: attributes.editButtonBorderRadius?.mobile ?? {},
+						} }
+						onRadiusChange={ ( tierKey, next ) => {
+							const key = tierKey === 'base' ? 'desktop' : tierKey;
+							setAttributes( { editButtonBorderRadius: { ...attributes.editButtonBorderRadius, [ key ]: next } } );
+						} }
+					/>
+					<ResponsiveBoxControl
+						label={ __( 'Padding', 'sgs-blocks' ) }
+						presets
+						values={ {
+							base: attributes.editButtonPadding?.desktop ?? {},
+							tablet: attributes.editButtonPadding?.tablet ?? {},
+							mobile: attributes.editButtonPadding?.mobile ?? {},
+						} }
+						onChange={ ( tierKey, next ) => {
+							const key = 'base' === tierKey ? 'desktop' : tierKey;
+							setAttributes( { editButtonPadding: { ...attributes.editButtonPadding, [ key ]: next } } );
+						} }
+					/>
+					<TypographyControls
+						fontSizePresets
+						showFontFamily
+						showTransform
+						showLetterSpacing
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="editButton"
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				<AuthoredText as={ HeadingTag } className="sgs-form-review__heading" value={ heading } />
 				{ intro && <AuthoredText as="p" className="sgs-form-review__intro" value={ intro } /> }
 				{ /* A sample card painted from the card settings; the front end builds one per step from the visitor's answers. */ }
-				<div className="sgs-form-review__cards">
+				<div className="sgs-form-review__cards" style={ cardsStyle }>
 					<section className="sgs-form-review__card" style={ cardStyle }>
 						<div className="sgs-form-review__card-head">
 							<p className="sgs-form-review__card-title" style={ titleStyle }>
 								{ __( 'Your details', 'sgs-blocks' ) }
 							</p>
 							{ false !== showEditLinks && (
-								<button type="button" className="sgs-form-review__edit" tabIndex={ -1 }>
+								<button type="button" className="sgs-form-review__edit" tabIndex={ -1 } style={ editStyle }>
 									{ editLabel || __( 'Edit', 'sgs-blocks' ) }
 								</button>
 							) }
 						</div>
-						<dl className="sgs-form-review__list">
-							<dt className="sgs-form-review__term" style={ termStyle }>{ __( 'Name', 'sgs-blocks' ) }</dt>
-							<dd className="sgs-form-review__detail" style={ valueStyle }>{ __( 'Sample answer', 'sgs-blocks' ) }</dd>
+						<dl className="sgs-form-review__list" style={ listStyle }>
+							{ [ __( 'Name', 'sgs-blocks' ), __( 'Phone', 'sgs-blocks' ) ].map( ( term ) => (
+								<div className="sgs-form-review__row" style={ rowStyle } key={ term }>
+									<dt className="sgs-form-review__term" style={ termStyle }>{ term }</dt>
+									<dd className="sgs-form-review__detail" style={ valueStyle }>{ __( 'Sample answer', 'sgs-blocks' ) }</dd>
+								</div>
+							) ) }
 						</dl>
 					</section>
 				</div>

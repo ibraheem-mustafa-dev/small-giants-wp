@@ -146,7 +146,8 @@
 						"css:color": "drawerLinkNumColour",
 						"css:color-gradient": "drawerLinkNumColourGradient",
 						"css:font-size": "drawerLinkNumSize",
-						"css:font-weight": "drawerLinkNumWeight"
+						"css:font-weight": "drawerLinkNumWeight",
+						"css:font-family": "drawerLinkNumFontFamily"
 					},
 					"_note": "The row's direct-child sgs/text, in the drawer only."
 				},
@@ -226,6 +227,8 @@
 					],
 					"attrMap": {
 						"css:font-size": "drawerCardTagSize",
+						"css:font-family": "drawerCardTagFontFamily",
+						"css:letter-spacing": "drawerCardTagLetterSpacing",
 						"css:border-radius": "drawerCardTagRadius",
 						"css:padding": "drawerCardTagPadding",
 						"css:margin": "drawerCardTagMargin"
@@ -245,6 +248,19 @@
 						"css:line-height": "drawerCardTitleLineHeight"
 					},
 					"_note": "The aside's third slot, in the compact card."
+				},
+				"drawerCardDesc": {
+					"motion": false,
+					"label": "Drawer card description",
+					"layer": "CONTENT",
+					"order": 5.85,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "drawerCardDescColour"
+					},
+					"_note": "The aside's fourth slot (the text under the title) in the drawer, in the stacked and default card layouts (the compact card hides it)."
 				},
 				"drawerCardLink": {
 					"motion": false,
@@ -623,6 +639,11 @@
 			"default": "",
 			"description": "Font weight of each link row's number in the drawer (400, 700, bold). Validated in render.php."
 		},
+		"drawerLinkNumFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family of each link row's number in the drawer: a theme font preset slug (for example a mono slug) or a CSS font-family list. Sanitised by sgs_font_family_sanitise()."
+		},
 		"drawerLinkLabelColour": {
 			"type": "string",
 			"default": "",
@@ -781,6 +802,21 @@
 			"type": "string",
 			"default": "",
 			"description": "Font size of the compact card's tag in the drawer."
+		},
+		"drawerCardTagFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font family of the card's tag in the drawer, in the stacked and compact layouts: a theme font preset slug or a CSS font-family list. '' keeps the tag's own family."
+		},
+		"drawerCardTagLetterSpacing": {
+			"type": "string",
+			"default": "",
+			"description": "Letter spacing of the card's tag in the drawer, in the stacked and compact layouts: a single CSS length that may be negative (for example 0.72px). '' keeps the tag's own spacing."
+		},
+		"drawerCardDescColour": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the colour of the aside card's description (its fourth slot, the text under the title), in the stacked and default card layouts (a palette slug or any CSS colour)."
 		},
 		"drawerCardTagPadding": {
 			"type": "object",

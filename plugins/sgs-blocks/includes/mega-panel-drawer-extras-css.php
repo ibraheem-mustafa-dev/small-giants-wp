@@ -19,6 +19,11 @@
  *   description, link).
  * - The aside card's link in every layout: its colours (`drawerCardLinkBg`,
  *   `drawerCardLinkColour`).
+ * - The aside card's description colour (`drawerCardDescColour`) in every
+ *   layout that shows the description (stacked and the default card).
+ * - The card tag's font family and letter spacing (`drawerCardTagFontFamily`,
+ *   `drawerCardTagLetterSpacing`), wherever `drawerCardTagSize` applies
+ *   (stacked and compact).
  *
  * Every unset attribute emits nothing. Rules are rooted on the panel's own
  * uid class, as the rest of the drawer copy's rules are.
@@ -29,6 +34,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-tokens.php';
+require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-hover-state.php';
@@ -116,6 +122,60 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_card_box_decls' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_mega_panel_drawer_letter_spacing' ) ) {
+	/**
+	 * One letter-spacing attribute: a single CSS length that may be negative.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $key        Attribute name.
+	 * @return string A CSS length, or ''.
+	 */
+	function sgs_mega_panel_drawer_letter_spacing( array $attributes, string $key ): string {
+		$raw = isset( $attributes[ $key ] ) && is_string( $attributes[ $key ] ) ? trim( $attributes[ $key ] ) : '';
+		if ( 0 === strpos( $raw, '-' ) ) {
+			$length = sgs_css_single_length_value( substr( $raw, 1 ) );
+			return '' !== $length ? '-' . $length : '';
+		}
+		return sgs_css_single_length_value( $raw );
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_tag_type_decls' ) ) {
+	/**
+	 * The card tag's font family and letter spacing declarations.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Declarations (each ending `;`), or ''.
+	 */
+	function sgs_mega_panel_drawer_tag_type_decls( array $attributes ): string {
+		$family  = sgs_font_family_sanitise( $attributes['drawerCardTagFontFamily'] ?? '' );
+		$spacing = sgs_mega_panel_drawer_letter_spacing( $attributes, 'drawerCardTagLetterSpacing' );
+		return ( '' !== $family ? 'font-family:' . $family . ';' : '' )
+			. ( '' !== $spacing ? 'letter-spacing:' . $spacing . ';' : '' );
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_card_slot_sel' ) ) {
+	/**
+	 * The selector for slot N of the stacked or default aside card: the aside's
+	 * own Nth child, or, when the clone wraps the slots after the media frame,
+	 * the matching child of the wrapper's content band. The slot can be the
+	 * element itself; `$tail` reaches into it or onto it.
+	 *
+	 * @param string $aside_sel The in-drawer aside selector.
+	 * @param int    $n         Slot number (1 = media frame ... 5 = link).
+	 * @param string $tail      Appended to each selector.
+	 * @return string Selector list.
+	 */
+	function sgs_mega_panel_drawer_card_slot_sel( string $aside_sel, int $n, string $tail = '' ): string {
+		if ( 1 === $n ) {
+			return $aside_sel . ' > :nth-child(1)' . $tail;
+		}
+		return $aside_sel . ' > :nth-child(' . $n . '):not(.wp-block-sgs-container)' . $tail
+			. ',' . $aside_sel . ' > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(' . ( $n - 1 ) . ')' . $tail;
+	}
+}
+
 if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 	/**
 	 * The `stacked-overlay` aside card.
@@ -151,11 +211,7 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 		$wrap = $aside_sel . ' > .wp-block-sgs-container:nth-child(n+2)';
 		$css .= $wrap . ',' . $wrap . ' > .sgs-container__inner{display:contents;}';
 		$slot = static function ( int $n, string $tail = '' ) use ( $aside_sel ): string {
-			if ( 1 === $n ) {
-				return $aside_sel . ' > :nth-child(1)' . $tail;
-			}
-			return $aside_sel . ' > :nth-child(' . $n . '):not(.wp-block-sgs-container)' . $tail
-				. ',' . $aside_sel . ' > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(' . ( $n - 1 ) . ')' . $tail;
+			return sgs_mega_panel_drawer_card_slot_sel( $aside_sel, $n, $tail );
 		};
 		// Slot 1, the media frame, spans the card's full width at the top.
 		$css .= $slot( 1 ) . '{grid-column:1 / -1;grid-row:1;width:100%;margin:0;}';
@@ -173,8 +229,10 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 		$tag_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTagSize' );
 		$tag_pad  = sgs_box_object_longhand_list( $attributes['drawerCardTagPadding'] ?? null, 'padding' );
 		$tag_rad  = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTagRadius' );
-		if ( '' !== $tag_size || $tag_pad || '' !== $tag_rad ) {
+		$tag_type = sgs_mega_panel_drawer_tag_type_decls( $attributes );
+		if ( '' !== $tag_size || $tag_pad || '' !== $tag_rad || '' !== $tag_type ) {
 			$css .= $slot( 2, '.wp-block-sgs-label' ) . ',' . $slot( 2, ' .wp-block-sgs-label' ) . '{'
+				. $tag_type
 				. ( '' !== $tag_size ? 'font-size:' . $tag_size . ';line-height:1.5;' : '' )
 				. ( '' !== $tag_rad ? 'border-radius:' . $tag_rad . ';' : '' )
 				. ( $tag_pad ? implode( ';', $tag_pad ) . ';' : '' ) . '}';
@@ -187,6 +245,21 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 				. ( '' !== $title_lh ? 'line-height:' . $title_lh . ';' : '' ) . '}';
 		}
 		return $css;
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_card_desc_css' ) ) {
+	/**
+	 * The aside card's description colour (`drawerCardDescColour`): slot 4, the
+	 * text under the title, as the element itself or inside the clone's wrapper.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $aside_sel  The in-drawer aside selector.
+	 * @return string CSS, or ''.
+	 */
+	function sgs_mega_panel_drawer_card_desc_css( array $attributes, string $aside_sel ): string {
+		$colour = sgs_colour_value( (string) ( $attributes['drawerCardDescColour'] ?? '' ) );
+		return '' !== $colour ? sgs_mega_panel_drawer_card_slot_sel( $aside_sel, 4 ) . '{color:' . $colour . ';}' : '';
 	}
 }
 
