@@ -30,10 +30,23 @@
 		align-items: start;
 	}
 
+	.sgs-buybox-pick--no-preview {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	.sgs-buybox-pick__live,
 	.sgs-buybox-pick__undo-row {
 		grid-column: 1 / -1;
 	}
+}
+
+/* Preview picture hidden: the summary and per-unit lines flow under the groups, start-aligned. */
+.sgs-buybox-pick--no-preview .sgs-buybox-pick__side {
+	justify-items: start;
+}
+
+.sgs-buybox-pick--no-preview .sgs-buybox-pick__caption {
+	text-align: start;
 }
 
 /* ── Group ─────────────────────────────────────────────────────────── */

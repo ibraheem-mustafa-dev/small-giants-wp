@@ -3128,6 +3128,11 @@
 			"default": false,
 			"description": "Pick a set only: hide the product photo gallery so the picker, preview and summary fill the width. Off by default."
 		},
+		"pickHidePreview": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: hide the preview picture (image and flavour dots). The summary line and per-unit line then sit under the pick groups at full width. Off by default."
+		},
 		"previewBackgroundColour": {
 			"type": "string",
 			"default": "",

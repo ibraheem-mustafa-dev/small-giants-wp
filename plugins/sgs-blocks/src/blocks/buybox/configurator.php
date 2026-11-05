@@ -396,7 +396,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 				}
 			}
 		}
-		$out  = '<div class="sgs-buybox-pick" data-sgs-pick';
+		$out  = '<div class="sgs-buybox-pick' . ( ! empty( $attributes['pickHidePreview'] ) ? ' sgs-buybox-pick--no-preview' : '' ) . '" data-sgs-pick';
 		$out .= ' data-summary="' . esc_attr( $template ) . '"';
 		$out .= ' data-pack-axis="' . esc_attr( $pack['key'] ) . '"';
 		$out .= ' data-pack-units="' . esc_attr( (string) wp_json_encode( (object) $pack['units'] ) ) . '"';
@@ -410,7 +410,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 	/**
-	 * Everything after the pickers: the pick groups, then the side column (preview, caption) and the shared messages.
+	 * Everything after the pickers: the pick groups, then the side column (preview, caption; the preview box is left out when `pickHidePreview` is on) and the shared messages.
 	 *
 	 * @param array<string,mixed> $state      From sgs_buybox_configurator_state().
 	 * @param array<string,mixed> $attributes Block attributes.
@@ -435,7 +435,9 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 		$image    = $image_id > 0 ? wp_get_attachment_image( $image_id, 'large', false, array( 'class' => 'sgs-buybox-pick__preview-image', 'alt' => '', 'loading' => 'lazy' ) ) : '';
 		$out     .= '<div class="sgs-buybox-pick__side">';
 		$out     .= '<figure class="sgs-buybox-pick__preview">';
-		$out     .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+		if ( empty( $attributes['pickHidePreview'] ) ) {
+			$out .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+		}
 		$out     .= '<figcaption class="sgs-buybox-pick__caption sgs-buybox__pick-summary" data-sgs-caption></figcaption>';
 		$out     .= '</figure>';
 		$out     .= '<p class="sgs-buybox-pick__per-unit" data-sgs-per-unit hidden></p>';

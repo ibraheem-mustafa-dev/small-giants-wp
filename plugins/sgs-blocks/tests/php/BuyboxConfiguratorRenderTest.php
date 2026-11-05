@@ -129,6 +129,22 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertStringContainsString( 'sgs-buybox__gallery-col', BuyboxSnapshotTest::render_fixture( 'standard', array( 'pickHideGallery' => true ) ), 'the setting only acts in Pick a set' );
 	}
 
+	public function test_pick_hide_preview_drops_the_preview_box_keeps_the_caption_and_is_off_by_default(): void {
+		$off = self::html();
+		$this->assertStringContainsString( 'data-sgs-preview', $off );
+		$this->assertStringContainsString( 'data-sgs-dots', $off );
+		$this->assertStringNotContainsString( 'sgs-buybox-pick--no-preview', $off );
+		$scope = static fn ( string $html ): string => (string) preg_replace( '/sgs-bb-[0-9a-f]+/', 'sgs-bb-x', $html );
+		$this->assertSame( $scope( $off ), $scope( self::html( array( 'pickHidePreview' => false ) ) ), 'explicit false is byte-identical to unset (apart from the instance scope id, hashed from the attributes)' );
+		$hidden = self::html( array( 'pickHidePreview' => true ) );
+		$this->assertStringNotContainsString( 'data-sgs-preview', $hidden );
+		$this->assertStringNotContainsString( 'data-sgs-dots', $hidden );
+		$this->assertStringNotContainsString( 'sgs-buybox-pick__preview-box', $hidden );
+		$this->assertStringContainsString( 'sgs-buybox-pick--no-preview', $hidden );
+		$this->assertStringContainsString( 'data-sgs-caption', $hidden );
+		$this->assertStringContainsString( 'data-sgs-per-unit', $hidden );
+	}
+
 	public function test_the_preview_box_settings_print_scoped_per_device(): void {
 		$html = self::html(
 			array(

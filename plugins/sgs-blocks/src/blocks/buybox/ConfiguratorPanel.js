@@ -164,7 +164,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, showPriceRow: true } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, showPriceRow: true } ) }>
 				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
 						<SelectControl
@@ -225,6 +225,15 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						checked={ true === attributes.pickHideGallery }
 						onChange={ ( val ) => setAttributes( { pickHideGallery: val } ) }
 						help={ __( 'The picker, preview and summary then fill the width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</Item>
+				<Item label={ __( 'Hide the preview picture', 'sgs-blocks' ) } name="pickHidePreview" fallback={ false } attributes={ attributes } setAttributes={ setAttributes }>
+					<ToggleControl
+						label={ __( 'Hide the preview picture', 'sgs-blocks' ) }
+						checked={ true === attributes.pickHidePreview }
+						onChange={ ( val ) => setAttributes( { pickHidePreview: val } ) }
+						help={ __( 'The summary line then sits under the pick groups at full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</Item>

@@ -699,7 +699,7 @@ function SamplePickSet( { attributes } ) {
 	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
 	return (
-		<div className="sgs-buybox-pick">
+		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }` }>
 			<div className="sgs-buybox-pick__groups sgs-buybox__pick-box">
 				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
 					<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
@@ -716,7 +716,7 @@ function SamplePickSet( { attributes } ) {
 				</div>
 			</div>
 			<div className="sgs-buybox-pick__side">
-				<div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" />
+				{ true !== attributes.pickHidePreview && <div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" /> }
 				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
 			</div>
 		</div>
