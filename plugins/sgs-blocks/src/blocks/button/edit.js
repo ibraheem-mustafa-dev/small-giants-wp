@@ -166,6 +166,7 @@ export default function Edit( {
 		borderStyle,
 		borderWidth,
 		contentAlign,
+		alignSelf,
 		iconGap,
 		focusStyle,
 	} = attributes;
@@ -1026,6 +1027,40 @@ export default function Edit( {
 							/>
 						) }
 					</ResponsiveOverride>
+
+					{ /* Align self — block.json attributes.alignSelf (tier object) +
+					   render.php (align-self on the button root, a flex item of its parent). */ }
+					<ResponsiveOverride
+						label={ __( 'Align self', 'sgs-blocks' ) }
+						value={ alignSelf }
+						onChange={ ( obj ) =>
+							setAttributes( { alignSelf: obj } )
+						}
+					>
+						{ ( { tier, ownValue, setOwnValue } ) => (
+							<SelectControl
+								value={ ownValue || '' }
+								options={ [
+									{
+										label:
+											'desktop' === tier
+												? __( 'Default', 'sgs-blocks' )
+												: __( '— inherit —', 'sgs-blocks' ),
+										value: '',
+									},
+									{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
+									{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+									{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+									{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+									{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+									{ label: __( 'Baseline', 'sgs-blocks' ), value: 'baseline' },
+								] }
+								onChange={ ( val ) => setOwnValue( val ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* Typography — always editable (preset-as-seed) */ }
@@ -1253,8 +1288,8 @@ export default function Edit( {
 				</ToolsPanel>
 
 				{ /* Border — always editable (preset-as-seed). Box-object interface
-				   contract §1/§5: borderWidth is an SGS custom object attr (base only,
-				   no tiers); borderRadius is a single block-owned tier-object attr
+				   contract §1/§5: borderWidth is an SGS custom object attr (a flat box = desktop,
+				   or a tier object { desktop, tablet, mobile } written by SgsBorderControl); borderRadius is a single block-owned tier-object attr
 				   { desktop, tablet, mobile }, read directly by render.php. */ }
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }
