@@ -10,9 +10,10 @@ import {
 	RichText,
 	useBlockProps,
 } from '@wordpress/block-editor';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import {
 	LinkPopoverField,
+	SGS_FONT_WEIGHT_OPTIONS,
 	SgsColourPanel,
 	TypographyControls,
 	textRow,
@@ -27,7 +28,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const tier = usePreviewTier();
 	const linkColour = colourVar( attributes.commerceNoteLinkColour );
 	const linkHover = colourVar( attributes.commerceNoteLinkColourHover );
+	const linkWeight = attributes.commerceNoteLinkFontWeight;
 	const linkCss = [
+		linkWeight
+			? `#block-${ clientId } .sgs-commerce-note__link{font-weight:${ linkWeight };}`
+			: '',
 		linkColour
 			? `#block-${ clientId } .sgs-commerce-note__link{color:${ linkColour };}`
 			: '',
@@ -90,6 +95,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 			<InspectorControls>
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Link weight', 'sgs-blocks' ) }
+						value={ attributes.commerceNoteLinkFontWeight || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( {
+								commerceNoteLinkFontWeight: value,
+							} )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Link text', 'sgs-blocks' ) }
 						value={ linkLabel }

@@ -76,6 +76,17 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 			array()
 		);
 
+		$css .= sgs_emit_responsive_css(
+			$tile,
+			array(
+				array(
+					'value'        => $attributes['giftTileMinHeight'] ?? null,
+					'css'          => 'min-height',
+					'unit_default' => 'px',
+				),
+			)
+		);
+
 		$selected = array();
 		$fill     = sgs_background_paint_decl( (string) ( $attributes['giftTileSelectedBackground'] ?? '' ), '' );
 		if ( '' !== $fill ) {

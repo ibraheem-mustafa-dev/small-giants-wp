@@ -270,6 +270,8 @@ The roster is NOT the same test as "renders via `SGS_Container_Wrapper`". A bloc
 
 **Split image position (`splitMediaAlign`):** a per-device `start` / `center` / `end` for an image narrower than the media column; the column becomes a flex row (`justify-content`) only once a device is set. Status: built; unset prints nothing. A resting tilt on the split image is the motion model's `restRotate` on the `split-image` part (`--sgs-rot-rest`), not a hero attribute.
 
+**Content stack gap (`contentGap`):** a per-device length for the space between the content column's stacked items (eyebrow, heading, text, buttons), printed as `gap` on `.sgs-hero__content` (a flex column) through `sgs_emit_responsive_css`; the wrapper's own `gap` cannot reach it, because the wrapper's only child is the content column. Status: built on branch m-commerce, not yet deployed; unset prints nothing and the render is byte-identical.
+
 **Rich-text content (XS-9.1):** Inner content rich-text uses `sgs/heading` with `wp_kses_post()` sanitisation, which supports inline emphasis/strong/anchor while blocking script/style tags.
 
 **Variants:**

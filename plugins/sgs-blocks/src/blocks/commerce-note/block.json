@@ -58,7 +58,8 @@
 					],
 					"prefix": "commerceNoteLink",
 					"attrMap": {
-						"css:color": "commerceNoteLinkColour"
+						"css:color": "commerceNoteLinkColour",
+						"css:font-weight": "commerceNoteLinkFontWeight"
 					},
 					"states": {
 						"hover": {
@@ -155,6 +156,10 @@
 				"normal",
 				"italic"
 			],
+			"default": ""
+		},
+		"commerceNoteLinkFontWeight": {
+			"type": "string",
 			"default": ""
 		}
 	},

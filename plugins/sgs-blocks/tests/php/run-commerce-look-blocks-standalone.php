@@ -58,6 +58,7 @@ $gift = sgs_gift_order_look_css(
 		'giftTileSelectedBackground'   => '#ffeedd',
 		'giftTileSelectedBorderColour' => '#445566',
 		'giftTileSelectedShadow'       => '4px 4px 0 #3a2a22',
+		'giftTileMinHeight'            => array( 'desktop' => '76px', 'mobile' => 60 ),
 		'fieldBackground'              => '#ffffff',
 		'fieldBorderColour'            => '#aabbcc',
 	)
@@ -70,6 +71,9 @@ ok( str_contains( $gift, '.sgs-gift-order__input,.sgs-gift-order .sgs-gift-order
 ok( str_contains( $gift, '.sgs-gift-order .sgs-gift-order__input,.sgs-gift-order .sgs-gift-order__textarea{border-color:#aabbcc;}' ), 'gift: field border colour' );
 
 ok( str_contains( $gift, 'box-shadow:4px 4px 0px 0px #3a2a22' ), 'gift: chosen tile shadow' );
+
+ok( str_contains( $gift, '.sgs-gift-order .sgs-gift-order__tile{min-height:76px;}' ) && str_contains( $gift, 'min-height:60px' ), 'gift: tile minimum height per device' );
+ok( ! str_contains( sgs_gift_order_look_css( array() ), 'min-height' ), 'gift: tile height unset prints nothing' );
 
 // sgs/commerce-note.
 $base = array( 'text' => 'Hello', 'linkLabel' => 'Go', 'linkUrl' => 'https://example.test' );
@@ -85,6 +89,9 @@ $on = harness(
 	)
 );
 ok( str_contains( $on['css'], 'font-size:13px' ) && str_contains( $on['css'], 'text-align:center' ), 'note: typography and alignment' );
+$wt = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkFontWeight' => '700' ) );
+ok( str_contains( $wt['css'], 'a{font-weight:700;}' ), 'note: link weight' );
+ok( ! str_contains( $on['css'], 'font-weight' ), 'note: link weight unset prints nothing' );
 ok( str_contains( $on['css'], '.sgs-commerce-note__link{color:#ff0000}' ) && str_contains( $on['css'], 'color:#00ff00' ), 'note: link colour and hover' );
 
 // sgs/free-delivery-bar: track border.
@@ -99,6 +106,12 @@ $fd_on = harness(
 	)
 );
 ok( str_contains( $fd_on['css'], '.sgs-free-delivery-bar__track{border-style:solid;border-width:1px 1px 1px 1px;border-color:#ff0000;}' ), 'bar: track border' );
+
+// sgs/hero: content stack gap.
+$hero_off = harness( 'sgs/hero', array() );
+ok( ! str_contains( $hero_off['css'], 'sgs-hero__content{gap' ), 'hero: content gap unset prints nothing' );
+$hero_on = harness( 'sgs/hero', array( 'contentGap' => array( 'desktop' => '12px', 'mobile' => 8 ) ) );
+ok( str_contains( $hero_on['css'], '.sgs-hero__content{gap:12px;}' ) && str_contains( $hero_on['css'], '.sgs-hero__content{gap:8px;}' ), 'hero: content gap per device' );
 
 // sgs/account: the content-link rule no longer reaches the sign-in tabs.
 $css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/account/style.css' );

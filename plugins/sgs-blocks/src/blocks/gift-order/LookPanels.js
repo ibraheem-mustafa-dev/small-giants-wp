@@ -15,10 +15,17 @@ import {
 	SgsBorderControl,
 	SgsBoxControl,
 	SgsColourPanel,
+	SgsLengthControl,
 	ShadowControl,
 	fillRow,
 	normaliseResponsiveBox,
 } from '../../components';
+
+const TILE_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+];
 
 /**
  * One border, radius pair.
@@ -155,6 +162,26 @@ export default function LookPanels( { attributes, setAttributes } ) {
 						),
 					] }
 				/>
+				<ResponsiveOverride
+					label={ __( 'Tile minimum height', 'sgs-blocks' ) }
+					value={ attributes.giftTileMinHeight }
+					onChange={ ( obj ) =>
+						setAttributes( { giftTileMinHeight: obj } )
+					}
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<SgsLengthControl
+							presets={ false }
+							scale="spacing"
+							label={ __( 'Tile minimum height', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ ownValue || '' }
+							placeholder="44px"
+							units={ TILE_UNITS }
+							onChange={ ( val ) => setOwnValue( val || '' ) }
+						/>
+					) }
+				</ResponsiveOverride>
 				<BorderRows
 					names={ {
 						width: 'giftTileBorderWidth',

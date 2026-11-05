@@ -260,7 +260,8 @@
 					"prefix": "content",
 					"_note": "The `content` grid-area (headline/sub-headline/CTA column in the split variant). background-color and padding both resolve via the default convention (contentBackground, contentPadding). css:background-image is explicitly attrMapped to contentBackgroundGradient because the default {prefix}{suffix} convention has no 'BackgroundGradient' candidate (only 'BackgroundImage'/'Overlay*' suffixes exist for this member) — found live 2026-08-15 during element-manifest-drift triage. REPOINTED 2026-08-16 (D643): this mapped `contentBackgroundGradientFrom`, an attribute deleted by the D636 storage collapse (837f7c97) — the manifest had been claiming a non-existent attr. The accepted-orphan note about a `...To` sibling is gone with it: one string attr now holds the whole gradient, so there is no second colour stop to strand.",
 					"attrMap": {
-						"css:background-image": "contentBackgroundGradient"
+						"css:background-image": "contentBackgroundGradient",
+						"css:gap": "contentGap"
 					}
 				},
 				"media": {
@@ -1243,6 +1244,10 @@
 				"vertical-lr"
 			],
 			"default": ""
+		},
+		"contentGap": {
+			"type": "object",
+			"description": "Space between the stacked items of the content column (eyebrow, heading, text, buttons) per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset prints no gap."
 		}
 	},
 	"render": "file:./render.php",

@@ -63,7 +63,8 @@
 						"css:border-width": "giftTileBorderWidth",
 						"css:border-style": "giftTileBorderStyle",
 						"css:border-color": "giftTileBorderColour",
-						"css:border-radius": "giftTileBorderRadius"
+						"css:border-radius": "giftTileBorderRadius",
+						"css:min-height": "giftTileMinHeight"
 					}
 				},
 				"tileSelected": {
@@ -318,6 +319,11 @@
 		"giftTileSelectedShadowColour": {
 			"type": "string",
 			"default": ""
+		},
+		"giftTileMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height of the two choice tiles per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet's 44px."
 		}
 	},
 	"editorScript": "file:./index.js",
