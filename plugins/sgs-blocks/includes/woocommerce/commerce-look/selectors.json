@@ -95,7 +95,7 @@
 		},
 		"item_image_img": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__image img",
-			"checkout": ".wc-block-components-order-summary-item__image img",
+			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__image > img",
 			"wc_version": "11.2.1",
 			"state": "basket filled with a product that has an image; any width",
 			"needs": {
@@ -142,15 +142,6 @@
 			"checkout": ".wc-block-components-checkout-order-summary__title-text",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; checkout title shows at narrow widths only",
-			"needs": {
-				"basket": "filled"
-			}
-		},
-		"total_row": {
-			"cart": ".wc-block-components-totals-footer-item, .wc-block-components-totals-footer-item .wc-block-components-totals-item__label, .wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
-			"checkout": ".wc-block-components-totals-footer-item, .wc-block-components-totals-footer-item .wc-block-components-totals-item__label, .wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
-			"wc_version": "11.2.1",
-			"state": "basket filled; any user; any width",
 			"needs": {
 				"basket": "filled"
 			}
@@ -210,6 +201,121 @@
 			"checkout": ".wc-block-checkout__terms",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"total_label": {
+			"cart": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__label",
+			"checkout": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__label",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"total_value": {
+			"cart": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
+			"checkout": ".wc-block-components-totals-footer-item .wc-block-components-totals-item__value",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_row_label": {
+			"cart": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__label",
+			"checkout": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__label",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_row_value": {
+			"cart": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__value",
+			"checkout": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__value",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"summary_row_divider": {
+			"cart": ".wc-block-components-totals-wrapper:has(.wc-block-components-totals-item):not(:has(.wc-block-components-totals-footer-item)):not(:first-child)",
+			"checkout": ".wc-block-components-totals-wrapper:has(.wc-block-components-totals-item):not(:has(.wc-block-components-totals-footer-item)):not(:first-child)",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the divider sits above every row after the first, except the total row (WooCommerce draws each row in its own totals wrapper)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"total_divider": {
+			"cart": ".wc-block-components-totals-wrapper:has(.wc-block-components-totals-footer-item)",
+			"checkout": ".wc-block-components-totals-wrapper:has(.wc-block-components-totals-footer-item)",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the total row has its own totals wrapper",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_variant": {
+			"cart": ".wc-block-cart-items__row .wc-block-components-product-metadata, .wc-block-cart-items__row .wc-block-components-product-metadata__description > p, .wc-block-cart-items__row .wc-block-components-product-metadata__variation-data, .wc-block-cart-items__row .wc-block-components-product-details",
+			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item .wc-block-components-product-metadata, .wc-block-components-order-summary .wc-block-components-order-summary-item .wc-block-components-product-metadata__description > p, .wc-block-components-order-summary .wc-block-components-order-summary-item .wc-block-components-product-metadata__variation-data, .wc-block-components-order-summary .wc-block-components-order-summary-item .wc-block-components-product-details",
+			"wc_version": "11.2.1",
+			"state": "basket filled with a product that has a short description or a chosen variation; any width (the cart rows repeat the row class and the checkout rows repeat the summary classes, as WooCommerce does, to out-rank its own rules)",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"item_remove": {
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__quantity .wc-block-cart-item__remove-link",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (table-qualified like WooCommerce's own rule)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_cell": {
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row > td",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (table-qualified: WooCommerce zeroes the cell padding on narrow blocks with a rule this must out-rank)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"layout": {
+			"cart": ".wc-block-components-sidebar-layout",
+			"checkout": ".wc-block-components-sidebar-layout",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"sidebar_wide": {
+			"cart": ".wc-block-components-sidebar-layout.is-large > .wc-block-components-sidebar",
+			"checkout": ".wc-block-components-sidebar-layout.is-large > .wc-block-components-sidebar",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; wide block (WooCommerce adds is-large to the layout and stacks the sidebar under the form otherwise)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "wide"
+			}
+		},
+		"item_thumb_box": {
+			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__image",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the checkout picture sits in a 48px box that must widen with the picture)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_unit_price": {
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__prices",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the unit price line under the product name)",
 			"needs": {
 				"basket": "filled"
 			}

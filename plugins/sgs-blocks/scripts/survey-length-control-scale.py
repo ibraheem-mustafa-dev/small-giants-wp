@@ -89,6 +89,8 @@ ROLE_EXCEPTIONS = {
     'extension/sgsItemGap': ('spacing', 'extension attribute: the space between Cart line-item cards'),
     'extension/sgsItemThumbSize': ('spacing', 'extension attribute: the width of a line-item picture'),
     'extension/sgsItemStepperRadius': ('spacing', 'extension attribute: the corner radius of the quantity stepper'),
+    'extension/sgsSidebarWidth': ('spacing', 'extension attribute: the width of the Cart or Checkout summary column per device'),
+    'extension/sgsColumnGap': ('spacing', 'extension attribute: the gap between the Cart or Checkout form and summary columns per device'),
 }
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {

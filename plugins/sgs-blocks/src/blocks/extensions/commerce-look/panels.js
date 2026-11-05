@@ -5,8 +5,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { SgsLengthControl, ShadowControl } from '../../../components';
-import { CardControls, ColourRow, TextControls } from './controls';
+import { ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl, ShadowControl, TierBorderControl } from '../../../components';
+import { boxTiers, CardControls, ColourRow, TextControls, writeTier } from './controls';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -47,6 +47,9 @@ export function FieldsPanel( { attributes, setAttributes } ) {
 				__next40pxDefaultSize
 			/>
 			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsField" />
+			<PanelBody title={ __( 'Field labels', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsFieldLabel" />
+			</PanelBody>
 		</PanelBody>
 	);
 }
@@ -69,13 +72,21 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 				units={ LENGTH_UNITS }
 				onChange={ ( val ) => setAttributes( { sgsItemGap: val || undefined } ) }
 			/> }
-			<SgsLengthControl
+			<ResponsiveLengthControl
 				scale="spacing"
 				label={ __( 'Picture width', 'sgs-blocks' ) }
-				value={ attributes.sgsItemThumbSize || '' }
+				value={ attributes.sgsItemThumbSize }
 				units={ LENGTH_UNITS }
-				onChange={ ( val ) => setAttributes( { sgsItemThumbSize: val || undefined } ) }
+				onChange={ ( next ) => setAttributes( { sgsItemThumbSize: next } ) }
 			/>
+			{ isCart && (
+				<ResponsiveBoxControl
+					presets
+					label={ __( 'Cell padding (sets the row height)', 'sgs-blocks' ) }
+					values={ boxTiers( attributes.sgsItemCellPadding ) }
+					onChange={ ( tier, next ) => setAttributes( { sgsItemCellPadding: writeTier( attributes.sgsItemCellPadding, tier, next ) } ) }
+				/>
+			) }
 			{ isCart && <SgsLengthControl
 				scale="spacing"
 				label={ __( 'Quantity stepper corner radius', 'sgs-blocks' ) }
@@ -91,12 +102,28 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 					__nextHasNoMarginBottom
 				/>
 			) }
+			{ isCart && (
+				<ToggleControl
+					label={ __( 'Hide the unit price under the name', 'sgs-blocks' ) }
+					checked={ !! attributes.sgsItemHideUnitPrice }
+					onChange={ ( val ) => setAttributes( { sgsItemHideUnitPrice: val || undefined } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 			<PanelBody title={ __( 'Item name', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsItemName" />
 			</PanelBody>
 			<PanelBody title={ __( 'Item price', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsItemPrice" />
 			</PanelBody>
+			<PanelBody title={ __( 'Variant text', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls { ...shared } prefix="sgsItemVariant" />
+			</PanelBody>
+			{ isCart && (
+				<PanelBody title={ __( 'Remove link', 'sgs-blocks' ) } initialOpen={ false }>
+					<TextControls { ...shared } prefix="sgsItemRemove" />
+				</PanelBody>
+			) }
 		</PanelBody>
 	);
 }
@@ -115,9 +142,56 @@ export function SummaryPanel( { attributes, setAttributes } ) {
 			<PanelBody title={ __( 'Summary heading', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsSummaryHeading" />
 			</PanelBody>
-			<PanelBody title={ __( 'Total row', 'sgs-blocks' ) } initialOpen={ false }>
-				<TextControls { ...shared } prefix="sgsTotalRow" />
+			<PanelBody title={ __( 'Summary row labels', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls { ...shared } prefix="sgsSummaryRowLabel" />
 			</PanelBody>
+			<PanelBody title={ __( 'Summary row values', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls { ...shared } prefix="sgsSummaryRowValue" />
+			</PanelBody>
+			<TierBorderControl
+				label={ __( 'Line between summary rows', 'sgs-blocks' ) }
+				value={ attributes.sgsSummaryRowDivider }
+				onChange={ ( next ) => setAttributes( { sgsSummaryRowDivider: next } ) }
+			/>
+			<PanelBody title={ __( 'Total row label', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls { ...shared } prefix="sgsTotalLabel" />
+			</PanelBody>
+			<PanelBody title={ __( 'Total row value', 'sgs-blocks' ) } initialOpen={ false }>
+				<TextControls { ...shared } prefix="sgsTotalValue" />
+			</PanelBody>
+			<TierBorderControl
+				label={ __( 'Line above the total row', 'sgs-blocks' ) }
+				value={ attributes.sgsTotalDivider }
+				onChange={ ( next ) => setAttributes( { sgsTotalDivider: next } ) }
+			/>
+		</PanelBody>
+	);
+}
+
+/**
+ * The two columns: sidebar width (wide layout only) and the gap between form and sidebar.
+ *
+ * @param {Object} props Block attributes and setter.
+ * @return {JSX.Element} The panel.
+ */
+export function ColumnsPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Columns', 'sgs-blocks' ) } initialOpen={ false }>
+			<ResponsiveLengthControl
+				scale="spacing"
+				label={ __( 'Summary column width', 'sgs-blocks' ) }
+				help={ __( 'Applies while WooCommerce shows the summary beside the form; the form takes the rest. Leave empty for 360px.', 'sgs-blocks' ) }
+				value={ attributes.sgsSidebarWidth }
+				units={ LENGTH_UNITS }
+				onChange={ ( next ) => setAttributes( { sgsSidebarWidth: next } ) }
+			/>
+			<ResponsiveLengthControl
+				scale="spacing"
+				label={ __( 'Gap between the columns', 'sgs-blocks' ) }
+				value={ attributes.sgsColumnGap }
+				units={ LENGTH_UNITS }
+				onChange={ ( next ) => setAttributes( { sgsColumnGap: next } ) }
+			/>
 		</PanelBody>
 	);
 }
