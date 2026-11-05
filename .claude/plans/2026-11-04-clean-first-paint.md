@@ -47,10 +47,8 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - A PHP restructure into `<details>` is a later option. It ships only behind a structural check that leaves WooCommerce's markup untouched when its shape differs, plus a test against the installed WooCommerce version.
 - FAQ: read the accordion script first, then put its final structure into `render.php`.
 
-**G. No late stylesheets (P2).**
-- For `defer_non_critical_css`: for each deferred sheet, either move the rules any above-the-fold block needs into that block's own blocking stylesheet, or stop deferring the sheet. Deferring is kept only for a sheet that holds no above-the-fold rules.
-- Move `wc-blocks-style` and `sgs-toast` into `<head>`, by enqueuing them before `wp_head` on pages that use them.
-- The F-lite late-CSS check enforces this.
+**G. No late stylesheets (P2).** Built. `sgs-core-blocks`, `sgs-utilities`, `sgs-extensions` and `sgs-dark-mode` each hold first-viewport rules (navigation, buttons, logo tiles, spacing and media utilities, image controls, the `[data-theme]` dark scope) so none is deferred and `defer_non_critical_css` is gone; dark mode switches by attribute as well as media, so a media attribute would be wrong.
+- `wc-blocks-style` was enqueued by WooCommerce from a priority-10 `wp_head` callback (styles print at 8), so `functions.php::enqueue_woocommerce_blocks_style_early` enqueues it on `wp_enqueue_scripts`; `Sgs_Toast::request()` enqueues `sgs-toast` while the template renders. The allowlist holds only two third-party payment-plugin sheets on the product page.
 
 **A. Stable scope classes (P1).** The minted suffix becomes the hash of the CSS rules it scopes, `md5( prefix | rule text )`, built with a placeholder and then substituted. There are no counters, so render order, double renders, editor and REST renders all give the same class for the same rules. Identical blocks share one class and one rule, which also shrinks the collected file.
 - Superseded collected files stay on disk for the page-cache lifetime, so cached HTML never points at a missing file. A deploy that changes rules changes the name once, as expected.

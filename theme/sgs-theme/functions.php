@@ -425,7 +425,7 @@ function enqueue_styles(): void {
 		asset_version( 'assets/css/core-blocks-critical.css', $theme_version )
 	);
 
-	// Non-critical block styles — deferred via defer_non_critical_css() below.
+	// Block styles: render-blocking in <head> like every other sheet, so no rule applies after first paint.
 	wp_enqueue_style(
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
@@ -659,31 +659,21 @@ function enqueue_global_layout_fixes(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes' );
 
 /**
- * Defer non-critical stylesheets to reduce render-blocking resources.
+ * Print WooCommerce's block stylesheet in <head>.
  *
- * Converts selected <link rel="stylesheet"> tags to use the
- * media="print" onload="this.media='all'" pattern so they load
- * asynchronously without blocking first paint.
- *
- * @param string $tag    The HTML <link> tag for the stylesheet.
- * @param string $handle The stylesheet handle registered via wp_enqueue_style().
- * @return string Possibly-rewritten tag with deferred media swap.
+ * WooCommerce enqueues `wc-blocks-style` for its block notices from a `wp_head`
+ * callback at priority 10. Styles print on `wp_head` at priority 8, so that late
+ * enqueue lands in the footer and its rules apply after first paint. Enqueuing it
+ * on `wp_enqueue_scripts` prints it in <head>; WooCommerce's later call is then a no-op.
  */
-function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = array( 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions' );
-
-	if ( in_array( $handle, $deferred, true ) ) {
-		// Replace media="all" with media="print" and add onload swap.
-		$tag = str_replace(
-			"media='all'",
-			"media='print' onload=\"this.media='all'\"",
-			$tag
-		);
+function enqueue_woocommerce_blocks_style_early(): void {
+	if ( ! wp_style_is( 'wc-blocks-style', 'registered' ) ) {
+		return;
 	}
 
-	return $tag;
+	wp_enqueue_style( 'wc-blocks-style' );
 }
-add_filter( 'style_loader_tag', __NAMESPACE__ . '\defer_non_critical_css', 10, 2 );
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_woocommerce_blocks_style_early', 20 );
 
 /**
  * Output meta description from post excerpt or custom field.

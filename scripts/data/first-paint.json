@@ -36,7 +36,20 @@
       ]
     }
   },
-  "lateCssAllowlist": [],
+  "lateCssAllowlist": [
+    {
+      "site": "eye-care-test",
+      "page": "/product/gucci-oversized-cat-eye/",
+      "handle": "wc-stripe-upe-classic-css",
+      "reason": "Third-party payment plugin stylesheet for the express-payment buttons, enqueued by that plugin in wp_footer; it styles only its own lazily mounted payment element, which is below the first viewport."
+    },
+    {
+      "site": "eye-care-test",
+      "page": "/product/gucci-oversized-cat-eye/",
+      "handle": "stripelink_styles-css",
+      "reason": "Third-party payment plugin stylesheet for the express-payment buttons, enqueued by that plugin in wp_footer; it styles only its own lazily mounted payment element, which is below the first viewport."
+    }
+  ],
   "baseline": {
     "eye-care-test": {
       "/@375": 0.183,

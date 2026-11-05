@@ -1,9 +1,8 @@
 /**
  * SGS Theme — Core Block Non-Critical Styles
  *
- * Below-the-fold and interaction-based styles deferred until after first paint.
- * Loaded asynchronously via the defer_non_critical_css filter in functions.php
- * using the media="print" onload="this.media='all'" pattern.
+ * Navigation, button, social, footer and interaction styles.
+ * Loaded render-blocking in <head> from functions.php::enqueue_styles.
  *
  * Above-the-fold critical styles (header, logo, nav base, hero buttons) are in
  * core-blocks-critical.css, which loads synchronously.
