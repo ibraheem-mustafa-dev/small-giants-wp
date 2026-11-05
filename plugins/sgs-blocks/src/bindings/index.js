@@ -203,3 +203,4 @@ registerBlockBindingsSource( {
 } );
 
 import './product-field';
+import './order';
