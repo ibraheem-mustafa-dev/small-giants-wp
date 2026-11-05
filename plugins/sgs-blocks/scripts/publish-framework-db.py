@@ -15,6 +15,11 @@ Sessions no longer queue behind one long shared reseed. The flow is compare-and-
                Restores consistency/attr-role-map.json, consistency/roster.json and dbschema/seed-history.json from HEAD
                (so the rebase never merges them) and rebuilds each from the published shared DB.
 
+Every publish is logged in <shared>.publish.log (JSON lines: who, which tree, sha before and after). `begin`, `publish` and
+`status` compare the shared DB's sha256 with the last one the log knows; a different sha means something wrote the file
+outside `publish`, and the log records that write once with the file's modification time, so a later overwrite can be
+traced to the minute it happened.
+
 Exit codes: 0 done, 2 refused (bad input, corrupt copy, shared DB open in WAL mode), 3 the shared DB changed (reseed again).
 `--self-test` is `python -m pytest plugins/sgs-blocks/scripts/tests/test_publish_framework_db.py`.
 """
@@ -129,6 +134,58 @@ class PublishLock:
             self.held = False
 
 
+def log_path(shared: Path) -> Path:
+    return shared.with_name(shared.name + ".publish.log")
+
+
+def record_event(shared: Path, event: str, **fields: object) -> None:
+    entry = {
+        "at": time.time(), "event": event, "pid": os.getpid(), "tree": str(REPO_ROOT),
+        "user": os.environ.get("USERNAME") or os.environ.get("USER") or "", **fields,
+    }
+    with log_path(shared).open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry) + "\n")
+
+
+def logged_events(shared: Path) -> list[dict]:
+    try:
+        lines = log_path(shared).read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return []
+    events = []
+    for line in lines:
+        try:
+            events.append(json.loads(line))
+        except ValueError:
+            continue
+    return events
+
+
+def known_sha(shared: Path) -> str | None:
+    """The sha256 the log last saw the shared DB with: a publish's result, an outside write seen, or the first sighting."""
+    for entry in reversed(logged_events(shared)):
+        if entry.get("event") == "publish":
+            return entry.get("sha_after")
+        if entry.get("event") in ("outside-write", "baseline"):
+            return entry.get("sha")
+    return None
+
+
+def note_outside_write(shared: Path, current: str) -> str | None:
+    """Compare `current` with the last sha the log knows. A difference means the file was written outside `publish`: the
+    write is logged once (with the file's modification time) and a sentence is returned for the caller to print."""
+    known = known_sha(shared)
+    if known is None:
+        record_event(shared, "baseline", sha=current)
+        return None
+    if known == current:
+        return None
+    written = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(shared.stat().st_mtime))
+    record_event(shared, "outside-write", sha=current, previous=known, mtime=shared.stat().st_mtime)
+    return (f"the shared DB ({current[:12]}) was written outside publish-framework-db.py: it was last published or seen as "
+            f"{known[:12]}, and the file was modified {written}. Match that time against the other sessions' reseeds and deploys.")
+
+
 def snapshot(source: Path, dest: Path) -> None:
     """Consistent copy of `source` at `dest` through SQLite's backup API (safe while another process has it open)."""
     if dest.resolve() == source.resolve():
@@ -153,12 +210,13 @@ def begin(copy: Path, shared: Path) -> dict:
         raise PublishRefused(f"--copy is the shared DB itself ({shared}); name a different file, and leave SGS_FRAMEWORK_DB unset for begin and publish")
     with PublishLock(shared):
         before = sha256_of(shared)
+        warning = note_outside_write(shared, before)
         snapshot(shared, copy)
         if sha256_of(shared) != before:
             raise PublishRefused("the shared DB changed while the copy was taken (a reseed is writing it directly); retry")
     record = {"shared": str(shared), "sha256": before, "taken_at": time.time()}
     base_file(copy).write_text(json.dumps(record, indent=2), encoding="utf-8")
-    return record
+    return {**record, "warning": warning}
 
 
 def check_copy(copy: Path) -> None:
@@ -209,6 +267,7 @@ def publish(copy: Path, shared: Path) -> dict:
     staged = shared.with_name(shared.name + ".publishing")
     with PublishLock(shared):
         current = sha256_of(shared)
+        warning = note_outside_write(shared, current)
         if current != base["sha256"]:
             raise SharedChanged(f"shared DB is {current[:12]}, the copy started from {base['sha256'][:12]}")
         refuse_if_shared_in_use(shared)
@@ -228,8 +287,25 @@ def publish(copy: Path, shared: Path) -> dict:
             except OSError:
                 pass  # the new DB is already live; an empty sidecar is rebuilt by SQLite
         published = sha256_of(shared)
+        record_event(shared, "publish", sha_before=current, sha_after=published, copy=str(copy))
     marker.write_text(json.dumps({**base, "published_sha256": published, "published_at": time.time()}, indent=2), encoding="utf-8")
-    return {"sha256": published}
+    return {"sha256": published, "warning": warning}
+
+
+def status(shared: Path) -> list[str]:
+    """The last log entries and whether the shared DB still matches the last sha the log knows."""
+    if not shared.is_file():
+        raise PublishRefused(f"shared framework DB not found: {shared}")
+    lines = []
+    with PublishLock(shared):
+        current = sha256_of(shared)
+        warning = note_outside_write(shared, current)
+    for entry in logged_events(shared)[-5:]:
+        when = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime(entry.get("at", 0)))
+        detail = entry.get("sha_after") or entry.get("sha") or ""
+        lines.append(f"{when}  {entry.get('event'):13} {str(detail)[:12]}  {entry.get('user', '')}  {entry.get('tree', '')}")
+    lines.append(f"shared DB now {current[:12]}" + (f"\nWARNING: {warning}" if warning else ", matching the log"))
+    return lines
 
 
 def regenerate(restore_first: bool) -> None:
@@ -255,6 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     for name in ("begin", "publish"):
         step = sub.add_parser(name)
         step.add_argument("--copy", type=Path, required=True)
+    sub.add_parser("status")
     regen = sub.add_parser("regenerate")
     regen.add_argument("--restore-first", action="store_true", help="git checkout HEAD -- the three generated files first")
     args = parser.parse_args(argv)
@@ -263,9 +340,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "begin":
             record = begin(args.copy, shared)
             print(f"[begin] copy {args.copy} taken from {shared} (sha256 {record['sha256'][:12]})")
+            if record["warning"]:
+                print(f"[begin] WARNING: {record['warning']}", file=sys.stderr)
         elif args.command == "publish":
             result = publish(args.copy, shared)
             print(f"[publish] shared DB replaced (sha256 {result['sha256'][:12]}). Next: git pull --rebase, then `regenerate --restore-first`.")
+            if result["warning"]:
+                print(f"[publish] WARNING: {result['warning']}", file=sys.stderr)
+        elif args.command == "status":
+            print("\n".join(status(shared)))
         else:
             regenerate(args.restore_first)
             print("[regenerate] attr-role-map.json, roster.json and seed-history.json rebuilt from the shared DB")

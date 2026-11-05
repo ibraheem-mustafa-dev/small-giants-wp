@@ -358,3 +358,33 @@ Causes were proven from source and saved settings by three read-only investigato
 | R6-09 | consent `boxSize` and `boxMargin` on careers (151) | framework + site |
 | R6-10 | post-grid `filterPadding` on 508 | framework + site |
 | R6-11 | drawer close X as an 18px-arm custom icon (203); social glyph sizes via `childIconSize` (201, 203, 205); the rest from the measuring pass | site |
+
+## Round 6 outcomes (2026-11-04, on local-indus; indus-test after the push)
+
+Framework (main through f05693824, deployed to indus-test with Mama's tracks in one combined reseed and deploy): media `displayWidth` and drawn-width sizes; post-grid image fill, part spacing and filter padding; mega-panel drawer number weight and card link colours; form-field-tiles tile settings; form `actionsAlignItems`, textarea `counterReserve`, consent `boxSize`/`boxMargin`; timeline `panelTravelEnd` and part spacing; process-steps `numberSize` and `stepRowGap`. Follow-up fix 33fca17a0: the end-of-strip travel is measured in layout coordinates (the scrollWidth version left the last card 548px right of the start against the draft's 264), and the drawer card-link and circle selectors match a slot that is the button itself.
+
+Site, measured against the draft at 375/768/1440:
+
+| Id | Outcome |
+|---|---|
+| R6-02 | five of six mega photos now fetch 252-300px files (were 1600px); sectors-24 fetches its 683px file because the attachment has no size between 300 and 683 |
+| R6-03 | blog and Keep reading card padding and part spacing match through settings; the flex column, full-width read-more row and image fill stay in Custom CSS (R7-01) |
+| R6-04 | end-of-strip travel set on 92 and 95; exact end position verified after 33fca17a0 deploys |
+| R6-05 | drawer link numbers weight 500 on About, Brands, Trade; Sectors has no mega-panel block |
+| R6-06 | tiles (149) Custom CSS removed; timeline spacing moved to settings, the 375 content padding rule restored in Custom CSS (R7-03); drawer buttons moved to tier settings with the minimum Custom CSS kept (R7-02); Sectors keeps its corner position in Custom CSS (Bean: one-client look) |
+| R6-07 | Back 54 vs 52 (line-height 1.5 vs normal; R7-04) |
+| R6-08 | textarea padding 30/18/14 matches; counter 5px higher |
+| R6-09 | consent row 21px, box 18px |
+| R6-10 | filter chips 50/128/89/86 wide, as the draft |
+| R6-11 | close X 2.5px, 18px arms; WhatsApp label 15px/600; footer "Visit us" 18px; heritage badge 56px; brand tile shadow; food-service crop centred at 375. The testimonial avatar ring and the footer's "Placeholder photograph" credit are draft placeholders, not cloned (D-30, D-31) |
+
+## Round 7 starting list
+
+| Id | Where | Gap | Kind |
+|---|---|---|---|
+| R7-01 | post-grid cards | no setting for a flex-column card content with the read-more pinned to the bottom as a full-width row, and the read-more arrow is a hard-coded glyph (`class-post-grid-rest.php`), not an icon setting | framework |
+| R7-02 | button in the drawer | `borderWidth` has no per-device tiers; no `align-self` setting | framework |
+| R7-03 | timeline at 375 | the mobile-carousel stylesheet rule (class repeated five times) beats the content padding setting's left and right sides | framework: let the carousel reset yield to a set padding |
+| R7-04 | apply Back button | 54 vs 52: form button line-height 1.5 vs the draft's normal | site or framework (check `navButtonLineHeight` accepts normal) |
+| R7-05 | heritage section | 14px taller at 375 and 768, 9px shorter at 1440, outside the steps block | investigate |
+| R7-06 | blog row 2 | one read-more sits at 1598 vs the draft's 1649 | investigate |

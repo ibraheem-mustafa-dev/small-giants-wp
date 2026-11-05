@@ -88,7 +88,7 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 	css += `${ aside } > :nth-child(3){grid-column:1;grid-row:2;margin:0;padding-block-start:${ pad };padding-inline-start:${ pad };}`;
 	css += `${ aside } > :nth-child(4){grid-column:1;grid-row:3;margin:4px 0 0;padding-block-end:${ pad };padding-inline-start:${ pad };}`;
 	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:${ pad };}`;
-	css += `${ aside } > :nth-child(5) .sgs-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}`;
+	css += `${ aside } > :nth-child(5).sgs-button,${ aside } > :nth-child(5) .sgs-button{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}`;
 	css += `${ aside } > :nth-child(5) .sgs-button__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}`;
 	const tagPad = padBox( v.drawerCardTagPadding );
 	const tagRadius = v.drawerCardTagRadius && SAFE_LENGTH_RE.test( v.drawerCardTagRadius ) ? `border-radius:${ v.drawerCardTagRadius };` : '';
@@ -118,7 +118,7 @@ export function drawerCardLinkPreviewCss( aside, v ) {
 	const paint = ( bg ? `background-color:${ bg };` : '' ) + ( colour ? `color:${ colour };` : '' );
 	let css = '';
 	if ( paint ) {
-		css += `${ aside } > :nth-child(5):not(.wp-block-sgs-container) .sgs-button,${ aside } > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(4) .sgs-button{${ paint }}`;
+		css += `${ aside } .sgs-button{${ paint }}`;
 	}
 	return css;
 }

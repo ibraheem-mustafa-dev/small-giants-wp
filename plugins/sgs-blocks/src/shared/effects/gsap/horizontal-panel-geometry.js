@@ -60,9 +60,14 @@ export function layoutPanels( track ) {
  * part of the last panel off-screen, so the row always travels at least far enough to bring the last panel's right
  * edge to the host's right edge.
  *
- * TRACK-END MODE (`travelEnd` is `track-end`): the row travels until its own end, trailing padding included, sits at the
- * host's right edge: `track.scrollWidth - el.clientWidth`, floored at 0. The transform does not change `scrollWidth`, so
- * the value stays correct when GSAP re-measures on refresh. The first-to-last rule above applies in `first-start` mode.
+ * TRACK-END MODE (`travelEnd` is `track-end`): the row travels until the LAST panel's right edge sits as far in from
+ * the host's right edge as the FIRST panel's left edge sat in from the host's left edge before any travel, so the strip
+ * ends with the same margin it starts with wherever that margin lives (track padding, host padding or a content band).
+ * Both edges are measured in page layout coordinates (`layoutLeft`), because the panels' offsetParent is usually the
+ * row itself, not the host. It can travel less than the first-to-last distance (a wide last panel ends with its right
+ * edge in from the host's edge, not its left edge at the start position), and never less than it takes to bring the
+ * last panel's right edge onto the host.
+ * Layout boxes ignore the GSAP transform, so the value stays correct when GSAP re-measures on refresh.
  *
  * @param {HTMLElement} el        The pinned panel container.
  * @param {HTMLElement} track     The row.
@@ -72,9 +77,6 @@ export function layoutPanels( track ) {
  *                  scroll-snap fallback as the only behaviour.
  */
 export function travelDistance( el, track, travelEnd = 'first-start' ) {
-	if ( 'track-end' === travelEnd ) {
-		return Math.max( 0, track.scrollWidth - el.clientWidth );
-	}
 	const panels = layoutPanels( track );
 	if ( panels.length < 2 ) {
 		return 0;
@@ -86,5 +88,26 @@ export function travelDistance( el, track, travelEnd = 'first-start' ) {
 	}
 	const ideal = last.offsetLeft - first.offsetLeft;
 	const flushRight = last.offsetLeft + last.offsetWidth - el.clientWidth;
+	if ( 'track-end' === travelEnd ) {
+		const hostLeft = layoutLeft( el );
+		const startInset = layoutLeft( first ) - hostLeft;
+		const lastRight = layoutLeft( last ) - hostLeft + last.offsetWidth;
+		return Math.max( 0, lastRight - ( el.clientWidth - Math.max( 0, startInset ) ) );
+	}
 	return Math.max( 0, ideal, flushRight );
+}
+
+/**
+ * An element's left edge in page layout coordinates: the sum of `offsetLeft` (plus each offsetParent's left border)
+ * up the offsetParent chain. Layout boxes ignore transforms, so the GSAP translation on the track never shifts it.
+ *
+ * @param {HTMLElement} node The element.
+ * @return {number} Pixels.
+ */
+function layoutLeft( node ) {
+	let x = 0;
+	for ( let n = node; n; n = n.offsetParent ) {
+		x += n.offsetLeft + ( n.offsetParent ? n.offsetParent.clientLeft : 0 );
+	}
+	return x;
 }

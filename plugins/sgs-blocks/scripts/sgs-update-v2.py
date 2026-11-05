@@ -7491,6 +7491,39 @@ def stage_13_export_db_to_csv(dry_run: bool = False, self_test: bool = False) ->
 # Main dispatcher
 # ---------------------------------------------------------------------------
 
+_IDENTITY_DERIVATION: dict = {}
+
+
+def _start_identity_derivation(conn: sqlite3.Connection) -> None:
+    """Stage 14's code read only reads source files, and its database inputs (roles, enums, effects, allowed blocks) are
+    final once Stage 11 is done and Stage 12 only reports. So the inputs are loaded here, on this connection, and the read
+    runs in a worker thread during Stage 12; Stage 14 collects it and does the write. Any failure is held and raised by
+    Stage 14, where the same read would have raised."""
+    from concurrent.futures import ThreadPoolExecutor  # noqa: PLC0415
+
+    if not conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='block_identity_facts'").fetchone():
+        return
+    lib = Path(__file__).resolve().parent / "lib"
+    if str(lib) not in sys.path:
+        sys.path.insert(0, str(lib))
+    from block_identity_facts import derive_from  # noqa: PLC0415
+    from identity_markup import load_db_inputs  # noqa: PLC0415
+
+    pool = ThreadPoolExecutor(max_workers=1)
+    _IDENTITY_DERIVATION.update(pool=pool, future=pool.submit(derive_from, load_db_inputs(conn)))
+
+
+def _collect_identity_derivation() -> tuple | None:
+    """The finished early code read, or None when none was started. Raises what the read raised."""
+    pool, future = _IDENTITY_DERIVATION.pop("pool", None), _IDENTITY_DERIVATION.pop("future", None)
+    if future is None:
+        return None
+    try:
+        return future.result()
+    finally:
+        pool.shutdown(wait=True)
+
+
 def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
     """Replace the rows of block_identity_facts: source='code' from a fresh derivation from the block, helper, filter and
     view-script code, source='live' from scripts/computed-route/data/block-live-facts.json (step A2b's live read; a value
@@ -7502,7 +7535,7 @@ def stage_14_block_identity_facts(conn: sqlite3.Connection, dry_run: bool = Fals
     if str(lib) not in sys.path:
         sys.path.insert(0, str(lib))
     from block_identity_facts import seed  # noqa: PLC0415
-    result = seed(conn, dry_run=dry_run)
+    result = seed(conn, dry_run=dry_run, derived=_collect_identity_derivation())
     print(f"Stage 14: {result['rows']} rows over {result['blocks']} blocks{' (dry run: nothing written)' if dry_run else ''}")
     for key, n in result["by_fact_state"].items():
         print(f"  {key:28} {n}")
@@ -7749,6 +7782,8 @@ def main() -> None:
             print(f"Unknown stage: {stage_num}. Valid: 1-14.")
             continue
         stage_began = time.perf_counter()
+        if stage_num == 12 and 14 in stages_to_run and not args.dry_run:
+            _start_identity_derivation(conn)
         results[stage_num] = dispatch[stage_num]()
         stage_seconds[stage_num] = time.perf_counter() - stage_began
         # Stage 1 reclassifies block_attributes.role from the auto-classifier, which overwrites the
