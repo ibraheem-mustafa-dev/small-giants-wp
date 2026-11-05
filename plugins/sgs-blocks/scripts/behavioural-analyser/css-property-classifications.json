@@ -2349,6 +2349,78 @@
     },
     {
       "slug": "sgs/breadcrumbs",
+      "attr": "currentFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
+      "attr": "currentTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "current",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/breadcrumbs",
       "attr": "flexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -2845,6 +2917,14 @@
       "attr": "writingMode",
       "fields": {
         "css_property": "writing-mode"
+      }
+    },
+    {
+      "slug": "sgs/button",
+      "attr": "alignSelf",
+      "fields": {
+        "css_property": "align-self",
+        "css_element": "wrapper"
       }
     },
     {
@@ -9638,6 +9718,22 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fileLabelBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "file-zone-box"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "file-zone-box"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "filePromptFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -10698,6 +10794,129 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "optionalFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "optional-tag",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -10756,6 +10975,14 @@
       "fields": {
         "css_property": "height",
         "css_element": "progress-track"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "requiredMarkGap",
+      "fields": {
+        "css_property": "margin-inline-start",
+        "css_element": "required-mark"
       }
     },
     {
@@ -30718,22 +30945,6 @@
     },
     {
       "slug": "sgs/timeline",
-      "attr": "contentMargin",
-      "fields": {
-        "css_property": "margin",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "contentPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "content"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
       "attr": "counterFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -30838,14 +31049,6 @@
     },
     {
       "slug": "sgs/timeline",
-      "attr": "dateMargin",
-      "fields": {
-        "css_property": "margin",
-        "css_element": "date"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
       "attr": "dateTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -30910,14 +31113,6 @@
       "fields": {
         "css_property": "text-decoration-thickness-link",
         "css_element": "entry"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "descriptionMargin",
-      "fields": {
-        "css_property": "margin",
-        "css_element": "description-text"
       }
     },
     {
@@ -36206,6 +36401,73 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fileIconBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "file-zone-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileIconBoxSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "file-zone-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "file-zone-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileIconRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "file-zone-icon"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileIconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "file-zone-icon-drawing"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "file-zone-box"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "file-zone-box"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fileLabelPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "file-zone-box"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "gridTemplateColumns",
       "fields": {
         "css_property": "grid-template-columns",
@@ -36220,6 +36482,15 @@
         "css_property": "color",
         "role": "color",
         "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "optionalColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "optional-tag"
       }
     },
     {
@@ -37277,6 +37548,14 @@
       "attr": "editButtonLineHeight",
       "fields": {
         "css_property": "line-height",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonMinHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_element": "edit-button"
       }
     },
@@ -43070,6 +43349,14 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "readMorePin",
+      "fields": {
+        "css_property": "align-self",
+        "css_element": "read-more"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -45858,6 +46145,22 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "contentMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "contentPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "content"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "counterColour",
       "fields": {
         "css_property": "color",
@@ -45884,6 +46187,14 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "dateMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "descriptionLinkColourGradient",
       "fields": {
         "css_property": "color-link-gradient",
@@ -45897,6 +46208,14 @@
         "css_property": "color-link-gradient",
         "css_element": "description",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "description-text"
       }
     },
     {
