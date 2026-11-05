@@ -6,6 +6,18 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 TARGET="${1:-}"
 
+# Refuse a missing or partial plugin build: rsync --delete would otherwise empty the site's build/ (a stopped
+# `npm run build` cleans build/ before it writes). Every src block needs its built block.json.
+check_build() {
+  local src built
+  src="$(find "$REPO/plugins/sgs-blocks/src/blocks" -mindepth 2 -maxdepth 2 -name block.json | wc -l)"
+  built="$(find "$REPO/plugins/sgs-blocks/build/blocks" -mindepth 2 -maxdepth 2 -name block.json 2>/dev/null | wc -l)"
+  if [ "$built" -eq 0 ] || [ "$built" -lt "$src" ]; then
+    echo "Refusing to sync: plugins/sgs-blocks/build has $built built blocks, src has $src. Build first, or copy a green build from ~/.cache/sgs-deploy/<key>/build." >&2
+    exit 1
+  fi
+}
+
 sync_site() {
   local site="$1" dir="/var/www/$1"
   [ -d "$dir/wp-content" ] || { echo "Missing $dir" >&2; exit 1; }
@@ -43,6 +55,10 @@ sync_site() {
   chown -R www-data:www-data "$dir/wp-content/plugins" "$dir/wp-content/themes" "$dir/wp-content/mu-plugins"
   sudo -u www-data wp --path="$dir" cache flush
 }
+
+case "$TARGET" in
+  local-eye-care|local-sandybrown|local-indus|local-mamas|all) check_build ;;
+esac
 
 case "$TARGET" in
   local-eye-care|local-sandybrown|local-indus|local-mamas) sync_site "$TARGET" ;;
