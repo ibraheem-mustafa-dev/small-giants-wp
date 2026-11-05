@@ -119,6 +119,8 @@ namespace {
 	$line = new WC_Order_Item_Product();
 	\SGS\Blocks\Flow_Fields_Cart::copy_to_order_line_item( $line, 'key', array( \SGS\Blocks\Flow_Fields_Cart::KEY => $bag ), new WC_Order() );
 	check( array( 'Flavour', 'Your prescription', 'Gift note', 'Wrapped' ) === array_column( $line->meta, 0 ), 'the order line keeps every answer, hidden ones included' );
+	$rows = \SGS\Blocks\Flow_Fields_Cart::get_item_data( array(), array( \SGS\Blocks\Flow_Fields_Cart::KEY => $bag ) );
+	check( array( 'Flavour', 'Gift note' ) === array_column( $rows, 'name' ), 'the bag, cart and checkout rows leave out the hidden answers' );
 
 	echo PHP_EOL, '==== ', ( 0 === $failures ? 'all passed' : "$failures failed" ), ' ====', PHP_EOL;
 	exit( 0 === $failures ? 0 : 1 );

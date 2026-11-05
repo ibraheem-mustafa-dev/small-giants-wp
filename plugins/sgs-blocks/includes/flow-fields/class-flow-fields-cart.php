@@ -73,6 +73,10 @@ final class Flow_Fields_Cart {
 	 */
 	public static function get_item_data( array $item_data, array $cart_item ): array {
 		foreach ( self::entries( $cart_item ) as $entry ) {
+			// A question set to "Show in the bag line: off" stays on the order line only.
+			if ( isset( $entry['bag_line'] ) && false === $entry['bag_line'] ) {
+				continue;
+			}
 			$item_data[] = array(
 				'name'  => $entry['label'],
 				'value' => $entry['value'],
