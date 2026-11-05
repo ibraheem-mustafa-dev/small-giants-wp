@@ -9,7 +9,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
 import { Toggle } from './extraControls';
 import { patchTier } from '../../utils';
@@ -56,7 +56,25 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 	};
 
 	return (
-		<PanelBody title={ __( 'Menu', 'sgs-blocks' ) } initialOpen>
+		<>
+		<ToolsPanel
+			label={ __( 'Menu', 'sgs-blocks' ) }
+			resetAll={ () =>
+				setAttributes( {
+					navLayout: undefined,
+					showMenuIcons: undefined,
+					navIcons: undefined,
+					menuActiveIndicatorWidth: undefined,
+					menuOrdersCount: undefined,
+				} )
+			}
+		>
+			<ToolsPanelItem
+				label={ __( 'Menu layout', 'sgs-blocks' ) }
+				hasValue={ () => !! navLayout && Object.keys( navLayout ).length > 0 }
+				onDeselect={ () => setAttributes( { navLayout: undefined } ) }
+				isShownByDefault
+			>
 			<ResponsiveControl label={ __( 'Menu layout', 'sgs-blocks' ) }>
 				{ ( breakpoint ) => (
 					<ToggleGroupControl
@@ -78,7 +96,13 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				) }
 			</ResponsiveControl>
+			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Active item bar width', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuActiveIndicatorWidth && Object.keys( attributes.menuActiveIndicatorWidth ).length > 0 }
+				onDeselect={ () => setAttributes( { menuActiveIndicatorWidth: undefined } ) }
+			>
 			<ResponsiveOverride
 				label={ __( 'Active item bar width', 'sgs-blocks' ) }
 				value={ attributes.menuActiveIndicatorWidth }
@@ -96,20 +120,39 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					/>
 				) }
 			</ResponsiveOverride>
+			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuOrdersCount }
+				onDeselect={ () => setAttributes( { menuOrdersCount: undefined } ) }
+			>
 			<Toggle
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				name="menuOrdersCount"
 				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
 			/>
+			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Show menu icons', 'sgs-blocks' ) }
+				hasValue={ () => undefined !== showMenuIcons }
+				onDeselect={ () => setAttributes( { showMenuIcons: undefined } ) }
+				isShownByDefault
+			>
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Show menu icons', 'sgs-blocks' ) }
 				checked={ ! isFalse( showMenuIcons ) }
 				onChange={ ( value ) => setAttributes( { showMenuIcons: value } ) }
 			/>
+			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Menu icons', 'sgs-blocks' ) }
+				hasValue={ () => !! navIcons && Object.keys( navIcons ).length > 0 }
+				onDeselect={ () => setAttributes( { navIcons: undefined } ) }
+			>
 			{ showMenuIcons !== false &&
 				Object.keys( DEFAULT_MENU_ICONS ).map( ( endpoint ) => (
 					<IconPicker
@@ -122,6 +165,8 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 						}
 					/>
 				) ) }
+			</ToolsPanelItem>
+		</ToolsPanel>
 
 			<PanelBody title={ __( 'Hide menu items', 'sgs-blocks' ) } initialOpen={ false }>
 				{ HIDEABLE_ENDPOINTS.map( ( { key, label } ) => (
@@ -134,7 +179,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					/>
 				) ) }
 			</PanelBody>
-		</PanelBody>
+		</>
 	);
 }
 
