@@ -369,6 +369,7 @@ const ATTR_ELEMENT_OVERRIDES = {
 	// sgs/account Round 9: each new setting paints one element the stylesheet's other rules are not.
 	'account::ordersRowPadding': [ 'orders-row' ],
 	'account::ordersEmptyPadding': [ 'orders-empty' ],
+	'account::ordersPillPadding': [ 'orders-pill' ],
 	'account::addressCardPadding': [ 'address-card' ],
 	'account::addressCardBorderRadius': [ 'address-card' ],
 	'account::loginButtonPadding': [ 'login-button' ],
