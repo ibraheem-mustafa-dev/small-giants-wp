@@ -225,8 +225,13 @@
 		},
 		"giftTileBorderWidth": {
 			"type": "object",
-			"default": {},
-			"description": "Choice tile border width as a box {top,right,bottom,left} or a tier object of boxes. Unset prints no border."
+			"default": {
+				"top": "2px",
+				"right": "2px",
+				"bottom": "2px",
+				"left": "2px"
+			},
+			"description": "Choice tile border width as a box {top,right,bottom,left} or a tier object of boxes. Default 2px on every side."
 		},
 		"giftTileBorderStyle": {
 			"type": "string",

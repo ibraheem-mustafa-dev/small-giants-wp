@@ -77,11 +77,11 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 		);
 
 		$css .= sgs_emit_responsive_css(
-			$tile,
+			$root,
 			array(
 				array(
 					'value'        => $attributes['giftTileMinHeight'] ?? null,
-					'css'          => 'min-height',
+					'css'          => '--sgs-gift-tile-min-height',
 					'unit_default' => 'px',
 				),
 			)

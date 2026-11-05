@@ -72,7 +72,7 @@ ok( str_contains( $gift, '.sgs-gift-order .sgs-gift-order__input,.sgs-gift-order
 
 ok( str_contains( $gift, 'box-shadow:4px 4px 0px 0px #3a2a22' ), 'gift: chosen tile shadow' );
 
-ok( str_contains( $gift, '.sgs-gift-order .sgs-gift-order__tile{min-height:76px;}' ) && str_contains( $gift, 'min-height:60px' ), 'gift: tile minimum height per device' );
+ok( str_contains( $gift, '--sgs-gift-tile-min-height:76px;' ) && str_contains( $gift, '--sgs-gift-tile-min-height:60px;' ), 'gift: tile minimum height per device' );
 ok( ! str_contains( sgs_gift_order_look_css( array() ), 'min-height' ), 'gift: tile height unset prints nothing' );
 
 // sgs/commerce-note.
