@@ -6457,6 +6457,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "itemDetailLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "item-details"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "itemNameFontSize",
       "fields": {
         "css_property": "font-size",
@@ -6468,6 +6476,14 @@
       "attr": "itemNameFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "item-name"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemNameLineHeight",
+      "fields": {
+        "css_property": "line-height",
         "css_element": "item-name"
       }
     },
