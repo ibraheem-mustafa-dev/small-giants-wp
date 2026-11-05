@@ -315,6 +315,9 @@ if ( ! empty( $base_style_engine_args ) ) {
 // lineHeight. Inherited across link/separator/current, same as before. ---
 $scoped_css[] = sgs_typography_css_rule( $attributes, '', $root_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
+// The current-page crumb's own typography (prefix 'current'): a value set here wins over the inherited root value.
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'current', "{$root_sel} .sgs-breadcrumbs__item--current", '', false, false, sgs_object_attr_keys( $block ) );
+
 // --- Responsive padding/margin tiers — box objects, hand-built shorthand,
 // scoped @media on the SAME root selector (contract §B/§B2: tablet
 // max-width:1023px, mobile max-width:767px). ---

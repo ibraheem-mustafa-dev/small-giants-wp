@@ -311,6 +311,15 @@ export default function Edit( { attributes, setAttributes } ) {
 						prefix=""
 					/>
 				</PanelBody>
+				{ /* The current-page crumb's own typography (prefix "current"); render.php scopes it to
+				   .sgs-breadcrumbs__item--current, so it wins over the root value the crumb inherits. */ }
+				<PanelBody title={ __( 'Current page typography', 'sgs-blocks' ) } initialOpen={ false }>
+					<TypographyControls fontSizePresets showFontFamily showDecoration showTransform showLetterSpacing
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="current"
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<nav { ...blockProps } aria-label={ __( 'Breadcrumbs', 'sgs-blocks' ) }>
@@ -358,7 +367,7 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ showCurrentCrumb !== false && ( <li
 						className="sgs-breadcrumbs__item sgs-breadcrumbs__item--current"
 						aria-current="page"
-						style={ { ...gapStyle, ...resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) } }
+						style={ { ...gapStyle, ...typographyPreviewStyle( attributes, 'current', tier ), ...resolveTextColourPreviewStyle( currentColour, currentColourGradient, colourVar ) } }
 					>
 						{ currentCrumbLabel || __( 'Current Page', 'sgs-blocks' ) }
 					</li> ) }

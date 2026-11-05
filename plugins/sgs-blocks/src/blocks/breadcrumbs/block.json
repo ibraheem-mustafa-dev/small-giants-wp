@@ -290,6 +290,52 @@
 			"default": "",
 			"description": "Hover-state gradient sibling of currentColourHover. Non-empty wins over currentColourHover on :hover/:focus-visible."
 		},
+		"currentFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"currentFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"currentFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"currentFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"currentLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"currentLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"currentFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"currentTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"currentTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"currentLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"currentLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"fontSize": {
 			"type": "object",
 			"default": {}
