@@ -1,0 +1,127 @@
+{
+ "bases": {
+  "sans-serif": {
+   "local": "Arial",
+   "unitsPerEm": 2048,
+   "ascender": 1854,
+   "descender": -434,
+   "lineGap": 67,
+   "avgWidth": 0.44146
+  },
+  "serif": {
+   "local": "Times New Roman",
+   "unitsPerEm": 2048,
+   "ascender": 1825,
+   "descender": -443,
+   "lineGap": 87,
+   "avgWidth": 0.40011
+  }
+ },
+ "fonts": {
+  "caveat/caveat-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 960,
+   "descender": -300,
+   "lineGap": 0,
+   "avgWidth": 0.33816
+  },
+  "dm-sans-v15-latin-regular.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 992,
+   "descender": -310,
+   "lineGap": 0,
+   "avgWidth": 0.46629
+  },
+  "dm-serif-display-v15-latin-regular.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1036,
+   "descender": -335,
+   "lineGap": 0,
+   "avgWidth": 0.44393
+  },
+  "fraunces/fraunces-variable-latin.woff2": {
+   "unitsPerEm": 2000,
+   "ascender": 1956,
+   "descender": -510,
+   "lineGap": 0,
+   "avgWidth": 0.51091
+  },
+  "geist-mono/geist-mono-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1005,
+   "descender": -295,
+   "lineGap": 0,
+   "avgWidth": 0.6
+  },
+  "inter-variable-latin.woff2": {
+   "unitsPerEm": 2048,
+   "ascender": 1984,
+   "descender": -494,
+   "lineGap": 0,
+   "avgWidth": 0.47395
+  },
+  "karla/karla-variable-latin.woff2": {
+   "unitsPerEm": 2000,
+   "ascender": 1834,
+   "descender": -504,
+   "lineGap": 0,
+   "avgWidth": 0.45733
+  },
+  "montserrat/montserrat-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 968,
+   "descender": -251,
+   "lineGap": 0,
+   "avgWidth": 0.48833
+  },
+  "montserrat-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 968,
+   "descender": -251,
+   "lineGap": 0,
+   "avgWidth": 0.48833
+  },
+  "outfit/outfit-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1000,
+   "descender": -260,
+   "lineGap": 0,
+   "avgWidth": 0.43679
+  },
+  "playfair-display/playfair-display-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1082,
+   "descender": -251,
+   "lineGap": 0,
+   "avgWidth": 0.44977
+  },
+  "roboto/roboto-variable-latin.woff2": {
+   "unitsPerEm": 2048,
+   "ascender": 1900,
+   "descender": -500,
+   "lineGap": 0,
+   "avgWidth": 0.44292
+  },
+  "source-sans-3/source-sans-3-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1024,
+   "descender": -400,
+   "lineGap": 0,
+   "avgWidth": 0.39681
+  },
+  "source-sans-3-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1024,
+   "descender": -400,
+   "lineGap": 0,
+   "avgWidth": 0.39681
+  },
+  "young-serif/young-serif-variable-latin.woff2": {
+   "unitsPerEm": 1000,
+   "ascender": 1046,
+   "descender": -366,
+   "lineGap": 0,
+   "avgWidth": 0.50339
+  }
+ }
+}

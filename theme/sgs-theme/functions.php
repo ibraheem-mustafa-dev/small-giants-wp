@@ -31,6 +31,7 @@ require_once __DIR__ . '/inc/shop-load-more-settings.php';
 require_once __DIR__ . '/inc/core-block-styles.php';
 require_once __DIR__ . '/inc/selection.php';
 require_once __DIR__ . '/inc/colour-roles.php';
+require_once __DIR__ . '/inc/font-fallback.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
@@ -351,32 +352,6 @@ function preload_hero_image(): void {
 }
 add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
 
-/**
- * Preload the active site's body font so first-paint text renders in the
- * branded family rather than falling back to the system stack.
- */
-function preload_fonts(): void {
-	/*
-	 * Preload the body font for the active site. The WP-style-variation
-	 * overlay was removed 2026-05-22 (Phase 5a Decision 18); per-site
-	 * branding now lives in the site's single theme.json snapshot. Sites
-	 * that use non-Inter heading fonts (e.g. Montserrat,
-	 * Fraunces) should register their own preload via
-	 * sites/<client>/theme-snapshot.json's customTemplates/typography
-	 * settings — this base preload covers the body font only.
-	 */
-	$fonts = array(
-		'inter-variable-latin.woff2',
-	);
-
-	foreach ( $fonts as $font ) {
-		printf(
-			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-			esc_url( get_theme_file_uri( 'assets/fonts/' . $font ) )
-		);
-	}
-}
-add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
  * Cache-busting version for a theme asset.

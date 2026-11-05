@@ -79,7 +79,7 @@ function preload_hero_image(): void {
  * Preload critical font files to prevent FOUT.
  *
  * NOTE: This file is NOT currently required by functions.php — the live
- * preload_fonts() implementation is defined directly in functions.php.
+ * font preloads are printed by inc/font-fallback.php::preload_first_paint_fonts().
  * The WP style-variation overlay system was removed 2026-05-22 (Phase 5a
  * Decision 18); per-site branding now ships through a single per-site
  * theme.json snapshot at sites/<client>/theme-snapshot.json.

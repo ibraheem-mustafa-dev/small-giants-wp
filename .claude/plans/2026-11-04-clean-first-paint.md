@@ -64,7 +64,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - CSS keeps `height: auto`.
 - These are HTML attributes, so Spec 32 is unaffected.
 
-**E. Font swap (P7, last).** First a size-matched fallback face (`size-adjust` and the ascent and descent overrides) for the body and heading fonts. Then preload at most the one file the `h1` paints with; the body font is already preloaded. Do not preload more, so the hero image keeps its priority.
+**E. Font swap (P7, last). Built.** `plugins/sgs-blocks/scripts/compute-font-fallback-metrics.py` reads unitsPerEm, hhea ascender, descender, lineGap and a frequency-weighted average advance from every woff2 under `theme/sgs-theme/assets/fonts/` (and from Arial / Times New Roman as the local stand-ins) into `assets/fonts/fallback-metrics.json`; `inc/font-fallback.php` prints a `<Family> Fallback` `@font-face` (`src: local()`, `size-adjust`, ascent, descent and line-gap overrides) per theme.json family and inserts the name right after the web font in the stack. Preloads come from the active global styles: the h1's font file and the body font file (one file when they match), replacing the hard-coded Inter preload. A box sized in `ch` (the hero h1 has `max-width: 15ch`) follows the font's zero glyph, so its box width cannot be matched by `size-adjust` without distorting text widths; text widths and line breaks match within 1%.
 
 **Rule for future blocks.** One line in `.claude/rules/` (block authoring):
 - a block's server HTML plus CSS is its final first-paint layout and look, and JS only adds behaviour
