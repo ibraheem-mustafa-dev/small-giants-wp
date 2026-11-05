@@ -4,9 +4,9 @@
  * Data flow:
  *   1. render.php SSRs count = 0 and (in flyout/drawer mode) a loading-only
  *      panel skeleton (cache-safe).
- *   2. On DOMContentLoaded this module fetches the live cart from the
- *      WooCommerce Store API (`store-api.js`) and hydrates the badge on
- *      every `.sgs-cart` instance on the page.
+ *   2. On DOMContentLoaded this module takes the live cart from the page-wide
+ *      cart reader (`shared/cart-live`, which asks the WooCommerce Store API)
+ *      and hydrates the badge on every `.sgs-cart` instance on the page.
  *   3. `flyout` mode wires a local disclosure toggle (`flyout.js` — FR-36-10
  *      DISCLOSURE: no trap, page stays usable). `drawer` mode imports the
  *      SHARED `store('sgs/nav')` (registers the same dialog/DIALOG plumbing
@@ -16,8 +16,8 @@
  *      render the live item list/qty/remove/subtotal — never a redirect.
  *   5. On every `wc-blocks_added_to_cart` / `added_to_cart` /
  *      `wc-blocks_removed_from_cart` document event (fired elsewhere on the
- *      page, e.g. by `sgs/product-card`'s Store API add-to-cart), every
- *      badge refreshes and — flyout mode only, `autoOpenOnAdd` — the panel
+ *      page, e.g. by `sgs/product-card`'s Store API add-to-cart), the cart
+ *      reader refetches and every badge refreshes and — flyout mode only, `autoOpenOnAdd` — the panel
  *      opens (dismissible via its existing close affordances).
  *
  * Drawer mode is deliberately EXCLUDED from auto-open-on-add: `showModal()`
@@ -36,13 +36,15 @@
  *   HOWEVER that store's shape is an internal implementation detail
  *   (no stable public docs as of WC 10.4) and subscribing to it directly
  *   would couple us to WC minor-version churn.
- *   DECISION: use the Store API fetch as the canonical source of truth.
+ *   DECISION: the Store API is the canonical source of truth; the page-wide reader
+ *   (`shared/cart-live`) reads the `wc/store/cart` data store only for the badge count
+ *   where the page already holds it, never for the panel rows.
  *
  * @package
  */
 
 import '../../shared/nav-interactivity/store';
-import { fetchCart } from './store-api';
+import { onCartChange } from '../../shared/cart-live';
 import { initPanel } from './panel-render';
 import { initFlyout } from './flyout';
 import { maybeAnimateCountPop } from './count-pop';
@@ -136,8 +138,7 @@ function initWidgetPanel( widget ) {
 			return null;
 		}
 		const panel = initPanel( panelRoot, {
-			onCartUpdated: updateCartWidgets,
-			freeDelivery,
+				freeDelivery,
 		} );
 		flyout.setOnOpen( panel.refresh );
 		return {
@@ -149,7 +150,6 @@ function initWidgetPanel( widget ) {
 	}
 
 	const panel = initPanel( panelRoot, {
-		onCartUpdated: updateCartWidgets,
 		freeDelivery,
 	} );
 
@@ -168,40 +168,11 @@ function initWidgetPanel( widget ) {
 }
 
 /**
- * Fetch the cart once and push it to every badge + open panel on the page.
- *
- * @param {Array<{mode:string,open?:Function,refresh?:Function,autoOpenOnAdd:boolean}>} panels
- *                                                                                                           The per-widget panel handles from `initWidgetPanel`.
- * @param {Object}                                                                      [opts]               Options.
- * @param {boolean}                                                                     [opts.allowAutoOpen] Whether this refresh may trigger
- *                                                                                                           auto-open-on-add (false on initial load).
- */
-async function refreshAll( panels, { allowAutoOpen = false } = {} ) {
-	let cart;
-	try {
-		cart = await fetchCart();
-	} catch {
-		return;
-	}
-	updateCartWidgets( cart );
-
-	if ( ! allowAutoOpen ) {
-		return;
-	}
-	panels.forEach( ( panel ) => {
-		if ( panel.autoOpenOnAdd && 'function' === typeof panel.open ) {
-			panel.open();
-		} else if (
-			panel.autoOpenOnAdd &&
-			'function' === typeof panel.refresh
-		) {
-			panel.refresh();
-		}
-	} );
-}
-
-/**
  * Initialise every sgs/cart instance on the page.
+ *
+ * The page-wide cart reader (`shared/cart-live`) owns the reading: one load request, one refetch per WooCommerce
+ * add/remove event, and whatever the drawer publishes after its own read or mutation. Every change reaches the
+ * badges; an add event also opens (or refreshes) the panels that opted in, once the new reading arrives.
  */
 function init() {
 	const widgets = document.querySelectorAll( '.sgs-cart' );
@@ -213,18 +184,33 @@ function init() {
 		.map( initWidgetPanel )
 		.filter( Boolean );
 
-	// Initial hydration — replaces SSR "0" with the real count. Never
-	// auto-opens on first load (only on a genuine add-to-cart event).
-	refreshAll( panels, { allowAutoOpen: false } );
-
-	const onCartChanged = () => refreshAll( panels, { allowAutoOpen: true } );
-	document.addEventListener( 'wc-blocks_added_to_cart', onCartChanged );
+	// An add event arms the auto-open; the next reading consumes it. Initial load never auto-opens.
+	let openOnNextReading = false;
+	const onAdded = () => {
+		openOnNextReading = true;
+	};
 	// Tolerate jQuery `added_to_cart` if a 3rd-party plugin re-emits
 	// it as a native DOM CustomEvent.
-	document.addEventListener( 'added_to_cart', onCartChanged );
-	document.addEventListener( 'wc-blocks_removed_from_cart', () =>
-		refreshAll( panels, { allowAutoOpen: false } )
-	);
+	document.addEventListener( 'wc-blocks_added_to_cart', onAdded );
+	document.addEventListener( 'added_to_cart', onAdded );
+
+	onCartChange( ( cart ) => {
+		updateCartWidgets( cart );
+		if ( ! openOnNextReading ) {
+			return;
+		}
+		openOnNextReading = false;
+		panels.forEach( ( panel ) => {
+			if ( panel.autoOpenOnAdd && 'function' === typeof panel.open ) {
+				panel.open();
+			} else if (
+				panel.autoOpenOnAdd &&
+				'function' === typeof panel.refresh
+			) {
+				panel.refresh();
+			}
+		} );
+	} );
 }
 
 if ( document.readyState === 'loading' ) {

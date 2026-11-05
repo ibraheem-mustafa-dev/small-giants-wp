@@ -1079,7 +1079,7 @@ WooCommerce cart count badge. Category: `sgs-interactive`. Displays a live item 
 
 Attributes: `/wp-blocks schema sgs/cart`. The badge is hidden at a count of 0 unless `showWhenEmpty` is on.  `freeDeliveryTextFontWeight` sets the weight of the free-delivery message. A bag line's "Add my prescription" link is a plain text link flush with the product name; its 44px tap area is a `::after`, so it adds no padding and does not move Remove.
 
-Render: dynamic `render.php`; the free-delivery threshold comes from `includes/helpers-free-delivery.php::sgs_free_delivery_threshold`, shared with `sgs/free-delivery-bar`. `view.js` reads the cart through the Store API (`store-api.js::fetchCart`) on WooCommerce's add and remove events, so the count updates without a page reload.
+Render: dynamic `render.php`; the free-delivery threshold comes from `includes/helpers-free-delivery.php::sgs_free_delivery_threshold`, shared with `sgs/free-delivery-bar`. `view.js` takes the live cart from the page-wide reader `src/shared/cart-live/index.js::onCartChange` (one load request, one refetch per WooCommerce add and remove event, shared with `sgs/free-delivery-bar`), so the count updates without a page reload; the drawer reads and mutates the cart through `src/shared/cart-live/request.js` (`store-api.js` re-exports it for the wishlist) and publishes each result with `index.js::publishCart`.
 
 SGS-BEM: `.sgs-cart` root + `__icon` / `__count` + `--empty` modifier.
 
