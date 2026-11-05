@@ -47,17 +47,16 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - A PHP restructure into `<details>` is a later option. It ships only behind a structural check that leaves WooCommerce's markup untouched when its shape differs, plus a test against the installed WooCommerce version.
 - FAQ: read the accordion script first, then put its final structure into `render.php`.
 
-**G. No late stylesheets (P2).**
-- For `defer_non_critical_css`: for each deferred sheet, either move the rules any above-the-fold block needs into that block's own blocking stylesheet, or stop deferring the sheet. Deferring is kept only for a sheet that holds no above-the-fold rules.
-- Move `wc-blocks-style` and `sgs-toast` into `<head>`, by enqueuing them before `wp_head` on pages that use them.
-- The F-lite late-CSS check enforces this.
+**G. No late stylesheets (P2).** Built. `sgs-core-blocks`, `sgs-utilities`, `sgs-extensions` and `sgs-dark-mode` each hold first-viewport rules (navigation, buttons, logo tiles, spacing and media utilities, image controls, the `[data-theme]` dark scope) so none is deferred and `defer_non_critical_css` is gone; dark mode switches by attribute as well as media, so a media attribute would be wrong.
+- `wc-blocks-style` was enqueued by WooCommerce from a priority-10 `wp_head` callback (styles print at 8), so `functions.php::enqueue_woocommerce_blocks_style_early` enqueues it on `wp_enqueue_scripts`; `Sgs_Toast::request()` enqueues `sgs-toast` while the template renders. The allowlist holds only two third-party payment-plugin sheets on the product page.
 
-**A. Stable scope classes (P1).** The minted suffix becomes the hash of the CSS rules it scopes, `md5( prefix | rule text )`, built with a placeholder and then substituted. There are no counters, so render order, double renders, editor and REST renders all give the same class for the same rules. Identical blocks share one class and one rule, which also shrinks the collected file.
+**A. Stable scope classes (P1).** Built: `sgs_scope_class_for_root` takes the callable that builds the rules and hashes them; the two anchor-name callers (fx-path, fx-shape) pass `per_instance` so repeats of one seed get a counted suffix. The collector already dedupes identical CSS, and its epoch-based pruning runs together with a full LiteSpeed purge, so no cached page names a deleted file. Design: The minted suffix becomes the hash of the CSS rules it scopes, `md5( prefix | rule text )`, built with a placeholder and then substituted. There are no counters, so render order, double renders, editor and REST renders all give the same class for the same rules. Identical blocks share one class and one rule, which also shrinks the collected file.
 - Superseded collected files stay on disk for the page-cache lifetime, so cached HTML never points at a missing file. A deploy that changes rules changes the name once, as expected.
 - Before shipping, grep the snapshots, fixtures and motion-QA pages for any selector naming the old `sgs-child-sizing-<hex>` pattern.
 - Afterwards, re-measure the page-weight plan's "possible second collected file on /shop/" (`plans/2026-11-03-page-weight-budget.md`, cause 4).
 
 **B. Reserved image boxes (P3).**
+- Built: `sgs_image_size_attrs` (`includes/helpers-image-dimensions.php`) reads a real size from attachment metadata, the file header or an SVG viewBox, cached by URL, and `sgs_render_media` plus 11 other printers now print `width` and `height`; the responsive logo prints a ratio-true `height`. `sgs_render_media` never printed dimensions on its URL path (the plan's premise that it did was wrong).
 - Find the `sgs_render_media` branch that loses the dimensions on brand-strip and card-grid. Likely candidates: the URL path when `attachment_url_to_postid` fails, or the dimensions being dropped later in the block's own markup rewrite. Fix it at the source.
 - Give the responsive logo its `height`.
 - Census every other `<img>` printer (about 61 files print `<img>`), and fix only those that print an attachment without both attributes.
@@ -65,7 +64,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - CSS keeps `height: auto`.
 - These are HTML attributes, so Spec 32 is unaffected.
 
-**E. Font swap (P7, last).** First a size-matched fallback face (`size-adjust` and the ascent and descent overrides) for the body and heading fonts. Then preload at most the one file the `h1` paints with; the body font is already preloaded. Do not preload more, so the hero image keeps its priority.
+**E. Font swap (P7, last). Built.** `plugins/sgs-blocks/scripts/compute-font-fallback-metrics.py` reads unitsPerEm, hhea ascender, descender, lineGap and a frequency-weighted average advance from every woff2 under `theme/sgs-theme/assets/fonts/` (and from Arial / Times New Roman as the local stand-ins) into `assets/fonts/fallback-metrics.json`; `inc/font-fallback.php` prints a `<Family> Fallback` `@font-face` (`src: local()`, `size-adjust`, ascent, descent and line-gap overrides) per theme.json family and inserts the name right after the web font in the stack. Preloads come from the active global styles: the h1's font file and the body font file (one file when they match), replacing the hard-coded Inter preload. A box sized in `ch` (the hero h1 has `max-width: 15ch`) follows the font's zero glyph, so its box width cannot be matched by `size-adjust` without distorting text widths; text widths and line breaks match within 1%.
 
 **Rule for future blocks.** One line in `.claude/rules/` (block authoring):
 - a block's server HTML plus CSS is its final first-paint layout and look, and JS only adds behaviour

@@ -75,7 +75,7 @@ function sgs_inject_scoped_block_css( string $block_content, string $marker, cal
 	if ( '' === $root_tag ) {
 		return $block_content;
 	}
-	$scope = sgs_scope_class_for_root( $root_tag, $marker );
+	$scope = sgs_scope_class_for_root( $root_tag, $marker, static fn( string $scope_class ): string => (string) $css_for_scope( $scope_class ) );
 	$css   = (string) $css_for_scope( $scope );
 	if ( '' === $css ) {
 		return $block_content;

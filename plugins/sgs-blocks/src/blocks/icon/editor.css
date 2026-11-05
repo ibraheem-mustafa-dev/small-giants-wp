@@ -25,3 +25,8 @@
 .sgs-icon-bound-link {
 	margin: 0 0 8px;
 }
+
+/* The editor user is always signed in: the signed-in dot shows in the canvas. */
+.sgs-icon__dot {
+	display: block;
+}

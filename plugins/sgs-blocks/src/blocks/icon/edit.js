@@ -22,6 +22,7 @@ import {
 } from '../../utils';
 import IconInspector from './inspector';
 import CanvasGlyph from './glyph';
+import { canvasDotStyle } from './canvas-dot';
 import {
 	SITE_INFO_ADMIN_URL,
 	boundLinkKey,
@@ -232,6 +233,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		'sgs-icon',
 		`sgs-icon--source-${ iconSource || 'lucide' }`,
 		`sgs-icon--shape-${ shape }`,
+		attributes.showSignedInDot && 'sgs-icon--has-dot',
 		showBg && 'sgs-icon--has-bg',
 		( showBg || hasBorder || groupBorder ) && 'sgs-icon--boxed',
 		groupBorder && ! outline.outline && 'sgs-icon--group-border',
@@ -254,10 +256,12 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 	const labelRootStyle = labelText ? canvasLabelRootStyle( attributes, tier, presetSlugs ) : {};
 	const blockProps = useBlockProps( { className, style: { ...canvasRootStyle( attributes, tier, brand, presetSlugs, shadowHoverMap || {} ), ...outline.style, ...labelRootStyle } } );
 	const linked = !! unboundUrl || link.bound;
+	const dotStyle = canvasDotStyle( attributes, tier, presetSlugs );
 	const shapeEl = (
 		<span className="sgs-icon__shape" style={ shapeStyle }>
 			{ outline.outline && ( showBg || outline.stroke ) && <CanvasOutline shape={ shape } /> }
 			<CanvasGlyph attributes={ attributes } glyphBrand={ brand.glyphBrand } drawFixed={ brand.drawFixed } logoGradient={ logoGradient } />
+			{ dotStyle && <span className="sgs-icon__dot" aria-hidden="true" style={ dotStyle } /> }
 		</span>
 	);
 

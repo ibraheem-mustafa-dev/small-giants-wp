@@ -255,7 +255,7 @@ foreach ( $post_grid_box_targets as $post_grid_box_attr => $post_grid_box_target
 
 // readMorePin: per-device bottom-pinning of the read more link. Pinned makes the card a flex column
 // (not the list layout, whose card is a grid), the text area a column that fills it, the excerpt take
-// the spare height and the link a full-width row; inline hands each back to normal flow.
+// the spare height and the link a full-width row at the card's foot (also when there is no excerpt); inline hands each back to normal flow.
 $post_grid_pin_map = static function ( string $pinned, string $inline ): callable {
 	return static function ( $raw ) use ( $pinned, $inline ): string {
 		if ( 'pinned' === $raw ) {
@@ -281,6 +281,10 @@ if ( is_array( $post_grid_pin_value ) && array() !== $post_grid_pin_value ) {
 		),
 		$root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__readmore' => array(
 			array( 'align-self', 'stretch', 'auto' ),
+		),
+		// Zero specificity, so a saved readMoreMargin (a plain class rule) still wins over the pin's top margin.
+		':where(' . $root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__readmore)' => array(
+			array( 'margin-top', 'auto', '0' ),
 		),
 	);
 	foreach ( $post_grid_pin_targets as $post_grid_pin_sel => $post_grid_pin_decls ) {

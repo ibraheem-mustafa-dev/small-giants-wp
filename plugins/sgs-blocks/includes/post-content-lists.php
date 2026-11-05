@@ -141,7 +141,11 @@ function sgs_inject_post_content_lists( $block_content, $block ) {
 	if ( '' === $root_tag ) {
 		return $block_content;
 	}
-	$scope = sgs_scope_class_for_root( $root_tag, 'sgs-post-content-lists' );
+	$scope = sgs_scope_class_for_root(
+		$root_tag,
+		'sgs-post-content-lists',
+		static fn( string $scope_class ): string => sgs_post_content_lists_css( $attrs, $scope_class )
+	);
 	$css   = sgs_post_content_lists_css( $attrs, $scope );
 	if ( '' === $css ) {
 		return $block_content;

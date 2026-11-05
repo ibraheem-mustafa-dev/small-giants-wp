@@ -359,6 +359,7 @@
 .sgs-choice-flow__chrome-logo {
 	max-height: 32px;
 	width: auto;
+	height: auto;
 	flex-shrink: 0;
 }
 

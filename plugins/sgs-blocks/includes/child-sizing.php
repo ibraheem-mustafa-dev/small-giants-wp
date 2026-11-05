@@ -165,7 +165,10 @@ function inject_child_sizing( $block_content, $block ) {
 	}
 	// The scope reuses the block's own uid class when it has one; add it only
 	// when it was freshly minted.
-	$scope   = sgs_scope_class_for_root( $root_tag, 'sgs-child-sizing' );
+	$css_for = static function ( string $scope_class ) use ( $states, $css_by ): string {
+		return sgs_emit_tier_rules_map( '.sgs-child-sizing.' . $scope_class, $states, $css_by, '', '|' );
+	};
+	$scope   = sgs_scope_class_for_root( $root_tag, 'sgs-child-sizing', $css_for );
 	$has_uid = (bool) preg_match( '/\bclass=["\'][^"\']*\b' . preg_quote( $scope, '/' ) . '\b/', $root_tag );
 	$classes = $has_uid ? 'sgs-child-sizing' : 'sgs-child-sizing ' . $scope;
 
@@ -177,7 +180,7 @@ function inject_child_sizing( $block_content, $block ) {
 
 	// Two classes (marker + scope) so a per-instance choice outranks a block's
 	// own single-class sizing default such as `.sgs-button--full`.
-	$css = sgs_emit_tier_rules_map( '.sgs-child-sizing.' . $scope, $states, $css_by, '', '|' );
+	$css = $css_for( $scope );
 	if ( '' === $css ) {
 		return $head . $root;
 	}

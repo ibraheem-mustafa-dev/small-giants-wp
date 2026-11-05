@@ -123,7 +123,7 @@ $greeting          = str_replace( '{name}', esc_html( $name ), esc_html( $greeti
 	<?php if ( $menu_items ) : ?>
 		<div class="sgs-account__quick-cards">
 			<?php foreach ( $menu_items as $endpoint => $label ) :
-				if ( in_array( $endpoint, $never_hide, true ) ) {
+				if ( 'dashboard' === $endpoint || in_array( $endpoint, $never_hide, true ) ) {
 					continue;
 				}
 				?>

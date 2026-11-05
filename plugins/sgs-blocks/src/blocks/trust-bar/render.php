@@ -716,9 +716,10 @@ foreach ( $items as $tb_item_index => $item ) {
 		$badge_content = '';
 		if ( $media_url ) {
 			$badge_content .= sprintf(
-				'<img src="%s" alt="%s"%s class="sgs-trust-bar__badge-img%s" loading="lazy" />',
+				'<img src="%s" alt="%s"%s%s class="sgs-trust-bar__badge-img%s" loading="lazy" />',
 				esc_url( $media_url ),
 				esc_attr( $media_alt ),
+				sgs_image_size_attrs( (string) $media_url ),
 				$item_decorative ? ' aria-hidden="true"' : '',
 				esc_attr( $tb_badge_img_marker_class_attr )
 			);

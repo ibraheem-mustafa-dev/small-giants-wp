@@ -67,14 +67,14 @@ if ( ! function_exists( 'sgs_account_default_status_step_labels' ) ) {
 
 if ( ! function_exists( 'sgs_account_never_hide' ) ) {
 	/**
-	 * Endpoints the hiddenEndpoints control may never remove — a client can
-	 * lock themselves out of their own account (dashboard) or lose the only
-	 * way to log out.
+	 * Endpoints the hiddenEndpoints control may never remove: the only way to
+	 * log out. The Dashboard may be hidden; the account root then shows the
+	 * first visible tab (Account_Dashboard).
 	 *
 	 * @return string[] Endpoint keys.
 	 */
 	function sgs_account_never_hide(): array {
-		return array( 'dashboard', 'customer-logout' );
+		return array( 'customer-logout' );
 	}
 }
 

@@ -9,6 +9,8 @@
  * @package SGS\Blocks
  */
 
+require_once __DIR__ . '/helpers-image-dimensions.php';
+
 /**
  * Output a responsive image tag with srcset when a valid attachment ID is available.
  *
@@ -300,10 +302,11 @@ if ( ! function_exists( 'sgs_render_media' ) ) {
 		$mobile_url = isset( $attrs['mobile_url'] ) ? trim( (string) $attrs['mobile_url'] ) : '';
 		$img_class  = 'sgs-media sgs-media--image' . $context_cls;
 		$img_tag    = sprintf(
-			'<img src="%s" alt="%s" class="%s" loading="lazy" decoding="async" />',
+			'<img src="%s" alt="%s" class="%s"%s loading="lazy" decoding="async" />',
 			esc_url( $url ),
 			esc_attr( $alt ),
-			esc_attr( $img_class )
+			esc_attr( $img_class ),
+			sgs_image_size_attrs( $url )
 		);
 
 		if ( '' !== $mobile_url ) {

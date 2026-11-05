@@ -46,6 +46,29 @@
 		const currentValue = currentParams.get( paramName );
 		const isChecked = currentValue ? currentValue.split( ',' ).indexOf( config.term ) !== -1 : false;
 
+		// A full navigation, the same round trip WC's own filter chips take, so
+		// server-side filtering picks it up with no extra JS of ours.
+		function bind( input ) {
+			input.addEventListener( 'change', function () {
+				input.setAttribute( 'aria-checked', input.checked ? 'true' : 'false' );
+				const url = new URL( window.location.href );
+				if ( input.checked ) {
+					url.searchParams.set( paramName, config.term );
+				} else {
+					url.searchParams.delete( paramName );
+				}
+				window.location.assign( url.toString() );
+			} );
+		}
+
+		// The server prints the switch (inc/shop-filters-first-paint.php), so it is in
+		// place from the first frame and only needs its behaviour here.
+		const printed = dialog.querySelector( '.sgs-shop-filters__bool-filter-input' );
+		if ( printed ) {
+			bind( printed );
+			return;
+		}
+
 		const wrap = document.createElement( 'div' );
 		wrap.className = 'sgs-shop-filters__bool-filter';
 
@@ -67,18 +90,7 @@
 		text.className = 'sgs-shop-filters__bool-filter-text';
 		text.textContent = config.label;
 
-		input.addEventListener( 'change', function () {
-			input.setAttribute( 'aria-checked', input.checked ? 'true' : 'false' );
-			const url = new URL( window.location.href );
-			if ( input.checked ) {
-				url.searchParams.set( paramName, config.term );
-			} else {
-				url.searchParams.delete( paramName );
-			}
-			// Full navigation: the same round trip WC's own filter chips take,
-			// so server-side filtering picks it up with no extra JS of ours.
-			window.location.assign( url.toString() );
-		} );
+		bind( input );
 
 		label.appendChild( input );
 		label.appendChild( track );

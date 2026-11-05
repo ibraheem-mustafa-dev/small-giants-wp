@@ -348,15 +348,65 @@ def test_a_pass_for_a_different_copy_does_not_allow_publish(real_pass: None, sha
     assert marker_of(shared) == "start"
 
 
+def commit_in(repo: Path, rel: str) -> None:
+    path = repo / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("v1", encoding="utf-8")
+    subprocess.run(["git", "add", rel], cwd=repo, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-qm", "add " + rel], cwd=repo, check=True, capture_output=True)
+
+
 def test_publish_refuses_when_a_tracked_file_is_dirty(real_pass: None, shared: Path, tmp_path: Path, repo: Path, capsys) -> None:
+    commit_in(repo, "plugins/sgs-blocks/block.txt")
     copy = tmp_path / "copy.db"
     assert pub.main(["begin", "--copy", str(copy)]) == 0
     reseed(copy, "reseeded")
     record_gate_pass(repo, copy)
-    (repo / "tracked.txt").write_text("edited after gating", encoding="utf-8")
+    (repo / "plugins" / "sgs-blocks" / "block.txt").write_text("edited after gating", encoding="utf-8")
     assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
     assert "differ from HEAD" in capsys.readouterr().err
     assert marker_of(shared) == "start"
+
+
+def test_a_dirty_file_outside_the_build_inputs_does_not_refuse(real_pass: None, shared: Path, tmp_path: Path, repo: Path) -> None:
+    commit_in(repo, "notes/other-session.md")
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    record_gate_pass(repo, copy)
+    (repo / "notes" / "other-session.md").write_text("another session's edit", encoding="utf-8")
+    assert pub.main(["publish", "--copy", str(copy)]) == 0
+    assert marker_of(shared) == "reseeded"
+
+
+def test_a_dirty_file_inside_the_build_inputs_refuses(real_pass: None, shared: Path, tmp_path: Path, repo: Path, capsys) -> None:
+    commit_in(repo, "plugins/sgs-blocks/block.txt")
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    record_gate_pass(repo, copy)
+    (repo / "plugins" / "sgs-blocks" / "block.txt").write_text("edited", encoding="utf-8")
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
+    assert "plugins/" in capsys.readouterr().err
+    assert marker_of(shared) == "start"
+
+
+def test_a_failed_pass_carry_still_publishes_and_warns(real_pass: None, shared: Path, tmp_path: Path, repo: Path, capsys, monkeypatch: pytest.MonkeyPatch) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    record_gate_pass(repo, copy)
+
+    def broken_carry(_from: object, _to: object) -> bool:
+        raise OSError("disk full")
+
+    monkeypatch.setattr(pub.deploy_cache, "carry_pass", broken_carry)
+    assert pub.main(["publish", "--copy", str(copy)]) == 0
+    assert marker_of(shared) == "reseeded"
+    io = capsys.readouterr()
+    assert "published but the gate pass was not carried" in io.err
+    assert "disk full" in io.err
+    assert any(e.get("event") == "publish" for e in pub.logged_events(shared))
 
 
 def test_regenerate_copy_runs_the_generators_against_the_copy(shared: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

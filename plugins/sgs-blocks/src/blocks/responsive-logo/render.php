@@ -190,7 +190,10 @@ if ( '' === $alt ) {
 // keeps its "Go to [Site] homepage" announcement either way. Never strips the
 // link itself — that stays an operator decision (linkToHome).
 $img_alt         = $logo_decorative ? '' : $alt;
-$img_aria_hidden = $logo_decorative ? ' aria-hidden="true"' : '';
+// The box the desktop logo draws at: the printed width, and the height that keeps the file's own aspect ratio.
+$logo_size       = sgs_image_intrinsic_size( $desktop_url );
+$logo_height     = null !== $logo_size ? max( 1, (int) round( $width * $logo_size[1] / $logo_size[0] ) ) : 0;
+$img_tail_attrs = ( $logo_height > 0 ? ' height="' . $logo_height . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' );
 
 // The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
 // (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
@@ -582,7 +585,7 @@ if ( $has_svg_animation && $svg_html ) {
 		esc_url( $desktop_url ),
 		esc_attr( $img_alt ),
 		absint( $width ),
-		$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+		$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 	);
 } elseif ( '' !== $inline_logo_html ) {
 	// Inline logo: the SVG file itself at every width; a compact logo (mobile, else tablet slot) swaps in below 1024px.
@@ -599,7 +602,7 @@ if ( $has_svg_animation && $svg_html ) {
 			esc_url( $inline_compact_url ),
 			esc_attr( $img_alt ),
 			absint( $width ),
-			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	}
 } else {
@@ -626,7 +629,7 @@ if ( $has_svg_animation && $svg_html ) {
 			esc_attr( $img_alt ),
 			absint( $width ),
 			absint( $custom_px ),
-			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} elseif ( 'tablet' === $switch_mode && $has_alt ) {
 		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
@@ -639,7 +642,7 @@ if ( $has_svg_animation && $svg_html ) {
 			esc_url( $desktop_url ),
 			esc_attr( $img_alt ),
 			absint( $width ),
-			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	} else {
 		// mobile (default): compact at <=767px; a distinct tablet logo (if set) fills
@@ -655,17 +658,16 @@ if ( $has_svg_animation && $svg_html ) {
 			esc_url( $desktop_url ),
 			esc_attr( $img_alt ),
 			absint( $width ),
-			$img_aria_hidden // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	}
 }
 
 // Dark-mode logo variant (U-17, design §3.1). Hidden by default; shown (and the light logo hidden)
 // under :root[data-theme="dark"] / :root[data-theme="auto"][data-prefers-dark="true"]
-// via style.css. No width/height HTML attributes are set on it deliberately
-// — it shares the same box the light logo occupies (style.css positions both
-// absolutely on top of one another), so it must inherit that box's size
-// rather than impose its own intrinsic one.
+// via style.css. It carries no width/height attributes: it is positioned
+// absolutely over the light logo's box (style.css), so it takes that box's size
+// and reserves none of its own.
 if ( '' !== $dark_logo_url ) {
 	printf(
 		'<img class="sgs-responsive-logo__dark" src="%s" alt="" aria-hidden="true" loading="eager" decoding="async">',

@@ -26,10 +26,12 @@ require_once __DIR__ . '/inc/shop-toolbar-settings.php';
 require_once __DIR__ . '/inc/shop-filter-look-settings.php';
 require_once __DIR__ . '/inc/shop-controls-look-settings.php';
 require_once __DIR__ . '/inc/shop-chosen-filters.php';
+require_once __DIR__ . '/inc/shop-filters-first-paint.php';
 require_once __DIR__ . '/inc/shop-load-more-settings.php';
 require_once __DIR__ . '/inc/core-block-styles.php';
 require_once __DIR__ . '/inc/selection.php';
 require_once __DIR__ . '/inc/colour-roles.php';
+require_once __DIR__ . '/inc/font-fallback.php';
 
 // Header behaviour system (sticky, transparent, smart-reveal, shrink).
 // Header behaviour is owned by the sgs-blocks plugin (Spec 37 FR-37-13, D330):
@@ -350,32 +352,6 @@ function preload_hero_image(): void {
 }
 add_action( 'wp_head', __NAMESPACE__ . '\preload_hero_image', 1 );
 
-/**
- * Preload the active site's body font so first-paint text renders in the
- * branded family rather than falling back to the system stack.
- */
-function preload_fonts(): void {
-	/*
-	 * Preload the body font for the active site. The WP-style-variation
-	 * overlay was removed 2026-05-22 (Phase 5a Decision 18); per-site
-	 * branding now lives in the site's single theme.json snapshot. Sites
-	 * that use non-Inter heading fonts (e.g. Montserrat,
-	 * Fraunces) should register their own preload via
-	 * sites/<client>/theme-snapshot.json's customTemplates/typography
-	 * settings — this base preload covers the body font only.
-	 */
-	$fonts = array(
-		'inter-variable-latin.woff2',
-	);
-
-	foreach ( $fonts as $font ) {
-		printf(
-			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-			esc_url( get_theme_file_uri( 'assets/fonts/' . $font ) )
-		);
-	}
-}
-add_action( 'wp_head', __NAMESPACE__ . '\preload_fonts', 1 );
 
 /**
  * Cache-busting version for a theme asset.
@@ -424,7 +400,7 @@ function enqueue_styles(): void {
 		asset_version( 'assets/css/core-blocks-critical.css', $theme_version )
 	);
 
-	// Non-critical block styles — deferred via defer_non_critical_css() below.
+	// Block styles: render-blocking in <head> like every other sheet, so no rule applies after first paint.
 	wp_enqueue_style(
 		'sgs-core-blocks',
 		get_theme_file_uri( 'assets/css/core-blocks.css' ),
@@ -658,31 +634,21 @@ function enqueue_global_layout_fixes(): void {
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_global_layout_fixes' );
 
 /**
- * Defer non-critical stylesheets to reduce render-blocking resources.
+ * Print WooCommerce's block stylesheet in <head>.
  *
- * Converts selected <link rel="stylesheet"> tags to use the
- * media="print" onload="this.media='all'" pattern so they load
- * asynchronously without blocking first paint.
- *
- * @param string $tag    The HTML <link> tag for the stylesheet.
- * @param string $handle The stylesheet handle registered via wp_enqueue_style().
- * @return string Possibly-rewritten tag with deferred media swap.
+ * WooCommerce enqueues `wc-blocks-style` for its block notices from a `wp_head`
+ * callback at priority 10. Styles print on `wp_head` at priority 8, so that late
+ * enqueue lands in the footer and its rules apply after first paint. Enqueuing it
+ * on `wp_enqueue_scripts` prints it in <head>; WooCommerce's later call is then a no-op.
  */
-function defer_non_critical_css( string $tag, string $handle ): string {
-	$deferred = array( 'sgs-core-blocks', 'sgs-dark-mode', 'sgs-utilities', 'sgs-extensions' );
-
-	if ( in_array( $handle, $deferred, true ) ) {
-		// Replace media="all" with media="print" and add onload swap.
-		$tag = str_replace(
-			"media='all'",
-			"media='print' onload=\"this.media='all'\"",
-			$tag
-		);
+function enqueue_woocommerce_blocks_style_early(): void {
+	if ( ! wp_style_is( 'wc-blocks-style', 'registered' ) ) {
+		return;
 	}
 
-	return $tag;
+	wp_enqueue_style( 'wc-blocks-style' );
 }
-add_filter( 'style_loader_tag', __NAMESPACE__ . '\defer_non_critical_css', 10, 2 );
+add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_woocommerce_blocks_style_early', 20 );
 
 /**
  * Output meta description from post excerpt or custom field.

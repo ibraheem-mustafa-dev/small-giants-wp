@@ -119,7 +119,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 		$html = '<div class="sgs-choice-flow__chrome-header" data-product-name="' . esc_attr( $product_name ) . '">';
 
 		if ( '' !== $logo_url ) {
-			$html .= '<img class="sgs-choice-flow__chrome-logo" src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '" />';
+			$html .= '<img class="sgs-choice-flow__chrome-logo" src="' . esc_url( $logo_url ) . '" alt="' . esc_attr( $logo_alt ) . '"' . sgs_image_size_attrs( (string) $logo_url ) . ' />';
 		}
 
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';

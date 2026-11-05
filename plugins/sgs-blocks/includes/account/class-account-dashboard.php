@@ -43,6 +43,36 @@ final class Account_Dashboard {
 		if ( ! is_array( Account_Endpoints::$active ) ) {
 			return $template;
 		}
-		return __DIR__ . '/templates/dashboard.php';
+		return self::dashboard_hidden() ? __DIR__ . '/templates/first-tab.php' : __DIR__ . '/templates/dashboard.php';
+	}
+
+	/**
+	 * Whether the active sgs/account block hides the Dashboard menu item.
+	 *
+	 * @return bool
+	 */
+	public static function dashboard_hidden(): bool {
+		if ( ! is_array( Account_Endpoints::$active ) ) {
+			return false;
+		}
+		require_once __DIR__ . '/helpers-account-defaults.php';
+		return in_array( 'dashboard', sgs_account_sanitize_hidden_endpoints( Account_Endpoints::$active['hiddenEndpoints'] ?? array() ), true );
+	}
+
+	/**
+	 * The first visible account tab after the Dashboard (menu order, hidden items already removed).
+	 *
+	 * @return string Endpoint key, or '' when none.
+	 */
+	public static function first_visible_endpoint(): string {
+		if ( ! function_exists( 'wc_get_account_menu_items' ) ) {
+			return '';
+		}
+		foreach ( array_keys( \wc_get_account_menu_items() ) as $endpoint ) {
+			if ( 'dashboard' !== $endpoint && 'customer-logout' !== $endpoint ) {
+				return (string) $endpoint;
+			}
+		}
+		return '';
 	}
 }

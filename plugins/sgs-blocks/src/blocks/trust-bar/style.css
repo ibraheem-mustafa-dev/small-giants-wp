@@ -222,8 +222,12 @@
 	   instance by render.php's SGS_Media_Element::element_classes() marker class.
 	   render.php always emits an explicit --sgs-media-object-fit value (block.json
 	   default 'contain'), so this element never falls through to the shared
-	   stylesheet's own 'cover' fallback. */
+	   stylesheet's own 'cover' fallback. The width and height attributes reserve the box;
+	   auto sizes keep the picture's ratio under the max-height variants below. */
 	display: block;
+	width: auto;
+	height: auto;
+	max-width: 100%;
 }
 
 /* Size variants — image height */

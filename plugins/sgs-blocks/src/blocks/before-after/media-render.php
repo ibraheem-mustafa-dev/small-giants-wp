@@ -166,7 +166,7 @@ if ( ! function_exists( 'sgs_before_after_resolve_image' ) ) {
 				esc_attr( $img_cls ),
 				esc_url( $img_url ),
 				esc_attr( $alt ),
-				$decorative ? ' aria-hidden="true"' : ''
+				sgs_image_size_attrs( $img_url ) . ( $decorative ? ' aria-hidden="true"' : '' )
 			);
 		};
 

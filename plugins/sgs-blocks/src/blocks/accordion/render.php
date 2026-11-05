@@ -170,6 +170,10 @@ if ( $filter_on ) {
 	sgs_accordion_filter_enqueue();
 }
 
+// The item named by `defaultOpen` is printed open (includes/accordion-default-open.php), so it is open from the first frame.
+require_once dirname( __DIR__, 3 ) . '/includes/accordion-default-open.php';
+$content = sgs_accordion_open_default_item( $content, $default_open );
+
 // Own scoped <style> (composite caveat — printed BEFORE the wrapper call, which
 // emits its own separate <style id="{uid}"> for the layers it owns: base
 // spacing/border-radius/max-width/contentWidth/band/grid — same uid, two tags,

@@ -168,7 +168,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 - `columns` — 2 | 3 | 4 (desktop, always 2 on mobile)
 - `selectedStyle` — border | background | checkmark
 
-**Render:** Grid of clickable cards. Selected tiles show accent-colour border + checkmark. A single-select field submits one value; a multi-select field submits a list (see Submission name).
+**Render:** Grid of clickable cards. Selected tiles show accent-colour border + checkmark. A single-select field submits one value; a multi-select field submits a list (see Submission name). Each tile is a `<label for>` its input, so the browser itself checks the input on a click of the tile, a click of the input or Space on the focused input; `view.js::syncTiles` runs on the bubbling `change` and mirrors `sgs-form-tile--selected` on every tile of the group. A required multi-select group needs at least one tick (FR-4-13); a required single-select group keeps native `required`.
 
 ### File Upload (`sgs/form-field-file`)
 

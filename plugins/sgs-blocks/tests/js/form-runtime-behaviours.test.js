@@ -366,6 +366,19 @@ describe( 'FR-4-11 review cards', () => {
 		expect( rowFor() ).toBe( 'Yes' );
 	} );
 
+	it( 'keeps the option words for a one-option group that has its own legend', () => {
+		const root = reviewForm();
+		root.querySelectorAll( '.sgs-form-step' )[ 0 ].insertAdjacentHTML(
+			'beforeend',
+			'<div class="sgs-form-field sgs-form-field--checkbox"><fieldset class="sgs-form-field__group"><legend class="sgs-form-field__label">Trade type</legend><label class="sgs-form-field__option" for="tt-1"><input type="checkbox" id="tt-1" name="tradeType[]" value="Wholesale" checked> Wholesale</label></fieldset></div>'
+		);
+		const { populateReview } = require( SRC( 'review-cards.js' ) );
+		populateReview( root, root.querySelector( '.sgs-form-review' ) );
+		const terms = [ ...root.querySelectorAll( '.sgs-form-review__card' )[ 0 ].querySelectorAll( '.sgs-form-review__term' ) ];
+		const term = terms.find( ( n ) => 'Trade type' === n.textContent );
+		expect( term && term.nextElementSibling.textContent ).toBe( 'Wholesale' );
+	} );
+
 	it( 'shows no Edit buttons when switched off, and rebuilds cleanly on a second call', () => {
 		const root = reviewForm( 'data-show-edit="false"' );
 		const { populateReview } = require( SRC( 'review-cards.js' ) );

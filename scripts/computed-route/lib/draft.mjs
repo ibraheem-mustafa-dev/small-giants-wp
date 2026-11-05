@@ -128,17 +128,17 @@ export function assertDraftPage( folder, index = null ) {
 	return folder;
 }
 
-// Serves `folder` on 127.0.0.1 at an ephemeral port. `index` names the file a folder without an index.html serves at its
+// Serves `folder` on 127.0.0.1 at an ephemeral port (or `port` when given, for an address a person reuses). `index` names the file a folder without an index.html serves at its
 // root (a handoff whose page is "Home.dc.html"). Returns { url, port, close }: url ends in a slash; close() ends every
 // connection and resolves once the port is free, and may be called again.
-export async function serveDraft( folder, { index = null, host = '127.0.0.1' } = {} ) {
+export async function serveDraft( folder, { index = null, host = '127.0.0.1', port = 0 } = {} ) {
 	const root = fs.existsSync( folder ) && fs.statSync( folder ).isDirectory() ? fs.realpathSync( folder ) : null;
 	if ( ! root ) {
 		throw new Error( `${ folder } is not a directory` );
 	}
 	const server = http.createServer( ( req, res ) => respond( root, index, req, res ) );
-	await new Promise( ( done, fail ) => server.once( 'error', fail ).listen( 0, host, done ) );
-	const { port } = server.address();
+	await new Promise( ( done, fail ) => server.once( 'error', fail ).listen( port, host, done ) );
+	const bound = server.address().port;
 	let closing = null;
 	const close = () => {
 		closing ||= new Promise( ( done ) => {
@@ -147,5 +147,5 @@ export async function serveDraft( folder, { index = null, host = '127.0.0.1' } =
 		} );
 		return closing;
 	};
-	return { url: `http://${ host }:${ port }/`, port, close };
+	return { url: `http://${ host }:${ bound }/`, port: bound, close };
 }

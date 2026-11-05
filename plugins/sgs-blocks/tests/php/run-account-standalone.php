@@ -67,15 +67,15 @@ ok( false !== $saved_pos, 'saved-items is present in the menu' );
 ok( $saved_pos === $orders_pos + 1, 'saved-items sits immediately after orders' );
 
 // ---------------------------------------------------------------------------
-// 2) filter_menu_items(): a hidden endpoint disappears, dashboard and
-//    customer-logout NEVER do — even when the caller asks for it.
+// 2) filter_menu_items(): a hidden endpoint disappears (the Dashboard too),
+//    customer-logout NEVER does — even when the caller asks for it.
 // ---------------------------------------------------------------------------
 Account_Endpoints::$active = array(
 	'hiddenEndpoints' => array( 'downloads', 'dashboard', 'customer-logout' ),
 );
 $filtered = Account_Endpoints::filter_menu_items( $base_items );
 ok( ! isset( $filtered['downloads'] ), 'a hidden endpoint (downloads) is removed' );
-ok( isset( $filtered['dashboard'] ), 'dashboard is never hidden, even when requested' );
+ok( ! isset( $filtered['dashboard'] ), 'dashboard can be hidden' );
 ok( isset( $filtered['customer-logout'] ), 'customer-logout is never hidden, even when requested' );
 Account_Endpoints::$active = null;
 
@@ -89,6 +89,19 @@ ok( 'dispatched' === sgs_account_map_order_status_to_step( 'dispatched' ), 'disp
 ok( '' === sgs_account_map_order_status_to_step( 'cancelled' ), 'cancelled has no step (chip only, no track)' );
 ok( '' === sgs_account_map_order_status_to_step( 'refunded' ), 'refunded has no step' );
 ok( '' === sgs_account_map_order_status_to_step( 'failed' ), 'failed has no step' );
+
+// ---------------------------------------------------------------------------
+// 3b) A hidden Dashboard: the account root shows the first visible tab's content in place
+//     (templates/first-tab.php), not the dashboard template.
+// ---------------------------------------------------------------------------
+Account_Endpoints::$active = array( 'hiddenEndpoints' => array( 'dashboard' ) );
+$hidden_swap = Account_Dashboard::maybe_swap_dashboard_template( '/core/myaccount/dashboard.php', 'myaccount/dashboard.php', array(), '', '' );
+ok( str_ends_with( $hidden_swap, '/templates/first-tab.php' ), 'a hidden Dashboard swaps in the first-tab template' );
+ok( Account_Dashboard::dashboard_hidden(), 'dashboard_hidden() reads the block attribute' );
+Account_Endpoints::$active = array( 'hiddenEndpoints' => array( 'downloads' ) );
+$shown_swap = Account_Dashboard::maybe_swap_dashboard_template( '/core/myaccount/dashboard.php', 'myaccount/dashboard.php', array(), '', '' );
+ok( str_ends_with( $shown_swap, '/templates/dashboard.php' ), 'a visible Dashboard keeps the dashboard template' );
+Account_Endpoints::$active = null;
 
 // ---------------------------------------------------------------------------
 // 4) wc_get_template swap — ONLY while the flag is set.

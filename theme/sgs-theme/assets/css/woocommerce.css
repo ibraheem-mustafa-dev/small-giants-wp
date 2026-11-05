@@ -273,6 +273,13 @@ h2.wc-block-mini-cart__title {
 	overflow-x: clip;
 }
 
+/* Checkout order summary: WooCommerce sticks the sidebar at top:24px, which slides it under the
+   fixed site header. --sgs-header-height is published by the header (0px when not fixed). The
+   extra class beats WooCommerce's single-class rule inside its container query. */
+.wc-block-checkout__sidebar.is-sticky {
+	top: calc(var(--sgs-header-height, 0px) + 24px);
+}
+
 /* Form fields — consistent with theme inputs */
 .wc-block-components-text-input input,
 .wc-block-components-text-input select,
@@ -492,6 +499,14 @@ h2.wc-block-mini-cart__title {
    layout container and the block that follows, which both have controls. */
 .sgs-shop-layout .wp-block-woocommerce-product-collection {
 	margin-bottom: 0;
+}
+
+/* The product list sits flush under an empty notices area. WooCommerce drops the list's top margin only once
+   its notices script has emptied that area (its own rule tests `:not(:has(*))`, and the server markup holds a
+   <template>), so the list used to move up 24px after the first paint. A notice that is showing is a banner,
+   which keeps the margin. */
+.wp-block-woocommerce-product-collection .wc-block-components-notices:not( :has( .wc-block-components-notice-banner ) ) + .wc-block-product-template {
+	margin-block-start: 0;
 }
 
 /* ── 8b. Filter sidebar / drawer ── */
@@ -2315,11 +2330,11 @@ body.woocommerce-cart .with-empty-cart-icon,
 /* sgs-filter-swatches: each chip a round swatch of its term's colour
    (`--sgs-swatch`, set per term by inc/shop-toolbar-settings.php); the name
    stays as the button's accessible name and title. */
-.sgs-shop-filters__group:has( .sgs-filter-swatches ) .wc-block-product-filter-chips__items {
+:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) .wc-block-product-filter-chips__items {
 	gap: 12px;
 }
 
-.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item {
+:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item {
 	width: 30px;
 	height: 30px;
 	min-height: 30px;
@@ -2331,29 +2346,29 @@ body.woocommerce-cart .with-empty-cart-icon,
 	transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item > * {
+:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item > * {
 	display: none;
 }
 
-.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item:hover {
+:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item:hover {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
 	/* Customizer > Shop Filters swatch growth (inc/shop-filter-look-settings.php). */
 	transform: scale(var(--sgs-swatch-hover-scale, 1.08));
 }
 
-.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
+:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"] {
 	background: var(--sgs-swatch, var(--wp--preset--color--surface-alt));
 	border-color: var(--wp--preset--color--border-strong, var(--sgs-filter-line));
 	box-shadow: 0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text);
 }
-@media (forced-colors:active){.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
+@media (forced-colors:active){:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"]:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
-@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text)}}
+@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text)}}
 
 
 @media ( prefers-reduced-motion: reduce ) {
-	.sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item,
+	:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item,
 	.sgs-shop-filters__segment {
 		transition-duration: 0.01ms;
 	}
@@ -2553,15 +2568,15 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 
 /* Plain chips (not colour swatches): the page's card fill and the palette's
    border colour, at rest and on hover (hover never darkens the fill). */
-.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item:not([aria-checked="true"]),
-.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item:not([aria-checked="true"]):hover {
+.sgs-shop-filters-plain :is( .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )), .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading:not( .sgs-filter-swatches ):not( .sgs-filter-segmented ) + * ) button.wc-block-product-filter-chips__item:not([aria-checked="true"]),
+.sgs-shop-filters-plain :is( .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )), .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading:not( .sgs-filter-swatches ):not( .sgs-filter-segmented ) + * ) button.wc-block-product-filter-chips__item:not([aria-checked="true"]):hover {
 	--sgs-btn-bg: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
 	--sgs-btn-border: var(--sgs-filter-line, var(--wp--preset--color--border));
 	background: var(--sgs-btn-bg);
 }
 
 /* Chosen or not, a plain chip keeps its 14px sides. */
-.sgs-shop-filters-plain .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )) button.wc-block-product-filter-chips__item {
+.sgs-shop-filters-plain :is( .sgs-shop-filters__group:not(:has( .sgs-filter-swatches )), .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading:not( .sgs-filter-swatches ):not( .sgs-filter-segmented ) + * ) button.wc-block-product-filter-chips__item {
 	padding-inline: 14px;
 }
 
@@ -3289,4 +3304,148 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 
 .wc-block-order-confirmation-address-wrapper:has(> :not(:has([class*="order-confirmation-"][class*="-wrapper"]))) {
 	grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── 8j. First paint: the panel before its script runs ──
+ * sgs-shop-filters.js and its modules turn the template's <aside> into the panel and build the group
+ * accordion, the segmented row and the count. These rules give the server markup (each group heading and
+ * the filter blocks that follow it, directly inside WooCommerce's overlay content) the same look, so nothing
+ * changes when the script runs. Once the accordion has built a group, the heading sits inside its <summary>
+ * and no rule below matches it. A group is open when its heading carries `sgs-filter-open`; with no heading
+ * marked, the first group is open. The option count comes from `data-sgs-count`, printed by
+ * inc/shop-filters-first-paint.php. */
+
+/* Below the drawer breakpoint the panel is a closed dialog, so the aside is never part of the page. */
+@media ( max-width: 781px ) {
+	body.is-enhanced aside#sgs-shop-filters {
+		display: none;
+	}
+}
+
+/* Closed groups: the controls after a closed heading (up to three blocks per group). */
+:is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading:not( .sgs-filter-open ), .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ),
+:is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading:not( .sgs-filter-open ), .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ),
+:is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading:not( .sgs-filter-open ), .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ) + :not( .sgs-shop-filters__group-heading ) {
+	display: none;
+}
+
+/* A heading outside a group is the group's summary row, with the divider the group draws. */
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading {
+	display: flex;
+	box-sizing: content-box;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+	min-height: 44px;
+	margin: var(--wp--preset--spacing--20, 0.75rem) 0 0;
+	padding-top: var(--wp--preset--spacing--20, 0.75rem);
+	border-top: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+	user-select: none;
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading:not( .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) {
+	margin-top: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading::after {
+	content: "";
+	flex: 0 0 auto;
+	order: 2;
+	width: 0.34em;
+	height: 0.34em;
+	margin-right: 0.25em;
+	border-right: 1px solid currentColor;
+	border-bottom: 1px solid currentColor;
+	transform: rotate(45deg) translate(-0.085em, -0.085em);
+}
+
+:is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading.sgs-filter-open, .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading:not( .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) )::after {
+	transform: rotate(-135deg) translate(-0.136em, -0.136em);
+}
+
+/* sgs-filter-count: the number of options, right-aligned before the chevron. */
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading[data-sgs-count]::before {
+	content: attr( data-sgs-count );
+	order: 1;
+	margin-left: auto;
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+	font-weight: 400;
+	color: var(--wp--preset--color--text-muted);
+}
+
+/* The "plain" panel style (body.sgs-shop-filters-plain): 52px heading rows, each group ruled below. */
+.sgs-shop-filters-plain .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading {
+	min-height: 52px;
+	margin: 0;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.sgs-shop-filters-plain :is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading:not( .sgs-filter-open ), .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) {
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+.sgs-shop-filters-plain :is( .sgs-shop-filters .wc-block-product-filters__overlay-content:has( > .sgs-filter-open ) > .sgs-shop-filters__group-heading.sgs-filter-open, .sgs-shop-filters .wc-block-product-filters__overlay-content:not( :has( > .sgs-filter-open ) ) > .sgs-shop-filters__group-heading:not( .sgs-shop-filters__group-heading ~ .sgs-shop-filters__group-heading ) ) + :not( .sgs-shop-filters__group-heading ) {
+	padding-bottom: 18px;
+	border-bottom: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+/* The segmented row before the script builds it: WooCommerce's chips as one bordered row, "All" drawn first. */
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items {
+	display: flex;
+	flex: 1 1 100%;
+	flex-wrap: nowrap;
+	gap: 0;
+	width: 100%;
+	margin: 0 0 var(--wp--preset--spacing--10, 0.5rem);
+	padding: 0;
+	border: 1px solid var(--sgs-filter-line, var(--wp--preset--color--border));
+}
+
+.sgs-shop-filters-plain .sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items {
+	margin-bottom: 0;
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items::before {
+	content: var(--sgs-segmented-all-label, "All");
+	display: flex;
+	flex: 1 1 0;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 8px;
+	font-size: var(--sgs-filter-option-size, var(--wp--preset--font-size--small, 0.875rem));
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items:has( [aria-checked="true"] )::before {
+	background: transparent;
+	color: var(--wp--preset--color--text);
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute button.wc-block-product-filter-chips__item {
+	flex: 1 1 0;
+	justify-content: center;
+	min-height: 44px;
+	margin: 0;
+	padding: 0 8px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	color: var(--wp--preset--color--text);
+	font: inherit;
+	font-size: var(--sgs-filter-option-size, var(--wp--preset--font-size--small, 0.875rem));
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute button.wc-block-product-filter-chips__item[aria-checked="true"] {
+	background: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary));
+	color: var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--text-inverse));
+}
+
+.sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__count {
+	display: none;
 }

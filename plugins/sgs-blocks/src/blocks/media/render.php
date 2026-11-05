@@ -593,9 +593,10 @@ if ( 'image' === $media_type ) {
 
 	foreach ( $tier_imgs as $tier_key => $tier_url ) {
 		$image_html .= sprintf(
-			'<img src="%s" alt="%s"%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="lazy" decoding="async" />',
+			'<img src="%s" alt="%s"%s%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="lazy" decoding="async" />',
 			esc_url( $tier_url ),
 			esc_attr( $image_alt ),
+			sgs_image_size_attrs( (string) $tier_url ),
 			$img_aria_hidden,
 			esc_attr( $tier_key )
 		);

@@ -338,7 +338,7 @@ function sgs_expand_fx_path_route( string $block_content ): string {
 	 * BLOCK INSTANCE — two travelling blocks on the same page never collide.
 	 */
 	$root_tag_html = sgs_extract_root_opening_tag( $rest );
-	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxpath' );
+	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxpath', null, true );
 	$anchor_name   = '--sgs-fx-anchor-' . $scope_class;
 	$target_class  = 'sgs-fx-anchor-target-' . \substr( \md5( $scope_class ), 0, 8 );
 

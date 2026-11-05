@@ -54,6 +54,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-responsive.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-icon-signed-in-dot.php';
 
 // ── Link: Site Info first, the icon's own typed link as the fallback ─────────
 // Core resolves a bound `linkUrl` into $attributes before this runs, so a blank Site Info key leaves '' there and the
@@ -233,6 +234,9 @@ if ( $is_outline ) {
 $icon_align = (string) ( $attributes['iconAlign'] ?? 'start' );
 $icon_align = in_array( $icon_align, array( 'start', 'center', 'end' ), true ) ? $icon_align : 'start';
 $classes    = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source, 'sgs-icon--shape-' . $shape, $uid );
+if ( ! empty( $attributes['showSignedInDot'] ) ) {
+	$classes[] = 'sgs-icon--has-dot';
+}
 if ( $show_bg ) {
 	$classes[] = 'sgs-icon--has-bg';
 }
@@ -622,7 +626,7 @@ if ( 'dashicon' === $icon_source ) {
 $image_attrs = '' === $link_url && '' !== $aria_label && $group['in_group'] && ! $has_label ? ' role="img" aria-label="' . esc_attr( $aria_label ) . '"' : '';
 // An outline shape with something to paint (a background or a stroke) draws its SVG behind the glyph.
 $outline_svg = $is_outline && ( $show_bg || array() !== $outline_w ) ? sgs_icon_outline_svg( $shape, $uid . '-oc' ) : '';
-$output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $outline_svg . $glyph_html . '</span>';
+$output      = '<span class="sgs-icon__shape"' . $image_attrs . '>' . $outline_svg . $glyph_html . sgs_icon_signed_in_dot_html( $attributes ) . '</span>';
 $label_html  = $has_label ? '<span class="sgs-icon__label-text">' . sgs_rich_text_kses( $label_text, false ) . '</span>' : '';
 
 // ── Accessible name and link (step 10) ───────────────────────────────────────
@@ -660,6 +664,9 @@ if ( '' !== $bound_link_key ) {
 if ( $group['in_group'] ) {
 	$wrapper_extra['role'] = 'listitem';
 }
+
+$scoped_css[] = sgs_icon_signed_in_dot_css( $attributes, $shape_sel );
+$scoped_css      = array_filter( $scoped_css );
 
 if ( $scoped_css ) {
 	// wp_strip_all_tags (not esc_html) blocks a </style> breakout and keeps CSS combinators. Every value is

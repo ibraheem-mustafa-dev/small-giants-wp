@@ -55,6 +55,26 @@ final class Sgs_Toast {
 	}
 
 	/**
+	 * Enqueue the toast stylesheet.
+	 *
+	 * Called when a block asks for the toast, which happens while the template renders
+	 * and so before `wp_head`: the sheet prints in <head> and no toast rule applies
+	 * after first paint. `render()` calls it again as a safety net; the repeat is a no-op.
+	 */
+	private static function enqueue_style(): void {
+		if ( \is_admin() ) {
+			return;
+		}
+
+		\wp_enqueue_style(
+			'sgs-toast',
+			\plugins_url( 'assets/toast/toast.css', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
+			array(),
+			\defined( 'SGS_BLOCKS_VERSION' ) ? \SGS_BLOCKS_VERSION : false
+		);
+	}
+
+	/**
 	 * Ask for the toast region on this page load.
 	 *
 	 * Called from the render.php of every block whose frontend can produce a
@@ -62,6 +82,7 @@ final class Sgs_Toast {
 	 */
 	public static function request(): void {
 		self::$requested = true;
+		self::enqueue_style();
 
 		// The site's own "added" sentences, merged into the toast store's
 		// server state so the view modules read state.addedToBag and
@@ -145,12 +166,7 @@ final class Sgs_Toast {
 			return;
 		}
 
-		\wp_enqueue_style(
-			'sgs-toast',
-			\plugins_url( 'assets/toast/toast.css', \dirname( __DIR__ ) . '/sgs-blocks.php' ),
-			array(),
-			SGS_BLOCKS_VERSION
-		);
+		self::enqueue_style();
 
 		$success_icon = self::icon( 'circle-check' );
 		$error_icon   = self::icon( 'circle-x' );

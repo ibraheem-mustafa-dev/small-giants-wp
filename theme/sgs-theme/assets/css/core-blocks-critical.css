@@ -6,8 +6,8 @@
  * prevent a Flash of Unstyled Content for visible elements.
  *
  * Everything below the fold (footer, social icons, hover animations,
- * dropdowns) lives in core-blocks.css, which is deferred via the
- * defer_non_critical_css filter in functions.php.
+ * dropdowns) lives in core-blocks.css, also loaded render-blocking from
+ * functions.php::enqueue_styles.
  *
  * @package SGS\Theme
  */

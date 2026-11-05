@@ -189,7 +189,11 @@ function inject_image_controls( string $block_content, array $block ): string {
 	$sgs_scope_class = '';
 	$add_classes     = array( 'sgs-has-image-controls' );
 	if ( ! empty( $css_vars ) ) {
-		$sgs_scope_class = sgs_scope_class_for_root( sgs_extract_root_opening_tag( substr( $block_content, $sgs_root_offset ) ), 'sgs-imgctl' );
+		$sgs_scope_class = sgs_scope_class_for_root(
+			sgs_extract_root_opening_tag( substr( $block_content, $sgs_root_offset ) ),
+			'sgs-imgctl',
+			static fn( string $scope_class ): string => '.' . $scope_class . '{' . implode( ';', $css_vars ) . '}'
+		);
 		$add_classes[]   = $sgs_scope_class;
 	}
 	$classes_str = implode( ' ', $add_classes );

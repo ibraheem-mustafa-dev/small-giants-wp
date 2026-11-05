@@ -4,14 +4,14 @@
  * Layout per device tier, icons on/off, per-endpoint icon (Lucide only — the
  * server-side `sgs_account_menu_icon_css()` helper resolves names through
  * `sgs_get_lucide_icon()`, so any other source would be a silently dead
- * control), and which optional endpoints to hide. Dashboard and Log out are
- * never offered here — `sgs_account_never_hide()` (PHP) refuses them anyway,
- * so offering the checkbox would be a control that pretends to work.
+ * control), and which optional endpoints to hide. Log out is never offered here:
+ * `sgs_account_never_hide()` (PHP) refuses it, so a checkbox would pretend to work.
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { ResponsiveControl, IconPicker } from '../../components';
+import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
+import { Toggle } from './extraControls';
 import { patchTier } from '../../utils';
 
 const DEFAULT_MENU_ICONS = {
@@ -26,9 +26,11 @@ const DEFAULT_MENU_ICONS = {
 };
 
 // Endpoints an operator may legitimately hide (e.g. Downloads on a shop with
-// nothing downloadable). Dashboard/Log out are deliberately absent — the
-// server-side hide list refuses them regardless of what this control sends.
+// nothing downloadable). Log out is deliberately absent: the server-side hide
+// list refuses it regardless of what this control sends. With the Dashboard
+// hidden, the account root shows the first visible tab.
 const HIDEABLE_ENDPOINTS = [
+	{ key: 'dashboard', label: __( 'Dashboard', 'sgs-blocks' ) },
 	{ key: 'downloads', label: __( 'Downloads', 'sgs-blocks' ) },
 	{ key: 'payment-methods', label: __( 'Payment methods', 'sgs-blocks' ) },
 	{ key: 'edit-address', label: __( 'Addresses', 'sgs-blocks' ) },
@@ -54,7 +56,25 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 	};
 
 	return (
-		<PanelBody title={ __( 'Menu', 'sgs-blocks' ) } initialOpen>
+		<>
+		<ToolsPanel
+			label={ __( 'Menu', 'sgs-blocks' ) }
+			resetAll={ () =>
+				setAttributes( {
+					navLayout: undefined,
+					showMenuIcons: undefined,
+					navIcons: undefined,
+					menuActiveIndicatorWidth: undefined,
+					menuOrdersCount: undefined,
+				} )
+			}
+		>
+			<ToolsPanelItem
+				label={ __( 'Menu layout', 'sgs-blocks' ) }
+				hasValue={ () => !! navLayout && Object.keys( navLayout ).length > 0 }
+				onDeselect={ () => setAttributes( { navLayout: undefined } ) }
+				isShownByDefault
+			>
 			<ResponsiveControl label={ __( 'Menu layout', 'sgs-blocks' ) }>
 				{ ( breakpoint ) => (
 					<ToggleGroupControl
@@ -76,14 +96,63 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				) }
 			</ResponsiveControl>
+			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Active item bar width', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuActiveIndicatorWidth && Object.keys( attributes.menuActiveIndicatorWidth ).length > 0 }
+				onDeselect={ () => setAttributes( { menuActiveIndicatorWidth: undefined } ) }
+			>
+			<ResponsiveOverride
+				label={ __( 'Active item bar width', 'sgs-blocks' ) }
+				value={ attributes.menuActiveIndicatorWidth }
+				onChange={ ( obj ) => setAttributes( { menuActiveIndicatorWidth: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						presets
+						label={ __( 'Active item bar width', 'sgs-blocks' ) }
+						hideLabelFromVision
+					help={ __( 'Empty keeps 3px.', 'sgs-blocks' ) }
+						value={ ownValue ?? '' }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
+			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.menuOrdersCount }
+				onDeselect={ () => setAttributes( { menuOrdersCount: undefined } ) }
+			>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="menuOrdersCount"
+				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+			/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Show menu icons', 'sgs-blocks' ) }
+				hasValue={ () => undefined !== showMenuIcons }
+				onDeselect={ () => setAttributes( { showMenuIcons: undefined } ) }
+				isShownByDefault
+			>
 			<ToggleControl
 				__nextHasNoMarginBottom
 				label={ __( 'Show menu icons', 'sgs-blocks' ) }
 				checked={ ! isFalse( showMenuIcons ) }
 				onChange={ ( value ) => setAttributes( { showMenuIcons: value } ) }
 			/>
+			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Menu icons', 'sgs-blocks' ) }
+				hasValue={ () => !! navIcons && Object.keys( navIcons ).length > 0 }
+				onDeselect={ () => setAttributes( { navIcons: undefined } ) }
+			>
 			{ showMenuIcons !== false &&
 				Object.keys( DEFAULT_MENU_ICONS ).map( ( endpoint ) => (
 					<IconPicker
@@ -96,6 +165,8 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 						}
 					/>
 				) ) }
+			</ToolsPanelItem>
+		</ToolsPanel>
 
 			<PanelBody title={ __( 'Hide menu items', 'sgs-blocks' ) } initialOpen={ false }>
 				{ HIDEABLE_ENDPOINTS.map( ( { key, label } ) => (
@@ -108,7 +179,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					/>
 				) ) }
 			</PanelBody>
-		</PanelBody>
+		</>
 	);
 }
 

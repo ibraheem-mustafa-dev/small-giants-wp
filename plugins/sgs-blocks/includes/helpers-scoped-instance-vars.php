@@ -25,32 +25,65 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Placeholder class name the rule builders receive while the real scope class
+ * is still being decided. It is replaced by the minted class in the final CSS.
+ */
+const SGS_SCOPE_PLACEHOLDER = 'sgs-scope-placeholder';
+
+/**
  * Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern
  * every migrated render.php already emits as its scoping selector, e.g.
  * `sgs-info-box-a1b2c3d4`) within a root tag's class attribute, or mint a
- * fresh scoping class with the given prefix when none exists. This function
- * only DECIDES the class name — the caller is responsible for adding it to
- * the root tag's class list.
+ * scoping class with the given prefix when none exists. This function only
+ * DECIDES the class name; the caller adds it to the root tag's class list.
  *
- * @param string $root_tag_html The root element's OPENING tag markup only
- *                               (e.g. `<div class="…">`), BEFORE any classes
- *                               this request is about to add.
- * @param string $prefix        Fallback prefix (no trailing hyphen) used to
- *                               mint a new class when no uid class exists,
- *                               e.g. 'sgs-hover', 'sgs-parallax', 'sgs-imgctl'.
+ * A minted suffix is the hash of the CSS rules it scopes, so the same rules
+ * give the same class on every request, render order, editor and REST render.
+ * Blocks with identical rules share one class and the collector keeps one
+ * copy of the rule. When `$rules_for_scope` is null the root tag markup is
+ * hashed instead.
+ *
+ * `$per_instance` is for scopes whose CSS value names the instance itself (an
+ * anchor name): the nth block in a request with the same seed gets a seed
+ * that includes n, which is stable for a given page because render order is.
+ *
+ * @param string        $root_tag_html   The root element's OPENING tag markup only,
+ *                                        BEFORE any classes this request adds.
+ * @param string        $prefix          Fallback prefix (no trailing hyphen),
+ *                                        e.g. 'sgs-imgctl'.
+ * @param callable|null $rules_for_scope Receives a scope class name (no leading
+ *                                        dot) and returns the CSS text scoped by it.
+ * @param bool          $per_instance    Give each repeat of the same seed its own class.
  * @return string Class name (no leading dot) to use as the scoping selector.
  */
-function sgs_scope_class_for_root( string $root_tag_html, string $prefix ): string {
+function sgs_scope_class_for_root( string $root_tag_html, string $prefix, ?callable $rules_for_scope = null, bool $per_instance = false ): string {
 	if ( preg_match( '/\bclass=["\']([^"\']*)["\']/', $root_tag_html, $class_match ) ) {
 		if ( preg_match( '/sgs-[a-z-]+-[0-9a-f]{8}/', $class_match[1], $uid_match ) ) {
 			return $uid_match[0];
 		}
 	}
-	// No existing uid class — mint one. Uniqueness only needs to hold within
-	// a single request (multiple instances of the same block on one page
-	// must not collide); microtime()+wp_rand() over the tag markup gives a
-	// fresh 8-hex suffix per call, matching the `sgs-<slug>-<8hex>` shape.
-	return $prefix . '-' . substr( \md5( $root_tag_html . \microtime( true ) . \wp_rand() ), 0, 8 );
+	$seed = $prefix . '|' . ( null === $rules_for_scope ? $root_tag_html : (string) $rules_for_scope( SGS_SCOPE_PLACEHOLDER ) );
+	if ( $per_instance ) {
+		$seen          = &sgs_scope_seed_counts();
+		$n             = $seen[ $seed ] ?? 0;
+		$seen[ $seed ] = $n + 1;
+		$seed .= '|' . $n;
+	}
+	return $prefix . '-' . substr( \md5( $seed ), 0, 8 );
+}
+
+/**
+ * Per-request count of how many times each per-instance seed has been used.
+ *
+ * @param bool $reset Clear the counts (a new request starts empty; tests call this).
+ * @return array<string, int>
+ */
+function &sgs_scope_seed_counts( bool $reset = false ): array {
+	static $counts = array();
+	if ( $reset ) {
+		$counts = array();
+	}
+	return $counts;
 }
 
 /**

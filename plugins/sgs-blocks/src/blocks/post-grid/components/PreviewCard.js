@@ -130,7 +130,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 	const pinCard    = pinned ? { display: 'flex', flexDirection: 'column' } : {};
 	const pinContent = pinned ? { display: 'flex', flexDirection: 'column', flex: '1 1 auto' } : {};
 	const pinExcerpt = pinned ? { flex: '1 1 auto' } : {};
-	const pinLink    = pinned ? { alignSelf: 'stretch' } : {};
+	const pinLink    = pinned ? { alignSelf: 'stretch', marginTop: 'auto' } : {};
 
 	// metaLayout 'inline' wraps the flat/minimal category label and the meta line in one flex row, as render_card() does.
 	const isInlineLabel = showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' );

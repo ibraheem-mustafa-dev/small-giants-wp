@@ -371,3 +371,25 @@
 		stroke-width: max(2px, calc(2 * var(--sgs-icon-outline-w, 0px)));
 	}
 }
+
+/* -- Signed-in dot ------------------------------------------------------------
+   The element always prints (page caches serve one HTML to every visitor); it shows only for a signed-in visitor. */
+.sgs-icon--has-dot .sgs-icon__shape {
+	position: relative;
+}
+
+.sgs-icon__dot {
+	display: none;
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	inline-size: 8px;
+	block-size: 8px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--accent, currentColor);
+	pointer-events: none;
+}
+
+body.logged-in .sgs-icon__dot {
+	display: block;
+}

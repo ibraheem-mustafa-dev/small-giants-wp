@@ -336,6 +336,161 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "accountFormGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "OUTER",
+        "css_element": "accountForm"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "accountPasswordHelperText"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountPasswordHelperTypeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "password-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "addressHelper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressHelperTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "address-helper"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "cardBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -696,23 +851,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "fieldBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "fieldInput"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "fieldBorderWidth",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "fieldInput"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "fieldFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -756,14 +894,6 @@
       "attr": "fieldLineHeight",
       "fields": {
         "css_property": "line-height",
-        "css_element": "fieldInput"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "fieldMinHeight",
-      "fields": {
-        "css_property": "min-height",
         "css_element": "fieldInput"
       }
     },
@@ -889,6 +1019,316 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "guest-line"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "headerBack"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "headerEyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerEyebrowTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "header-eyebrow"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "headerIntro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerIntroTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "header-intro"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "headerMeta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerMetaTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "header-meta"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerRuleColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "headerRule"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "headerTitle"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "header-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerTitleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "header-title"
       }
     },
     {
@@ -1082,10 +1522,92 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "menuFontFamily",
+      "attr": "loginButtonPreset",
+      "fields": {
+        "css_property": "background-color,border-color,border-radius,color,font-weight,letter-spacing,text-transform",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuActiveIndicatorWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "menuIndicator",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "menuCount"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountFontFamily",
       "fields": {
         "css_property": "font-family",
-        "css_element": "menuLink"
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "menu-count"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuCountTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "menu-count"
       }
     },
     {
@@ -1117,38 +1639,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "menuFontStyle",
-      "fields": {
-        "css_property": "font-style",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "menuFontWeight",
-      "fields": {
-        "css_property": "font-weight",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "menuLetterSpacing",
-      "fields": {
-        "css_property": "letter-spacing",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "menuLineHeight",
-      "fields": {
-        "css_property": "line-height",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "menuTextAlign",
       "fields": {
         "css_property": "justify-content,text-align",
@@ -1158,36 +1648,165 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "menuTextColourHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "menuLink",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "menuTextDecoration",
-      "fields": {
-        "css_property": "text-decoration",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "menuTextTransform",
-      "fields": {
-        "css_property": "text-transform",
-        "css_element": "menuLink"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "menuTextWrap",
       "fields": {
         "css_property": "text-wrap",
         "css_element": "menuLink"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersEmptyTextType"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTextTypeTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "orders-empty-text"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersEmptyTitle"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyTitleTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "orders-empty-title"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "ordersRows"
       }
     },
     {
@@ -16919,6 +17538,32 @@
       "fields": {
         "css_property": "width",
         "css_element": "shape"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "signedInDot"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotRingColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "signedInDot"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotRingWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "signedInDot"
       }
     },
     {
@@ -33939,6 +34584,116 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "accountFormColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "OUTER",
+        "css_element": "accountForm"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountSaveFullWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "accountSave"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountSectionColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "accountSection"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "accountSectionRuleColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "accountSectionRule"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressCardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "addressCard"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "addressTitleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "addressTitle"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "authTabGap",
       "fields": {
         "css_property": "gap",
@@ -34006,6 +34761,15 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "fieldBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -34017,6 +34781,22 @@
       "attr": "fieldBorderStyle",
       "fields": {
         "css_property": "border-style",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "fieldInput"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "fieldMinHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_element": "fieldInput"
       }
     },
@@ -34055,10 +34835,24 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "headerAccountRule",
+      "fields": {
+        "css_element": "headerRule"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "headingColourGradient",
       "fields": {
         "css_property": "color-gradient",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "hideRememberMe",
+      "fields": {
+        "css_element": "rememberMe"
       }
     },
     {
@@ -34078,6 +34872,145 @@
         "css_property": "display",
         "css_layer": "OUTER",
         "css_element": "fieldLabel"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "loginButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonFullWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginLink"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginLinkColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginLink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginLinkPlacement",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "OUTER",
+        "css_element": "loginRow"
       }
     },
     {
@@ -34139,6 +35072,16 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "menuTextColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "menuLink",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "orderActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -34153,6 +35096,244 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "order-thumbs"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersDate"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersEmpty"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "ordersEmpty"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "ordersEmpty"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersEmptyState",
+      "fields": {
+        "css_element": "ordersEmpty"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersLook",
+      "fields": {
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersNumber"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPill"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillCancelledBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillCancelled"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillCancelledText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillCancelled"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillCompletedBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillCompleted"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillCompletedText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillCompleted"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFailedBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillFailed"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFailedText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillFailed"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillOnHoldBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillOnHold"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillOnHoldText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillOnHold"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillPendingBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillPending"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillPendingText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillPending"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillProcessingBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillProcessing"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillProcessingText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillProcessing"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillRefundedBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersPillRefunded"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillRefundedText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPillRefunded"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersPill"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersRows",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "ordersTotal"
       }
     },
     {
@@ -39857,6 +41038,37 @@
         "css_property": "background-image",
         "css_element": "label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "showSignedInDot",
+      "fields": {
+        "css_element": "signedInDot"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotRight",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "signedInDot"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "signedInDot"
+      }
+    },
+    {
+      "slug": "sgs/icon",
+      "attr": "signedInDotTop",
+      "fields": {
+        "css_property": "top",
+        "css_element": "signedInDot"
       }
     },
     {

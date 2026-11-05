@@ -1102,6 +1102,54 @@ if ( ! function_exists( 'attachment_url_to_postid' ) ) {
 	}
 }
 
+// Image-size lookups (includes/helpers-image-dimensions.php): no attachment metadata, no uploads folder, so a URL yields
+// no size and the <img> prints without width/height, as for any file the harness cannot read. The one transient the
+// harness answers is the product manifest's cache key (`sgs_manifest_v<N>_<product id>_…`, from manifest-stub.php's
+// $GLOBALS['sgs_qa_manifest']), whichever stub file loads first; every other key reads as unset.
+if ( ! function_exists( 'get_transient' ) ) {
+	function get_transient( $key ) {
+		$manifest = $GLOBALS['sgs_qa_manifest'] ?? null;
+		$id       = (int) ( $GLOBALS['sgs_qa_product']['id'] ?? 0 );
+		if ( is_array( $manifest ) && 1 === preg_match( '/^sgs_manifest_v\d+_(\d+)_/', (string) $key, $m ) && (int) $m[1] === $id ) {
+			return $manifest;
+		}
+		return false;
+	}
+}
+if ( ! function_exists( 'set_transient' ) ) {
+	function set_transient( $key, $value, $expiry = 0 ) {
+		return true;
+	}
+}
+if ( ! function_exists( 'wp_get_attachment_metadata' ) ) {
+	function wp_get_attachment_metadata( $id ) {
+		return false;
+	}
+}
+if ( ! function_exists( 'wp_getimagesize' ) ) {
+	function wp_getimagesize( $path ) {
+		return false;
+	}
+}
+if ( ! function_exists( 'content_url' ) ) {
+	function content_url( $path = '' ) {
+		return 'https://example.test/wp-content' . ( '' !== $path ? '/' . ltrim( $path, '/' ) : '' );
+	}
+}
+if ( ! function_exists( 'trailingslashit' ) ) {
+	function trailingslashit( $value ) {
+		return rtrim( (string) $value, "/\\" ) . '/';
+	}
+}
+if ( ! function_exists( 'wp_basename' ) ) {
+	function wp_basename( $path ) {
+		return basename( (string) $path );
+	}
+}
+if ( ! defined( 'WP_CONTENT_DIR' ) ) {
+	define( 'WP_CONTENT_DIR', sys_get_temp_dir() . '/sgs-harness-no-content' );
+}
+
 // Google_Reviews_Settings::init(), which registers admin_menu/admin_init/
 // wp_ajax_* hooks via add_action() and pulls in register_setting(),
 // add_options_page(), add_settings_section() and friends — none of which
