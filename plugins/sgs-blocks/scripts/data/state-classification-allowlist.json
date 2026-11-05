@@ -5,6 +5,16 @@
       "block": "sgs/choice-flow",
       "attribute": "stepperActiveColour",
       "reason": "In no block.json manifest element, so the classifier has no state declaration to read; it stays untagged (states wave plan, 2026-10-20, step 2 root cause 2)."
+    },
+    {
+      "block": "sgs/account",
+      "attribute": "ordersPillCompletedBackground",
+      "reason": "'completed' is an order status shown on the Orders list pill (the row's status class), not an interaction state; there is no resting twin to pair it with."
+    },
+    {
+      "block": "sgs/account",
+      "attribute": "ordersPillCompletedText",
+      "reason": "'completed' is an order status shown on the Orders list pill (the row's status class), not an interaction state; there is no resting twin to pair it with."
     }
   ]
 }
