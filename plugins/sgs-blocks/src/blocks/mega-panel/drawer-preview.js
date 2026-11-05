@@ -21,7 +21,7 @@
 
 import { colourVar, isCssGradient } from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerTagTypePreviewDecls, drawerCardDescPreviewCss } from './drawer-preview-extras';
+import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -90,6 +90,7 @@ export default function drawerPreviewCss( scope, v ) {
 	const aside = `${ scope } .sgs-mega-aside`;
 	return (
 		drawerPreviewBaseCss( scope, v ) +
+		drawerCardTagPreviewCss( aside, v ) +
 		drawerCardLinkPreviewCss( aside, v ) +
 		( v.drawerCardCompact && 'stacked-overlay' !== v.drawerCardLayout ? '' : drawerCardDescPreviewCss( aside, v ) )
 	);
@@ -178,17 +179,6 @@ function drawerPreviewBaseCss( scope, v ) {
 	css += `${ aside } > :nth-child(4){display:none;}`;
 	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 
-	const tagPad = boxSideDecls( v.drawerCardTagPadding, 'padding' );
-	const tagType = drawerTagTypePreviewDecls( v );
-	if ( v.drawerCardTagSize || tagPad || tagType ) {
-		css +=
-			`${ aside } > :nth-child(2) .wp-block-sgs-label{` +
-			tagType +
-			decl( 'font-size', v.drawerCardTagSize ) +
-			tagPad +
-			( v.drawerCardTagSize ? 'line-height:1.5;' : '' ) +
-			'}';
-	}
 	if ( v.drawerCardTitleSize ) {
 		css += `${ aside } > :nth-child(3){font-size:${ v.drawerCardTitleSize };}`;
 	}
