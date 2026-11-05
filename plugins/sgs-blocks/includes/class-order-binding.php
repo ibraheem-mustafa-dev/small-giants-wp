@@ -59,9 +59,12 @@ final class Order_Binding {
 	}
 
 	/**
-	 * The bound value, or null when the visitor may not see this order.
+	 * The bound value, or null when the visitor may not see this order (the block then keeps its saved text).
 	 *
-	 * @param mixed $source_args Binding args (`key`).
+	 * An optional `format` arg places the value inside a sentence: its first `%s` becomes the value, e.g.
+	 * `{"key":"number","format":"Thank you, order %s."}`. A format without `%s` is ignored.
+	 *
+	 * @param mixed $source_args Binding args (`key`, optional `format`).
 	 * @return string|null
 	 */
 	public static function get_value( $source_args ): ?string {
@@ -73,7 +76,13 @@ final class Order_Binding {
 		if ( null === $order ) {
 			return null;
 		}
-		return \sanitize_text_field( (string) $order->get_order_number() );
+		$value  = \sanitize_text_field( (string) $order->get_order_number() );
+		$format = isset( $source_args['format'] ) ? \sanitize_text_field( (string) $source_args['format'] ) : '';
+		$at     = '' !== $format ? \strpos( $format, '%s' ) : false;
+		if ( false === $at ) {
+			return $value;
+		}
+		return \substr( $format, 0, $at ) . $value . \substr( $format, $at + 2 );
 	}
 
 	/**
@@ -99,7 +108,7 @@ final class Order_Binding {
 			return null;
 		}
 		if ( $order->get_user_id() > 0 ) {
-			// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment -- WooCommerce's own filter.
+			// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, honoured as WooCommerce does.
 			$verify_known = (bool) \apply_filters( 'woocommerce_order_received_verify_known_shoppers', true );
 			return ( ! $verify_known || $order->get_user_id() === \get_current_user_id() ) ? $order : null;
 		}
@@ -117,11 +126,13 @@ final class Order_Binding {
 		if ( $session instanceof \WC_Session && $order->get_id() === (int) $session->get( 'store_api_draft_order' ) ) {
 			return true;
 		}
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, honoured as WooCommerce does.
 		$grace   = (int) \apply_filters( 'woocommerce_order_email_verification_grace_period', 10 * MINUTE_IN_SECONDS, $order, 'order-received' );
 		$created = $order->get_date_created();
 		if ( $created instanceof \WC_DateTime && \time() - $created->getTimestamp() <= $grace ) {
 			return true;
 		}
+		// phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's own filter, honoured as WooCommerce does.
 		if ( ! (bool) \apply_filters( 'woocommerce_order_email_verification_required', true, $order, 'order-received' ) ) {
 			return true;
 		}
