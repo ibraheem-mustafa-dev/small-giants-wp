@@ -1,12 +1,12 @@
 {
-	"generatedAt": "2026-11-03T23:20:10.371Z",
-	"total": 13,
+	"generatedAt": "2026-11-05T13:01:47.693Z",
+	"total": 15,
 	"violations": 0,
 	"findings": [
 		{
 			"file": "src/blocks/account/edit.js",
 			"block": "sgs/account",
-			"line": 319,
+			"line": 373,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -60,6 +60,27 @@
 			"ancestors": [
 				"div",
 				"Disabled"
+			]
+		},
+		{
+			"file": "src/blocks/free-delivery-bar/edit.js",
+			"block": "sgs/free-delivery-bar",
+			"line": 411,
+			"wrapped": true,
+			"ancestors": [
+				"",
+				"div",
+				"SsrPreviewGuard"
+			]
+		},
+		{
+			"file": "src/blocks/gift-order/edit.js",
+			"block": "sgs/gift-order",
+			"line": 102,
+			"wrapped": true,
+			"ancestors": [
+				"div",
+				"SsrPreviewGuard"
 			]
 		},
 		{
@@ -120,7 +141,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3534,
+			"line": 3546,
 			"wrapped": true,
 			"ancestors": [
 				"",

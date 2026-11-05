@@ -41,12 +41,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_border_radius_tiers` | `function sgs_border_radius_tiers( array $attributes ): array` | Resolve a block's `borderRadius` attribute into desktop/tablet/mobile corner objects, shape-agnostic (Phase 2 tier-object migration… | no markup |
 | `sgs_label_box_css_rule` | `function sgs_label_box_css_rule( array $box, string $selector ): string` | Build the SCOPED CSS for a label-style box on ONE selector. | no markup |
 
-#### `includes/helpers-brand-glyphs.php` — 8 function(s)
+#### `includes/helpers-brand-glyphs.php` — 9 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_brand_registry` | `function sgs_brand_registry(): array` | Every registry entry, keyed by slug, in the registry's order. Entries with an unsafe slug or colour are dropped, so a bad edit to the JSON… | no markup |
 | `sgs_brand_by_slug` | `function sgs_brand_by_slug( string $slug ): ?array` | One registry entry by its slug. | no markup |
+| `sgs_brand_slug_colour` | `function sgs_brand_slug_colour( string $value ): string` | The brand colour a bare registry slug names ('whatsapp' is #25D366), for a colour setting whose slug the site palette does not define. A… | no markup |
 | `sgs_brand_by_site_info_key` | `function sgs_brand_by_site_info_key( string $key ): ?array` | The registry entry a Site Info key links to. | no markup |
 | `sgs_brand_by_lucide_name` | `function sgs_brand_by_lucide_name( string $name ): ?array` | The brand a Lucide icon draws, when that icon is a brand's own mark (Instagram's `instagram`). Contact entries (phone, email, address)… | no markup |
 | `sgs_brand_glyph_svg` | `function sgs_brand_glyph_svg( array $brand, string $class_name = '', int $size = 24, bool $branded = false )…` | A registry glyph as inline SVG, decorative (`aria-hidden`): the caller's text or label names the action. | tags circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-hidden |
@@ -131,7 +132,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_button_element_line_height` | `function sgs_button_element_line_height( $value ): string` | Sanitise a button line-height: a unitless number or a CSS length. | no markup |
-| `sgs_button_element_text_align` | `function sgs_button_element_text_align( $value ): string` | Allow-list a button text-align keyword. Used by blocks that emit a `{prefix}TextAlign` rule for their own built-in CTA; the style helper… | no markup |
+| `sgs_button_element_text_align_css` | `function sgs_button_element_text_align_css( string $selector, $value ): string` | Scoped CSS for the text alignment of a built-in CTA, per breakpoint. | no markup |
 | `sgs_button_element_style_css` | `function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer =…` | Build a scoped CSS string (base rule + hover/focus rule) for a built-in button-like element, reading a prefixed attribute set. | no markup |
 
 #### `includes/helpers-cart-panel-css.php` — 1 function(s)
@@ -222,7 +223,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_css_length_value_preset_slugs` | `function sgs_css_length_value_preset_slugs(): array` | Return the currently-registered WP spacing-preset slugs (e.g. ['10','20', '30','40','50','60']), read live from theme.json via… | no markup |
 | `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. | no markup |
 | `sgs_font_weight_value` | `function sgs_font_weight_value( $value ): string` | A font weight, safe to print after `font-weight:`. | no markup |
-| `sgs_css_single_length_value` | `function sgs_css_single_length_value( $raw ): string` | A SINGLE CSS length, safe to place inside `max()` and `blur()`. | no markup |
+| `sgs_css_single_length_value` | `function sgs_css_single_length_value( $raw, bool $allow_negative = false ): string` | A SINGLE CSS length, safe to place inside `max()` and `blur()`. | no markup |
 | `sgs_css_length_value_self_test` | `function sgs_css_length_value_self_test()` | Run every accept/reject/backward-compat case and report an honest count. | tags script |
 
 #### `includes/helpers-css-sizing-keyword.php` — 2 function(s)
@@ -283,13 +284,23 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_form_submit_shadow_map` | `function sgs_form_submit_shadow_map(): array` | The submit button's shadow attribute names for sgs_shadow_decls(). | no markup |
 | `sgs_form_submit_motion_css` | `function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '' ): string` | The scoped CSS for the submit button's shadow and lift. | no markup |
 
-#### `includes/helpers-gallery-grid-css.php` — 3 function(s)
+#### `includes/helpers-free-delivery.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_free_delivery_threshold` | `function sgs_free_delivery_threshold( $override ): ?float` | Resolve the free-delivery threshold. | no markup |
+
+#### `includes/helpers-gallery-grid-css.php` — 7 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_gallery_wrapper_attributes` | `function sgs_gallery_wrapper_attributes( array $attributes ): array` | The gallery's attributes as SGS_Container_Wrapper should see them. | no markup |
 | `sgs_gallery_grid_owned_keys` | `function sgs_gallery_grid_owned_keys(): array` | The attributes that belong to the image grid, never to the wrapper. | no markup |
 | `sgs_gallery_grid_layout_css` | `function sgs_gallery_grid_layout_css( string $grid_sel, array $attributes ): string` | Scoped CSS for the grid layout's grid settings, on the image grid. | no markup |
+| `sgs_gallery_layout_tiers` | `function sgs_gallery_layout_tiers( array $attributes ): array` | The gallery's layout at each device tier, after the carousel rewrite. | no markup |
+| `sgs_gallery_layout_declarations` | `function sgs_gallery_layout_declarations( string $tier ): array` | The full declarations that make the image grid one layout at one device tier, resetting every property the other layouts set, so a narrower… | no markup |
+| `sgs_gallery_layout_css` | `function sgs_gallery_layout_css( string $grid_sel, array $attributes ): string` | The per-device layout override rules, on the image grid and its items. | no markup |
+| `sgs_gallery_scroll_css` | `function sgs_gallery_scroll_css( string $grid_sel, array $attributes ): string` | The swipe row's own settings on the image grid: the width of a card (`scrollItemWidth`, printed as `--sgs-scroll-item-width`, which only a… | no markup |
 
 #### `includes/helpers-global-settings.php` — 1 function(s)
 
@@ -375,7 +386,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. | tags button, div; aria aria-controls, aria-expanded, aria-label |
 
-#### `includes/helpers-inline-formats.php` — 6 function(s)
+#### `includes/helpers-inline-formats.php` — 8 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -384,7 +395,9 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_rich_text_sanitise_param` | `function sgs_rich_text_sanitise_param( $value ): string` | A REST argument sanitiser for typed rich text that prints inside a link or button: the sanitised markup, no link. | no markup |
 | `sgs_inline_format_palette_css` | `function sgs_inline_format_palette_css(): string` | The highlight colour rule for each palette slug that is safe in a selector. | no markup |
 | `sgs_inline_formats_enqueue` | `function sgs_inline_formats_enqueue(): void` | Enqueue the `sgs-inline-formats` stylesheet with its palette rules. | no markup |
-| `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format stylesheet when the block's markup holds a highlight or a photo. | no markup |
+| `sgs_basket_count_enqueue` | `function sgs_basket_count_enqueue(): void` | Load the basket-count view module, once per request; called only for markup holding a `sgs-basket-count` span. | no markup |
+| `sgs_basket_count_print` | `function sgs_basket_count_print( string $html ): string` | Empty each basket-count span, or fill it with the basket's item count on cart and checkout. | no markup |
+| `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format assets the block's markup needs. A highlight or a photo loads the stylesheet; a basket count… | no markup |
 
 #### `includes/helpers-item-effects.php` — 6 function(s)
 
@@ -414,11 +427,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_link_source_href` | `function sgs_link_source_href( string $source, string $typed_url ): string` | The resolved href alone, for a call site that prints its own anchor. Unescaped: the caller escapes with esc_url() as before. Pair with… | no markup |
 | `sgs_link_source_attrs_html` | `function sgs_link_source_attrs_html( string $source ): string` | The extra attributes a source puts on its link element, as escaped HTML with a leading space (' data-sgs-link-source="top"'), or '' for… | no markup |
 
-#### `includes/helpers-link-underline.php` — 1 function(s)
+#### `includes/helpers-link-underline.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_link_underline_css` | `function sgs_link_underline_css( array $attributes, $prefix, $selector, $paint = '' ): string` | CSS for how the links inside `$selector` are underlined. | no markup |
+| `sgs_link_underline_css` | `function sgs_link_underline_css( array $attributes, $prefix, $selector, $paint = '', $self = false ): string` | CSS for how the links inside `$selector` are underlined. | no markup |
+| `sgs_link_underline_self_css` | `function sgs_link_underline_self_css( array $attributes, $prefix, string $selector, string $mode, string…` | `sgs_link_underline_css()` for an element that is itself the link (`sgs/button`). | no markup |
 
 #### `includes/helpers-link.php` — 1 function(s)
 
@@ -468,7 +482,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… | no markup |
 | `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… | no markup |
 
-#### `includes/helpers-media.php` — 7 function(s)
+#### `includes/helpers-media.php` — 10 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -477,7 +491,10 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_content_image_claims_priority` | `function sgs_content_image_claims_priority( bool $leads_page = false ): bool` | Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and `fetchpriority="high"`; every… | no markup |
 | `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. | tags defs, linearGradient, polygon, span, stop, svg; aria aria-hidden |
 | `sgs_render_media` | `function sgs_render_media( $attrs, $context = '' )` | Render an image or video from a unified SGS media-slot attribute. | tags img, picture, source, video; aria aria-label |
-| `sgs_media_cover_crop_widens` | `function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int…` | Whether an image is cover-cropped into a box that draws it wider than the box. | no markup |
+| `sgs_media_cover_crop_hint_sizes` | `function sgs_media_cover_crop_hint_sizes( $raw ): string` | A `sizes` value from a per-device `displayWidth` (px the image is drawn at); a device without its own value inherits the wider device's. | no markup |
+| `sgs_media_cover_crop_plan` | `function sgs_media_cover_crop_plan( array $attributes, string $prefix, string $block_slug, int $attachment_id…` | Work out how a cover-cropped image is drawn relative to its box, and the `sizes` value that describes it. | no markup |
+| `sgs_media_cover_crop_widens` | `function sgs_media_cover_crop_widens( array $attributes, string $prefix, string $block_slug, int…` | Whether a cover-cropped image needs core's `auto` taken out of its `sizes` (see sgs_media_cover_crop_plan). | no markup |
+| `sgs_media_cover_crop_sizes` | `function sgs_media_cover_crop_sizes( array $attributes, string $prefix, string $block_slug, int…` | The concrete `sizes` value for a cover-cropped image whose drawn width is known on every device. | no markup |
 | `sgs_media_drop_auto_sizes` | `function sgs_media_drop_auto_sizes( $filtered_image )` | `wp_content_img_tag` filter: take core's `auto` out of `sizes` on an image marked `data-sgs-cover-crop`. | no markup |
 
 #### `includes/helpers-mega-render.php` — 3 function(s)
@@ -544,7 +561,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_preselect_axes_from_url` | `function sgs_preselect_axes_from_url( array $axes ): array` | The requested term slug per axis, keyed by taxonomy. | no markup |
 | `sgs_preselect_apply_to_manifest` | `function sgs_preselect_apply_to_manifest( array $manifest ): array` | Point a manifest's default at the combination the URL asks for. | no markup |
 
-#### `includes/helpers-responsive.php` — 15 function(s)
+#### `includes/helpers-responsive.php` — 16 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -557,6 +574,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_responsive_format_atom_value` | `function sgs_responsive_format_atom_value( $raw, $unit, $cast, $transform )` | Format one raw atom value into a CSS value string, or null if unusable. | no markup |
 | `sgs_responsive_sanitise_css_value` | `function sgs_responsive_sanitise_css_value( $value )` | Sanitise a free-text CSS length/expression value for a scoped <style>. | no markup |
 | `sgs_emit_responsive_css` | `function sgs_emit_responsive_css( $selector, array $prop_map, array $opts = array() )` | Emit scoped responsive CSS for object-model properties on one selector. | no markup |
+| `sgs_emit_tier_decls` | `function sgs_emit_tier_decls( string $selector, array $tiers ): string` | Print READY per-tier declaration lists on one selector. | no markup |
 | `sgs_canonicalise_responsive_attrs` | `function sgs_canonicalise_responsive_attrs( array $attrs )` | Canonicalisation ORACLE for object-model responsive attributes. | no markup |
 | `sgs_resolve_tier` | `function sgs_resolve_tier( $value, $tier = 'desktop', $default = null )` | Canonical tier-resolver — generalised cascade for both tri-state enums and scalar/null-marker values. Implements the contract: desktop… | no markup |
 | `sgs_emit_tier_rules` | `function sgs_emit_tier_rules( $uid_selector, $value, $css_on, $css_off = '', $default = 'off' )` | Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state ('inherit'\|'on'\|'off') responsive behaviour attribute, resolved… | no markup |
@@ -710,8 +728,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_site_info_item_sources` | `function sgs_site_info_item_sources(): array` | The Site Info sources an icon-list item can take its text from. | no markup |
-| `sgs_site_info_hours_groups` | `function sgs_site_info_hours_groups( bool $show_closed = false, string $closed_label = '' ): array` | Opening hours with consecutive days that share the same hours folded into one group, e.g. Mon to Sat all "9.30-17.30" is one group. A day… | no markup |
-| `sgs_site_info_hours_day_text` | `function sgs_site_info_hours_day_text( array $group ): string` | The day span of one hours group: "Mon" for a single day, "Mon–Sat" for a run. | no markup |
+| `sgs_site_info_hours_groups` | `function sgs_site_info_hours_groups( bool $show_closed = false, string $closed_label = '', bool $long_names =…` | Opening hours with consecutive days that share the same hours folded into one group, e.g. Mon to Sat all "9.30-17.30" is one group. A day… | no markup |
+| `sgs_site_info_hours_day_text` | `function sgs_site_info_hours_day_text( array $group, bool $long_names = false ): string` | The day span of one hours group: "Mon" for a single day, "Mon–Sat" for a run; with $long_names (a group built with full day names) a run… | no markup |
 | `sgs_site_info_hours_text` | `function sgs_site_info_hours_text(): string` | Opening hours as one plain line, e.g. "Mon–Sat 9.30-17.30; Sun 10-14". '' when no day has hours. | no markup |
 | `sgs_site_info_item` | `function sgs_site_info_item( string $source, bool $link = false ): ?array` | One Site Info detail as escaped HTML text plus the link it makes, formatted as sgs/business-info formats it. | no markup |
 
@@ -856,6 +874,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_tier_media_queries` | `function sgs_tier_media_queries( array $tiers, string $extra = '' ): array` | The exact media condition for each named tier (desktop >= 1024, tablet 768 to 1023, mobile <= 767), each optionally narrowed by `$extra`. | no markup |
 | `sgs_tier_exact_media_css` | `function sgs_tier_exact_media_css( array $tiers, string $rules, string $extra = '' ): string` | Wrap `$rules` so they apply at exactly the given tiers, with no cascade into other tiers. All three tiers and no extra condition: no… | no markup |
 
+#### `includes/helpers-tiered-border.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_tiered_border_specs` | `function sgs_tiered_border_specs( $raw, string $prefix = 'border' ): array` | Responsive property specs for sgs_emit_responsive_css(): width a CSS length, style `none\|solid\|dashed\|dotted`, colour a palette slug or… | no markup |
+
 #### `includes/helpers-tokens.php` — 35 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -910,15 +934,18 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_trust_bar_library_icon_svg` | `function sgs_trust_bar_library_icon_svg( string $slug ): string` | SVG for an icon slug (Lucide, WordPress or SGS library), sanitised for output. | tags circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-hidden, aria-label |
 | `sgs_trust_bar_item_css` | `function sgs_trust_bar_item_css( array $attributes, string $root_sel ): string` | Scoped CSS for the badge item's own spacing: `itemGap` (icon to label) and `itemPadding`, both responsive tier objects. | no markup |
 
-#### `includes/helpers-typography.php` — 5 function(s)
+#### `includes/helpers-typography.php` — 8 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_typography_attr` | `function sgs_typography_attr( $prefix, $base )` | Build a prefixed attribute key. '' + 'FontSize' → 'fontSize'; 'label' + 'FontSize' → 'labelFontSize'. | no markup |
 | `sgs_font_family_sanitise` | `function sgs_font_family_sanitise( $value ): string` | Sanitise a font-family value for safe CSS interpolation. | no markup |
 | `sgs_font_family_preset_slugs` | `function sgs_font_family_preset_slugs(): array` | Slugs of every font-family preset the site defines (theme, custom and default origins), cached per request. | no markup |
+| `sgs_object_attr_keys` | `function sgs_object_attr_keys( $block ): array` | The attribute keys a block declares as `type: object` in its block.json. | no markup |
+| `sgs_text_align_tier_css` | `function sgs_text_align_tier_css( string $selector, $value, array $opts = array(), bool $with_text_align =…` | Scoped CSS for a block's own per-breakpoint text alignment: `text-align` plus the custom property `--sgs-text-justify`, which places a flex… | no markup |
 | `sgs_typography_css_rule` | `function sgs_typography_css_rule( array $attributes, $prefix, $selector, $indent_sibling_selector = ''…` | Build a scoped typography CSS rule string (base + responsive) for one element. The caller wraps the return value in a single <style> tag. | no markup |
 | `sgs_link_colour_css` | `function sgs_link_colour_css( array $attributes, $prefix, $selector )` | Two-state, flat-or-gradient LINK colour for a RichText field whose `allowedFormats` permits `core/link` — a linked selection and the… | no markup |
+| `sgs_link_weight_css` | `function sgs_link_weight_css( array $attributes, $attr, $selector )` | CSS for the font weight of the links inside a text field. | no markup |
 
 #### `includes/helpers-value-ladder.php` — 3 function(s)
 
@@ -928,7 +955,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**93 files, 448 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**95 files, 465 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -936,6 +963,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 
 | File | Exports | Purpose |
 |---|---|---|
+| `AlignItemsTierControl.js` | `AlignItemsTierControl (default)` | AlignItemsTierControl - the per-breakpoint cross-axis alignment row (FW-F). |
 | `AuthoredText.js` | `AuthoredText (default)` | AuthoredText — the editor canvas's print of a typed rich value (a setting edited with `SgsFreeTextField type="rich"`), the twin… |
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
@@ -995,10 +1023,12 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
+| `TextAlignTierControl.js` | `TextAlignTierControl (default)`, `SGS_TEXT_ALIGN_OPTIONS` | TextAlignTierControl - the per-breakpoint text alignment row (FW-F). |
+| `TierBorderControl.js` | `TierBorderControl (default)` | TierBorderControl: one border (width, style, colour) per device, stored as `{desktop\|tablet\|mobile: {width, style, colour}}`.… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**61 files.**
+**64 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
