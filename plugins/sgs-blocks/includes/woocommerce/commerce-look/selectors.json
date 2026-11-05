@@ -137,6 +137,14 @@
 				"basket": "filled"
 			}
 		},
+		"summary_sidebar": {
+			"cart": ".wc-block-cart__sidebar",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the whole side column: the order summary and the Proceed to checkout button, for the card that wraps the button)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
 		"summary_heading": {
 			"cart": ".wc-block-cart__totals-title",
 			"checkout": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title .wc-block-components-checkout-order-summary__title-text, .wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper .wc-block-components-title",

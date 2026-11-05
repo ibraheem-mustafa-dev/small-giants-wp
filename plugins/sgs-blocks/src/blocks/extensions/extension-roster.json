@@ -442,7 +442,22 @@
 				"sgsButtonTextTransform": { "type": "string", "role": "typography", "css_property": "text-transform", "css_element": "primary-button" },
 				"sgsButtonMinHeight": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "min-height", "css_element": "primary-button" },
 				"sgsButtonPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "primary-button" },
-				"sgsItemCellPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "line-item-cell" }
+				"sgsItemCellPadding": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "padding", "css_element": "line-item-cell" },
+				"sgsItemImageBackground": { "type": "string", "role": "colour-background", "css_property": "background-color", "css_element": "line-item-image" },
+				"sgsItemImageBorderWidth": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-width", "css_element": "line-item-image" },
+				"sgsItemImageBorderStyle": { "type": "string", "role": "visual", "css_property": "border-style", "css_element": "line-item-image" },
+				"sgsItemImageBorderColour": { "type": "string", "role": "visual", "css_property": "border-color", "css_element": "line-item-image" },
+				"sgsItemImageBorderRadius": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-radius", "css_element": "line-item-image" },
+				"sgsItemStepperBackground": { "type": "string", "role": "colour-background", "css_property": "background-color", "css_element": "line-item-stepper" },
+				"sgsItemStepperBorderWidth": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-width", "css_element": "line-item-stepper" },
+				"sgsItemStepperBorderStyle": { "type": "string", "role": "visual", "css_property": "border-style", "css_element": "line-item-stepper" },
+				"sgsItemStepperBorderColour": { "type": "string", "role": "visual", "css_property": "border-color", "css_element": "line-item-stepper" },
+				"sgsItemStepperWidth": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "width", "css_element": "line-item-stepper" },
+				"sgsItemHideSeparators": { "type": "boolean", "role": "boolean-visibility", "css_property": "border-top-width", "css_element": "line-item-cell" },
+				"sgsSummaryWrapsButton": { "type": "boolean", "role": "visual", "css_property": "background-color", "css_element": "summary-sidebar" },
+				"sgsButtonBorderWidth": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-width", "css_element": "primary-button" },
+				"sgsButtonBorderStyle": { "type": "string", "role": "visual", "css_property": "border-style", "css_element": "primary-button" },
+				"sgsButtonBorderColour": { "type": "string", "role": "visual", "css_property": "border-color", "css_element": "primary-button" }
 			}
 		},
 		{
