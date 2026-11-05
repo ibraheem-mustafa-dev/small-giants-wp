@@ -24,17 +24,13 @@ import {
 import { addWishlistId } from '../../shared/wishlist-store';
 import { appendAuthoredText } from '../../utils/authored-text-dom';
 import { updatePanelExtras } from './panel-extras';
+import { publishCart } from '../../shared/cart-live';
 
 /**
  * Wire one panel instance against the Store API.
  *
  * @param {HTMLElement} panelRoot                  The `[data-sgs-cart-panel]` element.
  * @param {Object}      [opts]                     Options.
- * @param {Function}    [opts.onCartUpdated]       Callback fired with the fresh
- *                                                 cart object after every
- *                                                 successful load/mutation — used
- *                                                 by view.js to keep every badge
- *                                                 on the page in sync.
  * @param {Object}      [opts.freeDelivery]        Wave B, U-2 free-delivery progress data
  *                                                 (from the block wrapper's
  *                                                 `data-free-delivery-*` attributes).
@@ -44,7 +40,7 @@ import { updatePanelExtras } from './panel-extras';
  * @param {string}      [opts.freeDelivery.successMessage] The message shown once unlocked.
  * @return {Object} A `{ refresh }` controller.
  */
-export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
+export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	const itemsEl = panelRoot.querySelector( '[data-sgs-cart-items]' );
 
 	if ( ! itemsEl ) {
@@ -151,7 +147,7 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 	}
 
 	/**
-	 * Render the fetched cart (empty vs populated) and notify the caller.
+	 * Render the fetched cart (empty vs populated) and publish it to the page's live cart readers.
 	 *
 	 * @param {Object} cart The Store API cart response.
 	 */
@@ -167,9 +163,7 @@ export function initPanel( panelRoot, { onCartUpdated, freeDelivery } = {} ) {
 		}
 		updateFreeDeliveryProgress( freeDeliveryEl, cart, freeDelivery );
 		updatePanelExtras( panelRoot, cart );
-		if ( 'function' === typeof onCartUpdated ) {
-			onCartUpdated( cart );
-		}
+		publishCart( cart );
 	}
 
 	/**

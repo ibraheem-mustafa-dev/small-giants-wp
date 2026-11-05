@@ -2150,5 +2150,41 @@
     "added_commit": null,
     "budget_ms": 2000,
     "order": 245
+  },
+  {
+    "id": "check-json-duplicate-keys",
+    "cmd": "python scripts/check-json-duplicate-keys.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 246
+  },
+  {
+    "id": "check-json-duplicate-keys-selftest",
+    "cmd": "python scripts/check-json-duplicate-keys.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 247
+  },
+  {
+    "id": "check-nested-panel-title-rule",
+    "cmd": "python scripts/check-nested-panel-title-rule.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 248
+  },
+  {
+    "id": "check-nested-panel-title-rule-selftest",
+    "cmd": "python scripts/check-nested-panel-title-rule.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 249
   }
 ]

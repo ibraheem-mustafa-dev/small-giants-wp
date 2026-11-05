@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sgs/cart drawer: Store API requests load, open, add, quantity change and remove each cost the same requests: drawer after open 1`] = `
+"
+<div class="wp-block-sgs-cart sgs-cart sgs-cart--has-items" data-display-mode="drawer" data-show-zero-any="true" data-count-pop="off">
+	<button data-sgs-cart-trigger="" aria-label="View your cart (2 items in cart)"><span data-sgs-cart-count="" data-sgs-prev-count="2" class="sgs-cart__badge--visible">2</span></button>
+	<div data-sgs-cart-panel="" data-sgs-cart-mode="drawer">
+		<h2>Basket <span data-sgs-cart-panel-count="">(2)</span></h2>
+		<div data-sgs-cart-items=""><div class="sgs-cart__item" data-key="k1"><span class="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true"></span><div class="sgs-cart__item-info"><div class="sgs-cart__item-top"><span class="sgs-cart__item-name">Zookie box</span><span class="sgs-cart__item-price">£20.00</span></div><div class="sgs-cart__item-row"><label class="sgs-cart__item-qty-label" for="sgs-cart-qty-k1">Qty</label><input type="number" min="0" step="1" id="sgs-cart-qty-k1" class="sgs-cart__item-qty-input" value="2" data-key="k1" aria-label="Quantity for Zookie box"></div><div class="sgs-cart__item-actions"><button type="button" class="sgs-cart__item-save-for-later sgs-cart__item-action" data-key="k1" data-product-id="7">Save for later</button></div></div><button type="button" class="sgs-cart__item-remove" data-key="k1" aria-label="Remove Zookie box from cart"><span aria-hidden="true">×</span></button></div></div>
+		<div class="sgs-cart__panel-subtotal" data-sgs-cart-footer=""><span data-sgs-cart-subtotal="">£20.00</span></div>
+		<p data-sgs-cart-status=""></p>
+	</div>
+</div>"
+`;
+
+exports[`sgs/cart drawer: Store API requests load, open, add, quantity change and remove each cost the same requests: drawer after quantity change 1`] = `
+"
+<div class="wp-block-sgs-cart sgs-cart sgs-cart--has-items" data-display-mode="drawer" data-show-zero-any="true" data-count-pop="off">
+	<button data-sgs-cart-trigger="" aria-label="View your cart (5 items in cart)"><span data-sgs-cart-count="" data-sgs-prev-count="5" class="sgs-cart__badge--visible">5</span></button>
+	<div data-sgs-cart-panel="" data-sgs-cart-mode="drawer">
+		<h2>Basket <span data-sgs-cart-panel-count="">(5)</span></h2>
+		<div data-sgs-cart-items=""><div class="sgs-cart__item" data-key="k1"><span class="sgs-cart__item-thumb sgs-cart__item-thumb--placeholder" aria-hidden="true"></span><div class="sgs-cart__item-info"><div class="sgs-cart__item-top"><span class="sgs-cart__item-name">Zookie box</span><span class="sgs-cart__item-price">£50.00</span></div><div class="sgs-cart__item-row"><label class="sgs-cart__item-qty-label" for="sgs-cart-qty-k1">Qty</label><input type="number" min="0" step="1" id="sgs-cart-qty-k1" class="sgs-cart__item-qty-input" value="5" data-key="k1" aria-label="Quantity for Zookie box"></div><div class="sgs-cart__item-actions"><button type="button" class="sgs-cart__item-save-for-later sgs-cart__item-action" data-key="k1" data-product-id="7">Save for later</button></div></div><button type="button" class="sgs-cart__item-remove" data-key="k1" aria-label="Remove Zookie box from cart"><span aria-hidden="true">×</span></button></div></div>
+		<div class="sgs-cart__panel-subtotal" data-sgs-cart-footer=""><span data-sgs-cart-subtotal="">£50.00</span></div>
+		<p data-sgs-cart-status="">Quantity updated to 5.</p>
+	</div>
+</div>"
+`;
+
+exports[`sgs/cart drawer: Store API requests load, open, add, quantity change and remove each cost the same requests: drawer after remove 1`] = `
+"
+<div class="wp-block-sgs-cart sgs-cart" data-display-mode="drawer" data-show-zero-any="true" data-count-pop="off">
+	<button data-sgs-cart-trigger="" aria-label="View your cart (0 items in cart)"><span data-sgs-cart-count="" data-sgs-prev-count="0" class="sgs-cart__badge--visible">0</span></button>
+	<div data-sgs-cart-panel="" data-sgs-cart-mode="drawer">
+		<h2>Basket <span data-sgs-cart-panel-count="">(0)</span></h2>
+		<div data-sgs-cart-items=""><div class="sgs-cart__panel-empty"><p class="sgs-cart__panel-empty-message">Your cart is empty</p><a class="sgs-cart__panel-empty-cta" href="/">Continue shopping</a></div></div>
+		<div class="sgs-cart__panel-subtotal" data-sgs-cart-footer="" hidden=""><span data-sgs-cart-subtotal="">£50.00</span></div>
+		<p data-sgs-cart-status="">Item removed from your cart.</p>
+	</div>
+</div>"
+`;

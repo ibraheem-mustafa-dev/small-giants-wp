@@ -18,6 +18,8 @@
  * @package
  */
 
+import { storeRequest } from './request';
+
 const GLOBAL_KEY = 'sgsCartLive';
 const STORE_KEY = 'wc/store/cart';
 const EVENTS = [
@@ -27,20 +29,6 @@ const EVENTS = [
 ];
 // The store is allowed this long to hand over its first reading before the Store API is asked.
 const STORE_GRACE_MS = 3000;
-
-/**
- * The Store API base path.
- *
- * @return {string} e.g. "/wp-json/wc/store/v1".
- */
-function apiBase() {
-	const root =
-		window?.wpApiSettings?.root ||
-		window?.sgsCartData?.restUrl ||
-		window?.sgsWishlistData?.restUrl ||
-		'/wp-json';
-	return root.replace( /\/$/, '' ) + '/wc/store/v1';
-}
 
 /**
  * Turn the `wc/store/cart` store's camelCase keys into the Store API's snake_case ones.
@@ -101,13 +89,7 @@ function createInstance() {
 		}
 		inFlight = true;
 		try {
-			const response = await fetch( apiBase() + '/cart', {
-				credentials: 'same-origin',
-				headers: { 'Content-Type': 'application/json' },
-			} );
-			if ( response.ok ) {
-				publish( await response.json() );
-			}
+			publish( await storeRequest( '/cart' ) );
 		} catch {
 			// Offline or blocked: listeners keep the last reading.
 		} finally {
@@ -190,6 +172,7 @@ function createInstance() {
 		},
 		getCart: () => cart,
 		refresh: fetchCart,
+		publish,
 	};
 }
 
@@ -214,3 +197,15 @@ function instance() {
 export function onCartChange( callback ) {
 	return instance().onCartChange( callback );
 }
+
+/**
+ * Hand a cart the caller already holds (a drawer's own read or a mutation's response) to every listener, so the page's
+ * badges and bars follow it with no further request.
+ *
+ * @param {Object} cart A cart in the Store API's snake_case shape.
+ */
+export function publishCart( cart ) {
+	instance().publish( cart );
+}
+
+export { readCart, storeRequest } from './request';
