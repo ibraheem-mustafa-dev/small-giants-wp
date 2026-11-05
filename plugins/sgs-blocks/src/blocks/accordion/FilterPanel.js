@@ -90,6 +90,8 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 			filterChipsJustify: {},
 			filterChipsPadding: {},
 			filterSearchBackground: '',
+			filterSearchMaxWidth: {},
+			filterSearchAlign: {},
 			filterSearchHeight: {},
 			filterSearchPadding: {},
 			filterSearchFontSize: {},

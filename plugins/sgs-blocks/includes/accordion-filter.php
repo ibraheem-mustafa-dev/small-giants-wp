@@ -320,6 +320,23 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 					'css'   => 'font-size',
 				),
 			),
+			'.sgs-accordion__search'       => array(
+				array(
+					'value' => $tier( 'filterSearchMaxWidth' ),
+					'css'   => 'max-width',
+				),
+				array(
+					'value'     => $tier( 'filterSearchAlign' ),
+					'css'       => 'margin-inline',
+					'transform' => $pick(
+						array(
+							'left'   => '0 auto',
+							'center' => 'auto',
+							'right'  => 'auto 0',
+						)
+					),
+				),
+			),
 			'.sgs-accordion__search-input' => array(
 				array(
 					'value' => $tier( 'filterSearchHeight' ),

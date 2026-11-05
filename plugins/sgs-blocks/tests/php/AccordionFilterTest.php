@@ -202,6 +202,8 @@ final class AccordionFilterTest extends TestCase {
 				'filterChipsJustify'             => array(),
 				'filterChipsPadding'             => array(),
 				'filterSearchBackground'         => '',
+				'filterSearchMaxWidth'           => array(),
+				'filterSearchAlign'              => array(),
 				'filterSearchHeight'             => array(),
 				'filterSearchPadding'            => array(),
 				'filterSearchFontSize'           => array(),
@@ -254,6 +256,8 @@ final class AccordionFilterTest extends TestCase {
 			array(
 				'filterEnabled'            => true,
 				'filterSearchBackground'   => '#FFFAF0',
+				'filterSearchMaxWidth'     => array( 'desktop' => '640px' ),
+				'filterSearchAlign'        => array( 'desktop' => 'center', 'mobile' => 'left' ),
 				'filterSearchHeight'       => array( 'desktop' => '62px' ),
 				'filterSearchPadding'      => array( 'desktop' => array( 'top' => '0', 'right' => '20px', 'bottom' => '0', 'left' => '52px' ) ),
 				'filterSearchFontSize'     => array( 'desktop' => '17px' ),
@@ -270,6 +274,8 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertStringContainsString( ' .sgs-accordion__search-input{background-color:#FFFAF0;box-shadow:', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search-input{min-height:62px;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:52px;font-size:17px;}', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search{--sgs-accordion-search-icon-size:20px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{max-width:640px;margin-inline:auto;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{margin-inline:0 auto;}', $html, 'the mobile tier' );
 		$this->assertStringContainsString( ' .sgs-accordion__search-icon{color:#3A2A22;}', $html );
 	}
 

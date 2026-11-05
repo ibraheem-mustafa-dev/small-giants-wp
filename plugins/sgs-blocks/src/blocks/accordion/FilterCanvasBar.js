@@ -12,6 +12,7 @@ import { IconPreview, resolveColourToken } from '../../components';
 import { resolveShadowPreviewComposed, sgsLengthPreview, spacingPreview, tierValueOf } from '../../utils';
 
 const WRAP_CSS = { wrap: { flexWrap: 'wrap', overflowX: 'visible' }, nowrap: { flexWrap: 'nowrap', overflowX: 'auto' } };
+const MARGIN_CSS = { left: '0 auto', center: 'auto', right: 'auto 0' };
 const JUSTIFY_CSS = { left: 'flex-start', center: 'center', right: 'flex-end' };
 
 function countLine( attributes, count ) {
@@ -67,6 +68,10 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 		boxShadow: resolveShadowPreviewComposed( attributes.filterSearchShadow, attributes.filterSearchShadowColour ),
 		...spacingPreview( { padding: attributes.filterSearchPadding }, tier ),
 	};
+	const searchWrapStyle = {
+		maxWidth: length( attributes.filterSearchMaxWidth ),
+		marginInline: tierValueOf( attributes.filterSearchAlign, tier, ( v ) => MARGIN_CSS[ v ] ),
+	};
 	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();
 	const iconSize = sgsLengthPreview( attributes.filterSearchIconSize );
 	const showSearch = false !== attributes.filterSearch;
@@ -77,7 +82,7 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 			{ showSearch && (
 				<div
 					className={ 'sgs-accordion__search' + ( searchIcon ? ' sgs-accordion__search--has-icon' : '' ) }
-					style={ iconSize ? { '--sgs-accordion-search-icon-size': iconSize } : undefined }
+					style={ { ...searchWrapStyle, ...( iconSize ? { '--sgs-accordion-search-icon-size': iconSize } : {} ) } }
 				>
 					{ searchIcon && (
 						<span className="sgs-accordion__search-icon" style={ { color: colour( attributes.filterSearchIconColour ) } } aria-hidden="true">

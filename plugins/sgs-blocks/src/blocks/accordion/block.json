@@ -331,6 +331,19 @@
             "css:box-shadow-color": "filterSearchShadowColour"
           }
         },
+        "searchwrap": {
+          "selector": ".sgs-accordion__search",
+          "motion": false,
+          "label": "Filter search box width",
+          "order": 7.065,
+          "clusters": [
+            "layout"
+          ],
+          "attrMap": {
+            "css:max-width": "filterSearchMaxWidth",
+            "css:margin-inline": "filterSearchAlign"
+          }
+        },
         "searchicon": {
           "selector": ".sgs-accordion__search-icon",
           "motion": false,
@@ -583,6 +596,16 @@
       "type": "string",
       "default": "",
       "description": "Search box fill (palette slug or CSS colour). Empty keeps it transparent."
+    },
+    "filterSearchMaxWidth": {
+      "type": "object",
+      "default": {},
+      "description": "Search box maximum width per device {desktop,tablet,mobile}, each a CSS length. Empty = the full width of the filter bar."
+    },
+    "filterSearchAlign": {
+      "type": "object",
+      "default": {},
+      "description": "Where a search box narrower than the bar sits, per device {desktop,tablet,mobile}, each \"left\", \"center\" or \"right\". Empty = the start edge."
     },
     "filterSearchHeight": {
       "type": "object",

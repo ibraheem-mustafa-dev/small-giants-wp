@@ -36,6 +36,12 @@ const JUSTIFY_OPTIONS = [
 	{ label: __( 'Chips at the end', 'sgs-blocks' ), value: 'right', icon: alignRight },
 ];
 
+const SEARCH_ALIGN_OPTIONS = [
+	{ label: __( 'Search box at the start', 'sgs-blocks' ), value: 'left', icon: alignLeft },
+	{ label: __( 'Search box centred', 'sgs-blocks' ), value: 'center', icon: alignCenter },
+	{ label: __( 'Search box at the end', 'sgs-blocks' ), value: 'right', icon: alignRight },
+];
+
 /** True when a tier object carries any value. */
 const hasTier = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
 
@@ -179,6 +185,22 @@ export function SearchLookFields( { attributes, setAttributes } ) {
 	const shared = { attributes, setAttributes };
 	return (
 		<>
+			<TierItem label={ __( 'Search box maximum width', 'sgs-blocks' ) } attribute="filterSearchMaxWidth" { ...shared }>
+				<ResponsiveLengthControl
+					scale="spacing"
+					label={ __( 'Search box maximum width', 'sgs-blocks' ) }
+					value={ attributes.filterSearchMaxWidth }
+					onChange={ ( obj ) => setAttributes( { filterSearchMaxWidth: obj } ) }
+				/>
+			</TierItem>
+			<TierItem label={ __( 'Search box alignment', 'sgs-blocks' ) } attribute="filterSearchAlign" { ...shared }>
+				<TextAlignTierControl
+					label={ __( 'Search box alignment', 'sgs-blocks' ) }
+					value={ attributes.filterSearchAlign }
+					onChange={ ( obj ) => setAttributes( { filterSearchAlign: obj } ) }
+					options={ SEARCH_ALIGN_OPTIONS }
+				/>
+			</TierItem>
 			<TierItem label={ __( 'Search box height', 'sgs-blocks' ) } attribute="filterSearchHeight" { ...shared }>
 				<ResponsiveLengthControl
 					scale="spacing"
