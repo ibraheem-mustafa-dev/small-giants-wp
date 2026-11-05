@@ -139,7 +139,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// A static copy of the filter bar so the canvas shows what the front end adds above the items.
 	const filterBar = attributes.filterEnabled ? (
-		<FilterCanvasBar attributes={ attributes } clientId={ clientId } palette={ palette } />
+		<FilterCanvasBar attributes={ attributes } clientId={ clientId } palette={ palette } tier={ previewTier } />
 	) : null;
 
 	return (
