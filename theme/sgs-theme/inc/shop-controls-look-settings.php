@@ -241,11 +241,16 @@ function output_shop_controls_look_style(): void {
 		'sgs_shop_filter_box_size'  => '--sgs-filter-box-size',
 		'sgs_shop_filter_box_border' => '--sgs-filter-box-border',
 	);
+	// The smallest value each setting may print, so a typed 0 cannot hide the tick box or the text.
+	$floors = array(
+		'sgs_shop_filter_box_size'   => 10,
+		'sgs_shop_filter_count_size' => 8,
+	);
 	$decls = array();
 	foreach ( $vars as $id => $prop ) {
 		$raw = trim( (string) get_theme_mod( $id, '' ) );
 		if ( '' !== $raw ) {
-			$decls[] = $prop . ':' . min( 64, round( abs( (float) $raw ), 1 ) ) . 'px';
+			$decls[] = $prop . ':' . max( $floors[ $id ] ?? 0, min( 64, round( abs( (float) $raw ), 1 ) ) ) . 'px';
 		}
 	}
 	foreach ( shop_controls_look_colours() as $id => $spec ) {
@@ -283,6 +288,10 @@ function add_shop_controls_look_body_class( array $classes ): array {
 		if ( $value === $on[0] ) {
 			$classes[] = $on[1];
 		}
+	}
+	// The filter list's hover colour applies only when it is set (woocommerce.css reads the class).
+	if ( sanitize_hex_color( (string) get_theme_mod( 'sgs_shop_filter_list_hover', '' ) ) ) {
+		$classes[] = 'sgs-shop-list-hover';
 	}
 	// No floating Filter button: the shop layout keeps no space for it on narrow screens.
 	if ( ! wp_validate_boolean( get_theme_mod( 'sgs_shop_sticky_trigger', true ) ) ) {

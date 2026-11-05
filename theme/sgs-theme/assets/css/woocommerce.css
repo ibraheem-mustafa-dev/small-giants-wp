@@ -2076,12 +2076,13 @@ body.woocommerce-cart .with-empty-cart-icon,
 	padding: var(--sgs-filter-list-row, 0.125rem) 0;
 }
 
-/* Label hover colour (Customizer > Shop Filters); unset it is the label's own colour. */
-.sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item label:hover,
-.sgs-shop-filters .wc-block-product-filter-checkbox-list__item label:hover,
-.sgs-shop-filters .wc-block-components-checkbox__label:hover,
-.sgs-shop-filters .wc-block-product-filter-checkbox-list__label:hover {
-	color: var(--sgs-filter-list-hover, var(--wp--preset--color--text, #1e1e1e));
+/* Label hover colour (Customizer > Shop Filters). The body class is present only when the colour is set,
+   so an unset site keeps its labels' own hover behaviour. */
+.sgs-shop-list-hover .sgs-shop-filters .wc-block-components-product-filter-checkbox-list__item label:hover,
+.sgs-shop-list-hover .sgs-shop-filters .wc-block-product-filter-checkbox-list__item label:hover,
+.sgs-shop-list-hover .sgs-shop-filters .wc-block-components-checkbox__label:hover,
+.sgs-shop-list-hover .sgs-shop-filters .wc-block-product-filter-checkbox-list__label:hover {
+	color: var(--sgs-filter-list-hover);
 }
 
 /* Native checkbox — hidden, replaced by custom square */
