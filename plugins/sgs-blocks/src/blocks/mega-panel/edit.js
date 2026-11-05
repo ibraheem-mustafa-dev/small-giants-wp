@@ -69,8 +69,13 @@ import {
 	isCssGradient,
 	sgsBorderPreview,
 } from '../../utils';
-import { fontFamilyCssValue } from '../../utils/typography-preview';
 import {
+	fontFamilyCssValue,
+	fontFamilyPickerValue,
+	fontFamilyStoredValue,
+} from '../../utils/typography-preview';
+import {
+	FontFamilyControl,
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 	ToolsPanel,
@@ -258,6 +263,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerLinkNumColourGradient,
 		drawerLinkNumSize,
 		drawerLinkNumWeight,
+		drawerLinkNumFontFamily,
 		drawerLinkLabelColour,
 		drawerLinkLabelColourGradient,
 		drawerLinkLabelSize,
@@ -279,6 +285,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardSpacing,
 		drawerCardThumbSize,
 		drawerCardTagSize,
+		drawerCardTagFontFamily,
+		drawerCardTagLetterSpacing,
+		drawerCardDescColour,
 		drawerCardMediaRatio,
 		drawerCardTagRadius,
 		drawerLinkTrailingIcon,
@@ -328,6 +337,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// SLUG to its CSS stops.
 	const [ rawGradientPresets ] = useSettings( 'color.gradients' );
 	const gradientPresets = flattenPresetSetting( rawGradientPresets );
+	// The theme's font families, for the drawer font-family pickers.
+	const [ rawFontFamilies ] = useSettings( 'typography.fontFamilies' );
+	const drawerFontFamilies = flattenPresetSetting( rawFontFamilies );
 
 	const sepStyle = asideSeparator?.style || 'line';
 
@@ -555,6 +567,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerLinkNumColourGradient,
 				drawerLinkNumSize,
 				drawerLinkNumWeight,
+				drawerLinkNumFontFamily,
 				drawerLinkLabelColour,
 				drawerLinkLabelColourGradient,
 				drawerLinkLabelSize,
@@ -576,6 +589,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerCardSpacing,
 				drawerCardThumbSize,
 				drawerCardTagSize,
+				drawerCardTagFontFamily,
+				drawerCardTagLetterSpacing,
+				drawerCardDescColour,
 				drawerCardTagPadding,
 				drawerCardTitleSize,
 				drawerCardTitleLineHeight,
@@ -1414,6 +1430,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						}
 						presets={ false }
 					/>
+					<FontFamilyControl
+						fontFamilies={ drawerFontFamilies }
+						value={ fontFamilyPickerValue( drawerLinkNumFontFamily, drawerFontFamilies ) }
+						onChange={ ( value ) =>
+							setAttributes( {
+								drawerLinkNumFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerLinkNumFontFamily ) || '',
+							} )
+						}
+					/>
 					<SelectControl
 						label={ __( 'Link number weight', 'sgs-blocks' ) }
 						value={ drawerLinkNumWeight || '' }
@@ -1547,6 +1572,25 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								onChange={ ( value ) =>
 									setAttributes( {
 										drawerCardTagSize: value || '',
+									} )
+								}
+								presets={ false }
+							/>
+							<FontFamilyControl
+								fontFamilies={ drawerFontFamilies }
+								value={ fontFamilyPickerValue( drawerCardTagFontFamily, drawerFontFamilies ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardTagFontFamily: fontFamilyStoredValue( value, drawerFontFamilies, drawerCardTagFontFamily ) || '',
+									} )
+								}
+							/>
+							<SgsLengthControl
+								label={ __( 'Card tag letter spacing', 'sgs-blocks' ) }
+								value={ drawerCardTagLetterSpacing || '' }
+								onChange={ ( value ) =>
+									setAttributes( {
+										drawerCardTagLetterSpacing: value || '',
 									} )
 								}
 								presets={ false }

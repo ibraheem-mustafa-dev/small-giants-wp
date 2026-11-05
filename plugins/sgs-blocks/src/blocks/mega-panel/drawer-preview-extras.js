@@ -10,6 +10,7 @@
  */
 
 import { colourVar, isCssGradient, resolveShadowPreviewComposed } from '../../utils';
+import { fontFamilyCssValue } from '../../utils/typography-preview';
 
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
@@ -92,8 +93,9 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 	css += `${ aside } > :nth-child(5) .sgs-button__label{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}`;
 	const tagPad = padBox( v.drawerCardTagPadding );
 	const tagRadius = v.drawerCardTagRadius && SAFE_LENGTH_RE.test( v.drawerCardTagRadius ) ? `border-radius:${ v.drawerCardTagRadius };` : '';
-	if ( v.drawerCardTagSize || tagPad || tagRadius ) {
-		css += `${ aside } > :nth-child(2) .wp-block-sgs-label{${ tagRadius }${ v.drawerCardTagSize ? `font-size:${ v.drawerCardTagSize };line-height:1.5;` : '' }${ tagPad }}`;
+	const tagType = drawerTagTypePreviewDecls( v );
+	if ( v.drawerCardTagSize || tagPad || tagRadius || tagType ) {
+		css += `${ aside } > :nth-child(2) .wp-block-sgs-label{${ tagType }${ tagRadius }${ v.drawerCardTagSize ? `font-size:${ v.drawerCardTagSize };line-height:1.5;` : '' }${ tagPad }}`;
 	}
 	// A fill photo in the stacked card has no definite height: it takes its width and the chosen ratio (render.php: sgs_mega_panel_drawer_media_css()).
 	const ratio = String( v.drawerCardMediaRatio || '' ).trim();
@@ -121,6 +123,36 @@ export function drawerCardLinkPreviewCss( aside, v ) {
 		css += `${ aside } .sgs-button{${ paint }}`;
 	}
 	return css;
+}
+
+/**
+ * The card tag's font family and letter spacing declarations (twin of
+ * `sgs_mega_panel_drawer_tag_type_decls()`).
+ *
+ * @param {Object} v Enumerated drawer attributes.
+ * @return {string} Declarations, or ''.
+ */
+export function drawerTagTypePreviewDecls( v ) {
+	const family = fontFamilyCssValue( v.drawerCardTagFontFamily );
+	const spacing = String( v.drawerCardTagLetterSpacing || '' ).trim();
+	return ( family ? `font-family:${ family };` : '' ) + ( spacing && SAFE_LENGTH_RE.test( spacing ) ? `letter-spacing:${ spacing };` : '' );
+}
+
+/**
+ * The aside card's description colour (twin of
+ * `sgs_mega_panel_drawer_card_desc_css()`): slot 4, as the element itself or
+ * inside the clone's wrapper.
+ *
+ * @param {string} aside Aside selector.
+ * @param {Object} v     Enumerated drawer attributes.
+ * @return {string} CSS, or ''.
+ */
+export function drawerCardDescPreviewCss( aside, v ) {
+	const colour = v.drawerCardDescColour ? colourVar( v.drawerCardDescColour ) || v.drawerCardDescColour : '';
+	if ( ! colour ) {
+		return '';
+	}
+	return `${ aside } > :nth-child(4):not(.wp-block-sgs-container),${ aside } > .wp-block-sgs-container:nth-child(2) > .sgs-container__inner > :nth-child(3){color:${ colour };}`;
 }
 
 /**

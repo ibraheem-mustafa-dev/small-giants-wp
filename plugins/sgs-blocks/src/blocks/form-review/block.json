@@ -42,6 +42,7 @@
                 "list": {
                     "label": "Review summary list",
                     "order": 3,
+                    "layer": "GRID",
                     "clusters": [
                         "layout"
                     ],
@@ -56,6 +57,7 @@
                 "row": {
                     "label": "Review row",
                     "order": 9,
+                    "layer": "GRID",
                     "clusters": [
                         "layout"
                     ],

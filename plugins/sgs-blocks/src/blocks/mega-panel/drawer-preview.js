@@ -20,7 +20,8 @@
  */
 
 import { colourVar, isCssGradient } from '../../utils';
-import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss } from './drawer-preview-extras';
+import { fontFamilyCssValue } from '../../utils/typography-preview';
+import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerTagTypePreviewDecls, drawerCardDescPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -86,7 +87,12 @@ function borderPaint( colour, grad ) {
  * @return {string} CSS text.
  */
 export default function drawerPreviewCss( scope, v ) {
-	return drawerPreviewBaseCss( scope, v ) + drawerCardLinkPreviewCss( `${ scope } .sgs-mega-aside`, v );
+	const aside = `${ scope } .sgs-mega-aside`;
+	return (
+		drawerPreviewBaseCss( scope, v ) +
+		drawerCardLinkPreviewCss( aside, v ) +
+		( v.drawerCardCompact && 'stacked-overlay' !== v.drawerCardLayout ? '' : drawerCardDescPreviewCss( aside, v ) )
+	);
 }
 
 function drawerPreviewBaseCss( scope, v ) {
@@ -114,6 +120,7 @@ function drawerPreviewBaseCss( scope, v ) {
 			v.drawerLinkNumColourGradient,
 			v.drawerLinkNumSize,
 			v.drawerLinkNumWeight,
+			v.drawerLinkNumFontFamily,
 		],
 		[ `${ row } .wp-block-sgs-heading`, v.drawerLinkLabelColour, v.drawerLinkLabelColourGradient, v.drawerLinkLabelSize ],
 		[
@@ -123,8 +130,8 @@ function drawerPreviewBaseCss( scope, v ) {
 			v.drawerLinkDescSize,
 		],
 	];
-	parts.forEach( ( [ selector, colour, grad, size, weight ] ) => {
-		const decls = textPaint( colour, grad ) + decl( 'font-size', size ) + decl( 'font-weight', weight );
+	parts.forEach( ( [ selector, colour, grad, size, weight, family ] ) => {
+		const decls = textPaint( colour, grad ) + decl( 'font-size', size ) + decl( 'font-weight', weight ) + decl( 'font-family', fontFamilyCssValue( family ) );
 		if ( decls ) {
 			css += `${ selector }{${ decls }}`;
 		}
@@ -172,9 +179,11 @@ function drawerPreviewBaseCss( scope, v ) {
 	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 
 	const tagPad = boxSideDecls( v.drawerCardTagPadding, 'padding' );
-	if ( v.drawerCardTagSize || tagPad ) {
+	const tagType = drawerTagTypePreviewDecls( v );
+	if ( v.drawerCardTagSize || tagPad || tagType ) {
 		css +=
 			`${ aside } > :nth-child(2) .wp-block-sgs-label{` +
+			tagType +
 			decl( 'font-size', v.drawerCardTagSize ) +
 			tagPad +
 			( v.drawerCardTagSize ? 'line-height:1.5;' : '' ) +
