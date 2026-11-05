@@ -54,3 +54,5 @@ Deferred (Bean, 2026-11-05): Subscribe and One-off purchase cards (subscriptions
 2. Product summary line: the draft has "All 20 strawberry" in lower case; ours prints "Your 20: All 20 Vanilla". The default flavour is Vanilla against the draft's Strawberry (product data).
 3. Add to basket hover fill: paper on hover in the draft; there is no setting.
 4. Hover and selected-state pairs for every item (the content pass captured resting crops only).
+5. Product pinned gallery top: 140px on mamas-test at 1024 and 1440 against the draft's 108px (the mirror measured 109px, so the live header-height value differs from the mirror's); prove which `--sgs-header-height` each side resolves before changing `stickyOffset`.
+6. QC rule for every round: measure at 768 as well as 375 and 1440. The buybox gallery `top` rule shipped under tablet-up while the column is sticky only from desktop, which pushed Eye Care's tablet gallery over the info column (fixed by the Eye Care session in `abe9231d9`, verified on mamas-test at 768, 1024 and 1440).
