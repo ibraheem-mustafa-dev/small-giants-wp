@@ -16,6 +16,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
 import DesignTokenPicker, { resolveColourToken } from '../../components/DesignTokenPicker';
@@ -226,7 +227,27 @@ if ( ! window.__sgsFilterLookRegistered ) {
 	 */
 	const withFilterLookPreview = createHigherOrderComponent( ( BlockListBlock ) => ( props ) => {
 		const [ palette ] = useSettings( 'color.palette' );
-		const { attributes, name } = props;
+		const { attributes, name, clientId } = props;
+		const startTerm = CHIPS_BLOCK === name && attributes ? String( attributes.sgsChipStartTerm || '' ) : '';
+		// The start term shows as the chosen chip on the canvas: the chip whose text slugifies to it is marked
+		// (the stylesheet paints the mark with the chosen-chip colours). The canvas may be an iframe.
+		useEffect( () => {
+			const roots = [ document, ...Array.from( document.querySelectorAll( 'iframe' ) ).map( ( f ) => f.contentDocument ).filter( Boolean ) ];
+			roots.forEach( ( doc ) => {
+				const block = doc.getElementById( `block-${ clientId }` );
+				if ( ! block ) {
+					return;
+				}
+				block.querySelectorAll( '.wc-block-product-filter-chips__item' ).forEach( ( chip ) => {
+					const slug = ( chip.getAttribute( 'value' ) || chip.textContent || '' ).trim().toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-|-$/g, '' );
+					if ( startTerm && slug === startTerm ) {
+						chip.setAttribute( 'data-sgs-start-term', 'true' );
+					} else {
+						chip.removeAttribute( 'data-sgs-start-term' );
+					}
+				} );
+			} );
+		} );
 		if ( ( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) || ! attributes ) {
 			return <BlockListBlock { ...props } />;
 		}
@@ -252,6 +273,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				[ 'count-text', pill && colour( attributes.sgsChipCountColour ) ],
 				[ 'count-size', pill && attributes.sgsChipCountSize ],
 				[ 'count-font-size', pill && attributes.sgsChipCountFontSize ],
+				[ 'all', attributes.sgsChipAllLabel && 'on' ],
 			];
 		} else {
 			rows = [
@@ -270,6 +292,9 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				style[ `--sgs-fl-${ key }` ] = value;
 			}
 		} );
+		if ( CHIPS_BLOCK === name && attributes.sgsChipAllLabel ) {
+			style[ '--sgs-fl-all-label' ] = JSON.stringify( String( attributes.sgsChipAllLabel ) );
+		}
 		if ( CHIPS_BLOCK === name && attributes.sgsChipCountRadius ) {
 			style[ '--sgs-fl-count-radius' ] = attributes.sgsChipCountRadius;
 		}
