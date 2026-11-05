@@ -13,6 +13,13 @@
 	--sgs-modal-transition: var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--spring, cubic-bezier(0.34, 1.56, 0.64, 1));
 }
 
+/* A modal with no trigger button of its own (opened from a link elsewhere) is an empty holder: it takes no
+   block-gap margin, so it adds no strip where it sits (the footer's, last in .wp-site-blocks). The open
+   dialog is top-layer and unaffected. Two classes beat the flow layout's :root :where() gap rule. */
+.sgs-modal.sgs-modal--no-trigger {
+	margin-block-start: 0;
+}
+
 /* Trigger button */
 .sgs-modal__trigger {
 	display: inline-flex;
