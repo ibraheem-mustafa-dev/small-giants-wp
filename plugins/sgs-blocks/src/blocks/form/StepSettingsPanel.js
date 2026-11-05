@@ -35,7 +35,7 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, actionsTopMargin, actionsBorderTopWidth, actionsBorderTopStyle, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
@@ -62,6 +62,10 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
 				actionsTopPadding: undefined,
+				actionsTopMargin: undefined,
+				actionsBorderTopWidth: undefined,
+				actionsBorderTopStyle: undefined,
+				actionsBorderTopColour: undefined,
 				stepLabelFontWeightCompleted: undefined,
 				statusRowMarginBottom: undefined,
 				progressTrackHeight: undefined,
@@ -195,6 +199,43 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 					) }
 				</ResponsiveOverride>
 			), true ) }
+			{ item( __( 'Margin above buttons', 'sgs-blocks' ), [ 'actionsTopMargin' ], (
+				<ResponsiveOverride
+					label={ __( 'Margin above buttons', 'sgs-blocks' ) }
+					value={ actionsTopMargin }
+					onChange={ ( obj ) => setAttributes( { actionsTopMargin: obj } ) }
+				>
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							presets={ false }
+							label={ __( 'Margin above buttons', 'sgs-blocks' ) }
+							hideLabelFromVision
+							help={ __( 'Extra space outside the buttons row, above its divider. It adds to the gap between the fields.', 'sgs-blocks' ) }
+							value={ ownValue ?? '' }
+							placeholder={ inherited ? effectiveValue : '0' }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
+						/>
+					) }
+				</ResponsiveOverride>
+			) ) }
+			{ item( __( 'Buttons row divider', 'sgs-blocks' ), [ 'actionsBorderTopWidth', 'actionsBorderTopStyle', 'actionsBorderTopColour' ], (
+				<>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Divider thickness', 'sgs-blocks' ) }
+						help={ __( 'A line along the top of the buttons row. Empty = no line. Its colour sits in the Colours panel. A sticky row’s own line colour wins when set.', 'sgs-blocks' ) }
+						value={ actionsBorderTopWidth ?? '' }
+						placeholder="0"
+						onChange={ ( val ) => setAttributes( { actionsBorderTopWidth: val || undefined } ) }
+					/>
+					<SelectControl __next40pxDefaultSize __nextHasNoMarginBottom
+						label={ __( 'Divider style', 'sgs-blocks' ) }
+						value={ actionsBorderTopStyle || 'solid' }
+						options={ [ 'solid', 'dashed', 'dotted' ].map( ( v ) => ( { label: v.charAt( 0 ).toUpperCase() + v.slice( 1 ), value: v } ) ) }
+						onChange={ ( val ) => setAttributes( { actionsBorderTopStyle: val || undefined } ) }
+					/>
+				</>
+			) ) }
 			{ item( __( 'Progress fill', 'sgs-blocks' ), [ 'progressFill' ], (
 				<SelectControl
 					label={ __( 'Progress fill counts', 'sgs-blocks' ) }

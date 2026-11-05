@@ -423,6 +423,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const trackHeightValue = tierLengthPreview( attributes.progressTrackHeight, previewTier );
 	const statusGapValue = tierLengthPreview( attributes.statusRowGap, previewTier );
 	const actionsSpaceValue = tierLengthPreview( attributes.actionsTopPadding, previewTier );
+	const actionsMarginValue = tierLengthPreview( attributes.actionsTopMargin, previewTier );
+	const actionsBorderWidth = tierLengthPreview( { desktop: attributes.actionsBorderTopWidth }, 'desktop' );
+	const actionsBorderColour = resolveColourToken( attributes.actionsBorderTopColour, palette ) || 'currentcolor';
 	const actionsGapValue = tierLengthPreview( attributes.actionsGap, previewTier );
 	const actionsAlignValue = tierValueOf( attributes.actionsAlignItems, previewTier );
 	const indentPreviewCss = textIndentPreviewCss( attributes, '', `.${ formPreviewScope }`, previewTier );
@@ -499,6 +502,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		stepNumberInactiveValue && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
 		( stepNumberDoneBg || stepNumberDoneColour ) && `.${ formPreviewScope } .sgs-form__progress-step--completed .sgs-form__progress-step-number{${ stepNumberDoneBg ? `background-color:${ stepNumberDoneBg };border-color:${ stepNumberDoneBg };` : '' }${ stepNumberDoneColour ? `color:${ stepNumberDoneColour };` : '' }}`,
 		stickyDecls && `.${ formPreviewScope } .sgs-form__actions{${ stickyDecls }}`,
+		actionsMarginValue && `.${ formPreviewScope } .sgs-form__actions{margin-top:${ actionsMarginValue };}`,
+		actionsBorderWidth && `.${ formPreviewScope } .sgs-form__actions{border-top:${ actionsBorderWidth } ${ attributes.actionsBorderTopStyle || 'solid' } ${ actionsBorderColour };}`,
 		actionsSpaceValue && `.${ formPreviewScope } .sgs-form__actions{--sgs-form-actions-space:${ actionsSpaceValue };}`,
 		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
 		attributes.statusRowMarginBottom && `.${ formPreviewScope } .sgs-form__status-row{margin-bottom:${ attributes.statusRowMarginBottom };}`,
@@ -897,6 +902,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'actions-sticky-border',
 						label: __( 'Sticky buttons row top line', 'sgs-blocks' ),
 						attrs: { base: 'actionsStickyBorderColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'actions-divider',
+						label: __( 'Buttons row divider colour', 'sgs-blocks' ),
+						attrs: { base: 'actionsBorderTopColour' },
 						attributes,
 						setAttributes,
 					} ),
