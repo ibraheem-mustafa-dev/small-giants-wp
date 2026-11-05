@@ -2141,5 +2141,14 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 244
+  },
+  {
+    "id": "detector6-icon-source-selftest",
+    "cmd": "python scripts/content-role-detect/detector6_native_support_and_style_emission.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 245
   }
 ]

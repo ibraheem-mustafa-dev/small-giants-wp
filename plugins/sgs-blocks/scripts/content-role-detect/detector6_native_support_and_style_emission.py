@@ -69,8 +69,9 @@ BLIND SPOTS (enumerated)
 MECHANISM C -- ICON-SOURCE FAMILY ==> role "icon-lucide" / "icon-wp-icon" /
 "icon-dashicon" / "icon-emoji" (2026-08-06)
 --------------------------------------------------------------------------
-`sgs/icon` is the reference: `iconSource` is a hard 4-value enum
-(`lucide`/`wp-icon`/`dashicon`/`emoji`) and its four sibling value attrs
+`sgs/icon` is the reference: `iconSource` is an enum holding every icon kind
+the `roles` table has a role for (`lucide`/`wp-icon`/`dashicon`/`emoji`, plus
+sources with no role yet: `brand`, `custom`) and its four sibling value attrs
 (`iconName`/`wpIconName`/`dashiconName`/`emojiChar`) each carry the ROUTING
 role that matches the kind they feed. Icon-source lookups build
 `{role: attr_name}` for every role starting `icon-` and dispatch on
@@ -78,16 +79,18 @@ it (D503) -- getting this wrong breaks icon routing, not just misfiles a row.
 
 The mechanism is DERIVED, never a per-block dict (FP-1): (1) find the
 attribute in the block's `block.json` whose OWN `enum` declaration is
-exactly the 4-member set `{lucide, wp-icon, dashicon, emoji}` -- read the
+a SUPERSET of the kinds (every `icon-<kind>` role in the `roles` table; see
+`icon_kinds`) -- read the
 enum VALUES, never the attribute's name; (2) find where `render.php` reads
 that selector attribute into a variable; (3) walk the branch structure
 (switch/case or if/elseif/else) that tests that variable against each of the
-4 kind literals; (4) within each branch's own text, trace the first
+kind literals (a kind tested in several places keeps every branch); (4) within each branch's own text, trace the first
 variable that resolves back to an `$attributes['x']` read -- that `x` is
 the sibling attr for that kind, role = `"icon-" + kind`. A chain with only
-3 explicit branch conditions plus a trailing unconditional `else` treats
-that else as the ONE remaining kind (structural, not "lucide is default" --
-see `_branch_windows`).
+one kind missing plus a trailing unconditional `else` treats that else as the
+remaining kind ONLY when the block's source list has no value outside the
+kinds (structural, not "lucide is default" -- see `_branch_windows`). A source
+value with no role is reported (`icon_source_values_without_role`) and skipped.
 
 Verified against BOTH shapes in this codebase: `sgs/icon`'s `switch/case`
 (all 4 kinds explicit, incl. `case 'lucide':`) and `sgs/separator`'s
@@ -196,11 +199,13 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sqlite3
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
 from block_source_files import render_files, render_source  # noqa: E402
+from framework_db import framework_db_path  # noqa: E402
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLUGIN_ROOT = SCRIPT_DIR.parent.parent          # plugins/sgs-blocks
@@ -365,7 +370,33 @@ def style_emission_evidence(block_slug: str, attr: str) -> dict | None:
 # Mechanism C -- icon-source family (enum-derived, no per-block dict).
 # ---------------------------------------------------------------------------
 
-_ICON_KIND_VALUES = frozenset({"lucide", "wp-icon", "dashicon", "emoji"})
+_icon_kinds_cache: frozenset[str] | None = None
+
+
+def icon_kinds(conn: "sqlite3.Connection | None" = None) -> frozenset[str]:
+    """The icon source kinds the framework has a role for: every `roles` row named `icon-<kind>`, minus `icon-slug` (the
+    array-item spelling, not a kind). Same derivation as lib/identity_markup.py::load_db_inputs (FP-1: no hand-written
+    list). Read once per process from the database `framework_db_path()` names, read-only; a database with no icon
+    kinds is an error, because an empty vocabulary would make every block silently resolve to nothing."""
+    global _icon_kinds_cache
+    if conn is None and _icon_kinds_cache is not None:
+        return _icon_kinds_cache
+    own = conn is None
+    if own:
+        conn = sqlite3.connect(f"file:{framework_db_path()}?mode=ro", uri=True, timeout=60)
+    try:
+        kinds = frozenset(
+            r[0][len("icon-"):] for r in conn.execute("SELECT role_name FROM roles WHERE role_name LIKE 'icon-%'")
+            if r[0] != "icon-slug"
+        )
+    finally:
+        if own:
+            conn.close()
+    if not kinds:
+        raise RuntimeError("the roles table holds no icon-<kind> role: the icon-source detector has no vocabulary")
+    if own:
+        _icon_kinds_cache = kinds
+    return kinds
 
 
 def _balanced_end(text: str, open_brace_idx: int) -> int:
@@ -425,33 +456,59 @@ def _top_level_attrs(text: str) -> dict[str, tuple[int, int]]:
     return attrs
 
 
-def _icon_source_selector_attr_from_text(block_json_text: str) -> str | None:
-    """The attribute that selects among the 4-member icon-source vocabulary
-    {lucide, wp-icon, dashicon, emoji}, found by READING each top-level
-    attribute's own `enum` declaration -- never by matching the attribute's
-    NAME. An attribute literally called `iconSource` with a DIFFERENT enum
-    is rejected (self_test negative control)."""
+def _icon_source_selector(block_json_text: str, kinds: frozenset[str]) -> tuple[str, frozenset[str]] | None:
+    """(attribute name, its enum values) for the attribute that selects among the icon source kinds, found by READING each
+    top-level attribute's own `enum` declaration -- never by matching the attribute's NAME. The enum must CONTAIN every
+    kind the framework has a role for; it may list more (a source with no role yet, like `brand` or `custom`), which
+    `icon_source_values_without_role` reports. An attribute literally called `iconSource` whose enum lacks the kinds is
+    rejected (self_test negative control)."""
     for name, (start, end) in _top_level_attrs(block_json_text).items():
         obj_text = block_json_text[start:end + 1]
         enum_m = re.search(r'"enum"\s*:\s*\[(.*?)\]', obj_text, re.DOTALL)
         if not enum_m:
             continue
         values = frozenset(re.findall(r'"([^"]*)"', enum_m.group(1)))
-        if values == _ICON_KIND_VALUES:
-            return name
+        if kinds <= values:
+            return name, values
     return None
 
 
-def _branch_windows(text: str, selector_var: str, search_start: int) -> dict[str, tuple[int, int]]:
-    """{kind: (window_start, window_end)} for each of the 4 icon-kind
-    literals, found from search_start onward as EITHER a `case 'kind':`
+def _icon_source_selector_attr_from_text(block_json_text: str, kinds: frozenset[str] | None = None) -> str | None:
+    found = _icon_source_selector(block_json_text, kinds if kinds is not None else icon_kinds())
+    return found[0] if found else None
+
+
+def icon_source_values_without_role(block_slug: str, kinds: frozenset[str] | None = None) -> list[str]:
+    """The block's icon source values that have no `icon-<kind>` role (sorted). Such a source is skipped by the family
+    resolution, never guessed; whoever owns the source decides whether it needs a role."""
+    bpath = _block_dir(block_slug) / "block.json"
+    if not bpath.is_file():
+        return []
+    kinds = kinds if kinds is not None else icon_kinds()
+    found = _icon_source_selector(_read(bpath), kinds)
+    return sorted(found[1] - kinds) if found else []
+
+
+def _branch_windows(text: str, selector_var: str, search_start: int,
+                    kinds: frozenset[str] | None = None,
+                    source_values: frozenset[str] | None = None) -> dict[str, list[tuple[int, int]]]:
+    """{kind: [(window_start, window_end), ...]} (one window per place the kind's literal is tested, in file order) for each of the icon kinds
+    (`kinds`, default: the roles table's), found from search_start onward as EITHER a `case 'kind':`
     switch label OR an `'kind' === $selector_var` / `$selector_var ===
     'kind'` if/elseif condition. If exactly ONE kind has no explicit
     literal anywhere and the chain closes with a bare `} else {` after the
     last explicit branch, that else inherits the missing kind -- a
-    structural fallback (the vocabulary has exactly four members; three
-    explicit conditions plus an unconditional else necessarily means the
-    else IS the fourth), never a hardcoded "lucide is the default" case.
+    structural fallback (three explicit conditions plus an unconditional
+    else, over a vocabulary where every source value is a kind, necessarily
+    means the else IS the last kind), never a hardcoded "lucide is the
+    default" case. The fallback applies only when the block's source list
+    has no value outside `kinds` (`source_values` is that list): with an
+    extra source (`brand`, `custom`) the bare else may belong to it, so the
+    missing kind is left unresolved instead of guessed. Every kind that
+    does have its own branch resolves from that branch alone. A kind tested in
+    more than one place (a `switch` label that falls through to a shared
+    body, then an `if` that renders it) keeps every window; the resolver
+    takes the first window that names an attribute.
 
     CLUSTERING (2026-08-06, found live on the REFERENCE block itself):
     every match of every kind literal is collected first, THEN grouped
@@ -467,9 +524,10 @@ def _branch_windows(text: str, selector_var: str, search_start: int) -> dict[str
     (self_test caught it: `sgs/icon.dashiconName` resolved to
     `backgroundShape`, a completely unrelated attribute, until clustering
     was added)."""
+    kinds = kinds if kinds is not None else icon_kinds()
     var_esc = re.escape(selector_var)
     all_matches: list[tuple[int, str]] = []
-    for kind in _ICON_KIND_VALUES:
+    for kind in sorted(kinds):
         esc = re.escape(kind)
         patterns = (
             rf"case\s*['\"]{esc}['\"]\s*:",
@@ -491,23 +549,20 @@ def _branch_windows(text: str, selector_var: str, search_start: int) -> dict[str
             clusters.append([(pos, kind)])
     best_cluster = max(clusters, key=lambda c: (len({k for _, k in c}), -c[0][0]))
 
-    positions: dict[str, int] = {}
-    for pos, kind in best_cluster:
-        if kind not in positions:
-            positions[kind] = pos
-
-    missing = _ICON_KIND_VALUES - positions.keys()
-    if len(missing) == 1 and positions:
-        last_explicit_end = max(positions.values())
+    occurrences = list(best_cluster)
+    present = {kind for _, kind in occurrences}
+    missing = kinds - present
+    if len(missing) == 1 and occurrences and (source_values is None or source_values <= kinds):
+        last_explicit_end = max(pos for pos, _ in occurrences)
         else_m = re.search(r"\}\s*else\s*\{", text[last_explicit_end:])
         if else_m:
-            positions[next(iter(missing))] = last_explicit_end + else_m.end()
+            occurrences.append((last_explicit_end + else_m.end(), next(iter(missing))))
 
-    ordered = sorted(positions.items(), key=lambda kv: kv[1])
-    windows: dict[str, tuple[int, int]] = {}
-    for idx, (kind, start) in enumerate(ordered):
-        end = ordered[idx + 1][1] if idx + 1 < len(ordered) else min(start + 1000, len(text))
-        windows[kind] = (start, end)
+    occurrences.sort()
+    windows: dict[str, list[tuple[int, int]]] = {}
+    for idx, (start, kind) in enumerate(occurrences):
+        end = occurrences[idx + 1][0] if idx + 1 < len(occurrences) else min(start + 1000, len(text))
+        windows.setdefault(kind, []).append((start, end))
     return windows
 
 
@@ -536,13 +591,17 @@ def _first_attr_in_window(text: str, win_start: int, win_end: int, exclude_var: 
     return None
 
 
-def _resolve_icon_family_from_text(text: str, selector_var: str, search_start: int) -> dict[str, dict]:
+def _resolve_icon_family_from_text(text: str, selector_var: str, search_start: int,
+                                   kinds: frozenset[str] | None = None,
+                                   source_values: frozenset[str] | None = None) -> dict[str, dict]:
     """{attr_name: {"role": "icon-<kind>", "evidence_line": N}} for every
     sibling value attr this render.php's branch structure resolves for the
     icon-source family rooted at selector_var."""
     out: dict[str, dict] = {}
-    for kind, (win_start, win_end) in _branch_windows(text, selector_var, search_start).items():
-        hit = _first_attr_in_window(text, win_start, win_end, selector_var)
+    for kind, spans in _branch_windows(text, selector_var, search_start, kinds, source_values).items():
+        hit = next(
+            (h for h in (_first_attr_in_window(text, a, b, selector_var) for a, b in spans) if h is not None), None
+        )
         if hit is None:
             continue
         attr_name, line_no = hit
@@ -570,9 +629,11 @@ def _resolve_icon_source_family(block_slug: str) -> dict[str, dict]:
     rpath = _block_dir(block_slug) / "render.php"
     if not bpath.is_file() or not rpath.is_file():
         return {}
-    selector_attr = _icon_source_selector_attr_from_text(_read(bpath))
-    if selector_attr is None:
+    kinds = icon_kinds()
+    selector = _icon_source_selector(_read(bpath), kinds)
+    if selector is None:
         return {}
+    selector_attr, source_values = selector
     render_text = _read(rpath)
     read_re = re.compile(
         rf"\$(\w+)\s*=\s*[^;]*\$attributes\s*\[\s*['\"]{re.escape(selector_attr)}['\"]\s*\]"
@@ -580,7 +641,7 @@ def _resolve_icon_source_family(block_slug: str) -> dict[str, dict]:
     m = read_re.search(render_text)
     if not m:
         return {}
-    return _resolve_icon_family_from_text(render_text, m.group(1), m.end())
+    return _resolve_icon_family_from_text(render_text, m.group(1), m.end(), kinds, source_values)
 
 
 def icon_source_family_evidence(block_slug: str, attr: str) -> dict | None:
@@ -673,7 +734,14 @@ def filter_predicate_evidence(block_slug: str, attr: str) -> dict | None:
 def detect(candidates: list[tuple[str, str]]) -> list[dict]:
     """candidates: [(block_slug, attr_name)] already filtered to role IS NULL."""
     out = []
+    reported: set[str] = set()
     for slug, attr in candidates:
+        if slug not in reported:
+            reported.add(slug)
+            extra = icon_source_values_without_role(slug)
+            if extra:
+                print(f"[detector6] {slug}: icon source value(s) {', '.join(extra)} have no icon-<kind> role: skipped, not guessed",
+                      file=sys.stderr)
         if attr in _NATIVE_SUPPORT_KEY:
             evidence = native_support_evidence(slug, attr)
             if evidence:
@@ -794,11 +862,11 @@ def self_test() -> int:
             "on this block -- the detector is claiming a row it must not."
         )
 
-    # 5. Positive -- sgs/nav-drawer.sgsCustomCss: read into $custom_css, merged
-    #    into $css, printed inside <style>...</style>.
-    r = style_emission_evidence("sgs/nav-drawer", "sgsCustomCss")
+    # 5. Positive -- sgs/nav-drawer.panelSize: read into $panel_size_attr_raw,
+    #    carried into the block's scoped <style>...</style> rules.
+    r = style_emission_evidence("sgs/nav-drawer", "panelSize")
     if not r:
-        failures.append("sgs/nav-drawer.sgsCustomCss did not resolve to style-emission")
+        failures.append("sgs/nav-drawer.panelSize did not resolve to style-emission")
 
     # 7. Fabricated attribute name guard, mechanism A -- must resolve to
     #    nothing (name isn't 'anchor' or 'className').
@@ -863,14 +931,48 @@ def self_test() -> int:
     if r:
         failures.append(f"sgs/star-rating.starColour resolved via icon-source-family but has no such attr family: {r}")
 
-    # 12. NEGATIVE CONTROL -- an enum that ISN'T the 4-value icon vocabulary
-    #     must never be mistaken for the selector, even when the attribute
-    #     is literally NAMED iconSource. Matching on the NAME alone would be
-    #     exactly the kind of spelling-based guess this programme forbids
-    #     (the supports.className trap in the module docstring).
+    # 12. NEGATIVE CONTROL -- an enum that lacks the icon kinds must never be
+    #     mistaken for the selector, even when the attribute is literally
+    #     NAMED iconSource. Matching on the NAME alone would be exactly the
+    #     kind of spelling-based guess this programme forbids (the
+    #     supports.className trap in the module docstring).
+    _kinds = icon_kinds()
     _fake_block_json = '{"attributes":{"iconSource":{"type":"string","enum":["left","center","right"]}}}'
-    if _icon_source_selector_attr_from_text(_fake_block_json) is not None:
+    if _icon_source_selector_attr_from_text(_fake_block_json, _kinds) is not None:
         failures.append("a 3-value enum on an attr named iconSource was wrongly accepted as the icon-source selector")
+    _lacking = '{"attributes":{"iconSource":{"type":"string","enum":["lucide","emoji"]}}}'
+    if _icon_source_selector_attr_from_text(_lacking, _kinds) is not None:
+        failures.append("an enum holding only some of the icon kinds was wrongly accepted as the icon-source selector")
+
+    # 12b. The selector is an enum that CONTAINS the kinds: a six-value list
+    #      (the kinds plus brand and custom) is found, and the two extras are
+    #      reported as having no role.
+    _six = ('{"attributes":{"iconSource":{"type":"string","enum":["'
+            + '","'.join(sorted(_kinds) + ["brand", "custom"]) + '"]},"other":{"type":"string"}}}')
+    if _icon_source_selector_attr_from_text(_six, _kinds) != "iconSource":
+        failures.append("a source list holding every icon kind plus brand and custom was not found as the selector")
+    if sorted(_icon_source_selector(_six, _kinds)[1] - _kinds) != ["brand", "custom"]:
+        failures.append("the extra source values (brand, custom) were not reported as having no role")
+    _real = icon_source_values_without_role("sgs/icon")
+    if _real != sorted(_real):
+        failures.append("icon_source_values_without_role is not sorted")
+
+    # 12c. Branch windows with extra sources: every kind that has its own
+    #      branch resolves from that branch alone, and the bare else is NOT
+    #      handed to the one kind with no literal when the source list has a
+    #      value outside the kinds (it may belong to that value).
+    _kind_list = sorted(_kinds)
+    _lit = _kind_list[:-1]
+    _php = "".join(
+        ("if" if i == 0 else "} elseif") + f" ( '{k}' === $src ) {{ $x{i} = 1; "
+        for i, k in enumerate(_lit)
+    ) + "} else { $fallback = 1; }"
+    _with_extra = _branch_windows(_php, "src", 0, _kinds, frozenset(_kinds | {"brand"}))
+    if sorted(_with_extra) != _lit:
+        failures.append(f"with an extra source value the bare else was guessed as a kind: {sorted(_with_extra)} vs {_lit}")
+    _plain = _branch_windows(_php, "src", 0, _kinds, frozenset(_kinds))
+    if sorted(_plain) != _kind_list:
+        failures.append(f"without extra source values the bare else should be the last kind: {sorted(_plain)}")
 
     # 13. PROVE MECHANISM C CAN FAIL -- mutate a copy of sgs/separator's
     #     real render.php so the emoji branch's condition literal is
