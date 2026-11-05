@@ -384,6 +384,16 @@
 			}
 		},
 		{
+			"slug": "sgs/form-field-tiles",
+			"attr": "tileSelectedOffset",
+			"fields": {
+				"role": "styling",
+				"css_property": "transform",
+				"css_element": "tile-selected"
+			},
+			"_reason": "2026-11-05: the chosen tile's {x,y} shift, printed as one `transform: translate()` declaration in the chosen-tile rule. Without a role the manifest gate counts it UNCLASSIFIED."
+		},
+		{
 			"slug": "sgs/option-picker",
 			"attr": "pillSelectedOffsetX",
 			"fields": {

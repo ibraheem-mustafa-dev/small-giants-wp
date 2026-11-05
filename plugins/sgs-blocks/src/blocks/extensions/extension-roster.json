@@ -166,7 +166,7 @@
 				"sgsChipCountSize": { "type": "string", "default": "", "role": "visual" },
 				"sgsChipCountFontSize": { "type": "string", "default": "", "role": "visual" },
 				"sgsChipAllLabel": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipStartTerm": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipStartTerm": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsSortBackground": { "type": "string", "default": "", "role": "visual" },
 				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual" },
 				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual" },
