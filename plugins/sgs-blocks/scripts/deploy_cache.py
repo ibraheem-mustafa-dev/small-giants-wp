@@ -138,6 +138,25 @@ def record_pass(key: str | None, repo: Path, build_dir: Path, seconds: float) ->
     prune(root)
 
 
+def carry_pass(from_key: str | None, to_key: str | None) -> bool:
+    """Copies a recorded entry to another key (same tree, a framework DB with identical content); False when there is
+    nothing to copy or the target already has an entry. Renamed into place like record_pass."""
+    if not from_key or not to_key or from_key == to_key or not gate_pass(from_key):
+        return False
+    root = cache_root()
+    final = root / to_key
+    if final.exists():
+        return False
+    work = root / f".{to_key}-carry-{os.getpid()}"
+    shutil.rmtree(work, ignore_errors=True)
+    try:
+        shutil.copytree(root / from_key, work)
+        os.replace(work, final)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    return True
+
+
 def restore_build(key: str | None, repo: Path, build_dir: Path) -> bool:
     """Puts the cached build/ and build leftovers in place; False when there is none."""
     record = gate_pass(key)
@@ -267,6 +286,17 @@ def self_test() -> list[str]:
             failures.append("restore_build did not restore build/ and the build's generated file")
         if restore_build(k1, repo, build):
             failures.append("restore_build restored for a key that never passed")
+        db.write_bytes(b"db-v3")
+        k3 = run_key(repo, isolated=True, no_cache=False, db=db)
+        if carry_pass(k1, k3):
+            failures.append("carry_pass copied from a key that never passed")
+        if not carry_pass(k2, k3) or not gate_pass(k3):
+            failures.append("carry_pass did not carry a recorded pass to another key")
+        else:
+            shutil.rmtree(build)
+            if not restore_build(k3, repo, build) or not (build / "index.js").is_file():
+                failures.append("restore_build did not restore from a carried pass")
+        db.write_bytes(b"db-v1")
 
         held: list[str] = []
         lock_path = base / "pkg.lock"

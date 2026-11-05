@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 import sqlite3
+import subprocess
 import time
 from pathlib import Path
 
@@ -269,3 +270,107 @@ def test_status_reports_a_matching_log_and_then_a_mismatch(shared: Path, capsys)
     write_directly(shared, "x")
     assert pub.main(["status"]) == 0
     assert "WARNING" in capsys.readouterr().out
+
+
+# --- gate-pass requirement, pass carry and regenerate --copy ---
+
+REAL_REQUIRE = pub.require_gate_pass
+
+
+@pytest.fixture()
+def real_pass() -> None:
+    return None
+
+
+@pytest.fixture(autouse=True)
+def pass_check_off(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The older tests exercise the swap itself; the tests that take `real_pass` use the real pass requirement."""
+    if "real_pass" not in request.fixturenames:
+        monkeypatch.setattr(pub, "require_gate_pass", lambda copy: "unused")
+        monkeypatch.setattr(pub.deploy_cache, "carry_pass", lambda a, b: False)
+
+
+@pytest.fixture()
+def repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    root = tmp_path / "repo"
+    root.mkdir()
+
+    def git(*args: str) -> None:
+        subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)
+
+    git("init", "-q")
+    git("config", "user.email", "t@example.invalid")
+    git("config", "user.name", "t")
+    (root / "tracked.txt").write_text("v1", encoding="utf-8")
+    git("add", "tracked.txt")
+    git("commit", "-qm", "one")
+    monkeypatch.setattr(pub, "REPO_ROOT", root)
+    monkeypatch.setenv("SGS_DEPLOY_CACHE_DIR", str(tmp_path / "cache"))
+    return root
+
+
+def record_gate_pass(root: Path, db: Path) -> str:
+    key = pub.deploy_cache.run_key(root, isolated=True, no_cache=False, db=db)
+    work = pub.deploy_cache.cache_root() / key
+    work.mkdir(parents=True)
+    (work / "gate-pass.json").write_text(json.dumps({"commit": "x", "passed_at": "now", "has_build": False, "files": []}), encoding="utf-8")
+    return key
+
+
+def test_publish_refuses_without_a_recorded_pass_and_names_the_command(real_pass: None, shared: Path, tmp_path: Path, repo: Path, capsys) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
+    err = capsys.readouterr().err
+    assert f"SGS_FRAMEWORK_DB={copy} python plugins/sgs-blocks/scripts/build-deploy.py --gate-only --blocks-only" in err
+    assert marker_of(shared) == "start"
+
+
+def test_publish_with_a_pass_succeeds_and_carries_it_to_the_published_sha(real_pass: None, shared: Path, tmp_path: Path, repo: Path) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    record_gate_pass(repo, copy)
+    assert pub.main(["publish", "--copy", str(copy)]) == 0
+    assert marker_of(shared) == "reseeded"
+    published_key = pub.deploy_cache.run_key(repo, isolated=True, no_cache=False, db=shared)
+    assert pub.deploy_cache.gate_pass(published_key) is not None
+
+
+def test_a_pass_for_a_different_copy_does_not_allow_publish(real_pass: None, shared: Path, tmp_path: Path, repo: Path) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "gated-content")
+    record_gate_pass(repo, copy)
+    reseed(copy, "changed-after-gating")
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
+    assert marker_of(shared) == "start"
+
+
+def test_publish_refuses_when_a_tracked_file_is_dirty(real_pass: None, shared: Path, tmp_path: Path, repo: Path, capsys) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    record_gate_pass(repo, copy)
+    (repo / "tracked.txt").write_text("edited after gating", encoding="utf-8")
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
+    assert "differ from HEAD" in capsys.readouterr().err
+    assert marker_of(shared) == "start"
+
+
+def test_regenerate_copy_runs_the_generators_against_the_copy(shared: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    copy = tmp_path / "copy.db"
+    make_db(copy, "copy-content")
+    monkeypatch.setenv("SGS_FRAMEWORK_DB", str(copy))  # set while gating on the copy; --copy must still work
+    seen: list[tuple[list[str], str]] = []
+
+    def fake_run(command, **kwargs):
+        seen.append((command, kwargs.get("env", {}).get("SGS_FRAMEWORK_DB", "")))
+        return subprocess.CompletedProcess(command, 0)
+
+    monkeypatch.setattr(pub.subprocess, "run", fake_run)
+    assert pub.main(["regenerate", "--copy", str(copy)]) == 0
+    assert len(seen) == 3 and all(db == str(copy.resolve()) for _, db in seen)
+    assert pub.main(["regenerate"]) == pub.EXIT_REFUSED  # without --copy the override is still refused
+    assert pub.main(["regenerate", "--copy", str(tmp_path / "missing.db")]) == pub.EXIT_REFUSED
