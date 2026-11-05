@@ -112,6 +112,41 @@ function block_link_anchor_is_inert( string $attrs ): bool {
 }
 
 /**
+ * Whether an anchor has an accessible name: an `aria-label`, an `aria-labelledby` or a `title`, or text (an image's `alt`
+ * included) in its content.
+ *
+ * An arrow-only button link prints an empty label span and an icon, so it has none. Such an anchor cannot be the card's
+ * lender (the card's only tab stop would then read as nothing), and it is demoted like a duplicate link.
+ *
+ * @param string $attrs The anchor's attribute string.
+ * @param string $inner The anchor's content, up to its closing tag.
+ * @return bool
+ */
+function block_link_anchor_has_name( string $attrs, string $inner ): bool {
+	if ( preg_match( '/(?<![\w-])(?:aria-label|aria-labelledby|title)\s*=\s*(["\'])\s*\S.*?\1/is', $attrs ) ) {
+		return true;
+	}
+	if ( preg_match( '/<img\b[^>]*\balt\s*=\s*(["\'])\s*\S.*?\1/is', $inner ) ) {
+		return true;
+	}
+	$text = preg_replace( '#<(script|style)\b.*?</\1>#is', '', $inner );
+	return '' !== trim( html_entity_decode( wp_strip_all_tags( (string) $text ), ENT_QUOTES ) );
+}
+
+/**
+ * The text of the first heading in the block's HTML: the name a card's overlay takes when the operator typed no label.
+ *
+ * @param string $html The block's rendered root.
+ * @return string The heading text, or ''.
+ */
+function block_link_first_heading_text( string $html ): string {
+	if ( ! preg_match( '#<h[1-6]\b[^>]*>(.*?)</h[1-6]>#is', $html, $heading ) ) {
+		return '';
+	}
+	return trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( wp_strip_all_tags( $heading[1] ), ENT_QUOTES ) ) );
+}
+
+/**
  * Whether this anchor is safe to rewrite at all.
  *
  * The anchor is found with `/<a\b([^>]*)>/`, which stops at the FIRST `>`. A
@@ -243,28 +278,37 @@ function insert_block_link_overlay(
 
 	$sgs_root = substr( $block_content, $sgs_root_offset );
 
-	// Find the lender, and demote any further link to the same destination.
+	// Find the lender, and demote any further link to the same destination. A link with no accessible name never
+	// becomes the lender: it is demoted, and the card keeps the labelled overlay instead.
 	$lender_found = false;
+	$whole_root   = $sgs_root;
 	$sgs_root     = (string) preg_replace_callback(
 		'/<a\b([^>]*)>/i',
-		static function ( array $anchor ) use ( &$lender_found, $block_link ): string {
-			$attrs = $anchor[1];
+		static function ( array $anchor ) use ( &$lender_found, $block_link, $whole_root ): string {
+			$attrs = $anchor[1][0];
 
 			if ( ! block_link_href_matches( $attrs, $block_link )
 				|| block_link_anchor_is_inert( $attrs )
 				|| ! block_link_anchor_is_rewritable( $attrs )
 				|| block_link_anchor_is_device_hidden( $attrs ) ) {
-				return $anchor[0];
+				return $anchor[0][0];
 			}
 
-			if ( ! $lender_found ) {
+			$content_start = (int) $anchor[0][1] + strlen( $anchor[0][0] );
+			$content_end   = stripos( $whole_root, '</a', $content_start );
+			$inner         = substr( $whole_root, $content_start, false === $content_end ? null : $content_end - $content_start );
+
+			if ( ! $lender_found && block_link_anchor_has_name( $attrs, $inner ) ) {
 				$lender_found = true;
 				return '<a' . block_link_add_class( $attrs, 'sgs-block-link-source' ) . '>';
 			}
 
 			return '<a' . rtrim( $attrs ) . ' tabindex="-1" aria-hidden="true">';
 		},
-		$sgs_root
+		$sgs_root,
+		-1,
+		$sgs_replaced,
+		PREG_OFFSET_CAPTURE
 	);
 
 	if ( $lender_found ) {
@@ -277,9 +321,12 @@ function insert_block_link_overlay(
 	} else {
 		// An empty anchor is invisible to screen readers without an
 		// accessible name — aria-label is required, never optional. Prefer
-		// the operator-supplied label; fall back to the link's host so the
-		// overlay is never unlabelled even when the control is left blank.
+		// the operator-supplied label, then the block's own heading, then the
+		// link's host, so the overlay is never unlabelled.
 		$link_label = $block_link_label;
+		if ( '' === $link_label ) {
+			$link_label = block_link_first_heading_text( $sgs_root );
+		}
 		if ( '' === $link_label ) {
 			$link_host  = wp_parse_url( $block_link, PHP_URL_HOST );
 			$link_label = $link_host ? $link_host : $block_link;

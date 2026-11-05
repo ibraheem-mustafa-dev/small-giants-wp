@@ -3720,6 +3720,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$do_wrap = true;
 			}
 			// The band also carries its block's own class, `sgs-<slug>__content-band`: the element the motion parts `content-band` and `inner` resolve to (Spec 38A §6.2), as the root's direct child.
+			// The scroll-sideways row is the __inner: marked so the view script makes it a focusable, named region while it overflows.
+			if ( $sgs_scroll_row_on ) {
+				$fx_track_attr .= sgs_container_scroll_region_attrs( $attributes );
+			}
 			$inner_class = 'sgs-container__inner' . ( $block instanceof \WP_Block && 0 === strpos( (string) $block->name, 'sgs/' ) ? ' sgs-' . sanitize_html_class( substr( (string) $block->name, 4 ) ) . '__content-band' : '' );
 			if ( $do_wrap && $has_band_responsive && '' !== $uid ) {
 				// Responsive band tiers exist: the base band styles were emitted into

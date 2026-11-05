@@ -1047,7 +1047,7 @@ $allowed_inner = sgs_button_inner_allowed_html();
 // Build the element.
 if ( 'button' === $tag_name ) {
 	$type_attr = $is_submit ? 'submit' : 'button';
-	$aria_str  = ( $has_explicit_aria || 'only' === $icon_position ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
+	$aria_str  = ( ( $has_explicit_aria || 'only' === $icon_position ) && '' !== trim( $aria_label ) ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
 	echo '<button type="' . esc_attr( $type_attr ) . '"' . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $aria_str built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
@@ -1064,7 +1064,7 @@ if ( 'button' === $tag_name ) {
 
 	$target_attr   = ( $link_target && '_self' !== $link_target ) ? ' target="' . esc_attr( $link_target ) . '"' : '';
 	$download_attr = $download ? ' download' : '';
-	$aria_str      = ( $has_explicit_aria || 'only' === $icon_position ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
+	$aria_str      = ( ( $has_explicit_aria || 'only' === $icon_position ) && '' !== trim( $aria_label ) ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 
 	echo '<a href="' . esc_url( $url ) . '"' . $target_attr . $rel_attr . $download_attr . $aria_str . ' ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target_attr/$rel_attr/$download_attr/$aria_str all built with esc_attr(); get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );

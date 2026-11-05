@@ -73,6 +73,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		slidesVisible,
 		slidePeek,
 		slideGap,
+		slideBleed,
 		cardStyle,
 		backgroundColour,
 		backgroundColourGradient,
@@ -116,6 +117,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			: resolveResponsiveTier( slidesVisible, previewTier )?.value || slidesDesktop;
 	const slidePeekNow = resolveResponsiveTier( slidePeek, previewTier )?.value || '';
 	const slideGapNow = resolveResponsiveTier( slideGap, previewTier )?.value || '';
+	const slideBleedNow = resolveResponsiveTier( slideBleed, previewTier )?.value || '';
 
 	// InnerBlocks — allows any number of sgs/testimonial children.
 	// templateLock:false lets the client add as many slides as they want.
@@ -126,6 +128,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				'--sgs-slides-visible': slidesVisibleNow,
 				'--sgs-slide-peek': slidePeekNow || undefined,
 				'--sgs-slide-gap': slideGapNow || undefined,
+				padding: slideBleedNow || undefined,
+				margin: slideBleedNow ? `calc(-1 * ${ slideBleedNow })` : undefined,
 			},
 		},
 		{
@@ -208,6 +212,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								dragToScroll: false,
 								slidePeek: {},
 								slideGap: {},
+								slideBleed: {},
 								slidesVisible: { desktop: 3 },
 							} )
 						}
@@ -379,6 +384,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								help={ __( 'The gap between the cards, e.g. 20px. Empty uses the theme spacing.', 'sgs-blocks' ) }
 								value={ slideGap }
 								onChange={ ( obj ) => setAttributes( { slideGap: obj } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Room for tilts and shadows', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! slideBleed && Object.keys( slideBleed ).length > 0
+							}
+							onDeselect={ () => setAttributes( { slideBleed: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Room for tilts and shadows', 'sgs-blocks' ) }
+								scale="spacing"
+								help={ __( 'Space around the cards inside the slider so a tilt, a hover lift or a shadow is not cut off, e.g. 16px. Empty adds none.', 'sgs-blocks' ) }
+								value={ slideBleed }
+								onChange={ ( obj ) => setAttributes( { slideBleed: obj } ) }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

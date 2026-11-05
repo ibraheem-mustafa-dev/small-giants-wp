@@ -19,6 +19,7 @@ import {
 	ToggleControl,
 	ToolbarGroup,
 	ToolbarButton,
+	Notice,
 } from '@wordpress/components';
 import {
 	IconPicker,
@@ -598,6 +599,16 @@ export default function Edit( {
 							'sgs-blocks'
 						) }
 					/>
+					{ ( !! url || usesSiteInfoLink ) &&
+						'' === ( label || '' ).replace( /<[^>]*>/g, '' ).trim() &&
+						'' === ( ariaLabel || '' ).trim() && (
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
+									'This link has no visible text and no aria label, so a screen reader cannot name it. Add an aria label below, unless the button sits inside a linked card, which then names the link.',
+									'sgs-blocks'
+								) }
+							</Notice>
+						) }
 					<TextControl
 						label={ __( 'Aria label', 'sgs-blocks' ) }
 						value={ ariaLabel }

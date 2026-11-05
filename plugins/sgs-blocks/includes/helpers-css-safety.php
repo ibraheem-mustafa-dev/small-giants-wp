@@ -311,6 +311,23 @@ if ( ! function_exists( 'sgs_css_single_length_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_css_negated_length_value' ) ) {
+	/**
+	 * The opposite of a single CSS length (`calc(-1 * <length>)`), for the negative margin that pairs with a padding of
+	 * the same length, so the box paints outwards without moving its neighbours. A zero length stays `0`.
+	 *
+	 * @param mixed $raw Raw attribute value.
+	 * @return string The negated length, or '' when the value is unusable.
+	 */
+	function sgs_css_negated_length_value( $raw ): string {
+		$length = sgs_css_single_length_value( $raw );
+		if ( '' === $length ) {
+			return '';
+		}
+		return 1 === preg_match( '/^0+(?:\.0+)?[a-z%]*$/i', $length ) ? '0' : 'calc(-1 * ' . $length . ')';
+	}
+}
+
 /**
  * CLI self-check — no WordPress bootstrap required.
  *

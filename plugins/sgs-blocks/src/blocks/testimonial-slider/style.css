@@ -118,6 +118,13 @@
 	min-width: 0;
 	margin: 0;
 	box-sizing: border-box;
+	/* A column, so the card inside fills the slide's height and every card in a row is as tall as the tallest. */
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-testimonial-slider__slide > .sgs-testimonial {
+	flex: 1 1 auto;
 }
 
 /* ===== Stage — flex row: [prev-arrow] [track] [next-arrow] ===== */
@@ -159,6 +166,9 @@
  * flex-shrink:0 stops the button from being squashed when the track is wide.
  */
 .sgs-testimonial-slider__arrow {
+	/* Above the track, whose bleed padding reaches over the arrows' edge. */
+	position: relative;
+	z-index: 1;
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
