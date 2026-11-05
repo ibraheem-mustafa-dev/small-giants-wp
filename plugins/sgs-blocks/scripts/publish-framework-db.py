@@ -15,7 +15,8 @@ Sessions no longer queue behind one long shared reseed. The flow is compare-and-
   5. gate        SGS_FRAMEWORK_DB=E:/sgs-tmp/my-reseed.db python build-deploy.py --gate-only --blocks-only [--editor-check local-<site>]
                  Builds and runs gate:full in an isolated worktree at HEAD and records a pass for (HEAD's tree, the copy's sha256).
   6. publish     python publish-framework-db.py publish --copy E:/sgs-tmp/my-reseed.db
-                 Refused (exit 2) unless that pass is on record for HEAD and the tracked files are clean. Takes a lock for a few
+                 Refused (exit 2) unless that pass is on record for HEAD and the tracked files under plugins/ and theme/ are clean
+                 (other directories may carry other sessions' edits: the pass is keyed on HEAD's tree). Takes a lock for a few
                  seconds and replaces the shared DB only when it still has the sha256 the copy started from (exit 3 means another
                  session published first: run `begin` and reseed again). Then carries the pass to the key for (same tree, published
                  sha256): the published DB is a SQLite backup of the gated copy, identical content, so the gates already ran on it.
@@ -58,6 +59,8 @@ GENERATED = (
     "plugins/sgs-blocks/scripts/consistency/roster.json",
     "plugins/sgs-blocks/scripts/dbschema/seed-history.json",
 )
+# The trees the reseed and the gates read (deploy_cache.ROOTS plus the seeders and generators under plugins/).
+BUILD_INPUTS = ("plugins", "theme")
 LOCK_WAIT_S = 120.0
 LOCK_STALE_S = 300.0
 REPLACE_WAIT_S = 30.0
@@ -273,7 +276,9 @@ def gate_command(copy: Path) -> str:
 
 
 def tracked_changes() -> list[str]:
-    done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"], cwd=str(REPO_ROOT),
+    """Tracked files under BUILD_INPUTS that differ from HEAD. Other sessions' edits elsewhere in a shared checkout do not
+    count: the gate pass is keyed on HEAD's tree and uncommitted files are never pushed."""
+    done = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "--", *BUILD_INPUTS], cwd=str(REPO_ROOT),
                           capture_output=True, text=True, check=True)
     return [line for line in done.stdout.splitlines() if line.strip()]
 
@@ -283,7 +288,7 @@ def require_gate_pass(copy: Path) -> str:
     when tracked files differ from HEAD (the pass would describe different code)."""
     dirty = tracked_changes()
     if dirty:
-        raise PublishRefused(f"{len(dirty)} tracked file(s) differ from HEAD ({dirty[0].strip()}): commit them, then gate. "
+        raise PublishRefused(f"{len(dirty)} tracked file(s) under {' and '.join(d + '/' for d in BUILD_INPUTS)} differ from HEAD ({dirty[0].strip()}): commit them, then gate. "
                              f"Run: {gate_command(copy)}")
     key = deploy_cache.run_key(REPO_ROOT, isolated=True, no_cache=False, db=copy)
     if not deploy_cache.gate_pass(key):
@@ -326,9 +331,15 @@ def publish(copy: Path, shared: Path) -> dict:
                 pass  # the new DB is already live; an empty sidecar is rebuilt by SQLite
         published = sha256_of(shared)
         record_event(shared, "publish", sha_before=current, sha_after=published, copy=str(copy))
-    # The published DB is a SQLite backup of the gated copy (identical content), so the pass for the copy holds for it.
-    deploy_cache.carry_pass(pass_key, deploy_cache.run_key(REPO_ROOT, isolated=True, no_cache=False, db=shared))
+    # The publish is on record (log above) and in the marker before the pass is carried: a failed carry never un-publishes.
     marker.write_text(json.dumps({**base, "published_sha256": published, "published_at": time.time()}, indent=2), encoding="utf-8")
+    # The published DB is a SQLite backup of the gated copy (identical content), so the pass for the copy holds for it.
+    try:
+        deploy_cache.carry_pass(pass_key, deploy_cache.run_key(REPO_ROOT, isolated=True, no_cache=False, db=shared))
+    except OSError as exc:
+        carry_warning = (f"the shared DB is published but the gate pass was not carried ({type(exc).__name__}: {exc}); "
+                         f"the deploy will rebuild, or re-run: {gate_command(shared)}")
+        warning = f"{warning} {carry_warning}" if warning else carry_warning
     return {"sha256": published, "warning": warning}
 
 
