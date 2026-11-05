@@ -175,6 +175,62 @@ Review against `E:/sgs-tmp/r6-decided.md` (three design reviewers, evidence `E:/
 
 Dropped: the phone menu's rating badge in its top row (decided, D7); the header logo 2px taller (the draft squashes its box); the header phone link box 5px narrower (invisible, icon and number in place); contact link cards (76.3px both). No proposed accepted differences this round. Open, owned elsewhere: the main-photo border's tier media queries move onto the shared tier printer the Mama's session is adding (its breakpoint migration, `check-breakpoint-literals`).
 
+## Finishing stream, round 7 (2026-11-04/05, approved by Bean)
+
+**How the review ran.**
+- Three design reviewers compared live with `E:/sgs-tmp/r7-decided.md`. They measured amounts and also hunted for anything dropped: every border side, shadow, divider, underline, icon and hover/focus look. Evidence: `E:/sgs-tmp/r7/rev-a|b|c`.
+- A full hover audit of the 213 animations the draft declares followed (`E:/sgs-tmp/r7/motion/`). So did a page-load check (`E:/sgs-tmp/r7/flash/`) and a check of Bean's five extra points.
+- Causes were proven by read-only investigators (`inv1` to `inv3`). Every claim was fact-checked live. Probe misses were withdrawn, among them the header Bag hover, the "taupe" WhatsApp text, the mega panel border and the "+2" pill.
+- Pairs: https://claude.ai/artifact/Sev2L343cma5jQ21ztzUHB (version 2).
+
+**Bean's hover rule restated.** Rule S1 governs: a white button gets the lift only, a black one the lift plus a lighter ground, a green WhatsApp the lift only, and nothing darkens (N36C). So the draft's WhatsApp card tint and the outline "as they are" fill were dropped.
+
+**Edits.**
+- Backups: `sites/eye-care-ward-end/build/backups/2026-11-04-r7/` (17 posts).
+- Scripts: `E:/sgs-tmp/r7/r7-edit.php` (14 posts) and `r7-edit2.php`.
+- Framework: `959f5ccb6` (settings and fixes), `359402534` (moved panels carry the motion class), `bdac8c79d` and `67e0c7d72` (icon ring), `8fc82f6fa` and `8f91873f7` (reseed files). Database published through `publish-framework-db.py`. Deployed to sandybrown and eye-care-test at `8f91873f7`. Checked after the deploy: round 6 values unchanged (`E:/sgs-tmp/r6/qc6.mjs`, `qc6b`, `cg`, `bagpos2`); flows pass at 1440 and 375 (£348, £289, size guide, no script errors); 16 editor loads (`E:/sgs-tmp/r7/editor-r7.mjs`: every edited post, both shop templates, the four mega panels) open with 0 invalid blocks.
+
+| Ref | What was wrong | Proven cause | Fix | Type | Status |
+|---|---|---|---|---|---|
+| R7-1 | Home: no 1px line above and below the Google reviews band (dropped) | `cr-ref-home-54` had no border saved | border top and bottom 1px solid `border` | setting | closed: 1px rgb(230,225,218) at 375, 768, 1440 |
+| R7-2 | Home: no 1px line under the brand strip (dropped) | `cr-ref-home-7` had no border | border bottom 1px solid `border` | setting | closed: 1px at all widths |
+| R7-3 | Header solid; the draft is 90% see-through with blur (dropped) | header 199 `surfaceOpacity` saved as 90 on a 0 to 1 scale, so `sgs_surface_fill_alpha` treats it as opaque | 0.9 | setting | closed: alpha 0.9, blur 16px |
+| R7-4 | Footer Privacy and Terms underlined at rest | `cr-ref-footer-30/31` `linkUnderline` unset (browser default) | "sweep" | setting | closed: none at rest |
+| R7-5 | Footer headings 0.8px letter spacing (draft 2.3px) | `letterSpacing` 0.06em | 0.17em | setting | closed: 2.295px |
+| R7-6 | Lenses menu cards 15px short | labels and titles had no line height (block defaults 1.2 and 1.05) | 1.5 on the 8 blocks in post 183 | setting | closed: panel 245px (draft 245) |
+| R7-7 | Bag: "Add my prescription" indented 8px and about 12px low; Remove 16px right | `cart/style.css` padding 0 8px and min-height 44px on the link | the text is the box; a `::after` gives the 44px tap area | framework default | closed: link flush with the name (x1116 = x1116), 112x19, tap area 47px; Remove x1244 (draft 1244); same at 375 and 768 |
+| R7-8 | Price-to-stock line 10px higher than the draft | hairline margin fixed at 8px | new `stockLineHairlineMargin`, Eye Care saves top 18px | framework setting | closed: rule 74.75px under the price top at all widths (draft 74.75) |
+| R7-9 | Colour dots grow 25% on hover (draft 12%) | `swatchHoverGrow` 125 | 112 on home, shop and product cards | setting | closed: scale 1.12 |
+| R7-10 | Trust bar spread edge to edge on wide screens | `cr-ref-header-0` had no content width (draft 1440px, centred, 24px sides) | `contentWidth` 1440px | setting | closed: 287 to 1656 at 1920 (draft 288 to 1656) |
+| R7-11 | Google rating against the logo; Bean wants it beside the menu, as a pill | left group `justifyContent` space-between; saved transparent ground and no border stripped the pill default | flex-start; overrides removed (replaces D7's "left of the logo") | setting | closed: 16px after the menu, pill with a 1px border |
+| R7-12 | Home product cards had no border (dropped) | no border saved on the 8 cards | 1px solid #E6E1DA; the shop card moves to the same #E6E1DA | setting | closed: 1px at all widths |
+| R7-13 | Product cards do not lift or cast a shadow on hover (dropped) | saved hover had a duration only; product-card had no hover-shadow setting | 4px lift saved; new `cardShadowHover`/`cardShadowColourHover` saved `0 18px 44px` / `primary 10%` | setting + framework setting | lift closed (translate -4px on home, shop, similar); shadow closed: lift -4px and shadow `0 18px 44px` 10% on hover |
+| R7-14 | Shape tiles do not lift on hover (dropped) | card-grid `elements.item` empty | item hover lift 4px | setting | closed: translate -4px |
+| R7-15 | About-strip photo does not zoom on hover (dropped) | the media part is a wrapper, so it shared the root element; its hover scale was refused as a shared-element duplicate | `motionSelector` lets a wrapper part target its own element (`.sgs-media-el`) | framework repair | closed: photo scale 1.05 on hover (`MotionMediaPartHoverTest`) |
+| R7-16 | Floating WhatsApp does not lift (S1) | no hover motion saved | 3px lift | setting | closed: 3px |
+| R7-17 | In-page WhatsApp darkens on hover (against S1); the home one also lifted 6px | `cr-ref-home-77` saved `backgroundColourHover` whatsapp-hover plus a motion lift on top of the S1 lift | both removed | setting | closed: no ground change, 3px on every page |
+| R7-18 | Bag Checkout does not lift (S1) | no hover lift on the checkout element | `cr-ref-header-13` checkout hover lift 3px | setting | closed: 3px rise; the bag panel moved to `<body>` now carries its block's motion class (`359402534`) |
+| R7-19 | "+2" colour count ring grey (draft #D8D2C8) | hard-coded rgba(0,0,0,.15) | new `swatchMoreBorderColour`, saved #D8D2C8 | framework setting | closed: rgb(216,210,200) |
+| R7-20 | Keyboard focus on buttons takes the hover look (L1) | `sgsFocusRests` unset | true on 86 buttons | setting | closed: focus keeps the resting fill, ring 2px |
+| R7-21 | Instagram hover ring red, border magenta (L2) | the brand-glyph ring always took the brand colour | the ring takes the icon's own border hover colour; Eye Care saves #C13584 | framework repair + setting | closed: ring and border rgb(193,53,132) |
+| R7-22 | Open menus sit 1px below the header's line (L3) | the panel opens at the header's bottom edge; the draft overlaps it | `submenuTopOffset` -1px on both nav bars | setting | closed: panel top 64, header bottom 65 |
+
+**Dropped after checking:**
+- The WhatsApp card tint and the "as they are" fill (S1, S4, N36C).
+- The "+2" pill, which the draft has too.
+- The 1px ring on "Similar shapes" dots, not visible.
+- The header Bag hover, which fills black as the draft does.
+- The checkout hovers, which belong to the checkout round below.
+
+**Proposed accepted differences (live is better):**
+- The lens summary greys pass contrast: 6.2:1 against the draft's 3.3:1.
+- The colour-dot focus ring is dark, so it shows on gold and tan dots.
+- Contact fields also turn tan on focus.
+
+**Two rounds of their own, both approved:**
+- The clean first paint, `plans/2026-11-04-clean-first-paint.md`.
+- Sign-in, account, checkout and confirmation to the draft. The sign-in page was never reviewed; checkout rows 147 to 156 are open.
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
