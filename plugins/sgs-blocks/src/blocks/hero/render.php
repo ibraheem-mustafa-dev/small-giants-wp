@@ -1397,19 +1397,17 @@ if ( '' !== $overlay_decls ) {
 // (`.sgs-hero__content` is z-index 1). Layers anchored to the parent stay where they are.
 $section_layers_html = '';
 $content_in_column   = (string) $content;
-if ( isset( $block ) && $block instanceof \WP_Block ) {
-	foreach ( $block->inner_blocks as $sgs_hero_child ) {
-		if ( 'sgs/decorative-image' !== $sgs_hero_child->name || 'section' !== ( $sgs_hero_child->attributes['anchorTo'] ?? 'parent' ) ) {
-			continue;
-		}
-		$sgs_hero_layer_html = (string) $sgs_hero_child->render();
-		$sgs_hero_layer_pos  = '' === $sgs_hero_layer_html ? false : strpos( $content_in_column, $sgs_hero_layer_html );
-		if ( false === $sgs_hero_layer_pos ) {
-			continue;
-		}
-		$content_in_column    = substr_replace( $content_in_column, '', $sgs_hero_layer_pos, strlen( $sgs_hero_layer_html ) );
-		$section_layers_html .= $sgs_hero_layer_html;
+foreach ( $block->inner_blocks as $sgs_hero_child ) {
+	if ( 'sgs/decorative-image' !== $sgs_hero_child->name || 'section' !== ( $sgs_hero_child->attributes['anchorTo'] ?? 'parent' ) ) {
+		continue;
 	}
+	$sgs_hero_layer_html = (string) $sgs_hero_child->render();
+	$sgs_hero_layer_pos  = '' === $sgs_hero_layer_html ? false : strpos( $content_in_column, $sgs_hero_layer_html );
+	if ( false === $sgs_hero_layer_pos ) {
+		continue;
+	}
+	$content_in_column    = substr_replace( $content_in_column, '', $sgs_hero_layer_pos, strlen( $sgs_hero_layer_html ) );
+	$section_layers_html .= $sgs_hero_layer_html;
 }
 $content_html = '<div class="sgs-hero__content">' . $content_in_column . '</div>';
 
