@@ -104,8 +104,12 @@ const collectedName = (html) => {
 };
 
 async function rawHtml(ctx, ua, url) {
-  const r = await ctx.request.get(bust(url), { headers: { 'user-agent': ua, 'cache-control': 'no-cache', pragma: 'no-cache' }, timeout: 60000 });
-  return { status: r.status(), html: await r.text() };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await ctx.request.get(bust(url), { headers: { 'user-agent': ua, 'cache-control': 'no-cache', pragma: 'no-cache' }, timeout: 90000 });
+      return { status: r.status(), html: await r.text() };
+    } catch (e) { if (attempt) return { status: 0, html: '' }; }
+  }
 }
 
 // ---------- JS-off look ----------
@@ -114,10 +118,15 @@ async function shot(br, url, w, h, js) {
   const ctx = await br.newContext({ viewport: { width: w, height: h }, javaScriptEnabled: js, reducedMotion: 'reduce' });
   try {
     const pg = await ctx.newPage();
+    const mask = '<style>[data-sgs-fx~="marquee"],[data-sgs-fx~="marquee"] *{visibility:hidden!important}*{animation:none!important;transition:none!important}</style></head>';
+    const pathname = new URL(url).pathname;
+    await pg.route((u) => u.pathname === pathname && u.searchParams.has('cb'), async (route) => {
+      const res = await route.fetch();
+      await route.fulfill({ response: res, body: (await res.text()).replace(/<\/head>/i, mask) });
+    });
     await pg.goto(bust(url), { waitUntil: 'load', timeout: 90000 }).catch(() => {});
     await pg.waitForTimeout(js ? 3000 : 1000);
-    await pg.addStyleTag({ content: '[data-sgs-fx~="marquee"],[data-sgs-fx~="marquee"] *{visibility:hidden!important}*{animation:none!important;transition:none!important}' }).catch(() => {});
-    return await pg.screenshot({ type: 'png', clip: { x: 0, y: 0, width: w, height: h } });
+    return await pg.screenshot({ type: 'png', clip: { x: 0, y: 0, width: w, height: h }, timeout: 30000 });
   } finally { await ctx.close(); }
 }
 async function diffBands(pg, a, b) {
