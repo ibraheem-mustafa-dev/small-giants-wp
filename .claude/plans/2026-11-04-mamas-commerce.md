@@ -30,7 +30,7 @@ The next session is the merged Mama's stream (Bean, 2026-11-05: one stream for T
 - COM-4: `sgs/cart`'s `view.js` reads the live basket from `src/shared/cart-live/index.js::onCartChange`, with one Store API client (`src/shared/cart-live/request.js`); request counts on load, open, add, quantity change and remove are unchanged (`tests/js/cart-view-requests.test.js`); the cart bundle grew 1,076 B (accepted for one implementation). Eye Care agreed (2026-11-05) and re-runs its drawer flows on its next deploy.
 - COM-6: WooCommerce's primary buttons (mini-cart checkout, Proceed to checkout, Place order) follow every key of the `primary` button preset (`theme/sgs-theme/assets/css/woocommerce.css`, Spec 11 FR-11-2). Eye Care agreed (2026-11-05): its draft's pay button is uppercase too. Indus agreed (no live shop pages).
 
-**Open:** COM-5 values and every new setting's value are set on local-mamas from the drafts in the merged round's content step (`plans/2026-11-05-mamas-merged-round.md`).
+**Set and live:** every new setting's value from the drafts, on mamas-test (`74ee0c69b`); COM-5 measured and closed with no change (the draft's item cards are 24px and its inputs 54px). Remaining commerce looks are in `plans/2026-11-05-mamas-merged-round.md`, Open item 5.
 
 **Divergences to record in Mama's ledger:** the draft's "Find address" (FR-30-23, none for now); the step 3 retitle "Her address & delivery" (a gift-only line replaces it); express pay buttons (no gateway; FR-30-0(c)); the single "address and delivery" checkout step (WooCommerce draws two step fieldsets; COM-2).
 
