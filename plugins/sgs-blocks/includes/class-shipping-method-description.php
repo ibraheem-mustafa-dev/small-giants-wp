@@ -12,8 +12,10 @@
  * nonce are WooCommerce's; the value is passed through `wp_kses_post()` when saved by
  * WooCommerce's text-field handler and again on output.
  *
- * Local pickup in the blocks checkout uses WooCommerce's separate "pickup
- * location" list, whose entries already have their own details field.
+ * The checkout block prints a local pickup rate's text from the rate meta
+ * `pickup_details` (only for the selected rate), never from `description`, so
+ * a local pickup rate also receives the description as that meta when it has
+ * none of its own.
  *
  * @package SGS\Blocks
  */
@@ -85,5 +87,31 @@ final class Shipping_Method_Description {
 			return $description;
 		}
 		return \wp_kses_post( $settings[ self::SETTING ] );
+	}
+
+	/**
+	 * Give each local pickup rate its description as the `pickup_details` meta the checkout block reads.
+	 *
+	 * @param mixed $rates Shipping rates keyed by rate id.
+	 * @return mixed
+	 */
+	public static function add_pickup_details( $rates ) {
+		if ( ! \is_array( $rates ) ) {
+			return $rates;
+		}
+		foreach ( $rates as $rate ) {
+			if ( ! $rate instanceof \WC_Shipping_Rate || 'local_pickup' !== $rate->get_method_id() ) {
+				continue;
+			}
+			$meta = $rate->get_meta_data();
+			if ( ! empty( $meta['pickup_details'] ) ) {
+				continue;
+			}
+			$description = (string) self::rate_description( '', $rate );
+			if ( '' !== $description ) {
+				$rate->add_meta_data( 'pickup_details', $description );
+			}
+		}
+		return $rates;
 	}
 }
