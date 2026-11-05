@@ -134,6 +134,16 @@
 				},
 				"current": {
 					"state": "current",
+					"attrMap": {
+						"css:font-size": "currentFontSize",
+						"css:font-weight": "currentFontWeight",
+						"css:font-style": "currentFontStyle",
+						"css:line-height": "currentLineHeight",
+						"css:font-family": "currentFontFamily",
+						"css:text-transform": "currentTextTransform",
+						"css:text-decoration": "currentTextDecoration",
+						"css:letter-spacing": "currentLetterSpacing"
+					},
 					"selector": ".sgs-breadcrumbs__item--current",
 					"label": "Current page",
 					"order": 4,
