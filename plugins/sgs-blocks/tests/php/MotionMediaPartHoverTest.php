@@ -62,4 +62,27 @@ final class MotionMediaPartHoverTest extends TestCase {
 		$css = $this->render( array( 'root' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.05 ) ) ) ) ) );
 		$this->assertMatchesRegularExpression( '/\.sgs-m-[a-z0-9]+\{[^}]*--sgs-mh-to-s:1\.05;/', $css );
 	}
+
+	private const PARALLAX = array( 'media' => array( 'effects' => array( array( 'id' => 'parallax', 'effect' => 'parallax', 'values' => array( 'speedRatio' => -0.06, 'basis' => 'page' ) ) ) ) );
+
+	private function render_html( string $html ): string {
+		return sgs_test_render_motion_block(
+			array(
+				'blockName' => 'sgs/media',
+				'attrs'     => array( 'sgsMotion' => array( 'v' => 1, 'elements' => self::PARALLAX ) ),
+			),
+			$html
+		);
+	}
+
+	public function test_a_bare_image_root_carries_the_media_part_effect(): void {
+		$out = $this->render_html( '<img src="a.jpg" alt="" class="sgs-media sgs-media--align-none sgs-media__img sgs-media-el" />' );
+		$this->assertStringContainsString( 'data-sgs-fx="parallax"', $out, 'the bare img is the media part and the root' );
+	}
+
+	public function test_negative_control_a_figure_keeps_the_effect_on_the_image_not_the_figure(): void {
+		$out = $this->render_html( self::FIGURE );
+		$this->assertMatchesRegularExpression( '/<img [^>]*data-sgs-fx="parallax"/', $out );
+		$this->assertDoesNotMatchRegularExpression( '/<figure [^>]*data-sgs-fx=/', $out );
+	}
 }

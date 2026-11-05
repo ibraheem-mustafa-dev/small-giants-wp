@@ -160,11 +160,15 @@ final class Sgs_Motion_Targets {
 	 * @param string              $scope      The scoped root's class.
 	 * @param string              $target     Target key.
 	 * @param array<string,mixed> $element    The sanitised element.
+	 * @param string              $html       The block's rendered HTML, or '' when not known. A part whose one-class element is
+	 *                                        the block root itself (sgs/media's bare `<img>`, which carries the scope class and
+	 *                                        `sgs-media-el` on one node) resolves as the root, since a descendant selector and
+	 *                                        the markup writer both start below the root and would never reach it.
 	 * @return array{selector:string,match:array{root:bool,classes:array<int,string>,tag:?string,child:bool}}|null Null
 	 *         for a part the block does not declare. `child` is true for a wrapper band part: only a direct child of the
 	 *         root matches.
 	 */
-	public static function resolve( string $block_name, string $scope, string $target, array $element ): ?array {
+	public static function resolve( string $block_name, string $scope, string $target, array $element, string $html = '' ): ?array {
 		$root = '.' . $scope;
 		if ( 'root' === $target ) {
 			return self::shape( $root, true, array(), null );
@@ -186,6 +190,9 @@ final class Sgs_Motion_Targets {
 		}
 		if ( '' !== $declared ) {
 			$last = Sgs_Motion_Custom_Target::last_compound( $declared );
+			if ( false === strpos( $declared, ' ' ) && '' !== $html && Sgs_Motion_Markup::root_has_classes( $html, $last['classes'] ) ) {
+				return self::shape( $root, true, array(), null );
+			}
 			return self::shape( $root . ' ' . $declared, false, $last['classes'], null );
 		}
 		return self::shape( $root . ' .' . $class, false, array( $class ), null );

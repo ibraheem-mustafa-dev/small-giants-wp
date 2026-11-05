@@ -65,6 +65,30 @@ final class Sgs_Motion_Markup {
 	}
 
 	/**
+	 * Whether the block root (the first tag after any leading style or script) carries every given class.
+	 *
+	 * @param string            $html    Block HTML.
+	 * @param array<int,string> $classes Class names.
+	 * @return bool
+	 */
+	public static function root_has_classes( string $html, array $classes ): bool {
+		if ( array() === $classes ) {
+			return false;
+		}
+		list( , $rest ) = self::split_head( $html );
+		$p              = new \WP_HTML_Tag_Processor( $rest );
+		if ( ! $p->next_tag() ) {
+			return false;
+		}
+		foreach ( $classes as $class ) {
+			if ( true !== $p->has_class( $class ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Whether the tag processor's current tag matches a target.
 	 *
 	 * @param \WP_HTML_Tag_Processor $p     Processor on a tag.
