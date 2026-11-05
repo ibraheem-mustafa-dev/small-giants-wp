@@ -268,10 +268,15 @@ if ( ! function_exists( 'sgs_css_single_length_value' ) ) {
 	 * single var()/calc()/min()/max()/minmax()/clamp() call. Rejected: lists,
 	 * keywords such as 'inherit', negatives, and two calls side by side.
 	 *
-	 * @param mixed $raw Raw attribute value.
+	 * @param mixed $raw            Raw attribute value.
+	 * @param bool  $allow_negative True lets a plain number-with-unit start with a minus sign ('-2px'); a function call never does.
 	 * @return string A single CSS length, or '' when the value is unusable.
 	 */
-	function sgs_css_single_length_value( $raw ): string {
+	function sgs_css_single_length_value( $raw, bool $allow_negative = false ): string {
+		if ( $allow_negative && is_string( $raw ) && 1 === preg_match( '/^\s*-\d/', $raw ) ) {
+			$abs = sgs_css_single_length_value( substr( ltrim( $raw ), 1 ) );
+			return 1 === preg_match( '/^\d/', $abs ) ? '-' . $abs : '';
+		}
 		$value = sgs_css_length_value( is_string( $raw ) ? $raw : '' );
 		if ( '' === $value ) {
 			return '';

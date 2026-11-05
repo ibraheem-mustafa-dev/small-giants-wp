@@ -331,15 +331,8 @@ if ( '' !== $sgs_ft_selected_width ) {
 	$sgs_ft_selected_decls[] = 'border-width:' . $sgs_ft_selected_width;
 }
 $sgs_ft_selected_offset = is_array( $attributes['tileSelectedOffset'] ?? null ) ? $attributes['tileSelectedOffset'] : array();
-// A single length that may start with a minus sign (sgs_css_single_length_value() refuses negatives).
-$sgs_ft_signed   = static function ( $raw ): string {
-	$raw = is_string( $raw ) ? trim( $raw ) : '';
-	$neg = 1 === preg_match( '/^-\d/', $raw );
-	$abs = sgs_css_single_length_value( $neg ? substr( $raw, 1 ) : $raw );
-	return '' === $abs ? '' : ( $neg && 1 === preg_match( '/^\d/', $abs ) ? '-' . $abs : ( $neg ? '' : $abs ) );
-};
-$sgs_ft_offset_x = $sgs_ft_signed( $sgs_ft_selected_offset['x'] ?? '' );
-$sgs_ft_offset_y = $sgs_ft_signed( $sgs_ft_selected_offset['y'] ?? '' );
+$sgs_ft_offset_x = sgs_css_single_length_value( $sgs_ft_selected_offset['x'] ?? '', true );
+$sgs_ft_offset_y = sgs_css_single_length_value( $sgs_ft_selected_offset['y'] ?? '', true );
 if ( '' !== $sgs_ft_offset_x || '' !== $sgs_ft_offset_y ) {
 	$sgs_ft_selected_decls[] = 'transform:translate(' . ( '' !== $sgs_ft_offset_x ? $sgs_ft_offset_x : '0' ) . ',' . ( '' !== $sgs_ft_offset_y ? $sgs_ft_offset_y : '0' ) . ')';
 }
