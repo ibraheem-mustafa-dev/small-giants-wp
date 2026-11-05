@@ -324,6 +324,18 @@ $sgs_ft_selected_border = sgs_colour_value( (string) ( $attributes['tileSelected
 if ( '' !== $sgs_ft_selected_border ) {
 	$sgs_ft_selected_decls[] = 'border-color:' . $sgs_ft_selected_border;
 }
+// The chosen tile's border width (empty keeps the stylesheet's 3px of the checkmark and border styles) and its offset: the
+// tile moves by the x and y lengths, which may be negative (up and to the left), as a draft's lifted chosen chip does.
+$sgs_ft_selected_width = sgs_css_single_length_value( (string) ( $attributes['tileSelectedBorderWidth'] ?? '' ) );
+if ( '' !== $sgs_ft_selected_width ) {
+	$sgs_ft_selected_decls[] = 'border-width:' . $sgs_ft_selected_width;
+}
+$sgs_ft_selected_offset = is_array( $attributes['tileSelectedOffset'] ?? null ) ? $attributes['tileSelectedOffset'] : array();
+$sgs_ft_offset_x = sgs_css_single_length_value( $sgs_ft_selected_offset['x'] ?? '', true );
+$sgs_ft_offset_y = sgs_css_single_length_value( $sgs_ft_selected_offset['y'] ?? '', true );
+if ( '' !== $sgs_ft_offset_x || '' !== $sgs_ft_offset_y ) {
+	$sgs_ft_selected_decls[] = 'transform:translate(' . ( '' !== $sgs_ft_offset_x ? $sgs_ft_offset_x : '0' ) . ',' . ( '' !== $sgs_ft_offset_y ? $sgs_ft_offset_y : '0' ) . ')';
+}
 $sgs_ft_selected_shadow = sgs_shadow_decls(
 	$attributes,
 	array(
