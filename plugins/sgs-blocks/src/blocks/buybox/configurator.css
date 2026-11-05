@@ -131,8 +131,8 @@
 }
 
 .sgs-buybox-pick__option:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--surface) 70%, white);
-	border-color: var(--wp--preset--color--text);
+	background: var(--sgs-pick-bg-hover, color-mix(in srgb, var(--wp--preset--color--surface) 70%, white));
+	border-color: var(--sgs-pick-border-hover, var(--wp--preset--color--text));
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked) {
@@ -142,7 +142,7 @@
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked):hover {
-	background: color-mix(in srgb, var(--wp--preset--color--accent) 80%, white);
+	background: var(--sgs-pick-sel-hover-bg, color-mix(in srgb, var(--wp--preset--color--accent) 80%, white));
 }
 
 .sgs-buybox-pick__option-body {

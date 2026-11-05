@@ -135,8 +135,15 @@
 								"css:background-color": "pillBgColourHover",
 								"css:background-image": "pillBgColourHoverGradient",
 								"css:color": "pillTextColourHover",
-								"css:-webkit-text-stroke-color": "pillTextStrokeColourHover"
-							}
+								"css:-webkit-text-stroke-color": "pillTextStrokeColourHover",
+								"css:translate": "pillHoverOffsetX",
+								"css:translate-y": "pillHoverOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:translate",
+								"css:translate-y"
+							],
+							"_noBaseByDesignNote": "An option's resting shift is none by definition; the hover shift is the hover look itself. Not a suppression hatch."
 						},
 						"current": {
 							"attrMap": {
@@ -374,6 +381,21 @@
 		"showSelectedTick": {
 			"type": "boolean",
 			"default": false
+		},
+		"pillHoverOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal shift of an option while the pointer is over it (CSS length, for example -2px). Empty = no shift."
+		},
+		"pillHoverOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Vertical shift of an option while the pointer is over it (CSS length, for example -2px). Empty = no shift."
+		},
+		"pillHoverStill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Keep an option's fill and text colour unchanged on hover (no brightening); only the hover shift moves it. Off by default."
 		},
 		"swatchShape": {
 			"type": "string",

@@ -202,7 +202,7 @@ export default function ConfiguratorLookPanel( { attributes, setAttributes, list
 			<PanelBody title={ __( 'Pick area option look', 'sgs-blocks' ) } initialOpen={ false }>
 				<ToolsPanel
 					label={ __( 'Settings', 'sgs-blocks' ) }
-					resetAll={ () => setAttributes( { pickerPillFontWeight: '', pickerPillSelectedShadow: '', pickerPillSelectedShadowColour: '', pickerPillSelectedOffsetX: '', pickerPillSelectedOffsetY: '', pickerDotShape: '', pickerDotSize: '', pickerGroupDotSize: '', pickerDotRingThickness: '', pickerDotTickInside: false } ) }
+					resetAll={ () => setAttributes( { pickerPillFontWeight: '', pickerPillSelectedShadow: '', pickerPillSelectedShadowColour: '', pickerPillSelectedOffsetX: '', pickerPillSelectedOffsetY: '', pickerPillHoverOffsetX: '', pickerPillHoverOffsetY: '', pickerPillHoverStill: false, pickerDotShape: '', pickerDotSize: '', pickerGroupDotSize: '', pickerDotRingThickness: '', pickerDotTickInside: false } ) }
 				>
 					<WeightItem label={ __( 'Option text weight', 'sgs-blocks' ) } name="pickerPillFontWeight" { ...common } />
 					<ToolsPanelItem
@@ -234,6 +234,33 @@ export default function ConfiguratorLookPanel( { attributes, setAttributes, list
 							label={ __( 'Selected option shift (down)', 'sgs-blocks' ) }
 							value={ attributes.pickerPillSelectedOffsetY || '' }
 							onChange={ ( val ) => setAttributes( { pickerPillSelectedOffsetY: val ?? '' } ) }
+						/>
+					</Item>
+					<Item label={ __( 'Option shift on hover (across)', 'sgs-blocks' ) } names={ [ 'pickerPillHoverOffsetX' ] } fallback="" { ...common }>
+						<SgsLengthControl
+							presets
+							scale="spacing"
+							label={ __( 'Option shift on hover (across)', 'sgs-blocks' ) }
+							value={ attributes.pickerPillHoverOffsetX || '' }
+							onChange={ ( val ) => setAttributes( { pickerPillHoverOffsetX: val ?? '' } ) }
+						/>
+					</Item>
+					<Item label={ __( 'Option shift on hover (down)', 'sgs-blocks' ) } names={ [ 'pickerPillHoverOffsetY' ] } fallback="" { ...common }>
+						<SgsLengthControl
+							presets
+							scale="spacing"
+							label={ __( 'Option shift on hover (down)', 'sgs-blocks' ) }
+							value={ attributes.pickerPillHoverOffsetY || '' }
+							onChange={ ( val ) => setAttributes( { pickerPillHoverOffsetY: val ?? '' } ) }
+						/>
+					</Item>
+					<Item label={ __( 'No brightening on hover', 'sgs-blocks' ) } names={ [ 'pickerPillHoverStill' ] } fallback={ false } { ...common }>
+						<ToggleControl
+							label={ __( 'No brightening on hover', 'sgs-blocks' ) }
+							checked={ true === attributes.pickerPillHoverStill }
+							onChange={ ( val ) => setAttributes( { pickerPillHoverStill: val } ) }
+							help={ __( 'Options keep their fill and text colour on hover; only the hover shift moves them.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
 						/>
 					</Item>
 					<Item label={ __( 'Colour dot shape', 'sgs-blocks' ) } names={ [ 'pickerDotShape' ] } fallback="" { ...common }>

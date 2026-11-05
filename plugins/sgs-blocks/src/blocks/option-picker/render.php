@@ -527,6 +527,26 @@ if ( $sel_pill_decls ) {
 	$scoped_css[] = "{$root_sel} .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill{" . implode( ';', $sel_pill_decls ) . ';}';
 }
 
+// --- Hover shift, and no brightening on hover. The shift uses the individual `translate` property so the tile's own
+// hover transform is cleared only when a shift is set. Unset prints nothing. ---
+$hover_offset_x = sgs_css_length_value( (string) ( $attributes['pillHoverOffsetX'] ?? '' ) );
+$hover_offset_y = sgs_css_length_value( (string) ( $attributes['pillHoverOffsetY'] ?? '' ) );
+if ( '' !== $hover_offset_x || '' !== $hover_offset_y ) {
+	$scoped_css[] = "{$root_sel} .sgs-option-picker__option:hover .sgs-option-picker__pill{transform:none;translate:" . ( '' !== $hover_offset_x ? $hover_offset_x : '0' ) . ' ' . ( '' !== $hover_offset_y ? $hover_offset_y : '0' ) . ';}';
+}
+if ( ! empty( $attributes['pillHoverStill'] ) ) {
+	$still_vars = array();
+	if ( '' === (string) $pill_bg_colour_hover && '' === (string) $pill_bg_colour_hover_gradient ) {
+		$still_vars[] = '--sgs-op-bg-hover:var(--sgs-op-bg,transparent)';
+	}
+	if ( '' === (string) $pill_text_colour_hover ) {
+		$still_vars[] = '--sgs-op-text-hover:currentcolor';
+	}
+	if ( $still_vars ) {
+		$scoped_css[] = "{$root_sel}{" . implode( ';', $still_vars ) . ';}';
+	}
+}
+
 // --- Base WP-native style.* — skip-serialised, emitted scoped (contract §A/§b) ---
 
 $base_style_engine_args = array();

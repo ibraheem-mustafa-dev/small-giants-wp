@@ -145,4 +145,17 @@ final class BuyboxPickLookTest extends TestCase {
 		$html = self::html( array( 'pickTilePriceWeight' => '700' ) );
 		$this->assertStringContainsString( '.sgs-option-picker--tile .sgs-option-picker__sub-label{font-weight:700;}', $html );
 	}
+
+	public function test_hover_shift_and_no_brightening_reach_every_kind_of_option_and_unset_prints_none(): void {
+		$off = self::html();
+		foreach ( array( ':hover{translate', '--sgs-pick-bg-hover', '--sgs-op-text-hover', 'hover .sgs-option-picker__pill{transform:none' ) as $needle ) {
+			$this->assertStringNotContainsString( $needle, $off, $needle );
+		}
+		$html = self::html( array( 'pickerPillHoverOffsetX' => '-2px', 'pickerPillHoverOffsetY' => '-2px', 'pickerPillHoverStill' => true, 'pickerPillBackgroundColour' => '#fffaf0', 'pickerPillSelectedOffsetX' => '-2px' ) );
+		$this->assertStringContainsString( '.sgs-option-picker__option:hover .sgs-option-picker__pill{transform:none;translate:-2px -2px;}', $html, 'tiles and pills' );
+		$this->assertStringContainsString( '.sgs-buybox-pick__option:hover{translate:-2px -2px;}', $html, 'flavour pills' );
+		$this->assertStringContainsString( '--sgs-op-text-hover:currentcolor', $html );
+		$this->assertStringContainsString( '--sgs-pick-bg-hover:var(--sgs-pick-bg', $html );
+		$this->assertLessThan( strpos( $html, '.sgs-buybox-pick__option:has(' ), strpos( $html, '.sgs-buybox-pick__option:hover{translate' ), 'hover rule first' );
+	}
 }

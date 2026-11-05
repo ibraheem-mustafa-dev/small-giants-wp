@@ -1034,6 +1034,57 @@ export default function Edit( { attributes, setAttributes } ) {
 
 					<ToolsPanel
 						className="sgs-nested-tools-panel"
+						label={ __( 'Hover', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( { pillHoverOffsetX: '', pillHoverOffsetY: '', pillHoverStill: false } )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Hover shift (across)', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.pillHoverOffsetX }
+							onDeselect={ () => setAttributes( { pillHoverOffsetX: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Hover shift (across)', 'sgs-blocks' ) }
+								scale="spacing"
+								value={ attributes.pillHoverOffsetX || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { pillHoverOffsetX: val ?? '' } ) }
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Hover shift (down)', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.pillHoverOffsetY }
+							onDeselect={ () => setAttributes( { pillHoverOffsetY: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Hover shift (down)', 'sgs-blocks' ) }
+								scale="spacing"
+								value={ attributes.pillHoverOffsetY || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { pillHoverOffsetY: val ?? '' } ) }
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'No brightening on hover', 'sgs-blocks' ) }
+							hasValue={ () => true === attributes.pillHoverStill }
+							onDeselect={ () => setAttributes( { pillHoverStill: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'No brightening on hover', 'sgs-blocks' ) }
+								help={ __( 'Keeps the fill and text colour on hover; only the hover shift moves the option.', 'sgs-blocks' ) }
+								checked={ true === attributes.pillHoverStill }
+								onChange={ ( val ) => setAttributes( { pillHoverStill: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+
+					<ToolsPanel
+						className="sgs-nested-tools-panel"
 						label={ __( 'Colour dot', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {

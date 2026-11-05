@@ -134,6 +134,8 @@ if ( ! function_exists( 'sgs_buybox_configurator_picker_attrs' ) ) {
 			'pickerPillSelectedShadowColour' => 'pillSelectedShadowColour',
 			'pickerPillSelectedOffsetX'      => 'pillSelectedOffsetX',
 			'pickerPillSelectedOffsetY'      => 'pillSelectedOffsetY',
+			'pickerPillHoverOffsetX'         => 'pillHoverOffsetX',
+			'pickerPillHoverOffsetY'         => 'pillHoverOffsetY',
 			'pickerDotShape'                 => 'swatchShape',
 			'pickerDotSize'                  => 'swatchSize',
 			'pickerDotRingThickness'             => 'swatchRingWidth',
@@ -152,6 +154,9 @@ if ( ! function_exists( 'sgs_buybox_configurator_picker_attrs' ) ) {
 		}
 		if ( ! empty( $attributes['pickerDotTickInside'] ) ) {
 			$picker_attrs['swatchTickInside'] = true;
+		}
+		if ( ! empty( $attributes['pickerPillHoverStill'] ) ) {
+			$picker_attrs['pillHoverStill'] = true;
 		}
 		// The legend's weight travels with the other label settings render.php forwards (only while the legend is visible).
 		$label_weight = trim( (string) ( $attributes['pickerLabelFontWeight'] ?? '' ) );
@@ -241,6 +246,15 @@ if ( ! function_exists( 'sgs_buybox_configurator_extra_css' ) ) {
 		}
 		if ( $vars ) {
 			$css[] = $root_sel . '{' . implode( ';', $vars ) . ';}';
+		}
+		// Hover first, so the selected rule (same specificity) keeps its own shift on a hovered selected option.
+		$hover_x = sgs_css_length_value( (string) ( $attributes['pickerPillHoverOffsetX'] ?? '' ) );
+		$hover_y = sgs_css_length_value( (string) ( $attributes['pickerPillHoverOffsetY'] ?? '' ) );
+		if ( '' !== $hover_x || '' !== $hover_y ) {
+			$css[] = $root_sel . ' .sgs-buybox-pick__option:hover{translate:' . ( '' !== $hover_x ? $hover_x : '0' ) . ' ' . ( '' !== $hover_y ? $hover_y : '0' ) . ';}';
+		}
+		if ( ! empty( $attributes['pickerPillHoverStill'] ) ) {
+			$css[] = $root_sel . '{--sgs-pick-bg-hover:var(--sgs-pick-bg,var(--wp--preset--color--surface));--sgs-pick-border-hover:var(--sgs-pick-border,color-mix(in srgb,var(--wp--preset--color--text) 35%,transparent));--sgs-pick-sel-hover-bg:var(--sgs-pick-sel-bg,var(--wp--preset--color--accent));}';
 		}
 		$sel_decls = sgs_shadow_decls(
 			$attributes,

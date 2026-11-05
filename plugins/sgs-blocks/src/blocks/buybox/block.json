@@ -862,6 +862,17 @@
 						"css:font-weight": "pickerPillFontWeight"
 					},
 					"states": {
+						"hover": {
+							"attrMap": {
+								"css:translate": "pickerPillHoverOffsetX",
+								"css:translate-y": "pickerPillHoverOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:translate",
+								"css:translate-y"
+							],
+							"_noBaseByDesignNote": "An option's resting shift is none by definition; the hover shift is the hover look itself. Not a suppression hatch."
+						},
 						"current": {
 							"attrMap": {
 								"css:box-shadow": "pickerPillSelectedShadow",
@@ -3166,6 +3177,21 @@
 			"type": "string",
 			"default": "",
 			"description": "Pick a set only: vertical shift of a selected option (CSS length, for example -2px)."
+		},
+		"pickerPillHoverOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: horizontal shift of an unselected option while the pointer is over it (CSS length, for example -2px), forwarded to sgs/option-picker as pillHoverOffsetX and printed for the flavour pills."
+		},
+		"pickerPillHoverOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: vertical shift of an option on hover (CSS length, for example -2px)."
+		},
+		"pickerPillHoverStill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: options keep their fill and text colour on hover (no brightening); only the hover shift moves them. Off by default."
 		},
 		"pickerLabelFontWeight": {
 			"type": "string",

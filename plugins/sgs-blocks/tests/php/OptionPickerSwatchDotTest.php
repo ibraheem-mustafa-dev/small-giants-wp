@@ -63,4 +63,16 @@ final class OptionPickerSwatchDotTest extends TestCase {
 		$this->assertStringContainsString( 'pill-label">A</span><span class="sgs-option-picker__sub-label">£9.50</span>', $out['html'] );
 		$this->assertSame( 1, substr_count( $out['html'], 'sgs-option-picker__sub-label' ) );
 	}
+
+	public function test_hover_shift_and_still_print_scoped_and_unset_prints_none(): void {
+		$off = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS ) );
+		$this->assertStringNotContainsString( ':hover .sgs-option-picker__pill{transform:none', $off['css'] );
+		$this->assertStringNotContainsString( '--sgs-op-text-hover', $off['css'] );
+		$on = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'pillHoverOffsetX' => '-2px', 'pillHoverOffsetY' => '-2px', 'pillHoverStill' => true ) );
+		$this->assertStringContainsString( '.sgs-option-picker__option:hover .sgs-option-picker__pill{transform:none;translate:-2px -2px;}', $on['css'] );
+		$this->assertStringContainsString( '--sgs-op-bg-hover:var(--sgs-op-bg,transparent);--sgs-op-text-hover:currentcolor;', $on['css'] );
+		$own = $this->render_block( 'sgs/option-picker', array( 'optionItems' => self::ITEMS, 'pillHoverStill' => true, 'pillTextColourHover' => '#112233' ) );
+		$this->assertStringContainsString( '--sgs-op-text-hover:#112233', $own['css'], 'an explicit hover colour is kept' );
+		$this->assertStringNotContainsString( '--sgs-op-text-hover:currentcolor', $own['css'] );
+	}
 }
