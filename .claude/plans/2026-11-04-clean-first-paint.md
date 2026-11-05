@@ -40,7 +40,7 @@ First list every block using `sgs_motion_root_has_effect( …, 'marquee' )` or `
 - JS-off look check: load each page with JavaScript off and on, and compare screenshots region by region. Report-only at first; it becomes a failure once its noise is known.
 - Stylesheet name: fetch two uncached responses and fail when the collected file's name differs (needed from A).
 
-It runs in the deploy's full tier on the canary, and by hand against any test site. Baseline first.
+It runs after the upload as a post-deploy verify stage (`build-deploy.py --first-paint`, `.claude/deploy-architecture.md`, Live first-paint gate), because a pre-deploy tier would measure the old live code; it also runs by hand against any site in `scripts/data/first-paint.json`. Built; baselines are recorded in that file and each fix lowers them with `--update-baseline`.
 
 **D. Shop filters and FAQ in their final look before JS (P5).**
 - Shop: the filters are WooCommerce `product-filter-*` blocks, and SGS owns only a `render_block` filter on them (`includes/product-filter-look.php`). First step, CSS only: style the server markup into the final look before JS runs. Groups that start closed are hidden behind CSS from the first paint. The gender chips are laid out as the segmented switch. Colour chips become dots. No structural rewrite.
