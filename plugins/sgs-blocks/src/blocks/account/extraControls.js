@@ -10,7 +10,6 @@ import {
 	BOX_UNITS,
 	ResponsiveOverride,
 	SgsBoxControl,
-	SgsLengthControl,
 	normaliseResponsiveBox,
 } from '../../components';
 
@@ -78,39 +77,6 @@ export function Choice( { name, label, options, help, attributes, setAttributes 
 			options={ options }
 			onChange={ ( value ) => setAttributes( { [ name ]: value || undefined } ) }
 		/>
-	);
-}
-
-/**
- * A per-device length.
- *
- * @param {Object}   p
- * @param {string}   p.name          Tier-object attribute name.
- * @param {string}   p.label         Control label.
- * @param {string}   [p.help]        Help text.
- * @param {Object}   p.attributes    Block attributes.
- * @param {Function} p.setAttributes Attribute setter.
- * @return {JSX.Element} A responsive length.
- */
-export function TierLength( { name, label, help, attributes, setAttributes } ) {
-	return (
-		<ResponsiveOverride
-			label={ label }
-			value={ attributes[ name ] }
-			onChange={ ( obj ) => setAttributes( { [ name ]: obj } ) }
-		>
-			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-				<SgsLengthControl
-					presets
-					label={ label }
-					hideLabelFromVision
-					help={ help }
-					value={ ownValue ?? '' }
-					placeholder={ inherited ? effectiveValue : '' }
-					onChange={ ( val ) => setOwnValue( val || undefined ) }
-				/>
-			) }
-		</ResponsiveOverride>
 	);
 }
 

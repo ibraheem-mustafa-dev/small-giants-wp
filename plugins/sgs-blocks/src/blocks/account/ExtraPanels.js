@@ -6,8 +6,8 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, TextControl } from '@wordpress/components';
-import { SgsBorderControl, ShadowControl } from '../../components';
-import { Choice, TextField, TierBox, TierLength, Toggle } from './extraControls';
+import { ResponsiveOverride, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
+import { Choice, TextField, TierBox, Toggle } from './extraControls';
 
 const WORDING = [
 	[ 'signIn', __( 'Sign in button (WooCommerce: Log in)', 'sgs-blocks' ), 'Log in' ],
@@ -182,7 +182,22 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 					{ label: __( 'Two columns', 'sgs-blocks' ), value: '2' },
 				] }
 			/>
-			<TierLength { ...p } name="accountFormGap" label={ __( 'Space between fields', 'sgs-blocks' ) } />
+			<ResponsiveOverride
+				label={ __( 'Space between fields', 'sgs-blocks' ) }
+				value={ attributes.accountFormGap }
+				onChange={ ( obj ) => setAttributes( { accountFormGap: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						presets
+						label={ __( 'Space between fields', 'sgs-blocks' ) }
+						hideLabelFromVision
+						value={ ownValue ?? '' }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
 			<Toggle
 				{ ...p }
 				name="accountDisplayFromNames"
@@ -235,7 +250,22 @@ export function SignInButtonPanel( { attributes, setAttributes } ) {
 				] }
 			/>
 			<Toggle { ...p } name="loginButtonFullWidth" label={ __( 'Full width', 'sgs-blocks' ) } />
-			<TierLength { ...p } name="loginButtonMinHeight" label={ __( 'Minimum height', 'sgs-blocks' ) } />
+			<ResponsiveOverride
+				label={ __( 'Minimum height', 'sgs-blocks' ) }
+				value={ attributes.loginButtonMinHeight }
+				onChange={ ( obj ) => setAttributes( { loginButtonMinHeight: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						presets
+						label={ __( 'Minimum height', 'sgs-blocks' ) }
+						hideLabelFromVision
+						value={ ownValue ?? '' }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
 			<TierBox { ...p } name="loginButtonPadding" label={ __( 'Padding', 'sgs-blocks' ) } />
 			<SgsBorderControl
 				widthValues={ attributes.loginButtonBorderWidth ?? {} }

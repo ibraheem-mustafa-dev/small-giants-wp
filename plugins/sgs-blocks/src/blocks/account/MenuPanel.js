@@ -10,8 +10,8 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-import { ResponsiveControl, IconPicker } from '../../components';
-import { TierLength, Toggle } from './extraControls';
+import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
+import { Toggle } from './extraControls';
 import { patchTier } from '../../utils';
 
 const DEFAULT_MENU_ICONS = {
@@ -79,13 +79,23 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				) }
 			</ResponsiveControl>
 
-			<TierLength
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				name="menuActiveIndicatorWidth"
+			<ResponsiveOverride
 				label={ __( 'Active item bar width', 'sgs-blocks' ) }
-				help={ __( 'Empty keeps 3px.', 'sgs-blocks' ) }
-			/>
+				value={ attributes.menuActiveIndicatorWidth }
+				onChange={ ( obj ) => setAttributes( { menuActiveIndicatorWidth: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						presets
+						label={ __( 'Active item bar width', 'sgs-blocks' ) }
+						hideLabelFromVision
+					help={ __( 'Empty keeps 3px.', 'sgs-blocks' ) }
+						value={ ownValue ?? '' }
+						placeholder={ inherited ? effectiveValue : '' }
+						onChange={ ( val ) => setOwnValue( val || undefined ) }
+					/>
+				) }
+			</ResponsiveOverride>
 			<Toggle
 				attributes={ attributes }
 				setAttributes={ setAttributes }
