@@ -75,10 +75,15 @@ if ( ! function_exists( __NAMESPACE__ . '\sgs_flow_fields_sanitise' ) ) {
 			if ( '' === $value ) {
 				continue;
 			}
-			$out[] = array(
+			$kept = array(
 				'label' => $label,
 				'value' => $value,
 			);
+			// Only an explicit "off" is kept; the order line still carries the answer.
+			if ( isset( $entry['bag_line'] ) && false === filter_var( $entry['bag_line'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE ) ) {
+				$kept['bag_line'] = false;
+			}
+			$out[] = $kept;
 		}
 
 		return $out;

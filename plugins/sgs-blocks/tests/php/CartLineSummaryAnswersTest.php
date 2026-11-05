@@ -108,6 +108,32 @@ namespace SGS\Blocks\Tests {
 			);
 		}
 
+		public function test_an_answer_with_the_bag_line_off_is_left_out_of_the_summary(): void {
+			$item = array(
+				'sgs_flow_fields' => array(
+					array(
+						'label' => 'Flavours',
+						'value' => 'A, B, C',
+					),
+					array(
+						'label'    => 'Your prescription',
+						'value'    => 'Send it later',
+						'bag_line' => false,
+					),
+				),
+			);
+			$this->assertSame( array( 'Flavours: A, B, C' ), \SGS\Blocks\sgs_cart_line_summary_for_cart_item( $item ) );
+			$this->assertSame(
+				array(
+					array(
+						'label' => 'Flavours',
+						'value' => 'A, B, C',
+					),
+				),
+				\SGS\Blocks\sgs_cart_line_summary_answers( $item )
+			);
+		}
+
 		public function test_line_without_answers_is_unchanged(): void {
 			$this->assertSame(
 				array( 'Frame only · Size: M' ),

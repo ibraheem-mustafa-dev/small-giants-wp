@@ -42,7 +42,7 @@ if ( ! function_exists( 'sgs_choice_flow_question_data_attrs' ) ) {
 	 * The question wrapper's data attributes the flow's scripts read:
 	 * `data-eyebrow` (replaces "Question N of M" and leaves this question out
 	 * of the count), `data-summary-label` (the stage line's label for an
-	 * unpriced answer), `data-price-prefix` (a starting price) and
+	 * unpriced answer), `data-bag-line` (`0` when the answer stays off the bag line), `data-price-prefix` (a starting price) and
 	 * `data-inline-next` (the chosen option's next step opens underneath).
 	 *
 	 * @param array $attributes The question block's attributes.
@@ -58,6 +58,10 @@ if ( ! function_exists( 'sgs_choice_flow_question_data_attrs' ) ) {
 			if ( '' !== $value ) {
 				$out[ $data ] = $value;
 			}
+		}
+		// The answer stays on the order but is left off the shopper's bag line (includes/cart-line-summary/functions.php).
+		if ( isset( $attributes['showInBagLine'] ) && false === $attributes['showInBagLine'] ) {
+			$out['data-bag-line'] = '0';
 		}
 		// A starting price ('from') reads as a plain amount on the stage line too.
 		if ( isset( $attributes['pricePrefix'] ) && 'from' === $attributes['pricePrefix'] ) {

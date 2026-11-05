@@ -16,7 +16,7 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { SelectControl, TextControl, TextareaControl } from '@wordpress/components';
+import { SelectControl, TextControl, TextareaControl, ToggleControl } from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 /**
@@ -25,7 +25,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @param {Function} props.setAttributes Block attribute setter.
  */
 export default function IntroField( { attributes, setAttributes } ) {
-	const { intro, introWidth, eyebrow, pricePrefix, priceGroup, summaryLabel } = attributes;
+	const { intro, introWidth, eyebrow, pricePrefix, priceGroup, summaryLabel, showInBagLine } = attributes;
 
 	return (
 		<>
@@ -89,6 +89,15 @@ export default function IntroField( { attributes, setAttributes } ) {
 					help={ __( 'How the summary names this answer, e.g. "Prescription". Leave blank for the step’s label.', 'sgs-blocks' ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+			) }
+			{ ! priceGroup && (
+				<ToggleControl
+					label={ __( 'Show in the bag line', 'sgs-blocks' ) }
+					checked={ false !== showInBagLine }
+					onChange={ ( val ) => setAttributes( { showInBagLine: val } ) }
+					help={ __( 'On: the bag, cart, checkout and emails name this answer. Off: the answer still goes on the order for you, but the shopper’s line leaves it out.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
 				/>
 			) }
 		</>
