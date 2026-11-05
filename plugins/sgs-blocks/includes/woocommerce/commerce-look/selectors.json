@@ -320,6 +320,15 @@
 				"basket": "filled"
 			}
 		},
+		"button_primary": {
+			"cart": ".wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button, .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button",
+			"checkout": ".wc-block-components-checkout-place-order-button.wc-block-components-button, .wp-block-woocommerce-checkout-actions-block .wp-element-button",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (the cart's Proceed to checkout and the checkout's Place order; the theme's woocommerce.css paints the same two buttons from the primary preset)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
 		"field_label_active": {
 			"cart": ".wc-block-components-text-input.is-active label",
 			"checkout": ".wc-block-components-text-input.is-active label",

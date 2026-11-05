@@ -247,3 +247,31 @@ export function CheckoutPanels( { attributes, setAttributes } ) {
 		</>
 	);
 }
+
+/**
+ * The primary button (Proceed to checkout on the cart, Place order on the checkout): type, height, padding.
+ *
+ * @param {Object} props Block attributes and setter.
+ * @return {JSX.Element} The panel.
+ */
+export function ButtonPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Primary button', 'sgs-blocks' ) } initialOpen={ false }>
+			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsButton" noColour />
+			<ResponsiveLengthControl
+				scale="spacing"
+				label={ __( 'Minimum height', 'sgs-blocks' ) }
+				help={ __( 'Leave empty to keep the button preset.', 'sgs-blocks' ) }
+				value={ attributes.sgsButtonMinHeight }
+				units={ LENGTH_UNITS }
+				onChange={ ( next ) => setAttributes( { sgsButtonMinHeight: next } ) }
+			/>
+			<ResponsiveBoxControl
+				presets
+				label={ __( 'Padding', 'sgs-blocks' ) }
+				values={ boxTiers( attributes.sgsButtonPadding ) }
+				onChange={ ( tier, next ) => setAttributes( { sgsButtonPadding: writeTier( attributes.sgsButtonPadding, tier, next ) } ) }
+			/>
+		</PanelBody>
+	);
+}

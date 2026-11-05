@@ -34,6 +34,7 @@ function sgs_commerce_look_typography_css( array $attrs, string $block, string $
 		'sgsTotalLabel'      => array( 'total_label' ),
 		'sgsTotalValue'      => array( 'total_value' ),
 		'sgsTerms'           => array( 'terms' ),
+		'sgsButton'          => array( 'button_primary' ),
 	);
 	$css    = '';
 	foreach ( $styles as $prefix => $rows ) {
