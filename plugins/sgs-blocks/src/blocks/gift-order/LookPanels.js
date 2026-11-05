@@ -9,6 +9,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	BOX_UNITS,
 	ResponsiveOverride,
@@ -118,6 +119,7 @@ function HeightRow( { label, attr, placeholder, attributes, setAttributes } ) {
  * @return {JSX.Element} Control.
  */
 function PaddingRow( { label, attr, attributes, setAttributes } ) {
+	const defaults = spacingDefaultsFor( 'sgs/gift-order', attr );
 	return (
 		<ResponsiveOverride
 			label={ label }
@@ -133,6 +135,7 @@ function PaddingRow( { label, attr, attributes, setAttributes } ) {
 					}
 					units={ BOX_UNITS }
 					presets
+					defaults={ defaults }
 					onChange={ ( next ) =>
 						setOwnValue( normaliseResponsiveBox( next ) )
 					}

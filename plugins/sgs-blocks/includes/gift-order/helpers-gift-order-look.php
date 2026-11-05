@@ -167,13 +167,12 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 		if ( '' !== $tick ) {
 			$css .= $root . ' .sgs-gift-order__checkbox{accent-color:' . $tick . ';}';
 		}
-		foreach ( array(
-			array( 'giftHelp', '.sgs-gift-order__help' ),
-			array( 'giftCount', '.sgs-gift-order__count' ),
-		) as list( $prefix, $part ) ) {
-			$css .= sgs_typography_css_rule( $attributes, $prefix, $root . ' ' . $part, '', false, false, sgs_gift_order_tiered_keys() );
-			$css .= sgs_text_states_css( $root . ' ' . $part, $attributes, array( 'base' => $prefix . 'Colour' ) );
-		}
+		$help_sel  = $root . ' .sgs-gift-order__help';
+		$count_sel = $root . ' .sgs-gift-order__count';
+		$css      .= sgs_typography_css_rule( $attributes, 'giftHelp', $help_sel, '', false, false, sgs_gift_order_tiered_keys() );
+		$css      .= sgs_text_states_css( $help_sel, $attributes, array( 'base' => 'giftHelpColour' ) );
+		$css      .= sgs_typography_css_rule( $attributes, 'giftCount', $count_sel, '', false, false, sgs_gift_order_tiered_keys() );
+		$css      .= sgs_text_states_css( $count_sel, $attributes, array( 'base' => 'giftCountColour' ) );
 		$css .= sgs_typography_css_rule( $attributes, 'giftLabel', $root . ' .sgs-gift-order__label', '', false, false, sgs_gift_order_tiered_keys() );
 		$css .= sgs_typography_css_rule( $attributes, 'giftNote', $note_sel, '', false, false, sgs_gift_order_tiered_keys() );
 

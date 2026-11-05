@@ -22,6 +22,14 @@
 		"inserter": true,
 		"sgs": {
 			"specRef": "30",
+			"spacingDefaults": {
+				"giftTilePadding": {
+					"top": "0.75rem",
+					"right": "var(--wp--preset--spacing--30)",
+					"bottom": "0.75rem",
+					"left": "var(--wp--preset--spacing--30)"
+				}
+			},
 			"elements": {
 				"panel": {
 					"selector": ".sgs-gift-order",
