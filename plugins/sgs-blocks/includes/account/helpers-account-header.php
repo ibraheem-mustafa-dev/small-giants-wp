@@ -142,6 +142,7 @@ if ( ! function_exists( 'sgs_account_header_css' ) ) {
 		$css[]  = sgs_text_states_css( $root_sel . ' .sgs-account__header-title', $attributes, array( 'base' => 'headerTitleColour' ) );
 		$css[]  = sgs_text_states_css( $root_sel . ' .sgs-account__header-intro', $attributes, array( 'base' => 'headerIntroColour' ) );
 		$css[]  = sgs_text_states_css( $root_sel . ' .sgs-account__header-meta', $attributes, array( 'base' => 'headerMetaColour' ) );
+		$css[]  = sgs_typography_css_rule( $attributes, 'headerBack', $root_sel . ' .sgs-account__header-back', '', false, false, $tiered );
 		$css[]  = sgs_text_states_css( $root_sel . ' .sgs-account__header-back', $attributes, array( 'base' => 'headerBackColour' ) );
 		$rule   = sgs_colour_value( (string) ( $attributes['headerRuleColour'] ?? '' ) );
 		if ( '' !== $rule ) {

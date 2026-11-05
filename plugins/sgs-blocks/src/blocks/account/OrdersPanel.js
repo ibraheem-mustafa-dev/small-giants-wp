@@ -34,6 +34,7 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 				help={ __( 'Order, date, status pill, total and a chevron on each row. Colours and type are under Colour and Typography.', 'sgs-blocks' ) }
 			/>
 			{ attributes.ordersLook && <TierBox { ...p } name="ordersRowPadding" label={ __( 'Row padding', 'sgs-blocks' ) } /> }
+			{ attributes.ordersLook && <TierBox { ...p } name="ordersPillPadding" label={ __( 'Status pill padding', 'sgs-blocks' ) } /> }
 			<Toggle
 				{ ...p }
 				name="ordersEmptyState"
@@ -115,6 +116,7 @@ export const EXTRA_TYPE_TARGETS = [
 	target( 'headerTitle', __( 'Page header title', 'sgs-blocks' ) ),
 	target( 'headerIntro', __( 'Page header intro', 'sgs-blocks' ) ),
 	target( 'headerMeta', __( 'Page header signed-in line', 'sgs-blocks' ) ),
+	target( 'headerBack', __( 'Back to sign in link', 'sgs-blocks' ) ),
 	target( 'menuCount', __( 'Menu Orders count', 'sgs-blocks' ) ),
 	target( 'ordersNumber', __( 'Order number', 'sgs-blocks' ) ),
 	target( 'ordersDate', __( 'Order date', 'sgs-blocks' ) ),

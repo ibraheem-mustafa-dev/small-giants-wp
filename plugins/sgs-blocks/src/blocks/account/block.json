@@ -444,6 +444,7 @@
 						"clusters": [
 							"text"
 						],
+						"prefix": "headerBack",
 						"attrMap": {
 							"css:color": "headerBackColour"
 						}
@@ -544,12 +545,14 @@
 						"order": 51,
 						"clusters": [
 							"text",
-							"fill"
+							"fill",
+							"layout"
 						],
 						"prefix": "ordersPill",
 						"attrMap": {
 							"css:color": "ordersPillText",
-							"css:background-color": "ordersPillBackground"
+							"css:background-color": "ordersPillBackground",
+							"css:padding": "ordersPillPadding"
 						}
 					},
 					"ordersPillPending": {
@@ -2157,6 +2160,57 @@
 			"headerMetaColour": {
 				"type": "string"
 			},
+			"headerBackFontSize": {
+				"type": "object"
+			},
+			"headerBackFontSizeUnit": {
+				"type": "string"
+			},
+			"headerBackFontFamily": {
+				"type": "string"
+			},
+			"headerBackFontWeight": {
+				"type": "string"
+			},
+			"headerBackFontStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"normal",
+					"italic"
+				]
+			},
+			"headerBackLineHeight": {
+				"type": "object"
+			},
+			"headerBackLineHeightUnit": {
+				"type": "string"
+			},
+			"headerBackLetterSpacing": {
+				"type": "object"
+			},
+			"headerBackLetterSpacingUnit": {
+				"type": "string"
+			},
+			"headerBackTextTransform": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"uppercase",
+					"lowercase",
+					"capitalize"
+				]
+			},
+			"headerBackTextDecoration": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"underline",
+					"line-through"
+				]
+			},
 			"headerBackColour": {
 				"type": "string"
 			},
@@ -2458,6 +2512,9 @@
 					"underline",
 					"line-through"
 				]
+			},
+			"ordersPillPadding": {
+				"type": "object"
 			},
 			"ordersPillPendingBackground": {
 				"type": "string"

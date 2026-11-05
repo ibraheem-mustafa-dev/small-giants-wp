@@ -146,6 +146,16 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 			$css[] = sgs_typography_css_rule( $attributes, 'ordersPill', $pill, '', false, false, $tiered );
 			$css[] = sgs_fill_states_css( $pill, $attributes, array( 'base' => 'ordersPillBackground' ) );
 			$css[] = sgs_text_states_css( $pill, $attributes, array( 'base' => 'ordersPillText' ) );
+			$css[] = sgs_emit_responsive_css(
+				$pill,
+				array(
+					array(
+						'value' => $attributes['ordersPillPadding'] ?? array(),
+						'css'   => 'padding',
+						'box'   => true,
+					),
+				)
+			);
 			// status slug => background attribute, text attribute.
 			$stats = array(
 				'pending'    => array( 'ordersPillPendingBackground', 'ordersPillPendingText' ),
