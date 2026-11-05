@@ -269,6 +269,14 @@ Dropped: the phone menu's rating badge in its top row (decided, D7); the header 
 
 **Accepted differences (live is better):** shop brand filter rows 44px and search box 44px (tap size); the bag Remove's 24px row; the lens skip row's 44px; the shop Gender buttons' focus ring sits inside the edge (the shared focus system insets it where buttons touch inside one border).
 
+**Post-round council (2026-11-05):** a code reviewer and a live reviewer on the canary found no critical defect and four real ones, all fixed and deployed with main `74ee0c69b` (sandybrown and eye-care-test, `[DONE]`):
+- `d87e871a4`: a hidden answer also leaves the per-answer bag, cart and checkout rows (`Flow_Fields_Cart::get_item_data`), so a line whose only extra answer is hidden never shows it raw.
+- `bceb4f3bd`: the filter list hover colour applies only under `body.sgs-shop-list-hover`, present when it is set (the canary has no class, so its labels keep their own hover); the tick-box and count sizes have floors.
+- `52baef637`: the foreach-key resolver reads only the loop and array in the helper call's own function and skips brackets inside strings, so it cannot mark a dead attribute consumed (positive and negative controls run).
+- `1496dbbce`: the buybox main photo crossfade (opacity 0.2s) is back on sites with no saved photo hover; it had lost to `.sgs-media-el`'s box-shadow transition (canary measured `opacity 0.2s` after the deploy; Eye Care's zoom unchanged).
+
+Flows pass after the deploy.
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
