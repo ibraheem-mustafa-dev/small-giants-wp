@@ -1151,6 +1151,14 @@
 			"type": "string",
 			"default": ""
 		},
+		"itemNameLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"itemNameLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
 		"itemDetailFontSize": {
 			"type": "object",
 			"default": {}
@@ -1158,6 +1166,14 @@
 		"itemDetailFontSizeUnit": {
 			"type": "string",
 			"default": "px"
+		},
+		"itemDetailLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"itemDetailLineHeightUnit": {
+			"type": "string",
+			"default": ""
 		},
 		"itemPriceFontSize": {
 			"type": "object",
