@@ -378,29 +378,56 @@ Site, measured against the draft at 375/768/1440:
 | R6-10 | filter chips 50/128/89/86 wide, as the draft |
 | R6-11 | close X 2.5px, 18px arms; WhatsApp label 15px/600; footer "Visit us" 18px; heritage badge 56px; brand tile shadow; food-service crop centred at 375. The testimonial avatar ring and the footer's "Placeholder photograph" credit are draft placeholders, not cloned (D-30, D-31) |
 
-## Round 7 starting list
+## Round 7 register (Bean approved 2026-11-05: all six framework groups, presented first; the review Edit pill gets a minimum-height setting, 44px by default and the draft's 37px on Indus; test page 231 deleted)
+
+Phase A re-proved every R7 cause from source with three read-only investigators; the main thread checked each load-bearing claim against the code before proposing.
+
+## Round 7 outcomes (2026-11-05, measured on local-indus and indus-test at 375/768/1440)
+
+Framework (main 2cc4c9b86 through the council fixes 2556d3a73; shared DB published 91af77ba55fd then f99ae7428c78; indus-test deployed with the theme):
+
+| Id | Outcome |
+|---|---|
+| R7-01, R7-06 | post-grid `readMorePin` (per device) and `readMoreIcon` (Lucide); blog row 2 read-more at 1647 (draft 1649), every card's read-more on one line per row |
+| R7-02 | button: per-device border width now reaches the front end (the editor already saved it; render.php printed desktop only), plus `alignSelf`; the drawer button already matched the draft, so no site change |
+| R7-03 | timeline carousel padding reset reads `--sgs-tl-content-pad-*`; the 375 Custom CSS rule on 92 and 95 removed; content padding 22px at 375 and 768 |
+| R7-04 | apply Back button 52px (navButtonLineHeight normal) |
+| R7-05 | heritage section 783.5 / 766.5 / 501.3, equal to the draft (one-column gap 40px, eyebrow line height) |
+| R7-07 | mega panel photos switch to eager on nav intent: the first hover's photo is ready in 232ms (was up to 3s); a brand-logo gallery inside the hidden mega panel no longer claims eager/high priority at page load (gallery uses the first-section priority rule) |
+| R7-08 | breadcrumbs current-crumb typography (`current*`, css_state current); current crumb 500 on 24 pages |
+| R7-09 | Optional tag is a per-field switch (`optionalTag`, one shared extension) with the form's text and look; shown on Home postcode only, as the draft; mark gap setting |
+| R7-10 | upload zone: row layout, icon, hint text, padding, border, radius, gap and icon box settings; apply zone matches (row, 18px, 16px radius, PDF/JPG/PNG hint) |
+| R7-11 | `anchorTo: section` on decorative-image: the layer's output is marked and the hero lifts the marked markup out of the content column (no second render; the first version re-rendered and silently failed on the motion class); rings at right -111 / bottom -167 (draft -120 / -160 plus float) on every hero page |
+| R7-12, R7-18, R7-19 | drawer tag typography in every card layout; card-link colours paint only the link slot; container slots match in unwrapped asides |
+| R7-13 | form-review `editButtonMinHeight` (44px floor reads it as fallback); Edit pill 37px with line height normal |
+| R7-14 | test page 231 trashed; editor check green on every target |
+| R7-15 | sync-build.sh refuses a missing or partial build (tested red and green) |
+| R7-16 | a required tick-several group needs one or more (`data-sgs-group-required`, custom validity on the first box); Ranges required again on 163; site-check forms 4 of 4 |
+| R7-17 | contact counter 21px (form line-height unit unitless) |
+| R7-20 | a non-px device width makes the cover-crop plan unknown for that device (no over-fetch on phones) |
+| R7-21 | review falls back to aria-label, data-label, a lone checkbox's own words (Yes/No), then the field name; hidden steps skipped |
+| R7-22 | no change: `stepRowGap` belongs to the wrapper, which prints the row gap; the `step` element has no GRID layer to claim it |
+
+Found and fixed during the round:
+- form tiles: a click on the checkbox itself, or Space on the focused box, toggled twice and left the tile unchanged (keyboard users could not tick a tile); tiles now follow the browser's own check on `change` (found by site-check's form filler).
+- form review: the lone "Deliver to this address" checkbox showed as "Samedelivery" (R7-21's name fallback); it reads "Deliver to this address: Yes/No" as the draft.
+- form buttons row: `actionsTopMargin` and a top divider (`actionsBorderTop*`); apply card 1049.1 / 1039.9 and Continue at 952 / 943, equal to the draft at 1440 / 768.
+- careers (site settings): job-card row gap 18px (card 340.9 at 375, draft 340.8), Teams eyebrow 16px below, Send button 26px below the consent row.
+- tooling: publish-framework-db.py refuses a publish without a recorded gate pass and carries the pass to the published DB (the deploy then skips build and gate:full); publish names the cause when SGS_FRAMEWORK_DB still points at the copy; the render harness loads section-anchored-layers.php.
+
+Verification: cold vision audit in five batches (four page batches of 9 draft/live pairs, one interactive batch: drawer at 375/768 with each item expanded, mega at 1440, apply steps 1 to 5); every doubtful finding re-measured on the live DOM (three disproved: the careers top strip, the about timeline fade at 375, the home marquee height); site-check 0 failed (the final run once missed the careers success message under a 99% CPU load while the entry was stored; the rerun passed 4 of 4). QC council of three cold raters on the round's commits: fixed the gallery taking a hero's priority slot, the read-more pin without an excerpt, the Optional tag in choice-flow bag labels, the one-option checkbox group answering Yes/No, the radio legend's literal space, tiles' missing per-field messages, the duplicate stacked tag CSS, publish refusing on other sessions' files and reporting a refusal after a successful swap.
+
+## Round 8 starting list
 
 | Id | Where | Gap | Kind |
 |---|---|---|---|
-| R7-01 | post-grid cards | no setting for a flex-column card content with the read-more pinned to the bottom as a full-width row, and the read-more arrow is a hard-coded glyph (`class-post-grid-rest.php`), not an icon setting | framework |
-| R7-02 | button in the drawer | `borderWidth` has no per-device tiers; no `align-self` setting | framework |
-| R7-03 | timeline at 375 | the mobile-carousel stylesheet rule (class repeated five times) beats the content padding setting's left and right sides | framework: let the carousel reset yield to a set padding |
-| R7-04 | apply Back button | 54 vs 52: form button line-height 1.5 vs the draft's normal | site or framework (check `navButtonLineHeight` accepts normal) |
-| R7-05 | heritage section | 14px taller at 375 and 768, 9px shorter at 1440, outside the steps block | investigate |
-| R7-06 | blog row 2 | one read-more sits at 1598 vs the draft's 1649 | investigate |
-| R7-07 | mega photos, 1440 | photos are `loading="lazy"`, so the first hover waits for the fetch (up to 3 s on the live server); hidden header copies of the About photo also fetch a 768px file at page load | framework: preload panel images on nav intent (pointerenter or focus of the nav), not on first paint |
-| R7-08 | breadcrumbs | current crumb weight 600 vs the draft's 500; no current-crumb weight setting | framework: `currentFontWeight` |
-| R7-09 | apply form fields | no "Optional" tag setting on a field label; no gap setting between the label and the required asterisk (draft 6px, live a space) | framework: field label extras in `includes/forms/field-render-helpers.php::field_label` |
-| R7-10 | apply file drop zone | no icon, alignment, height/padding or hint-line settings (the hint is a fixed "Max %d MB"; the draft says "PDF, JPG or PNG, up to 10MB") | framework: `form-field-file` settings |
-| R7-11 | hero decorative rings | the ring is positioned from `.sgs-hero__content`, so its per-device offsets only hold while the hero content keeps its size | framework: an "anchor to section" option on `sgs/decorative-image` |
-| R7-12 | drawer Brands pill and default-layout card | the new drawer tag font settings apply to stacked and compact cards only; the Brands card uses the default layout | framework: extend the drawer tag typography to the default layout |
-| R7-13 | apply review Edit pill | 44px tall (the shared touch-target minimum) vs the draft's 37px; no min-height setting | framework or accept |
-| R7-14 | editor check | page 231 ("Track F live check", a draft test page on local-indus) logs a Google Maps network error in the editor and fails the editor check | site: delete the test page, or tooling: ignore third-party network errors |
-| R7-16 | apply step 4 "Ranges" tiles | `required` on a multi-select `form-field-tiles` group marks every checkbox required, so Continue needs all of them ticked; the draft requires at least one. Required is unset on the site until fixed | framework: a required checkbox group requires one or more |
-| R7-15 | `sync-build.sh` | synced an empty plugin build into local-indus when the worktree had no `build/` (a stopped `npm run build` had cleaned it) | tooling: refuse to sync a missing or incomplete build |
-| R7-17 | contact textarea counter | the enquiry form's counter sits 5px higher than the draft (padding 30/18/14 already matches) | low: investigate |
-| R7-18 | `mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_card_link_css` | the drawer card-link colours paint every `.sgs-button` in the aside, not only the card's link (fine for one-button cards, wrong for a card with two) | framework: scope to the card link |
-| R7-19 | `mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_card_slot_sel` | a slot that is itself an `sgs/container` in the unwrapped aside layout is not matched (the `:not(.wp-block-sgs-container)` guard drops it) | framework |
-| R7-20 | `helpers-media.php::sgs_media_cover_crop_plan` | a tier whose width is a percentage inherits the wider tier's px width, so a phone over-fetches (still smaller than the old 1600px file) | framework: an unknown tier keeps the attachment hint |
-| R7-21 | `review-cards.js` | a choice group with no legend, label or aria-labelledby drops its row from the review; a step hidden as a whole (not field by field) is not detected | framework |
-| R7-22 | process-steps `block.json` | the `step` element's `prefix: "number"` (e5f5086ff) was a workaround for the missing row-gap member; now that `css:row-gap` is a layout member it can return to its default, after a manifest gate run | tooling |
+| R8-01 | hero rings, all hero pages | the draft ring pulses in scale (1 to 1.088) as it drifts; the live ring only floats (translate) | site motion setting or framework (investigate the decorative-image motion options) |
+| R8-02 | brand partner logos (mega Brands panel, drawer, home marquee) | the draft's own placeholder partner logos (LOREM FOODS and the rest) are cloned as drawn; the client's real partner logos are content Bean supplies | content |
+| R8-03 | footer hours pill | the "Closed" dot is red in live, amber in the draft; "Opens at 9:30am tomorrow" vs the draft's "Opens tomorrow at 9:30am" | low |
+| R8-04 | lean parity walk | a lean walk (`draft-live-walk.mjs --lean`, the page's `.fill.mjs` config, live = the mirror via its config) of the home page did not finish within 25 minutes over a 38 KB/s connection (the draft's Unsplash photos stalled the load); re-run on a normal connection, one width per run first, and adopt it as the round's first Phase A step and as the wrap-up stage | tooling |
+| R8-05 | deploy cache key | the pass is keyed on the whole repository tree, so a peer's docs-only push between gating and deploying makes the deploy rebuild; key it on the build's real inputs (plugins, theme, the gate scripts) | tooling |
+| R8-06 | apply review step | unverified audit claims: "Submit application" wraps to two lines at 375, and the review step's Submit button is black with yellow text where Continue is blue; compare each with the draft's review step (TradeApplication.dc.html driven to step 5) before acting | investigate |
+| R8-07 | apply form at 375 (and any page with a sticky bottom bar) | the floating WhatsApp button covers the right 35px of the sticky Continue / Submit button, arrow included (button x 43-332, bubble x 297-351, y 736-788); after Continue is pressed the form sits in front of the WhatsApp button until the page is clicked again (Bean 2026-11-05), so the stacking order changes with focus | framework, medium: the floating button lifts above a visible sticky bottom bar; find what raises the form while it holds focus |
+| R8-08 | `src/shared/nav-interactivity/mega-disclosure.js::warmPanelImages` | the first intent on any item warms every panel's photos of that nav (on desktop; it also runs in click-open mode) | framework, minor: warm the engaged panel first, skip coarse pointers |
+| R8-09 | `includes/mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_card_link_css` | the card-link colours reach the link only when it is the aside's (or its wrapper's) last child | framework, minor |
+| R8-10 | `src/blocks/button/render.php` focus ring | the signature focus ring reads the desktop border width only, so a tablet- or mobile-only border width is ignored there | framework, minor |
