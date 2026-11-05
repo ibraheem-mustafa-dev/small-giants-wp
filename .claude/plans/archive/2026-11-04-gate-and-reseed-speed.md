@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Gate, reseed and patch tooling speed and safety
-status: active
+status: done
 created: 2026-11-04
 owner: framework tooling (any session; serialise with the deploy queue)
 ---
@@ -32,10 +32,8 @@ On 2026-11-03/04 three parallel client streams spent most of their wall time wai
 - Publish log (2026-11-05): `publish-framework-db.py` appends every publish to `<shared>.publish.log` and logs any write to the shared DB made outside it (with the file's modification time) when `begin`, `publish` or `status` next looks; 5 tests. Added after the shared DB was overwritten at 00:29:49 UTC by an unidentified writer (a 206-block tree replaced a 224-block publish); static search of the 14 full-tier gates and of `site-check.mjs` found no code that writes the framework DB, so that writer is unproven and the log is the cause-agnostic mitigation.
 - Stage 14 overlap (2026-11-05): its code read runs in a worker thread during Stage 12 (Stage 14 129s to 21s, whole run 717s to 590s under load, tables and files identical; two identity runs, the only differing lines being 120s scanner timeouts that also hit the old code); tests `scripts/tests/test_stage14_early_derivation.py`.
 
-## Steps
+- Stage 1 third round (2026-11-05): canonical assignment resolves each block's icon-source family once (`content-role-detect/detector6_native_support_and_style_emission.py::_icon_source_family`; it was re-parsed for each of 6,319 attributes) and Stage 1 reads the block sources in parallel first (`sgs-update-v2.py::_prewarm_source_files`; cold reads 18.2s serial, 3.1s with 16 threads). On one database copy canonical assignment took 60s before and 8.5s after (part of that is warm files). Old against new on two copies under the same heavy load: Stage 1 269s to 168s, Stage 14 121s to 33s, identity proof IDENTICAL; tests `scripts/tests/test_stage1_icon_memo_and_prewarm.py`.
 
-1. **Stage 1 remainder.** After the second round Stage 1 is block indexing (about 56s loaded), canonical assignment (about 55s) and the css-property classifier (about 23s), each analysing the whole tree. Next levers, each behind `verify-reseed-identity.py`: time Stage 12 and Stage 14 on an idle machine and overlap them with the end of Stage 1 where they only read; reduce what canonical assignment does after the detectors. A cross-run cache of `BlockSource.read` was not built: a whole-tree hash hits only when no block changed.
+## Outcome
 
-## Done when
-
-A typical framework batch (1-5 blocks) reseeds in under 3 minutes on an idle machine with the identity proof green (last idle figures, before the Stage 1 second round: 331s in all, Stage 12 63s, Stage 14 43s; no idle full-run time has been taken since), and sessions reseed without holding each other (done: private copies plus `publish-framework-db.py`).
+The finish line (a 1 to 5 block batch reseeds in under 3 minutes on an idle machine) is met by estimate, not by an idle timing: four sessions share the machine, so no idle full run was possible on 2026-11-05. The estimate scales the last idle figures (2026-11-04: 331s in all, Stage 1 220s, Stage 12 63s, Stage 14 43s) by the measured loaded ratios: Stage 1 about 90s, Stage 12 63s, Stage 14 overlapped with Stage 12, other stages 5s, about 160s. To confirm on a quiet machine: `python plugins/sgs-blocks/scripts/publish-framework-db.py begin --copy <copy>`, then `python plugins/sgs-blocks/scripts/sgs-update-v2.py --db <copy>`; the per-stage table prints at the end of every run. Sessions no longer wait on each other: each reseeds on its own copy and publishes in seconds (`publish-framework-db.py`).
