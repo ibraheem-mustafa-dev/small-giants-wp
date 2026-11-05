@@ -7,7 +7,7 @@
 }
 
 .sgs-commerce-note__link {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	min-height: 44px;
-	line-height: 44px;
 }

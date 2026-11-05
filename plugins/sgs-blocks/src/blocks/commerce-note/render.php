@@ -50,8 +50,29 @@ if ( '' === $sgs_note_html ) {
 	return;
 }
 
+// Look settings: one scoped <style> and a scope class, only while a setting is in use.
+require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+
+$sgs_note_class = 'sgs-commerce-note';
+$sgs_note_css   = '';
+$sgs_note_uid   = 'sgs-commerce-note-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$sgs_note_sel   = '.' . $sgs_note_uid . '.wp-block-sgs-commerce-note';
+$sgs_note_css  .= sgs_typography_css_rule( $attributes, 'commerceNote', $sgs_note_sel, '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_note_css  .= sgs_text_states_css(
+	$sgs_note_sel . ' .sgs-commerce-note__link',
+	$attributes,
+	array(
+		'base'  => 'commerceNoteLinkColour',
+		'hover' => 'commerceNoteLinkColourHover',
+	)
+);
+if ( '' !== $sgs_note_css ) {
+	$sgs_note_class .= ' ' . $sgs_note_uid;
+	echo '<style>' . wp_strip_all_tags( $sgs_note_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is pre-sanitised by the shared helpers.
+}
+
 printf(
 	'<p %1$s>%2$s</p>',
-	get_block_wrapper_attributes( array( 'class' => 'sgs-commerce-note' ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes each value.
+	get_block_wrapper_attributes( array( 'class' => $sgs_note_class ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes each value.
 	$sgs_note_html // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from sgs_rich_text_kses(), esc_url() and esc_html() above.
 );

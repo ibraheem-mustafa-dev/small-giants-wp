@@ -6,7 +6,13 @@
 	"title": "Commerce note",
 	"category": "sgs-content",
 	"description": "A line of text with an optional link inside the Cart and Checkout blocks: an allergen note, a delivery promise, a Keep shopping link.",
-	"keywords": [ "cart", "checkout", "note", "allergen", "link" ],
+	"keywords": [
+		"cart",
+		"checkout",
+		"note",
+		"allergen",
+		"link"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "info-outline",
 	"parent": [
@@ -21,16 +27,136 @@
 		"inserter": true,
 		"sgs": {
 			"specRef": "30",
-			"elements": {}
+			"elements": {
+				"note": {
+					"label": "Note text",
+					"order": 1,
+					"motion": false,
+					"clusters": [
+						"text"
+					],
+					"isWrapper": true,
+					"prefix": "commerceNote",
+					"attrMap": {
+						"css:font-size": "commerceNoteFontSize",
+						"css:font-family": "commerceNoteFontFamily",
+						"css:font-weight": "commerceNoteFontWeight",
+						"css:line-height": "commerceNoteLineHeight",
+						"css:letter-spacing": "commerceNoteLetterSpacing",
+						"css:text-transform": "commerceNoteTextTransform",
+						"css:text-align": "commerceNoteTextAlign",
+						"css:font-style": "commerceNoteFontStyle"
+					}
+				},
+				"link": {
+					"selector": ".sgs-commerce-note__link",
+					"label": "Note link",
+					"order": 2,
+					"motion": false,
+					"clusters": [
+						"text"
+					],
+					"prefix": "commerceNoteLink",
+					"attrMap": {
+						"css:color": "commerceNoteLinkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "commerceNoteLinkColourHover"
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"attributes": {
-		"text": { "type": "string", "default": "" },
-		"linkLabel": { "type": "string", "default": "" },
-		"linkUrl": { "type": "string", "default": "" },
-		"linkTarget": { "type": "string", "enum": [ "_self", "_blank" ], "default": "_self" },
-		"linkRel": { "type": "string", "default": "" },
-		"linkUrlSource": { "type": "string", "default": "" }
+		"text": {
+			"type": "string",
+			"default": ""
+		},
+		"linkLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"linkUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"linkTarget": {
+			"type": "string",
+			"enum": [
+				"_self",
+				"_blank"
+			],
+			"default": "_self"
+		},
+		"linkRel": {
+			"type": "string",
+			"default": ""
+		},
+		"linkUrlSource": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"commerceNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"commerceNoteFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"commerceNoteLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"commerceNoteLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"commerceNoteTextTransform": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"commerceNoteLinkColour": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteLinkColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"commerceNoteFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

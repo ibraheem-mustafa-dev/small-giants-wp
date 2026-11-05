@@ -10,6 +10,9 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, TextControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import GiftOrder from '../../commerce-blocks/gift/component';
+import LookPanels from './LookPanels';
+import ServerSideRender from '../../components/ServerSideRender';
+import { SsrPreviewGuard } from '../../components';
 
 /**
  * Text settings shown in each panel: [ attribute, label, help ].
@@ -63,6 +66,17 @@ function TextRows( { fields, attributes, setAttributes } ) {
 	) );
 }
 
+/**
+ * Keeps the previous answer on screen while a new one loads.
+ *
+ * @param {Object}      props
+ * @param {JSX.Element} props.children The previous response.
+ * @return {JSX.Element} The children.
+ */
+function KeepResponse( { children } ) {
+	return <>{ children }</>;
+}
+
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const placement = useSelect(
 		( select ) =>
@@ -75,8 +89,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		[ clientId ]
 	);
 	const rows = { attributes, setAttributes };
+	// Only the look settings go to the server: its answer carries the `<style>` the front end prints, so the canvas needs
+	// no second copy of the rules, and editing the words never asks again.
+	const lookAttributes = Object.fromEntries(
+		Object.entries( attributes ).filter( ( [ name ] ) =>
+			/^(giftPanel|giftTile|field)/.test( name )
+		)
+	);
 	return (
 		<div { ...useBlockProps() }>
+			<SsrPreviewGuard>
+				<ServerSideRender
+					block="sgs/gift-order"
+					attributes={ lookAttributes }
+					LoadingResponsePlaceholder={ KeepResponse }
+					EmptyResponsePlaceholder={ () => null }
+				/>
+			</SsrPreviewGuard>
 			<InspectorControls group="settings">
 				<PanelBody title={ __( 'Basket switch', 'sgs-blocks' ) }>
 					<TextRows fields={ BASKET_FIELDS } { ...rows } />
@@ -127,6 +156,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<LookPanels
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 			</InspectorControls>
 			<GiftOrder settings={ attributes } forcePlacement={ placement } />
 		</div>

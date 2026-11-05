@@ -6,7 +6,13 @@
 	"title": "Gift order",
 	"category": "sgs-interactive",
 	"description": "A gift switch for the basket and a gift step for the checkout: recipient name and note, kept on the order.",
-	"keywords": [ "gift", "checkout", "basket", "note", "recipient" ],
+	"keywords": [
+		"gift",
+		"checkout",
+		"basket",
+		"note",
+		"recipient"
+	],
 	"textdomain": "sgs-blocks",
 	"icon": "heart",
 	"parent": [
@@ -20,21 +26,130 @@
 		"inserter": true,
 		"sgs": {
 			"specRef": "30",
-			"elements": {}
+			"elements": {
+				"panel": {
+					"selector": ".sgs-gift-order",
+					"motion": false,
+					"label": "Gift panel",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "giftPanel",
+					"attrMap": {
+						"css:background-color": "giftPanelBackground",
+						"css:border-width": "giftPanelBorderWidth",
+						"css:border-style": "giftPanelBorderStyle",
+						"css:border-color": "giftPanelBorderColour",
+						"css:border-radius": "giftPanelBorderRadius",
+						"css:box-shadow": "giftPanelShadow",
+						"css:box-shadow-color": "giftPanelShadowColour",
+						"css:padding": "giftPanelPadding"
+					}
+				},
+				"tile": {
+					"selector": ".sgs-gift-order__tile",
+					"motion": false,
+					"label": "Choice tiles",
+					"order": 2,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "giftTile",
+					"attrMap": {
+						"css:background-color": "giftTileBackground",
+						"css:border-width": "giftTileBorderWidth",
+						"css:border-style": "giftTileBorderStyle",
+						"css:border-color": "giftTileBorderColour",
+						"css:border-radius": "giftTileBorderRadius"
+					}
+				},
+				"tileSelected": {
+					"selector": ".sgs-gift-order__tile--selected",
+					"motion": false,
+					"label": "Chosen tile",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "giftTileSelectedBackground",
+						"css:border-color": "giftTileSelectedBorderColour",
+						"css:box-shadow": "giftTileSelectedShadow",
+						"css:box-shadow-color": "giftTileSelectedShadowColour"
+					}
+				},
+				"field": {
+					"selector": ".sgs-gift-order__input",
+					"motion": false,
+					"label": "Name and note fields",
+					"order": 4,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "field",
+					"attrMap": {
+						"css:background-color": "fieldBackground",
+						"css:border-width": "fieldBorderWidth",
+						"css:border-style": "fieldBorderStyle",
+						"css:border-color": "fieldBorderColour",
+						"css:border-radius": "fieldBorderRadius",
+						"css:box-shadow": "fieldShadow",
+						"css:box-shadow-color": "fieldShadowColour"
+					}
+				}
+			}
 		}
 	},
 	"attributes": {
-		"basketLabel": { "type": "string", "default": "This is a gift" },
-		"basketHelp": { "type": "string", "default": "" },
-		"stepTitle": { "type": "string", "default": "Who is it for?" },
-		"optionMeLabel": { "type": "string", "default": "For me" },
-		"optionMeText": { "type": "string", "default": "" },
-		"optionGiftLabel": { "type": "string", "default": "It is a gift" },
-		"optionGiftText": { "type": "string", "default": "Send to someone else" },
-		"recipientLabel": { "type": "string", "default": "Recipient name" },
-		"messageLabel": { "type": "string", "default": "Your note" },
-		"messagePlaceholder": { "type": "string", "default": "" },
-		"giftOnlyLine": { "type": "string", "default": "" },
+		"basketLabel": {
+			"type": "string",
+			"default": "This is a gift"
+		},
+		"basketHelp": {
+			"type": "string",
+			"default": ""
+		},
+		"stepTitle": {
+			"type": "string",
+			"default": "Who is it for?"
+		},
+		"optionMeLabel": {
+			"type": "string",
+			"default": "For me"
+		},
+		"optionMeText": {
+			"type": "string",
+			"default": ""
+		},
+		"optionGiftLabel": {
+			"type": "string",
+			"default": "It is a gift"
+		},
+		"optionGiftText": {
+			"type": "string",
+			"default": "Send to someone else"
+		},
+		"recipientLabel": {
+			"type": "string",
+			"default": "Recipient name"
+		},
+		"messageLabel": {
+			"type": "string",
+			"default": "Your note"
+		},
+		"messagePlaceholder": {
+			"type": "string",
+			"default": ""
+		},
+		"giftOnlyLine": {
+			"type": "string",
+			"default": ""
+		},
 		"characterCountText": {
 			"type": "string",
 			"default": "%1$d of %2$d characters"
@@ -43,8 +158,167 @@
 			"type": "string",
 			"default": "Your gift details could not be saved. Please try again."
 		},
-		"recipientLimit": { "type": "integer", "default": 0 },
-		"messageLimit": { "type": "integer", "default": 0 }
+		"recipientLimit": {
+			"type": "integer",
+			"default": 0
+		},
+		"messageLimit": {
+			"type": "integer",
+			"default": 0
+		},
+		"giftPanelBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of the gift panel: a palette slug or any CSS colour."
+		},
+		"giftPanelBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Gift panel border width as a box {top,right,bottom,left} or a tier object of boxes. Unset prints no border."
+		},
+		"giftPanelBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Gift panel border style. Unset = solid when a width is set."
+		},
+		"giftPanelBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Gift panel border colour: a palette slug or any CSS colour."
+		},
+		"giftPanelBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Gift panel corner radius per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}."
+		},
+		"giftPanelShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Gift panel shadow: a preset slug or a CSS box-shadow value."
+		},
+		"giftPanelShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"giftPanelPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Gift panel padding per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}."
+		},
+		"giftTileBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of the two choice tiles."
+		},
+		"giftTileBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile border width as a box {top,right,bottom,left} or a tier object of boxes. Unset prints no border."
+		},
+		"giftTileBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Choice tile border style. Unset = solid when a width is set."
+		},
+		"giftTileBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Choice tile border colour: a palette slug or any CSS colour."
+		},
+		"giftTileBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile corner radius per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}."
+		},
+		"giftTileSelectedBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of the chosen tile."
+		},
+		"giftTileSelectedBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the chosen tile."
+		},
+		"fieldBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of the name and note fields."
+		},
+		"fieldBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Field border width as a box {top,right,bottom,left}."
+		},
+		"fieldBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "",
+			"description": "Field border style. Unset = solid when a width is set."
+		},
+		"fieldBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Resting border colour of the fields."
+		},
+		"fieldBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Field corner radius per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}."
+		},
+		"fieldShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Field shadow: a preset slug or a CSS box-shadow value."
+		},
+		"fieldShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"giftTileSelectedShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow of the chosen tile: a preset slug or a CSS box-shadow value."
+		},
+		"giftTileSelectedShadowColour": {
+			"type": "string",
+			"default": ""
+		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

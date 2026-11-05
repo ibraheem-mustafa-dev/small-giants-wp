@@ -136,7 +136,26 @@ $track_radius = sgs_css_length_value( (string) ( $attributes['freeDeliveryTrackR
 if ( '' !== $track_radius ) {
 	$scoped[] = $root_sel . ' .sgs-free-delivery-bar__track{border-radius:' . $track_radius . ';}';
 }
-$scoped[] = sgs_emit_responsive_css(
+$track_sel    = $root_sel . ' .sgs-free-delivery-bar__track';
+$track_border = sgs_border_element_decls(
+	$attributes,
+	'freeDeliveryTrack',
+	$track_sel,
+	array(
+		'colour' => array( 'base' => 'freeDeliveryTrackBorderColour' ),
+		'radius' => false,
+	)
+);
+$scoped[]     = sgs_emit_tier_decls(
+	$track_sel,
+	array(
+		'desktop' => $track_border['base'],
+		'tablet'  => $track_border['tablet'],
+		'mobile'  => $track_border['mobile'],
+	)
+);
+$scoped       = array_merge( $scoped, $track_border['rules'] );
+$scoped[]     = sgs_emit_responsive_css(
 	$root_sel . ' .sgs-free-delivery-bar__track',
 	array(
 		array(

@@ -41,6 +41,9 @@
 				],
 				"freeDeliveryBarMargin": [
 					"freeDeliveryBarMargin"
+				],
+				"freeDeliveryTrackBorderWidth": [
+					"freeDeliveryTrackBorderWidth"
 				]
 			},
 			"elements": {
@@ -97,7 +100,10 @@
 						"css:background-color": "freeDeliveryTrackColour",
 						"css:height": "freeDeliveryTrackHeight",
 						"css:margin": "freeDeliveryBarMargin",
-						"css:border-radius": "freeDeliveryTrackRadius"
+						"css:border-radius": "freeDeliveryTrackRadius",
+						"css:border-width": "freeDeliveryTrackBorderWidth",
+						"css:border-style": "freeDeliveryTrackBorderStyle",
+						"css:border-color": "freeDeliveryTrackBorderColour"
 					}
 				},
 				"fill": {
@@ -176,6 +182,20 @@
 			"type": "string",
 			"default": "",
 			"description": "Free-delivery track corner radius (CSS length). Empty keeps fully rounded."
+		},
+		"freeDeliveryTrackBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Free-delivery progress track border width per device: a box or a tier object of boxes. Empty prints no border."
+		},
+		"freeDeliveryTrackBorderStyle": {
+			"type": "string",
+			"enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+			"default": "solid"
+		},
+		"freeDeliveryTrackBorderColour": {
+			"type": "string",
+			"default": ""
 		},
 		"freeDeliveryFillDuration": {
 			"type": "number",
