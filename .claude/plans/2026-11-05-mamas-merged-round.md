@@ -30,11 +30,27 @@ Fixed during the merge: the extension attribute seeder collapses a union type th
 - The checkout's single "address and delivery" step: WooCommerce draws two step fieldsets, and joining them needs negative-margin CSS against its markup (Spec 35).
 - Shop's "All" chip carries no total count: WooCommerce gives the chips block no total.
 
-## Open (task: the next Mama's round, which plans these as its round items 1 to 7; from the QC on mamas-test 2026-11-05, evidence `E:/sgs-tmp/qc-m/results.json`; investigate and prove each cause, then propose to Bean before building)
-1. Axe, check first whether each is new: Home `link-name` (serious, `#sgs-btn-27a6db3e` and 3 more), `scrollable-region-focusable` (serious, a container content band), `landmark-unique` (trust bar); Product `aria-allowed-role` (slider dot buttons); Shop `heading-order`; Basket and Checkout `aria-prohibited-attr` on WooCommerce's totals items and payment skeleton (may be WooCommerce markup or a loading state). The QC of 2026-11-05 morning reported the commerce pages axe-clean.
-2. Selected-state offset shadow and shift missing: buy box priced pills and pack tiles (Home, Product), Shop and Gifts chips, Help chips (shift only). Check whether each block has the setting (option-picker has selected shadow and offsets) before calling it a gap.
-3. Buy box pick looks: pill weight 500 against 700, selected text black against cocoa, unselected pill fill transparent against #fffaf0; pack tiles 98x78 against 164x87 with no total price line, 11px/500, unselected fill #fbf3dc against #fffaf0; the badge 21px against 19px with an extra 1px shadow.
-4. Review cards (Product): the draft's alternating 1 degree tilt, card fill and 2px border are absent; heights 255 to 284 against 293 to 297.
-5. Commerce: line-item thumbnails lack the 2px cocoa border, pink fill and 16px (checkout 12px) radius; the quantity pill 102x46 with a faint border against 110x44 with 2px; the basket button reads "Proceed to Checkout" (draft "Checkout securely"), has no 2px border and sits below the summary card at 480px (draft inside it at 428px); the free-delivery bar spans 1240px (draft 720px inside the items column: move it into WooCommerce's items column now that it registers there); checkout "Place Order" (draft "Pay £30.45") with no border; the allergen link is not underlined; gift tiles 80px against 76px; gift fields 44.8px with 16px labels against 54px and 15px; the gift note box 94px in 16px type against 114px in 24px.
-6. Sign in: the submit button "Log in" 117x57, 600, pink against "Sign in →" 140x60, 17px/700, yellow.
-7. Small: Contact tile radius 20px against a full pill; Help search icon 16px from the left against 20px and chips 3 to 7px wider; Shop and Gifts chip order differs from the draft and Gifts lacks the "Any" price chip; Shop's "All" chip has no total count (divergence).
+## QC round (2026-11-05 evening, main `12a6b9626`, framework DB 4125b35ac524, mamas-test deployed and mirror pushed 22:39 UTC; site-check 0 failed with and without a basket; axe 0 violations on Home, Product, Shop, Basket and Checkout at 375 and 1440)
+Every QC item was re-measured against the draft first (`E:/sgs-tmp/qc-inv/*/results.json`, pairs beside them); about a third were misreadings and were dropped. Built:
+- **Buy box pick area:** option-picker looks passed through (`pickerPill*` fill, border, weight, selected shadow and offsets, hover shift and still), card padding and gap, numbered headings with hints, round dots with the tick inside, a tile price line and columns, the label margin leak, the badge reset, and `pickHidePreview` (Bean: no preview on Product). Scope classes are hashed from non-default values only (`includes/helpers-instance-scope-hash.php`).
+- **Buy box gallery:** the gallery sticker ("baked with love" on the pinned photo), `stickyOffset` driving the gallery column, add-to-cart resting and hover shadows, thumbnails as `role="group"`, and `sgs/gift-order` allowed in the extras slot.
+- **Chips and filter:** WooCommerce chips' selected shadow and offsets and the "All" count; the accordion filter font family and search icon offset.
+- **Commerce looks:** commerceLook thumbnail, stepper and button border, `sgsSummaryWrapsButton` and `sgsItemHideSeparators`.
+- **Gift and note:** `sgs/gift-order` on product pages (Bean), its field sizing and typography, and the commerce-note link underline and min-height.
+- **Accessibility:**
+  - testimonial-slider `slideBleed` and equal-height cards;
+  - container scroll-row keyboard access (shared `src/shared/scroll-region/`);
+  - trust-bar `ariaLabel` on every tag;
+  - nameless links never lend a card its link;
+  - the cart trigger name is visible text first and plural-aware.
+- **Gates:** `test_allowed_blocks_scrape.py` honours `SGS_FRAMEWORK_DB`.
+- **Sign in controls:** built by the Eye Care session (`loginButton*`, `strings`, `loginLink*`, `hideRememberMe`).
+- **Content:** set on local-mamas and pushed; Home's reviews were rebuilt as `sgs/testimonial-slider`.
+
+Deferred (Bean, 2026-11-05): Subscribe and One-off purchase cards (subscriptions parked; the client needs the site live first).
+
+## Open (task: the next Mama's round; check each against the draft in every state, with pairs)
+1. Home reviews slider: the card titles use Karla against the draft's Young Serif; the quote mark is missing; the footer reads name then date, where the draft has name on the left and "date · Trustpilot" on the right; the draft's arrows sit in the section header, and the slider's own arrows shrink the cards (they are off now). Copy the Product cards' settings first, then build header-placed arrows if no setting exists.
+2. Product summary line: the draft has "All 20 strawberry" in lower case; ours prints "Your 20: All 20 Vanilla". The default flavour is Vanilla against the draft's Strawberry (product data).
+3. Add to basket hover fill: paper on hover in the draft; there is no setting.
+4. Hover and selected-state pairs for every item (the content pass captured resting crops only).
