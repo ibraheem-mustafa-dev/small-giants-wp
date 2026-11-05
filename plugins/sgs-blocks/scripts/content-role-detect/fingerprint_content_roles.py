@@ -1117,7 +1117,10 @@ def main() -> int:
     if args.self_test:
         return self_test()
     if args.write_detectors:
-        Path(args.write_detectors).write_text(json.dumps(run_detectors()), encoding="utf-8")
+        target = Path(args.write_detectors)
+        partial = target.with_name(target.name + ".part")
+        partial.write_text(json.dumps(run_detectors()), encoding="utf-8")
+        os.replace(str(partial), str(target))
         return 0
 
     result = compute()

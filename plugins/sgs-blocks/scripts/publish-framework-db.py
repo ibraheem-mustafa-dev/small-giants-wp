@@ -28,7 +28,9 @@ import sqlite3
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "lib"))
 from framework_db import framework_db_path  # noqa: E402
@@ -75,6 +77,7 @@ class PublishLock:
         self.wait_s = wait_s
         self.stale_s = stale_s
         self.held = False
+        self.token = uuid.uuid4().hex
 
     def __enter__(self) -> "PublishLock":
         deadline = time.monotonic() + self.wait_s
@@ -88,7 +91,7 @@ class PublishLock:
                 time.sleep(0.25)
                 continue
             with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                handle.write(json.dumps({"pid": os.getpid(), "at": time.time()}))
+                handle.write(json.dumps({"pid": os.getpid(), "at": time.time(), "token": self.token}))
             self.held = True
             return self
 
@@ -98,25 +101,41 @@ class PublishLock:
         except FileNotFoundError:
             return
         if age > self.stale_s:
+            # rename, not unlink: of several waiters that saw the same old lock only one rename succeeds
+            graveyard = self.path.with_name(self.path.name + "." + uuid.uuid4().hex + ".stale")
             try:
-                self.path.unlink()
-            except FileNotFoundError:
+                os.rename(str(self.path), str(graveyard))
+            except OSError:
+                return
+            try:
+                graveyard.unlink()
+            except OSError:
                 pass
+
+    def _owned(self) -> bool:
+        try:
+            return json.loads(self.path.read_text(encoding="utf-8")).get("token") == self.token
+        except (OSError, ValueError):
+            return False
 
     def __exit__(self, *_exc: object) -> None:
         if self.held:
-            try:
-                self.path.unlink()
-            except FileNotFoundError:
-                pass
+            # a lock that was broken as stale and re-taken by another session is not ours to delete
+            if self._owned():
+                try:
+                    self.path.unlink()
+                except FileNotFoundError:
+                    pass
             self.held = False
 
 
 def snapshot(source: Path, dest: Path) -> None:
     """Consistent copy of `source` at `dest` through SQLite's backup API (safe while another process has it open)."""
+    if dest.resolve() == source.resolve():
+        raise PublishRefused(f"the copy and the source are the same file: {dest}")
     if dest.exists():
         dest.unlink()
-    src = sqlite3.connect(f"file:{source.as_posix()}?mode=ro", uri=True)
+    src = sqlite3.connect(f"file:{quote(source.resolve().as_posix(), safe='/:')}?mode=ro", uri=True)
     try:
         dst = sqlite3.connect(str(dest))
         try:
@@ -130,6 +149,8 @@ def snapshot(source: Path, dest: Path) -> None:
 def begin(copy: Path, shared: Path) -> dict:
     if not shared.is_file() or shared.stat().st_size == 0:
         raise PublishRefused(f"shared framework DB not found or empty: {shared}")
+    if copy.resolve() == shared.resolve():
+        raise PublishRefused(f"--copy is the shared DB itself ({shared}); name a different file, and leave SGS_FRAMEWORK_DB unset for begin and publish")
     with PublishLock(shared):
         before = sha256_of(shared)
         snapshot(shared, copy)
@@ -192,6 +213,8 @@ def publish(copy: Path, shared: Path) -> dict:
             raise SharedChanged(f"shared DB is {current[:12]}, the copy started from {base['sha256'][:12]}")
         refuse_if_shared_in_use(shared)
         snapshot(copy, staged)
+        with staged.open("r+b") as staged_handle:
+            os.fsync(staged_handle.fileno())
         try:
             replace_with_retry(staged, shared)
         finally:
@@ -199,8 +222,11 @@ def publish(copy: Path, shared: Path) -> dict:
                 staged.unlink()
         for suffix in ("-wal", "-shm"):
             stale = shared.with_name(shared.name + suffix)
-            if stale.is_file():
-                stale.unlink()
+            try:
+                if stale.is_file():
+                    stale.unlink()
+            except OSError:
+                pass  # the new DB is already live; an empty sidecar is rebuilt by SQLite
         published = sha256_of(shared)
     marker.write_text(json.dumps({**base, "published_sha256": published, "published_at": time.time()}, indent=2), encoding="utf-8")
     return {"sha256": published}
@@ -248,6 +274,9 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_CONFLICT
     except PublishRefused as exc:
         print(f"[{args.command}] REFUSED: {exc}", file=sys.stderr)
+        return EXIT_REFUSED
+    except (sqlite3.Error, OSError, ValueError, KeyError, subprocess.CalledProcessError) as exc:
+        print(f"[{args.command}] REFUSED: {type(exc).__name__}: {exc}", file=sys.stderr)
         return EXIT_REFUSED
     return 0
 

@@ -178,3 +178,47 @@ def test_block_source_raises_when_either_reader_fails(monkeypatch):
     monkeypatch.setattr(block_source, "_run", fake_run)
     with pytest.raises(block_source.BlockSourceError):
         block_source.BlockSource.read(Path("."))
+
+
+class _Conn:
+    def commit(self):
+        pass
+
+
+def _run_canonical(update, monkeypatch, env_before, collected):
+    seen = {}
+
+    class _Result:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    def fake_run(cmd, **kwargs):
+        seen["env"] = kwargs["env"]
+        return _Result()
+
+    monkeypatch.setattr(update.subprocess, "run", fake_run)
+    monkeypatch.setattr(update, "_collect_content_role_detectors", lambda: collected)
+    for key, value in env_before.items():
+        monkeypatch.setenv(key, value)
+    update._run_canonical_assignment(_Conn())
+    return seen["env"]
+
+
+def test_a_stale_detector_file_in_the_shell_never_reaches_canonical_assignment(update, monkeypatch):
+    env = _run_canonical(update, monkeypatch, {"SGS_CONTENT_ROLE_DETECTORS_JSON": "C:/old/run.json"}, {})
+    assert "SGS_CONTENT_ROLE_DETECTORS_JSON" not in env
+
+
+def test_the_early_runs_file_reaches_canonical_assignment(update, monkeypatch):
+    env = _run_canonical(update, monkeypatch, {"SGS_CONTENT_ROLE_DETECTORS_JSON": "C:/old/run.json"}, {"SGS_CONTENT_ROLE_DETECTORS_JSON": "C:/new/run.json"})
+    assert env["SGS_CONTENT_ROLE_DETECTORS_JSON"] == "C:/new/run.json"
+
+
+def test_the_early_run_is_discarded_once_canonical_assignment_is_done(update, monkeypatch, tmp_path):
+    folder = tmp_path / "sgs-detectors-x"
+    folder.mkdir()
+    update._DETECTOR_RUN.clear()
+    update._DETECTOR_RUN.update(proc=_Done(0), out=folder / "detectors.json")
+    _run_canonical(update, monkeypatch, {}, {})
+    assert not update._DETECTOR_RUN and not folder.exists()

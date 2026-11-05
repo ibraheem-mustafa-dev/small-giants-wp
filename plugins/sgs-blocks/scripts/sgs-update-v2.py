@@ -1889,20 +1889,26 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
     if not ac_script.exists():
         return
     conn.commit()
+    # Only a file this run's early detectors just wrote may reach the child: a value inherited from the shell would make it
+    # read some earlier run's findings instead of running the detectors.
+    child_env = {k: v for k, v in os.environ.items() if k != _DETECTORS_ENV}
+    child_env.update(_collect_content_role_detectors())
     try:
         result = subprocess.run(
             ["python", str(ac_script)],
             capture_output=True, text=True, timeout=900,
             encoding="utf-8", errors="replace",
-            env={**os.environ, **_collect_content_role_detectors()},
+            env=child_env,
         )
     except subprocess.TimeoutExpired:
+        _discard_content_role_detectors()
         print(
             "Stage 1 tail (canonical assignment): FAILED, timed out after 900s. "
             "block_attributes.role is incomplete; re-run this stage before any build, "
             "deploy or role-map regeneration."
         )
         raise SystemExit(1)
+    _discard_content_role_detectors()
     if result.returncode != 0:
         print(
             f"Stage 1 tail (canonical assignment): FAILED exit={result.returncode}; "
@@ -2059,6 +2065,17 @@ def _discard_component_scan() -> None:
 
 
 _DETECTOR_RUN: dict = {}
+_DETECTORS_ENV = "SGS_CONTENT_ROLE_DETECTORS_JSON"
+
+
+def _kill_process_tree(proc) -> None:
+    """Stops the process and its children. On Windows Popen.kill() ends the parent only, which would leave the detectors'
+    own php/python children running; taskkill /T takes the tree by the parent's PID."""
+    if sys.platform == "win32":
+        subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"], capture_output=True)
+    else:
+        proc.kill()
+    proc.wait()
 
 
 def _discard_content_role_detectors() -> None:
@@ -2066,8 +2083,7 @@ def _discard_content_role_detectors() -> None:
     proc = _DETECTOR_RUN.pop("proc", None)
     out = _DETECTOR_RUN.pop("out", None)
     if proc is not None and proc.poll() is None:
-        proc.kill()
-        proc.wait()
+        _kill_process_tree(proc)
     if out is not None:
         shutil.rmtree(out.parent, ignore_errors=True)
 
@@ -2103,11 +2119,10 @@ def _collect_content_role_detectors() -> dict:
     try:
         returncode = proc.wait(timeout=600)
     except subprocess.TimeoutExpired:
-        proc.kill()
-        proc.wait()
+        _kill_process_tree(proc)
         returncode = None
     if returncode == 0 and out.is_file() and out.stat().st_size > 0:
-        return {"SGS_CONTENT_ROLE_DETECTORS_JSON": str(out)}
+        return {_DETECTORS_ENV: str(out)}
     print(f"Stage 1 (content-role detectors): the early run did not finish (exit {returncode}); canonical assignment runs them itself")
     return {}
 

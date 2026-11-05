@@ -155,3 +155,48 @@ def test_lock_released_when_publish_conflicts(shared: Path, tmp_path: Path) -> N
 
 def test_regenerate_refuses_when_override_is_set(shared: Path) -> None:
     assert pub.main(["regenerate"]) == pub.EXIT_REFUSED
+
+
+def test_begin_refuses_a_copy_that_is_the_shared_db_and_leaves_it_intact(shared: Path) -> None:
+    assert pub.main(["begin", "--copy", str(shared)]) == pub.EXIT_REFUSED
+    assert marker_of(shared) == "start"
+
+
+def test_a_lock_that_was_broken_and_retaken_is_not_deleted_by_its_old_holder(shared: Path) -> None:
+    lock_path = shared.with_name(shared.name + ".publish.lock")
+    old_holder = pub.PublishLock(shared)
+    old_holder.__enter__()
+    lock_path.unlink()
+    new_holder = pub.PublishLock(shared)
+    new_holder.__enter__()
+    old_holder.__exit__(None, None, None)
+    assert lock_path.exists()
+    new_holder.__exit__(None, None, None)
+    assert not lock_path.exists()
+
+
+def test_a_stale_lock_is_broken_by_rename_so_one_waiter_wins(shared: Path) -> None:
+    lock_path = shared.with_name(shared.name + ".publish.lock")
+    lock_path.write_text("{}")
+    old = time.time() - 1000
+    os.utime(lock_path, (old, old))
+    first, second = pub.PublishLock(shared, stale_s=300), pub.PublishLock(shared, stale_s=300)
+    first._break_if_stale()
+    second._break_if_stale()
+    assert not lock_path.exists()
+    assert not list(lock_path.parent.glob("*.stale"))
+
+
+def test_a_corrupt_shared_db_is_a_refusal_not_a_traceback(shared: Path, tmp_path: Path) -> None:
+    shared.write_bytes(b"garbage" * 1000)
+    assert pub.main(["begin", "--copy", str(tmp_path / "copy.db")]) == pub.EXIT_REFUSED
+
+
+def test_a_path_with_uri_characters_is_copied(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    odd = tmp_path / "a#b%c d" / "sgs-framework.db"
+    odd.parent.mkdir()
+    make_db(odd, "odd")
+    monkeypatch.setenv("SGS_FRAMEWORK_DB", str(odd))
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    assert marker_of(copy) == "odd"
