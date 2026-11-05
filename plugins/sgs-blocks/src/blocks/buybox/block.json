@@ -905,7 +905,27 @@
 					],
 					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
 					"attrMap": {
-						"css:font-size": "pickPricedFontSize"
+						"css:font-size": "pickPricedFontSize",
+						"css:min-height": "pickPricedMinHeight",
+						"css:display": "pickPricedLayout"
+					}
+				},
+				"pick-badge": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__term-badge, .sgs-buybox__pick-box .sgs-buybox-pick__option-badge",
+					"motion": false,
+					"label": "Pick a set term badge",
+					"order": 27,
+					"clusters": [
+						"colour"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickBadgeBackgroundColour",
+						"css:color": "pickBadgeTextColour"
 					}
 				},
 				"rrp-price": {
@@ -3187,6 +3207,31 @@
 			"type": "object",
 			"default": {},
 			"description": "Pick a set only: text size of the pill-style priced options (not the pack tiles), per device {desktop, tablet, mobile}, each a CSS length such as 16px."
+		},
+		"pickPricedLayout": {
+			"type": "string",
+			"enum": [
+				"",
+				"columns",
+				"auto"
+			],
+			"default": "",
+			"description": "Pick a set only: how the pill-style priced options sit. Empty or columns keeps the fixed grid of columns; auto lets each pill size to its own text and wrap in a row."
+		},
+		"pickPricedMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: minimum height of the pill-style priced options (not the pack tiles), per device {desktop, tablet, mobile}, each a CSS length such as 48px. Empty keeps the pill's own height."
+		},
+		"pickBadgeBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: fill of the pack tile's term badge (for example Most popular) and of a pick-several option badge (palette slug or colour). Empty keeps the stylesheet's primary fill."
+		},
+		"pickBadgeTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: text colour of the term badge. Empty picks a colour that reads 4.5:1 on the badge fill whenever the stylesheet's own text colour does not."
 		},
 		"pickTileNumberSize": {
 			"type": "object",
