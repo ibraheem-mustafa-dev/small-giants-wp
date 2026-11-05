@@ -616,6 +616,18 @@
    "selector": "@media (max-width: 767px) .sgs-trust-bar--text-only .sgs-trust-bar__badge",
    "property": "min-height",
    "reason": "badgeSize, iconCircleSize and badgeImageSize size icons and images; a text-only badge has none, and its height comes from padding (F2 candidate)."
+  },
+  {
+   "block": "gift-order",
+   "selector": ".sgs-gift-order__switch",
+   "property": "min-height",
+   "reason": "Settings checked: giftTileMinHeight, which sizes only the choice tiles; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "gift-order",
+   "selector": ".sgs-gift-order__input, .sgs-gift-order__textarea",
+   "property": "min-height",
+   "reason": "Settings checked: giftTileMinHeight, which sizes only the choice tiles (the field settings are background, border, radius and shadow); no setting sizes this element, so 44px is SGS's own default."
   }
  ]
 }

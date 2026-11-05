@@ -36,9 +36,9 @@
 	align-items: center;
 	justify-content: center;
 	gap: 0.125rem;
-	min-height: 44px;
+	min-height: var(--sgs-gift-tile-min-height, 44px);
 	padding: 0.75rem 1rem;
-	border: 2px solid currentcolor;
+	border: 0 solid currentcolor;
 	text-align: center;
 	cursor: pointer;
 }
