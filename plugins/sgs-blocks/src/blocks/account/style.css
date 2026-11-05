@@ -379,6 +379,13 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	min-width: 44px;
 }
 
+/* WooCommerce's clearfix (`.col2-set::before/::after { content: " "; display: table }`) becomes two extra flex or grid
+   items wherever the block lays a .col2-set out as a flex row or a grid, pushing the second card onto a new row. */
+.sgs-account .col2-set::before,
+.sgs-account .col2-set::after {
+	content: none;
+}
+
 /* -- Addresses -------------------------------------------------------------- */
 .sgs-account .woocommerce-Addresses.u-columns.col2-set {
 	display: grid;
