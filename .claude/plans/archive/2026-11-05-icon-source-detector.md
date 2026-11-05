@@ -1,7 +1,7 @@
 ---
 doc_type: plan
 title: Icon-source detector reads its kinds from the database and runs in the gates
-status: active
+status: done
 created: 2026-11-05
 owner: framework tooling (any session; reseeds on a private copy, see .claude/dev-setup.md "Reseeding on a private copy")
 ---
@@ -33,3 +33,7 @@ Whether brand logos and custom SVGs get their own roles (`icon-brand`, `icon-cus
 ## Done when
 
 The self-test is green on a full tree and runs in the fast gate tier, the detector resolves `sgs/icon` and `sgs/separator` from their code, a block with extra source values no longer drops out silently, and a private-copy reseed leaves every `icon-%` role as it was.
+
+## Outcome
+
+Done 2026-11-05. `detector6_native_support_and_style_emission.py::icon_kinds` reads the kinds from the `roles` table; `_icon_source_selector` accepts any enum that contains them; `icon_source_values_without_role` reports the rest (`brand`, `custom`), which detect() prints on stderr and skips; `_branch_windows` keeps every place a kind is tested, ends a window at a no-role source's branch and gives the bare `else` to the last kind only when the source list holds no extra value. Step 0 found five failures on the full tree: the four `sgs/icon` ones and `sgs/nav-drawer.sgsCustomCss` (that render.php no longer reads it since the generic custom-CSS helper; the case now uses `panelSize`); the ten extra failures of the partial-tree run were artefacts. The self-test (20 checks) is gate `detector6-icon-source-selftest` in the fast tier. Step 6: `verify-reseed-identity.py` between `origin/main` and the change showed every table and repo file identical (only a Stage 12 log line cut at 120 characters at a different place because the two worktree paths differ in length); all 100 blocks' icon-family resolution is identical before and after the window-boundary change. `icon-brand` / `icon-custom` roles remain Bean's decision (above).

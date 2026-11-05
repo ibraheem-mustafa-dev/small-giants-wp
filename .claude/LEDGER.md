@@ -92,7 +92,7 @@ Governing documents: fix register `plans/2026-10-02-eye-care-fix-register.md` (r
 
 ## Known failing tests
 
-- Icon-source detector self-test red (`sgs/icon.iconSource` has six values, the detector four; roles unaffected): `plans/2026-11-05-icon-source-detector.md`.
+- `icon-brand`/`icon-custom` roles: Bean's call, only if Spec 48 cloning must place them (`plans/archive/2026-11-05-icon-source-detector.md`).
 - `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): the fixtures predate the `slot_value` column (2026-09-05) and one assert expects 2-tuples where the code returns 3-tuples. Small fix in the tests.
 - In a `B:` worktree, ten route tests fail only because a worktree lacks `cache/` and the inventories; they pass in the main checkout.
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`: divergences D-72 to D-91 (except D-87) cite no register decision, and the README does not list the new `lib/motion-validate.mjs`, `lib/motion-refusals.mjs` and their tests.

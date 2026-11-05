@@ -505,7 +505,8 @@ def _branch_windows(text: str, selector_var: str, search_start: int,
     has no value outside `kinds` (`source_values` is that list): with an
     extra source (`brand`, `custom`) the bare else may belong to it, so the
     missing kind is left unresolved instead of guessed. Every kind that
-    does have its own branch resolves from that branch alone. A kind tested in
+    does have its own branch resolves from that branch alone: a branch for a
+    source with no role ends the window before it. A kind tested in
     more than one place (a `switch` label that falls through to a shared
     body, then an `if` that renders it) keeps every window; the resolver
     takes the first window that names an attribute.
@@ -551,6 +552,18 @@ def _branch_windows(text: str, selector_var: str, search_start: int,
 
     occurrences = list(best_cluster)
     present = {kind for _, kind in occurrences}
+    boundaries: list[int] = []
+    for extra in sorted((source_values or frozenset()) - kinds):
+        esc = re.escape(extra)
+        for pat in (
+            rf"case\s*['\"]{esc}['\"]\s*:",
+            rf"['\"]{esc}['\"]\s*===\s*\${var_esc}\b",
+            rf"\${var_esc}\s*===\s*['\"]{esc}['\"]",
+        ):
+            boundaries += [
+                search_start + m.start() for m in re.finditer(pat, text[search_start:])
+                if best_cluster[0][0] <= search_start + m.start() <= best_cluster[-1][0] + 1000
+            ]
     missing = kinds - present
     if len(missing) == 1 and occurrences and (source_values is None or source_values <= kinds):
         last_explicit_end = max(pos for pos, _ in occurrences)
@@ -562,6 +575,7 @@ def _branch_windows(text: str, selector_var: str, search_start: int,
     windows: dict[str, list[tuple[int, int]]] = {}
     for idx, (start, kind) in enumerate(occurrences):
         end = occurrences[idx + 1][0] if idx + 1 < len(occurrences) else min(start + 1000, len(text))
+        end = min([end] + [b for b in boundaries if b > start])
         windows.setdefault(kind, []).append((start, end))
     return windows
 
@@ -954,8 +968,10 @@ def self_test() -> int:
     if sorted(_icon_source_selector(_six, _kinds)[1] - _kinds) != ["brand", "custom"]:
         failures.append("the extra source values (brand, custom) were not reported as having no role")
     _real = icon_source_values_without_role("sgs/icon")
-    if _real != sorted(_real):
-        failures.append("icon_source_values_without_role is not sorted")
+    if not _real or set(_real) & _kinds:
+        failures.append(f"sgs/icon lists sources without a role (brand, custom); the report returned {_real!r}")
+    if icon_source_values_without_role("sgs/separator"):
+        failures.append("sgs/separator lists only kinds with a role but the report named an extra source")
 
     # 12c. Branch windows with extra sources: every kind that has its own
     #      branch resolves from that branch alone, and the bare else is NOT
@@ -970,6 +986,12 @@ def self_test() -> int:
     _with_extra = _branch_windows(_php, "src", 0, _kinds, frozenset(_kinds | {"brand"}))
     if sorted(_with_extra) != _lit:
         failures.append(f"with an extra source value the bare else was guessed as a kind: {sorted(_with_extra)} vs {_lit}")
+    # an extra source's branch ends the window before it: the kind's window must not reach into the extra's body
+    _php_extra = _php.replace("} else {", "} elseif ( 'brand' === $src ) { $brand_attr = 1; } else {")
+    _wins = _branch_windows(_php_extra, "src", 0, _kinds, frozenset(_kinds | {"brand"}))
+    _brand_at = _php_extra.index("'brand'")
+    if any(b > _brand_at and a < _brand_at for spans in _wins.values() for a, b in spans):
+        failures.append("a kind's window runs into the body of a source that has no role")
     _plain = _branch_windows(_php, "src", 0, _kinds, frozenset(_kinds))
     if sorted(_plain) != _kind_list:
         failures.append(f"without extra source values the bare else should be the last kind: {sorted(_plain)}")
