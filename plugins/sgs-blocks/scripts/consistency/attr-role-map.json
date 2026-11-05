@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 10784,
+    "row_count": 10788,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -3757,6 +3757,9 @@
     "sgs/form-step::textColourHover": "color",
     "sgs/form-step::textColourHoverGradient": "colour-gradient",
     "sgs/form::actionsAlignItems": "layout",
+    "sgs/form::actionsBorderTopColour": "color",
+    "sgs/form::actionsBorderTopStyle": "behaviour",
+    "sgs/form::actionsBorderTopWidth": "visual",
     "sgs/form::actionsFlexWrap": "layout",
     "sgs/form::actionsGap": "layout",
     "sgs/form::actionsNote": "text-content",
@@ -3769,6 +3772,7 @@
     "sgs/form::actionsStickyPadding": "layout",
     "sgs/form::actionsStickyShadow": "visual",
     "sgs/form::actionsStickyShadowColour": "color",
+    "sgs/form::actionsTopMargin": "layout",
     "sgs/form::actionsTopPadding": "layout",
     "sgs/form::alignContent": "layout",
     "sgs/form::alignItems": "layout",

@@ -9111,6 +9111,31 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsBorderTopColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "submit-actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsBorderTopStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "submit-actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsBorderTopWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "submit-actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "actionsStickyBackground",
       "fields": {
         "css_property": "background-color",
@@ -9136,6 +9161,14 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "actionsTopMargin",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "submit-actions"
       }
     },
     {
