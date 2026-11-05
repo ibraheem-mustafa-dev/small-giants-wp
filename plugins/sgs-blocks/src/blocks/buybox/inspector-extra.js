@@ -511,6 +511,20 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		fillRow( {
+			key: 'gallery-sticker-background',
+			label: __( 'Photo sticker fill', 'sgs-blocks' ),
+			attrs: { base: 'galleryStickerBackgroundColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
+			key: 'gallery-sticker-text',
+			label: __( 'Photo sticker text', 'sgs-blocks' ),
+			attrs: { base: 'galleryStickerTextColour' },
+			attributes,
+			setAttributes,
+		} ),
+		fillRow( {
 			key: 'add-to-cart-background',
 			label: __( 'Add to cart background', 'sgs-blocks' ),
 			attrs: { base: 'addToCartBackgroundColour' },

@@ -13,6 +13,7 @@ import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
 import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
+import { BuyboxStickerPanels } from './inspector-sticker';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
@@ -20,7 +21,7 @@ import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
-const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
+const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list', 'sgs/gift-order' ];
 
 /**
  * Editor view for sgs/buybox: the canvas draws a sample product with the real
@@ -346,6 +347,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 				<BuyboxExtraSettingsPanels3
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<BuyboxStickerPanels
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
