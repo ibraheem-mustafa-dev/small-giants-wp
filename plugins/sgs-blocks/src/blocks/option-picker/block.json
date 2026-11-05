@@ -159,6 +159,34 @@
 					"order": 4,
 					"clusters": [],
 					"_note": "Wave B — the second caption line under an option's label (e.g. a frame size's eye/bridge/temple measurement), sourced from subLabelMetaKey (a WooCommerce term-meta key selector, not a colour/size value — its control lives in the block's Settings panel, not Styles, per THE PLACEMENT RULE C3). Paints via the pill's own resolved text colour at reduced opacity by design (style.css .sgs-option-picker__sub-label), so there is no dedicated sub-label colour/size attribute and this element carries no attrMap. Declared here for manifest completeness / orphan-scan visibility (Spec 35 Part O) — mirrors sgs/button's icon element, which also declares clusters: [] for the same reason."
+				},
+				"swatch-dot": {
+					"label": "Colour dot",
+					"selector": ".sgs-option-picker__swatch--colour",
+					"motion": false,
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:border-radius": "swatchShape",
+						"css:width": "swatchSize",
+						"css:border-width": "swatchRingWidth",
+						"css:border-color": "swatchRingColour"
+					},
+					"states": {
+						"current": {
+							"attrMap": {
+								"css:color": "swatchTickColour"
+							},
+							"noBaseByDesign": [
+								"css:color"
+							],
+							"_noBaseByDesignNote": "The tick inside the colour dot exists only while its option is selected (transparent otherwise), so it has no resting colour to style. Not a suppression hatch."
+						}
+					},
+					"_note": "The colour dot in an outlined, filled or ghost option (a tile keeps its full-width colour block). The shape, size and ring print as one scoped rule; swatchTickInside moves the selected tick into the dot, drawn in swatchTickColour."
 				}
 			},
 			"boxFamilies": {
@@ -271,6 +299,11 @@
 						"type": "string",
 						"description": "Optional per-item image URL, forwarded by a caller that resolves its own image per option (e.g. sgs/buybox's pickerVariationSwatch — a per-PRODUCT variation photo, which this block's own _sgs_swatch_image_id term meta cannot carry since term meta is shared by every product using that term). Wins over the term-meta swatch lookup for that item when set; empty (default, every existing caller) leaves the term-meta path unchanged.",
 						"role": "image-object"
+					},
+					"subLabel": {
+						"type": "string",
+						"description": "Optional per-item second caption line, forwarded by a caller that resolves its own text per option (for example sgs/buybox's pack-tile price line, taken from the variation price). Shown in place of the term-meta sub-label for that item; empty (every existing caller) leaves the term-meta path unchanged.",
+						"role": "text-content"
 					}
 				}
 			}
@@ -341,6 +374,41 @@
 		"showSelectedTick": {
 			"type": "boolean",
 			"default": false
+		},
+		"swatchShape": {
+			"type": "string",
+			"enum": [
+				"",
+				"round",
+				"square"
+			],
+			"default": "",
+			"description": "Shape of the colour dot in an outlined, filled or ghost option. Empty keeps the stylesheet's own shape."
+		},
+		"swatchSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the colour dot (CSS length, for example 20px). Empty keeps the stylesheet's own size."
+		},
+		"swatchRingWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Width of the ring around the colour dot (CSS length, for example 2px). Empty keeps the stylesheet's own ring."
+		},
+		"swatchRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the ring around the colour dot (palette slug or colour)."
+		},
+		"swatchTickInside": {
+			"type": "boolean",
+			"default": false,
+			"description": "Show the selected tick inside the colour dot instead of the separate tick before the label."
+		},
+		"swatchTickColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tick inside the colour dot (palette slug or colour). Empty = white."
 		},
 		"pillBgColour": {
 			"type": "string",

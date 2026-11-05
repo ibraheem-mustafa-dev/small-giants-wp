@@ -872,3 +872,24 @@
 .sgs-option-picker--no-term-details .sgs-option-picker__term-description {
 	display: none;
 }
+
+/* ── Selected tick drawn inside the colour dot (swatchTickInside) ───
+   The separate tick before the label is hidden by --no-tick; the dot carries its own,
+   transparent until its option is selected. */
+.sgs-option-picker--swatch-tick .sgs-option-picker__swatch--colour {
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+}
+
+.sgs-option-picker--swatch-tick .sgs-option-picker__swatch--colour::after {
+	content: "\2713";
+	color: transparent;
+	font-size: 0.7em;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.sgs-option-picker--swatch-tick .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill .sgs-option-picker__swatch--colour::after {
+	color: var(--sgs-op-swatch-tick, #fff);
+}

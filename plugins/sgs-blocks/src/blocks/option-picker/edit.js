@@ -57,7 +57,7 @@ import {
 	tierBoxLonghands,
 	gapVar,
 } from '../../utils';
-import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import SubLabelPanel from './sub-label-panel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -468,6 +468,20 @@ export default function Edit( { attributes, setAttributes } ) {
 							gradient: 'labelColourGradient',
 							hoverGradient: 'labelColourHoverGradient',
 						},
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'swatchRing',
+						label: __( 'Colour dot ring colour', 'sgs-blocks' ),
+						attrs: { base: 'swatchRingColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'swatchTick',
+						label: __( 'Tick colour inside the colour dot', 'sgs-blocks' ),
+						attrs: { base: 'swatchTickColour' },
 						attributes,
 						setAttributes,
 					} ),
@@ -1017,6 +1031,81 @@ export default function Edit( { attributes, setAttributes } ) {
 							} );
 						} }
 					/>
+
+					<ToolsPanel
+						className="sgs-nested-tools-panel"
+						label={ __( 'Colour dot', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								swatchShape: '',
+								swatchSize: '',
+								swatchRingWidth: '',
+								swatchTickInside: false,
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __( 'Colour dot shape', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.swatchShape }
+							onDeselect={ () => setAttributes( { swatchShape: '' } ) }
+							isShownByDefault
+						>
+							<ToggleGroupControl
+								isBlock
+								isDeselectable
+								label={ __( 'Colour dot shape', 'sgs-blocks' ) }
+								value={ attributes.swatchShape || '' }
+								onChange={ ( val ) => setAttributes( { swatchShape: val || '' } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							>
+								<ToggleGroupControlOption value="round" label={ __( 'Round', 'sgs-blocks' ) } />
+								<ToggleGroupControlOption value="square" label={ __( 'Square', 'sgs-blocks' ) } />
+							</ToggleGroupControl>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Colour dot size', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.swatchSize }
+							onDeselect={ () => setAttributes( { swatchSize: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Colour dot size', 'sgs-blocks' ) }
+								scale="spacing"
+								value={ attributes.swatchSize || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { swatchSize: val ?? '' } ) }
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Colour dot ring width', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.swatchRingWidth }
+							onDeselect={ () => setAttributes( { swatchRingWidth: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Colour dot ring width', 'sgs-blocks' ) }
+								scale="spacing"
+								value={ attributes.swatchRingWidth || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { swatchRingWidth: val ?? '' } ) }
+								presets={ false }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tick inside the colour dot', 'sgs-blocks' ) }
+							hasValue={ () => true === attributes.swatchTickInside }
+							onDeselect={ () => setAttributes( { swatchTickInside: false } ) }
+							isShownByDefault
+						>
+							<ToggleControl
+								label={ __( 'Tick inside the colour dot', 'sgs-blocks' ) }
+								help={ __( 'The selected tick sits inside the dot instead of before the label.', 'sgs-blocks' ) }
+								checked={ true === attributes.swatchTickInside }
+								onChange={ ( val ) => setAttributes( { swatchTickInside: val } ) }
+								__nextHasNoMarginBottom
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 
 					{ /* Selection appearance — colours live in the top-level
 					   SgsColourPanel (Normal/Current states per swatch).
