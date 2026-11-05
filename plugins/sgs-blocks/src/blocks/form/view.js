@@ -385,27 +385,19 @@ const { state } = store( 'sgs/form', {
 		/**
 		 * Toggle a tile checkbox/radio (for tile-based selection fields).
 		 */
-		toggleTile() {
+		syncTiles() {
+			// The tile is a <label for> its input, so the browser checks the input itself on a click of the tile, a
+			// click of the input or Space on the focused input, and fires `change` (which this handler runs on). The
+			// tile only mirrors the result: every tile of the group, because choosing a radio tile unchecks the others.
 			const { ref } = getElement();
-
-			// Find the input inside the clicked label.
-			const input = ref.querySelector( 'input' );
-			if ( ! input ) {
+			const group = ref.closest( '.sgs-form-field__group' ) || ref.parentElement;
+			if ( ! group ) {
 				return;
 			}
-
-			// Toggle the input.
-			if ( input.type === 'checkbox' ) {
-				input.checked = ! input.checked;
-			} else if ( input.type === 'radio' ) {
-				input.checked = true;
-			}
-
-			// Dispatch change event for validation.
-			input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
-
-			// Toggle selected class on the label.
-			ref.classList.toggle( 'sgs-form-tile--selected', input.checked );
+			group.querySelectorAll( '.sgs-form-tile' ).forEach( ( tile ) => {
+				const input = tile.querySelector( 'input' );
+				tile.classList.toggle( 'sgs-form-tile--selected', !! input?.checked );
+			} );
 		},
 
 		/**

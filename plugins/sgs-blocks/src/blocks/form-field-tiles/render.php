@@ -389,7 +389,7 @@ foreach ( $tiles as $i => $tile ) {
 	// Use value if set; fall back to label (slugified) so the input always has a meaningful value.
 	$tile_value   = ! empty( $tile['value'] ) ? $tile['value'] : sanitize_title( $tile['label'] ?? '' );
 	$tile_checked = in_array( (string) $tile_value, $sgs_ft_default_values, true );
-	echo '<label class="sgs-form-tile' . ( $tile_checked ? ' sgs-form-tile--selected' : '' ) . '" for="' . esc_attr( $tile_id ) . '" data-wp-on--click="actions.toggleTile">';
+	echo '<label class="sgs-form-tile' . ( $tile_checked ? ' sgs-form-tile--selected' : '' ) . '" for="' . esc_attr( $tile_id ) . '" data-wp-on--change="actions.syncTiles">';
 	echo '<input type="' . esc_attr( $input_type ) . '" id="' . esc_attr( $tile_id ) . '" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $tile_value ) . '" class="sgs-form-tile__input"' . ( $tile_checked ? ' checked' : '' );
 	if ( $required ) {
 		echo ( $multi ? '' : ' required' ) . ' aria-required="true"';
