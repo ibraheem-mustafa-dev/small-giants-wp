@@ -57,7 +57,7 @@ A dynamic block with an InnerBlocks slot must `save` as `<InnerBlocks.Content />
 
 ## 4. Button presets are native theme.json
 
-Per-client preset values live in `settings.custom.buttonPresets` of the client's `sites/<client>/theme-snapshot.json` (Spec 32 Part C), pushed by `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, and in the Customiser panel `plugins/sgs-blocks/includes/class-button-presets-customiser.php`. WordPress generates the `--wp--custom--button-presets--*` properties itself; the framework emits no bridge and has no Settings page for them.
+Per-client preset values live in `settings.custom.buttonPresets` of the client's `sites/<client>/theme-snapshot.json` (Spec 32 Part C), pushed by `plugins/sgs-blocks/scripts/push-theme-snapshot.py`, and in the Customiser panel `plugins/sgs-blocks/includes/class-button-presets-customiser.php`. WordPress generates the `--wp--custom--button-presets--*` properties itself; the framework emits no bridge and has no Settings page for them. WooCommerce's primary buttons (the mini-cart checkout button, Proceed to checkout and Place order, `theme/sgs-theme/assets/css/woocommerce.css`) follow the `primary` preset's `border-radius`, falling back to the `border-radius.medium` token, and its optional `shadow` and `hover-shadow` keys (a box-shadow value each; absent means no shadow), so the client's button look reaches the shop's own buttons (Spec 27 FR-30-18).
 
 | Path | Audience | UX |
 |---|---|---|
