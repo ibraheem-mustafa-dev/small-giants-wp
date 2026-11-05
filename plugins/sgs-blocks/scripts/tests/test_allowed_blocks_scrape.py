@@ -41,7 +41,11 @@ import pytest
 _REPO_ROOT = Path(__file__).resolve().parents[4]   # small-giants-wp/
 _SCRIPTS_ROOT = _REPO_ROOT / "plugins" / "sgs-blocks" / "scripts"
 _BLOCKS_DIR = _REPO_ROOT / "plugins" / "sgs-blocks" / "src" / "blocks"
-_REAL_DB = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+sys.path.insert(0, str(_SCRIPTS_ROOT / "lib"))
+from framework_db import framework_db_path  # noqa: E402
+
+# The framework DB this run reads: $SGS_FRAMEWORK_DB (a private reseed copy) or the shared DB.
+_REAL_DB = framework_db_path()
 
 # ---------------------------------------------------------------------------
 # Import sgs-update-v2.py as a module (hyphen in filename requires importlib)
