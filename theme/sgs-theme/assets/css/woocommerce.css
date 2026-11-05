@@ -151,8 +151,9 @@ h2.wc-block-mini-cart__title {
 .wc-block-mini-cart__footer-checkout.wc-block-components-button:hover,
 .wc-block-mini-cart__footer-checkout.wp-element-button:hover {
 	box-shadow: var(--wp--custom--button-presets--primary--hover-shadow, var(--wp--custom--button-presets--primary--shadow, none));
-	background-color: var(--wp--preset--color--primary-dark, #076a8e);
-	border-color: var(--wp--preset--color--primary-dark, #076a8e);
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
 /* View cart — outline style */
@@ -223,8 +224,9 @@ h2.wc-block-mini-cart__title {
 .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button:hover,
 .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button:hover {
 	box-shadow: var(--wp--custom--button-presets--primary--hover-shadow, var(--wp--custom--button-presets--primary--shadow, none));
-	background-color: var(--wp--preset--color--primary-dark, #076a8e);
-	border-color: var(--wp--preset--color--primary-dark, #076a8e);
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
 /* Empty cart — centred, brand-aligned */
@@ -320,8 +322,9 @@ h2.wc-block-mini-cart__title {
 .wc-block-components-checkout-place-order-button.wc-block-components-button:hover,
 .wp-block-woocommerce-checkout-actions-block .wp-element-button:hover {
 	box-shadow: var(--wp--custom--button-presets--primary--hover-shadow, var(--wp--custom--button-presets--primary--shadow, none));
-	background-color: var(--wp--preset--color--primary-dark, #076a8e);
-	border-color: var(--wp--preset--color--primary-dark, #076a8e);
+	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
 /* Mobile — checkout zero horizontal overflow */
@@ -924,8 +927,9 @@ dialog.sgs-shop-filters {
 }
 
 .sgs-shop-filters__apply:hover {
-	background: var(--wp--preset--color--primary-dark);
-	border-color: var(--wp--preset--color--primary-dark);
+	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
 .sgs-shop-filters__clear-all {
@@ -2156,8 +2160,9 @@ body.woocommerce-cart .with-empty-cart-icon,
 
 .sgs-shop-filters .wc-block-product-filters__apply-button:hover,
 .sgs-shop-filters .wc-block-product-filter-clear-button:hover {
-	background: var(--wp--preset--color--primary-dark);
-	border-color: var(--wp--preset--color--primary-dark);
+	background: var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e));
+	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--hover-background, var(--wp--preset--color--primary-dark, #076a8e)));
+	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
 /* Reduced motion: no transitions on filter controls */
