@@ -77,6 +77,21 @@ function shop_controls_look_numbers(): array {
 		'sgs_shop_filter_list_row'    => __( 'Space above and below each checkbox-list option (px, blank for 2)', 'sgs-theme' ),
 		'sgs_shop_filter_list_weight' => __( 'Weight of checkbox-list option text (100 to 900, blank for 400)', 'sgs-theme' ),
 		'sgs_shop_filter_heading_size' => __( 'Filter panel heading size (px, blank for the theme large size)', 'sgs-theme' ),
+		'sgs_shop_filter_count_size'  => __( 'Text size of checkbox-list option counts (px, blank for the theme small size)', 'sgs-theme' ),
+		'sgs_shop_filter_box_size'    => __( 'Tick-box size of checkbox-list options (px, blank for 18)', 'sgs-theme' ),
+		'sgs_shop_filter_box_border'  => __( 'Tick-box border width of checkbox-list options (px, blank for 2)', 'sgs-theme' ),
+	);
+}
+
+/**
+ * The colour controls: setting => [ label, custom property ].
+ *
+ * @return array<string,array{0:string,1:string}>
+ */
+function shop_controls_look_colours(): array {
+	return array(
+		'sgs_shop_filter_list_hover'   => array( __( 'Checkbox-list option text colour on hover (blank for the text colour)', 'sgs-theme' ), '--sgs-filter-list-hover' ),
+		'sgs_shop_filter_count_colour' => array( __( 'Checkbox-list option count colour (blank for the muted text colour)', 'sgs-theme' ), '--sgs-filter-count-colour' ),
 	);
 }
 
@@ -101,6 +116,25 @@ function register_shop_controls_look_settings( \WP_Customize_Manager $wp_customi
 				'section' => 'sgs_shop_filters',
 				'type'    => 'number',
 				'label'   => $label,
+			)
+		);
+	}
+	foreach ( shop_controls_look_colours() as $id => $spec ) {
+		$wp_customize->add_setting(
+			$id,
+			array(
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_hex_color',
+			)
+		);
+		$wp_customize->add_control(
+			new \WP_Customize_Color_Control(
+				$wp_customize,
+				$id,
+				array(
+					'section' => 'sgs_shop_filters',
+					'label'   => $spec[0],
+				)
 			)
 		);
 	}
@@ -203,12 +237,21 @@ function output_shop_controls_look_style(): void {
 		'sgs_shop_filter_list_size' => '--sgs-filter-list-size',
 		'sgs_shop_filter_list_row'  => '--sgs-filter-list-row',
 		'sgs_shop_filter_heading_size' => '--sgs-filter-heading-size',
+		'sgs_shop_filter_count_size' => '--sgs-filter-count-size',
+		'sgs_shop_filter_box_size'  => '--sgs-filter-box-size',
+		'sgs_shop_filter_box_border' => '--sgs-filter-box-border',
 	);
 	$decls = array();
 	foreach ( $vars as $id => $prop ) {
 		$raw = trim( (string) get_theme_mod( $id, '' ) );
 		if ( '' !== $raw ) {
 			$decls[] = $prop . ':' . min( 64, round( abs( (float) $raw ), 1 ) ) . 'px';
+		}
+	}
+	foreach ( shop_controls_look_colours() as $id => $spec ) {
+		$hex = sanitize_hex_color( (string) get_theme_mod( $id, '' ) );
+		if ( $hex ) {
+			$decls[] = $spec[1] . ':' . $hex;
 		}
 	}
 	$weight = absint( get_theme_mod( 'sgs_shop_filter_list_weight', '' ) );
