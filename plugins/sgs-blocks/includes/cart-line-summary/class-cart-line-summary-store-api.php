@@ -22,7 +22,9 @@
  * Hooking only one leaves a visible flash of duplicated rows, either on first
  * paint or on the first interaction.
  *
- * Both callbacks are scoped to `/wc/store/v1/cart*` and FAIL OPEN: any
+ * Both callbacks are scoped to `/wc/store/v1/cart*` and `/wc/store/v1/checkout*` (the checkout
+ * payload embeds the cart as `__experimentalCart`, which seeds the checkout block's cart store; a
+ * filter on the cart route alone left the checkout summary showing both rows) and FAIL OPEN: any
  * response that is not the familiar `{ items: [ ... ] }` shape is returned
  * exactly as it arrived, so a WooCommerce release that changes the payload
  * degrades to duplicate rows rather than an empty cart.
@@ -41,6 +43,9 @@ final class Cart_Line_Summary_Store_API {
 
 	/** The Store API cart route prefix this class will touch, and no other. */
 	const ROUTE_PREFIX = '/wc/store/v1/cart';
+
+	/** The checkout route, whose payload embeds the cart as `__experimentalCart`. */
+	const CHECKOUT_ROUTE_PREFIX = '/wc/store/v1/checkout';
 
 	/** Wire the two response filters. */
 	public static function register(): void {
@@ -69,36 +74,65 @@ final class Cart_Line_Summary_Store_API {
 		if ( ! \is_object( $request ) || ! \method_exists( $request, 'get_route' ) ) {
 			return $response;
 		}
-		if ( 0 !== \strpos( (string) $request->get_route(), self::ROUTE_PREFIX ) ) {
+		$route = (string) $request->get_route();
+		$data  = $response->get_data();
+		if ( ! \is_array( $data ) ) {
 			return $response;
 		}
 
-		$data = $response->get_data();
-		if ( ! \is_array( $data ) || ! isset( $data['items'] ) || ! \is_array( $data['items'] ) ) {
+		if ( 0 === \strpos( $route, self::ROUTE_PREFIX ) ) {
+			$items = self::emptied_items( $data['items'] ?? null );
+			if ( null === $items ) {
+				return $response;
+			}
+			$data['items'] = $items;
+		} elseif ( 0 === \strpos( $route, self::CHECKOUT_ROUTE_PREFIX ) ) {
+			// The checkout route embeds the whole cart as `__experimentalCart` (an object), and the
+			// checkout block seeds its cart store from it.
+			$embedded = $data['__experimentalCart'] ?? null;
+			$is_obj   = \is_object( $embedded );
+			$cart     = $is_obj ? (array) $embedded : $embedded;
+			if ( ! \is_array( $cart ) ) {
+				return $response;
+			}
+			$items = self::emptied_items( $cart['items'] ?? null );
+			if ( null === $items ) {
+				return $response;
+			}
+			$cart['items']              = $items;
+			$data['__experimentalCart'] = $is_obj ? (object) $cart : $cart;
+		} else {
 			return $response;
 		}
 
-		$changed = false;
-		foreach ( $data['items'] as $index => $item ) {
-			if ( ! \is_array( $item ) || ! isset( $item['variation'] ) || ! \is_array( $item['variation'] ) ) {
-				continue;
-			}
-			if ( empty( $item['variation'] ) ) {
-				continue;
-			}
-			$summary = self::line_summary_of( $item );
-			if ( empty( $summary ) ) {
-				continue;
-			}
-			$data['items'][ $index ]['variation'] = array();
-			$changed                              = true;
-		}
-
-		if ( $changed ) {
-			$response->set_data( $data );
-		}
+		$response->set_data( $data );
 
 		return $response;
+	}
+
+	/**
+	 * The items with `variation` emptied on every line that carries a summary.
+	 *
+	 * @param mixed $items The response `items` value.
+	 * @return array|null The reshaped items, or null when nothing changed.
+	 */
+	private static function emptied_items( $items ): ?array {
+		if ( ! \is_array( $items ) ) {
+			return null;
+		}
+		$changed = false;
+		foreach ( $items as $index => $item ) {
+			if ( ! \is_array( $item ) || empty( $item['variation'] ) || ! \is_array( $item['variation'] ) ) {
+				continue;
+			}
+			if ( empty( self::line_summary_of( $item ) ) ) {
+				continue;
+			}
+			$items[ $index ]['variation'] = array();
+			$changed                      = true;
+		}
+
+		return $changed ? $items : null;
 	}
 
 	/**
