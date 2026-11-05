@@ -2952,7 +2952,7 @@ def _seed_extension_attr_rows(
         if source is not None and source != "sgs-ext":
             continue
         values = (
-            spec.get("type", "string"),
+            _canonical_attr_type(spec.get("type", "string")),
             json.dumps(spec["default"]) if "default" in spec else None,
             json.dumps(spec["enum"]) if spec.get("enum") else None,
             int(spec.get("is_responsive", 0)),
