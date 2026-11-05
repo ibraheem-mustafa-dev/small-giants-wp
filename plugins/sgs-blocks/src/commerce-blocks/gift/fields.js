@@ -9,7 +9,7 @@ import { sprintf } from '@wordpress/i18n';
  * A live character count that is announced politely.
  *
  * @param {Object} props
- * @param {string} props.format Block text with %1$d (used) and %2$d (maximum).
+ * @param {string} props.format Block text with %1$d (used), %2$d (maximum) and %3$d (left).
  * @param {number} props.used   Characters used.
  * @param {number} props.max    Characters allowed.
  * @return {JSX.Element} Counter.
@@ -17,13 +17,14 @@ import { sprintf } from '@wordpress/i18n';
 function Counter( { format, used, max } ) {
 	return (
 		<span className="sgs-gift-order__count" aria-live="polite">
-			{ sprintf( format, used, max ) }
+			{ sprintf( format, used, max, Math.max( 0, max - used ) ) }
 		</span>
 	);
 }
 
 /**
  * @param {Object}   props
+ * @param {boolean}  props.product      Product-page layout: no recipient name, and the note label is hidden from sight.
  * @param {string}   props.idBase       Unique id prefix.
  * @param {Object}   props.config       Block attributes (all visible words).
  * @param {Object}   props.gift         Current value.
@@ -34,6 +35,7 @@ function Counter( { format, used, max } ) {
  * @return {JSX.Element} Fields.
  */
 export default function Fields( {
+	product = false,
 	idBase,
 	config,
 	gift,
@@ -44,34 +46,39 @@ export default function Fields( {
 } ) {
 	return (
 		<div className="sgs-gift-order__fields">
+			{ product ? null : (
+				<div className="sgs-gift-order__field">
+					<label
+						className="sgs-gift-order__label"
+						htmlFor={ idBase + '-to' }
+					>
+						{ config.recipientLabel }
+					</label>
+					<input
+						id={ idBase + '-to' }
+						className="sgs-gift-order__input"
+						type="text"
+						autoComplete="off"
+						maxLength={ recipientMax }
+						value={ gift.to }
+						onChange={ ( event ) =>
+							onChange( { to: event.target.value } )
+						}
+						onBlur={ onCommit }
+					/>
+					<Counter
+						format={ config.characterCountText }
+						used={ gift.to.length }
+						max={ recipientMax }
+					/>
+				</div>
+			) }
 			<div className="sgs-gift-order__field">
 				<label
-					className="sgs-gift-order__label"
-					htmlFor={ idBase + '-to' }
-				>
-					{ config.recipientLabel }
-				</label>
-				<input
-					id={ idBase + '-to' }
-					className="sgs-gift-order__input"
-					type="text"
-					autoComplete="off"
-					maxLength={ recipientMax }
-					value={ gift.to }
-					onChange={ ( event ) =>
-						onChange( { to: event.target.value } )
+					className={
+						'sgs-gift-order__label' +
+						( product ? ' sgs-gift-order__label--hidden' : '' )
 					}
-					onBlur={ onCommit }
-				/>
-				<Counter
-					format={ config.characterCountText }
-					used={ gift.to.length }
-					max={ recipientMax }
-				/>
-			</div>
-			<div className="sgs-gift-order__field">
-				<label
-					className="sgs-gift-order__label"
 					htmlFor={ idBase + '-message' }
 				>
 					{ config.messageLabel }

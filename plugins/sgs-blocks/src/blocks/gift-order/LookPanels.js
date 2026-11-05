@@ -17,8 +17,10 @@ import {
 	SgsColourPanel,
 	SgsLengthControl,
 	ShadowControl,
+	TypographyControls,
 	fillRow,
 	normaliseResponsiveBox,
+	textRow,
 } from '../../components';
 
 const TILE_UNITS = [
@@ -68,6 +70,75 @@ function BorderRows( { names, attributes, setAttributes } ) {
 				} )
 			}
 		/>
+	);
+}
+
+/**
+ * A per-device minimum height.
+ *
+ * @param {Object}   props
+ * @param {string}   props.label         Control label.
+ * @param {string}   props.attr          Attribute name.
+ * @param {string}   props.placeholder   Shown while unset.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @return {JSX.Element} Control.
+ */
+function HeightRow( { label, attr, placeholder, attributes, setAttributes } ) {
+	return (
+		<ResponsiveOverride
+			label={ label }
+			value={ attributes[ attr ] }
+			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+		>
+			{ ( { ownValue, setOwnValue } ) => (
+				<SgsLengthControl
+					presets={ false }
+					scale="spacing"
+					label={ label }
+					hideLabelFromVision
+					value={ ownValue || '' }
+					placeholder={ placeholder }
+					units={ TILE_UNITS }
+					onChange={ ( val ) => setOwnValue( val || '' ) }
+				/>
+			) }
+		</ResponsiveOverride>
+	);
+}
+
+/**
+ * A per-device padding box.
+ *
+ * @param {Object}   props
+ * @param {string}   props.label         Control label.
+ * @param {string}   props.attr          Attribute name.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Setter.
+ * @return {JSX.Element} Control.
+ */
+function PaddingRow( { label, attr, attributes, setAttributes } ) {
+	return (
+		<ResponsiveOverride
+			label={ label }
+			value={ attributes[ attr ] }
+			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+		>
+			{ ( { ownValue, setOwnValue } ) => (
+				<SgsBoxControl
+					label={ label }
+					hideLabelFromVision
+					values={
+						ownValue && 'object' === typeof ownValue ? ownValue : {}
+					}
+					units={ BOX_UNITS }
+					presets
+					onChange={ ( next ) =>
+						setOwnValue( normaliseResponsiveBox( next ) )
+					}
+				/>
+			) }
+		</ResponsiveOverride>
 	);
 }
 
@@ -182,6 +253,11 @@ export default function LookPanels( { attributes, setAttributes } ) {
 						/>
 					) }
 				</ResponsiveOverride>
+				<PaddingRow
+					label={ __( 'Tile padding', 'sgs-blocks' ) }
+					attr="giftTilePadding"
+					{ ...common }
+				/>
 				<BorderRows
 					names={ {
 						width: 'giftTileBorderWidth',
@@ -231,6 +307,99 @@ export default function LookPanels( { attributes, setAttributes } ) {
 						base: 'fieldShadow',
 						colour: 'fieldShadowColour',
 					} }
+				/>
+				<PaddingRow
+					label={ __( 'Field padding', 'sgs-blocks' ) }
+					attr="giftFieldPadding"
+					{ ...common }
+				/>
+				<HeightRow
+					label={ __( 'Name field minimum height', 'sgs-blocks' ) }
+					attr="giftInputMinHeight"
+					placeholder="44px"
+					{ ...common }
+				/>
+				<HeightRow
+					label={ __( 'Note box minimum height', 'sgs-blocks' ) }
+					attr="giftNoteMinHeight"
+					placeholder="44px"
+					{ ...common }
+				/>
+			</PanelBody>
+			<PanelBody
+				title={ __( 'Field label and note text', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="giftLabel"
+					showResponsive
+					fontSizePresets
+					showFontFamily
+					showWeight
+					showLineHeight
+				/>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="giftNote"
+					showResponsive
+					fontSizePresets
+					showFontFamily
+					showWeight
+					showLineHeight
+				/>
+			</PanelBody>
+			<PanelBody
+				title={ __( 'Tick box, hint and count', 'sgs-blocks' ) }
+				initialOpen={ false }
+			>
+				<SgsColourPanel
+					rows={ [
+						textRow( {
+							key: 'checkbox',
+							label: __( 'Ticked box', 'sgs-blocks' ),
+							attrs: { base: 'giftCheckboxColour' },
+							attributes,
+							setAttributes,
+						} ),
+						textRow( {
+							key: 'help',
+							label: __( 'Hint text', 'sgs-blocks' ),
+							attrs: { base: 'giftHelpColour' },
+							attributes,
+							setAttributes,
+						} ),
+						textRow( {
+							key: 'count',
+							label: __( 'Character count', 'sgs-blocks' ),
+							attrs: { base: 'giftCountColour' },
+							attributes,
+							setAttributes,
+						} ),
+					] }
+				/>
+				<HeightRow
+					label={ __( 'Tick box row minimum height', 'sgs-blocks' ) }
+					attr="giftSwitchMinHeight"
+					placeholder="44px"
+					{ ...common }
+				/>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="giftHelp"
+					showResponsive
+					fontSizePresets
+				/>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					prefix="giftCount"
+					showResponsive
+					fontSizePresets
+					showTextAlign
 				/>
 			</PanelBody>
 		</>

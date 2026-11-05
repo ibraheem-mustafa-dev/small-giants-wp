@@ -14,7 +14,11 @@
 import { registerCheckoutBlock } from '@woocommerce/blocks-checkout';
 import giftMetadata from '../blocks/gift-order/block.json';
 import GiftOrder from './gift/component';
+import { GIFT_ORDER_PARENTS } from './gift/parents';
 import { flagStoreApiRequests } from './api';
 
 flagStoreApiRequests();
-registerCheckoutBlock( { metadata: giftMetadata, component: GiftOrder } );
+registerCheckoutBlock( {
+	metadata: { ...giftMetadata, parent: GIFT_ORDER_PARENTS },
+	component: GiftOrder,
+} );

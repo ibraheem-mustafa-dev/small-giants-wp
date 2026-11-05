@@ -59,12 +59,18 @@
 					"prefix": "commerceNoteLink",
 					"attrMap": {
 						"css:color": "commerceNoteLinkColour",
-						"css:font-weight": "commerceNoteLinkFontWeight"
+						"css:font-weight": "commerceNoteLinkFontWeight",
+						"css:text-decoration-link": "commerceNoteLinkUnderline",
+						"css:text-decoration-thickness-link": "commerceNoteLinkUnderlineThickness",
+						"css:text-decoration-color-link": "commerceNoteLinkUnderlineColour",
+						"css:text-decoration-offset-link": "commerceNoteLinkUnderlineOffset",
+						"css:min-height": "commerceNoteLinkMinHeight"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color": "commerceNoteLinkColourHover"
+								"css:color": "commerceNoteLinkColourHover",
+								"css:text-decoration-color-link": "commerceNoteLinkUnderlineColourHover"
 							}
 						}
 					}
@@ -161,6 +167,43 @@
 		"commerceNoteLinkFontWeight": {
 			"type": "string",
 			"default": ""
+		},
+		"commerceNoteLinkUnderline": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"always",
+				"hover",
+				"sweep"
+			],
+			"default": "",
+			"description": "How the link is underlined: '' unchanged (the theme's link style), none, always, hover (an underline on hover and keyboard focus) or sweep. sgs_link_underline_css()."
+		},
+		"commerceNoteLinkUnderlineThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the link underline (a CSS length)."
+		},
+		"commerceNoteLinkUnderlineColour": {
+			"type": "string",
+			"default": "",
+			"description": "The link underline's colour: a palette slug or any CSS colour; empty draws it in the link's own colour."
+		},
+		"commerceNoteLinkUnderlineColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "The underline colour on hover and keyboard focus."
+		},
+		"commerceNoteLinkUnderlineOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Gap between the link text and its underline (a CSS length)."
+		},
+		"commerceNoteLinkMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height of the link's tap area per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet's 44px."
 		}
 	},
 	"editorScript": "file:./index.js",

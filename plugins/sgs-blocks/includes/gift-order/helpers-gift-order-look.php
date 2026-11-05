@@ -40,6 +40,18 @@ if ( ! function_exists( 'sgs_gift_order_element_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_gift_order_tiered_keys' ) ) {
+	/**
+	 * Typography attributes of the gift component that are stored as `{desktop,tablet,mobile}` objects (the
+	 * emitter reads a key as per-device only when it is listed here).
+	 *
+	 * @return string[]
+	 */
+	function sgs_gift_order_tiered_keys(): array {
+		return array( 'giftLabelFontSize', 'giftLabelLineHeight', 'giftNoteFontSize', 'giftNoteLineHeight', 'giftHelpFontSize', 'giftCountFontSize', 'giftCountTextAlign' );
+	}
+}
+
 if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 	/**
 	 * The look rules for the gift component.
@@ -87,6 +99,18 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 			)
 		);
 
+		$css .= sgs_emit_responsive_css(
+			$tile,
+			array(
+				array(
+					'value'        => $attributes['giftTilePadding'] ?? null,
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+
 		$selected = array();
 		$fill     = sgs_background_paint_decl( (string) ( $attributes['giftTileSelectedBackground'] ?? '' ), '' );
 		if ( '' !== $fill ) {
@@ -100,6 +124,58 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 		if ( array() !== $selected ) {
 			$css .= $tile . '.sgs-gift-order__tile--selected{' . implode( ';', $selected ) . ';}';
 		}
+
+		$input_sel = $root . ' .sgs-gift-order__input';
+		$note_sel  = $root . ' .sgs-gift-order__textarea';
+		foreach ( array(
+			array( $input_sel, 'giftInputMinHeight' ),
+			array( $note_sel, 'giftNoteMinHeight' ),
+		) as list( $sel, $key ) ) {
+			$css .= sgs_emit_responsive_css(
+				$sel,
+				array(
+					array(
+						'value'        => $attributes[ $key ] ?? null,
+						'css'          => 'min-height',
+						'unit_default' => 'px',
+					),
+				)
+			);
+		}
+		$css .= sgs_emit_responsive_css(
+			$field,
+			array(
+				array(
+					'value'        => $attributes['giftFieldPadding'] ?? null,
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$css .= sgs_emit_responsive_css(
+			$root . ' .sgs-gift-order__switch',
+			array(
+				array(
+					'value'        => $attributes['giftSwitchMinHeight'] ?? null,
+					'css'          => 'min-height',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$tick = sgs_colour_value( (string) ( $attributes['giftCheckboxColour'] ?? '' ) );
+		if ( '' !== $tick ) {
+			$css .= $root . ' .sgs-gift-order__checkbox{accent-color:' . $tick . ';}';
+		}
+		foreach ( array(
+			array( 'giftHelp', '.sgs-gift-order__help' ),
+			array( 'giftCount', '.sgs-gift-order__count' ),
+		) as list( $prefix, $part ) ) {
+			$css .= sgs_typography_css_rule( $attributes, $prefix, $root . ' ' . $part, '', false, false, sgs_gift_order_tiered_keys() );
+			$css .= sgs_text_states_css( $root . ' ' . $part, $attributes, array( 'base' => $prefix . 'Colour' ) );
+		}
+		$css .= sgs_typography_css_rule( $attributes, 'giftLabel', $root . ' .sgs-gift-order__label', '', false, false, sgs_gift_order_tiered_keys() );
+		$css .= sgs_typography_css_rule( $attributes, 'giftNote', $note_sel, '', false, false, sgs_gift_order_tiered_keys() );
 
 		$css .= \SGS\Blocks\Forms\field_own_style_css( $attributes, 'sgs-gift-order', $field );
 		$edge = sgs_colour_value( (string) ( $attributes['fieldBorderColour'] ?? '' ) );

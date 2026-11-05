@@ -23,7 +23,6 @@ if ( ! class_exists( '\SGS\Blocks\Gift_Order\Gift_Order_Store_Api' ) ) {
 require_once dirname( __DIR__, 3 ) . '/includes/gift-order/helpers-gift-order-look.php';
 
 \SGS\Blocks\Gift_Order\Gift_Order_Store_Api::ensure_registered();
-\SGS\Blocks\Commerce_Blocks\Commerce_Blocks_Assets::enqueue();
 
 // Every visible word is a block setting; the component reads them from this one JSON value.
 $sgs_gift_config = array(
@@ -50,6 +49,19 @@ $sgs_gift_config['messageLimit']   = ( (int) ( $attributes['messageLimit'] ?? 0 
 	? min( (int) $attributes['messageLimit'], $sgs_gift_caps['message'] )
 	: $sgs_gift_caps['message'];
 
+// On a single-product page nothing mounts the component, so the block prints its own markup (view.js drives it).
+require_once dirname( __DIR__, 3 ) . '/includes/gift-order/helpers-gift-order-product.php';
+$sgs_gift_look = sgs_gift_order_look_css( $attributes );
+if ( sgs_gift_order_is_product_page() ) {
+	if ( '' !== $sgs_gift_look ) {
+		echo '<style>' . wp_strip_all_tags( $sgs_gift_look ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is pre-sanitised by the shared helpers.
+	}
+	echo sgs_gift_order_product_html( $attributes, $sgs_gift_config, \SGS\Blocks\Gift_Order\Gift_Order_Session::get() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts in sgs_gift_order_product_html().
+	return;
+}
+
+\SGS\Blocks\Commerce_Blocks\Commerce_Blocks_Assets::enqueue();
+
 $sgs_gift_wrapper = get_block_wrapper_attributes(
 	array(
 		'data-block-name' => 'sgs/gift-order',
@@ -58,7 +70,6 @@ $sgs_gift_wrapper = get_block_wrapper_attributes(
 );
 
 // The look settings: one scoped <style> beside the placeholder (nothing while none is set).
-$sgs_gift_look = sgs_gift_order_look_css( $attributes );
 if ( '' !== $sgs_gift_look ) {
 	echo '<style>' . wp_strip_all_tags( $sgs_gift_look ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is pre-sanitised by the shared helpers.
 }
