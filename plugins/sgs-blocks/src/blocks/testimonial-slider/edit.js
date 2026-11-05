@@ -72,6 +72,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		arrowIconNext,
 		slidesVisible,
 		slidePeek,
+		slideGap,
 		cardStyle,
 		backgroundColour,
 		backgroundColourGradient,
@@ -114,6 +115,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			? slidesVisible?.mobile || 1
 			: resolveResponsiveTier( slidesVisible, previewTier )?.value || slidesDesktop;
 	const slidePeekNow = resolveResponsiveTier( slidePeek, previewTier )?.value || '';
+	const slideGapNow = resolveResponsiveTier( slideGap, previewTier )?.value || '';
 
 	// InnerBlocks — allows any number of sgs/testimonial children.
 	// templateLock:false lets the client add as many slides as they want.
@@ -123,6 +125,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			style: {
 				'--sgs-slides-visible': slidesVisibleNow,
 				'--sgs-slide-peek': slidePeekNow || undefined,
+				'--sgs-slide-gap': slideGapNow || undefined,
 			},
 		},
 		{
@@ -204,6 +207,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								pauseButton: false,
 								dragToScroll: false,
 								slidePeek: {},
+								slideGap: {},
 								slidesVisible: { desktop: 3 },
 							} )
 						}
@@ -360,6 +364,21 @@ export default function Edit( { attributes, setAttributes } ) {
 								help={ __( 'How much of the next card shows at the edge, e.g. 48px. Empty shows none.', 'sgs-blocks' ) }
 								value={ slidePeek }
 								onChange={ ( obj ) => setAttributes( { slidePeek: obj } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space between slides', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! slideGap && Object.keys( slideGap ).length > 0
+							}
+							onDeselect={ () => setAttributes( { slideGap: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Space between slides', 'sgs-blocks' ) }
+								scale="spacing"
+								help={ __( 'The gap between the cards, e.g. 20px. Empty uses the theme spacing.', 'sgs-blocks' ) }
+								value={ slideGap }
+								onChange={ ( obj ) => setAttributes( { slideGap: obj } ) }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem

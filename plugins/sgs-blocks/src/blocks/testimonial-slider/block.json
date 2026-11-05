@@ -104,6 +104,7 @@
 					"order": 6,
 					"clusters": [ "motion" ],
 					"attrMap": {
+						"css:gap": "slideGap",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing"
 					},
@@ -258,6 +259,22 @@
 			"sgs": {
 				"meaning": {
 					"what": "Sets how much of the next testimonial card shows at the edge of the slider.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "CSS length"
+						}
+					}
+				}
+			}
+		},
+		"slideGap": {
+			"type": "object",
+			"default": {},
+			"description": "The space between slides, per device: a CSS length. Empty uses the spacing preset. Printed as gap on the slide list and --sgs-slide-gap on the track, which the slide width calc reads.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the space between the testimonial cards in the slider.",
 					"trigger": "always, from page load",
 					"parameters": {
 						"value": {
