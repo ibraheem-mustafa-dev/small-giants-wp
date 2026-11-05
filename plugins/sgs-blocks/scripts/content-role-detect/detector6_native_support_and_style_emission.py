@@ -550,10 +550,22 @@ def _resolve_icon_family_from_text(text: str, selector_var: str, search_start: i
     return out
 
 
+_icon_family_cache: dict[str, dict[str, dict]] = {}
+
+
 def _icon_source_family(block_slug: str) -> dict[str, dict]:
     """Full icon-source family resolution for a block -- empty dict if the
     block has no icon-source family at all (mechanism C negative control 1)
-    or the selector attribute's own read line can't be found."""
+    or the selector attribute's own read line can't be found.
+
+    Resolved once per block per process, like `_read`, which already reads each file once: the callers ask once per
+    ATTRIBUTE (6,319 times for 100 blocks), and each resolution re-parsed the block's block.json character by character."""
+    if block_slug not in _icon_family_cache:
+        _icon_family_cache[block_slug] = _resolve_icon_source_family(block_slug)
+    return _icon_family_cache[block_slug]
+
+
+def _resolve_icon_source_family(block_slug: str) -> dict[str, dict]:
     bpath = _block_dir(block_slug) / "block.json"
     rpath = _block_dir(block_slug) / "render.php"
     if not bpath.is_file() or not rpath.is_file():
