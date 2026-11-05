@@ -154,7 +154,7 @@ if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
 	 * The item's image or video markup, shared by the linked, lightbox and plain branches.
 	 *
 	 * @param array  $img            The mediaItems entry.
-	 * @param int    $index          Position in the gallery (only the first can claim the page priority slot).
+	 * @param int    $index          Position in the gallery (only the first can load eagerly).
 	 * @param string $image_size     Registered image size.
 	 * @param string $img_class      Class list for the attachment <img>.
 	 * @param bool   $decorative     Whether the image is hidden from assistive tech.
@@ -167,10 +167,14 @@ if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
 		if ( 'image' !== $img_type || ! $img_id ) {
 			return $fallback_html;
 		}
-		// Only the page's likely LCP image loads eagerly at high priority (helpers-media.php): the gallery's first
-		// image when the gallery sits in the page's first section. An explicit fetchpriority stops core's own
-		// first-images heuristic, which would otherwise prioritise a gallery inside a hidden header menu panel.
-		$priority = 0 === $index && sgs_content_image_claims_priority();
+		// The gallery's first image loads eagerly when the gallery renders in the page's first section. It never takes
+		// the page's one high-priority slot (helpers-media.php::sgs_next_background_image_index): inner blocks render
+		// before their parent, so a gallery inside a hero or a background-image container would otherwise claim the
+		// slot ahead of that parent's own lead image. Every image carries an explicit fetchpriority="auto", which also
+		// stops core's first-images heuristic from prioritising a gallery inside a hidden header menu panel.
+		$eager = 0 === $index
+			&& class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' )
+			&& \SGS\Blocks\Motion\Sgs_Motion_Renderer::in_first_section();
 		return (string) wp_get_attachment_image(
 			$img_id,
 			$image_size,
@@ -178,8 +182,8 @@ if ( ! function_exists( 'sgs_gallery_media_html' ) ) {
 			array_merge(
 				array(
 					'class'         => $img_class,
-					'loading'       => $priority ? 'eager' : 'lazy',
-					'fetchpriority' => $priority ? 'high' : 'auto',
+					'loading'       => $eager ? 'eager' : 'lazy',
+					'fetchpriority' => 'auto',
 				),
 				$decorative ? array(
 					'alt'         => '',

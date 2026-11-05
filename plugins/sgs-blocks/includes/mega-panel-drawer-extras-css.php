@@ -256,7 +256,6 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 		$css .= $slot( 5, '.sgs-button' ) . ',' . $slot( 5, ' .sgs-button' ) . '{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
 		$css .= $slot( 5, ' .sgs-button__label' ) . '{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}';
 
-		$css .= sgs_mega_panel_drawer_card_tag_css( $attributes, $aside_sel );
 		$title_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTitleSize' );
 		$title_lh   = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTitleLineHeight' );
 		if ( '' !== $title_size || '' !== $title_lh ) {
