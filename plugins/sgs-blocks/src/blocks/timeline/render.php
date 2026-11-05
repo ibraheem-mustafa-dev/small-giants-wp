@@ -703,28 +703,35 @@ if ( 'carousel' === $mobile_layout ) {
 }
 
 // Per-device spacing boxes of the entry parts: the date, the text area and the description. An unset side keeps the
-// stylesheet's own value.
+// stylesheet's own value. The text area's padding is also printed as `--sgs-tl-content-pad-<side>` custom properties
+// beside the real `padding-<side>` declarations: the carousel layout's zero-padding reset reads them, so a set padding
+// wins there without a specificity contest.
 foreach (
 	array(
-		'dateMargin'        => array( '.sgs-timeline__date', 'margin' ),
-		'contentMargin'     => array( '.sgs-timeline__content', 'margin' ),
-		'contentPadding'    => array( '.sgs-timeline__content', 'padding' ),
-		'descriptionMargin' => array( '.sgs-timeline__description', 'margin' ),
+		'dateMargin'        => array( '.sgs-timeline__date', 'margin', '' ),
+		'contentMargin'     => array( '.sgs-timeline__content', 'margin', '' ),
+		'contentPadding'    => array( '.sgs-timeline__content', 'padding', '--sgs-tl-content-pad' ),
+		'descriptionMargin' => array( '.sgs-timeline__description', 'margin', '' ),
 	) as $part_attr => $part_target
 ) {
 	if ( empty( $attributes[ $part_attr ] ) || ! is_array( $attributes[ $part_attr ] ) ) {
 		continue;
 	}
-	$scoped_css[] = sgs_emit_responsive_css(
-		$root_sel . ' ' . $part_target[0],
+	$part_specs = array(
 		array(
-			array(
-				'value' => $attributes[ $part_attr ],
-				'css'   => $part_target[1],
-				'box'   => true,
-			),
-		)
+			'value' => $attributes[ $part_attr ],
+			'css'   => $part_target[1],
+			'box'   => true,
+		),
 	);
+	if ( '' !== $part_target[2] ) {
+		$part_specs[] = array(
+			'value' => $attributes[ $part_attr ],
+			'css'   => $part_target[2],
+			'box'   => true,
+		);
+	}
+	$scoped_css[] = sgs_emit_responsive_css( $root_sel . ' ' . $part_target[0], $part_specs );
 }
 
 require __DIR__ . '/horizontal-panel.php';

@@ -1717,6 +1717,13 @@
 			padding-right: 0;
 		}
 
+		// The text area's side padding is zero unless the block sets it: render.php prints the contentPadding sides as
+		// these custom properties beside the real padding declarations.
+		.sgs-timeline__content {
+			padding-left: var(--sgs-tl-content-pad-left, 0);
+			padding-right: var(--sgs-tl-content-pad-right, 0);
+		}
+
 		.sgs-timeline__media-slot {
 			max-width: 100%;
 		}
