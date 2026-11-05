@@ -5,7 +5,7 @@
  * and `woocommerce/catalog-sorting` (the "Sort by" select) ONLY. Every default is empty or off, which changes
  * nothing; set values are painted on the frontend by includes/product-filter-look.php as scoped rules.
  *
- * Chips: `sgsChipFontWeight`, `sgsChipBorderWidth`, `sgsChipPaintButtons` (print the colours picked on the block onto
+ * Chips: `sgsChipFontWeight`, `sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipPaintButtons` (print the colours picked on the block onto
  * the chip buttons, resting and chosen), and a count pill (`sgsChipCountPill`, `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`).
  * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`.
@@ -52,6 +52,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					...settings.attributes,
 					sgsChipFontWeight: { type: 'string', default: '' },
 					sgsChipBorderWidth: { type: 'string', default: '' },
+					sgsChipMinHeight: { type: 'string', default: '' },
 					sgsChipPaintButtons: { type: 'boolean', default: false },
 					sgsChipCountPill: { type: 'boolean', default: false },
 					sgsChipCountBackground: { type: 'string', default: '' },
@@ -129,6 +130,14 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								units={ LENGTH_UNITS }
 								onChange={ ( val ) => setAttributes( { sgsChipBorderWidth: val || '' } ) }
 								help={ empty }
+							/>
+							<SgsLengthControl
+								scale="spacing"
+								label={ __( 'Chip least height', 'sgs-blocks' ) }
+								value={ attributes.sgsChipMinHeight || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { sgsChipMinHeight: val || '' } ) }
+								help={ __( 'The chip padding and text size are the block’s own Dimensions and Typography settings. Empty sizes a chip to its content.', 'sgs-blocks' ) }
 							/>
 							<ToggleControl
 								label={ __( 'Paint the chip colours onto the buttons', 'sgs-blocks' ) }
@@ -262,6 +271,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 			rows = [
 				[ 'chip-weight', attributes.sgsChipFontWeight ],
 				[ 'chip-border-width', attributes.sgsChipBorderWidth ],
+				[ 'chip-min-height', attributes.sgsChipMinHeight ],
 				[ 'chip-fill', paint && colour( attributes.customChipBackground, attributes.chipBackground ) ],
 				[ 'chip-edge', paint && colour( attributes.customChipBorder, attributes.chipBorder ) ],
 				[ 'chip-text', paint && colour( attributes.customChipText, attributes.chipText ) ],

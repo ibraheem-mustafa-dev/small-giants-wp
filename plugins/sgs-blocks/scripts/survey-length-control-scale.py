@@ -81,6 +81,7 @@ ROLE_EXCEPTIONS = {
     'extension/sgsListGap': ('spacing', 'extension attribute: the space between list items per device'),
     'extension/sgsChipGap': ('spacing', 'extension attribute: a gap between chips'),
     'extension/sgsHeight': ('spacing', 'extension attribute: an image height per device'),
+    'extension/sgsChipMinHeight': ('spacing', 'extension attribute: the least height of a chip'),
     'extension/sgsChipBorderWidth': ('spacing', 'extension attribute: a chip border width'),
     'extension/sgsChipCountRadius': ('spacing', 'extension attribute: a count pill corner radius'),
     'extension/sgsChipCountSize': ('spacing', 'extension attribute: a count pill height and least width'),

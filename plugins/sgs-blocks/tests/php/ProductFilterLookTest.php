@@ -24,6 +24,17 @@ namespace SGS\Blocks {
 			return true;
 		}
 	}
+	if ( ! function_exists( __NAMESPACE__ . '\wp_style_engine_get_styles' ) ) {
+		/**
+		 * Minimal wp_style_engine_get_styles(): the chips' padding as CSS.
+		 *
+		 * @param array<string, mixed> $block_styles Style data.
+		 * @return array<string, string>
+		 */
+		function wp_style_engine_get_styles( $block_styles ) {
+			return array( 'css' => isset( $block_styles['spacing']['padding'] ) ? 'padding-top:0;padding-left:18px' : '' );
+		}
+	}
 	if ( ! function_exists( __NAMESPACE__ . '\remove_query_arg' ) ) {
 		/**
 		 * Minimal remove_query_arg(): returns the page path.
@@ -152,6 +163,13 @@ namespace {
 			$this->assertSame( self::SORT, \SGS\Blocks\sgs_inject_filter_look( self::SORT, array( 'blockName' => 'core/group', 'attrs' => array( 'sgsSortBorderRadius' => '999px' ) ) ) );
 		}
 
+		public function test_chip_least_height_prints_on_the_buttons_and_nothing_when_unset(): void {
+			$css = \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipMinHeight' => '46px' ), 'sgs-look-1a2b3c4d' );
+			$this->assertStringContainsString( '.wc-block-product-filter-chips__item{min-height:46px;}', $css );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipMinHeight' => '' ), 'sgs-look-1a2b3c4d' ) );
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipMinHeight' => '46px;}x{y:z' ), 'sgs-look-1a2b3c4d' ) );
+		}
+
 		public function test_count_pill_size_and_text_size_print_only_with_the_pill(): void {
 			$attrs = array(
 				'sgsChipCountSize'     => '22px',
@@ -193,6 +211,11 @@ namespace {
 			$this->assertStringContainsString( 'aria-current="true"', $none );
 			$this->assertStringNotContainsString( 'aria-current', $chosen );
 			$this->assertStringContainsString( '>All</span>', $chosen );
+		}
+
+		public function test_all_chip_takes_the_chips_padding(): void {
+			$css = \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipAllLabel' => 'All', 'style' => array( 'spacing' => array( 'padding' => array( 'left' => '18px' ) ) ) ), 'sgs-look-1a2b3c4d' );
+			$this->assertStringContainsString( '.sgs-filter-look__all{display:inline-flex;align-items:center;text-decoration:none;padding-top:0;padding-left:18px;}', $css );
 		}
 
 		public function test_all_chip_css_prints_only_with_a_label(): void {

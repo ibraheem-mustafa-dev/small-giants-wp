@@ -8,7 +8,7 @@
  * to those two blocks ONLY, each empty by default; an empty value prints nothing, so a site that sets none of them
  * keeps WooCommerce's and the theme's look byte for byte.
  *
- * Chips (`sgsChipBorderWidth`, `sgsChipFontWeight`, `sgsChipCountPill` with `sgsChipCountBackground`,
+ * Chips (`sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipFontWeight`, `sgsChipCountPill` with `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`, and `sgsChipPaintButtons`): WooCommerce stores the colours a client
  * picks on the chips block (`customChipBackground`, `customChipBorder`, `customChipText`, the same three
  * `customSelectedChip*`, or the palette slugs `chipBackground` and the rest) and hands them to its own stylesheet
@@ -145,6 +145,10 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 	if ( '' !== $weight ) {
 		$rest[] = 'font-weight:' . $weight;
 	}
+	$min_height = sgs_css_single_length_value( (string) ( $attrs['sgsChipMinHeight'] ?? '' ) );
+	if ( '' !== $min_height ) {
+		$rest[] = 'min-height:' . $min_height;
+	}
 	$border_width = sgs_css_single_length_value( (string) ( $attrs['sgsChipBorderWidth'] ?? '' ) );
 	if ( '' !== $border_width ) {
 		$rest[] = 'border-width:' . $border_width;
@@ -207,7 +211,7 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 
 	// The All chip is a link: it centres like a button and, while chosen, wears WooCommerce's own chosen-chip look.
 	$has_all     = '' !== trim( (string) ( $attrs['sgsChipAllLabel'] ?? '' ) );
-	$all         = $has_all ? array( 'display:inline-flex', 'align-items:center', 'text-decoration:none' ) : array();
+	$all         = $has_all ? array_merge( array( 'display:inline-flex', 'align-items:center', 'text-decoration:none' ), sgs_filter_look_item_shape_decls( $attrs ) ) : array();
 	$all_current = $has_all ? array(
 		'background:var(--wc-product-filter-chips-selected-background,var(--wc-product-filter-chips-text,CanvasText))',
 		'border-color:var(--wc-product-filter-chips-selected-border,var(--wc-product-filter-chips-text,CanvasText))',
@@ -219,6 +223,23 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 		. sgs_filter_look_rule( $root . ' .wc-block-product-filter-chips__count', $count )
 		. sgs_filter_look_rule( $root . ' .sgs-filter-look__all', $all )
 		. sgs_filter_look_rule( $root . ' .sgs-filter-look__all[aria-current="true"]', $all_current );
+}
+
+/**
+ * The radius and padding WooCommerce prints as an inline style on each chip button, as declarations for the All chip.
+ *
+ * @param array<string, mixed> $attrs Stored block attributes.
+ * @return string[] Declarations without semicolons; empty when the chips carry neither.
+ */
+function sgs_filter_look_item_shape_decls( array $attrs ): array {
+	$styles = wp_style_engine_get_styles(
+		array(
+			'border'  => array( 'radius' => $attrs['style']['border']['radius'] ?? null ),
+			'spacing' => array( 'padding' => $attrs['style']['spacing']['padding'] ?? null ),
+		)
+	);
+	$css = is_string( $styles['css'] ?? null ) ? $styles['css'] : '';
+	return array_values( array_filter( array_map( 'trim', explode( ';', $css ) ), 'strlen' ) );
 }
 
 /**

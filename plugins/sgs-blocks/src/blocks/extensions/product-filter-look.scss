@@ -9,6 +9,10 @@
 	border-width: var(--sgs-fl-chip-border-width);
 }
 
+.sgs-filter-look-preview--chip-min-height .wc-block-product-filter-chips__item {
+	min-height: var(--sgs-fl-chip-min-height);
+}
+
 .sgs-filter-look-preview--chip-fill .wc-block-product-filter-chips__item {
 	background: var(--sgs-fl-chip-fill);
 }
