@@ -273,6 +273,13 @@ h2.wc-block-mini-cart__title {
 	overflow-x: clip;
 }
 
+/* Checkout order summary: WooCommerce sticks the sidebar at top:24px, which slides it under the
+   fixed site header. --sgs-header-height is published by the header (0px when not fixed). The
+   extra class beats WooCommerce's single-class rule inside its container query. */
+.wc-block-checkout__sidebar.is-sticky {
+	top: calc(var(--sgs-header-height, 0px) + 24px);
+}
+
 /* Form fields — consistent with theme inputs */
 .wc-block-components-text-input input,
 .wc-block-components-text-input select,
