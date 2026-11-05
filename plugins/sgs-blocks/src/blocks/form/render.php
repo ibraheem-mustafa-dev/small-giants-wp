@@ -716,6 +716,29 @@ if ( is_array( $sgs_actions_space ) && array() !== $sgs_actions_space ) {
 		)
 	);
 }
+$sgs_actions_margin = $attributes['actionsTopMargin'] ?? null;
+if ( is_array( $sgs_actions_margin ) && array() !== $sgs_actions_margin ) {
+	$sgs_field_css .= sgs_emit_responsive_css(
+		'.' . $sgs_form_uid . ' .sgs-form__actions',
+		array(
+			array(
+				'value'     => $sgs_actions_margin,
+				'css'       => 'margin-top',
+				'transform' => $sgs_form_length,
+			),
+		)
+	);
+}
+// Divider above the buttons row. The three values are also custom properties so the
+// sticky row's "off" reset (below) restores the divider instead of clearing it.
+$sgs_actions_bw = $sgs_form_length( $attributes['actionsBorderTopWidth'] ?? '' );
+if ( '' !== $sgs_actions_bw ) {
+	$sgs_actions_bs = (string) ( $attributes['actionsBorderTopStyle'] ?? 'solid' );
+	$sgs_actions_bs = in_array( $sgs_actions_bs, array( 'solid', 'dashed', 'dotted' ), true ) ? $sgs_actions_bs : 'solid';
+	$sgs_actions_bc = sgs_colour_value( (string) ( $attributes['actionsBorderTopColour'] ?? '' ) );
+	$sgs_actions_bc = '' !== $sgs_actions_bc ? $sgs_actions_bc : 'currentcolor';
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form__actions{border-top-width:' . $sgs_actions_bw . ';border-top-style:' . $sgs_actions_bs . ';border-top-color:' . $sgs_actions_bc . ';--sgs-form-actions-border-width:' . $sgs_actions_bw . ';--sgs-form-actions-border-style:' . $sgs_actions_bs . ';--sgs-form-actions-border-colour:' . $sgs_actions_bc . ';}';
+}
 $sgs_actions_gap = $attributes['actionsGap'] ?? null;
 if ( is_array( $sgs_actions_gap ) && array() !== $sgs_actions_gap ) {
 	$sgs_field_css .= sgs_emit_responsive_css(
@@ -846,7 +869,7 @@ if ( array() !== $sgs_sticky_raw ) {
 		$d  .= '' !== $box ? $box . ';' : '';
 		return $d;
 	};
-	$sgs_sticky_off_decls = 'position:static;bottom:auto;z-index:auto;background-color:transparent;border-top:0;margin-inline:0;box-shadow:none;padding:0;padding-top:var(--sgs-form-actions-space,var(--wp--preset--spacing--30,1rem));';
+	$sgs_sticky_off_decls = 'position:static;bottom:auto;z-index:auto;background-color:transparent;border-top:var(--sgs-form-actions-border-width,0) var(--sgs-form-actions-border-style,solid) var(--sgs-form-actions-border-colour,currentcolor);margin-inline:0;box-shadow:none;padding:0;padding-top:var(--sgs-form-actions-space,var(--wp--preset--spacing--30,1rem));';
 	$sgs_prev_decls       = '';
 	foreach ( array( 'desktop' => null, 'tablet' => SGS_Breakpoints::TABLET_MAX, 'mobile' => SGS_Breakpoints::MOBILE_MAX ) as $sgs_tier => $sgs_max ) {
 		$sgs_decls = $sgs_sticky_on[ $sgs_tier ] ? $sgs_sticky_on_decls( $sgs_tier ) : $sgs_sticky_off_decls;

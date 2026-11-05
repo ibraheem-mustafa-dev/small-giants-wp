@@ -346,6 +346,26 @@ describe( 'FR-4-11 review cards', () => {
 		expect( document.activeElement ).toBe( root.querySelectorAll( '.sgs-form-step' )[ 1 ].querySelector( 'h3' ) );
 	} );
 
+	it( 'labels a lone checkbox with its own words and answers Yes or No', () => {
+		const root = reviewForm();
+		root.querySelectorAll( '.sgs-form-step' )[ 0 ].insertAdjacentHTML(
+			'beforeend',
+			'<div class="sgs-form-field sgs-form-field--checkbox"><fieldset class="sgs-form-field__group"><label class="sgs-form-field__option" for="cb-1"><input type="checkbox" id="cb-1" name="sameDelivery[]" value="Deliver to this address"> Deliver to this address</label></fieldset></div>'
+		);
+		const { populateReview } = require( SRC( 'review-cards.js' ) );
+		const review = root.querySelector( '.sgs-form-review' );
+		const rowFor = () => {
+			const terms = [ ...root.querySelectorAll( '.sgs-form-review__card' )[ 0 ].querySelectorAll( '.sgs-form-review__term' ) ];
+			const term = terms.find( ( n ) => 'Deliver to this address' === n.textContent );
+			return term && term.nextElementSibling.textContent;
+		};
+		populateReview( root, review );
+		expect( rowFor() ).toBe( 'No' );
+		root.querySelector( '#cb-1' ).checked = true;
+		populateReview( root, review );
+		expect( rowFor() ).toBe( 'Yes' );
+	} );
+
 	it( 'shows no Edit buttons when switched off, and rebuilds cleanly on a second call', () => {
 		const root = reviewForm( 'data-show-edit="false"' );
 		const { populateReview } = require( SRC( 'review-cards.js' ) );

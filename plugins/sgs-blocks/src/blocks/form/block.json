@@ -470,11 +470,16 @@
 					"label": "Submit button row",
 					"order": 9,
 					"clusters": [
-						"layout"
+						"layout",
+						"border"
 					],
 					"attrMap": {
 						"css:justify-content": "submitAlign",
 						"css:padding": "actionsTopPadding",
+						"css:margin-top": "actionsTopMargin",
+						"css:border-width": "actionsBorderTopWidth",
+						"css:border-style": "actionsBorderTopStyle",
+						"css:border-color": "actionsBorderTopColour",
 						"css:gap": "actionsGap"
 					}
 				},
@@ -3845,6 +3850,27 @@
 			"type": "object",
 			"default": {},
 			"description": "Space above the buttons row, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's spacing-30 (1rem). Applies when the row is not sticky; a sticky row uses its own padding setting."
+		},
+		"actionsTopMargin": {
+			"type": "object",
+			"default": {},
+			"description": "Margin above the buttons row, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = 0. The form's fields sit in a grid with a row gap, so this margin adds to that gap."
+		},
+		"actionsBorderTopWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the divider line along the top of the buttons row: a CSS length or a bare number of px. Empty = no line."
+		},
+		"actionsBorderTopStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted" ],
+			"default": "solid",
+			"description": "Line style of the buttons row divider. Applies once a width is set."
+		},
+		"actionsBorderTopColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the buttons row divider: a palette slug or a custom colour. Empty = the text colour. On a sticky device the sticky row's own line colour (actionsStickyBorderColour) wins when it is set."
 		},
 		"statusRowMarginBottom": {
 			"type": "string",
