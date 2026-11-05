@@ -293,11 +293,11 @@ if ( ! function_exists( 'sgs_buybox_extras_scoped_css' ) ) {
 			$css[]      = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $root_sel . ' .sgs-buybox__config-col{position:sticky;top:calc(var(--sgs-header-height, 0px) + ' . $offset_len . ');}}';
 		}
 
-		// --- The pinned gallery column follows the same offset. The stylesheet pins it from 1024px at 2rem; a
+		// --- The pinned gallery column follows the same offset. The stylesheet pins it from 1024px at 2rem (position:sticky only there, so `top` is emitted only there: at 768-1023px the column is position:relative and a `top` would shift it over the next row); a
 		// stickyOffset set here moves its `top` to the header height plus the offset, whether or not the
 		// configurator column is also pinned. Unset prints nothing. ---
 		if ( '' !== $sticky['offset'] ) {
-			$css[] = SGS_Breakpoints::media( 'tablet-up' ) . '{' . $root_sel . ' .sgs-buybox__gallery-col{top:calc(var(--sgs-header-height, 0px) + ' . $sticky['offset'] . ');}}';
+			$css[] = SGS_Breakpoints::media( 'desktop' ) . '{' . $root_sel . ' .sgs-buybox__gallery-col{top:calc(var(--sgs-header-height, 0px) + ' . $sticky['offset'] . ');}}';
 		}
 
 		// --- RRP saving pill colours. ---
