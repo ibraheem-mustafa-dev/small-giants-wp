@@ -1388,27 +1388,13 @@ if ( '' !== $overlay_decls ) {
 // FP-14: no scalar content rendering. $content = full InnerBlocks output
 // (sgs/label + sgs/heading + sgs/text + sgs/button(s) supplied by converter).
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $content is WP core InnerBlocks output.
-// Floating layers (sgs/decorative-image) whose `anchorTo` is 'section' are lifted out of the
-// content column and printed as direct children of the hero root, so their edge offsets
-// (positionTop and the rest) are measured from the whole section — `.sgs-hero` is the
-// nearest positioned ancestor — and not from the content box, which changes size with the
-// copy. Each layer renders exactly as it does in place (same HTML, same scoped <style>); the
-// layer's own z-index sets whether it sits behind or in front of the content column
-// (`.sgs-hero__content` is z-index 1). Layers anchored to the parent stay where they are.
-$section_layers_html = '';
-$content_in_column   = (string) $content;
-foreach ( $block->inner_blocks as $sgs_hero_child ) {
-	if ( 'sgs/decorative-image' !== $sgs_hero_child->name || 'section' !== ( $sgs_hero_child->attributes['anchorTo'] ?? 'parent' ) ) {
-		continue;
-	}
-	$sgs_hero_layer_html = (string) $sgs_hero_child->render();
-	$sgs_hero_layer_pos  = '' === $sgs_hero_layer_html ? false : strpos( $content_in_column, $sgs_hero_layer_html );
-	if ( false === $sgs_hero_layer_pos ) {
-		continue;
-	}
-	$content_in_column    = substr_replace( $content_in_column, '', $sgs_hero_layer_pos, strlen( $sgs_hero_layer_html ) );
-	$section_layers_html .= $sgs_hero_layer_html;
-}
+// Floating layers (sgs/decorative-image) whose `anchorTo` is 'section' are lifted out of the content column and
+// printed as direct children of the hero root, so their edge offsets are measured from the whole section (`.sgs-hero`
+// is the nearest positioned ancestor), not from the content box, which changes size with the copy. The layer's own
+// render marks its finished output (includes/section-anchored-layers.php), and the marked markup itself moves, so
+// nothing renders twice. The layer's z-index sets whether it sits behind or in front of the content column
+// (`.sgs-hero__content` is z-index 1).
+list( $content_in_column, $section_layers_html ) = \SGS\Blocks\sgs_lift_section_anchored_layers( (string) $content );
 $content_html = '<div class="sgs-hero__content">' . $content_in_column . '</div>';
 
 // ── Build split media area — image / video / SVG, per device tier ─────────
