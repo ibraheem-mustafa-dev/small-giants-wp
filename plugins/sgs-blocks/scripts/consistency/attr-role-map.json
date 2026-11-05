@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 10446,
+    "row_count": 10450,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -5948,6 +5948,7 @@
     "sgs/mega-panel::drawerCardBorderColour": "color",
     "sgs/mega-panel::drawerCardBorderColourGradient": "colour-gradient",
     "sgs/mega-panel::drawerCardCompact": "boolean-visibility",
+    "sgs/mega-panel::drawerCardDescColour": "color",
     "sgs/mega-panel::drawerCardGap": "layout",
     "sgs/mega-panel::drawerCardLayout": "enum-mode",
     "sgs/mega-panel::drawerCardLinkBg": "color",
@@ -5957,6 +5958,8 @@
     "sgs/mega-panel::drawerCardPadding": "layout",
     "sgs/mega-panel::drawerCardRadius": "visual",
     "sgs/mega-panel::drawerCardSpacing": "spacing-token",
+    "sgs/mega-panel::drawerCardTagFontFamily": "typography",
+    "sgs/mega-panel::drawerCardTagLetterSpacing": "typography",
     "sgs/mega-panel::drawerCardTagMargin": "layout",
     "sgs/mega-panel::drawerCardTagPadding": "layout",
     "sgs/mega-panel::drawerCardTagRadius": "visual",
@@ -5979,6 +5982,7 @@
     "sgs/mega-panel::drawerLinkMinHeight": "layout",
     "sgs/mega-panel::drawerLinkNumColour": "color",
     "sgs/mega-panel::drawerLinkNumColourGradient": "colour-gradient",
+    "sgs/mega-panel::drawerLinkNumFontFamily": "typography",
     "sgs/mega-panel::drawerLinkNumSize": "select-from-enum",
     "sgs/mega-panel::drawerLinkNumWeight": "enum-mode",
     "sgs/mega-panel::drawerLinkPaddingY": "styling",

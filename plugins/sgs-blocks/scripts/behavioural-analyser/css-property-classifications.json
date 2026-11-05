@@ -18391,6 +18391,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardThumbSize",
       "fields": {
         "css_property": "width",
@@ -38978,6 +38987,16 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardDescColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardDesc"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardLinkBg",
       "fields": {
         "css_property": "background-color",
@@ -39030,6 +39049,15 @@
         "css_property": "border-radius",
         "css_layer": "CONTENT",
         "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardTagLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardTag"
       }
     },
     {
@@ -39214,6 +39242,15 @@
       "attr": "drawerLinkNumColourGradient",
       "fields": {
         "css_property": "color-gradient",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkNumber"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkNumFontFamily",
+      "fields": {
+        "css_property": "font-family",
         "css_layer": "CONTENT",
         "css_element": "drawerLinkNumber"
       }
