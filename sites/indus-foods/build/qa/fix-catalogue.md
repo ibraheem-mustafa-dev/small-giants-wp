@@ -367,9 +367,9 @@ Site, measured against the draft at 375/768/1440:
 
 | Id | Outcome |
 |---|---|
-| R6-02 | five of six mega photos now fetch 252-300px files (were 1600px); sectors-24 fetches its 683px file because the attachment has no size between 300 and 683 |
+| R6-02 | all six mega photos fetch files near their drawn width at 1440 (were 1600px): About and Trade 263-300px files for 248px boxes, Sectors 200-300px files for 205px boxes (sectors-24's hint is 200 so it takes the 200x300 file, not 683x1024); first-hover delay remains (R7-07) |
 | R6-03 | blog and Keep reading card padding and part spacing match through settings; the flex column, full-width read-more row and image fill stay in Custom CSS (R7-01) |
-| R6-04 | end-of-strip travel set on 92 and 95; exact end position verified after 33fca17a0 deploys |
+| R6-04 | end-of-strip travel set on 92 and 95; measured live at 1440 on both pages: the last card ends at x=404, 260px right of the first card's start (draft 403.6, +264) |
 | R6-05 | drawer link numbers weight 500 on About, Brands, Trade; Sectors has no mega-panel block |
 | R6-06 | tiles (149) Custom CSS removed; timeline spacing moved to settings, the 375 content padding rule restored in Custom CSS (R7-03); drawer buttons moved to tier settings with the minimum Custom CSS kept (R7-02); Sectors keeps its corner position in Custom CSS (Bean: one-client look) |
 | R6-07 | Back 54 vs 52 (line-height 1.5 vs normal; R7-04) |
@@ -398,3 +398,9 @@ Site, measured against the draft at 375/768/1440:
 | R7-14 | editor check | page 231 ("Track F live check", a draft test page on local-indus) logs a Google Maps network error in the editor and fails the editor check | site: delete the test page, or tooling: ignore third-party network errors |
 | R7-16 | apply step 4 "Ranges" tiles | `required` on a multi-select `form-field-tiles` group marks every checkbox required, so Continue needs all of them ticked; the draft requires at least one. Required is unset on the site until fixed | framework: a required checkbox group requires one or more |
 | R7-15 | `sync-build.sh` | synced an empty plugin build into local-indus when the worktree had no `build/` (a stopped `npm run build` had cleaned it) | tooling: refuse to sync a missing or incomplete build |
+| R7-17 | apply review step | review heading, card and Edit pill match the draft at 1440 and 375 (measured 2026-11-05); the enquiry textarea counter sits 5px higher than the draft | low: investigate |
+| R7-18 | `mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_card_link_css` | the drawer card-link colours paint every `.sgs-button` in the aside, not only the card's link (fine for one-button cards, wrong for a card with two) | framework: scope to the card link |
+| R7-19 | `mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_card_slot_sel` | a slot that is itself an `sgs/container` in the unwrapped aside layout is not matched (the `:not(.wp-block-sgs-container)` guard drops it) | framework |
+| R7-20 | `helpers-media.php::sgs_media_cover_crop_plan` | a tier whose width is a percentage inherits the wider tier's px width, so a phone over-fetches (still smaller than the old 1600px file) | framework: an unknown tier keeps the attachment hint |
+| R7-21 | `review-cards.js` | a choice group with no legend, label or aria-labelledby drops its row from the review; a step hidden as a whole (not field by field) is not detected | framework |
+| R7-22 | process-steps `block.json` | the `step` element's `prefix: "number"` (e5f5086ff) was a workaround for the missing row-gap member; now that `css:row-gap` is a layout member it can return to its default, after a manifest gate run | tooling |
