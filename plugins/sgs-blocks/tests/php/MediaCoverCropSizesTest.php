@@ -110,4 +110,12 @@ class MediaCoverCropSizesTest extends TestCase {
 			sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 )
 		);
 	}
+
+	public function test_a_non_px_width_on_a_device_is_unknown_and_stops_inheritance(): void {
+		$attrs = $this->ratio_attrs( '1/1' );
+		$attrs['maxWidth'] = array( 'desktop' => '400px', 'mobile' => '100%' );
+		// Image 10 is 3:2 so the crop widens; the phone's drawn width is unknown, so no concrete sizes list is printed.
+		$this->assertTrue( sgs_media_cover_crop_widens( $attrs, '', 'sgs/media', 10 ) );
+		$this->assertSame( '', sgs_media_cover_crop_sizes( $attrs, '', 'sgs/media', 10 ) );
+	}
 }

@@ -419,13 +419,12 @@ if ( ! function_exists( 'sgs_media_cover_crop_plan' ) ) {
 		}
 		$image_ratio = $width / $height;
 
-		// Per-device px width and height; a device without its own value inherits the wider device's.
+		// Per-device px width and height; a device without its own value inherits the wider device's. A device whose
+		// value is set but is not px (for example `100%`) is null: its width is unknown and stops the inheritance.
 		$px      = static function ( $raw ): array {
 			$out = array();
 			foreach ( sgs_media_atom_box_shape_resolve_tier_object( $raw ) as $tier => $value ) {
-				if ( preg_match( '/^\s*(\d+(?:\.\d+)?)\s*px\s*$/i', $value, $m ) ) {
-					$out[ $tier ] = (float) $m[1];
-				}
+				$out[ $tier ] = preg_match( '/^\s*(\d+(?:\.\d+)?)\s*px\s*$/i', $value, $m ) ? (float) $m[1] : null;
 			}
 			return $out;
 		};
