@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
 import { PanelBody, TextControl, SelectControl, ToggleControl } from '@wordpress/components';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { SgsColourPanel, fillRow, textRow, SgsBorderControl, SgsLengthControl, TypographyControls, ResponsiveControl, ResponsiveLengthControl, ResponsiveBoxControl } from '../../components';
 import { patchTier } from '../../utils/patch-tier';
 import { backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, sgsLengthPreview, sgsBorderPreview } from '../../utils';
@@ -209,56 +210,100 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Rows and layout', 'sgs-blocks' ) } initialOpen={ false }>
-					<SelectControl
-						label={ __( 'Answer position', 'sgs-blocks' ) }
-						value={ attributes.rowLayout || 'side' }
-						options={ [
-							{ label: __( 'Beside the label', 'sgs-blocks' ), value: 'side' },
-							{ label: __( 'Under the label', 'sgs-blocks' ), value: 'stacked' },
-						] }
-						onChange={ ( val ) => setAttributes( { rowLayout: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ResponsiveControl label={ __( 'Rows side by side', 'sgs-blocks' ) }>
-						{ ( breakpoint ) => (
+					<ToolsPanel
+						label={ __( 'Row and card spacing', 'sgs-blocks' ) }
+						resetAll={ () => setAttributes( { rowLayout: 'side', listColumns: {}, listRowGap: {}, listColumnGap: {}, cardsGap: {}, cardsMarginTop: {} } ) }
+					>
+						<ToolsPanelItem
+							label={ __( 'Answer position', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => 'side' !== attributes.rowLayout }
+							onDeselect={ () => setAttributes( { rowLayout: 'side' } ) }
+						>
 							<SelectControl
-								label={ __( 'Rows side by side', 'sgs-blocks' ) }
-								hideLabelFromVision
-								value={ String( attributes.listColumns?.[ breakpoint ] ?? '' ) }
+								label={ __( 'Answer position', 'sgs-blocks' ) }
+								value={ attributes.rowLayout || 'side' }
 								options={ [
-									{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
-									{ label: '1', value: '1' },
-									{ label: '2', value: '2' },
-									{ label: '3', value: '3' },
-									{ label: '4', value: '4' },
+									{ label: __( 'Beside the label', 'sgs-blocks' ), value: 'side' },
+									{ label: __( 'Under the label', 'sgs-blocks' ), value: 'stacked' },
 								] }
-								onChange={ ( val ) => patchTier( attributes, setAttributes, 'listColumns', breakpoint, val ? parseInt( val, 10 ) : '' ) }
+								onChange={ ( val ) => setAttributes( { rowLayout: val } ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
-						) }
-					</ResponsiveControl>
-					<ResponsiveLengthControl
-						label={ __( 'Space between rows', 'sgs-blocks' ) }
-						value={ attributes.listRowGap }
-						onChange={ ( next ) => setAttributes( { listRowGap: next } ) }
-					/>
-					<ResponsiveLengthControl
-						label={ __( 'Space between columns', 'sgs-blocks' ) }
-						value={ attributes.listColumnGap }
-						onChange={ ( next ) => setAttributes( { listColumnGap: next } ) }
-					/>
-					<ResponsiveLengthControl
-						label={ __( 'Space between cards', 'sgs-blocks' ) }
-						value={ attributes.cardsGap }
-						onChange={ ( next ) => setAttributes( { cardsGap: next } ) }
-					/>
-					<ResponsiveLengthControl
-						label={ __( 'Space above the cards', 'sgs-blocks' ) }
-						value={ attributes.cardsMarginTop }
-						onChange={ ( next ) => setAttributes( { cardsMarginTop: next } ) }
-					/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Rows side by side', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => Object.keys( attributes.listColumns ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { listColumns: {} } ) }
+						>
+							<ResponsiveControl label={ __( 'Rows side by side', 'sgs-blocks' ) }>
+								{ ( breakpoint ) => (
+									<SelectControl
+										label={ __( 'Rows side by side', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ String( attributes.listColumns?.[ breakpoint ] ?? '' ) }
+										options={ [
+											{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+											{ label: '1', value: '1' },
+											{ label: '2', value: '2' },
+											{ label: '3', value: '3' },
+											{ label: '4', value: '4' },
+										] }
+										onChange={ ( val ) => patchTier( attributes, setAttributes, 'listColumns', breakpoint, val ? parseInt( val, 10 ) : '' ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								) }
+							</ResponsiveControl>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space between rows', 'sgs-blocks' ) }
+							hasValue={ () => Object.keys( attributes.listRowGap ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { listRowGap: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Space between rows', 'sgs-blocks' ) }
+								value={ attributes.listRowGap }
+								onChange={ ( next ) => setAttributes( { listRowGap: next } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space between columns', 'sgs-blocks' ) }
+							hasValue={ () => Object.keys( attributes.listColumnGap ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { listColumnGap: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Space between columns', 'sgs-blocks' ) }
+								value={ attributes.listColumnGap }
+								onChange={ ( next ) => setAttributes( { listColumnGap: next } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space between cards', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () => Object.keys( attributes.cardsGap ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { cardsGap: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Space between cards', 'sgs-blocks' ) }
+								value={ attributes.cardsGap }
+								onChange={ ( next ) => setAttributes( { cardsGap: next } ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Space above the cards', 'sgs-blocks' ) }
+							hasValue={ () => Object.keys( attributes.cardsMarginTop ?? {} ).length > 0 }
+							onDeselect={ () => setAttributes( { cardsMarginTop: {} } ) }
+						>
+							<ResponsiveLengthControl
+								label={ __( 'Space above the cards', 'sgs-blocks' ) }
+								value={ attributes.cardsMarginTop }
+								onChange={ ( next ) => setAttributes( { cardsMarginTop: next } ) }
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
 				</PanelBody>
 				<PanelBody title={ __( 'Edit button', 'sgs-blocks' ) } initialOpen={ false }>
 					<SgsBorderControl
