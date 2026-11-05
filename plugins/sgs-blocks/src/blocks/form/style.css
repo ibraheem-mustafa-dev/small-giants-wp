@@ -431,6 +431,11 @@ select.sgs-form-field__input {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
+/* The space between a label and its required mark or optional tag; the form's Required mark gap setting wins. */
+:where(.sgs-form-field__required, .sgs-form-field__optional) {
+	margin-inline-start: 0.25em;
+}
+
 /* ----------------------------------------------------------------
    5. Help text
    ---------------------------------------------------------------- */
@@ -710,16 +715,46 @@ select.sgs-form-field__input {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 0.5rem;
-	padding: 2rem;
-	border: 2px dashed var(--wp--preset--color--border, #ccc);
-	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	border-style: dashed;
+	border-color: var(--wp--preset--color--border, #ccc);
 	cursor: pointer;
 	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
 :where(.sgs-form-field__file-label) {
+	gap: 0.5rem;
+	padding: 2rem;
+	border-width: 2px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	text-align: center;
+}
+
+/* An upload field set to the row layout: the icon, then the prompt and hint stacked beside it. */
+.sgs-form-field__file-label--row {
+	flex-direction: row;
+}
+
+:where(.sgs-form-field__file-label--row) {
+	gap: 1rem;
+	text-align: start;
+}
+
+.sgs-form-field__file-text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+:where(.sgs-form-field__file-text) {
+	gap: 0.125rem;
+}
+
+/* The upload zone's icon holder; its size, fill, colour and radius are form settings. */
+.sgs-form-field__file-icon {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
 }
 
 /* Hover border/background colours are client-controllable
@@ -745,12 +780,15 @@ select.sgs-form-field__input {
    colour holding the prompt, the help line and a Choose file cue; the size
    limit stays for screen readers. The whole panel is the file input's target. */
 .sgs-form-field__file-zone--panel .sgs-form-field__file-label {
+	border-color: var(--wp--preset--color--border-strong, var(--wp--preset--color--border, #ccc));
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
+:where(.sgs-form-field__file-zone--panel .sgs-form-field__file-label) {
 	gap: 8px;
 	padding: 40px 20px;
 	border-width: 1px;
-	border-color: var(--wp--preset--color--border-strong, var(--wp--preset--color--border, #ccc));
 	border-radius: 0;
-	background-color: var(--wp--preset--color--surface-alt, #fff);
 }
 
 .sgs-form-field__file-zone--panel .sgs-form-field__file-hint {
@@ -775,12 +813,12 @@ select.sgs-form-field__input {
 	display: inline-flex;
 	align-items: center;
 	margin-top: 6px;
-	padding: 10px 20px;
 	border: 1px solid currentColor;
 	color: var(--wp--preset--color--text, #1a202c);
 }
 
 :where(.sgs-form-field__file-button) {
+	padding: 10px 20px;
 	font-size: 12.5px;
 	line-height: 1.5;
 	letter-spacing: 0.12em;

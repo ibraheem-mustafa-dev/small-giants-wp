@@ -94,7 +94,8 @@
 						"css:-webkit-text-stroke-color": "textStrokeColour",
 						"css:column-count": "textColumns",
 						"css:gap": "iconGap",
-						"css:justify-content": "contentAlign"
+						"css:justify-content": "contentAlign",
+						"css:align-self": "alignSelf"
 					},
 					"states": {
 						"hover": {
@@ -438,6 +439,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Per-device alignment of the label + icon inside the button along its row (justify-content: flex-start|center|flex-end). Tier object {desktop,tablet,mobile}; empty keeps the centred default. Distinct from textAlign, which cannot move flex content."
+		},
+		"alignSelf": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device align-self of the button as a flex item in its parent (auto|flex-start|center|flex-end|stretch|baseline). Tier object {desktop,tablet,mobile}; empty leaves the parent's alignment."
 		},
 		"iconGap": {
 			"type": "object",

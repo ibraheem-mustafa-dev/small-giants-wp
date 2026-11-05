@@ -356,6 +356,7 @@
             "css:color": "readMoreColour",
             "css:color-gradient": "readMoreColourGradient",
             "css:margin": "readMoreMargin",
+            "css:align-self": "readMorePin",
             "css:-webkit-text-stroke-width": "readMoreTextStrokeWidth",
             "css:-webkit-text-stroke-color": "readMoreTextStrokeColour"
           },
@@ -573,6 +574,16 @@
     "readMoreText": {
       "type": "string",
       "default": "Read more"
+    },
+    "readMoreIcon": {
+      "type": "string",
+      "default": "",
+      "description": "Icon after the read more text: empty keeps the text arrow, 'none' shows no icon, any other value is a Lucide icon slug."
+    },
+    "readMorePin": {
+      "type": "object",
+      "default": {},
+      "description": "Per-device ({desktop,tablet,mobile} tier object) placement of the read more link: 'pinned' makes each card a column so the link sits as a full-width row at the card's bottom, whatever the excerpt length; 'inline' keeps it directly after the excerpt. Empty keeps it directly after the excerpt. Not applied to the list layout."
     },
     "emptyMessage": {
       "type": "string",

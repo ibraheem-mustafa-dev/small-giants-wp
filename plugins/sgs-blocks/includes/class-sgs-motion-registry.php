@@ -1399,6 +1399,10 @@ class SGS_Motion_Registry {
 			return;
 		}
 
+		if ( 'marquee' === $effect ) {
+			\SGS\Blocks\Motion\Sgs_Motion_Assets::queue_marquee_gate();
+		}
+
 		$plugin_set = (array) ( $effects[ $effect ]['plugin_set'] ?? array() );
 
 		foreach ( $plugin_set as $plugin ) {

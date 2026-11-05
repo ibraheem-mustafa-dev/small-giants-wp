@@ -8,6 +8,8 @@ import MediaElementPanel from '../../../components/MediaElementPanel';
 import SgsBooleanField from '../../../components/SgsBooleanField';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
 import ResponsiveLengthControl from '../../../components/ResponsiveLengthControl';
+import ResponsiveOverride from '../../../components/ResponsiveOverride';
+import { IconPicker } from '../../../components/IconPicker';
 import { ASPECT_RATIO_OPTIONS, IMAGE_SIZE_OPTIONS } from './constants';
 
 import SgsFreeTextField from '../../../components/SgsFreeTextField';
@@ -28,6 +30,8 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 		metaLayout,
 		showReadMore,
 		readMoreText,
+		readMoreIcon,
+		readMorePin,
 	} = attributes;
 
 	return (
@@ -259,7 +263,9 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 						label={ __( 'Show read more', 'sgs-blocks' ) }
 						hasValue={ () =>
 							showReadMore !== true ||
-							readMoreText !== 'Read more'
+							readMoreText !== 'Read more' ||
+							'' !== ( readMoreIcon || '' ) ||
+							!! readMorePin?.desktop || !! readMorePin?.tablet || !! readMorePin?.mobile
 						}
 						onDeselect={ () =>
 							setAttributes( {
@@ -280,6 +286,46 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 										value={ readMoreText }
 										onChange={ set( 'readMoreText' ) }
 									/>
+									<IconPicker
+										label={ __( 'Read more icon', 'sgs-blocks' ) }
+										value={ [ '', 'none' ].includes( readMoreIcon || '' ) ? null : { source: 'lucide', name: readMoreIcon } }
+										onChange={ ( { name } ) => setAttributes( { readMoreIcon: name } ) }
+										sources={ [ 'lucide' ] }
+									/>
+									<SelectControl
+										label={ __( 'Icon style', 'sgs-blocks' ) }
+										value={ [ '', 'none' ].includes( readMoreIcon || '' ) ? ( readMoreIcon || '' ) : 'custom' }
+										options={ [
+											{ label: __( 'Text arrow', 'sgs-blocks' ), value: '' },
+											{ label: __( 'No icon', 'sgs-blocks' ), value: 'none' },
+											{ label: __( 'Icon chosen above', 'sgs-blocks' ), value: 'custom', disabled: true },
+										] }
+										onChange={ ( v ) => setAttributes( { readMoreIcon: v } ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<ResponsiveOverride
+										label={ __( 'Read more position', 'sgs-blocks' ) }
+										value={ readMorePin }
+										onChange={ ( obj ) => setAttributes( { readMorePin: obj } ) }
+									>
+										{ ( { ownValue, setOwnValue } ) => (
+											<SelectControl
+												label={ __( 'Read more position', 'sgs-blocks' ) }
+												hideLabelFromVision
+												value={ ownValue || '' }
+												options={ [
+													{ label: __( 'Inherit', 'sgs-blocks' ), value: '' },
+													{ label: __( 'Pinned to the card bottom', 'sgs-blocks' ), value: 'pinned' },
+													{ label: __( 'Straight after the excerpt', 'sgs-blocks' ), value: 'inline' },
+												] }
+												onChange={ setOwnValue }
+												help={ __( 'Pinned: the link is a full-width row at the bottom of every card, so cards of different text length line up. Not applied to the list layout.', 'sgs-blocks' ) }
+												__nextHasNoMarginBottom
+												__next40pxDefaultSize
+											/>
+										) }
+									</ResponsiveOverride>
 									{ /* Read more colour moved to the shared SgsColourPanel
 									     above (D622 is superseded). */ }
 								</>

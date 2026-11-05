@@ -5,7 +5,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import { SgsLengthControl, ResponsiveOverride } from '../../components';
 
 const EDGE_UNITS = [
@@ -41,6 +41,27 @@ export default function LayerEdgePanel( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 				</p>
+				<SelectControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ __( 'Measure the edges from', 'sgs-blocks' ) }
+					help={ __(
+						'Inside a hero, "The whole section" measures from the hero itself, so the layer stays put when the hero copy changes size. The editor canvas keeps showing the layer inside the content column; the live page anchors it to the section.',
+						'sgs-blocks'
+					) }
+					value={ attributes.anchorTo || 'parent' }
+					options={ [
+						{
+							label: __( 'The block it sits in', 'sgs-blocks' ),
+							value: 'parent',
+						},
+						{
+							label: __( 'The whole section', 'sgs-blocks' ),
+							value: 'section',
+						},
+					] }
+					onChange={ ( v ) => setAttributes( { anchorTo: v } ) }
+				/>
 				{ EDGES.map( ( [ attr, label ] ) => (
 					<ResponsiveOverride
 						key={ attr }

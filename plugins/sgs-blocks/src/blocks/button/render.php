@@ -291,15 +291,24 @@ if ( $sgs_btn_underline_owned ) {
 }
 
 // Border (custom mode only). Box-object interface contract §1/§2: borderWidth
-// is an SGS custom OBJECT attr { top, right, bottom, left } — no WP-native
-// border-width support, no tiers (matches the pre-existing base-only contract).
+// is an SGS custom OBJECT attr — a flat { top, right, bottom, left } box (the
+// desktop width) or a { desktop, tablet, mobile } tier object holding one such
+// box per device (what SgsBorderControl writes once a tablet/mobile width is set).
 $border_style     = isset( $attributes['borderStyle'] ) ? sgs_css_keyword_sanitise( $attributes['borderStyle'] ) : 'solid';
-$border_width_obj = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_raw = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+$border_width_tiered = isset( $border_width_raw['desktop'] ) || isset( $border_width_raw['tablet'] ) || isset( $border_width_raw['mobile'] );
+$border_width_obj = $border_width_tiered ? ( is_array( $border_width_raw['desktop'] ?? null ) ? $border_width_raw['desktop'] : array() ) : $border_width_raw;
+$border_width_tablet_obj = $border_width_tiered && is_array( $border_width_raw['tablet'] ?? null ) ? $border_width_raw['tablet'] : array();
+$border_width_mobile_obj = $border_width_tiered && is_array( $border_width_raw['mobile'] ?? null ) ? $border_width_raw['mobile'] : array();
 $border_width_top = sgs_css_length_value( $border_width_obj['top'] ?? '' );
 $border_width_rgt = sgs_css_length_value( $border_width_obj['right'] ?? '' );
 $border_width_bot = sgs_css_length_value( $border_width_obj['bottom'] ?? '' );
 $border_width_lft = sgs_css_length_value( $border_width_obj['left'] ?? '' );
 $has_border_width = ( '' !== $border_width_top || '' !== $border_width_rgt || '' !== $border_width_bot || '' !== $border_width_lft );
+// A width set only at tablet or mobile still needs the border-style declaration to paint.
+$border_width_tab_val = sgs_box_object_shorthand( $border_width_tablet_obj );
+$border_width_mob_val = sgs_box_object_shorthand( $border_width_mobile_obj );
+$has_border_width_any = $has_border_width || null !== $border_width_tab_val || null !== $border_width_mob_val;
 
 // Box shadow — SHAPE-only string attrs (D621/D622 colour-architecture
 // redesign); colour lives in the sibling boxShadowColour/boxShadowColourHover
@@ -397,9 +406,9 @@ if ( $has_border_width ) {
 // non-solid override; a preset-less (custom) button has no style of its own, so
 // its width paints with the resolved style ('' = solid, helpers-border-style.php).
 $border_style_is_preset = in_array( $inherit_style, array( 'primary', 'secondary', 'outline' ), true );
-$border_style_has_width = $has_border_width || $border_style_is_preset;
+$border_style_has_width = $has_border_width_any || $border_style_is_preset;
 $border_style_resolved  = sgs_border_style_keyword( $border_style );
-if ( ( $has_border_width && ! $border_style_is_preset ) || ( $border_style_has_width && 'solid' !== $border_style_resolved ) ) {
+if ( ( $has_border_width_any && ! $border_style_is_preset ) || ( $border_style_has_width && 'solid' !== $border_style_resolved ) ) {
 	$base_decls[] = 'border-style:' . $border_style_resolved;
 }
 if ( $box_shadow_decls['normal'] ) {
@@ -418,10 +427,12 @@ if ( $base_decls ) {
 	$scoped_css_parts[] = ".{$uid}.sgs-button{" . implode( ';', $base_decls ) . ';}';
 }
 
-// Content alignment + label-to-icon gap, per device. Both are flex properties
-// of the button root. Unset attrs emit nothing (the centred, gapless default
+// Content alignment, label-to-icon gap and the button's own align-self, per
+// device. The first two are flex properties of the button root; align-self
+// positions the root as a flex item in its parent. Unset attrs emit nothing (the centred, gapless default
 // stands).
 $content_align_allowed = array( 'flex-start', 'center', 'flex-end' );
+$align_self_allowed    = array( 'auto', 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' );
 $content_align_props   = array(
 	array(
 		'value'     => $attributes['contentAlign'] ?? array(),
@@ -434,6 +445,13 @@ $content_align_props   = array(
 		'value'        => $attributes['iconGap'] ?? array(),
 		'css'          => 'gap',
 		'unit_default' => 'px',
+	),
+	array(
+		'value'     => $attributes['alignSelf'] ?? array(),
+		'css'       => 'align-self',
+		'transform' => static function ( $raw ) use ( $align_self_allowed ) {
+			return in_array( $raw, $align_self_allowed, true ) ? $raw : '';
+		},
 	),
 );
 $scoped_css_parts[]    = sgs_emit_responsive_css( ".{$uid}.sgs-button", $content_align_props );
@@ -560,6 +578,9 @@ if ( null !== $margin_tab_val ) {
 if ( null !== $radius_tab_val ) {
 	$tablet_box_decls[] = "{$radius_tab_val}";
 }
+if ( null !== $border_width_tab_val ) {
+	$tablet_box_decls[] = "border-width:{$border_width_tab_val}";
+}
 if ( $tablet_box_decls ) {
 	$scoped_css_parts[] = SGS_Breakpoints::media( 'tablet' ) . '{' . ".{$uid}.sgs-button{" . implode( ';', $tablet_box_decls ) . ';}}';
 }
@@ -573,6 +594,9 @@ if ( null !== $margin_mob_val ) {
 }
 if ( null !== $radius_mob_val ) {
 	$mobile_box_decls[] = "{$radius_mob_val}";
+}
+if ( null !== $border_width_mob_val ) {
+	$mobile_box_decls[] = "border-width:{$border_width_mob_val}";
 }
 if ( $mobile_box_decls ) {
 	$scoped_css_parts[] = SGS_Breakpoints::media( 'mobile' ) . '{' . ".{$uid}.sgs-button{" . implode( ';', $mobile_box_decls ) . ';}}';

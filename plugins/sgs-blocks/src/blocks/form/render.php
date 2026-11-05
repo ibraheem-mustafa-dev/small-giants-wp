@@ -584,6 +584,24 @@ $sgs_required_text = sgs_text_decls( $attributes, array( 'base' => 'requiredMark
 if ( ! empty( $sgs_required_text['normal'] ) ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__required{' . implode( ';', $sgs_required_text['normal'] ) . ';}';
 }
+// The space before the required mark and the optional tag is one margin on both (the markup carries no literal
+// space), and the optional tag has its own colour and typography. Each is opt-in: unset prints nothing.
+$sgs_mark_gap = sgs_responsive_normalise_object( $attributes['requiredMarkGap'] ?? null );
+$sgs_field_css .= sgs_emit_responsive_css(
+	'.' . $sgs_form_uid . ' .sgs-form-field__required, .' . $sgs_form_uid . ' .sgs-form-field__optional',
+	array(
+		array(
+			'value'        => $sgs_mark_gap,
+			'css'          => 'margin-inline-start',
+			'unit_default' => 'px',
+		),
+	)
+);
+$sgs_optional_text = sgs_text_decls( $attributes, array( 'base' => 'optionalColour' ) );
+if ( ! empty( $sgs_optional_text['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__optional{' . implode( ';', $sgs_optional_text['normal'] ) . ';}';
+}
+$sgs_field_css .= sgs_typography_css_rule( $attributes, 'optional', '.' . $sgs_form_uid . ' .sgs-form-field__optional', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_label_text = sgs_text_decls( $attributes, array( 'base' => 'labelColour' ) );
 if ( ! empty( $sgs_label_text['normal'] ) ) {
 	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__label{' . implode( ';', $sgs_label_text['normal'] ) . ';}';
@@ -1015,6 +1033,85 @@ if ( '' !== $sgs_form_file_border_css || '' !== $sgs_form_file_fill_css ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_supports_css .= $sgs_form_file_border_css . $sgs_form_file_fill_css;
+}
+
+// Upload zone box and icon: padding, border width, style and corner radius, gap, and the icon holder's size, fill,
+// colour and radius. The zone's colours are printed above; every value here is opt-in and an unset one prints nothing.
+$sgs_zone_border = sgs_border_element_decls( $attributes, 'fileLabel', $sgs_form_file_label_sel, array() );
+$sgs_zone_css    = '';
+if ( $sgs_zone_border['base'] ) {
+	$sgs_zone_css .= $sgs_form_file_label_sel . '{' . implode( ';', $sgs_zone_border['base'] ) . ';}';
+}
+foreach ( array( 'tablet', 'mobile' ) as $sgs_zone_tier ) {
+	if ( $sgs_zone_border[ $sgs_zone_tier ] ) {
+		$sgs_zone_css .= sgs_emit_tier_decls( $sgs_form_file_label_sel, array( $sgs_zone_tier => $sgs_zone_border[ $sgs_zone_tier ] ) );
+	}
+}
+$sgs_zone_css .= implode( '', $sgs_zone_border['rules'] );
+$sgs_zone_css .= sgs_emit_responsive_css(
+	$sgs_form_file_label_sel,
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileLabelPadding'] ?? null, true ),
+			'css'          => 'padding',
+			'box'          => true,
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileLabelGap'] ?? null ),
+			'css'          => 'gap',
+			'unit_default' => 'px',
+		),
+	)
+);
+$sgs_zone_icon_sel    = '.' . $sgs_form_uid . ' .sgs-form-field__file-icon';
+$sgs_zone_icon_fill   = sgs_fill_decls( $attributes, array( 'base' => 'fileIconBackground' ) );
+$sgs_zone_icon_text   = sgs_text_decls( $attributes, array( 'base' => 'fileIconColour' ) );
+$sgs_zone_icon_radius = sgs_border_element_decls( $attributes, 'fileIcon', $sgs_zone_icon_sel, array( 'radius' => 'fileIconRadius' ) );
+$sgs_zone_icon_decls  = array_merge( $sgs_zone_icon_fill['normal'], $sgs_zone_icon_text['normal'], $sgs_zone_icon_radius['base'] );
+if ( $sgs_zone_icon_decls ) {
+	$sgs_zone_css .= $sgs_zone_icon_sel . '{' . implode( ';', $sgs_zone_icon_decls ) . ';}';
+}
+foreach ( array( 'tablet', 'mobile' ) as $sgs_zone_tier ) {
+	if ( $sgs_zone_icon_radius[ $sgs_zone_tier ] ) {
+		$sgs_zone_css .= sgs_emit_tier_decls( $sgs_zone_icon_sel, array( $sgs_zone_tier => $sgs_zone_icon_radius[ $sgs_zone_tier ] ) );
+	}
+}
+$sgs_zone_css .= sgs_emit_responsive_css(
+	$sgs_zone_icon_sel,
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileIconBoxSize'] ?? null ),
+			'css'          => 'width',
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileIconBoxSize'] ?? null ),
+			'css'          => 'height',
+			'unit_default' => 'px',
+		),
+	)
+);
+$sgs_zone_css .= sgs_emit_responsive_css(
+	$sgs_zone_icon_sel . ' svg',
+	array(
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileIconSize'] ?? null ),
+			'css'          => 'width',
+			'unit_default' => 'px',
+		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['fileIconSize'] ?? null ),
+			'css'          => 'height',
+			'unit_default' => 'px',
+		),
+	)
+);
+if ( '' !== $sgs_zone_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_zone_css;
 }
 
 // ── Build inner HTML ───────────────────────────────────────────────────────

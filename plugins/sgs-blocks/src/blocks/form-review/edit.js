@@ -52,6 +52,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			tier
 		),
 	};
+	const editMinHeight = sgsLengthPreview( pickTier( attributes.editButtonMinHeight ) );
+	if ( editMinHeight ) {
+		editStyle.minHeight = editMinHeight;
+	}
 	const editPad = pickTier( attributes.editButtonPadding );
 	if ( editPad ) {
 		editStyle.padding = [ editPad.top, editPad.right, editPad.bottom, editPad.left ].map( ( side ) => side || 0 ).join( ' ' );
@@ -349,6 +353,11 @@ export default function Edit( { attributes, setAttributes } ) {
 							const key = 'base' === tierKey ? 'desktop' : tierKey;
 							setAttributes( { editButtonPadding: { ...attributes.editButtonPadding, [ key ]: next } } );
 						} }
+					/>
+					<ResponsiveLengthControl
+						label={ __( 'Minimum height', 'sgs-blocks' ) }
+						value={ attributes.editButtonMinHeight }
+						onChange={ ( next ) => setAttributes( { editButtonMinHeight: next } ) }
 					/>
 					<TypographyControls
 						fontSizePresets

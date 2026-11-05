@@ -1034,16 +1034,6 @@ if ( $sgs_mm_in_drawer ) {
 		$css .= $sgs_dv_aside . ' > :nth-child(4){display:none;}';
 		$css .= $sgs_dv_aside . ' > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}';
 
-		$sgs_dv_tag_size = $sgs_dv_len( 'drawerCardTagSize' );
-		$sgs_dv_tag_pad  = $sgs_dv_box( 'drawerCardTagPadding', 'padding' );
-		$sgs_dv_tag_type = sgs_mega_panel_drawer_tag_type_decls( $attributes );
-		if ( '' !== $sgs_dv_tag_size || '' !== $sgs_dv_tag_pad || '' !== $sgs_dv_tag_type ) {
-			$css .= $sgs_dv_aside . ' > :nth-child(2) .wp-block-sgs-label{'
-				. $sgs_dv_tag_type
-				. $sgs_dv_decl( 'font-size', $sgs_dv_tag_size )
-				. $sgs_dv_tag_pad
-				. ( '' !== $sgs_dv_tag_size ? 'line-height:1.5;' : '' ) . '}';
-		}
 		$sgs_dv_title_size = $sgs_dv_len( 'drawerCardTitleSize' );
 		if ( '' !== $sgs_dv_title_size ) {
 			$css .= $sgs_dv_aside . ' > :nth-child(3){font-size:' . $sgs_dv_title_size . ';}';
@@ -1060,6 +1050,8 @@ if ( $sgs_mm_in_drawer ) {
 			$css .= $sgs_dv_aside . '{' . $sgs_dv_card_decls . '}';
 		}
 	}
+	// The card tag's typography and box, in every layout.
+	$css .= sgs_mega_panel_drawer_card_tag_css( $attributes, $sgs_dv_aside );
 	// The card link's colours, in every layout.
 	$css .= sgs_mega_panel_drawer_card_link_css( $attributes, $sgs_dv_aside );
 	// The description's colour, in the layouts that show the description.

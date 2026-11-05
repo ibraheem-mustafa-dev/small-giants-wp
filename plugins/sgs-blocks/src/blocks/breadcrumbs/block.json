@@ -133,6 +133,17 @@
 					}
 				},
 				"current": {
+					"state": "current",
+					"attrMap": {
+						"css:font-size": "currentFontSize",
+						"css:font-weight": "currentFontWeight",
+						"css:font-style": "currentFontStyle",
+						"css:line-height": "currentLineHeight",
+						"css:font-family": "currentFontFamily",
+						"css:text-transform": "currentTextTransform",
+						"css:text-decoration": "currentTextDecoration",
+						"css:letter-spacing": "currentLetterSpacing"
+					},
 					"selector": ".sgs-breadcrumbs__item--current",
 					"label": "Current page",
 					"order": 4,
@@ -289,6 +300,52 @@
 			"type": "string",
 			"default": "",
 			"description": "Hover-state gradient sibling of currentColourHover. Non-empty wins over currentColourHover on :hover/:focus-visible."
+		},
+		"currentFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"currentFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"currentFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"currentFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"currentLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"currentLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"currentFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"currentTextTransform": {
+			"type": "string",
+			"enum": [ "", "none", "uppercase", "lowercase", "capitalize" ],
+			"default": ""
+		},
+		"currentTextDecoration": {
+			"type": "string",
+			"enum": [ "", "none", "underline", "line-through" ],
+			"default": ""
+		},
+		"currentLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"currentLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
 		},
 		"fontSize": {
 			"type": "object",

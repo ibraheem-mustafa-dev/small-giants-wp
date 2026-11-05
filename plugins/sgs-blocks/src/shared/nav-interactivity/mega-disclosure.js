@@ -959,6 +959,33 @@ function focusFirstInPanel( root ) {
 	} );
 }
 
+/** Nav roots whose panel photos are already warmed. */
+const warmedNavRoots = new WeakSet();
+
+/**
+ * Starts the photo fetch for every panel in the nav the visitor engaged.
+ * Panel photos render `loading="lazy"` and sit in hidden panels, so without
+ * this the first open waits for the network. Runs once per nav root, and not
+ * at all under Save-Data.
+ *
+ * @param {HTMLElement} root A disclosure root inside the nav.
+ */
+function warmPanelImages( root ) {
+	const nav = root.closest( 'nav' ) || root;
+	if ( warmedNavRoots.has( nav ) ) {
+		return;
+	}
+	warmedNavRoots.add( nav );
+	if ( window.navigator?.connection?.saveData ) {
+		return;
+	}
+	nav.querySelectorAll(
+		'[data-sgs-mega-panel] img[loading="lazy"]'
+	).forEach( ( img ) => {
+		img.loading = 'eager';
+	} );
+}
+
 /** True while focusTrigger() hands focus back, so linkTriggerFocus does not reopen. */
 let refocusingTrigger = false;
 
@@ -989,6 +1016,7 @@ function toggleDisclosure( ctx, ref, event ) {
 		event.preventDefault();
 	}
 	const root = rootFor( ref );
+	warmPanelImages( root );
 	clearOpenTimer( ctx.megaId );
 	clearCloseTimer( ctx.megaId );
 	if ( ctx.isOpen ) {
@@ -1036,6 +1064,11 @@ const { state } = store( 'sgs/mega', {
 			}
 		},
 
+		/** Keyboard focus anywhere in a disclosure root: warm its nav's panel photos. */
+		warmPanels() {
+			warmPanelImages( rootFor( getElement().ref ) );
+		},
+
 		/** Toggle on click/tap. On touch (no hover) this is the sole open path. */
 		toggle( event ) {
 			toggleDisclosure( getContext(), getElement().ref, event );
@@ -1068,6 +1101,7 @@ const { state } = store( 'sgs/mega', {
 		linkTriggerFocus() {
 			const ctx = getContext();
 			const { ref } = getElement();
+			warmPanelImages( rootFor( ref ) );
 			if (
 				ctx.isOpen ||
 				refocusingTrigger ||
@@ -1151,6 +1185,7 @@ const { state } = store( 'sgs/mega', {
 		 */
 		enterBridge() {
 			const ctx = getContext();
+			warmPanelImages( rootFor( getElement().ref ) );
 			clearCloseTimer( ctx.megaId );
 			if ( ! canHover() || ctx.isOpen || 'click' === ctx.openOn ) {
 				return;

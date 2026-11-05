@@ -75,6 +75,12 @@
             "type": "boolean",
             "default": false
         },
+        "optionalTag": {
+            "type": "boolean",
+            "default": false,
+            "role": "behaviour",
+            "description": "Shows the form's Optional tag after the label when the field is not required. The form sets the tag's text and look."
+        },
         "width": {
             "type": "string",
             "default": "full"
@@ -132,6 +138,26 @@
             "type": "string",
             "default": "",
             "description": "The panel look's button text; empty reads \"Choose file\"."
+        },
+        "hintText": {
+            "type": "string",
+            "default": "",
+            "role": "content",
+            "description": "The line under the drop-zone prompt (for example the accepted file types). Plain text. Empty = the generated \"Max N MB\" line."
+        },
+        "zoneIcon": {
+            "type": "string",
+            "default": "",
+            "description": "Lucide icon slug drawn in the drop zone. Empty = no icon. Its holder, size and colours are the form's upload zone icon settings."
+        },
+        "zoneLayout": {
+            "type": "string",
+            "enum": [
+                "column",
+                "row"
+            ],
+            "default": "column",
+            "description": "Dashed look only: column stacks the icon, prompt and hint centred; row puts the icon beside the prompt and hint."
         }
     },
     "render": "file:./render.php",

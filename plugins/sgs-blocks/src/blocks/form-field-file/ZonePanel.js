@@ -8,17 +8,19 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { IconPicker } from '../../components';
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes (zoneStyle, buttonLabel).
+ * @param {Object}   props.attributes    Block attributes (zoneStyle, buttonLabel, hintText, zoneIcon, zoneLayout).
  * @param {Function} props.setAttributes Block attribute setter.
  * @return {JSX.Element} The panel.
  */
 export default function ZonePanel( { attributes, setAttributes } ) {
 	const isPanel = 'panel' === attributes.zoneStyle;
+	const isNative = 'native' === attributes.zoneStyle;
 	return (
 		<PanelBody title={ __( 'Drop zone', 'sgs-blocks' ) } initialOpen={ false }>
 			<SelectControl
@@ -33,6 +35,36 @@ export default function ZonePanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			<TextControl
+				label={ __( 'Hint line', 'sgs-blocks' ) }
+				value={ attributes.hintText || '' }
+				help={ __( 'The small line under the prompt, for example the accepted file types. Empty shows the maximum file size.', 'sgs-blocks' ) }
+				onChange={ ( hintText ) => setAttributes( { hintText } ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			{ ! isNative && (
+				<IconPicker
+					label={ __( 'Zone icon', 'sgs-blocks' ) }
+					/* render.php draws a Lucide icon in the zone; its holder, size and colours are the form's Upload zone settings. */
+					sources={ [ 'lucide' ] }
+					value={ attributes.zoneIcon ? { source: 'lucide', name: attributes.zoneIcon } : null }
+					onChange={ ( val ) => setAttributes( { zoneIcon: val ? val.name : '' } ) }
+				/>
+			) }
+			{ ! isPanel && ! isNative && (
+				<SelectControl
+					label={ __( 'Layout', 'sgs-blocks' ) }
+					value={ attributes.zoneLayout || 'column' }
+					options={ [
+						{ label: __( 'Stacked and centred', 'sgs-blocks' ), value: 'column' },
+						{ label: __( 'Icon beside the text', 'sgs-blocks' ), value: 'row' },
+					] }
+					onChange={ ( zoneLayout ) => setAttributes( { zoneLayout } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
 			{ isPanel && (
 				<SgsFreeTextField type="rich" noLink
 					label={ __( 'Button text', 'sgs-blocks' ) }

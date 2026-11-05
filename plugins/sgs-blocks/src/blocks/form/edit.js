@@ -17,6 +17,7 @@ import {
 	resolveTextColourPreviewStyle,
 	backgroundPaintPreview,
 	borderBoxPreview,
+	sgsBorderPreview,
 	typographyPreviewStyle,
 	typographyPreviewCss,
 	textIndentPreviewCss,
@@ -37,6 +38,8 @@ import SubmitMotionControls from './SubmitMotionControls';
 import SavedProgressPanel from './SavedProgressPanel';
 import StepSettingsPanel from './StepSettingsPanel';
 import ButtonLabelControls from './ButtonLabelControls';
+import FieldMarksPanel from './FieldMarksPanel';
+import UploadZonePanel from './UploadZonePanel';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -331,6 +334,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
 	const labelColourValue = resolveColourToken( attributes.labelColour, palette );
 	const requiredMarkValue = resolveColourToken( attributes.requiredMarkColour, palette );
+	const optionalColourValue = resolveColourToken( attributes.optionalColour, palette );
+	const fileIconBackgroundValue = resolveColourToken( attributes.fileIconBackground, palette );
+	const fileIconColourValue = resolveColourToken( attributes.fileIconColour, palette );
 	const stepCounterColourValue = resolveColourToken( attributes.stepCounterColour, palette );
 	const trackColourValue = resolveColourToken( attributes.progressTrackColour, palette );
 	const stepNumberInactiveValue = resolveColourToken( attributes.stepNumberInactiveBackground, palette );
@@ -343,6 +349,9 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const stickyBg = resolveColourToken( attributes.actionsStickyBackground, palette );
 	const stickyBorder = resolveColourToken( attributes.actionsStickyBorderColour, palette );
 	const stickyBleed = sgsLengthPreview( attributes.actionsStickyBleed );
+	const markGapValue = tierLengthPreview( attributes.requiredMarkGap, previewTier );
+	const fileIconBoxValue = tierLengthPreview( attributes.fileIconBoxSize, previewTier );
+	const fileIconSizeValue = tierLengthPreview( attributes.fileIconSize, previewTier );
 	const stickyShadow = resolveShadowPreviewComposed( attributes.actionsStickyShadow, attributes.actionsStickyShadowColour );
 	const stickyPadding = Object.entries( tierBoxLonghands( attributes.actionsStickyPadding, previewTier, 'padding' ) )
 		.map( ( [ prop, val ] ) => `${ prop.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ val };` )
@@ -433,6 +442,16 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			.filter( ( [ , value ] ) => '' !== value )
 			.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
 			.join( '' );
+	// The upload zone's box and its icon holder's corners, as render.php prints them through sgs_border_element_decls()
+	// and sgs_emit_responsive_css() (the zone's border colour is fileLabelBorderPreviewDecl above).
+	const zoneBoxDecls = [
+		typographyDecls( sgsBorderPreview( { widthValues: attributes.fileLabelBorderWidth, styleValue: attributes.fileLabelBorderStyle, radiusValues: attributes.fileLabelBorderRadius }, previewTier, palette ) ),
+		typographyDecls( tierBoxLonghands( attributes.fileLabelPadding, previewTier, 'padding' ) ),
+		tierLengthPreview( attributes.fileLabelGap, previewTier ) && `gap:${ tierLengthPreview( attributes.fileLabelGap, previewTier ) };`,
+	]
+		.filter( Boolean )
+		.join( '' );
+	const zoneIconRadiusDecls = typographyDecls( sgsBorderPreview( { radiusValues: attributes.fileIconRadius }, previewTier, palette ) );
 	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
 	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
 	// Tile icon, tile label, consent text, review term and answer, help, error,
@@ -451,6 +470,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'helpText', `.${ formPreviewScope } .sgs-form-field__help,.${ formPreviewScope } .sgs-form-field__file-hint`, previewTier ),
 		typographyPreviewCss( attributes, 'errorText', `.${ formPreviewScope } .sgs-form-field__error,.${ formPreviewScope } .sgs-form-field__error-message`, previewTier ),
 		typographyPreviewCss( attributes, 'fileStatus', `.${ formPreviewScope } .sgs-form-file__preview,.${ formPreviewScope } .sgs-form-file__progress`, previewTier ),
+		typographyPreviewCss( attributes, 'optional', `.${ formPreviewScope } .sgs-form-field__optional`, previewTier ),
 		typographyPreviewCss( attributes, 'fileButton', `.${ formPreviewScope } .sgs-form-field__file-button`, previewTier ),
 		typographyPreviewCss( attributes, 'filePrompt', `.${ formPreviewScope } .sgs-form-field__file-label`, previewTier ),
 		typographyPreviewCss( attributes, 'gridColHeading', `.${ formPreviewScope } .sgs-form-field__column-heading`, previewTier ),
@@ -463,6 +483,14 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		typographyPreviewCss( attributes, 'savedNotice', `.${ formPreviewScope } .sgs-form__saved-notice`, previewTier ),
 		labelColourValue && `.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
 		requiredMarkValue && `.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
+		optionalColourValue && `.${ formPreviewScope } .sgs-form-field__optional{color:${ optionalColourValue };}`,
+		markGapValue && `.${ formPreviewScope } .sgs-form-field__required,.${ formPreviewScope } .sgs-form-field__optional{margin-inline-start:${ markGapValue };}`,
+		fileIconBackgroundValue && `.${ formPreviewScope } .sgs-form-field__file-icon{background-color:${ fileIconBackgroundValue };}`,
+		fileIconColourValue && `.${ formPreviewScope } .sgs-form-field__file-icon{color:${ fileIconColourValue };}`,
+		fileIconBoxValue && `.${ formPreviewScope } .sgs-form-field__file-icon{width:${ fileIconBoxValue };height:${ fileIconBoxValue };}`,
+		fileIconSizeValue && `.${ formPreviewScope } .sgs-form-field__file-icon svg{width:${ fileIconSizeValue };height:${ fileIconSizeValue };}`,
+		zoneBoxDecls && `.${ formPreviewScope } .sgs-form-field__file-label{${ zoneBoxDecls }}`,
+		zoneIconRadiusDecls && `.${ formPreviewScope } .sgs-form-field__file-icon{${ zoneIconRadiusDecls }}`,
 		tierValueOf( attributes.requiredMarkHidden, previewTier ) && `.${ formPreviewScope } .sgs-form-field__required{display:none;}`,
 		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
 		trackColourValue && `.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,
@@ -778,6 +806,27 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'required-mark',
 						label: __( 'Required mark colour', 'sgs-blocks' ),
 						attrs: { base: 'requiredMarkColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'optional-tag',
+						label: __( 'Optional tag colour', 'sgs-blocks' ),
+						attrs: { base: 'optionalColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'file-icon-background',
+						label: __( 'Upload zone icon background', 'sgs-blocks' ),
+						attrs: { base: 'fileIconBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'file-icon-colour',
+						label: __( 'Upload zone icon colour', 'sgs-blocks' ),
+						attrs: { base: 'fileIconColour' },
 						attributes,
 						setAttributes,
 					} ),
@@ -1145,6 +1194,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						) }
 					</ResponsiveOverride>
 				</PanelBody>
+				<FieldMarksPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<UploadZonePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* One Typography panel, one target per surface. 'All text' (prefix '')
 					   paints the form root and is inherited by anything the other targets
@@ -1331,6 +1382,21 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								key: 'fileStatus',
 								label: __( 'File upload status', 'sgs-blocks' ),
 								prefix: 'fileStatus',
+								fontSizePresets: true,
+								showFontFamily: true,
+								showDecoration: true,
+								showTransform: true,
+								showLetterSpacing: true,
+								showTextAlign: true,
+								showTextWrap: true,
+								showTextStroke: true,
+								showTextColumns: true,
+								showWritingMode: true,
+							},
+							{
+								key: 'optional',
+								label: __( 'Optional tag', 'sgs-blocks' ),
+								prefix: 'optional',
 								fontSizePresets: true,
 								showFontFamily: true,
 								showDecoration: true,

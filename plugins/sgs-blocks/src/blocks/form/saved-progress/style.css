@@ -68,9 +68,13 @@
 	font-weight: 700;
 }
 
-.sgs-form-review__edit {
+/* The 44px touch target is the fallback; the Edit button's minimum height setting replaces it. */
+:where(.sgs-form-review__edit) {
 	min-width: 44px;
-	min-height: 44px;
+	min-height: var(--sgs-form-review-edit-min-height, 44px);
+}
+
+.sgs-form-review__edit {
 	padding: 0.5rem 1.125rem;
 	border: 1px solid currentColor;
 	border-radius: 999px;

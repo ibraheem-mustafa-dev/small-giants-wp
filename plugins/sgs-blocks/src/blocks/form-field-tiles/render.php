@@ -44,6 +44,8 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_submission_name;
+use function SGS\Blocks\Forms\field_required_mark;
+use function SGS\Blocks\Forms\field_optional_tag;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
@@ -369,14 +371,13 @@ $sgs_ft_extra_class = trim( 'sgs-form-field--tiles-style-' . esc_attr( $selected
 echo field_open( $attributes, 'tiles', $sgs_ft_extra_class ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — field_open() returns safe markup.
 
 // Tile groups use fieldset + legend for correct accessibility grouping.
-echo '<fieldset class="sgs-form-field__group">';
+// A multi-select group is "at least one" (custom-messages.js::syncGroupRequired); a radio group keeps native required.
+echo '<fieldset class="sgs-form-field__group"' . ( $required && $multi ? ' data-sgs-group-required' : '' ) . '>';
 
 if ( ! empty( $attributes['label'] ?? '' ) ) {
 	echo '<legend class="sgs-form-field__label">';
 	echo sgs_rich_text_kses( (string) $attributes['label'], false );
-	if ( $required ) {
-		echo ' <span class="sgs-form-field__required" aria-hidden="true">*</span>';
-	}
+	echo $required ? field_required_mark() : field_optional_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both helpers return escaped markup.
 	echo '</legend>';
 }
 
@@ -391,7 +392,7 @@ foreach ( $tiles as $i => $tile ) {
 	echo '<label class="sgs-form-tile' . ( $tile_checked ? ' sgs-form-tile--selected' : '' ) . '" for="' . esc_attr( $tile_id ) . '" data-wp-on--click="actions.toggleTile">';
 	echo '<input type="' . esc_attr( $input_type ) . '" id="' . esc_attr( $tile_id ) . '" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $tile_value ) . '" class="sgs-form-tile__input"' . ( $tile_checked ? ' checked' : '' );
 	if ( $required ) {
-		echo ' required aria-required="true"';
+		echo ( $multi ? '' : ' required' ) . ' aria-required="true"';
 	}
 	// First tile carries aria-describedby for the whole group.
 	if ( 0 === $i ) {

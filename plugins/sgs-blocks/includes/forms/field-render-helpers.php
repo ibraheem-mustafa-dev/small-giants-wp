@@ -143,8 +143,38 @@ function field_label( string $field_id, array $attributes ): string {
 		esc_attr( $field_id ),
 		$hidden ? ' sgs-sr-only' : '',
 		sgs_rich_text_kses( (string) $label, false ),
-		$required ? ' <span class="sgs-form-field__required" aria-hidden="true">*</span><span class="sgs-sr-only">(required)</span>' : ''
+		$required ? field_required_mark() : field_optional_tag( $attributes )
 	);
+}
+
+/**
+ * The required mark printed after a label or legend: the asterisk (hidden from assistive technology) and
+ * a screen-reader "(required)". The space before the mark is the stylesheet's margin, set by the form's
+ * Required mark gap, never a literal space.
+ *
+ * @return string Mark HTML.
+ */
+function field_required_mark(): string {
+	return '<span class="sgs-form-field__required" aria-hidden="true">*</span><span class="sgs-sr-only"> ' . esc_html__( '(required)', 'sgs-blocks' ) . '</span>';
+}
+
+/**
+ * The optional tag printed after the label of a field that is not required and switches the tag on (its
+ * `optionalTag` attribute). The text is the open form's Optional tag text (read from the form's render scope,
+ * field-name-scope.php), else "Optional".
+ *
+ * @param array<string, mixed> $attributes Field block attributes.
+ * @return string Tag HTML (empty for a required field or one that leaves the tag off).
+ */
+function field_optional_tag( array $attributes ): string {
+	if ( ! empty( $attributes['required'] ) || empty( $attributes['optionalTag'] ) ) {
+		return '';
+	}
+	$text = form_scope_optional_text();
+	if ( '' === $text ) {
+		$text = __( 'Optional', 'sgs-blocks' );
+	}
+	return '<span class="sgs-form-field__optional">' . esc_html( $text ) . '</span>';
 }
 
 /**

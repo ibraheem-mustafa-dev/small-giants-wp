@@ -108,6 +108,7 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 		padding,
 		margin,
 		contentAlign,
+		alignSelf,
 		iconGap,
 		iconSize,
 	} = attributes;
@@ -118,6 +119,10 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	const align = tierValueOf( contentAlign, tier );
 	if ( [ 'flex-start', 'center', 'flex-end' ].includes( align ) ) {
 		style.justifyContent = align;
+	}
+	const selfAlign = tierValueOf( alignSelf, tier );
+	if ( [ 'auto', 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' ].includes( selfAlign ) ) {
+		style.alignSelf = selfAlign;
 	}
 	const gap = tierLengthPreview( iconGap, tier );
 	if ( gap ) {

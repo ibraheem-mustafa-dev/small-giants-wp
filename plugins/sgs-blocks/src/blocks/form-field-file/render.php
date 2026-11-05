@@ -41,6 +41,19 @@ $drop_label = ! empty( $upload_text )
 	? $upload_text
 	: __( 'Drag a file here or click to browse', 'sgs-blocks' );
 
+// The line under the prompt: the author's own text, else the generated size limit.
+$hint_text = trim( (string) ( $attributes['hintText'] ?? '' ) );
+$hint_text = '' !== $hint_text ? esc_html( $hint_text ) : sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max );
+
+// Optional Lucide icon (zoneIcon) before the prompt; the row layout belongs to the dashed look.
+$zone_icon_slug = sanitize_key( (string) ( $attributes['zoneIcon'] ?? '' ) );
+$zone_icon_svg  = '';
+if ( '' !== $zone_icon_slug ) {
+	require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
+	$zone_icon_svg = sgs_get_lucide_icon( $zone_icon_slug );
+}
+$is_row = 'row' === ( $attributes['zoneLayout'] ?? 'column' ) && ! $is_panel;
+
 echo field_open( $attributes, 'file' );
 echo field_label( $fid, $attributes );
 echo '<div class="sgs-form-field__file-zone' . ( $is_panel ? ' sgs-form-field__file-zone--panel' : '' ) . ( $is_native ? ' sgs-form-field__file-zone--native' : '' ) . '">';
@@ -65,9 +78,14 @@ printf(
 );
 
 if ( ! $is_native ) {
-	echo '<div class="sgs-form-field__file-label sgs-focus-proxy">';
+	echo '<div class="sgs-form-field__file-label sgs-focus-proxy' . ( $is_row ? ' sgs-form-field__file-label--row' : '' ) . '">';
+	if ( '' !== $zone_icon_svg ) {
+		echo '<span class="sgs-form-field__file-icon" aria-hidden="true">' . $zone_icon_svg . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
+	}
+	echo $is_row ? '<span class="sgs-form-field__file-text">' : '';
 	echo '<span>' . sgs_rich_text_kses( (string) $drop_label, false ) . '</span>';
-	echo '<span class="sgs-form-field__file-hint">' . sprintf( esc_html__( 'Max %d MB', 'sgs-blocks' ), $max ) . '</span>';
+	echo '<span class="sgs-form-field__file-hint">' . $hint_text . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above.
+	echo $is_row ? '</span>' : '';
 	if ( $is_panel ) {
 		// The help line and a button-look cue sit inside the panel; the whole panel is the file input's target.
 		echo field_help( $fid, $attributes );

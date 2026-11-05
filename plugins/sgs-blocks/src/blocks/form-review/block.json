@@ -160,6 +160,7 @@
                         "css:border-width": "editButtonBorderWidth",
                         "css:border-radius": "editButtonBorderRadius",
                         "css:padding": "editButtonPadding",
+                        "css:min-height": "editButtonMinHeight",
                         "css:font-size": "editButtonFontSize",
                         "css:font-weight": "editButtonFontWeight",
                         "css:font-style": "editButtonFontStyle",
@@ -388,6 +389,11 @@
         "editButtonPadding": {
             "type": "object",
             "default": {}
+        },
+        "editButtonMinHeight": {
+            "type": "object",
+            "default": {},
+            "description": "Minimum height of the Edit button, per device: {desktop,tablet,mobile}, each a CSS length ('37px', '2.3rem') or a bare number of px. The value is the height, even below 44px. Empty = the stylesheet's 44px."
         },
         "editButtonFontSize": {
             "type": "object",

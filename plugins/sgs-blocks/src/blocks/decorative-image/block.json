@@ -131,6 +131,12 @@
 			"type": "object",
 			"default": {"desktop": 50}
 		},
+        "_comment_anchorTo": "Where the edge offsets are measured from. parent (default): the layer's containing block, which inside sgs/hero is the content column. section: sgs/hero prints the layer as a direct child of the hero root, so the offsets are measured from the whole section and do not drift when the copy changes size. Outside a hero the two are the same.",
+        "anchorTo": {
+            "type": "string",
+            "enum": [ "parent", "section" ],
+            "default": "parent"
+        },
         "_comment_edges": "Edge offsets, per device: a length from the shared length control, negative values included. An axis whose edge (left or right; top or bottom) holds a value at any device is placed by its edges at every device and drops its centre percentage and its half of the centring translate; an axis with none keeps positionX/positionY. Unset prints nothing.",
         "positionTop": {
             "type": "object",

@@ -428,6 +428,9 @@ if ( $is_video ) {
 	// not a silent drop (this block never had object-fit/focal-point controls
 	// for video before this migration either).
 	$video_wrapper_class = array( 'sgs-decorative-image', 'sgs-decorative-image--video' );
+	if ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ) {
+		$video_wrapper_class[] = 'sgs-decorative-image--anchor-section';
+	}
 	if ( $has_content ) {
 		$video_wrapper_class[] = 'sgs-decorative-image--layer';
 		$video_wrapper_class[] = 'sgs-decorative-image--over-image';
@@ -585,6 +588,10 @@ if ( $sgs_di_wants_wrapper ) {
 	$style_tag_html = '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>';
 
 	$sgs_di_wrapper_class = array( 'sgs-decorative-image' );
+	// A layer anchored to the section is lifted out of its parent's content column by sgs/hero (hero/render.php).
+	if ( 'section' === ( $attributes['anchorTo'] ?? 'parent' ) ) {
+		$sgs_di_wrapper_class[] = 'sgs-decorative-image--anchor-section';
+	}
 	if ( $has_content ) {
 		$sgs_di_wrapper_class[] = 'sgs-decorative-image--layer';
 		if ( $has_media ) {

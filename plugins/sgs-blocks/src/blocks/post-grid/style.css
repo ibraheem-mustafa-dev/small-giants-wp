@@ -449,6 +449,16 @@
 	text-decoration: none;
 }
 
+:where(.sgs-post-grid__readmore-icon) {
+	display: inline-flex;
+	align-items: center;
+}
+
+:where(.sgs-post-grid__readmore-icon svg) {
+	width: 1em;
+	height: 1em;
+}
+
 .sgs-post-grid__readmore:hover,
 .sgs-post-grid__readmore:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	text-decoration: none;

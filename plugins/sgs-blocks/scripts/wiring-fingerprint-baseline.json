@@ -3,6 +3,7 @@
  "counts": {
   "L3": 151,
   "L5": 25,
+  "C1": 2,
   "L2": 2,
   "L3-tier": 1,
   "L7": 1
@@ -77,6 +78,8 @@
   "sgs/media::overlayOpacity::L3",
   "sgs/media::overlayOpacity::L5",
   "sgs/media::padding::L3",
+  "sgs/mega-panel::drawerCardLinkBg::C1",
+  "sgs/mega-panel::drawerCardLinkColour::C1",
   "sgs/modal::scrimBlur::L3",
   "sgs/modal::scrimColour::L3",
   "sgs/modal::scrimColourGradient::L3",

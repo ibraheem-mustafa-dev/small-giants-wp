@@ -289,15 +289,9 @@
   },
   {
    "block": "form",
-   "selector": ".sgs-form-review__edit",
-   "property": "min-height",
-   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
-  },
-  {
-   "block": "form",
-   "selector": ".sgs-form-review__edit",
+   "selector": ":where(.sgs-form-review__edit)",
    "property": "min-width",
-   "reason": "No form setting sizes this element: fieldMinHeight and fieldTextareaMinHeight size the text, select and textarea controls and submitMinHeight the submit button, and the remaining settings here are typography, colour and padding."
+   "reason": "House floor: the review Edit pill's width is its label plus padding, always wider than 44px for any real label; editButtonMinHeight (sgs/form-review) governs only its height, which reads the setting with 44px as the fallback."
   },
   {
    "block": "form",

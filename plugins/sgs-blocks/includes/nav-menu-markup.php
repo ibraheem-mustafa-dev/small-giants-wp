@@ -219,7 +219,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 						}
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-bar-menu__item--mega">'
-							. '<div class="%4$s" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '<div class="%4$s" data-wp-interactive="sgs/mega" %2$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--focusin="actions.warmPanels" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '%5$s'
 							// `data-lenis-prevent`: the site runs Lenis smooth scrolling
 							// (<html class="lenis">), which intercepts wheel events
@@ -387,7 +387,7 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 
 						$html .= sprintf(
 							'<li class="%1$s sgs-nav-bar-menu__item--has-submenu">'
-							. '<div class="sgs-nav-bar-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
+							. '<div class="sgs-nav-bar-menu__submenu-root" data-sgs-nav-disclosure="dropdown" data-sgs-nav-submenu-align="%2$s" data-wp-interactive="sgs/mega" %3$s data-wp-on--mouseenter="actions.enterBridge" data-wp-on--focusin="actions.warmPanels" data-wp-on--mouseleave="actions.leaveBridge" data-wp-watch="callbacks.watchOpenState">'
 							. '%4$s'
 							// `data-lenis-prevent` for the same reason as the mega panel
 							// above — see that note. A dropdown is the likelier of the two

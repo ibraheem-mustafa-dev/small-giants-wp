@@ -48,6 +48,18 @@ def reseed(copy: Path, marker: str) -> None:
     con.close()
 
 
+def test_publish_with_the_copy_still_named_refuses_clearly(
+    shared: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    copy = tmp_path / "copy.db"
+    assert pub.main(["begin", "--copy", str(copy)]) == 0
+    reseed(copy, "reseeded")
+    monkeypatch.setenv("SGS_FRAMEWORK_DB", str(copy))  # left set from gating on the copy
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_REFUSED
+    assert "unset it for publish" in capsys.readouterr().err
+    assert marker_of(shared) == "start"
+
+
 def test_begin_publish_replaces_shared(shared: Path, tmp_path: Path) -> None:
     copy = tmp_path / "copy.db"
     assert pub.main(["begin", "--copy", str(copy)]) == 0

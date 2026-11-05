@@ -38,13 +38,14 @@ function field_name_suffix_reserve( string $block_name ): int {
 /**
  * The scope stack: index 0 is the base scope, each open form pushes one.
  *
- * @return array<int, array{reserved: array<string, bool>, taken: array<string, bool>}> Scopes, by reference.
+ * @return array<int, array{reserved: array<string, bool>, taken: array<string, bool>, optional: string}> Scopes, by reference.
  */
 function &field_name_scopes(): array {
 	static $scopes = array(
 		array(
 			'reserved' => array(),
 			'taken'    => array(),
+			'optional' => '',
 		),
 	);
 	return $scopes;
@@ -88,7 +89,18 @@ function field_names_open_form( array $parsed_form ): void {
 	$scopes[] = array(
 		'reserved' => field_names_collect_explicit( $inner ),
 		'taken'    => array(),
+		'optional' => trim( (string) ( $parsed_form['attrs']['optionalText'] ?? '' ) ),
 	);
+}
+
+/**
+ * The open form's Optional tag text (the form's `optionalText` attribute), read by the field label helpers.
+ *
+ * @return string The text, or '' outside a form or when the form sets none.
+ */
+function form_scope_optional_text(): string {
+	$scopes = &field_name_scopes();
+	return (string) ( $scopes[ count( $scopes ) - 1 ]['optional'] ?? '' );
 }
 
 /**

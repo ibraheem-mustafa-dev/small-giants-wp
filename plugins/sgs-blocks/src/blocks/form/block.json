@@ -918,9 +918,92 @@
 					],
 					"attrMap": {
 						"css:color": "requiredMarkColour",
-						"css:display": "requiredMarkHidden"
+						"css:display": "requiredMarkHidden",
+						"css:margin-inline-start": "requiredMarkGap"
 					},
 					"_note": "The asterisk beside a required field's label, emitted by includes/forms/field-render-helpers.php::field_label and by the checkbox field."
+				},
+				"optional-tag": {
+					"selector": ".sgs-form-field__optional",
+					"motion": false,
+					"label": "Optional tag",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "optional",
+					"attrMap": {
+						"css:color": "optionalColour",
+						"css:font-size": "optionalFontSize",
+						"css:font-weight": "optionalFontWeight",
+						"css:font-style": "optionalFontStyle",
+						"css:font-family": "optionalFontFamily",
+						"css:text-transform": "optionalTextTransform",
+						"css:text-decoration": "optionalTextDecoration",
+						"css:line-height": "optionalLineHeight",
+						"css:letter-spacing": "optionalLetterSpacing",
+						"css:text-align": "optionalTextAlign",
+						"css:text-wrap": "optionalTextWrap",
+						"css:-webkit-text-stroke-width": "optionalTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "optionalTextStrokeColour",
+						"css:column-count": "optionalTextColumns",
+						"css:writing-mode": "optionalWritingMode"
+					},
+					"_note": "The tag after the label of a field that is not required, text from optionalText (a content attribute), printed on fields whose optionalTag is on by includes/forms/field-render-helpers.php::field_optional_tag and by the checkbox and tiles legends. Typography is the optional* family (render.php sgs_typography_css_rule); colour is optionalColour.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "optionalTextStrokeColourHover"
+							}
+						}
+					}
+				},
+				"file-zone-box": {
+					"selector": ".sgs-form-field__file-label",
+					"motion": false,
+					"label": "Upload zone box",
+					"order": 24,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:padding": "fileLabelPadding",
+						"css:border-width": "fileLabelBorderWidth",
+						"css:border-style": "fileLabelBorderStyle",
+						"css:border-radius": "fileLabelBorderRadius",
+						"css:gap": "fileLabelGap"
+					},
+					"_note": "The upload zone's box (padding, border width, style and corner radius, gap). Its border and fill colours are fileLabelBorderColour* and fileLabelBackgroundColour*. render.php prints it with sgs_emit_responsive_css and sgs_border_element_decls under the form's scope."
+				},
+				"file-zone-icon": {
+					"selector": ".sgs-form-field__file-icon",
+					"motion": false,
+					"label": "Upload zone icon",
+					"order": 25,
+					"clusters": [
+						"layout",
+						"fill"
+					],
+					"attrMap": {
+						"css:width": "fileIconBoxSize",
+						"css:background-color": "fileIconBackground",
+						"css:color": "fileIconColour",
+						"css:border-radius": "fileIconRadius"
+					},
+					"_note": "The Lucide icon chosen on an upload field (zoneIcon). fileIconBoxSize sets the holder's width and height; the drawing's size is fileIconSize."
+				},
+				"file-zone-icon-drawing": {
+					"selector": ".sgs-form-field__file-icon svg",
+					"motion": false,
+					"label": "Upload zone icon drawing",
+					"order": 26,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:width": "fileIconSize"
+					},
+					"_note": "The icon drawing inside the holder; width and height share fileIconSize."
 				},
 				"step-buttons": {
 					"selector": ".sgs-form__button--next, .sgs-form__button--submit",
@@ -1763,6 +1846,188 @@
 		"fileLabelBackgroundColourHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"optionalText": {
+			"type": "string",
+			"default": "",
+			"role": "content",
+			"description": "Text of the tag printed after the label of each field that switches its own Optional tag on (for example \"Optional\"). Empty = \"Optional\". Read by includes/forms/field-render-helpers.php::field_optional_tag through the form's render scope."
+		},
+		"requiredMarkGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between a field label and its required mark or optional tag, per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the stylesheet's 0.25em."
+		},
+		"optionalColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the optional tag after a field label. Empty = the label colour."
+		},
+		"optionalFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"optionalFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"optionalFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"optionalFontStyle": {
+			"type": "string",
+			"default": ""
+		},
+		"optionalFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"optionalTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"optionalTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"optionalLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"optionalLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionalLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"optionalLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"optionalTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"optionalTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"optionalTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"optionalTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"optionalTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"optionalTextColumns": {
+			"type": "number"
+		},
+		"optionalWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"fileLabelPadding": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Padding of the upload zone, per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Empty = the stylesheet's 2rem."
+		},
+		"fileLabelBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of the upload zone as a box {top,right,bottom,left}, or one box per device. Empty = the stylesheet's 2px."
+		},
+		"fileLabelBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "dashed",
+			"description": "Border style of the upload zone once a width is set. Colour is fileLabelBorderColour."
+		},
+		"fileLabelBorderRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Corner radius of the upload zone, per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Empty = the stylesheet's medium radius."
+		},
+		"fileLabelGap": {
+			"type": "object",
+			"default": {},
+			"description": "Space between the icon, the prompt and the hint inside the upload zone, per device: each a CSS length or a bare number of px. Empty = the stylesheet's 0.5rem (1rem in the row layout)."
+		},
+		"fileIconBoxSize": {
+			"type": "object",
+			"default": {},
+			"description": "Width and height of the upload zone's icon holder, per device: each a CSS length or a bare number of px. Empty = the icon's own size."
+		},
+		"fileIconSize": {
+			"type": "object",
+			"default": {},
+			"description": "Width and height of the upload zone's icon drawing, per device: each a CSS length or a bare number of px. Empty = 24px."
+		},
+		"fileIconBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Fill behind the upload zone's icon. Empty = none."
+		},
+		"fileIconColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the upload zone's icon. Empty = the zone's text colour."
+		},
+		"fileIconRadius": {
+			"type": "object",
+			"default": {
+				"desktop": {}
+			},
+			"description": "Corner radius of the upload zone's icon holder, per device: {desktop,tablet,mobile}, each {topLeft,topRight,bottomRight,bottomLeft}. Empty = square."
 		},
 		"requireLogin": {
 			"type": "boolean",
