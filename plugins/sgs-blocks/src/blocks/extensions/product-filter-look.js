@@ -15,7 +15,7 @@
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
 import DesignTokenPicker, { resolveColourToken } from '../../components/DesignTokenPicker';
@@ -56,6 +56,10 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					sgsChipCountBackground: { type: 'string', default: '' },
 					sgsChipCountColour: { type: 'string', default: '' },
 					sgsChipCountRadius: { type: 'string', default: '' },
+					sgsChipCountSize: { type: 'string', default: '' },
+					sgsChipCountFontSize: { type: 'string', default: '' },
+					sgsChipAllLabel: { type: 'string', default: '' },
+					sgsChipStartTerm: { type: 'string', default: '' },
 				},
 			};
 		}
@@ -151,8 +155,39 @@ if ( ! window.__sgsFilterLookRegistered ) {
 										onChange={ ( val ) => setAttributes( { sgsChipCountRadius: val || '' } ) }
 										help={ __( 'Empty makes a full pill.', 'sgs-blocks' ) }
 									/>
+									<SgsLengthControl
+										scale="spacing"
+										label={ __( 'Count pill size', 'sgs-blocks' ) }
+										value={ attributes.sgsChipCountSize || '' }
+										units={ LENGTH_UNITS }
+										onChange={ ( val ) => setAttributes( { sgsChipCountSize: val || '' } ) }
+										help={ __( 'Sets the pill’s height and least width. Empty sizes it to the number.', 'sgs-blocks' ) }
+									/>
+									<SgsLengthControl
+										scale="font-size"
+										label={ __( 'Count pill text size', 'sgs-blocks' ) }
+										value={ attributes.sgsChipCountFontSize || '' }
+										onChange={ ( val ) => setAttributes( { sgsChipCountFontSize: val || '' } ) }
+										help={ empty }
+									/>
 								</>
 							) }
+							<TextControl
+								label={ __( '“All” chip label', 'sgs-blocks' ) }
+								value={ attributes.sgsChipAllLabel || '' }
+								onChange={ ( val ) => setAttributes( { sgsChipAllLabel: val || '' } ) }
+								help={ __( 'Adds a first chip that clears this filter. Leave empty for none.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<TextControl
+								label={ __( 'Start with this term', 'sgs-blocks' ) }
+								value={ attributes.sgsChipStartTerm || '' }
+								onChange={ ( val ) => setAttributes( { sgsChipStartTerm: val || '' } ) }
+								help={ __( 'The term’s slug (for example just-had-a-baby). A page opened with no filter chosen is sent once to the same page with this term chosen, so the address can be shared. Leave empty to open unfiltered.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
 						</PanelBody>
 					) }
 					{ SORT_BLOCK === name && (
@@ -215,6 +250,8 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				[ 'count-pill', pill && 'on' ],
 				[ 'count-fill', pill && colour( attributes.sgsChipCountBackground ) ],
 				[ 'count-text', pill && colour( attributes.sgsChipCountColour ) ],
+				[ 'count-size', pill && attributes.sgsChipCountSize ],
+				[ 'count-font-size', pill && attributes.sgsChipCountFontSize ],
 			];
 		} else {
 			rows = [

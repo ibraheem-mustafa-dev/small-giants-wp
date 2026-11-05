@@ -17,6 +17,22 @@
  * exist and the chip buttons keep the unstyled default. With `sgsChipPaintButtons` on, those same stored
  * colours are printed straight onto the chip buttons, resting and chosen (`aria-checked="true"`).
  *
+ * Count pill (`sgsChipCountPill`): WooCommerce prints the count as `(<span data-wp-text="context.item.count">3</span>)`
+ * inside `.wc-block-product-filter-chips__count`. With the pill on, the two bracket text nodes are dropped so the pill holds
+ * the bare number (the `data-wp-text` span, which the Interactivity store updates, is untouched); the pill is centred and
+ * `sgsChipCountSize` / `sgsChipCountFontSize` size it.
+ *
+ * All chip (`sgsChipAllLabel`): a non-empty label adds a first chip, a plain link to this page with the group's filter
+ * parameters removed, marked `aria-current="true"` while nothing in the group is chosen. A group with a start term links
+ * to the page with that parameter set to empty, so the start term is not applied again.
+ *
+ * Start term (`sgsChipStartTerm`): a term slug the group opens on. WooCommerce keeps filter state only in the URL query
+ * (`tags`, `categories`, `filter_<attribute>`), read from REQUEST_URI for the chosen state and from the query vars for the
+ * product list, so a page opened with none of those parameters is redirected (302) once to the same URL with the start
+ * term's parameter: the chip is chosen by WooCommerce itself (`aria-checked`), the address is shareable, and clearing the
+ * chip works (the Interactivity router fetches with `Sec-Fetch-Dest: empty`, which is never redirected). The page is sent
+ * uncacheable while it can redirect. Only page content is searched for the setting.
+ *
  * Sort (`sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`,
  * `sgsSortFontWeight`): printed on `select.orderby`.
  *
@@ -34,6 +50,8 @@ const SGS_FILTER_LOOK_CHIPS_BLOCK = 'woocommerce/product-filter-chips';
 const SGS_FILTER_LOOK_SORT_BLOCK  = 'woocommerce/catalog-sorting';
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_inject_filter_look', 11, 2 );
+add_filter( 'render_block', __NAMESPACE__ . '\sgs_filter_look_chips_markup', 9, 3 );
+add_filter( 'wp', __NAMESPACE__ . '\sgs_chip_start_maybe_redirect', 1 );
 
 /**
  * Add a marker + scope class to a block's root and hand its scoped rule to the page.
@@ -122,7 +140,7 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 	$root = '.sgs-filter-look.' . $scope;
 	$item = $root . ' .wc-block-product-filter-chips__item';
 
-	$rest = array();
+	$rest   = array();
 	$weight = sgs_font_weight_value( $attrs['sgsChipFontWeight'] ?? '' );
 	if ( '' !== $weight ) {
 		$rest[] = 'font-weight:' . $weight;
@@ -162,11 +180,21 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 
 	$count = array();
 	if ( true === ( $attrs['sgsChipCountPill'] ?? false ) ) {
-		$count[] = 'padding-inline:0.5em';
-		$count[] = 'min-width:1.5em';
-		$count[] = 'text-align:center';
-		$radius  = sgs_css_single_length_value( (string) ( $attrs['sgsChipCountRadius'] ?? '' ) );
-		$count[] = 'border-radius:' . ( '' !== $radius ? $radius : '999px' );
+		$size      = sgs_css_single_length_value( (string) ( $attrs['sgsChipCountSize'] ?? '' ) );
+		$font_size = sgs_css_single_length_value( (string) ( $attrs['sgsChipCountFontSize'] ?? '' ) );
+		$radius    = sgs_css_single_length_value( (string) ( $attrs['sgsChipCountRadius'] ?? '' ) );
+		$count[]   = 'display:inline-flex';
+		$count[]   = 'align-items:center';
+		$count[]   = 'justify-content:center';
+		$count[]   = 'padding-inline:0.5em';
+		$count[]   = 'min-width:' . ( '' !== $size ? $size : '1.5em' );
+		if ( '' !== $size ) {
+			$count[] = 'height:' . $size;
+		}
+		if ( '' !== $font_size ) {
+			$count[] = 'font-size:' . $font_size;
+		}
+		$count[]    = 'border-radius:' . ( '' !== $radius ? $radius : '999px' );
 		$count_fill = sgs_filter_look_colour( $attrs, array( 'sgsChipCountBackground' ) );
 		if ( '' !== $count_fill ) {
 			$count[] = 'background-color:' . $count_fill;
@@ -177,9 +205,20 @@ function sgs_filter_look_chips_css( array $attrs, string $scope ): string {
 		}
 	}
 
+	// The All chip is a link: it centres like a button and, while chosen, wears WooCommerce's own chosen-chip look.
+	$has_all     = '' !== trim( (string) ( $attrs['sgsChipAllLabel'] ?? '' ) );
+	$all         = $has_all ? array( 'display:inline-flex', 'align-items:center', 'text-decoration:none' ) : array();
+	$all_current = $has_all ? array(
+		'background:var(--wc-product-filter-chips-selected-background,var(--wc-product-filter-chips-text,CanvasText))',
+		'border-color:var(--wc-product-filter-chips-selected-border,var(--wc-product-filter-chips-text,CanvasText))',
+		'color:var(--wc-product-filter-chips-selected-text,var(--wc-product-filter-chips-background,Canvas))',
+	) : array();
+
 	return sgs_filter_look_rule( $item, $rest )
 		. sgs_filter_look_rule( $item . '[aria-checked="true"]', $chosen )
-		. sgs_filter_look_rule( $root . ' .wc-block-product-filter-chips__count', $count );
+		. sgs_filter_look_rule( $root . ' .wc-block-product-filter-chips__count', $count )
+		. sgs_filter_look_rule( $root . ' .sgs-filter-look__all', $all )
+		. sgs_filter_look_rule( $root . ' .sgs-filter-look__all[aria-current="true"]', $all_current );
 }
 
 /**
@@ -244,4 +283,200 @@ function sgs_inject_filter_look( $block_content, $block ) {
 		);
 	}
 	return $block_content;
+}
+
+/**
+ * The query parameters one filter group keeps its state in.
+ *
+ * @param string $type Item type WooCommerce stores: `taxonomy/<taxonomy>` or `attribute/<attribute>`.
+ * @return string[] Parameter names; empty for an unknown type.
+ */
+function sgs_chip_group_param_keys( string $type ): array {
+	if ( 0 === strpos( $type, 'attribute/' ) ) {
+		$name = substr( $type, 10 );
+		return '' === $name ? array() : array( 'filter_' . $name, 'query_type_' . $name );
+	}
+	if ( 0 !== strpos( $type, 'taxonomy/' ) ) {
+		return array();
+	}
+	$taxonomy = substr( $type, 9 );
+	$map      = array();
+	if ( function_exists( 'wc_get_container' ) && class_exists( '\Automattic\WooCommerce\Internal\ProductFilters\Params' ) ) {
+		$params = wc_get_container()->get( \Automattic\WooCommerce\Internal\ProductFilters\Params::class )->get_param( 'taxonomy' );
+		$map    = is_array( $params ) ? $params : array();
+	}
+	$map += array(
+		'product_cat'   => 'categories',
+		'product_tag'   => 'tags',
+		'product_brand' => 'brands',
+	);
+	return array( $map[ $taxonomy ] ?? 'filter_' . $taxonomy );
+}
+
+/**
+ * The All chip: a link that clears the group's filter, first in the chip list.
+ *
+ * @param string $label   Chip text.
+ * @param string $href    Page address with the group's parameters removed.
+ * @param bool   $current True while nothing in the group is chosen.
+ * @return string Markup.
+ */
+function sgs_chip_all_markup( string $label, string $href, bool $current ): string {
+	return '<a class="wc-block-product-filter-chips__item sgs-filter-look__all" href="' . esc_url( $href ) . '"'
+		. ( $current ? ' aria-current="true"' : '' ) . '><span class="wc-block-product-filter-chips__label"><span class="wc-block-product-filter-chips__text">'
+		. esc_html( $label ) . '</span></span></a>';
+}
+
+/**
+ * Render-block filter: the bare count number and the All chip.
+ *
+ * @param mixed $block_content Rendered block HTML.
+ * @param mixed $block         Parsed block.
+ * @param mixed $instance      Block instance (holds the filter group's items in its context).
+ * @return mixed
+ */
+function sgs_filter_look_chips_markup( $block_content, $block, $instance = null ) {
+	if ( ! is_string( $block_content ) || ! is_array( $block ) || SGS_FILTER_LOOK_CHIPS_BLOCK !== ( $block['blockName'] ?? '' ) ) {
+		return $block_content;
+	}
+	$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+
+	if ( true === ( $attrs['sgsChipCountPill'] ?? false ) ) {
+		$block_content = preg_replace(
+			'/\(\s*(<span data-wp-text="context\.item\.count">[^<]*<\/span>)\s*\)/',
+			'$1',
+			$block_content
+		);
+	}
+
+	$label = trim( (string) ( $attrs['sgsChipAllLabel'] ?? '' ) );
+	if ( '' === $label || ! is_object( $instance ) || ! is_array( $instance->context ?? null ) ) {
+		return $block_content;
+	}
+	$items = $instance->context['woocommerce/selectableItems']['items'] ?? null;
+	if ( ! is_array( $items ) || array() === $items ) {
+		return $block_content;
+	}
+	$first  = reset( $items );
+	$keys   = sgs_chip_group_param_keys( is_array( $first ) ? (string) ( $first['type'] ?? '' ) : '' );
+	$anchor = '<div class="wc-block-product-filter-chips__items">';
+	$at     = strpos( $block_content, $anchor );
+	if ( array() === $keys || false === $at ) {
+		return $block_content;
+	}
+	$current = true;
+	foreach ( $items as $item ) {
+		if ( is_array( $item ) && ! empty( $item['selected'] ) ) {
+			$current = false;
+			break;
+		}
+	}
+	$href = remove_query_arg( array_merge( $keys, array( 'paged' ) ) );
+	if ( '' !== trim( (string) ( $attrs['sgsChipStartTerm'] ?? '' ) ) ) {
+		$href = add_query_arg( $keys[0], '', $href );
+	}
+	return substr_replace( $block_content, $anchor . sgs_chip_all_markup( $label, $href, $current ), $at, strlen( $anchor ) );
+}
+
+/**
+ * Every start term set on a chips block, with the filter group it belongs to.
+ *
+ * @param array<int, array<string, mixed>> $blocks Parsed blocks.
+ * @param string                           $type   Item type of the enclosing filter block ('' outside one).
+ * @return array<int, array{type: string, term: string}>
+ */
+function sgs_chip_start_collect( array $blocks, string $type = '' ): array {
+	$found = array();
+	foreach ( $blocks as $block ) {
+		$name  = (string) ( $block['blockName'] ?? '' );
+		$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+		$here  = $type;
+		if ( 'woocommerce/product-filter-taxonomy' === $name ) {
+			$here = 'taxonomy/' . ( is_string( $attrs['taxonomy'] ?? null ) && '' !== $attrs['taxonomy'] ? $attrs['taxonomy'] : 'product_cat' );
+		} elseif ( 'woocommerce/product-filter-attribute' === $name && function_exists( 'wc_get_attribute' ) && ! empty( $attrs['attributeId'] ) ) {
+			$attribute = wc_get_attribute( (int) $attrs['attributeId'] );
+			$here      = $attribute ? 'attribute/' . str_replace( 'pa_', '', (string) $attribute->slug ) : '';
+		}
+		if ( SGS_FILTER_LOOK_CHIPS_BLOCK === $name && '' !== $type && is_string( $attrs['sgsChipStartTerm'] ?? null ) ) {
+			$term = sanitize_title( $attrs['sgsChipStartTerm'] );
+			if ( '' !== $term ) {
+				$found[] = array(
+					'type' => $type,
+					'term' => $term,
+				);
+			}
+		}
+		if ( is_array( $block['innerBlocks'] ?? null ) && array() !== $block['innerBlocks'] ) {
+			$found = array_merge( $found, sgs_chip_start_collect( $block['innerBlocks'], $here ) );
+		}
+	}
+	return $found;
+}
+
+/**
+ * The query arguments to add so each group opens on its start term, or none when the page is already filtered.
+ *
+ * @param array<int, array{type: string, term: string}> $starts   From sgs_chip_start_collect().
+ * @param array<string, mixed>                          $query    The request's query arguments.
+ * @param string[]                                      $all_keys Every filter parameter name WooCommerce reads.
+ * @return array<string, string> Parameter => term slug.
+ */
+function sgs_chip_start_args( array $starts, array $query, array $all_keys ): array {
+	if ( array() !== array_intersect_key( $query, array_flip( $all_keys ) ) ) {
+		return array();
+	}
+	$args = array();
+	foreach ( $starts as $start ) {
+		$keys = sgs_chip_group_param_keys( $start['type'] );
+		if ( array() !== $keys && ! isset( $args[ $keys[0] ] ) ) {
+			$args[ $keys[0] ] = $start['term'];
+		}
+	}
+	return $args;
+}
+
+/**
+ * `wp` action: send an unfiltered page that has a start term to the same page with the term set.
+ *
+ * @return void
+ */
+function sgs_chip_start_maybe_redirect(): void {
+	if ( is_admin() || wp_doing_ajax() || ! is_singular() || 'GET' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		return;
+	}
+	$post = get_queried_object();
+	if ( ! $post instanceof \WP_Post || ! has_block( SGS_FILTER_LOOK_CHIPS_BLOCK, $post ) ) {
+		return;
+	}
+	$starts = array_values(
+		array_filter(
+			sgs_chip_start_collect( parse_blocks( $post->post_content ) ),
+			static fn( array $s ): bool => 0 !== strpos( $s['type'], 'taxonomy/' ) || (bool) term_exists( $s['term'], substr( $s['type'], 9 ) )
+		)
+	);
+	if ( array() === $starts ) {
+		return;
+	}
+	$all_keys = array();
+	foreach ( $starts as $start ) {
+		$all_keys = array_merge( $all_keys, sgs_chip_group_param_keys( $start['type'] ) );
+	}
+	if ( function_exists( 'wc_get_container' ) && class_exists( '\Automattic\WooCommerce\Internal\ProductFilters\Params' ) ) {
+		$all_keys = array_merge( $all_keys, wc_get_container()->get( \Automattic\WooCommerce\Internal\ProductFilters\Params::class )->get_param_keys() );
+	}
+	$args = sgs_chip_start_args( $starts, $_GET, $all_keys ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( array() === $args ) {
+		return;
+	}
+	// This address can redirect, so no cache may keep either answer for it.
+	nocache_headers();
+	header( 'X-LiteSpeed-Cache-Control: no-cache' );
+	do_action( 'litespeed_control_set_nocache', 'sgs chip start term' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- LiteSpeed Cache's own hook.
+	// The Interactivity router fetches regions with Sec-Fetch-Dest: empty; only a page load is redirected.
+	$dest = isset( $_SERVER['HTTP_SEC_FETCH_DEST'] ) ? sanitize_key( wp_unslash( $_SERVER['HTTP_SEC_FETCH_DEST'] ) ) : 'document';
+	if ( 'document' !== $dest ) {
+		return;
+	}
+	wp_safe_redirect( add_query_arg( $args ), 302 );
+	exit;
 }

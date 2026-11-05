@@ -34,10 +34,21 @@
 }
 
 .sgs-filter-look-preview--count-pill .wc-block-product-filter-chips__count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	padding-inline: 0.5em;
 	min-width: 1.5em;
-	text-align: center;
 	border-radius: var(--sgs-fl-count-radius, 999px);
+}
+
+.sgs-filter-look-preview--count-size .wc-block-product-filter-chips__count {
+	min-width: var(--sgs-fl-count-size);
+	height: var(--sgs-fl-count-size);
+}
+
+.sgs-filter-look-preview--count-font-size .wc-block-product-filter-chips__count {
+	font-size: var(--sgs-fl-count-font-size);
 }
 
 .sgs-filter-look-preview--count-fill .wc-block-product-filter-chips__count {

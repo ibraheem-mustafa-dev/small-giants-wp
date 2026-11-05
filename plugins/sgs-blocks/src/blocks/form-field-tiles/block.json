@@ -60,6 +60,8 @@
 					"attrMap": {
 						"css:background-color": "tileSelectedBackgroundColour",
 						"css:border-color": "tileSelectedBorderColour",
+						"css:border-width": "tileSelectedBorderWidth",
+						"css:transform": "tileSelectedOffset",
 						"css:box-shadow": "tileSelectedShadow",
 						"css:box-shadow-color": "tileSelectedShadowColour"
 					},
@@ -638,6 +640,16 @@
 			"type": "string",
 			"default": ""
 		},
+		"tileSelectedBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Border width of the chosen tile (a length). Empty = the stylesheet's 3px of the checkmark and border styles."
+		},
+		"tileSelectedOffset": {
+			"type": "object",
+			"default": {},
+			"description": "How far the chosen tile moves, as {x,y} lengths that may be negative (-2px up and to the left). Empty = it stays put."
+		},
 		"tileSelectedShadow": {
 			"type": "string",
 			"default": ""
@@ -666,7 +678,7 @@
 		"tileBorderWidth": {
 			"type": "object",
 			"default": {},
-			"description": "Border width of each tile as a {top,right,bottom,left} box or a {desktop,tablet,mobile} object of boxes. Empty = the stylesheet's 2px. A selected tile keeps its own 3px."
+			"description": "Border width of each tile as a {top,right,bottom,left} box or a {desktop,tablet,mobile} object of boxes. Empty = the stylesheet's 2px. A chosen tile takes its width from tileSelectedBorderWidth."
 		},
 		"tileBorderStyle": {
 			"type": "string",

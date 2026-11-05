@@ -20,6 +20,7 @@ import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	SgsBoxControl,
+	SgsLengthControl,
 	SgsGapControl,
 	AlignItemsTierControl,
 } from '../../components';
@@ -173,6 +174,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			if ( selectedBorder ) {
 				style.borderColor = selectedBorder;
 			}
+			if ( attributes.tileSelectedBorderWidth ) {
+				style.borderStyle = style.borderStyle || 'solid';
+				style.borderWidth = attributes.tileSelectedBorderWidth;
+			}
+			const offsetX = attributes.tileSelectedOffset?.x;
+			const offsetY = attributes.tileSelectedOffset?.y;
+			if ( offsetX || offsetY ) {
+				style.transform = `translate(${ offsetX || '0' }, ${ offsetY || '0' })`;
+			}
 			const selectedShadow = resolveShadowPreviewComposed( attributes.tileSelectedShadow, attributes.tileSelectedShadowColour );
 			if ( selectedShadow ) {
 				style.boxShadow = selectedShadow;
@@ -311,6 +321,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								defaultValue: '',
 								tileSelectedShadow: '',
 								tileSelectedShadowColour: '',
+								tileSelectedBorderWidth: '',
+								tileSelectedOffset: {},
 							} )
 						}
 					>
@@ -451,6 +463,41 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								help={ __( 'The value of the tile to start chosen. Separate several values with commas on a multi-select field.', 'sgs-blocks' ) }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Chosen tile border width', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.tileSelectedBorderWidth }
+							onDeselect={ () => setAttributes( { tileSelectedBorderWidth: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Chosen tile border width', 'sgs-blocks' ) }
+								value={ attributes.tileSelectedBorderWidth || '' }
+								max={ 12 }
+								onChange={ ( val ) => setAttributes( { tileSelectedBorderWidth: val || '' } ) }
+								help={ __( 'Empty keeps 3px for the checkmark and border styles.', 'sgs-blocks' ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Chosen tile offset', 'sgs-blocks' ) }
+							hasValue={ () => !! ( attributes.tileSelectedOffset?.x || attributes.tileSelectedOffset?.y ) }
+							onDeselect={ () => setAttributes( { tileSelectedOffset: {} } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Chosen tile moves right by', 'sgs-blocks' ) }
+								value={ attributes.tileSelectedOffset?.x || '' }
+								negative
+								max={ 40 }
+								onChange={ ( val ) => setAttributes( { tileSelectedOffset: { ...attributes.tileSelectedOffset, x: val || '' } } ) }
+								help={ __( 'A negative length moves it left.', 'sgs-blocks' ) }
+							/>
+							<SgsLengthControl
+								label={ __( 'Chosen tile moves down by', 'sgs-blocks' ) }
+								value={ attributes.tileSelectedOffset?.y || '' }
+								negative
+								max={ 40 }
+								onChange={ ( val ) => setAttributes( { tileSelectedOffset: { ...attributes.tileSelectedOffset, y: val || '' } } ) }
+								help={ __( 'A negative length moves it up.', 'sgs-blocks' ) }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
