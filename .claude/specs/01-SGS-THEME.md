@@ -51,7 +51,7 @@ Directory-level map of `theme/sgs-theme/` (the files themselves: `git ls-files t
 | `patterns/` | Block patterns by category: content, footers, headers (`sgs-headers`), drawers, mega panels. List: `git ls-files theme/sgs-theme/patterns` or the framework DB |
 | `styles/` | Empty by design: per-client snapshots live at `sites/<client>/theme-snapshot.json` (see §Per-site theme.json Model) |
 
-`templates/home.html` (the blog posts index, the page assigned as `page_for_posts`) carries a LITERAL "Blogs" `sgs/heading` as its h1, not `core/query-title`: `query-title type="archive"` returns empty on a posts index, because core gates it on `is_archive()` and a posts page is `is_home()`. Header and footer content is specified in §Header/Footer/Nav Block System below; Spec 37 owns the block FRs.
+`templates/home.html` (the blog posts index, the page assigned as `page_for_posts`) carries a LITERAL "Blogs" `sgs/heading` as its h1, not `core/query-title`: `query-title type="archive"` returns empty on a posts index, because core gates it on `is_archive()` and a posts page is `is_home()`. Header and footer content is specified in §Header/Footer/Nav Block System below; Spec 37 owns the block FRs. Spacing on an `sgs/` block in a template or part is saved in the block's tier-of-boxes shape (`"padding":{"desktop":{"top":…}}`); a flat `{top,bottom}` box emits no rule, and `plugins/sgs-blocks/scripts/check-tier-storage-shape.py --check` fails on one.
 
 ---
 
