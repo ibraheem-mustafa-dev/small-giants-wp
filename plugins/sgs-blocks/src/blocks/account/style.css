@@ -612,3 +612,230 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	border-radius: 4px;
 	color: var(--wp--preset--color--text, currentColor);
 }
+
+/* -- Page header (eyebrow, title, intro) per view ---------------------------- */
+.sgs-account__header {
+	margin-block-end: var(--sgs-account-header-space, 1.75rem);
+}
+
+.sgs-account__header--account {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: var(--sgs-account-header-gap, 1rem);
+}
+
+.sgs-account__header--rule {
+	padding-block-end: 1.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--border, #e2e2e2);
+}
+
+.sgs-account__header-eyebrow {
+	margin: 0 0 0.5rem;
+	font-size: 0.75rem;
+}
+
+/* Zero specificity: the eyebrow type settings always win. */
+:where(.sgs-account__header-eyebrow) {
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+}
+
+.sgs-account__header-title {
+	margin: 0 0 0.75rem;
+}
+
+.sgs-account__header--account .sgs-account__header-title,
+.sgs-account__header-intro,
+.sgs-account__header-meta {
+	margin-block-end: 0;
+}
+
+.sgs-account__header-intro {
+	margin-block-start: 0;
+	max-width: 60ch;
+}
+
+.sgs-account__header-backline {
+	margin: 1rem 0 0;
+}
+
+.sgs-account__header-meta {
+	margin-block-start: 0;
+}
+
+/* -- Menu: Orders count ------------------------------------------------------ */
+.sgs-account__menu-count {
+	margin-inline-start: auto;
+	font-size: 0.75rem;
+}
+
+/* -- Addresses: WooCommerce floats the title and the Edit link; the card header is a row instead ----------- */
+.sgs-account .woocommerce-Address-title {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+}
+
+:where(.sgs-account .woocommerce-Address-title) {
+	flex-wrap: wrap;
+	gap: 0.5rem 1rem;
+}
+
+.sgs-account .woocommerce-Address-title :is(h2, h3),
+.sgs-account .woocommerce-Address-title .edit {
+	float: none;
+	margin: 0;
+}
+
+.sgs-account .woocommerce-Address {
+	float: none;
+	width: auto;
+}
+
+.sgs-account__address-helper {
+	margin-block: 1rem 0;
+}
+
+/* -- Orders list as bordered rows (ordersLook) -------------------------------- */
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table {
+	display: block;
+	border: 0;
+}
+
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table thead {
+	display: none;
+}
+
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table tbody {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	background: var(--wp--preset--color--border, #e2e2e2);
+}
+
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table .woocommerce-orders-table__row {
+	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto auto;
+	grid-template-areas: "number status total actions" "date status total actions";
+	align-items: center;
+	gap: 0.25rem 1.25rem;
+	margin: 0;
+	padding: 1.25rem 1.375rem;
+	border: 0;
+	border-radius: 0;
+	background: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table .woocommerce-orders-table__row > td {
+	display: block;
+	padding: 0;
+	border: 0;
+	background: none;
+}
+
+.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table td::before {
+	content: none;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-number {
+	grid-area: number;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-date {
+	grid-area: date;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-status {
+	grid-area: status;
+	justify-self: start;
+	padding: 0.3rem 0.6rem;
+	background: var(--wp--preset--color--surface-alt, #f0f0f0);
+	color: var(--wp--preset--color--text, currentColor);
+	font-size: 0.6875rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-total {
+	grid-area: total;
+	white-space: nowrap;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-actions {
+	grid-area: actions;
+}
+
+/* The row's View link becomes a chevron and stretches over the row, so the whole row opens the order. */
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-actions {
+	display: grid;
+	grid-auto-flow: column;
+	justify-content: end;
+	align-items: center;
+}
+
+:where(.sgs-account--orders-rows .woocommerce-orders-table__cell-order-actions) {
+	gap: 0.5rem;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-actions a.view {
+	display: block;
+	width: 14px;
+	height: 14px;
+	overflow: hidden;
+	padding: 0;
+	border: 0;
+	background: currentColor;
+	color: inherit;
+	font-size: 0;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") center / contain no-repeat;
+	overflow: visible;
+}
+
+.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-actions a.view::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+@container sgs-account (max-width: 767px) {
+	.sgs-account.sgs-account--orders-rows table.woocommerce-orders-table .woocommerce-orders-table__row {
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		grid-template-areas: "number total actions" "date status actions";
+		display: grid;
+	}
+	.sgs-account.sgs-account--orders-rows .woocommerce-orders-table__cell-order-status {
+		justify-self: end;
+	}
+}
+
+/* -- Orders empty state ----------------------------------------------------- */
+:where(.sgs-account__orders-empty) {
+	padding: 3rem 1.5rem;
+	text-align: center;
+}
+
+.sgs-account__orders-empty {
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	background: var(--wp--preset--color--surface, #fff);
+}
+
+.sgs-account__orders-empty-title {
+	margin: 0 0 0.5rem;
+	font-size: 1.5rem;
+}
+
+.sgs-account__orders-empty-text {
+	max-width: 46ch;
+	margin: 0 auto 1.25rem;
+}
+
+/* -- Account details: the Change password helper line ------------------------ */
+.sgs-account__password-helper {
+	margin: 0 0 0.75rem;
+}

@@ -37,6 +37,11 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-defaults
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-render-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-field-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-signed-out.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-look-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-header.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-edit-account.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-extras.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-endpoints.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-dashboard.php';
 
@@ -76,6 +81,7 @@ $menu_icons      = wp_parse_args(
 $scoped_css   = array();
 $scoped_css[] = sgs_account_scoped_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_field_css( $attributes, $root_sel );
+$scoped_css[] = sgs_account_look_css( $attributes, $root_sel );
 $show_card    = sgs_account_signed_out_card_active( $attributes );
 if ( $show_menu_icons ) {
 	$scoped_css[] = sgs_account_menu_icon_css( $menu_icons, $root_sel );
@@ -83,13 +89,15 @@ if ( $show_menu_icons ) {
 
 // -- Render WooCommerce's own output, flag set for its full duration ----
 \SGS\Blocks\Account_Endpoints::$active = $attributes;
+\SGS\Blocks\Account_Strings::begin( $attributes );
 ob_start();
 if ( $show_card ) {
 	echo sgs_account_signed_out_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper.
 } elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
 	\WC_Shortcode_My_Account::output( array() );
 }
-$wc_output = ob_get_clean();
+$wc_output = sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes );
+\SGS\Blocks\Account_Strings::end();
 \SGS\Blocks\Account_Endpoints::$active = null;
 
 // Sign in / Create account tabs: only the two-column log-in form, never the card or an endpoint.
@@ -114,6 +122,9 @@ if ( $use_tabs ) {
 
 $logged_out = ! is_user_logged_in();
 
+// Optional page header for the view being shown (nothing prints while its settings are empty).
+$header_html = $show_card ? '' : sgs_account_header_html( $attributes, sgs_account_current_view() );
+
 $wrapper_classes = array(
 	'sgs-account',
 	$uid,
@@ -121,6 +132,9 @@ $wrapper_classes = array(
 	'sgs-account--tablet-' . $menu_layout['tablet'],
 	'sgs-account--mobile-' . $menu_layout['mobile'],
 );
+if ( ! empty( $attributes['ordersLook'] ) ) {
+	$wrapper_classes[] = 'sgs-account--orders-rows';
+}
 
 $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $wrapper_classes ) ) );
 
@@ -131,6 +145,7 @@ $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $
 </style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-sanitised. ?> data-auth-layout="<?php echo esc_attr( $auth_layout ); ?>">
+<?php echo $header_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_header_html(). ?>
 <?php if ( $show_card ) : echo $wc_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the signed-out card, escaped in sgs_account_signed_out_html(); it sits outside .sgs-account__wc so WooCommerce's content-link rules do not restyle its buttons.
 else : ?>
 	<div class="sgs-account__wc">

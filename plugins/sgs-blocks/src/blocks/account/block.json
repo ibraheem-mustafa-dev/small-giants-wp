@@ -156,7 +156,8 @@
 					"label": "Active menu item bar",
 					"order": 3,
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"attrMap": {
 						"css:background-color": "menuActiveIndicatorColour",
@@ -754,7 +755,8 @@
 					"attrMap": {
 						"css:grid-template-columns": "accountFormColumns",
 						"css:gap": "accountFormGap"
-					}
+					},
+					"layer": "OUTER"
 				},
 				"accountSection": {
 					"selector": ".woocommerce-EditAccountForm fieldset > legend",
@@ -870,7 +872,8 @@
 					],
 					"attrMap": {
 						"css:grid-template-columns": "loginLinkPlacement"
-					}
+					},
+					"layer": "OUTER"
 				},
 				"rememberMe": {
 					"selector": ".sgs-account__wc form .woocommerce-form-login__rememberme",

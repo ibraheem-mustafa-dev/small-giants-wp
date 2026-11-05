@@ -101,6 +101,7 @@ ROLE_EXCEPTIONS = {
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {
     'components/ResponsiveLengthControl.js': ('spacing', 'generic wrapper: must forward `scale` from its callers'),
+    'blocks/account/extraControls.js': ('spacing', 'generic wrappers for sgs/account: their callers name the attribute; every length is a box length or a gap'),
     'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
     'components/SgsGapControl.js': ('spacing', 'the row and column gap pair: its parts are gaps, always the spacing scale'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),

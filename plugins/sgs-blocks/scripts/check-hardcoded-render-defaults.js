@@ -366,6 +366,15 @@ const ATTR_ELEMENT_OVERRIDES = {
 	// stylesheet holds no rule of its own for it, so it is pinned to its manifest element (`field-label`), a token no
 	// stylesheet selector carries: the tick-box gap in a checkbox label and the log-in layout's gap are other spacings.
 	'account::labelGap': [ 'field-label' ],
+	// sgs/account Round 9: each new setting paints one element the stylesheet's other rules are not.
+	'account::ordersRowPadding': [ 'orders-row' ],
+	'account::ordersEmptyPadding': [ 'orders-empty' ],
+	'account::addressCardPadding': [ 'address-card' ],
+	'account::addressCardBorderRadius': [ 'address-card' ],
+	'account::loginButtonPadding': [ 'login-button' ],
+	'account::loginButtonBorderRadius': [ 'login-button' ],
+	'account::accountFormGap': [ 'account-form' ],
+	'account::accountFormColumns': [ 'account-form' ],
 };
 
 /**

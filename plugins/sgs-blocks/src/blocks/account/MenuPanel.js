@@ -4,14 +4,14 @@
  * Layout per device tier, icons on/off, per-endpoint icon (Lucide only — the
  * server-side `sgs_account_menu_icon_css()` helper resolves names through
  * `sgs_get_lucide_icon()`, so any other source would be a silently dead
- * control), and which optional endpoints to hide. Dashboard and Log out are
- * never offered here — `sgs_account_never_hide()` (PHP) refuses them anyway,
- * so offering the checkbox would be a control that pretends to work.
+ * control), and which optional endpoints to hide. Log out is never offered here:
+ * `sgs_account_never_hide()` (PHP) refuses it, so a checkbox would pretend to work.
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 import { ResponsiveControl, IconPicker } from '../../components';
+import { TierLength, Toggle } from './extraControls';
 import { patchTier } from '../../utils';
 
 const DEFAULT_MENU_ICONS = {
@@ -26,9 +26,11 @@ const DEFAULT_MENU_ICONS = {
 };
 
 // Endpoints an operator may legitimately hide (e.g. Downloads on a shop with
-// nothing downloadable). Dashboard/Log out are deliberately absent — the
-// server-side hide list refuses them regardless of what this control sends.
+// nothing downloadable). Log out is deliberately absent: the server-side hide
+// list refuses it regardless of what this control sends. With the Dashboard
+// hidden, the account root shows the first visible tab.
 const HIDEABLE_ENDPOINTS = [
+	{ key: 'dashboard', label: __( 'Dashboard', 'sgs-blocks' ) },
 	{ key: 'downloads', label: __( 'Downloads', 'sgs-blocks' ) },
 	{ key: 'payment-methods', label: __( 'Payment methods', 'sgs-blocks' ) },
 	{ key: 'edit-address', label: __( 'Addresses', 'sgs-blocks' ) },
@@ -76,6 +78,20 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					</ToggleGroupControl>
 				) }
 			</ResponsiveControl>
+
+			<TierLength
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="menuActiveIndicatorWidth"
+				label={ __( 'Active item bar width', 'sgs-blocks' ) }
+				help={ __( 'Empty keeps 3px.', 'sgs-blocks' ) }
+			/>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="menuOrdersCount"
+				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+			/>
 
 			<ToggleControl
 				__nextHasNoMarginBottom

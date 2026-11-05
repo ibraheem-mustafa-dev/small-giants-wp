@@ -27,6 +27,8 @@ import MenuPanel from './MenuPanel';
 import DashboardPanel from './DashboardPanel';
 import FieldsPanel, { fieldColourRows } from './FieldsPanel';
 import LoggedOutPanel from './LoggedOutPanel';
+import OrdersPanel, { extraColourRows, EXTRA_TYPE_TARGETS } from './OrdersPanel';
+import { WordingPanel, HeaderPanel, AddressesPanel, AccountDetailsPanel, SignInButtonPanel } from './ExtraPanels';
 import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
 
 /**
@@ -150,6 +152,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		...fieldColourRows( attributes, setAttributes ),
+		...extraColourRows( attributes, setAttributes ),
 	];
 
 	return (
@@ -186,6 +189,12 @@ export default function Edit( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
+				<WordingPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<HeaderPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<SignInButtonPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OrdersPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<AddressesPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<AccountDetailsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody
 					title={ __( 'Card border', 'sgs-blocks' ) }
 					initialOpen={ false }
@@ -297,6 +306,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								showTransform: true,
 								showTextAlign: true,
 							},
+							...EXTRA_TYPE_TARGETS,
 						] }
 					/>
 				</PanelBody>
