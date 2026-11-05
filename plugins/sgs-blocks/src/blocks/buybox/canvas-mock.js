@@ -63,6 +63,14 @@ const SAMPLE = {
 };
 
 /**
+ * A CSS length the mock may print: letters, digits and the length punctuation only.
+ *
+ * @param {*} value Stored length.
+ * @return {string} The length, or '' when it is not safe to print.
+ */
+const safeLength = ( value ) => ( /^[\w.%() ,-]+$/.test( String( value || '' ) ) ? String( value ) : '' );
+
+/**
  * Whether the add-to-basket bar is on at a tier (render.php's sgs_buybox_sticky_bar_data).
  *
  * @param {Object} attributes Block attributes.
@@ -267,7 +275,6 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		return resolved && ! /[;{}<>]/.test( resolved ) ? resolved : '';
 	};
 	// Main photo frame, price row gap, chip radius and cart padding: the same settings render.php prints.
-	const safeLength = ( value ) => ( /^[\w.%() ,-]+$/.test( String( value || '' ) ) ? String( value ) : '' );
 	const photoDecls = [];
 	const photoGround = colourOf( attributes.mainPhotoBackgroundColour );
 	if ( photoGround ) {
@@ -303,6 +310,13 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	}
 	if ( safeLength( attributes.rrpPillRadius ) ) {
 		css += `${ root } .buybox__rrp-pill{border-radius:${ safeLength( attributes.rrpPillRadius ) };}`;
+	}
+	const hairlineMargin = attributes.stockLineHairlineMargin || {};
+	const hairlineMarginDecls = [ 'top', 'bottom' ]
+		.filter( ( side ) => safeLength( hairlineMargin[ side ] ) )
+		.map( ( side ) => `margin-${ side }:${ safeLength( hairlineMargin[ side ] ) }` );
+	if ( hairlineMarginDecls.length ) {
+		css += `${ root } .sgs-buybox__stock-hairline{${ hairlineMarginDecls.join( ';' ) };}`;
 	}
 	const cartPadding = attributes.addToCartPadding || {};
 	const cartPaddingDecls = [ 'top', 'right', 'bottom', 'left' ]
@@ -1079,7 +1093,14 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 						style={ {
 							borderTop:
 								'1px solid var(--wp--preset--color--border)',
-							margin: '8px 0',
+							marginTop:
+								safeLength(
+									attributes.stockLineHairlineMargin?.top
+								) || '8px',
+							marginBottom:
+								safeLength(
+									attributes.stockLineHairlineMargin?.bottom
+								) || '8px',
 						} }
 					/>
 				) }

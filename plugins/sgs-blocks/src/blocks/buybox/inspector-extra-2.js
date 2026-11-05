@@ -2,6 +2,8 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, TextControl, RangeControl, SelectControl } from '@wordpress/components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import { SgsBoxControl } from '../../components';
+const HAIRLINE_SIDES = [ 'top', 'bottom' ];
 const STOCK_LINE_POSITION_OPTIONS = [
 	{ value: 'below', label: __( 'Below the pickers (today)', 'sgs-blocks' ) },
 	{ value: 'above', label: __( 'Above the pickers', 'sgs-blocks' ) },
@@ -31,6 +33,7 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 		stockInStockLabel,
 		stockLinePosition,
 		stockLineHairline,
+		stockLineHairlineMargin,
 	} = attributes;
 
 	return (
@@ -156,6 +159,17 @@ export function BuyboxExtraSettingsPanels2( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 						__nextHasNoMarginBottom
+					/>
+				) }
+				{ 'above' === ( stockLinePosition || 'below' ) && !! stockLineHairline && (
+					<SgsBoxControl
+						label={ __( 'Hairline spacing', 'sgs-blocks' ) }
+						values={ stockLineHairlineMargin ?? {} }
+						sides={ HAIRLINE_SIDES }
+						presets
+						onChange={ ( next ) =>
+							setAttributes( { stockLineHairlineMargin: next } )
+						}
 					/>
 				) }
 			</PanelBody>

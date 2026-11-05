@@ -169,12 +169,6 @@
   },
   {
    "block": "cart",
-   "selector": ":where(.sgs-cart__panel) .sgs-cart__item-add-options",
-   "property": "min-height",
-   "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."
-  },
-  {
-   "block": "cart",
    "selector": ":where(.sgs-cart__panel) .sgs-cart__item-remove",
    "property": "min-height",
    "reason": "Settings checked: iconSize and panelCloseSize (read by the trigger and close button), pillMinHeight, itemThumbSize, freeDeliveryTrackHeight, checkoutMinHeight; none sizes this element, so 44px is SGS's own default."

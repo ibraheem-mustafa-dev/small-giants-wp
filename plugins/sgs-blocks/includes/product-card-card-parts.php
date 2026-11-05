@@ -60,6 +60,27 @@ if ( ! function_exists( 'sgs_product_card_parts_css' ) ) {
 			$css .= $root_sel . ' .sgs-product-card__swatch{border-color:' . sgs_colour_value( $swatch_border ) . ';}';
 		}
 
+		$swatch_more_border = (string) ( $attributes['swatchMoreBorderColour'] ?? '' );
+		if ( '' !== $swatch_more_border ) {
+			$css .= $root_sel . ' .sgs-product-card__swatch-more{border-color:' . sgs_colour_value( $swatch_more_border ) . ';}';
+		}
+
+		// Hover shadow: the shared composer, with the stylesheet's own resting shadow left as it is (the card has no
+		// resting-shadow attribute, so only the hover pair is mapped). A touch-guarded hover rule plus its focus-within twin.
+		$shadow = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'         => 'cardShadow',
+				'hover'        => 'cardShadowHover',
+				'hover_colour' => 'cardShadowColourHover',
+			),
+			'sgs/product-card'
+		);
+		if ( array() !== $shadow['hover'] ) {
+			// sgs-shadow-fallback: hover state only; the resting card shadow is the stylesheet's.
+			$css .= sgs_hover_state_rules( $root_sel, implode( ';', $shadow['hover'] ) . ';', ':focus-within' );
+		}
+
 		$media_bg = (string) ( $attributes['mediaBackgroundColour'] ?? '' );
 		if ( '' !== $media_bg ) {
 			$css .= $root_sel . ' .product-card__media,' . $root_sel . ' .sgs-product-card__media-wrap{background:' . sgs_colour_value( $media_bg ) . ';}';

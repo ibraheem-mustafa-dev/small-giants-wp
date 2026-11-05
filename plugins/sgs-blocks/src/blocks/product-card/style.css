@@ -1729,6 +1729,13 @@
 	line-height: 1.3;
 }
 
+/* The hover shadow (cardShadowHover) eases in; no transition under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+	.product-card {
+		transition: box-shadow var(--wp--custom--duration--quick, 0.15s) var(--wp--custom--easing--ease, ease);
+	}
+}
+
 .sgs-product-card__swatch-more {
 	cursor: default;
 	color: var( --wp--preset--color--text-muted, #5e584f );

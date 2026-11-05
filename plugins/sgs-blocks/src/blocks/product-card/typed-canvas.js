@@ -117,7 +117,7 @@ export function typedCardPreview( attrs, tier ) {
 		},
 		ratingStars: { ...typographyPreviewStyle( attrs, 'ratingStars', tier ), color: colour( attrs.ratingColour ) },
 		swatch: { borderColor: colour( attrs.swatchBorderColour ) },
-		swatchMore: typographyPreviewStyle( attrs, 'swatchMore', tier ),
+		swatchMore: { ...typographyPreviewStyle( attrs, 'swatchMore', tier ), borderColor: colour( attrs.swatchMoreBorderColour ) },
 		// The picker forwards its settings to sgs/option-picker as the same custom properties.
 		picker: {
 			'--sgs-op-bg': colour( attrs.pickerPillBgColour ),

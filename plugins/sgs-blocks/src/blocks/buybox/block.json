@@ -131,6 +131,18 @@
 					},
 					"_note": "The price row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
+				"stock-hairline": {
+					"selector": ".sgs-buybox .sgs-buybox__stock-hairline",
+					"motion": false,
+					"label": "Stock line hairline",
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:margin": "stockLineHairlineMargin"
+					},
+					"_note": "The rule between the price row and an above-pickers stock line; an unset side keeps the 8px default."
+				},
 				"meter": {
 					"selector": ".sgs-buybox-guided__meter",
 					"motion": false,
@@ -1918,6 +1930,10 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Only applies when stockLinePosition is 'above'. Adds a 1px hairline rule (in the border colour) between the price row and the stock line."
+		},
+		"stockLineHairlineMargin": {
+			"type": "object",
+			"description": "Space above and below the stock-line hairline, a {top, bottom} box. An unset side keeps the stylesheet's 8px."
 		},
 		"notifyHeadingFontSize": {
 			"type": "object",

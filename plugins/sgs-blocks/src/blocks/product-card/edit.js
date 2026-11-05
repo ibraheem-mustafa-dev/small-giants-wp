@@ -19,11 +19,13 @@ import {
 	ResponsiveLengthControl,
 	SgsBorderControl,
 	MediaElementPanel,
-	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl } from '../../components';
+	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl, ShadowControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
+
+const CARD_HOVER_SHADOW_KEYS = { hover: 'cardShadowHover', hoverColour: 'cardShadowColourHover' };
 import {
 	PanelBody,
 	SelectControl,
@@ -1766,6 +1768,16 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							const key = tier === 'base' ? 'desktop' : tier;
 							setAttributes( { borderRadius: { ...attributes.borderRadius, [ key ]: next } } );
 						} }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Card hover shadow', 'sgs-blocks' ) } initialOpen={ false }>
+					<ShadowControl
+						label={ __( 'Shadow on hover', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ CARD_HOVER_SHADOW_KEYS }
+						hoverOnly
 					/>
 				</PanelBody>
 

@@ -23,7 +23,9 @@ final class Sgs_Motion_Targets {
 
 	/**
 	 * The declared parts of a block that can be motion targets: part key => isWrapper. A part marked `"motion": false`
-	 * (an element the block does not print itself, Spec 38A §6.2) is left out, so a layer on it resolves to nothing.
+	 * (an element the block does not print itself, Spec 38A §6.2) is left out, so a layer on it resolves to nothing. A
+	 * wrapper part that also declares a `motionSelector` (sgs/media: the figure carries the box, the image is what
+	 * moves) is a target of its own element, not the root.
 	 *
 	 * @param string $block_name Block name.
 	 * @return array<string,bool>
@@ -41,30 +43,55 @@ final class Sgs_Motion_Targets {
 			if ( is_array( $spec ) && array_key_exists( 'motion', $spec ) && false === $spec['motion'] ) {
 				continue;
 			}
-			$out[ (string) $key ] = is_array( $spec ) && ! empty( $spec['isWrapper'] );
+			$out[ (string) $key ] = is_array( $spec ) && ! empty( $spec['isWrapper'] ) && '' === self::motion_selector( $block_name, (string) $key );
 		}
 		return $out;
 	}
 
 	/**
-	 * The selector a part declares (`supports.sgs.elements.<part>.selector`), relative to the block root: one or more
-	 * classes joined by single descendant spaces. Empty when the part declares none or an unsafe value; the part then
-	 * resolves to its BEM class.
+	 * The selector a part declares (`supports.sgs.elements.<part>.motionSelector`, else `.selector`), relative to the
+	 * block root: one or more classes joined by single descendant spaces. Empty when the part declares none or an unsafe
+	 * value; the part then resolves to its BEM class (or the root, for a wrapper part).
 	 *
 	 * @param string $block_name Block name.
 	 * @param string $part       Part key.
 	 * @return string
 	 */
 	public static function declared_selector( string $block_name, string $part ): string {
+		$motion = self::motion_selector( $block_name, $part );
+		return '' !== $motion ? $motion : self::safe_selector( $block_name, $part, 'selector' );
+	}
+
+	/**
+	 * The selector a part declares for motion alone (`supports.sgs.elements.<part>.motionSelector`): a wrapper part
+	 * whose `selector` the styling layer reads as the wrapper (sgs/media's figure) names the element that moves.
+	 *
+	 * @param string $block_name Block name.
+	 * @param string $part       Part key.
+	 * @return string Empty when the part declares none or an unsafe value.
+	 */
+	public static function motion_selector( string $block_name, string $part ): string {
+		return self::safe_selector( $block_name, $part, 'motionSelector' );
+	}
+
+	/**
+	 * One declared selector key of a part, when it is a descendant chain of classes.
+	 *
+	 * @param string $block_name Block name.
+	 * @param string $part       Part key.
+	 * @param string $key        `selector` or `motionSelector`.
+	 * @return string
+	 */
+	private static function safe_selector( string $block_name, string $part, string $key ): string {
 		if ( ! class_exists( '\WP_Block_Type_Registry' ) ) {
 			return '';
 		}
 		$type = \WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
 		$spec = is_object( $type ) && isset( $type->supports['sgs']['elements'][ $part ] ) ? $type->supports['sgs']['elements'][ $part ] : null;
-		if ( ! is_array( $spec ) || ! isset( $spec['selector'] ) || ! is_string( $spec['selector'] ) ) {
+		if ( ! is_array( $spec ) || ! isset( $spec[ $key ] ) || ! is_string( $spec[ $key ] ) ) {
 			return '';
 		}
-		$selector = trim( $spec['selector'] );
+		$selector = trim( $spec[ $key ] );
 		return 1 === preg_match( '/^\.[A-Za-z][A-Za-z0-9_-]*( \.[A-Za-z][A-Za-z0-9_-]*)*$/', $selector ) ? $selector : '';
 	}
 

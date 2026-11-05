@@ -184,8 +184,13 @@
 								"css:background-color-gradient": "backgroundColourHoverGradient",
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
-								"css:border-color": "borderColourHover"
-							}
+								"css:border-color": "borderColourHover",
+								"css:box-shadow": "cardShadowHover"
+							},
+							"noBaseByDesign": [
+								"css:box-shadow"
+							],
+							"_noBaseByDesignNote": "css:box-shadow (cardShadowHover) is the card's hover shadow; the resting shadow is the stylesheet default (the Show shadow switch), so a resting-shadow attribute would duplicate it."
 						}
 					},
 					"_note": "R2c (B-3/B-8, 2026-08-22): root box colour/border moved OFF WordPress's native style path onto block-private attrs (backgroundColour/textColour/borderColour + Gradient/Hover siblings, borderWidth, borderStyle) so the box has a SINGLE owner instead of the native Styles-tab gradient panel and the SGS panel both writing into the same style.color object. Native __experimentalBorder is reduced to radius only (a corner-shape control, not a colour/paint decision — stays on the native path). Content-KIND composite (D294, box+width only) — wraps sgs/container via SGS_Container_Wrapper. spacing.padding is FALSE in block.json supports (padding is custom-var driven, not native), so css:max-width resolves via attrMap not native fallback. `css:padding` was RE-KEYED off this element 2026-07-24 (Spec 32 section 6.1 consistency fix) — the image (`.sgs-product-card__media-wrap`) is full-bleed OUTSIDE the body, so card padding never belonged on the root; it now lives on the `body` element below, matching where render.php actually paints it."
@@ -671,6 +676,19 @@
 							}
 						}
 					}
+				},
+				"swatchMoreRing": {
+					"selector": ".sgs-product-card__swatch-more",
+					"motion": false,
+					"label": "Colour swatch overflow count ring",
+					"order": 24,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "swatchMoreBorderColour"
+					},
+					"_note": "The ring around the \"+N\" count; an unset colour keeps the stylesheet's faint dark ring."
 				},
 				"cta2": {
 					"absentIn": ["live-cpt", "readonly-variable"],
@@ -1689,6 +1707,18 @@
 			"type": "number",
 			"default": 0,
 			"description": "How far a colour dot grows when pointed at, in % (125 = a quarter larger). 0 = no growth."
+		},
+		"swatchMoreBorderColour": {
+			"type": "string",
+			"description": "Ring colour of the \"+N\" colour-count chip. Theme token slug or raw hex. Empty = a faint dark ring."
+		},
+		"cardShadowHover": {
+			"type": "string",
+			"description": "Shadow shape of the card on hover or keyboard focus within it, such as \"0 18px 44px\". Empty = no hover shadow."
+		},
+		"cardShadowColourHover": {
+			"type": "string",
+			"description": "Colour of the hover shadow: a theme token with a percentage (\"primary 10%\") or a hex."
 		},
 		"swatchBorderColour": {
 			"type": "string",

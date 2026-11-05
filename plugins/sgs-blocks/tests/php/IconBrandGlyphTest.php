@@ -252,7 +252,8 @@ final class IconBrandGlyphTest extends TestCase {
 		);
 		$this->assertMatchesRegularExpression( '#\.sgs-icon__link:hover \.sgs-icon__shape\{[^}]*border-color:var\(--wp--preset--color--primary#', $css, 'the own hover border colour paints' );
 		$this->assertStringNotContainsString( 'border-color:var(--sgs-si-border-colour-hover,#25D366)', $css, 'the brand does not override it' );
-		$this->assertStringContainsString( 'box-shadow:0 0 0 1px #25D366', $css, 'the ring still shows' );
+		$this->assertStringContainsString( 'box-shadow:0 0 0 1px var(--wp--preset--color--primary', $css, 'the ring shows in the own hover border colour' );
+		$this->assertStringNotContainsString( 'box-shadow:0 0 0 1px #25D366', $css, 'the brand ring does not sit around a differently coloured border' );
 	}
 
 	public function test_the_client_ground_and_border_still_apply_and_hover_keeps_the_ground(): void {

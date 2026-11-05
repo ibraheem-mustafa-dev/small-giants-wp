@@ -1,7 +1,7 @@
 /**
  * Motion targets for the editor-canvas emitter (Spec 38A §6.2, §6.5): the JS twin of
  * `includes/motion/class-sgs-motion-targets.php::resolve()`. A target is `root`, a part the block declares in
- * `supports.sgs.elements` (its declared `selector`, else `sgs-<slug>__<part>`; an `isWrapper` part is the root; a part
+ * `supports.sgs.elements` (its declared `motionSelector` or `selector`, else `sgs-<slug>__<part>`; an `isWrapper` part is the root unless it declares a `motionSelector`; a part
  * marked `"motion": false` is not a target; a part resolving to the container wrapper's band class is the root's direct
  * child band only), or a cloning-only `custom:<n>` whose stored selector is prefixed by the scoped root (refused without
  * a review row or with a selector that could leave the root, as `Sgs_Motion_Custom_Target` refuses it).
@@ -79,24 +79,30 @@ export function motionParts( elements ) {
 		) {
 			return;
 		}
-		out[ key ] = Boolean( isObject && spec.isWrapper );
+		out[ key ] = Boolean( isObject && spec.isWrapper ) && declaredSelector( elements, key, 'motionSelector' ) === '';
 	} );
 	return out;
 }
 
 /**
- * The selector a part declares, relative to the root, or '' when none or unsafe.
+ * The selector a part declares, relative to the root, or '' when none or unsafe. Without a `key` it is the part's
+ * `motionSelector` when set (a wrapper part naming the element that moves), else its `selector`; with a `key` it is
+ * that one declared key.
  *
  * @param {Object} elements `supports.sgs.elements`.
  * @param {string} part     Part key.
+ * @param {string} [key]    `selector` or `motionSelector`.
  * @return {string} Selector.
  */
-export function declaredSelector( elements, part ) {
+export function declaredSelector( elements, part, key ) {
+	if ( ! key ) {
+		return declaredSelector( elements, part, 'motionSelector' ) || declaredSelector( elements, part, 'selector' );
+	}
 	const spec = elements?.[ part ];
-	if ( ! spec || typeof spec !== 'object' || typeof spec.selector !== 'string' ) {
+	if ( ! spec || typeof spec !== 'object' || typeof spec[ key ] !== 'string' ) {
 		return '';
 	}
-	const selector = spec.selector.trim();
+	const selector = spec[ key ].trim();
 	return DECLARED_RE.test( selector ) ? selector : '';
 }
 

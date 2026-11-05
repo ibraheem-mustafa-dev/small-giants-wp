@@ -803,13 +803,19 @@
    later above so the two read as one row of peer actions, and the same 44px
    target. It renders only while that line still has extras to choose. */
 :where(.sgs-cart__panel) .sgs-cart__item-add-options {
-	display: inline-flex;
-	align-items: center;
-	min-height: 44px;
-	padding: 0 8px;
+	position: relative;
+	display: inline-block;
 	font-size: 0.8rem;
 	text-decoration: underline;
 	color: color-mix( in srgb, currentColor 85%, transparent );
+}
+
+/* The visible box is the text only; the 44px tap area is a pseudo-element so
+   the link sits flush with the product name and does not move its neighbours. */
+:where(.sgs-cart__panel) .sgs-cart__item-add-options::after {
+	content: "";
+	position: absolute;
+	inset: -14px -6px;
 }
 
 .sgs-cart__item-add-options:hover {

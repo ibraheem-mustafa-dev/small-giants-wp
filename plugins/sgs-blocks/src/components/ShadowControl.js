@@ -134,6 +134,7 @@ const warnMissing = ( what ) => () => {
  * @param {Function} [props.setAttributes]        Block setAttributes.
  * @param {Object}   [props.attrNames]            Map from `shadowAttrKeys()`.
  * @param {string}   [props.liftPrefix]           Attribute prefix for the lift switch ('' = the block root; see ShadowLiftControls).
+ * @param {boolean}  [props.hoverOnly]            Show only the hover shadow builder, for a block with no resting shadow attributes.
  */
 export default function ShadowControl( {
 	label,
@@ -149,6 +150,7 @@ export default function ShadowControl( {
 	setAttributes,
 	attrNames,
 	liftPrefix = '',
+	hoverOnly = false,
 } ) {
 	// Explicit props win over the map, and a pair is written in ONE call only when the map
 	// (not the caller) supplies both halves.
@@ -230,6 +232,23 @@ export default function ShadowControl( {
 	// automatic-lift switch with nothing else to show there yet — either way there is now
 	// something for the Hover tab to hold.
 	const showHoverTab = hasHoverState || declaresLift;
+
+	if ( hoverOnly && hasHoverState ) {
+		return (
+			<BaseControl label={ label } __nextHasNoMarginBottom>
+				<ShadowStateBuilder
+					{ ...shared }
+					isHover
+					canEditShape={ canEditHoverShape }
+					value={ valueHover }
+					colour={ colourHover }
+					baseValue={ value }
+					baseColour={ colour }
+					onApply={ applyHover }
+				/>
+			</BaseControl>
+		);
+	}
 
 	return (
 		<BaseControl label={ label } __nextHasNoMarginBottom>

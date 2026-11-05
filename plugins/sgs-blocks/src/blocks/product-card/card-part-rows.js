@@ -14,7 +14,7 @@ import { __ } from '@wordpress/i18n';
  * @return {Object[]} SgsColourPanel rows.
  */
 export function cardPartColourRows( attributes, setAttributes ) {
-	const { borderColourHover, rrpColour, mediaBackgroundColour, noImageLabelColour, swatchBorderColour, wishlistBorderColour } = attributes;
+	const { borderColourHover, rrpColour, mediaBackgroundColour, noImageLabelColour, swatchBorderColour, swatchMoreBorderColour, wishlistBorderColour } = attributes;
 
 	return [
 		{
@@ -78,6 +78,19 @@ export function cardPartColourRows( attributes, setAttributes ) {
 					label: __( 'Normal', 'sgs-blocks' ),
 					value: swatchBorderColour,
 					onChange: ( val ) => setAttributes( { swatchBorderColour: val ?? '' } ),
+					linked: true,
+				},
+			],
+		},
+		{
+			key: 'swatchMoreBorder',
+			label: __( 'Colour count chip ring colour', 'sgs-blocks' ),
+			states: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: swatchMoreBorderColour,
+					onChange: ( val ) => setAttributes( { swatchMoreBorderColour: val ?? '' } ),
 					linked: true,
 				},
 			],

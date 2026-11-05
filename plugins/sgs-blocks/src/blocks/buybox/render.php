@@ -1023,6 +1023,13 @@ $buybox_stock_position = in_array( (string) ( $attributes['stockLinePosition'] ?
 	: 'below';
 if ( 'above' === $buybox_stock_position && ! empty( $attributes['stockLineHairline'] ) ) {
 	$scoped_css[] = $root_sel . ' .sgs-buybox__stock-hairline{border-top:1px solid ' . sgs_colour_value( 'border' ) . ';margin:8px 0;}';
+	$sgs_bb_hairline_margin = sgs_box_object_longhands(
+		is_array( $attributes['stockLineHairlineMargin'] ?? null ) ? $attributes['stockLineHairlineMargin'] : array(),
+		'margin'
+	);
+	if ( null !== $sgs_bb_hairline_margin ) {
+		$scoped_css[] = $root_sel . ' .sgs-buybox__stock-hairline{' . $sgs_bb_hairline_margin . ';}';
+	}
 }
 
 // Gallery/config grid ratio + gap override — style.css's own
