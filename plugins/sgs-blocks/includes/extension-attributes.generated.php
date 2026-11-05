@@ -35,6 +35,7 @@ return array(
 	'sgsChipCountSize' => array( 'type' => 'string' ),
 	'sgsChipFontWeight' => array( 'type' => 'string' ),
 	'sgsChipGap' => array( 'type' => 'object' ),
+	'sgsChipMinHeight' => array( 'type' => 'string' ),
 	'sgsChipPaintButtons' => array( 'type' => 'boolean' ),
 	'sgsChipStartTerm' => array( 'type' => 'string' ),
 	'sgsCollapseVisibility' => array( 'type' => 'string' ),

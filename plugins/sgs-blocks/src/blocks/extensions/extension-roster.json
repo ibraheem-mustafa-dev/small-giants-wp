@@ -158,6 +158,7 @@
 			"attributes": {
 				"sgsChipFontWeight": { "type": "string", "default": "", "role": "visual" },
 				"sgsChipBorderWidth": { "type": "string", "default": "", "role": "visual" },
+				"sgsChipMinHeight": { "type": "string", "default": "", "role": "visual" },
 				"sgsChipPaintButtons": { "type": "boolean", "default": false, "role": "visual" },
 				"sgsChipCountPill": { "type": "boolean", "default": false, "role": "visual" },
 				"sgsChipCountBackground": { "type": "string", "default": "", "role": "visual" },
