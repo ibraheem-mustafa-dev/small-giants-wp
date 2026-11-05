@@ -907,14 +907,14 @@ function collectPrefixedHelperConsumed( corpus ) {
 		while ( ( m = re.exec( corpus ) ) !== null ) {
 			addPrefix( m[ 1 ], suffixes );
 		}
-		// The prefix as a foreach KEY variable over a literal array map:
+		// The prefix as a foreach KEY variable over a literal array map, in the same function:
 		//   $typography = array( 'itemName' => '.sel', ... );
 		//   foreach ( $typography as $prefix => $sel ) { fnName( $attributes, $prefix, ... ); }
 		// Each literal key of that array is a prefix the helper reads (sgs/cart's
 		// includes/helpers-cart-panel-css.php::sgs_cart_panel_css).
-		const varRe = new RegExp( fnName + '\\s*\\(\\s*[^,]+,\\s*\\$(\\w+)\\s*[,)]', 'g' );
+		const varRe = new RegExp( fnName + '\\s*\\(\\s*\\$attributes\\s*,\\s*\\$(\\w+)\\s*[,)]', 'g' );
 		while ( ( m = varRe.exec( corpus ) ) !== null ) {
-			for ( const prefix of foreachKeyLiterals( corpus, m[ 1 ] ) ) {
+			for ( const prefix of foreachKeyLiterals( corpus, m[ 1 ], m.index ) ) {
 				addPrefix( prefix, suffixes );
 			}
 		}
@@ -923,45 +923,82 @@ function collectPrefixedHelperConsumed( corpus ) {
 }
 
 /**
- * The literal string keys of every array a `foreach ( $arr as $keyVar => ... )`
- * iterates, where `$arr = array( 'key' => ..., ... );` is a literal in `corpus`.
- * Only top-level `'key' =>` pairs of that one array literal count, so a value
- * that is itself an array contributes no keys.
+ * The literal keys of the array a helper call's prefix variable loops over: the nearest
+ * `foreach ( $arr as $keyVar => ... )` before `callIdx` inside the same function, and the
+ * nearest `$arr = array( ... );` before that loop, also inside the function. Only the
+ * array's top-level `'key' =>` pairs count, and brackets inside quoted strings are
+ * skipped, so an unrelated loop or array elsewhere in the corpus never supplies keys.
  *
- * @param {string} corpus PHP source (comments already stripped).
- * @param {string} keyVar The foreach key variable's name, without `$`.
- * @return {Set<string>} The literal keys.
+ * @param {string} corpus  PHP source (comments already stripped).
+ * @param {string} keyVar  The foreach key variable's name, without `$`.
+ * @param {number} callIdx Offset of the helper call in `corpus`.
+ * @return {Set<string>} The literal keys (empty when no such loop and array exist).
  */
-function foreachKeyLiterals( corpus, keyVar ) {
+function foreachKeyLiterals( corpus, keyVar, callIdx ) {
 	const keys = new Set();
+	const fnStart = Math.max( 0, corpus.lastIndexOf( 'function', callIdx ) );
+	const scope = corpus.slice( fnStart, callIdx );
 	const loopRe = new RegExp( 'foreach\\s*\\(\\s*\\$(\\w+)\\s+as\\s+\\$' + keyVar + '\\s*=>', 'g' );
+	let loop = null;
 	let lm;
-	while ( ( lm = loopRe.exec( corpus ) ) !== null ) {
-		const arrRe = new RegExp( '\\$' + lm[ 1 ] + '\\s*=\\s*array\\s*\\(', 'g' );
-		let am;
-		while ( ( am = arrRe.exec( corpus ) ) !== null ) {
-			let depth = 1;
-			let i = am.index + am[ 0 ].length;
-			let top = '';
-			for ( ; i < corpus.length && depth > 0; i++ ) {
-				const ch = corpus[ i ];
-				if ( '(' === ch ) {
-					depth++;
-				} else if ( ')' === ch ) {
-					depth--;
+	while ( ( lm = loopRe.exec( scope ) ) !== null ) {
+		loop = lm;
+	}
+	if ( ! loop ) {
+		return keys;
+	}
+	const before = scope.slice( 0, loop.index );
+	const arrRe = new RegExp( '\\$' + loop[ 1 ] + '\\s*=\\s*array\\s*\\(', 'g' );
+	let arr = null;
+	let am;
+	while ( ( am = arrRe.exec( before ) ) !== null ) {
+		arr = am;
+	}
+	if ( ! arr ) {
+		return keys;
+	}
+	// Walk the array literal to its closing bracket, keeping only top-level text.
+	let depth = 1;
+	let quote = '';
+	let top = '';
+	for ( let i = arr.index + arr[ 0 ].length; i < before.length && depth > 0; i++ ) {
+		const ch = before[ i ];
+		if ( quote ) {
+			if ( '\\' === ch ) {
+				if ( 1 === depth ) {
+					top += ch + ( before[ i + 1 ] || '' );
 				}
-				if ( 1 === depth || ( 0 === depth && ')' !== ch ) ) {
-					top += ch;
-				} else if ( 2 === depth && '(' === ch ) {
-					top += ' ';
-				}
+				i++;
+				continue;
 			}
-			const keyRe = /['"]([A-Za-z0-9_]+)['"]\s*=>/g;
-			let km;
-			while ( ( km = keyRe.exec( top ) ) !== null ) {
-				keys.add( km[ 1 ] );
+			if ( ch === quote ) {
+				quote = '';
 			}
+			if ( 1 === depth ) {
+				top += ch;
+			}
+			continue;
 		}
+		if ( "'" === ch || '"' === ch ) {
+			quote = ch;
+		} else if ( '(' === ch ) {
+			depth++;
+			continue;
+		} else if ( ')' === ch ) {
+			depth--;
+			continue;
+		}
+		if ( 1 === depth ) {
+			top += ch;
+		}
+	}
+	if ( 0 !== depth ) {
+		return keys; // unterminated literal: claim nothing
+	}
+	const keyRe = /['"]([A-Za-z0-9_]+)['"]\s*=>/g;
+	let km;
+	while ( ( km = keyRe.exec( top ) ) !== null ) {
+		keys.add( km[ 1 ] );
 	}
 	return keys;
 }

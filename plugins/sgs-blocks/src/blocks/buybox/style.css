@@ -791,10 +791,13 @@
 	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
 }
 
-/* Crossfade on variation swap (driven by data-wp-bind--src in the store). Zero specificity, on the
-   photo part's own selector, so a hover state saved on the photo keeps its timing (the motion
-   emitter appends this entry to its transition list; a heavier selector here would replace it). */
-:where(.sgs-buybox .sgs-buybox__main-photo) {
+/* Crossfade on variation swap (driven by data-wp-bind--src in the store). The second selector
+   (0,1,1) outranks the media atom's `.sgs-media-el` transition (0,1,0), which would otherwise leave
+   only box-shadow easing; it stays below the motion emitter's scoped rule (0,2,0), so a hover state
+   saved on the photo keeps its timing, with this entry appended to its list. The first selector is
+   the one generate-motion-base-transitions.py reads. */
+:where(.sgs-buybox .sgs-buybox__main-photo),
+:where(.sgs-buybox) img.sgs-buybox__main-photo {
 	transition: opacity 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 

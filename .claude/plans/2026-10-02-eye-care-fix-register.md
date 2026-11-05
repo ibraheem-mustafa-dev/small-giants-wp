@@ -235,6 +235,40 @@ Dropped: the phone menu's rating badge in its top row (decided, D7); the header 
 - The clean first paint, `plans/2026-11-04-clean-first-paint.md`.
 - Sign-in, account, checkout and confirmation to the draft. The sign-in page was never reviewed; checkout rows 147 to 156 are open.
 
+## Finishing stream, round 8 (2026-11-05, approved by Bean)
+
+**How the review ran.** Three design reviewers compared live with `E:/sgs-tmp/r8-decided.md` (round 7's list plus the round 7 results), measuring amounts and hunting dropped looks with three probe rules from round 7: read the painted element on a hover, read the panel not its wrapper, read `translate` for lifts. Two read-only investigators proved causes (`E:/sgs-tmp/r8/inv1`, `inv2`); every dropped or medium claim was re-measured live before it reached Bean. Pairs: https://claude.ai/artifact/YXqwMQttGRTdHv4CpBzHpe.
+
+**Edits.**
+- Backups: `sites/eye-care-ward-end/build/backups/2026-11-05-r8/` (7 posts).
+- Scripts: `E:/sgs-tmp/r8/r8-edit.php` (settings needing no deploy) and `r8-edit2.php` (settings needing the new code). Both refuse to save unless the user can `edit_css`: the first save ran without `--user` and stripped the Custom CSS from posts 199, 423 and 463 for about 10 minutes; all three were restored byte for byte from the backup and re-edited as Claude.
+- Framework: `ca9609d08` (choice-flow-question `showInBagLine`), `f17424dac` (shop filter list hover, count and tick-box theme mods), `ee980869b` (buybox main photo hover eases at its saved timing), `3496b37f6` (a modal with no trigger takes no block gap), `c4d1e0d47` (cart `itemNameLineHeight`, `itemDetailLineHeight`), `16ae91c52` (buybox `pickerPillSelectedTextColour`), `cc4d69b96` and `af750ed49` (check-dead-controls resolves a typography helper called inside a foreach over a literal prefix map: inspector-scan rule 34 from 54 findings to 2), `12245dfc8` (reseed files). Database published as `203b7a671887`; deployed to sandybrown and eye-care-test at `12245dfc8`.
+- Checked after the deploy: every row below at 375, 768 and 1440; round 6 and 7 values identical to round 7's saved outputs (`E:/sgs-tmp/r8/regress.txt`; only the bag's scope hash differs); flows pass at 1440 and 375 (£348, £289, size guide, no script errors); 16 editor loads with 0 invalid blocks; the Mama's cart change (COM-4) leaves the "Added to bag" toast, the bag flows and the wishlist heart working.
+
+| Ref | What was wrong | Proven cause | Fix | Type | Status |
+|---|---|---|---|---|---|
+| R8-1 | Product main photo does not zoom on hover (dropped) | no hover saved on the buybox `main-photo` part; a 3-class crossfade rule would also have snapped it | hover scale 1.04 over 0.9s saved; the crossfade moved to a zero-specificity rule | setting + framework repair | closed: scale 1.04, transition 0.9s at 768 and 1440 |
+| R8-2 | Shop brand filter names do not turn taupe on hover (dropped; tick-box labels, not links, so S2 does not apply) | no hover colour existed for the checkbox list | new theme mod `sgs_shop_filter_list_hover`, saved #6F6152 | framework setting | closed: rgb(111,97,82) on hover |
+| R8-3 | Bag line with lenses shows "· Your prescription Send it later" (against rows 20 + 23) | `sgs_cart_line_summary_answers` appended every unpriced flow answer | per-question "Show in the bag line" switch; the prescription question saves it off; the answer stays on the order line | framework setting | closed: "Prescription · Distance · Standard · Tinted to match", then "Colour Ivory · Size M" |
+| R8-4 | Every page ends with a 24px blank strip | the footer's trigger-less modal, last in `.wp-site-blocks`, took the 24px block gap | `sgs-modal--no-trigger` takes no block-start margin | framework repair | closed: 0px below the footer on help and home at all widths |
+| R8-5 | Bag frame-only line 12px taller; the link underline soft grey | no line height on the item name and details; link colour at 85% | new line heights saved 1.27 and 1.23 (19px, 16px); link colour `text`; Custom CSS: 1px solid underline, actions top-aligned | framework setting + setting + Custom CSS | closed: name 19px, details 16px, link 2px below the draft (the brand logo row, decided) |
+| R8-6 | Brands menu 23px taller | 52px logo box and two headings with no line height | logo stays 32px: image padding top 14px, image height 46px, card padding bottom 15px; headings line height 1.5 | setting | closed: cells 84.25px (draft 84), logos 32px, headings 17.25px |
+| R8-7 | Product "Good to know": extra top line; heading 13px tight | `borderWidth.top` saved on the accordion; heading had no line height | border removed; line height 1.5 | setting | closed: no top border, heading 45px, rows 63px below its top (draft 63) |
+| R8-8 | "My qualifications" darkens on hover (against S1) | `colourBackgroundHover` rgba(20,20,20,.14) saved | removed | setting | closed: transparent on hover |
+| R8-9 | Shop filter counts 13px darker; tick boxes 18px with 2px border | hard-coded in `woocommerce.css` | new theme mods: count 12px #77716A, box 16px with 1px border | framework setting | closed: count 12px rgb(119,113,106), box 16px 1px |
+| R8-10 | Bag close 10px nearer the edge; cross longer and thinner | `margin-right: -10px` in `cart/style.css`; 24px icon | Custom CSS: no nudge, 16px icon | Custom CSS | closed: right edge 1416 at 1440 (draft 1416), cross drawn 10px (draft 10) |
+| R8-11 | Photo zooms snap (0.25s) where the draft glides | no duration saved on the card image and about-strip photo | card images 0.9s and the about strip 1.4s, easing cubic-bezier(0.2, 0.7, 0.2, 1) | setting | closed: home and shop cards 0.9s, about strip 1.4s; the similar-shapes cards are saved the same way and render nothing on the Gucci product |
+| R8-12 | Lens "Frame only?" a shade darker | the skip prompt takes `text-muted` | Custom CSS on the lens flow: `text-subtle` | Custom CSS | closed: rgb(107,101,94) |
+| R8-13 | Product breadcrumb "/" darker than its links | `separatorColour` unset (`text-muted`) | `text-subtle` | setting | closed: rgb(107,101,94), as the links |
+| R8-14 | Selected size label pure white (draft #FAF8F5) | the standard buybox had no selected-pill text colour | new `pickerPillSelectedTextColour`, forwarded to the option picker; saved #FAF8F5 | framework setting | closed: rgb(250,248,245) |
+
+**Dropped after checking:**
+- The lens summary "Tinted to match" label at 375: a draft glitch (it wraps to four lines and clips), Bean.
+- The lens "Most people pick this" tag: already #FAF8F5 live (probe miss).
+- The About outline button's hover fill (D-7 removed it), the Help FAQ icon offset (follows S5's 18px icon), the phone menu close glyph (round 5), the contact textarea's monospace placeholder (the draft's own browser default), the shop "Filter" heading (the draft has it) and the FAQ question line height (no visible effect).
+
+**Accepted differences (live is better):** shop brand filter rows 44px and search box 44px (tap size); the bag Remove's 24px row; the lens skip row's 44px; the shop Gender buttons' focus ring sits inside the edge (the shared focus system insets it where buttons touch inside one border).
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
