@@ -22,7 +22,9 @@ database's sha256 changed during the run (a peer's reseed makes it inconclusive,
 
 Both repositories must be separate worktrees (a reseed writes files into its own tree), each with node_modules
 installed in plugins/sgs-blocks and scripts/computed-route. The seed database is a copy of the shared one unless
---seed-db names another; the shared database is only read.
+--seed-db names another; the shared database is only read, and the tool proves it: the shared database's sha256 is taken
+before and after each run on copies, and a run that changed it fails (a reseed given a copy must never write the shared
+file; a peer publishing meanwhile also shows here, so check `publish-framework-db.py status` before blaming the code).
 
 --plant-difference is the negative control: after seeding it changes one database cell and one repository file in
 the candidate, and the run passes only if the comparison reports both. Exit 0 = identical (or, with
@@ -186,6 +188,15 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def shared_db_change(before: str, after: str) -> str | None:
+    """The failure sentence when the shared database's sha256 differs after a run that was given private copies."""
+    if before == after:
+        return None
+    return (f"SHARED DATABASE CHANGED during a run on private copies (sha256 {before[:12]} -> {after[:12]}): a reseed given a "
+            "copy must not write the shared file. Run `publish-framework-db.py status` (a peer's publish also changes it; repeat "
+            "the run if so), then look for a stage that opens the shared path itself.")
+
+
 def seed(repo: Path, db: Path | None, log: Path, stage: int | None = None) -> int:
     """Runs sgs-update-v2.py in `repo`: on the copy `db`, or on the shared database when `db` is None."""
     began = time.perf_counter()
@@ -277,13 +288,21 @@ def self_test() -> int:
             conn.close()
         if not any("columns differ" in d for d in compare_dbs(col_a, col_b, [], [])):
             failures.append("negative control: a renamed time column was not reported")
+        guard_db = tmp_path / "guard.db"
+        guard_db.write_bytes(b"shared v1")
+        guard_before = sha256(guard_db)
+        if shared_db_change(guard_before, sha256(guard_db)) is not None:
+            failures.append("positive control: an untouched shared database was reported as changed")
+        guard_db.write_bytes(b"shared v2")
+        if shared_db_change(guard_before, sha256(guard_db)) is None:
+            failures.append("negative control: a rewritten shared database was not reported")
         if norm_cell("C:\\r\\x\\y", ["C:\\r\\x"]) != "<REPO>\\y":
             failures.append("repository path was not normalised")
         if CLOCK.sub("<TS>", "at 2026-11-04 03:39:12.5Z ok") != "at <TS> ok":
             failures.append("clock time was not normalised")
     for line in failures:
         print("FAIL", line)
-    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, duplicated row, renamed column, path and clock normalisation)")
+    print("self-test:", "FAIL" if failures else "ok (positive control, changed cell, missing row, changed finding count, duplicated row, renamed column, shared-database guard, path and clock normalisation)")
     return 1 if failures else 0
 
 
@@ -310,6 +329,8 @@ def main() -> int:
     work.mkdir(parents=True, exist_ok=True)
     db_a, db_b = work / "baseline.db", work / "candidate.db"
     shared_before = sha256(a.seed_db) if a.shared_readonly else ""
+    guard_path = SHARED_DB if SHARED_DB.is_file() else None
+    guard_before = sha256(guard_path) if guard_path and not a.shared_readonly and not a.reuse else None
     if not a.reuse:
         if a.shared_readonly:
             targets = [(a.baseline, None, work / "baseline.log", a.stage), (a.candidate, None, work / "candidate.log", a.stage)]
@@ -322,6 +343,11 @@ def main() -> int:
             codes = list(pool.map(lambda args: seed(*args), targets))
         if any(codes):
             print("A reseed itself failed; no comparison is meaningful.")
+            return 1
+    if guard_before is not None:
+        changed = shared_db_change(guard_before, sha256(guard_path))
+        if changed:
+            print(changed)
             return 1
     if a.shared_readonly and sha256(a.seed_db) != shared_before:
         print("INCONCLUSIVE: the shared database changed during the run (a peer reseeded, or the stage wrote to it). Repeat the run.")
