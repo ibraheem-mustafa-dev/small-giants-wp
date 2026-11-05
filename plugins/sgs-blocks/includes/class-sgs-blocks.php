@@ -259,6 +259,9 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce-checkout-address.php';
 		// Free delivery applies: no paid delivery option beside it.
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce-shipping-rates.php';
+		// Delivery option descriptions (flat rate, free shipping, local pickup).
+		require_once SGS_BLOCKS_PATH . 'includes/class-shipping-method-description.php';
+		\SGS\Blocks\Shipping_Method_Description::register();
 	}
 
 	/**
