@@ -36751,10 +36751,208 @@
     },
     {
       "slug": "sgs/form-review",
+      "attr": "cardsGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "cards"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "cardsMarginTop",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "cards"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBackgroundColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "edit-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "edit-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "edit-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "editButtonTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "edit-button"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
         "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "listColumnGap",
+      "fields": {
+        "css_property": "column-gap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "listColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "listRowGap",
+      "fields": {
+        "css_property": "row-gap",
+        "css_layer": "GRID",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/form-review",
+      "attr": "rowLayout",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "row"
       }
     },
     {
