@@ -274,7 +274,7 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertStringContainsString( ' .sgs-accordion__search-input{background-color:#FFFAF0;box-shadow:', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search-input{min-height:62px;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:52px;font-size:17px;}', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search{--sgs-accordion-search-icon-size:20px;}', $html );
-		$this->assertStringContainsString( ' .sgs-accordion__search{max-width:640px;margin-inline:auto;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{width:100%;max-width:640px;margin-inline:auto;}', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search{margin-inline:0 auto;}', $html, 'the mobile tier' );
 		$this->assertStringContainsString( ' .sgs-accordion__search-icon{color:#3A2A22;}', $html );
 	}
