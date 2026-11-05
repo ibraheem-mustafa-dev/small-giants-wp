@@ -4,15 +4,17 @@
  * Empty keeps the stylesheet's own wrapping; the server emits `flex-wrap` only for 'nowrap' or 'wrap'
  * (`check-row-flex-wrap.py` holds every block that lays items in a row to a `css:flex-wrap` map). Three short
  * options, so a ToggleGroupControl (the enum-control-shape table). `help` replaces the default help text when a
- * block's row needs a caveat of its own.
+ * block's row needs a caveat of its own. `hideLabelFromVision` keeps the label for screen readers only, for a
+ * wrapper (such as ResponsiveOverride) that already shows the same label.
  */
 import { __ } from '@wordpress/i18n';
 import { ToggleGroupControl, ToggleGroupControlOption } from './primitives';
 
-export default function FlexWrapControl( { label, value, onChange, help } ) {
+export default function FlexWrapControl( { label, value, onChange, help, hideLabelFromVision = false } ) {
 	return (
 		<ToggleGroupControl
 			label={ label || __( 'Wrap items', 'sgs-blocks' ) }
+			hideLabelFromVision={ hideLabelFromVision }
 			help={ help || __( 'Default keeps the layout\'s own behaviour. One row keeps every item on a single line; Wrap lets items that overrun drop onto a further row.', 'sgs-blocks' ) }
 			value={ value || '' }
 			onChange={ ( next ) => onChange( next || '' ) }

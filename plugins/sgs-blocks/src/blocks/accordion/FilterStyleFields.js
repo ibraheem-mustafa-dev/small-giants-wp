@@ -108,6 +108,7 @@ export function ChipLookFields( { attributes, setAttributes } ) {
 					{ ( { ownValue, setOwnValue } ) => (
 						<FlexWrapControl
 							label={ __( 'Chip row wrapping', 'sgs-blocks' ) }
+							hideLabelFromVision
 							help={ __( 'One row keeps every chip on a single line and scrolls the row sideways. Wrap lets chips drop onto further rows.', 'sgs-blocks' ) }
 							value={ ownValue }
 							onChange={ setOwnValue }
