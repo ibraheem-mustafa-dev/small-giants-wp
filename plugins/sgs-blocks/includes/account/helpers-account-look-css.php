@@ -339,11 +339,15 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 					'shadow_colour' => 'loginButtonShadowColour',
 				)
 			);
-			$css[] = sgs_text_states_css( $btn, $attributes, array(
+			$css[]  = sgs_text_states_css(
+				$btn,
+				$attributes,
+				array(
 					'base'  => 'loginButtonText',
 					'hover' => 'loginButtonTextHover',
-				) );
-			$css[] = sgs_fill_states_css(
+				)
+			);
+			$css[]  = sgs_fill_states_css(
 				$btn,
 				$attributes,
 				array(
@@ -351,8 +355,8 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 					'hover' => 'loginButtonBackgroundHover',
 				)
 			);
-			$css[] = sgs_typography_css_rule( $attributes, 'loginButton', $btn, '', false, false, $tiered );
-			$css[] = sgs_emit_responsive_css(
+			$css[]  = sgs_typography_css_rule( $attributes, 'loginButton', $btn, '', false, false, $tiered );
+			$css[]  = sgs_emit_responsive_css(
 				$btn,
 				array(
 					array(

@@ -37,21 +37,21 @@ final class Account_Strings {
 	 */
 	public static function supported(): array {
 		return array(
-			'signIn'          => 'Log in',
-			'usernameLabel'   => 'Username or email address',
+			'signIn'            => 'Log in',
+			'usernameLabel'     => 'Username or email address',
 			'lostUsernameLabel' => 'Username or email',
-			'rememberMe'      => 'Remember me',
-			'lostPassword'    => 'Lost your password?',
-			'resetPassword'   => 'Reset password',
-			'register'        => 'Register',
-			'signOut'         => 'Log out',
-			'orders'          => 'Orders',
-			'addresses'       => 'Addresses',
-			'accountDetails'  => 'Account details',
-			'savedItems'      => 'Saved items',
-			'billingAddress'  => 'Billing address',
-			'shippingAddress' => 'Shipping address',
-			'passwordChange'  => 'Password change',
+			'rememberMe'        => 'Remember me',
+			'lostPassword'      => 'Lost your password?',
+			'resetPassword'     => 'Reset password',
+			'register'          => 'Register',
+			'signOut'           => 'Log out',
+			'orders'            => 'Orders',
+			'addresses'         => 'Addresses',
+			'accountDetails'    => 'Account details',
+			'savedItems'        => 'Saved items',
+			'billingAddress'    => 'Billing address',
+			'shippingAddress'   => 'Shipping address',
+			'passwordChange'    => 'Password change',
 		);
 	}
 
