@@ -789,7 +789,12 @@
 	/* object-fit: rule 37-media-no-handroll — owned by the 'main' media-atom
 	   layer (block.json supports.sgs.mediaElements + assets/css/media-atoms/
 	   object-fit.css's .sgs-media-el rule, cover fallback preserved there). */
-	/* Crossfade on variation swap (driven by data-wp-bind--src in the store). */
+}
+
+/* Crossfade on variation swap (driven by data-wp-bind--src in the store). Zero specificity, on the
+   photo part's own selector, so a hover state saved on the photo keeps its timing (the motion
+   emitter appends this entry to its transition list; a heavier selector here would replace it). */
+:where(.sgs-buybox .sgs-buybox__main-photo) {
 	transition: opacity 0.2s var(--wp--custom--easing--ease, ease); /* sgs-motion: exact */
 }
 
