@@ -146,19 +146,20 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 			$css[] = sgs_typography_css_rule( $attributes, 'ordersPill', $pill, '', false, false, $tiered );
 			$css[] = sgs_fill_states_css( $pill, $attributes, array( 'base' => 'ordersPillBackground' ) );
 			$css[] = sgs_text_states_css( $pill, $attributes, array( 'base' => 'ordersPillText' ) );
+			// status slug => background attribute, text attribute.
 			$stats = array(
-				'Pending'    => 'pending',
-				'Processing' => 'processing',
-				'OnHold'     => 'on-hold',
-				'Completed'  => 'completed',
-				'Cancelled'  => 'cancelled',
-				'Refunded'   => 'refunded',
-				'Failed'     => 'failed',
+				'pending'    => array( 'ordersPillPendingBackground', 'ordersPillPendingText' ),
+				'processing' => array( 'ordersPillProcessingBackground', 'ordersPillProcessingText' ),
+				'on-hold'    => array( 'ordersPillOnHoldBackground', 'ordersPillOnHoldText' ),
+				'completed'  => array( 'ordersPillCompletedBackground', 'ordersPillCompletedText' ),
+				'cancelled'  => array( 'ordersPillCancelledBackground', 'ordersPillCancelledText' ),
+				'refunded'   => array( 'ordersPillRefundedBackground', 'ordersPillRefundedText' ),
+				'failed'     => array( 'ordersPillFailedBackground', 'ordersPillFailedText' ),
 			);
-			foreach ( $stats as $key => $slug ) {
+			foreach ( $stats as $slug => $pair ) {
 				$status_pill = $table . ' .woocommerce-orders-table__row--status-' . $slug . ' .woocommerce-orders-table__cell-order-status';
-				$css[]       = sgs_fill_states_css( $status_pill, $attributes, array( 'base' => 'ordersPill' . $key . 'Background' ) );
-				$css[]       = sgs_text_states_css( $status_pill, $attributes, array( 'base' => 'ordersPill' . $key . 'Text' ) );
+				$css[]       = sgs_fill_states_css( $status_pill, $attributes, array( 'base' => $pair[0] ) );
+				$css[]       = sgs_text_states_css( $status_pill, $attributes, array( 'base' => $pair[1] ) );
 			}
 		}
 

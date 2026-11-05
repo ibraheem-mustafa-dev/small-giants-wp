@@ -27,10 +27,11 @@ const WORDING = [
 	[ 'passwordChange', __( 'Password change heading', 'sgs-blocks' ), 'Password change' ],
 ];
 
+// [ view, label, eyebrow attribute, title attribute, intro attribute ]
 const VIEWS = [
-	[ 'headerSignIn', __( 'Sign in page', 'sgs-blocks' ) ],
-	[ 'headerLost', __( 'Lost password page', 'sgs-blocks' ) ],
-	[ 'headerAccount', __( 'Signed-in account', 'sgs-blocks' ) ],
+	[ 'headerSignIn', __( 'Sign in page', 'sgs-blocks' ), 'headerSignInEyebrow', 'headerSignInTitle', 'headerSignInIntro' ],
+	[ 'headerLost', __( 'Lost password page', 'sgs-blocks' ), 'headerLostEyebrow', 'headerLostTitle', 'headerLostIntro' ],
+	[ 'headerAccount', __( 'Signed-in account', 'sgs-blocks' ), 'headerAccountEyebrow', 'headerAccountTitle', 'headerAccountIntro' ],
 ];
 
 /**
@@ -85,16 +86,16 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 					{ label: 'H3', value: 'h3' },
 				] }
 			/>
-			{ VIEWS.map( ( [ prefix, label ] ) => (
+			{ VIEWS.map( ( [ prefix, label, eyebrow, title, intro ] ) => (
 				<PanelBody key={ prefix } title={ label } initialOpen={ false }>
-					<TextField { ...p } name={ prefix + 'Eyebrow' } label={ __( 'Eyebrow', 'sgs-blocks' ) } />
+					<TextField { ...p } name={ eyebrow } label={ __( 'Eyebrow', 'sgs-blocks' ) } />
 					<TextField
 						{ ...p }
-						name={ prefix + 'Title' }
+						name={ title }
 						label={ __( 'Title', 'sgs-blocks' ) }
 						help={ 'headerAccount' === prefix ? __( 'Use {first_name} for the customer’s first name.', 'sgs-blocks' ) : undefined }
 					/>
-					<TextField { ...p } name={ prefix + 'Intro' } label={ __( 'Intro line', 'sgs-blocks' ) } />
+					{ '' !== intro && <TextField { ...p } name={ intro } label={ __( 'Intro line', 'sgs-blocks' ) } /> }
 					{ 'headerLost' === prefix && (
 						<TextField { ...p } name="headerLostBackLabel" label={ __( 'Back to sign in link', 'sgs-blocks' ) } />
 					) }

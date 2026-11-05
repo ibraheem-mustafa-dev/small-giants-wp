@@ -5,6 +5,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	BOX_UNITS,
 	ResponsiveOverride,
@@ -135,6 +136,7 @@ export function TierBox( { name, label, attributes, setAttributes } ) {
 					values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 					units={ BOX_UNITS }
 					presets
+					defaults={ spacingDefaultsFor( 'sgs/account', name ) }
 					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 				/>
 			) }

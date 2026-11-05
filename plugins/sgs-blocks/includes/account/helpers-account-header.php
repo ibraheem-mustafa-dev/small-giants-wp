@@ -60,22 +60,36 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 	 * @return string Escaped HTML.
 	 */
 	function sgs_account_header_html( array $attributes, string $view ): string {
-		$prefix = array(
-			'signin'  => 'headerSignIn',
-			'lost'    => 'headerLost',
-			'account' => 'headerAccount',
-		)[ $view ] ?? '';
-		if ( '' === $prefix ) {
+		$names = array(
+			'signin'  => array(
+				'eyebrow' => 'headerSignInEyebrow',
+				'title'   => 'headerSignInTitle',
+				'intro'   => 'headerSignInIntro',
+			),
+			'lost'    => array(
+				'eyebrow' => 'headerLostEyebrow',
+				'title'   => 'headerLostTitle',
+				'intro'   => 'headerLostIntro',
+				'back'    => 'headerLostBackLabel',
+			),
+			'account' => array(
+				'eyebrow' => 'headerAccountEyebrow',
+				'title'   => 'headerAccountTitle',
+				'intro'   => 'headerAccountIntro',
+				'meta'    => 'headerAccountMeta',
+			),
+		)[ $view ] ?? array();
+		if ( array() === $names ) {
 			return '';
 		}
-		$read    = static function ( string $suffix ) use ( $attributes, $prefix ): string {
-			return trim( (string) ( $attributes[ $prefix . $suffix ] ?? '' ) );
+		$read    = static function ( string $slot ) use ( $attributes, $names ): string {
+			return isset( $names[ $slot ] ) ? trim( (string) ( $attributes[ $names[ $slot ] ] ?? '' ) ) : '';
 		};
-		$eyebrow = $read( 'Eyebrow' );
-		$title   = $read( 'Title' );
-		$intro   = $read( 'Intro' );
-		$meta    = 'account' === $view ? $read( 'Meta' ) : '';
-		$back    = 'lost' === $view ? $read( 'BackLabel' ) : '';
+		$eyebrow = $read( 'eyebrow' );
+		$title   = $read( 'title' );
+		$intro   = $read( 'intro' );
+		$meta    = $read( 'meta' );
+		$back    = $read( 'back' );
 		if ( '' === $eyebrow . $title . $intro . $meta . $back ) {
 			return '';
 		}

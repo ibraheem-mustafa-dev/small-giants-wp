@@ -6,14 +6,15 @@ import { PanelBody } from '@wordpress/components';
 import { fillRow, textRow } from '../../components';
 import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
 
+// [ row key, label, background attribute, text attribute ]
 const STATUSES = [
-	[ 'Pending', __( 'Pending', 'sgs-blocks' ) ],
-	[ 'Processing', __( 'Processing', 'sgs-blocks' ) ],
-	[ 'OnHold', __( 'On hold', 'sgs-blocks' ) ],
-	[ 'Completed', __( 'Completed', 'sgs-blocks' ) ],
-	[ 'Cancelled', __( 'Cancelled', 'sgs-blocks' ) ],
-	[ 'Refunded', __( 'Refunded', 'sgs-blocks' ) ],
-	[ 'Failed', __( 'Failed', 'sgs-blocks' ) ],
+	[ 'Pending', __( 'Pending', 'sgs-blocks' ), 'ordersPillPendingBackground', 'ordersPillPendingText' ],
+	[ 'Processing', __( 'Processing', 'sgs-blocks' ), 'ordersPillProcessingBackground', 'ordersPillProcessingText' ],
+	[ 'OnHold', __( 'On hold', 'sgs-blocks' ), 'ordersPillOnHoldBackground', 'ordersPillOnHoldText' ],
+	[ 'Completed', __( 'Completed', 'sgs-blocks' ), 'ordersPillCompletedBackground', 'ordersPillCompletedText' ],
+	[ 'Cancelled', __( 'Cancelled', 'sgs-blocks' ), 'ordersPillCancelledBackground', 'ordersPillCancelledText' ],
+	[ 'Refunded', __( 'Refunded', 'sgs-blocks' ), 'ordersPillRefundedBackground', 'ordersPillRefundedText' ],
+	[ 'Failed', __( 'Failed', 'sgs-blocks' ), 'ordersPillFailedBackground', 'ordersPillFailedText' ],
 ];
 
 /**
@@ -83,10 +84,10 @@ export function extraColourRows( attributes, setAttributes ) {
 		f( 'ordersPillBackground', __( 'Status pill background', 'sgs-blocks' ), { base: 'ordersPillBackground' } ),
 		t( 'ordersPillText', __( 'Status pill text', 'sgs-blocks' ), { base: 'ordersPillText' } ),
 	];
-	STATUSES.forEach( ( [ key, label ] ) => {
+	STATUSES.forEach( ( [ key, label, background, text ] ) => {
 		rows.push(
-			f( 'ordersPill' + key + 'Bg', label + ': ' + __( 'pill background', 'sgs-blocks' ), { base: 'ordersPill' + key + 'Background' } ),
-			t( 'ordersPill' + key + 'Tx', label + ': ' + __( 'pill text', 'sgs-blocks' ), { base: 'ordersPill' + key + 'Text' } )
+			f( 'ordersPill' + key + 'Bg', label + ': ' + __( 'pill background', 'sgs-blocks' ), { base: background } ),
+			t( 'ordersPill' + key + 'Tx', label + ': ' + __( 'pill text', 'sgs-blocks' ), { base: text } )
 		);
 	} );
 	rows.push(
