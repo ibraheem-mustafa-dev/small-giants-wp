@@ -75,6 +75,29 @@ export function fieldValueText( field ) {
 }
 
 /**
+ * The question of a field that prints no visible label element: its aria-label, then its data-label, then its
+ * input name made readable ("trade_type[]" reads "Trade type").
+ *
+ * @param {HTMLElement} field A `.sgs-form-field` element.
+ * @return {string} Label text, or '' when the field carries none of the three.
+ */
+function fallbackLabelText( field ) {
+	const labelled = field.matches( '[aria-label]' ) ? field : field.querySelector( '[aria-label]' );
+	const aria = labelled ? labelled.getAttribute( 'aria-label' ).trim() : '';
+	if ( aria ) {
+		return aria;
+	}
+	const dataEl = field.matches( '[data-label]' ) ? field : field.querySelector( '[data-label]' );
+	const data = dataEl ? dataEl.getAttribute( 'data-label' ).trim() : '';
+	if ( data ) {
+		return data;
+	}
+	const named = field.querySelector( 'input[name], select[name], textarea[name]' );
+	const name = named ? named.getAttribute( 'name' ).replace( /\[\d*\]$/, '' ).replace( /[-_]+/g, ' ' ).replace( /\s+/g, ' ' ).trim() : '';
+	return name ? name.charAt( 0 ).toUpperCase() + name.slice( 1 ) : '';
+}
+
+/**
  * The question a field asks: the group legend or field label, never an option's label, with the required marker
  * and its screen-reader "(required)" text stripped.
  *
@@ -94,10 +117,10 @@ export function fieldLabelText( field ) {
 			field.querySelector( 'label:not(.sgs-form-field__option):not(.sgs-form-tile):not(.screen-reader-text)' );
 	}
 	if ( ! source ) {
-		return '';
+		return fallbackLabelText( field );
 	}
 	const clone = source.cloneNode( true );
-	clone.querySelectorAll( '.sgs-form-field__required, .sgs-sr-only, .screen-reader-text' ).forEach( ( node ) => node.remove() );
+	clone.querySelectorAll( '.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text' ).forEach( ( node ) => node.remove() );
 	return clone.textContent.replace( /\s+/g, ' ' ).trim();
 }
 
@@ -113,6 +136,22 @@ function isFieldHidden( field ) {
 		return true;
 	}
 	const inputs = field.querySelectorAll( 'input, select, textarea' );
+	return inputs.length > 0 && Array.from( inputs ).every( ( input ) => input.disabled );
+}
+
+/**
+ * Whether a whole step is out of the form: hidden by the `hidden` attribute (itself or an ancestor), or holding
+ * inputs that are all disabled. A step merely not on screen (`sgs-form-step--hidden`, the stepper's own class)
+ * is still part of the form and is not skipped.
+ *
+ * @param {HTMLElement} step Step element.
+ * @return {boolean} True when the step takes no part in the review.
+ */
+function isStepSkipped( step ) {
+	if ( step.closest( '[hidden]' ) ) {
+		return true;
+	}
+	const inputs = step.querySelectorAll( 'input, select, textarea' );
 	return inputs.length > 0 && Array.from( inputs ).every( ( input ) => input.disabled );
 }
 
@@ -213,6 +252,9 @@ export function populateReview( formRoot, review ) {
 		: [ { step: formRoot, index: -1, title: '' } ];
 
 	sections.forEach( ( section ) => {
+		if ( section.index >= 0 && isStepSkipped( section.step ) ) {
+			return;
+		}
 		const rows = answeredRows( section.step );
 		if ( ! rows.length ) {
 			return;

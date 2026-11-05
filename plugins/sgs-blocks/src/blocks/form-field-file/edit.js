@@ -9,6 +9,7 @@ import {
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import FieldLabelLayoutPanel from '../../components/FieldLabelLayoutPanel';
 import ZonePanel from './ZonePanel';
+import { IconPreview } from '../../components';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
@@ -243,6 +244,11 @@ export default function Edit( { attributes, setAttributes } ) {
 					) }
 					{ ! isNative && (
 					<div className="sgs-form-field__file-label" style={ isPanel ? undefined : { border: 'none', padding: 0 } }>
+						{ attributes.zoneIcon && (
+							<span className="sgs-form-field__file-icon" aria-hidden="true">
+								<IconPreview source="lucide" name={ attributes.zoneIcon } />
+							</span>
+						) }
 						<span>
 							<AuthoredText
 								value={ uploadText || __( 'Drag a file here or click to browse', 'sgs-blocks' ) }
@@ -257,8 +263,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								color: '#666',
 							} }
 						>
-							{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
-							{ __( 'MB', 'sgs-blocks' ) }
+							{ attributes.hintText || (
+								<>
+									{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
+									{ __( 'MB', 'sgs-blocks' ) }
+								</>
+							) }
 						</span>
 						{ isPanel && helpText && (
 							<p className="sgs-form-field__help">{ helpText }</p>

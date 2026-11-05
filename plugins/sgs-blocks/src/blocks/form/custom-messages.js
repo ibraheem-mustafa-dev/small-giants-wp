@@ -53,6 +53,43 @@ export function reasons( field ) {
 	return out;
 }
 
+const GROUP_SELECTOR = 'fieldset[data-sgs-group-required]';
+
+/**
+ * Apply a tick-several group's "at least one" rule. A group-required fieldset (checkbox and multi-select tiles
+ * fields) carries no `required` attribute on its inputs: when none of its checkboxes is ticked the FIRST one is
+ * given a custom validity (its own `data-sgs-msg-required` copy, else the default), and every other box is cleared.
+ *
+ * @param {HTMLElement} group Fieldset carrying data-sgs-group-required.
+ */
+export function syncGroupRequired( group ) {
+	const boxes = Array.from( group.querySelectorAll( 'input[type="checkbox"]' ) );
+	const anyTicked = boxes.some( ( box ) => box.checked );
+	boxes.forEach( ( box, index ) => {
+		if ( 0 === index && ! anyTicked ) {
+			box.setCustomValidity( box.getAttribute( 'data-sgs-msg-required' ) || 'Please select at least one option.' );
+		} else {
+			box.setCustomValidity( '' );
+		}
+	} );
+}
+
+/**
+ * The error line of a field: the control's own `<id>-error`, or for a control inside a tick-several group the
+ * group's field-level error line.
+ *
+ * @param {HTMLElement} field Control.
+ * @return {HTMLElement|null} Error element.
+ */
+function errorLineFor( field ) {
+	const own = field.id ? document.getElementById( field.id + '-error' ) : null;
+	if ( own ) {
+		return own;
+	}
+	const group = field.closest( GROUP_SELECTOR );
+	return group ? group.closest( '.sgs-form-field' )?.querySelector( '.sgs-form-field__error' ) ?? null : null;
+}
+
 /**
  * Validate one control, mark it and fill its error line. A field's own message is also set as the control's custom
  * validity so the browser bubble shows the same words.
@@ -62,7 +99,11 @@ export function reasons( field ) {
  */
 export function validateField( field ) {
 	field.setCustomValidity( '' );
-	const errorEl = field.id ? document.getElementById( field.id + '-error' ) : null;
+	const group = field.closest( GROUP_SELECTOR );
+	if ( group ) {
+		syncGroupRequired( group );
+	}
+	const errorEl = errorLineFor( field );
 	if ( field.checkValidity() ) {
 		field.removeAttribute( 'aria-invalid' );
 		if ( errorEl ) {
@@ -86,4 +127,20 @@ export function validateField( field ) {
 		errorEl.textContent = message || field.validationMessage || 'This field is required.';
 	}
 	return false;
+}
+
+// A tick-several group re-checks its rule whenever a box changes, and clears the error it showed once one is ticked.
+if ( 'undefined' !== typeof document ) {
+	document.addEventListener( 'change', ( event ) => {
+		const group = event.target?.closest ? event.target.closest( GROUP_SELECTOR ) : null;
+		if ( ! group ) {
+			return;
+		}
+		syncGroupRequired( group );
+		const first = group.querySelector( 'input[type="checkbox"]' );
+		if ( first && 'true' === first.getAttribute( 'aria-invalid' ) ) {
+			validateField( first );
+		}
+	} );
+	document.querySelectorAll( GROUP_SELECTOR ).forEach( syncGroupRequired );
 }

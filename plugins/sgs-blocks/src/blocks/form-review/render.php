@@ -152,6 +152,11 @@ $sgs_fr_css .= sgs_emit_responsive_css(
 			'box'          => true,
 			'unit_default' => 'px',
 		),
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['editButtonMinHeight'] ?? null ),
+			'css'          => 'min-height',
+			'unit_default' => 'px',
+		),
 	)
 );
 $sgs_fr_css .= sgs_typography_css_rule( $attributes, 'editButton', $sgs_fr_edit_sel, '', false, false, sgs_object_attr_keys( $block ) );
