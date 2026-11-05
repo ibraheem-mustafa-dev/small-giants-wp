@@ -39,6 +39,7 @@ final class Account_Strings {
 		return array(
 			'signIn'          => 'Log in',
 			'usernameLabel'   => 'Username or email address',
+			'lostUsernameLabel' => 'Username or email',
 			'rememberMe'      => 'Remember me',
 			'lostPassword'    => 'Lost your password?',
 			'resetPassword'   => 'Reset password',

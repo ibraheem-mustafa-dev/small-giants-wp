@@ -12,6 +12,7 @@ import { Choice, TextField, TierBox, TierLength, Toggle } from './extraControls'
 const WORDING = [
 	[ 'signIn', __( 'Sign in button (WooCommerce: Log in)', 'sgs-blocks' ), 'Log in' ],
 	[ 'usernameLabel', __( 'Sign in field label', 'sgs-blocks' ), 'Username or email address' ],
+	[ 'lostUsernameLabel', __( 'Lost password field label', 'sgs-blocks' ), 'Username or email' ],
 	[ 'rememberMe', __( 'Remember me', 'sgs-blocks' ), 'Remember me' ],
 	[ 'lostPassword', __( 'Lost password link', 'sgs-blocks' ), 'Lost your password?' ],
 	[ 'resetPassword', __( 'Reset password button', 'sgs-blocks' ), 'Reset password' ],
