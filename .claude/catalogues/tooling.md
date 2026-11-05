@@ -20,7 +20,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 | Directory | Runnable files | Holds |
 |---|---|---|
 | `scripts/` | 1019 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 854 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `plugins/sgs-blocks/scripts/` | 856 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -204,18 +204,20 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 170 | `check-breakpoint-literals.py` | device-tier breakpoints come from the shared source, never typed. |
 | 171 | `check-framework-db-resolver.py` | every script a reseed runs asks lib/framework_db for its database. |
 | 172 | `check-wp-package-exports.mjs` | The build maps @wordpress/* imports to WordPress's own script globals (wp.dom, wp.blockEditor, ...), and webpack does not check that the name exists… |
-| 173 | `check-json-duplicate-keys.py` | a committed JSON file the plugins or theme load never repeats an object key. |
-| 174 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 175 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 176 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 177 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 178 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 179 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 180 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
-| 181 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
-| 182 | `tap-area-fits-shape.check.mjs` | Computed-size check for ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house tap floor, so the tap area fits the shape; with… |
+| 173 | `detector6_native_support_and_style_emission.py` | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
+| 174 | `check-json-duplicate-keys.py` | a committed JSON file the plugins or theme load never repeats an object key. |
+| 175 | `check-nested-panel-title-rule.py` | the nested-ToolsPanel title rule lives once, in assets/css/inspector-controls.css. |
+| 176 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 177 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 178 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 179 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 180 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 181 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 182 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
+| 183 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
+| 184 | `tap-area-fits-shape.check.mjs` | Computed-size check for ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house tap floor, so the tap area fits the shape; with… |
 
-**182 gating scripts.** Regenerate this whole section with:
+**184 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -223,7 +225,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (182 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 182 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (184 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 184 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -598,6 +600,14 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: **read-only** — no write call site found in source
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/check-nested-panel-title-rule.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]; `REPO` = PLUGIN.parents[1]
+- Reads: `SHARED`
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): plugins
+- CLI flags read: `--check`, `--self-test`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/check-no-core-blocks.py`** (build)
 - Path constants: `REPO` = pathlib.Path(__file__).resolve().parents[3]; `MIG` = REPO / 'plugins' / 'sgs-blocks' / 'scripts' / 'migrate-core-blocks'; `THEME` = REPO / 'theme' / 'sgs-theme'
 - Reads: UNVERIFIED (no recognised read call site found)
@@ -892,6 +902,14 @@ Every field below is extracted from the script's own executable code (regex over
 **`plugins/sgs-blocks/scripts/consistency/run-consistency-gates.py`** (build)
 - Reads: UNVERIFIED (no recognised read call site found)
 - Writes: **read-only** — no write call site found in source
+- Non-zero exit sites found: SystemExit(non-zero on failure)
+
+**`plugins/sgs-blocks/scripts/content-role-detect/detector6_native_support_and_style_emission.py`** (build)
+- Path constants: `SCRIPT_DIR` = Path(__file__).resolve().parent; `PLUGIN_ROOT` = SCRIPT_DIR.parent.parent          # plugins/sgs-blocks
+- Reads: `sqlite3:f"file:{framework_db_path(`
+- Writes: **read-only** — no write call site found in source
+- DB tables (sgs-framework.db): roles
+- CLI flags read: `--candidates`, `--self-test`
 - Non-zero exit sites found: SystemExit(non-zero on failure)
 
 **`plugins/sgs-blocks/scripts/db-consistency/run.py`** (build)
@@ -1356,7 +1374,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 773 scripts
+#### `plugins/sgs-blocks/scripts/` — 775 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1440,6 +1458,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-inert-controls.py` | manifest+npm+script-call | Find block attributes that are OVERWRITTEN in render.php before being used. |
 | `check-interaction-only-css.py` | script-call | visual-diff-gate helper. |
 | `check-item-field-roles.py` | manifest | - every repeater item field in a block.json declares a role from the role vocabulary. |
+| `check-json-duplicate-keys.py` | manifest | a committed JSON file the plugins or theme load never repeats an object key. |
 | `check-jsonld-flags.py` | manifest+npm | guard the ONE json_encode flag combination that is unsafe. |
 | `check-ksort-before-hash.py` | manifest+npm+script-call | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
 | `check-length-unit-partners.py` | manifest+npm | Gate: no single length setting stores a bare number beside a `<name>Unit` attribute. |
@@ -1467,6 +1486,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-motion-style-writes.py` | — | front-end motion scripts write custom properties only (Spec 38A FR-38A-47). |
 | `check-motion-token-consumers.py` | script-call | motion tokens and their readers agree (Spec 38A section 7, FR-38A-14, FR-38A-15). |
 | `check-nested-global-settings.py` | manifest | reject nested-path wp_get_global_settings() reads. |
+| `check-nested-panel-title-rule.py` | manifest | the nested-ToolsPanel title rule lives once, in assets/css/inspector-controls.css. |
 | `check-no-core-blocks.py` | manifest+script-call | Prebuild gate: NO banned core blocks in theme pattern/part/template FILES. |
 | `check-no-fluid-typography.py` | manifest | "WordPress's fluid type engine stays off". |
 | `check-no-src-requires.py` | manifest | Fail when plugin-level PHP loads a file from src/. |
@@ -1535,7 +1555,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `content-role-detect/detector3_i18n_default.py` | script-call+test-import | Detector 3 — i18n-wrapped default walk (structural, statement-scoped). |
 | `content-role-detect/detector4_referenced_not_output.py` | script-call | Detector 4 — "referenced in code, but never escaped to output and never CSS". |
 | `content-role-detect/detector5_image_alt_companion.py` | script-call | Detector 5 -- derive the image<->alt COMPANION relationship from render.php. |
-| `content-role-detect/detector6_native_support_and_style_emission.py` | script-call | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
+| `content-role-detect/detector6_native_support_and_style_emission.py` | manifest+script-call+test-import | Detector 6 -- "WP-core native support" + "value painted inside a <style> element". |
 | `content-role-detect/detector7_css_paint_flow.php` | script-call | Detector 7 — CSS PAINT FLOW (forward variable tracking to a paint site). |
 | `content-role-detect/fingerprint_content_roles.py` | script-call+test-import | Deterministic content-role fingerprint (Track A / Spec 35, Step 2). |
 | `copy-built-styles.js` | npm+script-call | Postbuild: copy style-index.css to style.css per block. |
@@ -1964,7 +1984,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `prove-selftest-can-fail.py` | script-call | Prove a detector's --self-test is LOAD-BEARING, not decorative. |
 | `provision-site-info-from-draft.py` | manifest+script-call+test-import | : fill a client site's Site Info from the clone pipeline's handover report. |
 | `provision-site-mail.py` | script-call | : give a client site working SMTP email through FluentSMTP. |
-| `publish-framework-db.py` | test-import | reseed on a private copy, publish it to the shared framework DB in a short locked step. |
+| `publish-framework-db.py` | script-call+test-import | reseed on a private copy, publish it to the shared framework DB in a short locked step. |
 | `push-theme-snapshot.py` | script-call+skill+test-import | Deploy a per-client theme.json snapshot to a WP site. |
 | `qa/check-border-roundtrip.js` | script-call | Border round-trip probe — does the FRONTEND actually paint the border the block's `borderWidth` / `borderStyle` / `borderColour` attributes describe? |
 | `qa/fr30-15-alerts-live-proof.php` | — | FR-30-15 live proof: saved-item alerts and the Notify me sender, on a real site (unified-email plan phase 3 — the emails now go through the… |
