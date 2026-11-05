@@ -2598,13 +2598,23 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:not(:focus-visible)",
+   "selector": ":is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:not(:focus-visible)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items:has( [aria-checked=\"true\"] )::before",
+   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute button.wc-block-product-filter-chips__item[aria-checked=\"true\"]",
+   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
@@ -2693,7 +2703,7 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters__group:has( .sgs-filter-swatches ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:hover",
+   "selector": ":where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
