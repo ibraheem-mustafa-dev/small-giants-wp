@@ -53,6 +53,13 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 			'tablet'  => '360px',
 		),
 		'sgsColumnGap'               => array( 'desktop' => '40px' ),
+		'sgsButtonFontSize'          => 18,
+		'sgsButtonFontWeight'        => '700',
+		'sgsButtonMinHeight'         => array(
+			'desktop' => '62px',
+			'mobile'  => '56px',
+		),
+		'sgsButtonPadding'           => array( 'desktop' => array( 'left' => '24px' ) ),
 	);
 
 	private function root(): string {
@@ -101,11 +108,15 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 			$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*img\{width:80px;\}/', $css, "{$block} picture width on mobile" );
 		}
 		$cart = $this->css( self::NEW_ATTRS, 'cart' );
+		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button,.sgs-x .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button{min-height:62px;padding-left:24px;}', $cart );
+		$this->assertStringContainsString( 'wp-element-button{font-size:18px;}', $cart );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:\d+px\)\{[^{]*wp-element-button\{min-height:56px;\}/', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-item__remove-link{font-weight:700;}', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-items__row > td{padding-top:0px;padding-bottom:0px;}', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-item__prices{display:none;}', $cart );
 		$this->assertStringContainsString( '.wc-block-cart-item__image img{width:104px;}', $cart );
 		$checkout = $this->css( self::NEW_ATTRS, 'checkout' );
+		$this->assertStringContainsString( '.sgs-x .wc-block-components-checkout-place-order-button.wc-block-components-button,.sgs-x .wp-block-woocommerce-checkout-actions-block .wp-element-button{min-height:62px;padding-left:24px;}', $checkout );
 		$this->assertStringContainsString( '.wc-block-components-order-summary-item__image{width:104px;}', $checkout );
 		$this->assertStringContainsString( '.wc-block-components-order-summary-item__image{flex-shrink:0;}', $checkout );
 		$this->assertStringNotContainsString( 'remove-link', $checkout, 'the checkout has no remove link' );
@@ -123,7 +134,7 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		foreach ( array( 'cart', 'checkout' ) as $block ) {
 			$css = $this->css( $old, $block );
 			$this->assertNotSame( '', $css );
-			foreach ( array( 'border-top', 'flex-basis', '.wc-block-components-sidebar-layout{column-gap', '> td', 'flex-shrink', 'totals-item__label', 'product-metadata', 'remove-link' ) as $needle ) {
+			foreach ( array( 'border-top', 'flex-basis', '.wc-block-components-sidebar-layout{column-gap', '> td', 'flex-shrink', 'totals-item__label', 'product-metadata', 'remove-link', 'min-height', 'proceed-to-checkout', 'place-order' ) as $needle ) {
 				$this->assertStringNotContainsString( $needle, $css, "{$block}: '{$needle}' must not print without its setting" );
 			}
 		}
@@ -135,7 +146,8 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		$this->assertSame( '8637bc9c27b4a43ee9e5f9c52bf56c21', md5( $css ) );
 		$checkout = $this->css( array( 'sgsItemThumbSize' => '96px' ), 'checkout' );
 		$this->assertStringContainsString( '{width:96px;max-width:100%;height:auto;}', $checkout, 'same declarations; the checkout selector now out-ranks WooCommerce' );
-		$this->assertStringNotContainsString( 'flex-shrink', $checkout );
+		$this->assertStringContainsString( '.wc-block-components-order-summary-item__image{width:96px;flex-shrink:0;}', $checkout, 'the picture box takes the width and stops shrinking' );
+		$this->assertStringNotContainsString( 'flex-shrink', $css, 'the cart has no picture box' );
 	}
 
 	public function test_the_settings_are_declared_and_the_rows_exist(): void {
@@ -146,7 +158,7 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		$this->assertStringContainsString( "sgsItemThumbSize: { type: [ 'string', 'object' ] }", $js );
 		$this->assertStringNotContainsString( 'sgsTotalRow', $js );
 		$rows = json_decode( (string) file_get_contents( $this->root() . 'includes/woocommerce/commerce-look/selectors.json' ), true )['rows'];
-		foreach ( array( 'total_label', 'total_value', 'summary_row_label', 'summary_row_value', 'summary_row_divider', 'total_divider', 'item_variant', 'sidebar_wide', 'layout' ) as $id ) {
+		foreach ( array( 'total_label', 'total_value', 'summary_row_label', 'summary_row_value', 'summary_row_divider', 'total_divider', 'item_variant', 'sidebar_wide', 'layout', 'button_primary' ) as $id ) {
 			$this->assertArrayHasKey( 'cart', $rows[ $id ], $id );
 			$this->assertArrayHasKey( 'checkout', $rows[ $id ], $id );
 		}

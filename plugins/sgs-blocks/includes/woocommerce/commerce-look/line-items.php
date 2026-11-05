@@ -35,19 +35,21 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= $unit . '{display:none;}';
 	}
 
-	// Thumbnail size: the picture. A plain length (the shape saved before the setting became per-device) prints the one
-	// rule it always printed; a per-device object prints a rule per device and widens the checkout picture box.
-	$img = sgs_commerce_look_selector( 'item_image_img', $block, $root );
+	// Thumbnail size: the picture, and on the checkout the 48px box WooCommerce draws it in (a flex item that shrinks
+	// and caps the picture, so the box takes the same width and stops shrinking). A plain length (the shape saved before
+	// the setting became per-device) prints one rule for the picture; a per-device object prints a rule per device.
+	$img   = sgs_commerce_look_selector( 'item_image_img', $block, $root );
+	$box   = sgs_commerce_look_selector( 'item_thumb_box', $block, $root );
 	$thumb = $attrs['sgsItemThumbSize'] ?? null;
 	if ( '' !== $img && is_string( $thumb ) ) {
 		$size = sgs_css_single_length_value( $thumb );
 		if ( '' !== $size ) {
 			$css .= $img . '{width:' . $size . ';max-width:100%;height:auto;}';
+			$css .= '' === $box ? '' : $box . '{width:' . $size . ';flex-shrink:0;}';
 		}
 	} elseif ( '' !== $img && ! empty( $thumb ) ) {
 		$width = array( array( 'value' => $thumb, 'css' => 'width', 'unit_default' => 'px' ) );
 		$css  .= sgs_emit_responsive_css( $img, $width ) . $img . '{max-width:100%;height:auto;}';
-		$box   = sgs_commerce_look_selector( 'item_thumb_box', $block, $root );
 		if ( '' !== $box ) {
 			$css .= sgs_emit_responsive_css( $box, $width ) . $box . '{flex-shrink:0;}';
 		}

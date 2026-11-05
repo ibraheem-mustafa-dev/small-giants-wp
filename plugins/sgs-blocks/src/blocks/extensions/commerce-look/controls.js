@@ -118,9 +118,10 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Block setAttributes.
  * @param {string}   props.prefix        Attribute prefix (`sgsStepTitle`, ...).
+ * @param {boolean}  [props.noColour]    Omit the colour row (the button's colours come from the preset).
  * @return {JSX.Element} The rows.
  */
-export function TextControls( { attributes, setAttributes, prefix } ) {
+export function TextControls( { attributes, setAttributes, prefix, noColour = false } ) {
 	return (
 		<>
 			<TypographyControls
@@ -131,7 +132,7 @@ export function TextControls( { attributes, setAttributes, prefix } ) {
 				setAttributes={ setAttributes }
 				prefix={ prefix }
 			/>
-			<ColourRow label={ __( 'Text colour', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Colour' } />
+			{ ! noColour && <ColourRow label={ __( 'Text colour', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Colour' } /> }
 		</>
 	);
 }
