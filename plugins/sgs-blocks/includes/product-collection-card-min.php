@@ -128,7 +128,11 @@ function sgs_inject_card_min_width( $block_content, $block ) {
 	if ( '' === $root_tag ) {
 		return $block_content;
 	}
-	$scope = sgs_scope_class_for_root( $root_tag, 'sgs-card-min' );
+	$scope = sgs_scope_class_for_root(
+		$root_tag,
+		'sgs-card-min',
+		static fn( string $scope_class ): string => sgs_card_min_width_css( $value, $scope_class )
+	);
 	$css   = sgs_card_min_width_css( $value, $scope );
 	if ( '' === $css ) {
 		return $block_content;

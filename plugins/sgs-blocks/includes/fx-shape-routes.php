@@ -354,7 +354,7 @@ function sgs_expand_fx_shape_pair( string $block_content ): string {
 	 * one, so the anchor name is unique per block instance.
 	 */
 	$root_tag_html = sgs_extract_root_opening_tag( $rest );
-	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxshape' );
+	$scope_class   = sgs_scope_class_for_root( $root_tag_html, 'sgs-fxshape', null, true );
 	$anchor_name   = '--sgs-fx-anchor-' . $scope_class;
 	$target_class  = 'sgs-fx-anchor-target-' . \substr( \md5( $scope_class ), 0, 8 );
 
