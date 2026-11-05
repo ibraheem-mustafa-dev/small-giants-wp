@@ -22,6 +22,12 @@
 		"inserter": true,
 		"sgs": {
 			"specRef": "30",
+			"colourExemptions": {
+				"checkbox": {
+					"rule": "states",
+					"reason": "The ticked-box colour is the browser accent colour of a native checkbox, painted by the browser for its own checked state; no :hover rule targets it in style.css and the box has no hover look of its own."
+				}
+			},
 			"spacingDefaults": {
 				"giftTilePadding": {
 					"top": "0.75rem",
@@ -123,6 +129,7 @@
 						"css:font-size": "giftLabelFontSize",
 						"css:font-family": "giftLabelFontFamily",
 						"css:font-weight": "giftLabelFontWeight",
+						"css:font-style": "giftLabelFontStyle",
 						"css:line-height": "giftLabelLineHeight"
 					}
 				},
@@ -140,6 +147,7 @@
 						"css:font-size": "giftNoteFontSize",
 						"css:font-family": "giftNoteFontFamily",
 						"css:font-weight": "giftNoteFontWeight",
+						"css:font-style": "giftNoteFontStyle",
 						"css:line-height": "giftNoteLineHeight",
 						"css:min-height": "giftNoteMinHeight"
 					}
@@ -463,6 +471,12 @@
 			"default": "",
 			"description": "Field label weight. Unset keeps the stylesheet weight."
 		},
+		"giftLabelFontStyle": {
+			"type": "string",
+			"enum": [ "", "normal", "italic" ],
+			"default": "",
+			"description": "Field label style. Unset keeps the inherited style."
+		},
 		"giftLabelLineHeight": {
 			"type": "object",
 			"default": {},
@@ -490,6 +504,12 @@
 			"type": "string",
 			"default": "",
 			"description": "Note box text weight. Unset keeps the stylesheet weight."
+		},
+		"giftNoteFontStyle": {
+			"type": "string",
+			"enum": [ "", "normal", "italic" ],
+			"default": "",
+			"description": "Note box text style. Unset keeps the inherited style."
 		},
 		"giftNoteLineHeight": {
 			"type": "object",

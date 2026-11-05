@@ -127,21 +127,26 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 
 		$input_sel = $root . ' .sgs-gift-order__input';
 		$note_sel  = $root . ' .sgs-gift-order__textarea';
-		foreach ( array(
-			array( $input_sel, 'giftInputMinHeight' ),
-			array( $note_sel, 'giftNoteMinHeight' ),
-		) as list( $sel, $key ) ) {
-			$css .= sgs_emit_responsive_css(
-				$sel,
+		$css .= sgs_emit_responsive_css(
+			$input_sel,
+			array(
 				array(
-					array(
-						'value'        => $attributes[ $key ] ?? null,
-						'css'          => 'min-height',
-						'unit_default' => 'px',
-					),
-				)
-			);
-		}
+					'value'        => $attributes['giftInputMinHeight'] ?? null,
+					'css'          => 'min-height',
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$css .= sgs_emit_responsive_css(
+			$note_sel,
+			array(
+				array(
+					'value'        => $attributes['giftNoteMinHeight'] ?? null,
+					'css'          => 'min-height',
+					'unit_default' => 'px',
+				),
+			)
+		);
 		$css .= sgs_emit_responsive_css(
 			$field,
 			array(

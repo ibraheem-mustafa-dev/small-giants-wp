@@ -163,9 +163,9 @@ ok( str_contains( $on['css'], '.sgs-commerce-note__link{color:#ff0000}' ) && str
 
 $ul = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkUnderline' => 'always', 'commerceNoteLinkUnderlineOffset' => '3px' ) );
 ok( str_contains( $ul['css'], ' a{text-decoration-line:underline;' ) && str_contains( $ul['css'], 'text-underline-offset:3px' ), 'note: link underline always' );
-ok( ! str_contains( $off['css'], 'text-decoration' ) && ! str_contains( $off['css'], 'min-height' ), 'note: link underline and tap height unset print nothing' );
+ok( ! str_contains( $off['css'], 'text-decoration' ) && ! str_contains( $off['css'], 'link-min-height' ), 'note: link underline and tap height unset print nothing' );
 $mh = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkMinHeight' => array( 'desktop' => 0, 'mobile' => '44px' ) ) );
-ok( str_contains( $mh['css'], '.sgs-commerce-note__link{min-height:0px;}' ) && str_contains( $mh['css'], '.sgs-commerce-note__link{min-height:44px;}' ), 'note: link tap height per device' );
+ok( str_contains( $mh['css'], '{--sgs-commerce-note-link-min-height:0px;}' ) && str_contains( $mh['css'], '{--sgs-commerce-note-link-min-height:44px;}' ), 'note: link tap height per device' );
 
 // sgs/free-delivery-bar: track border.
 $fd_off = harness( 'sgs/free-delivery-bar', array( 'freeDeliveryThresholdOverride' => '35' ) );

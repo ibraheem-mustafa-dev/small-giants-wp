@@ -74,37 +74,62 @@ function BorderRows( { names, attributes, setAttributes } ) {
 	);
 }
 
+/** The per-device minimum heights, each with the panel section it sits in. */
+const HEIGHT_ROWS = [
+	[ 'giftInputMinHeight', 'field' ],
+	[ 'giftNoteMinHeight', 'field' ],
+	[ 'giftSwitchMinHeight', 'tick' ],
+];
+
 /**
- * A per-device minimum height.
+ * The label of a minimum-height row.
+ *
+ * @param {string} attr Attribute name.
+ * @return {string} Control label.
+ */
+function heightLabel( attr ) {
+	switch ( attr ) {
+		case 'giftInputMinHeight':
+			return __( 'Name field minimum height', 'sgs-blocks' );
+		case 'giftNoteMinHeight':
+			return __( 'Note box minimum height', 'sgs-blocks' );
+		default:
+			return __( 'Tick box row minimum height', 'sgs-blocks' );
+	}
+}
+
+/**
+ * The per-device minimum heights of one panel section.
  *
  * @param {Object}   props
- * @param {string}   props.label         Control label.
- * @param {string}   props.attr          Attribute name.
- * @param {string}   props.placeholder   Shown while unset.
+ * @param {string}   props.section       `field` or `tick`.
  * @param {Object}   props.attributes    Block attributes.
  * @param {Function} props.setAttributes Setter.
- * @return {JSX.Element} Control.
+ * @return {JSX.Element[]} Controls.
  */
-function HeightRow( { label, attr, placeholder, attributes, setAttributes } ) {
-	return (
-		<ResponsiveOverride
-			label={ label }
-			value={ attributes[ attr ] }
-			onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
-		>
-			{ ( { ownValue, setOwnValue } ) => (
-				<SgsLengthControl
-					presets={ false }
-					scale="spacing"
-					label={ label }
-					hideLabelFromVision
-					value={ ownValue || '' }
-					placeholder={ placeholder }
-					units={ TILE_UNITS }
-					onChange={ ( val ) => setOwnValue( val || '' ) }
-				/>
-			) }
-		</ResponsiveOverride>
+function HeightRows( { section, attributes, setAttributes } ) {
+	return HEIGHT_ROWS.map( ( [ attr, group ] ) =>
+		group === section ? (
+			<ResponsiveOverride
+				key={ attr }
+				label={ heightLabel( attr ) }
+				value={ attributes[ attr ] }
+				onChange={ ( obj ) => setAttributes( { [ attr ]: obj } ) }
+			>
+				{ ( { ownValue, setOwnValue } ) => (
+					<SgsLengthControl
+						presets={ false }
+						scale="spacing"
+						label={ heightLabel( attr ) }
+						hideLabelFromVision
+						value={ ownValue || '' }
+						placeholder="44px"
+						units={ TILE_UNITS }
+						onChange={ ( val ) => setOwnValue( val || '' ) }
+					/>
+				) }
+			</ResponsiveOverride>
+		) : null
 	);
 }
 
@@ -316,18 +341,7 @@ export default function LookPanels( { attributes, setAttributes } ) {
 					attr="giftFieldPadding"
 					{ ...common }
 				/>
-				<HeightRow
-					label={ __( 'Name field minimum height', 'sgs-blocks' ) }
-					attr="giftInputMinHeight"
-					placeholder="44px"
-					{ ...common }
-				/>
-				<HeightRow
-					label={ __( 'Note box minimum height', 'sgs-blocks' ) }
-					attr="giftNoteMinHeight"
-					placeholder="44px"
-					{ ...common }
-				/>
+				<HeightRows section="field" { ...common } />
 			</PanelBody>
 			<PanelBody
 				title={ __( 'Field label and note text', 'sgs-blocks' ) }
@@ -383,16 +397,14 @@ export default function LookPanels( { attributes, setAttributes } ) {
 						} ),
 					] }
 				/>
-				<HeightRow
-					label={ __( 'Tick box row minimum height', 'sgs-blocks' ) }
-					attr="giftSwitchMinHeight"
-					placeholder="44px"
-					{ ...common }
-				/>
+				<HeightRows section="tick" { ...common } />
 				<TypographyControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					prefix="giftHelp"
+					showWeight={ false }
+					showStyle={ false }
+					showLineHeight={ false }
 					showResponsive
 					fontSizePresets
 				/>
@@ -400,6 +412,9 @@ export default function LookPanels( { attributes, setAttributes } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					prefix="giftCount"
+					showWeight={ false }
+					showStyle={ false }
+					showLineHeight={ false }
 					showResponsive
 					fontSizePresets
 					showTextAlign

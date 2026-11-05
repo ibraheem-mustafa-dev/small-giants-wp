@@ -185,6 +185,9 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 	if ( tileGap ) {
 		rootStyle[ '--sgs-option-picker-tile-gap' ] = tileGap;
 	}
+	if ( attributes.swatchTickInside && attributes.swatchTickColour ) {
+		rootStyle[ '--sgs-op-swatch-tick' ] = colourVar( attributes.swatchTickColour );
+	}
 	// Resting and selected shadow and the selected shift, read by style.css (same channel as the colours above).
 	const restShadow = composeShadow( pillShadow, pillShadowColour );
 	if ( restShadow ) {
@@ -199,6 +202,41 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 	}
 
 	return rootStyle;
+}
+
+/**
+ * The sample colour dot's look at the canvas: the same shape, size and ring render.php prints on
+ * `.sgs-option-picker__swatch--colour`, or null while none of them is set (a tile keeps its colour block).
+ *
+ * @param {Object} attributes The block's attributes.
+ * @return {Object|null} Style for the sample dot.
+ */
+function swatchDotPreviewStyle( attributes ) {
+	const { pillStyle, swatchShape, swatchSize, swatchRingWidth, swatchRingColour, swatchTickInside } = attributes;
+	if ( 'tile' === pillStyle ) {
+		return null;
+	}
+	if ( ! swatchShape && ! swatchSize && ! swatchRingWidth && ! swatchRingColour && ! swatchTickInside ) {
+		return null;
+	}
+	const dot = {};
+	if ( 'round' === swatchShape ) {
+		dot.borderRadius = '50%';
+	} else if ( 'square' === swatchShape ) {
+		dot.borderRadius = 0;
+	}
+	if ( swatchSize ) {
+		dot.width = swatchSize;
+		dot.height = swatchSize;
+	}
+	if ( swatchRingWidth ) {
+		dot.borderWidth = swatchRingWidth;
+	}
+	if ( swatchRingColour ) {
+		dot.borderColor = colourVar( swatchRingColour );
+	}
+	dot[ '--sgs-op-swatch-bg' ] = 'var(--sgs-op-text, currentColor)';
+	return dot;
 }
 
 /* ── Component ──────────────────────────────────────────────────────────── */
@@ -260,6 +298,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			`sgs-option-picker--${ pillSize }`,
 			colourPreset ? `sgs-option-picker--${ colourPreset }` : '',
 			true === showSelectedTick ? '' : 'sgs-option-picker--no-tick',
+			attributes.swatchTickInside ? 'sgs-option-picker--swatch-tick' : '',
 			showTermDetails ? '' : 'sgs-option-picker--no-term-details',
 			requireChoice ? 'sgs-option-picker--require-choice' : '',
 		]
@@ -385,6 +424,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	);
 
 	/* ── Canvas preview pills ── */
+	const swatchDotStyle = swatchDotPreviewStyle( attributes );
 	const renderPills = () => {
 		if ( optionItems.length === 0 ) {
 			return (
@@ -429,6 +469,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						   The sub-label itself lives on WooCommerce term-meta, so
 						   (like the swatch image/colour) it can't be previewed live
 						   in the editor -- see the Sub-label panel's help text. */ }
+						{ swatchDotStyle && (
+							<span
+								className="sgs-option-picker__swatch sgs-option-picker__swatch--colour"
+								style={ swatchDotStyle }
+								aria-hidden="true"
+							/>
+						) }
 						<span className="sgs-option-picker__pill-text">
 							<span className="sgs-option-picker__pill-label">
 								{ item.label ||

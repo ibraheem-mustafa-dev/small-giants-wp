@@ -39,7 +39,6 @@
 	min-height: var(--sgs-gift-tile-min-height, 44px);
 	padding: 0.75rem var(--wp--preset--spacing--30, 1rem);
 	border: 0 solid currentcolor;
-	text-align: center;
 	cursor: pointer;
 }
 
@@ -62,7 +61,7 @@
 	cursor: pointer;
 }
 
-.sgs-gift-order__tile-label {
+:where(.sgs-gift-order__tile-label) {
 	font-weight: 700;
 }
 
@@ -87,7 +86,7 @@
 	min-width: 0;
 }
 
-.sgs-gift-order__switch-text {
+:where(.sgs-gift-order__switch-text) {
 	font-weight: 700;
 }
 
@@ -104,7 +103,7 @@
 	gap: 0.375rem;
 }
 
-.sgs-gift-order__label {
+:where(.sgs-gift-order__label) {
 	font-weight: 700;
 }
 
@@ -125,6 +124,9 @@
 
 .sgs-gift-order__gift-only {
 	margin: 0.75rem 0 0;
+}
+
+:where(.sgs-gift-order__gift-only) {
 	font-weight: 700;
 }
 

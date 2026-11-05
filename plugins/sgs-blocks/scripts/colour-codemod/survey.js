@@ -803,7 +803,7 @@ function main() {
 
 			const needsHover = row.statesCount < 2;
 			// Shadow has no gradient form — exempt BY MECHANISM, never per block.
-			const needsGradient = ! row.hasGradient && ! mechanisms.includes( 'shadow' );
+			const needsGradient = ! row.hasGradient && ! mechanisms.includes( 'shadow' ) && ! mechanisms.includes( 'decoration' );
 
 			// Bug 1 — a declared, real-reasoned block.json colourExemptions entry
 			// suppresses the corresponding need, with rule 31's own semantics.

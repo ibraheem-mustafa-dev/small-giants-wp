@@ -137,7 +137,6 @@ if ( ! function_exists( 'sgs_buybox_configurator_picker_attrs' ) ) {
 			'pickerPillHoverOffsetX'         => 'pillHoverOffsetX',
 			'pickerPillHoverOffsetY'         => 'pillHoverOffsetY',
 			'pickerDotShape'                 => 'swatchShape',
-			'pickerDotSize'                  => 'swatchSize',
 			'pickerDotRingThickness'             => 'swatchRingWidth',
 			'pickerDotRingColour'            => 'swatchRingColour',
 			'pickerDotTickColour'            => 'swatchTickColour',
@@ -271,6 +270,12 @@ if ( ! function_exists( 'sgs_buybox_configurator_extra_css' ) ) {
 		}
 		if ( $sel_decls ) {
 			$css[] = $root_sel . ' .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked){' . implode( ';', $sel_decls ) . ';}';
+		}
+
+		// The option pickers' colour dots (a tile keeps its colour block): size, set here so the pick area's one setting reaches every picker.
+		$dot_size = sgs_css_length_value( (string) ( $attributes['pickerDotSize'] ?? '' ) );
+		if ( '' !== $dot_size ) {
+			$css[] = $root_sel . ' .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__swatch--colour{width:' . $dot_size . ';height:' . $dot_size . ';}';
 		}
 
 		// Flavour dots: shape, size and ring, then the tick drawn inside the dot.

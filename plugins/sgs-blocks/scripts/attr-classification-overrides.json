@@ -2209,6 +2209,13 @@
 			}
 		},
 		{
+			"slug": "sgs/buybox",
+			"attr": "galleryStickerRotation",
+			"fields": {
+				"role": "styling"
+			}
+		},
+		{
 			"slug": "sgs/mega-panel",
 			"attr": "asideSeparator",
 			"fields": {
@@ -3214,6 +3221,57 @@
 				"role": "typography"
 			},
 			"_why": "2026-10-19, G11 (Spec 32 FR-32-24). Paints text-underline-offset on a link in the attribution element (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'attribution'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/commerce-note",
+			"attr": "commerceNoteLinkUnderline",
+			"fields": {
+				"css_property": "text-decoration-line",
+				"css_element": "link",
+				"role": "typography"
+			},
+			"_why": "2026-11-05, Mama's QC round. Paints text-decoration-line on the note link (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'commerceNoteLink'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/commerce-note",
+			"attr": "commerceNoteLinkUnderlineThickness",
+			"fields": {
+				"css_property": "text-decoration-thickness",
+				"css_element": "link",
+				"role": "typography"
+			},
+			"_why": "2026-11-05, Mama's QC round. Paints text-decoration-thickness on the note link (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'commerceNoteLink'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/commerce-note",
+			"attr": "commerceNoteLinkUnderlineColour",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "link",
+				"role": "color"
+			},
+			"_why": "2026-11-05, Mama's QC round. Paints text-decoration-color on the note link (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'commerceNoteLink'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/commerce-note",
+			"attr": "commerceNoteLinkUnderlineColourHover",
+			"fields": {
+				"css_property": "text-decoration-color",
+				"css_element": "link",
+				"css_state": "hover",
+				"role": "color"
+			},
+			"_why": "2026-11-05, Mama's QC round. Paints text-decoration-color on the note link (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'commerceNoteLink'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
+		},
+		{
+			"slug": "sgs/commerce-note",
+			"attr": "commerceNoteLinkUnderlineOffset",
+			"fields": {
+				"css_property": "text-underline-offset",
+				"css_element": "link",
+				"role": "typography"
+			},
+			"_why": "2026-11-05, Mama's QC round. Paints text-underline-offset on the note link (`{selector} a`) via sgs_link_underline_css(), called from render.php with the prefix 'commerceNoteLink'. Same dynamic-key scanning gap as sgs/business-info.linkUnderline."
 		},
 		{
 			"slug": "sgs/testimonial",

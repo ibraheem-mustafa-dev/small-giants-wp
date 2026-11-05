@@ -579,6 +579,9 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( selDecls.length ) {
 			css += `${ box } .sgs-option-picker__option--selected .sgs-option-picker__pill,${ box } .sgs-option-picker__option input:checked ~ .sgs-option-picker__pill{${ selDecls.join( ';' ) };}`;
 		}
+		if ( attributes.pickerDotSize ) {
+			css += `${ root } .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__swatch--colour{width:${ safeLength( attributes.pickerDotSize ) };height:${ safeLength( attributes.pickerDotSize ) };}`;
+		}
 		const dotDecls = [];
 		if ( 'round' === attributes.pickerDotShape ) {
 			dotDecls.push( 'border-radius:50%' );

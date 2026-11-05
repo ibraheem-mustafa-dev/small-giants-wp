@@ -54,7 +54,8 @@
 					"order": 2,
 					"motion": false,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "commerceNoteLink",
 					"attrMap": {

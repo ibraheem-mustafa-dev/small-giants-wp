@@ -45,6 +45,7 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 		galleryStickerBorderWidth,
 		galleryStickerBorderStyle,
 		galleryStickerBorderColour,
+		galleryStickerBackgroundColour,
 		galleryStickerShape,
 		galleryStickerRadius,
 		galleryStickerRotation,
@@ -161,6 +162,7 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 							/>
 						) }
 						<NumberControl
+							__next40pxDefaultSize
 							label={ __( 'Tilt (degrees)', 'sgs-blocks' ) }
 							value={ galleryStickerRotation || '' }
 							step={ 1 }
@@ -203,6 +205,7 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 									galleryStickerBorderStyle: val,
 								} )
 							}
+							contrastAgainst={ galleryStickerBackgroundColour || '' }
 							colourLabel={ __(
 								'Sticker border colour',
 								'sgs-blocks'

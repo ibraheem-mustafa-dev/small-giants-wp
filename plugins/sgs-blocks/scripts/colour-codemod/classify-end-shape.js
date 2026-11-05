@@ -745,7 +745,7 @@ function classifyAll() {
 			// resolves to 'shadow' correctly (MECHANISM_BY_CSS_PROPERTY maps
 			// box-shadow-color -> shadow), only the needsGradient gate was missing
 			// the check.
-			const needsGradient = ! row.hasGradient && ! mechanisms.includes( 'shadow' );
+			const needsGradient = ! row.hasGradient && ! mechanisms.includes( 'shadow' ) && ! mechanisms.includes( 'decoration' );
 			const gradientExempt = needsGradient && isGradientExempt( blockJson, row.rowKey );
 
 			if ( ( ! needsHover || statesExempt ) && ( ! needsGradient || gradientExempt ) ) {

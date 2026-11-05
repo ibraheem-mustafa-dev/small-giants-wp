@@ -70,11 +70,11 @@ $sgs_note_css  .= sgs_text_states_css(
 $sgs_note_css  .= sgs_link_weight_css( $attributes, 'commerceNoteLinkFontWeight', $sgs_note_sel );
 $sgs_note_css  .= sgs_link_underline_css( $attributes, 'commerceNote', $sgs_note_sel );
 $sgs_note_css  .= sgs_emit_responsive_css(
-	$sgs_note_sel . ' .sgs-commerce-note__link',
+	$sgs_note_sel,
 	array(
 		array(
 			'value'        => $attributes['commerceNoteLinkMinHeight'] ?? null,
-			'css'          => 'min-height',
+			'css'          => '--sgs-commerce-note-link-min-height',
 			'unit_default' => 'px',
 		),
 	)

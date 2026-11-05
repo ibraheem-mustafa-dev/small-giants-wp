@@ -4627,6 +4627,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerDotSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerHintColour",
       "fields": {
         "css_property": "color",
@@ -7744,14 +7752,6 @@
         "role": "color",
         "css_element": "link",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/commerce-note",
-      "attr": "commerceNoteLinkMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "link"
       }
     },
     {
@@ -13099,6 +13099,14 @@
     },
     {
       "slug": "sgs/gift-order",
+      "attr": "giftLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
       "attr": "giftLabelFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -13131,6 +13139,14 @@
     },
     {
       "slug": "sgs/gift-order",
+      "attr": "giftNoteFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
       "attr": "giftNoteFontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -13143,14 +13159,6 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "note"
-      }
-    },
-    {
-      "slug": "sgs/gift-order",
-      "attr": "giftSwitchMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "switch"
       }
     },
     {
@@ -35383,14 +35391,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "pickerDotSize",
-      "fields": {
-        "css_property": "width",
-        "css_element": "pick-dot"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "pickerDotTickColour",
       "fields": {
         "css_property": "color",
@@ -36300,6 +36300,14 @@
       "attr": "commerceNoteLinkFontWeight",
       "fields": {
         "css_property": "font-weight",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkMinHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_element": "link"
       }
     },
@@ -38814,6 +38822,14 @@
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftSwitchMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "switch"
       }
     },
     {

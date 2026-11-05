@@ -57,3 +57,8 @@
 .wp-block-sgs-option-picker.sgs-option-picker {
 	padding: 4px;
 }
+
+/* The chosen option's sample dot shows its tick (the front end shows it through the checked radio). */
+.sgs-option-picker--swatch-tick .sgs-option-picker__option--selected .sgs-option-picker__swatch--colour::after {
+	color: var(--sgs-op-swatch-tick, #fff);
+}

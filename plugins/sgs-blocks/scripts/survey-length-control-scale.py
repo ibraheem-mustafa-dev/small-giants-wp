@@ -85,6 +85,8 @@ ROLE_EXCEPTIONS = {
     'extension/sgsChipBorderWidth': ('spacing', 'extension attribute: a chip border width'),
     'extension/sgsChipCountRadius': ('spacing', 'extension attribute: a count pill corner radius'),
     'extension/sgsChipCountSize': ('spacing', 'extension attribute: a count pill height and least width'),
+    'extension/sgsChipSelectedOffsetX': ('spacing', 'extension attribute: how far the chosen chip moves sideways'),
+    'extension/sgsChipSelectedOffsetY': ('spacing', 'extension attribute: how far the chosen chip moves up or down'),
     'extension/sgsChipCountFontSize': ('font-size', 'extension attribute: the text size inside a count pill'),
     'sgs/form-field-tiles/tileSelectedBorderWidth': ('spacing', 'the chosen tile border width, awaiting its DB row'),
     'sgs/form-field-tiles/tileSelectedOffset': ('spacing', 'the chosen tile offset, awaiting its DB row'),

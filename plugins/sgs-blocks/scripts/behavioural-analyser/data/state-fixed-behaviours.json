@@ -2,6 +2,21 @@
  "_note": "Fixed state behaviours: a selector that paints under a state with fixed values and no setting. Each entry carries the file, the selector and the reason. Read by check-state-exhaustiveness.py.",
  "entries": [
   {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion-item[hidden]",
+   "reason": "an item the filter has hidden leaves layout (display none); the hidden attribute is behaviour set by the filter script, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion__chip:hover",
+   "reason": "the chip lifts 2px on hover as fixed behaviour; it carries no colour, and reduced motion removes it"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
+   "selector": ".sgs-accordion__chip[aria-pressed=\"true\"]",
+   "reason": "the pressed chip's resting paint is the primary preset pair; the pressed colour and background are the filterChipColourPressed and filterChipBackgroundPressed settings (includes/accordion-filter.php::sgs_accordion_filter_css, state current)"
+  },
+  {
    "file": "plugins/sgs-blocks/assets/css/device-toggle.css",
    "selector": ".sgs-device-cue__dismiss:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
@@ -165,6 +180,16 @@
    "file": "plugins/sgs-blocks/assets/css/fx-wave-gradient.css",
    "selector": ".sgs-wave-gradient__toggle:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
+   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label",
+   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
+   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label::after",
+   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
   },
   {
    "file": "plugins/sgs-blocks/assets/css/header-behaviours.css",
@@ -395,6 +420,21 @@
    "file": "plugins/sgs-blocks/src/blocks/account/style.css",
    "selector": ".sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link.is-active > a",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-panel[hidden]",
+   "reason": "the closed sign-in tab panel is removed from view; hidden is the tab pattern itself, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-tab:hover",
+   "reason": "a sign-in tab lifts on hover by the site's button-preset hover transform, so the hover look is the site's button look, not a block setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account__auth-tab[aria-selected=\"true\"]",
+   "reason": "the open sign-in tab takes the site's primary button preset tokens and the other tab the secondary tokens, so the selected look is the site's button look, not a block setting"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/account/style.css",
@@ -992,6 +1032,16 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
+   "file": "plugins/sgs-blocks/src/blocks/form/field-features/style.css",
+   "selector": ".sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label",
+   "reason": "the inside floating label's lifted position under focus or a filled box: layout, no colour or setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/saved-progress/style.css",
+   "selector": ".sgs-form-review__edit:hover",
+   "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
+  },
+  {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ".sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
@@ -1000,6 +1050,11 @@
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ".sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--option-card .sgs-form-field__option input[type=\"checkbox\"]:checked",
+   "reason": "the ticked-box default (theme primary); the boxColourChecked setting overrides it through the field's own scoped :checked rule printed by form-field-checkbox/render.php, so the stylesheet rule is the resting default, not a missing setting."
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
@@ -1185,6 +1240,16 @@
    "file": "plugins/sgs-blocks/src/blocks/gallery/style.css",
    "selector": ":root:has( body.sgs-gallery-lightbox-open )",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gift-order/style.css",
+   "selector": ".sgs-gift-order__error[hidden]",
+   "reason": "the hidden attribute is set by the gift component's script to show or hide the note box and the error line; display none restores the hidden behaviour and is not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/gift-order/style.css",
+   "selector": ".sgs-gift-order__fields[hidden]",
+   "reason": "the hidden attribute is set by the gift component's script to show or hide the note box and the error line; display none restores the hidden behaviour and is not a look"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/google-rating-badge/style.css",
@@ -1543,13 +1608,13 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
-   "selector": ".sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill",
-   "reason": "editor-canvas preview channel for the pillSelectedShadow, pillSelectedShadowColour and pillSelectedOffsetX/Y settings (state current): edit.js writes --sgs-op-sel-shadow and --sgs-op-sel-translate onto the canvas root; the front end paints the same settings through the scoped rule render.php emits for the same selector"
+   "selector": ".sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
-   "selector": ".sgs-option-picker:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill::before",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+   "selector": ".sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill",
+   "reason": "editor-canvas preview channel for the pillSelectedShadow, pillSelectedShadowColour and pillSelectedOffsetX/Y settings (state current): edit.js writes --sgs-op-sel-shadow and --sgs-op-sel-translate onto the canvas root; the front end paints the same settings through the scoped rule render.php emits for the same selector"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/option-picker/style.css",
@@ -1903,6 +1968,11 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
+   "selector": ".sgs-toc__link:focus-visible",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
    "selector": ".sgs-toc__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -1959,6 +2029,16 @@
   {
    "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
    "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus .sgs-team-member__overlay-bio",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
+   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2407,6 +2487,31 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__button:disabled",
+   "reason": "the Load more button while a batch loads: progress cursor, 0.75 opacity"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__button:hover",
+   "reason": "the Load more button takes the primary button preset's hover colours (--wp--custom--button-presets--primary--hover-*), no own setting"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".sgs-shop-load-more__count[hidden]",
+   "reason": "the Showing N of M line is hidden when every product is shown"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".wp-block-query-pagination-next[hidden]",
+   "reason": "Load more mode hides the Next link it replaces (the no-JS fallback)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
+   "selector": ".wp-block-query-pagination-numbers[hidden]",
+   "reason": "Load more mode hides the page numbers it replaces (the links stay in the HTML for crawlers and no-JS)"
+  },
+  {
    "file": "theme/sgs-theme/assets/css/utilities.css",
    "selector": ".sgs-hover-highlight-fill:focus-visible",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
@@ -2765,101 +2870,6 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/form/field-features/style.css",
-   "selector": ".sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label",
-   "reason": "the inside floating label's lifted position under focus or a filled box: layout, no colour or setting"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/form/saved-progress/style.css",
-   "selector": ".sgs-form-review__edit:hover",
-   "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/table-of-contents/style.css",
-   "selector": ".sgs-toc__link:focus-visible",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
-   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/team-member/style.css",
-   "selector": ".sgs-has-hover-overlay .sgs-team-member__photo--has-overlay:focus-within .sgs-team-member__overlay-bio",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
-   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label",
-   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
-  },
-  {
-   "file": "plugins/sgs-blocks/assets/css/gift-card.css",
-   "selector": ".sgs-gift-card-form__radio:checked + .sgs-gift-card-form__amount-label::after",
-   "reason": "the chosen gift-card amount is marked by an inset ring and a tick in the inherited text colour (currentcolor), a non-colour cue for WCAG 1.4.1; the colour comes from the theme, so there is no setting"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-   "selector": ".wp-block-query-pagination-numbers[hidden]",
-   "reason": "Load more mode hides the page numbers it replaces (the links stay in the HTML for crawlers and no-JS)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-   "selector": ".wp-block-query-pagination-next[hidden]",
-   "reason": "Load more mode hides the Next link it replaces (the no-JS fallback)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-   "selector": ".sgs-shop-load-more__button:hover",
-   "reason": "the Load more button takes the primary button preset's hover colours (--wp--custom--button-presets--primary--hover-*), no own setting"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-   "selector": ".sgs-shop-load-more__button:disabled",
-   "reason": "the Load more button while a batch loads: progress cursor, 0.75 opacity"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/shop-load-more.css",
-   "selector": ".sgs-shop-load-more__count[hidden]",
-   "reason": "the Showing N of M line is hidden when every product is shown"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ".sgs-form-field--option-card .sgs-form-field__option input[type=\"checkbox\"]:checked",
-   "reason": "the ticked-box default (theme primary); the boxColourChecked setting overrides it through the field's own scoped :checked rule printed by form-field-checkbox/render.php, so the stylesheet rule is the resting default, not a missing setting."
-  },
-  {
-   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
-   "selector": ".sgs-accordion__chip[aria-pressed=\"true\"]",
-   "reason": "the pressed chip's resting paint is the primary preset pair; the pressed colour and background are the filterChipColourPressed and filterChipBackgroundPressed settings (includes/accordion-filter.php::sgs_accordion_filter_css, state current)"
-  },
-  {
-   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
-   "selector": ".sgs-accordion__chip:hover",
-   "reason": "the chip lifts 2px on hover as fixed behaviour; it carries no colour, and reduced motion removes it"
-  },
-  {
-   "file": "plugins/sgs-blocks/assets/css/accordion-filter.css",
-   "selector": ".sgs-accordion-item[hidden]",
-   "reason": "an item the filter has hidden leaves layout (display none); the hidden attribute is behaviour set by the filter script, not a look"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
-   "selector": ".sgs-account__auth-tab[aria-selected=\"true\"]",
-   "reason": "the open sign-in tab takes the site's primary button preset tokens and the other tab the secondary tokens, so the selected look is the site's button look, not a block setting"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
-   "selector": ".sgs-account__auth-panel[hidden]",
-   "reason": "the closed sign-in tab panel is removed from view; hidden is the tab pattern itself, not a look"
-  },
-  {
-   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
-   "selector": ".sgs-account__auth-tab:hover",
-   "reason": "a sign-in tab lifts on hover by the site's button-preset hover transform, so the hover look is the site's button look, not a block setting"
   }
  ]
 }

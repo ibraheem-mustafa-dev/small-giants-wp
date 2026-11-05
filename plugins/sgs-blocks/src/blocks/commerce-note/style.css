@@ -9,5 +9,5 @@
 .sgs-commerce-note__link {
 	display: inline-flex;
 	align-items: center;
-	min-height: 44px;
+	min-height: var(--sgs-commerce-note-link-min-height, 44px);
 }
