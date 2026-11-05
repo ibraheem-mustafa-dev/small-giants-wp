@@ -261,6 +261,8 @@ def publish(copy: Path, shared: Path) -> dict:
     if not marker.is_file():
         raise PublishRefused(f"{marker.name} not found: the copy was not made by `begin`")
     base = json.loads(marker.read_text(encoding="utf-8"))
+    if copy.resolve() == shared.resolve():
+        raise PublishRefused(f"--copy is the shared DB itself ({shared}): SGS_FRAMEWORK_DB still names the copy; unset it for publish")
     if Path(base["shared"]) != shared:
         raise PublishRefused(f"the copy started from {base['shared']}, not {shared}")
     check_copy(copy)
