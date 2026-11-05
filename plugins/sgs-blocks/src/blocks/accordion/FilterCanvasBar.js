@@ -9,7 +9,7 @@
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { IconPreview, resolveColourToken } from '../../components';
-import { resolveShadowPreviewComposed, sgsLengthPreview, spacingPreview, tierValueOf } from '../../utils';
+import { fontFamilyCssValue, resolveShadowPreviewComposed, sgsLengthPreview, spacingPreview, tierValueOf } from '../../utils';
 
 const WRAP_CSS = { wrap: { flexWrap: 'wrap', overflowX: 'visible' }, nowrap: { flexWrap: 'nowrap', overflowX: 'auto' } };
 const MARGIN_CSS = { left: '0 auto', center: 'auto', right: 'auto 0' };
@@ -47,6 +47,7 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 		borderColor: colour( attributes.filterChipBorderColour ),
 		borderRadius: attributes.filterChipRadius || undefined,
 		fontSize: length( attributes.filterChipFontSize ),
+		fontFamily: fontFamilyCssValue( attributes.filterChipFontFamily ),
 		...( wrap ? { flex: 'wrap' === wrap ? '0 1 auto' : 'none', whiteSpace: 'wrap' === wrap ? 'normal' : 'nowrap' } : {} ),
 		boxShadow: resolveShadowPreviewComposed( attributes.filterChipShadow, attributes.filterChipShadowColour ),
 		...( pressed
@@ -61,10 +62,14 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 		justifyContent: tierValueOf( attributes.filterChipsJustify, tier, ( v ) => JUSTIFY_CSS[ v ] ),
 		...spacingPreview( { padding: attributes.filterChipsPadding }, tier ),
 	};
+	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();
+	const iconOffset = sgsLengthPreview( attributes.filterSearchIconOffset );
 	const searchStyle = {
 		backgroundColor: colour( attributes.filterSearchBackground ),
 		minHeight: length( attributes.filterSearchHeight ),
 		fontSize: length( attributes.filterSearchFontSize ),
+		fontFamily: fontFamilyCssValue( attributes.filterSearchFontFamily ),
+		...( iconOffset && searchIcon ? { paddingInlineStart: `calc(${ iconOffset } + var(--sgs-accordion-search-icon-size, 1.25rem) + 0.75rem)` } : {} ),
 		boxShadow: resolveShadowPreviewComposed( attributes.filterSearchShadow, attributes.filterSearchShadowColour ),
 		...spacingPreview( { padding: attributes.filterSearchPadding }, tier ),
 	};
@@ -73,7 +78,6 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 		width: length( attributes.filterSearchMaxWidth ) || tierValueOf( attributes.filterSearchAlign, tier ) ? '100%' : undefined,
 		marginInline: tierValueOf( attributes.filterSearchAlign, tier, ( v ) => MARGIN_CSS[ v ] ),
 	};
-	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();
 	const iconSize = sgsLengthPreview( attributes.filterSearchIconSize );
 	const showSearch = false !== attributes.filterSearch;
 	const showChips = false !== attributes.filterChips && categories.length > 0;
@@ -86,7 +90,7 @@ export default function FilterCanvasBar( { attributes, clientId, palette, tier =
 					style={ { ...searchWrapStyle, ...( iconSize ? { '--sgs-accordion-search-icon-size': iconSize } : {} ) } }
 				>
 					{ searchIcon && (
-						<span className="sgs-accordion__search-icon" style={ { color: colour( attributes.filterSearchIconColour ) } } aria-hidden="true">
+						<span className="sgs-accordion__search-icon" style={ { color: colour( attributes.filterSearchIconColour ), insetInlineStart: iconOffset } } aria-hidden="true">
 							<IconPreview source="lucide" name={ searchIcon } />
 						</span>
 					) }

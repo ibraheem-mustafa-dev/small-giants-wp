@@ -76,6 +76,16 @@
 	color: var(--wc-product-filter-chips-selected-text, var(--wc-product-filter-chips-background, Canvas));
 }
 
+.sgs-filter-look-preview--chip-chosen-shadow .wc-block-product-filter-chips__item[aria-checked="true"],
+.sgs-filter-look-preview--chip-chosen-shadow .wc-block-product-filter-chips__item[data-sgs-start-term="true"] {
+	box-shadow: var(--sgs-fl-chip-chosen-shadow);
+}
+
+.sgs-filter-look-preview--chip-chosen-shift .wc-block-product-filter-chips__item[aria-checked="true"],
+.sgs-filter-look-preview--chip-chosen-shift .wc-block-product-filter-chips__item[data-sgs-start-term="true"] {
+	translate: var(--sgs-fl-chip-chosen-shift);
+}
+
 .sgs-filter-look-preview--sort-fill select {
 	background-color: var(--sgs-fl-sort-fill);
 }

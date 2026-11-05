@@ -8,6 +8,7 @@
  * Chips: `sgsChipFontWeight`, `sgsChipBorderWidth`, `sgsChipMinHeight`, `sgsChipPaintButtons` (print the colours picked on the block onto
  * the chip buttons, resting and chosen), and a count pill (`sgsChipCountPill`, `sgsChipCountBackground`,
  * `sgsChipCountColour`, `sgsChipCountRadius`).
+ * Chosen chip (`sgsChipSelectedShadow`, `sgsChipSelectedShadowColour`, `sgsChipSelectedOffsetX`, `sgsChipSelectedOffsetY`) and the All chip's count (`sgsChipAllCount`).
  * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`.
  *
  * @package SGS\Blocks
@@ -19,6 +20,8 @@ import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress
 import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
+import ShadowControl from '../../components/ShadowControl';
+import { resolveShadowPreviewComposed } from '../../utils';
 import DesignTokenPicker, { resolveColourToken } from '../../components/DesignTokenPicker';
 import './product-filter-look.scss';
 
@@ -29,6 +32,12 @@ const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: 'rem', label: 'rem' },
 	{ value: 'em', label: 'em' },
+];
+
+const OFFSET_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
 ];
 
 const WEIGHT_OPTIONS = [
@@ -61,6 +70,11 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					sgsChipCountSize: { type: 'string', default: '' },
 					sgsChipCountFontSize: { type: 'string', default: '' },
 					sgsChipAllLabel: { type: 'string', default: '' },
+					sgsChipAllCount: { type: 'boolean', default: false },
+					sgsChipSelectedShadow: { type: 'string', default: '' },
+					sgsChipSelectedShadowColour: { type: 'string', default: '' },
+					sgsChipSelectedOffsetX: { type: 'string', default: '' },
+					sgsChipSelectedOffsetY: { type: 'string', default: '' },
 					sgsChipStartTerm: { type: 'string', default: '' },
 				},
 			};
@@ -182,6 +196,30 @@ if ( ! window.__sgsFilterLookRegistered ) {
 									/>
 								</>
 							) }
+							<ShadowControl
+								label={ __( 'Chosen chip shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ { base: 'sgsChipSelectedShadow', colour: 'sgsChipSelectedShadowColour' } }
+							/>
+							<SgsLengthControl
+								scale="spacing"
+								presets={ false }
+								label={ __( 'Chosen chip shift (across)', 'sgs-blocks' ) }
+								value={ attributes.sgsChipSelectedOffsetX || '' }
+								units={ OFFSET_UNITS }
+								onChange={ ( val ) => setAttributes( { sgsChipSelectedOffsetX: val || '' } ) }
+								help={ __( 'Moves the chosen chip sideways. Negative moves it left.', 'sgs-blocks' ) }
+							/>
+							<SgsLengthControl
+								scale="spacing"
+								presets={ false }
+								label={ __( 'Chosen chip shift (down)', 'sgs-blocks' ) }
+								value={ attributes.sgsChipSelectedOffsetY || '' }
+								units={ OFFSET_UNITS }
+								onChange={ ( val ) => setAttributes( { sgsChipSelectedOffsetY: val || '' } ) }
+								help={ __( 'Moves the chosen chip up or down. Negative moves it up.', 'sgs-blocks' ) }
+							/>
 							<TextControl
 								label={ __( '“All” chip label', 'sgs-blocks' ) }
 								value={ attributes.sgsChipAllLabel || '' }
@@ -190,6 +228,15 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+							{ !! attributes.sgsChipAllLabel && (
+								<ToggleControl
+									label={ __( 'Show a product count on the “All” chip', 'sgs-blocks' ) }
+									help={ __( 'The number of different products in the shop, each counted once. Follows the count pill setting above.', 'sgs-blocks' ) }
+									checked={ !! attributes.sgsChipAllCount }
+									onChange={ ( val ) => setAttributes( { sgsChipAllCount: !! val } ) }
+									__nextHasNoMarginBottom
+								/>
+							) }
 							<TextControl
 								label={ __( 'Start with this term', 'sgs-blocks' ) }
 								value={ attributes.sgsChipStartTerm || '' }
@@ -284,6 +331,8 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				[ 'count-size', pill && attributes.sgsChipCountSize ],
 				[ 'count-font-size', pill && attributes.sgsChipCountFontSize ],
 				[ 'all', attributes.sgsChipAllLabel && 'on' ],
+				[ 'chip-chosen-shadow', resolveShadowPreviewComposed( attributes.sgsChipSelectedShadow, attributes.sgsChipSelectedShadowColour ) ],
+				[ 'chip-chosen-shift', ( attributes.sgsChipSelectedOffsetX || attributes.sgsChipSelectedOffsetY ) && `${ attributes.sgsChipSelectedOffsetX || '0' } ${ attributes.sgsChipSelectedOffsetY || '0' }` ],
 			];
 		} else {
 			rows = [
@@ -303,7 +352,7 @@ if ( ! window.__sgsFilterLookRegistered ) {
 			}
 		} );
 		if ( CHIPS_BLOCK === name && attributes.sgsChipAllLabel ) {
-			style[ '--sgs-fl-all-label' ] = JSON.stringify( String( attributes.sgsChipAllLabel ) );
+			style[ '--sgs-fl-all-label' ] = JSON.stringify( String( attributes.sgsChipAllLabel ) + ( attributes.sgsChipAllCount ? ' (n)' : '' ) );
 		}
 		if ( CHIPS_BLOCK === name && attributes.sgsChipCountRadius ) {
 			style[ '--sgs-fl-count-radius' ] = attributes.sgsChipCountRadius;

@@ -212,6 +212,9 @@ final class AccordionFilterTest extends TestCase {
 				'filterSearchIcon'               => '',
 				'filterSearchIconColour'         => '',
 				'filterSearchIconSize'           => '',
+				'filterChipFontFamily'           => '',
+				'filterSearchFontFamily'         => '',
+				'filterSearchIconOffset'         => '',
 			),
 			array( 'category' => 'Trade' )
 		);
@@ -277,6 +280,28 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertStringContainsString( ' .sgs-accordion__search{width:100%;max-width:640px;margin-inline:auto;}', $html );
 		$this->assertStringContainsString( ' .sgs-accordion__search{margin-inline:0 auto;}', $html, 'the mobile tier' );
 		$this->assertStringContainsString( ' .sgs-accordion__search-icon{color:#3A2A22;}', $html );
+	}
+
+	public function test_the_chip_and_search_font_families_and_the_search_icon_offset_print_real_properties(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'          => true,
+				'filterChipFontFamily'   => 'Karla, sans-serif',
+				'filterSearchFontFamily' => 'Karla, sans-serif',
+				'filterSearchIcon'       => 'search',
+				'filterSearchIconSize'   => '20px',
+				'filterSearchIconOffset' => '1.25rem',
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertStringContainsString( ' .sgs-accordion__chip{font-family:Karla, sans-serif;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search-input{font-family:Karla, sans-serif;padding-inline-start:calc(1.25rem + var(--sgs-accordion-search-icon-size,1.25rem) + 0.75rem);}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search-icon{inset-inline-start:1.25rem;}', $html );
+		$no_icon = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true, 'filterSearchIconOffset' => '1.25rem' ), array( 'category' => 'Trade' ) );
+		$this->assertStringNotContainsString( 'padding-inline-start', $no_icon, 'no icon, no padding change' );
 	}
 
 	public function test_the_empty_link_label_is_escaped_and_the_message_and_url_go_through_the_core_sanitisers(): void {
