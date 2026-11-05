@@ -58,6 +58,49 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterChipSelectedOffsetX",
+      "fields": {
+        "css_property": "translate",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipSelectedOffsetY",
+      "fields": {
+        "css_property": "translate-y",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipsWrap",
+      "fields": {
+        "css_property": "flex-wrap",
+        "css_layer": "GRID",
+        "css_element": "chips"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchAlign",
+      "fields": {
+        "css_property": "margin-inline",
+        "css_element": "searchwrap"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "flexDirection",
       "fields": {
         "css_property": "flex-direction",
@@ -4333,6 +4376,24 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerBoxBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelColour",
       "fields": {
         "css_property": "color",
@@ -7359,6 +7420,89 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "body"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "link",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "wrapper"
       }
     },
     {
@@ -12107,6 +12251,22 @@
     },
     {
       "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
       "attr": "freeDeliveryTrackColour",
       "fields": {
         "css_property": "background-color",
@@ -12392,6 +12552,47 @@
         "css_property": "padding",
         "css_layer": "GRID_AREA",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "tile"
       }
     },
     {
@@ -32542,10 +32743,69 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterChipFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "filterChipRadius",
       "fields": {
         "css_property": "border-radius",
         "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "chip",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipsJustify",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "chips"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterChipsPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "chips"
       }
     },
     {
@@ -32555,6 +32815,72 @@
         "css_property": "color",
         "role": "color",
         "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchIconColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "searchicon"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchIconSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "searchicon"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "searchwrap"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "search"
       }
     },
     {
@@ -34190,6 +34516,24 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickBadgeBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pick-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickBadgeTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pick-badge"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickOptionGap",
       "fields": {
         "css_property": "gap",
@@ -34223,6 +34567,22 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickPricedLayout",
+      "fields": {
+        "css_property": "display",
+        "css_element": "pick-priced-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickPricedMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "pick-priced-pill"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickTileEachSize",
       "fields": {
         "css_property": "font-size",
@@ -34251,24 +34611,6 @@
       "fields": {
         "css_property": "font-size",
         "css_element": "pick-tile-price"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "pickerBoxBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "picker-box"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "pickerBoxBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "picker-box"
       }
     },
     {
@@ -35085,6 +35427,14 @@
         "css_property": "color-gradient",
         "css_element": "body",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "link"
       }
     },
     {
@@ -36628,6 +36978,24 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedOffset",
+      "fields": {
+        "css_property": "transform",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "tileSelectedShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -37155,6 +37523,15 @@
     },
     {
       "slug": "sgs/free-delivery-bar",
+      "attr": "freeDeliveryTrackBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/free-delivery-bar",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -37330,6 +37707,173 @@
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "fieldShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileSelectedBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "tileSelected"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileSelectedBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "tileSelected"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "tileSelected"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "tileSelected"
       }
     },
     {
@@ -38006,6 +38550,15 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "contentGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID_AREA",
+        "css_element": "content"
       }
     },
     {
@@ -44921,6 +45474,15 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "slideGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "list"
       }
     },
     {
