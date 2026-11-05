@@ -177,6 +177,11 @@ class Post_Grid_REST {
 				'default'           => 'Read more',
 				'sanitize_callback' => 'sgs_rich_text_sanitise_param',
 			],
+			'readMoreIcon'         => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_key',
+			],
 			'aspectRatio'          => [
 				'type'              => 'string',
 				'default'           => '16/10',
@@ -393,6 +398,7 @@ class Post_Grid_REST {
 		$meta_inline   = isset( $params['metaLayout'] ) && 'inline' === $params['metaLayout'];
 		$show_readmore = isset( $params['showReadMore'] ) ? (bool) $params['showReadMore'] : true;
 		$readmore_text = isset( $params['readMoreText'] ) ? sgs_rich_text_kses( (string) $params['readMoreText'], false ) : 'Read more';
+		$readmore_icon = isset( $params['readMoreIcon'] ) ? sanitize_key( (string) $params['readMoreIcon'] ) : '';
 		$excerpt_len   = isset( $params['excerptLength'] ) ? absint( $params['excerptLength'] ) : 20;
 		$image_size    = isset( $params['imageSize'] ) ? sanitize_key( $params['imageSize'] ) : 'medium_large';
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
@@ -557,11 +563,21 @@ class Post_Grid_REST {
 
 		// Read more link.
 		if ( $show_readmore ) {
+			$readmore_glyph = '&rarr;';
+			if ( 'none' === $readmore_icon ) {
+				$readmore_glyph = '';
+			} elseif ( '' !== $readmore_icon && function_exists( 'sgs_get_lucide_icon' ) ) {
+				$readmore_svg = (string) sgs_get_lucide_icon( $readmore_icon );
+				if ( '' !== $readmore_svg ) {
+					$readmore_glyph = $readmore_svg;
+				}
+			}
 			$card .= sprintf(
-				'<a href="%s" class="sgs-post-grid__readmore"%s>%s <span aria-hidden="true">&rarr;</span></a>',
+				'<a href="%s" class="sgs-post-grid__readmore"%s>%s%s</a>',
 				$permalink,
 				$readmore_style,
-				sgs_rich_text_kses( $readmore_text, false )
+				sgs_rich_text_kses( $readmore_text, false ),
+				'' === $readmore_glyph ? '' : ' <span class="sgs-post-grid__readmore-icon" aria-hidden="true">' . $readmore_glyph . '</span>' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted static SVG from sgs_get_lucide_icon(), or the literal arrow entity.
 			);
 		}
 

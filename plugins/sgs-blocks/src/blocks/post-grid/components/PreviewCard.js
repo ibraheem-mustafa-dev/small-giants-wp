@@ -4,6 +4,8 @@
 import { __ } from '@wordpress/i18n';
 import { resolveColourToken } from '../../../components';
 import { colourVar, resolveTextColourPreviewStyle, typographyPreviewStyle, isCssGradient, tierBoxLonghands } from '../../../utils';
+import { tierValueOf } from '../../../utils/responsive';
+import { IconPreview } from '../../../components/IconPicker';
 import { cardGradientPreview } from '../preview-style';
 
 import AuthoredText from '../../../components/AuthoredText';
@@ -66,6 +68,8 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 		readMoreMargin,
 		showReadMore,
 		readMoreText,
+		readMoreIcon,
+		readMorePin,
 		aspectRatio,
 		imageHeight,
 		titleColour,
@@ -121,6 +125,13 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 
 	const isOverlay = cardStyle === 'overlay';
 
+	// readMorePin: the card is a column and the excerpt takes the spare height, as the front end's scoped rule does (not the list layout).
+	const pinned     = 'pinned' === tierValueOf( readMorePin, tier ) && 'list' !== attributes.layout;
+	const pinCard    = pinned ? { display: 'flex', flexDirection: 'column' } : {};
+	const pinContent = pinned ? { display: 'flex', flexDirection: 'column', flex: '1 1 auto' } : {};
+	const pinExcerpt = pinned ? { flex: '1 1 auto' } : {};
+	const pinLink    = pinned ? { alignSelf: 'stretch' } : {};
+
 	// metaLayout 'inline' wraps the flat/minimal category label and the meta line in one flex row, as render_card() does.
 	const isInlineLabel = showCategory && firstCat && ( cardStyle === 'flat' || cardStyle === 'minimal' );
 	const metaInline    = 'inline' === metaLayout && isInlineLabel;
@@ -151,7 +162,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 	return (
 		<article
 			className={ `sgs-post-grid__card sgs-post-grid__card--${ cardStyle }` }
-			style={ { ...( cardBg ? { '--sgs-card-bg': cardBg } : {} ), ...cardGradientPreview( attributes.cardBgColourGradient ) } }
+			style={ { ...( cardBg ? { '--sgs-card-bg': cardBg } : {} ), ...cardGradientPreview( attributes.cardBgColourGradient ), ...pinCard } }
 		>
 			{ showImage && featuredImage && (
 				<div className="sgs-post-grid__image-link">
@@ -175,7 +186,7 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				</div>
 			) }
 
-			<div className="sgs-post-grid__content" style={ tierBoxLonghands( contentPadding, tier, 'padding' ) }>
+			<div className="sgs-post-grid__content" style={ { ...tierBoxLonghands( contentPadding, tier, 'padding' ), ...pinContent } }>
 				{ metaInline ? (
 					<div className="sgs-post-grid__meta-row" style={ tierBoxLonghands( metaMargin, tier, 'margin' ) }>
 						{ categoryNode }
@@ -197,15 +208,22 @@ export default function PreviewCard( { post, attributes, palette, tier } ) {
 				) }
 
 				{ showExcerpt && (
-					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...tierBoxLonghands( excerptMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
+					<p className="sgs-post-grid__excerpt" style={ { ...excStyle, ...pinExcerpt, ...tierBoxLonghands( excerptMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'excerpt', tier ) } }>
 						{ excerptText || __( 'Post excerpt\u2026', 'sgs-blocks' ) }
 					</p>
 				) }
 
 				{ showReadMore && (
-					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...tierBoxLonghands( readMoreMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
-						<AuthoredText value={ readMoreText || __( 'Read more', 'sgs-blocks' ) } />{ ' ' }
-						<span aria-hidden="true">&rarr;</span>
+					<span className="sgs-post-grid__readmore" style={ { ...rmStyle, ...pinLink, ...tierBoxLonghands( readMoreMargin, tier, 'margin' ), ...typographyPreviewStyle( attributes, 'readMore', tier ) } }>
+						<AuthoredText value={ readMoreText || __( 'Read more', 'sgs-blocks' ) } />
+						{ 'none' !== readMoreIcon && (
+							<>
+								{ ' ' }
+								<span className="sgs-post-grid__readmore-icon" aria-hidden="true">
+									{ readMoreIcon ? <IconPreview source="lucide" name={ readMoreIcon } size={ 16 } /> : <>&rarr;</> }
+								</span>
+							</>
+						) }
 					</span>
 				) }
 			</div>

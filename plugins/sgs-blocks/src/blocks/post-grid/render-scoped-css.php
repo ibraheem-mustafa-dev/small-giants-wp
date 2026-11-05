@@ -253,6 +253,49 @@ foreach ( $post_grid_box_targets as $post_grid_box_attr => $post_grid_box_target
 	);
 }
 
+// readMorePin: per-device bottom-pinning of the read more link. Pinned makes the card a flex column
+// (not the list layout, whose card is a grid), the text area a column that fills it, the excerpt take
+// the spare height and the link a full-width row; inline hands each back to normal flow.
+$post_grid_pin_map = static function ( string $pinned, string $inline ): callable {
+	return static function ( $raw ) use ( $pinned, $inline ): string {
+		if ( 'pinned' === $raw ) {
+			return $pinned;
+		}
+		return 'inline' === $raw ? $inline : '';
+	};
+};
+$post_grid_pin_value = $attributes['readMorePin'] ?? null;
+if ( is_array( $post_grid_pin_value ) && array() !== $post_grid_pin_value ) {
+	$post_grid_pin_targets = array(
+		$root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__card' => array(
+			array( 'display', 'flex', 'block' ),
+			array( 'flex-direction', 'column', 'row' ),
+		),
+		$root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__content' => array(
+			array( 'display', 'flex', 'block' ),
+			array( 'flex-direction', 'column', 'row' ),
+			array( 'flex', '1 1 auto', '0 1 auto' ),
+		),
+		$root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__excerpt' => array(
+			array( 'flex', '1 1 auto', '0 1 auto' ),
+		),
+		$root_sel . ':not(.sgs-post-grid--list) .sgs-post-grid__readmore' => array(
+			array( 'align-self', 'stretch', 'auto' ),
+		),
+	);
+	foreach ( $post_grid_pin_targets as $post_grid_pin_sel => $post_grid_pin_decls ) {
+		$post_grid_pin_specs = array();
+		foreach ( $post_grid_pin_decls as $post_grid_pin_decl ) {
+			$post_grid_pin_specs[] = array(
+				'value'     => $post_grid_pin_value,
+				'css'       => $post_grid_pin_decl[0],
+				'transform' => $post_grid_pin_map( $post_grid_pin_decl[1], $post_grid_pin_decl[2] ),
+			);
+		}
+		$responsive_css .= sgs_emit_responsive_css( $post_grid_pin_sel, $post_grid_pin_specs );
+	}
+}
+
 // categoryBadgeBgColour background layer — moved to ::after (D292) so the
 // categoryBadgeColour text-colour gradient can use background-clip:text on the
 // same element. This MUST run before the text-colour trio loop below.
