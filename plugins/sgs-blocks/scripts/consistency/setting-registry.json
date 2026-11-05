@@ -1678,6 +1678,64 @@
 			"notes": "gap is the highest-value candidate for adopting the theme.json spacing token scale (SpacingSizesControl) rather than raw pixels — most card-grid/flex composite blocks want '40/Medium' not '38px'."
 		},
 		{
+			"setting_key": "css:row-gap",
+			"category": "css-property",
+			"label": "Row gap",
+			"optimal_control": {
+				"component": "UnitControl inside ResponsiveControl",
+				"props": {
+					"units": [
+						"px",
+						"rem",
+						"%"
+					],
+					"isResetValueOnUnitChange": true
+				},
+				"preset_layer": "SpacingSizesControl token presets seed the box (theme.json spacing scale) alongside the raw UnitControl",
+				"units": "px/rem/%",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "ResponsiveControl",
+			"spec_ref": "Part B Spacing row + Part H; the vertical half of css:gap, for a grid whose rows and columns are spaced differently",
+			"current_state": "new 2026-11-05 (form-review listRowGap, process-steps stepRowGap, form statusRowGap)",
+			"divergence": "none recorded",
+			"divergence_severity": "low",
+			"notes": "Use css:gap when both axes take one value; row-gap and column-gap when a draft spaces them differently."
+		},
+		{
+			"setting_key": "css:column-gap",
+			"category": "css-property",
+			"label": "Column gap",
+			"optimal_control": {
+				"component": "UnitControl inside ResponsiveControl",
+				"props": {
+					"units": [
+						"px",
+						"rem",
+						"%"
+					],
+					"isResetValueOnUnitChange": true
+				},
+				"preset_layer": "SpacingSizesControl token presets seed the box (theme.json spacing scale) alongside the raw UnitControl",
+				"units": "px/rem/%",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "ResponsiveControl",
+			"spec_ref": "Part B Spacing row + Part H; the horizontal half of css:gap",
+			"current_state": "new 2026-11-05 (form-review listColumnGap)",
+			"divergence": "none recorded",
+			"divergence_severity": "low",
+			"notes": "Use css:gap when both axes take one value."
+		},
+		{
 			"setting_key": "css:grid-auto-rows",
 			"category": "css-property",
 			"label": "Grid auto row height",
