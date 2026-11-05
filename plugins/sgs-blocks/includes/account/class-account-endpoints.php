@@ -12,6 +12,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-account-strings.php';
+
 /** Registers the saved-items endpoint + menu filtering. */
 final class Account_Endpoints {
 
@@ -96,13 +98,13 @@ final class Account_Endpoints {
 			foreach ( $items as $endpoint => $label ) {
 				$with_saved[ $endpoint ] = $label;
 				if ( 'orders' === $endpoint ) {
-					$with_saved['saved-items'] = __( 'Saved items', 'sgs-blocks' );
+					$with_saved['saved-items'] = Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) );
 				}
 			}
 			// 'orders' absent (a heavily customised menu) — append at the end
 			// rather than silently dropping the item.
 			if ( ! isset( $with_saved['saved-items'] ) ) {
-				$with_saved['saved-items'] = __( 'Saved items', 'sgs-blocks' );
+				$with_saved['saved-items'] = Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) );
 			}
 			$items = $with_saved;
 		}
@@ -126,7 +128,7 @@ final class Account_Endpoints {
 	 * @return string
 	 */
 	public static function saved_items_title( $title ) {
-		return __( 'Saved items', 'sgs-blocks' );
+		return Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) );
 	}
 
 	/**

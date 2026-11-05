@@ -216,11 +216,14 @@ Wishlist_Alerts_Scan::register();
 // sgs/account dashboard template and the account / Saved items pages.
 require_once SGS_BLOCKS_PATH . 'includes/account/helpers-account-defaults.php';
 require_once SGS_BLOCKS_PATH . 'includes/account/helpers-account-render-css.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/class-account-strings.php';
 require_once SGS_BLOCKS_PATH . 'includes/account/class-account-endpoints.php';
+require_once SGS_BLOCKS_PATH . 'includes/account/class-account-extras.php';
 require_once SGS_BLOCKS_PATH . 'includes/account/class-account-dashboard.php';
 require_once SGS_BLOCKS_PATH . 'includes/account/class-account-pages.php';
 Account_Endpoints::register();
 Account_Dashboard::register();
+Account_Extras::register();
 Account_Pages::register();
 // Lottie media type (Spec 38 §1.2a Tier H, D1151): the upload validator for
 // .json animation files and the shared render helper.
