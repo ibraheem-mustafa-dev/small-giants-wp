@@ -227,6 +227,10 @@ Dropped: the phone menu's rating badge in its top row (decided, D7); the header 
 - The colour-dot focus ring is dark, so it shows on gold and tan dots.
 - Contact fields also turn tan on focus.
 
+**Post-round council (2026-11-05):**
+- Code, reach and live reviewers found no critical or important defect. Every live check passed on the canary and eye-care-test: drawers, mega panels, the bag, entrances, and the bag link and Remove hit-tests.
+- One latent gap for the next framework batch: `includes/motion/class-sgs-motion-layer-drops.php::levels_for_target`, plus `extensions/motion/source-mode.js` and `emit-ring.js`, still treat any `isWrapper` part as the root and ignore `motionSelector`. So an effect layer saved on sgs/media's `media` part would not be dropped. No site saves one today.
+
 **Two rounds of their own, both approved:**
 - The clean first paint, `plans/2026-11-04-clean-first-paint.md`.
 - Sign-in, account, checkout and confirmation to the draft. The sign-in page was never reviewed; checkout rows 147 to 156 are open.
