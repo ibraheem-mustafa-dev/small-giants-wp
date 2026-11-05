@@ -3377,6 +3377,135 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "galleryStickerBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "css_element": "gallery-sticker",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "galleryThumbBorderColourHover",
       "fields": {
         "css_property": "border-color",
@@ -4456,6 +4585,22 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickTileNumberWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pick-tile-number"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickTilePriceWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pick-tile-price"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerBoxBackgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -4474,6 +4619,23 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerDotRingThickness",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerHintColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pick-heading"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelColour",
       "fields": {
         "css_property": "color",
@@ -4485,6 +4647,14 @@
       "attr": "pickerLabelFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "picker-label-text"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
         "css_element": "picker-label-text"
       }
     },
@@ -5063,15 +5233,6 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "stock"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "thumbSelectedScale",
-      "fields": {
-        "css_property": "transform",
-        "css_element": "gallery-thumb",
-        "css_state": "current"
       }
     },
     {
@@ -7583,6 +7744,55 @@
         "role": "color",
         "css_element": "link",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkUnderline",
+      "fields": {
+        "css_property": "text-decoration-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkUnderlineColour",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkUnderlineColourHover",
+      "fields": {
+        "css_property": "text-decoration-color-link",
+        "css_element": "link",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkUnderlineOffset",
+      "fields": {
+        "css_property": "text-decoration-offset-link",
+        "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/commerce-note",
+      "attr": "commerceNoteLinkUnderlineThickness",
+      "fields": {
+        "css_property": "text-decoration-thickness-link",
+        "css_element": "link"
       }
     },
     {
@@ -12841,10 +13051,106 @@
     },
     {
       "slug": "sgs/gift-order",
-      "attr": "giftPanelPadding",
+      "attr": "giftCheckboxColour",
       "fields": {
-        "css_property": "padding",
-        "css_element": "panel"
+        "css_property": "accent-color",
+        "css_element": "switch"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftCountFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftCountTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftHelpFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "help"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "label"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftNoteFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftNoteFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftNoteFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftNoteLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftSwitchMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "switch"
       }
     },
     {
@@ -21143,6 +21449,24 @@
     },
     {
       "slug": "sgs/option-picker",
+      "attr": "pillHoverOffsetX",
+      "fields": {
+        "css_property": "translate",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "pillHoverOffsetY",
+      "fields": {
+        "css_property": "translate-y",
+        "css_element": "pill",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
       "attr": "pillLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -21295,6 +21619,41 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "swatchRingColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "swatch-dot"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "swatchRingWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "swatch-dot"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "swatchSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "swatch-dot"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "swatchTickColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "swatch-dot",
+        "css_state": "current"
       }
     },
     {
@@ -30412,6 +30771,14 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "slideBleed",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "track"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "slidesVisible",
       "fields": {
         "css_property": "flex",
@@ -32979,6 +33346,14 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterChipFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "chip"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "filterChipFontSize",
       "fields": {
         "css_property": "font-size",
@@ -33064,6 +33439,14 @@
     },
     {
       "slug": "sgs/accordion",
+      "attr": "filterSearchFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "search"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
       "attr": "filterSearchFontSize",
       "fields": {
         "css_property": "font-size",
@@ -33076,6 +33459,14 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_element": "searchicon"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "filterSearchIconOffset",
+      "fields": {
+        "css_property": "inset-inline-start",
         "css_element": "searchicon"
       }
     },
@@ -34631,6 +35022,22 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -34661,6 +35068,72 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerBackgroundColour",
+      "fields": {
+        "css_property": "background",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerOffsetX",
+      "fields": {
+        "css_property": "right",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerOffsetY",
+      "fields": {
+        "css_property": "top",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerRotation",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "gallery-sticker"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "galleryStickerTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "gallery-sticker"
       }
     },
     {
@@ -34819,6 +35292,15 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickTileColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "pick-tile-columns"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickTileEachSize",
       "fields": {
         "css_property": "font-size",
@@ -34859,6 +35341,23 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerBoxGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerBoxPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "picker-box"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerBoxRadius",
       "fields": {
         "css_property": "border-radius",
@@ -34867,10 +35366,132 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerDotRingColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerDotShape",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerDotSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerDotTickColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerGroupDotSize",
+      "fields": {
+        "css_property": "height",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerLabelLinkPadding",
       "fields": {
         "css_property": "padding",
         "css_element": "picker-label-link"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "pick-pill-look"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "pick-pill-look"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "pick-pill-look"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillHoverOffsetX",
+      "fields": {
+        "css_property": "translate",
+        "css_element": "pick-pill-look",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillHoverOffsetY",
+      "fields": {
+        "css_property": "translate-y",
+        "css_element": "pick-pill-look",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillSelectedOffsetX",
+      "fields": {
+        "css_property": "translate",
+        "css_element": "pick-pill-look",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillSelectedOffsetY",
+      "fields": {
+        "css_property": "translate-y",
+        "css_element": "pick-pill-look",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "pick-pill-look",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickerPillSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "pick-pill-look",
+        "css_state": "current"
       }
     },
     {
@@ -35055,6 +35676,15 @@
         "css_property": "gap",
         "css_layer": "GRID",
         "css_element": "gallery-thumb"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "thumbSelectedScale",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "gallery-thumb",
+        "css_state": "current"
       }
     },
     {
@@ -38080,6 +38710,48 @@
     },
     {
       "slug": "sgs/gift-order",
+      "attr": "giftCountColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "count"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftFieldPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftHelpColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "help"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftInputMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "field"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftNoteMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "note"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
       "attr": "giftPanelBackground",
       "fields": {
         "css_property": "background-color",
@@ -38117,6 +38789,14 @@
       "attr": "giftPanelBorderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftPanelPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "panel"
       }
     },
@@ -38167,6 +38847,14 @@
       "attr": "giftTileMinHeight",
       "fields": {
         "css_property": "min-height",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTilePadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "tile"
       }
     },
@@ -43071,6 +43759,14 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "pill"
+      }
+    },
+    {
+      "slug": "sgs/option-picker",
+      "attr": "swatchShape",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "swatch-dot"
       }
     },
     {
