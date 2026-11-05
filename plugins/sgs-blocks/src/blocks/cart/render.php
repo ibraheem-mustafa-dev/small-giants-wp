@@ -359,6 +359,28 @@ if ( $hide_when_empty && 0 === $ssr_count ) {
 	$wrapper_classes[] = 'sgs-cart--hidden-empty';
 }
 
+// A visible word must start the accessible name (WCAG 2.5.3): when any tier shows the pill the name is the word, the live
+// count, then the action: "Basket 0 items, open basket". The words are translated here once (`_n`) as a singular and a plural
+// template with a {count} placeholder; view.js reads them from the widget and only fills in the count, so the two cannot drift.
+$sgs_cart_label_templates = null;
+$pill_label_text          = trim( wp_strip_all_tags( $pill_label ) );
+if ( $trigger_has_pill && '' !== $pill_label_text ) {
+	$action_text              = mb_strtolower( mb_substr( $aria_label, 0, 1 ) ) . mb_substr( $aria_label, 1 );
+	$sgs_cart_label_templates = array();
+	foreach ( array(
+		'one'   => 1,
+		'other' => 2,
+	) as $form => $sample ) {
+		$sgs_cart_label_templates[ $form ] = sprintf(
+			/* translators: 1: the visible pill word, 2: number of items, 3: the action, e.g. "open basket" */
+			_n( '%1$s %2$s item, %3$s', '%1$s %2$s items, %3$s', $sample, 'sgs-blocks' ),
+			$pill_label_text,
+			'{count}',
+			$action_text
+		);
+	}
+}
+
 // Wave B data attrs read by view.js (count-pop) / panel-render.js
 // (free-delivery progress, only meaningful — and only ever emitted — when
 // the block has a flyout/drawer panel to render it in).
@@ -370,6 +392,10 @@ $wrapper_data_attributes = array(
 	'data-auto-open-on-add' => $auto_open_on_add ? '1' : '0',
 	'data-count-pop'        => $count_pop_animation,
 );
+if ( null !== $sgs_cart_label_templates ) {
+	$wrapper_data_attributes['data-label-one']   = $sgs_cart_label_templates['one'];
+	$wrapper_data_attributes['data-label-other'] = $sgs_cart_label_templates['other'];
+}
 if ( $has_panel ) {
 	$wrapper_data_attributes['data-free-delivery-threshold']       = ( null !== $free_delivery_threshold ) ? (string) $free_delivery_threshold : '';
 	$wrapper_data_attributes['data-free-delivery-message']         = $free_delivery_message;
@@ -444,14 +470,9 @@ $pill_and_badge_html = $pill_icon_html . sprintf(
 
 $trigger_inner_html = ( 'pill' === $trigger_style || $trigger_mixed ) ? $pill_and_badge_html : $icon_and_badge_html;
 
-// A visible word must be inside the accessible name (WCAG 2.5.3), so a mixed block names the button
-// by its word at every width, then the aria-label setting and the live count. The same rule applies whenever
-// any tier shows the pill (a uniform pill included).
-if ( $trigger_has_pill ) {
-	$pill_label_text = trim( wp_strip_all_tags( $pill_label ) );
-	if ( '' !== $pill_label_text && false === stripos( $aria_label, $pill_label_text ) ) {
-		$trigger_label = $pill_label_text . ', ' . $trigger_label;
-	}
+// The pill trigger's name was built above ($sgs_cart_label_templates); the count is filled in here, and by view.js on every change.
+if ( null !== $sgs_cart_label_templates ) {
+	$trigger_label = str_replace( '{count}', (string) $ssr_count, 1 === $ssr_count ? $sgs_cart_label_templates['one'] : $sgs_cart_label_templates['other'] );
 }
 
 // ── Trigger markup (FR-36-10) ──────────────────────────────────────────────

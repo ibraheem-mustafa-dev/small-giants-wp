@@ -43,6 +43,7 @@
  * @package
  */
 
+import { pillTriggerLabel } from './trigger-label.js';
 import '../../shared/nav-interactivity/store';
 import { onCartChange } from '../../shared/cart-live';
 import { initPanel } from './panel-render';
@@ -84,6 +85,12 @@ function updateCartWidgets( cart ) {
 
 		if ( hideWhenEmpty ) {
 			widget.classList.toggle( 'sgs-cart--hidden-empty', count === 0 );
+		}
+
+		const pillLabel = pillTriggerLabel( widget.dataset, count );
+		if ( null !== pillLabel ) {
+			trigger.setAttribute( 'aria-label', pillLabel );
+			return;
 		}
 
 		const baseLabel =
