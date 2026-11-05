@@ -200,3 +200,60 @@ def test_a_path_with_uri_characters_is_copied(tmp_path: Path, monkeypatch: pytes
     copy = tmp_path / "copy.db"
     assert pub.main(["begin", "--copy", str(copy)]) == 0
     assert marker_of(copy) == "odd"
+
+
+def events(shared: Path) -> list[str]:
+    return [e["event"] for e in pub.logged_events(shared)]
+
+
+def write_directly(shared: Path, marker: str) -> None:
+    con = sqlite3.connect(str(shared))
+    con.execute("UPDATE block_attributes SET block_slug = ?", (marker,))
+    con.commit()
+    con.close()
+
+
+def test_first_begin_records_a_baseline_and_warns_of_nothing(shared: Path, tmp_path: Path, capsys) -> None:
+    assert pub.main(["begin", "--copy", str(tmp_path / "c.db")]) == 0
+    assert events(shared) == ["baseline"]
+    assert "WARNING" not in capsys.readouterr().err
+
+
+def test_a_publish_is_logged_with_both_shas_and_the_log_then_matches(shared: Path, tmp_path: Path) -> None:
+    copy = tmp_path / "c.db"
+    pub.main(["begin", "--copy", str(copy)])
+    reseed(copy, "reseeded")
+    assert pub.main(["publish", "--copy", str(copy)]) == 0
+    last = pub.logged_events(shared)[-1]
+    assert last["event"] == "publish" and last["sha_before"] != last["sha_after"] and last["sha_after"] == pub.sha256_of(shared)
+    assert pub.known_sha(shared) == pub.sha256_of(shared)
+
+
+def test_a_write_outside_publish_is_warned_once_and_logged_with_its_time(shared: Path, tmp_path: Path, capsys) -> None:
+    pub.main(["begin", "--copy", str(tmp_path / "a.db")])
+    capsys.readouterr()
+    write_directly(shared, "someone-else")
+    assert pub.main(["begin", "--copy", str(tmp_path / "b.db")]) == 0
+    assert "written outside publish-framework-db.py" in capsys.readouterr().err
+    outside = [e for e in pub.logged_events(shared) if e["event"] == "outside-write"]
+    assert len(outside) == 1 and outside[0]["mtime"] > 0
+    assert pub.main(["begin", "--copy", str(tmp_path / "c.db")]) == 0
+    assert "WARNING" not in capsys.readouterr().err
+    assert len([e for e in pub.logged_events(shared) if e["event"] == "outside-write"]) == 1
+
+
+def test_publish_after_a_write_outside_publish_still_conflicts_and_names_the_write(shared: Path, tmp_path: Path, capsys) -> None:
+    copy = tmp_path / "c.db"
+    pub.main(["begin", "--copy", str(copy)])
+    write_directly(shared, "someone-else")
+    assert pub.main(["publish", "--copy", str(copy)]) == pub.EXIT_CONFLICT
+    assert "outside-write" in events(shared)
+    assert marker_of(shared) == "someone-else"
+
+
+def test_status_reports_a_matching_log_and_then_a_mismatch(shared: Path, capsys) -> None:
+    assert pub.main(["status"]) == 0
+    assert "matching the log" in capsys.readouterr().out
+    write_directly(shared, "x")
+    assert pub.main(["status"]) == 0
+    assert "WARNING" in capsys.readouterr().out
