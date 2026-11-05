@@ -182,6 +182,8 @@ if ( ! function_exists( 'sgs_brand_logo_img_markup' ) ) {
 		$height     = isset( $logo['height'] ) ? absint( $logo['height'] ) : 0;
 		if ( $width && $height ) {
 			$dimensions = ' width="' . $width . '" height="' . $height . '"';
+		} else {
+			$dimensions = sgs_image_size_attrs( $url );
 		}
 
 		return '<img class="' . esc_attr( $class_name ) . '" src="' . esc_url( $url ) . '"'

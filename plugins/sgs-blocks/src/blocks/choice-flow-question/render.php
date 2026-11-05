@@ -163,7 +163,7 @@ if ( $is_product_attribute_step ) {
 		}
 		if ( '' !== $option_image['url'] ) {
 			echo '<span class="sgs-choice-flow-question__option-media">';
-			echo '<img src="' . esc_url( $option_image['url'] ) . '" alt="' . esc_attr( $option_image['alt'] ) . '" loading="lazy" />';
+			echo '<img src="' . esc_url( $option_image['url'] ) . '" alt="' . esc_attr( $option_image['alt'] ) . '"' . sgs_image_size_attrs( (string) $option_image['url'] ) . ' loading="lazy" />';
 			echo '</span>';
 		}
 		echo '<span class="sgs-choice-flow-question__option-label">' . esc_html( $label ) . '</span>';
@@ -262,7 +262,7 @@ if ( $is_product_attribute_step ) {
 
 		if ( '' !== $image_url ) {
 			echo '<span class="sgs-choice-flow-question__option-media">';
-			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '" loading="lazy" />';
+			echo '<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $image_alt ) . '"' . sgs_image_size_attrs( (string) $image_url ) . ' loading="lazy" />';
 			echo '</span>';
 		}
 

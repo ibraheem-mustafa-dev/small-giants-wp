@@ -56,6 +56,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - Afterwards, re-measure the page-weight plan's "possible second collected file on /shop/" (`plans/2026-11-03-page-weight-budget.md`, cause 4).
 
 **B. Reserved image boxes (P3).**
+- Built: `sgs_image_size_attrs` (`includes/helpers-image-dimensions.php`) reads a real size from attachment metadata, the file header or an SVG viewBox, cached by URL, and `sgs_render_media` plus 11 other printers now print `width` and `height`; the responsive logo prints a ratio-true `height`. `sgs_render_media` never printed dimensions on its URL path (the plan's premise that it did was wrong).
 - Find the `sgs_render_media` branch that loses the dimensions on brand-strip and card-grid. Likely candidates: the URL path when `attachment_url_to_postid` fails, or the dimensions being dropped later in the block's own markup rewrite. Fix it at the source.
 - Give the responsive logo its `height`.
 - Census every other `<img>` printer (about 61 files print `<img>`), and fix only those that print an attachment without both attributes.

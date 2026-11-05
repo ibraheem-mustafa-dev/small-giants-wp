@@ -1207,7 +1207,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	<?php if ( '' !== $sgs_resolved_img ) : ?>
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
-			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>" loading="lazy" decoding="async">
+			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"<?php echo sgs_image_size_attrs( (string) $sgs_resolved_img ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric attributes. ?> loading="lazy" decoding="async">
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_brand_markup( $attributes );

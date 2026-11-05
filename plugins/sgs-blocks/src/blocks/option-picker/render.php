@@ -794,8 +794,9 @@ foreach ( $valid_items as $item ) {
 	$item_image_url = (string) ( $item['image'] ?? '' );
 	if ( '' !== $item_image_url ) {
 		$swatch_image_html = sprintf(
-			'<img src="%s" alt="" class="%s" loading="lazy" decoding="async" aria-hidden="true" />',
+			'<img src="%s" alt=""%s class="%s" loading="lazy" decoding="async" aria-hidden="true" />',
 			esc_url( $item_image_url ),
+			sgs_image_size_attrs( $item_image_url ),
 			esc_attr( $sgs_op_swatch_img_class )
 		);
 		$pill_extra_class  = ' sgs-option-picker__pill--has-image';

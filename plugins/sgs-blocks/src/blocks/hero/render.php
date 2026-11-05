@@ -196,8 +196,9 @@ $sgs_hero_resolve_split_poster = static function ( array $attributes, string $su
 		return '';
 	}
 	return sprintf(
-		'<img src="%s" alt="" aria-hidden="true" class="sgs-media-el" loading="lazy" decoding="async" />',
-		esc_url( $poster_url )
+		'<img src="%s" alt="" aria-hidden="true"%s class="sgs-media-el" loading="lazy" decoding="async" />',
+		esc_url( $poster_url ),
+		sgs_image_size_attrs( $poster_url )
 	);
 };
 $split_image                   = $sgs_hero_resolve_split_image( $attributes, '' );

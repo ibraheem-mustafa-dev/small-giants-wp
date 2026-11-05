@@ -49,10 +49,10 @@ if ( ! function_exists( 'attachment_url_to_postid' ) ) {
 	 * No media library in unit tests: a background URL never resolves to an attachment id.
 	 *
 	 * @param string $url Attachment URL.
-	 * @return int Always 0.
+	 * @return int 0, unless a test maps the URL in $GLOBALS['sgs_test_attachment_ids'].
 	 */
-	function attachment_url_to_postid( $url ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
-		return 0;
+	function attachment_url_to_postid( $url ) {
+		return (int) ( $GLOBALS['sgs_test_attachment_ids'][ $url ] ?? 0 );
 	}
 }
 

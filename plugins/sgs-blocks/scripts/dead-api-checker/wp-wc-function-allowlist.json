@@ -381,6 +381,7 @@
     "wp_get_attachment_image_sizes",
     "wp_get_attachment_image_src",
     "wp_get_attachment_image_srcset",
+    "wp_getimagesize",
     "wp_get_attachment_image_url",
     "wp_get_attachment_metadata",
     "wp_get_attachment_url",
