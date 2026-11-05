@@ -307,7 +307,7 @@ if ( isset( $attributes['slidePeek'] ) && is_array( $attributes['slidePeek'] ) )
 		)
 	);
 }
-// The space between slides: a real `gap` on the track plus --sgs-slide-gap, which the slide list's gap and the slide
+// The space between slides: a real `gap` on the slide list (which lays the slides out) plus --sgs-slide-gap on the track, which the slide
 // flex-basis calc read (falling back to the spacing preset), so the cards still fill the track exactly.
 if ( isset( $attributes['slideGap'] ) && is_array( $attributes['slideGap'] ) ) {
 	$slider_scoped_css .= sgs_emit_responsive_css(
@@ -315,12 +315,17 @@ if ( isset( $attributes['slideGap'] ) && is_array( $attributes['slideGap'] ) ) {
 		array(
 			array(
 				'value'     => $attributes['slideGap'],
-				'css'       => 'gap',
+				'css'       => '--sgs-slide-gap',
 				'transform' => 'sgs_css_length_value',
 			),
+		)
+	);
+	$slider_scoped_css .= sgs_emit_responsive_css(
+		$root_sel . ' .sgs-testimonial-slider__list',
+		array(
 			array(
 				'value'     => $attributes['slideGap'],
-				'css'       => '--sgs-slide-gap',
+				'css'       => 'gap',
 				'transform' => 'sgs_css_length_value',
 			),
 		)

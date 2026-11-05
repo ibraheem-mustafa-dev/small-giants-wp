@@ -91,7 +91,7 @@ final class SlidersAndAccordionSettingsTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'slide-gap', $unset );
 		$this->assertSame( $this->unhash( $unset ), $this->unhash( $empty ), 'an empty gap renders byte-identically to an unset one' );
-		$this->assertStringContainsString( 'gap:20px', $set );
+		$this->assertMatchesRegularExpression( '/__list\{[^}]*gap:20px/', $set );
 		$this->assertStringContainsString( '--sgs-slide-gap:20px', $set );
 		$this->assertStringContainsString( '--sgs-slide-gap:12px', $set );
 	}
