@@ -1032,6 +1032,70 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "headerBackFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "headerBackTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "header-back"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "headerEyebrowColour",
       "fields": {
         "css_property": "color",
@@ -35235,6 +35299,14 @@
         "css_property": "color",
         "role": "color",
         "css_element": "ordersPillOnHold"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "ordersPill"
       }
     },
     {
