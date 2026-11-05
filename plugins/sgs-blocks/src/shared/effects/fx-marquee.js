@@ -378,6 +378,8 @@ export function createMarquee( root ) {
 }
 
 function bootAll() {
+	// The head gate (`assets/js/marquee-ready-gate.js`) keeps the marks it set only while this module has booted.
+	window.sgsMarqueeArmed = true;
 	document.querySelectorAll( SELECTOR ).forEach( ( root ) => {
 		const marquee = createMarquee( root );
 		if ( marquee ) {

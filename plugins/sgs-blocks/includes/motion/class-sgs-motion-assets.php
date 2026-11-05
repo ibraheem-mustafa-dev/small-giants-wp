@@ -51,6 +51,7 @@ final class Sgs_Motion_Assets {
 	const DRIVER_PATH    = 'build/shared/effects/scroll-driver.js';
 	const LOOP_PATH      = 'build/shared/effects/loop-control.js';
 	const GATE_PATH      = 'assets/js/motion-ready-gate.js';
+	const MARQUEE_GATE   = 'assets/js/marquee-ready-gate.js';
 
 	/**
 	 * Whether the ready gate has printed on this request.
@@ -58,6 +59,13 @@ final class Sgs_Motion_Assets {
 	 * @var bool
 	 */
 	private static bool $gate_printed = false;
+
+	/**
+	 * Whether the marquee ready gate has printed on this request.
+	 *
+	 * @var bool
+	 */
+	private static bool $marquee_gate_printed = false;
 
 	/**
 	 * Hook registration and the editor stylesheet.
@@ -175,6 +183,47 @@ final class Sgs_Motion_Assets {
 		$script = trim( (string) preg_replace( '#^\s*/\*\*.*?\*/#s', '', $source ) );
 		if ( '' !== $script ) {
 			wp_print_inline_script_tag( $script, array( 'id' => 'sgs-motion-ready-gate' ) );
+		}
+	}
+
+	/**
+	 * Queue the marquee ready gate for the head, once per request (`assets/js/marquee-ready-gate.js`).
+	 *
+	 * Called when a rendered block carries the `marquee` effect. A classic theme, whose head prints before the blocks
+	 * render, gets no gate and the marquee module sets the layout when it runs.
+	 *
+	 * @return void
+	 */
+	public static function queue_marquee_gate(): void {
+		if ( ! did_action( 'wp_head' ) && ! has_action( 'wp_head', array( self::class, 'print_marquee_gate' ) ) ) {
+			add_action( 'wp_head', array( self::class, 'print_marquee_gate' ), 1 );
+		}
+	}
+
+	/**
+	 * Print the marquee ready gate inline, once per request, without its doc comment (`wp_head`, priority 1).
+	 *
+	 * The tier widths come from `SGS_Breakpoints`, so the script holds no second copy of them.
+	 *
+	 * @return void
+	 */
+	public static function print_marquee_gate(): void {
+		if ( self::$marquee_gate_printed || ! self::exists( self::MARQUEE_GATE ) ) {
+			return;
+		}
+		self::$marquee_gate_printed = true;
+
+		$source = (string) file_get_contents( SGS_BLOCKS_PATH . self::MARQUEE_GATE ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local plugin file, read once per request.
+		$script = trim( (string) preg_replace( '#^\s*/\*\*.*?\*/#s', '', $source ) );
+		$widths = wp_json_encode(
+			array(
+				'tablet' => \SGS_Breakpoints::TABLET_MAX,
+				'mobile' => \SGS_Breakpoints::MOBILE_MAX,
+			)
+		);
+		$script = str_replace( 'SGS_MARQUEE_BREAKPOINTS', (string) $widths, $script );
+		if ( '' !== $script ) {
+			wp_print_inline_script_tag( $script, array( 'id' => 'sgs-marquee-ready-gate' ) );
 		}
 	}
 
