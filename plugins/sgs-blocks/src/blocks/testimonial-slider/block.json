@@ -95,6 +95,9 @@
 					"label": "Slide track",
 					"order": 5,
 					"clusters": [],
+					"attrMap": {
+						"css:gap": "slideGap"
+					},
 					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				},
 				"list": {
@@ -258,6 +261,22 @@
 			"sgs": {
 				"meaning": {
 					"what": "Sets how much of the next testimonial card shows at the edge of the slider.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "CSS length"
+						}
+					}
+				}
+			}
+		},
+		"slideGap": {
+			"type": "object",
+			"default": {},
+			"description": "The space between slides, per device: a CSS length. Empty uses the spacing preset. Printed as gap and --sgs-slide-gap on the track, which the slide list gap and the slide width calc read.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the space between the testimonial cards in the slider.",
 					"trigger": "always, from page load",
 					"parameters": {
 						"value": {

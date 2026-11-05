@@ -84,6 +84,18 @@ final class SlidersAndAccordionSettingsTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-slide-peek:40px', $html );
 	}
 
+	public function test_slider_slide_gap_prints_per_device_and_is_absent_when_unset(): void {
+		$unset = $this->render_slider( array( 'slidesVisible' => 3 ) );
+		$empty = $this->render_slider( array( 'slidesVisible' => 3, 'slideGap' => array() ) );
+		$set   = $this->render_slider( array( 'slidesVisible' => 3, 'slideGap' => array( 'desktop' => '20px', 'mobile' => '12px' ) ) );
+
+		$this->assertStringNotContainsString( 'slide-gap', $unset );
+		$this->assertSame( $this->unhash( $unset ), $this->unhash( $empty ), 'an empty gap renders byte-identically to an unset one' );
+		$this->assertStringContainsString( 'gap:20px', $set );
+		$this->assertStringContainsString( '--sgs-slide-gap:20px', $set );
+		$this->assertStringContainsString( '--sgs-slide-gap:12px', $set );
+	}
+
 	public function test_testimonial_default_layout_is_unchanged_by_the_new_attribute(): void {
 		$attrs   = array( 'quote' => 'Great', 'reviewerName' => 'Ann', 'reviewDate' => 'May 2026' );
 		$without = $this->render_block( 'sgs/testimonial', $attrs );
