@@ -1276,6 +1276,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	$buybox_picker_pill_font_size       = is_array( $attributes['pickerPillFontSize'] ?? null ) ? $attributes['pickerPillFontSize'] : array();
 	$buybox_picker_pill_font_size_unit  = (string) ( $attributes['pickerPillFontSizeUnit'] ?? 'px' );
 	$buybox_picker_pill_border_width    = sgs_css_length_value( (string) ( $attributes['pickerPillBorderWidth'] ?? '' ) );
+	$buybox_picker_pill_sel_text_colour = sanitize_text_field( (string) ( $attributes['pickerPillSelectedTextColour'] ?? '' ) );
 	// $buybox_picker_term_label_map (the "show selected value" slug->label
 	// lookup) is computed early, above the RRP block, next to
 	// $buybox_picker_show_selected_value.
@@ -1380,6 +1381,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			// pill styles only, so a tile's caption keeps its own em-relative size.
 			if ( '' !== $buybox_picker_pill_border_width ) {
 				$buybox_picker_attrs['pillBorderWidth'] = $buybox_picker_pill_border_width;
+			}
+			if ( '' !== $buybox_picker_pill_sel_text_colour ) {
+				$buybox_picker_attrs['pillSelectedTextColour'] = $buybox_picker_pill_sel_text_colour;
 			}
 			if ( 'tile' !== $buybox_axis_style && ! empty( $buybox_picker_pill_font_size ) ) {
 				$buybox_picker_attrs['pillFontSize']     = $buybox_picker_pill_font_size;

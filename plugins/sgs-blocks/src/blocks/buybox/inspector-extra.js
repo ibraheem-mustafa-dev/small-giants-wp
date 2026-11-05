@@ -497,6 +497,13 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
+			key: 'picker-pill-selected-text',
+			label: __( 'Selected option text colour', 'sgs-blocks' ),
+			attrs: { base: 'pickerPillSelectedTextColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'picker-option',
 			label: __( 'Option tile name', 'sgs-blocks' ),
 			attrs: { base: 'pickerOptionColour' },
