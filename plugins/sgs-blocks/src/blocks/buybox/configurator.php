@@ -251,7 +251,48 @@ if ( ! function_exists( 'sgs_buybox_configurator_look_css' ) ) {
 		}
 		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickPricedPadding'] ?? null, $pill . ' .sgs-option-picker__pill' ) );
 		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickPricedFontSize'] ?? null, $pill . ' .sgs-option-picker__pill', 'font-size', false ) );
-		return $css;
+		$css = array_merge( $css, sgs_buybox_configurator_tier_css( $attributes['pickPricedMinHeight'] ?? null, $pill . ' .sgs-option-picker__pill', 'min-height', false ) );
+		if ( 'auto' === ( $attributes['pickPricedLayout'] ?? '' ) ) {
+			// Auto width: the options row wraps as a flex row and each pill sizes to its own text.
+			$css[] = $pill . ' .sgs-option-picker__options{display:flex;flex-wrap:wrap;align-items:center;}';
+			$css[] = $pill . ' .sgs-option-picker__option{width:auto;}';
+			$css[] = $pill . ' .sgs-option-picker__pill{width:auto;}';
+		}
+		return array_merge( $css, sgs_buybox_configurator_badge_css( $attributes, $root_sel ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_configurator_badge_css' ) ) {
+	/**
+	 * The term badge ("Most popular") colours: the author's own fill and text, else a text colour that reads 4.5:1 on the
+	 * fill. Nothing prints when the stylesheet's own pair (the primary fill with the inverse text) already reads 4.5:1.
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @param string              $root_sel   The block's scoped root selector.
+	 * @return string[] CSS rules.
+	 */
+	function sgs_buybox_configurator_badge_css( array $attributes, string $root_sel ): array {
+		$fill = sgs_colour_value( (string) ( $attributes['pickBadgeBackgroundColour'] ?? '' ) );
+		$text = sgs_colour_value( (string) ( $attributes['pickBadgeTextColour'] ?? '' ) );
+		if ( '' === $text && function_exists( 'sgs_resolve_palette_hex' ) && function_exists( 'sgs_wcag_preferred_text_colour_for_bg' ) ) {
+			$fill_hex = sgs_colour_hex_for_contrast( '' !== $fill ? (string) $attributes['pickBadgeBackgroundColour'] : sgs_resolve_palette_hex( 'primary' ) );
+			$base     = sgs_colour_hex_for_contrast( sgs_resolve_palette_hex( 'text-inverse', sgs_resolve_palette_hex( 'surface' ) ) );
+			if ( '' !== $fill_hex && ( '' !== $fill || '' === $base || sgs_wcag_contrast_ratio( $base, $fill_hex ) < 4.5 ) ) {
+				$text = sgs_wcag_preferred_text_colour_for_bg( $fill_hex, $base );
+			}
+		}
+		$decl = array();
+		if ( '' !== $fill ) {
+			$decl[] = 'background-color:' . $fill;
+		}
+		if ( '' !== $text ) {
+			$decl[] = 'color:' . $text;
+		}
+		if ( ! $decl ) {
+			return array();
+		}
+		$box = $root_sel . ' .sgs-buybox__pick-box';
+		return array( $box . ' .sgs-option-picker__term-badge,' . $box . ' .sgs-buybox-pick__option-badge{' . implode( ';', $decl ) . ';}' );
 	}
 }
 

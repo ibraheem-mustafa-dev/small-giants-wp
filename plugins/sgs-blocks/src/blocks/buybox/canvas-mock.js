@@ -501,6 +501,23 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( pricedPad.length ) {
 			css += `${ pill } .sgs-option-picker__pill{${ pricedPad.join( ';' ) };}`;
 		}
+		const pricedMin = tierValueOf( attributes.pickPricedMinHeight, tier );
+		if ( pricedMin ) {
+			css += `${ pill } .sgs-option-picker__pill{min-height:${ safeLength( pricedMin ) };}`;
+		}
+		if ( 'auto' === attributes.pickPricedLayout ) {
+			css += `${ pill } .sgs-option-picker__options{display:flex;flex-wrap:wrap;align-items:center;}${ pill } .sgs-option-picker__option{width:auto;}${ pill } .sgs-option-picker__pill{width:auto;}`;
+		}
+		const badgeDecls = [];
+		if ( attributes.pickBadgeBackgroundColour ) {
+			badgeDecls.push( `background-color:${ resolve( attributes.pickBadgeBackgroundColour ) }` );
+		}
+		if ( attributes.pickBadgeTextColour ) {
+			badgeDecls.push( `color:${ resolve( attributes.pickBadgeTextColour ) }` );
+		}
+		if ( badgeDecls.length ) {
+			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__term-badge,${ root } .sgs-buybox__pick-box .sgs-buybox-pick__option-badge{${ badgeDecls.join( ';' ) };}`;
+		}
 		if ( attributes.pickPricedGap ) {
 			css += `${ pill } .sgs-option-picker__options{gap:${ safeLength( attributes.pickPricedGap ) };}`;
 		}

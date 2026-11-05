@@ -233,6 +233,30 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/:checked ~ \.sgs-option-picker__pill \.sgs-option-picker__term-description\s*\{\s*opacity: 1;/', $css, 'the selected each-line is not muted' );
 	}
 
+	public function test_priced_pills_can_size_to_their_text_and_take_a_minimum_height(): void {
+		$pill = '.sgs-buybox__pick-box .sgs-option-picker:not(.sgs-option-picker--tile)';
+		$html = self::html( array( 'pickPricedLayout' => 'auto', 'pickPricedMinHeight' => array( 'desktop' => '48px' ) ) );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__options{display:flex;flex-wrap:wrap;align-items:center;}', $html );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__pill{width:auto;}', $html );
+		$this->assertStringContainsString( $pill . ' .sgs-option-picker__pill{min-height:48px;}', $html );
+		$columns = self::html( array( 'pickPricedLayout' => 'columns' ) );
+		$this->assertStringNotContainsString( 'flex-wrap:wrap;align-items:center;}', $columns, 'columns keeps the grid' );
+		$this->assertStringNotContainsString( 'min-height:', self::html(), 'unset prints no height' );
+	}
+
+	public function test_the_term_badge_text_reads_4_5_to_1_on_its_fill_and_unset_prints_nothing(): void {
+		foreach ( array( '#F9CF6E', '#1F3A5F', '#FFFFFF' ) as $fill ) {
+			$html = self::html( array( 'pickBadgeBackgroundColour' => $fill ) );
+			$this->assertMatchesRegularExpression( '/term-badge,[^{]*option-badge\{background-color:' . $fill . ';color:(#[0-9a-fA-F]{3,6});\}/', $html, $fill );
+			preg_match( '/option-badge\{background-color:[^;]+;color:(#[0-9a-fA-F]{3,6});\}/', $html, $m );
+			$text = '#000' === $m[1] ? '#000000' : ( '#fff' === $m[1] ? '#ffffff' : $m[1] );
+			$this->assertGreaterThanOrEqual( 4.5, sgs_wcag_contrast_ratio( $text, $fill ), "text $text on $fill" );
+		}
+		$own = self::html( array( 'pickBadgeBackgroundColour' => '#F9CF6E', 'pickBadgeTextColour' => '#222222' ) );
+		$this->assertStringContainsString( '{background-color:#F9CF6E;color:#222222;}', $own, 'the author text colour wins' );
+		$this->assertStringNotContainsString( 'option-badge{', self::html(), 'unset prints no badge rule when the stylesheet pair passes or cannot be resolved' );
+	}
+
 	public function test_the_gallery_gaps_are_per_device_and_a_saved_string_still_works(): void {
 		$string = self::html( array( 'galleryColumnGap' => '60px', 'thumbGap' => '6px' ) );
 		$this->assertStringContainsString( '@media(min-width:768px){', $string );
