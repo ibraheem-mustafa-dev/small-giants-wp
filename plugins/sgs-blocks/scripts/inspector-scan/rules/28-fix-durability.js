@@ -59,6 +59,8 @@ const DURABILITY_MARKERS = [
 		token: 'sgs-nested-tools-panel',
 		js: [ 'edit.js' ],
 		css: [ 'editor.css', 'style.css' ],
+		// The one shared rule, relative to the plugin root: a block that emits the marker is covered when it holds the rule.
+		sharedCss: 'assets/css/inspector-controls.css',
 		plantedBy: '4a859e42',
 		what: 'hides the duplicate inner ToolsPanel title when nested in a PanelBody (Spec 35 A5)',
 	},
@@ -118,6 +120,12 @@ module.exports = {
 				);
 				if ( n > 0 ) cssFiles.push( name );
 				cssCount += n;
+			}
+
+			// The shared stylesheet is the CSS half for every block that emits the marker.
+			if ( jsCount > 0 && cssCount === 0 && marker.sharedCss ) {
+				const shared = path.join( ctx.blocksDir, '..', '..', marker.sharedCss );
+				if ( fs.existsSync( shared ) && countIn( stripCssComments( fs.readFileSync( shared, 'utf8' ) ), marker.token ) > 0 ) continue;
 			}
 
 			// Neither side references it: this block never had the fix. Not a
