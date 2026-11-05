@@ -839,3 +839,8 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 .sgs-account__password-helper {
 	margin: 0 0 0.75rem;
 }
+
+.sgs-account__register-hint {
+	display: block;
+	margin-top: 0.25rem;
+}

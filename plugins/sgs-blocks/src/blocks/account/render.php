@@ -40,6 +40,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-signed-o
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-look-css.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-header.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-edit-account.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-register.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-extras.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-endpoints.php';
@@ -96,7 +97,7 @@ if ( $show_card ) {
 } elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
 	\WC_Shortcode_My_Account::output( array() );
 }
-$wc_output = sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes );
+$wc_output = \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) );
 \SGS\Blocks\Account_Strings::end();
 \SGS\Blocks\Account_Endpoints::$active = null;
 

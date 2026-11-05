@@ -25,6 +25,9 @@ final class Account_Extras {
 		\add_action( 'wp_loaded', array( __CLASS__, 'fill_display_name' ), 10 );
 		\add_action( 'woocommerce_save_account_details_errors', array( __CLASS__, 'validate_mobile' ), 10, 1 );
 		\add_action( 'woocommerce_save_account_details', array( __CLASS__, 'save_mobile' ), 10, 1 );
+		\add_action( 'woocommerce_register_form_start', array( __CLASS__, 'register_first_name_field' ) );
+		\add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'validate_first_name' ), 10, 1 );
+		\add_action( 'woocommerce_created_customer', array( __CLASS__, 'save_first_name' ), 10, 1 );
 	}
 
 	/**
@@ -168,6 +171,64 @@ final class Account_Extras {
 			return null;
 		}
 		return isset( $_POST['account_mobile'] ) ? sanitize_text_field( wp_unslash( $_POST['account_mobile'] ) ) : '';
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+	}
+
+	/** The First name field at the top of the register form, while an sgs/account block with the setting on renders. */
+	public static function register_first_name_field(): void {
+		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['registerShowFirstName'] ) ) {
+			return;
+		}
+		$label = trim( (string) ( Account_Endpoints::$active['registerFirstNameLabel'] ?? '' ) );
+		$label = '' !== $label ? $label : __( 'First name', 'sgs-blocks' );
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- redisplays the visitor's own typed value only.
+		$value = isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
+		echo '<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">'
+			. '<label for="reg_first_name">' . esc_html( $label ) . '&nbsp;<span class="required" aria-hidden="true">*</span><span class="screen-reader-text">' . esc_html__( 'Required', 'sgs-blocks' ) . '</span></label>'
+			. '<input type="text" class="woocommerce-Input woocommerce-Input--text input-text" name="first_name" id="reg_first_name" autocomplete="given-name" value="' . esc_attr( $value ) . '" required aria-required="true" />'
+			. '<input type="hidden" name="sgs_register_first_name" value="1" /></p>';
+	}
+
+	/**
+	 * First name is required when the form carried the field (runs inside WooCommerce's registration, after its
+	 * register nonce check).
+	 *
+	 * @param mixed $errors WP_Error collecting the registration's errors.
+	 * @return mixed
+	 */
+	public static function validate_first_name( $errors ) {
+		$name = self::posted_first_name();
+		if ( null !== $name && '' === $name && $errors instanceof \WP_Error ) {
+			$errors->add( 'registration-error-missing-first-name', __( 'Please enter your first name.', 'sgs-blocks' ) );
+		}
+		return $errors;
+	}
+
+	/**
+	 * Store the first name on the new customer (runs after WooCommerce has created the account).
+	 *
+	 * @param mixed $customer_id New customer id.
+	 */
+	public static function save_first_name( $customer_id ) {
+		$name = self::posted_first_name();
+		if ( null === $name || '' === $name || ! is_numeric( $customer_id ) ) {
+			return;
+		}
+		update_user_meta( (int) $customer_id, 'first_name', $name );
+		update_user_meta( (int) $customer_id, 'billing_first_name', $name );
+	}
+
+	/**
+	 * The posted first name, or null when the register form did not carry the field.
+	 *
+	 * @return string|null
+	 */
+	private static function posted_first_name() {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- only called from WooCommerce's registration hooks, after its nonce check.
+		if ( empty( $_POST['sgs_register_first_name'] ) ) {
+			return null;
+		}
+		return isset( $_POST['first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 }

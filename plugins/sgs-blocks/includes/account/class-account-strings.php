@@ -38,6 +38,8 @@ final class Account_Strings {
 	public static function supported(): array {
 		return array(
 			'signIn'            => 'Log in',
+			'signInHeading'     => 'Login',
+			'registerHeading'   => 'Register',
 			'usernameLabel'     => 'Username or email address',
 			'lostUsernameLabel' => 'Username or email',
 			'rememberMe'        => 'Remember me',
@@ -51,6 +53,8 @@ final class Account_Strings {
 			'savedItems'        => 'Saved items',
 			'billingAddress'    => 'Billing address',
 			'shippingAddress'   => 'Shipping address',
+			'addAddressLink'    => 'Add %s',
+			'editAddressLink'   => 'Edit %s',
 			'passwordChange'    => 'Password change',
 		);
 	}
@@ -90,6 +94,11 @@ final class Account_Strings {
 		}
 		$map = array();
 		foreach ( self::$values as $key => $text ) {
+			// The register panel heading shares WooCommerce's "Register" text with the submit button, so it is set
+			// by `register_heading()` on the finished markup, not by the gettext map.
+			if ( 'registerHeading' === $key ) {
+				continue;
+			}
 			$map[ self::supported()[ $key ] ] = $text;
 		}
 		self::$map = $map;
@@ -103,6 +112,27 @@ final class Account_Strings {
 		}
 		self::$map    = null;
 		self::$values = array();
+	}
+
+	/**
+	 * Put the client's register panel heading on WooCommerce's rendered log-in / register markup (the `<h2>` of the
+	 * second column). Markup without that column is returned untouched.
+	 *
+	 * @param string $html WooCommerce's rendered output.
+	 * @return string
+	 */
+	public static function register_heading( string $html ): string {
+		$text = self::$values['registerHeading'] ?? '';
+		if ( '' === $text || false === strpos( $html, 'u-column2' ) ) {
+			return $html;
+		}
+		$out = preg_replace_callback(
+			'#(<div[^>]*\bu-column2\b[^>]*>\s*<h2\b[^>]*>)(.*?)(</h2>)#s',
+			static fn( array $m ): string => $m[1] . \esc_html( $text ) . $m[3],
+			$html,
+			1
+		);
+		return is_string( $out ) ? $out : $html;
 	}
 
 	/**

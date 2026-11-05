@@ -11,6 +11,8 @@ import { Choice, TextField, TierBox, Toggle } from './extraControls';
 
 const WORDING = [
 	[ 'signIn', __( 'Sign in button (WooCommerce: Log in)', 'sgs-blocks' ), 'Log in' ],
+	[ 'signInHeading', __( 'Sign in panel heading (WooCommerce: Login)', 'sgs-blocks' ), 'Login' ],
+	[ 'registerHeading', __( 'Register panel heading', 'sgs-blocks' ), 'Register' ],
 	[ 'usernameLabel', __( 'Sign in field label', 'sgs-blocks' ), 'Username or email address' ],
 	[ 'lostUsernameLabel', __( 'Lost password field label', 'sgs-blocks' ), 'Username or email' ],
 	[ 'rememberMe', __( 'Remember me', 'sgs-blocks' ), 'Remember me' ],
@@ -24,6 +26,8 @@ const WORDING = [
 	[ 'savedItems', __( 'Saved items (menu)', 'sgs-blocks' ), 'Saved items' ],
 	[ 'billingAddress', __( 'Billing address title', 'sgs-blocks' ), 'Billing address' ],
 	[ 'shippingAddress', __( 'Shipping address title', 'sgs-blocks' ), 'Shipping address' ],
+	[ 'addAddressLink', __( 'Add address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Add %s' ],
+	[ 'editAddressLink', __( 'Edit address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Edit %s' ],
 	[ 'passwordChange', __( 'Password change heading', 'sgs-blocks' ), 'Password change' ],
 ];
 
@@ -215,6 +219,30 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 			) }
 			<TextField { ...p } name="accountPasswordHelper" label={ __( 'Text under the password heading', 'sgs-blocks' ) } />
 			<Toggle { ...p } name="accountSaveFullWidth" label={ __( 'Save button full width', 'sgs-blocks' ) } />
+		</PanelBody>
+	);
+}
+
+/**
+ * @param {Object}   props               Panel props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute setter.
+ * @return {JSX.Element} The Register form panel.
+ */
+export function RegisterFormPanel( { attributes, setAttributes } ) {
+	const p = { attributes, setAttributes };
+	return (
+		<PanelBody title={ __( 'Register form', 'sgs-blocks' ) } initialOpen={ false }>
+			<Toggle
+				{ ...p }
+				name="registerShowFirstName"
+				label={ __( 'Ask for a first name', 'sgs-blocks' ) }
+				help={ __( 'A required First name field, saved to the customer’s name and billing first name.', 'sgs-blocks' ) }
+			/>
+			{ attributes.registerShowFirstName && (
+				<TextField { ...p } name="registerFirstNameLabel" label={ __( 'First name field label', 'sgs-blocks' ) } />
+			) }
+			<TextField { ...p } name="registerPasswordHint" label={ __( 'Hint under the password field', 'sgs-blocks' ) } />
 		</PanelBody>
 	);
 }

@@ -2796,6 +2796,17 @@
 			"accountDisplayFromNames": {
 				"type": "boolean"
 			},
+			"registerShowFirstName": {
+				"type": "boolean"
+			},
+			"registerFirstNameLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"registerPasswordHint": {
+				"type": "string",
+				"role": "content"
+			},
 			"accountShowMobile": {
 				"type": "boolean"
 			},
