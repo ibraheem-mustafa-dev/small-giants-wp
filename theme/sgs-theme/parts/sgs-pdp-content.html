@@ -5,9 +5,9 @@
 <!-- Product details band — default/surface background (alternates with surface-alt hero band above) -->
 <!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"}} -->
 
-	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"},"flexWrap":"wrap"} -->
+	<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"desktop":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}},"flexWrap":"wrap"} -->
 
-		<!-- wp:sgs/heading {"content":"Product details","level":"h2","textColour":"text","margin":{"bottom":"var:preset|spacing|50"}} /-->
+		<!-- wp:sgs/heading {"content":"Product details","level":"h2","textColour":"text","margin":{"desktop":{"bottom":"var:preset|spacing|50"}}} /-->
 
 		<!-- wp:sgs/tabs {"orientation":"horizontal","tabStyle":"underline","tabAlignment":"start"} -->
 
@@ -40,7 +40,7 @@
      dataSource=synced reads from wp_options[sgs_trustpilot_data] (populated by Settings > SGS Trustpilot Sync).
      emptyState=hide suppresses the section when no live data is available; set emptyState=coming-soon
      to display a "Reviews coming soon" placeholder instead of a broken gap. -->
-<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}} -->
+<!-- wp:sgs/container {"tagName":"div","contentWidth":{"desktop":"normal"},"padding":{"desktop":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}} -->
 
 	<!-- wp:sgs/trustpilot-reviews {"dataSource":"synced","emptyState":"hide","variant":"carousel","showSourceHeader":true,"showTrustpilotLogo":true,"showVerifiedBadge":true,"showDate":true,"showAuthor":true,"showSchema":false} /-->
 

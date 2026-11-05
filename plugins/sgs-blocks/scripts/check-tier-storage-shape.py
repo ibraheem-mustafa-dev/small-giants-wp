@@ -59,6 +59,7 @@ gridTemplateColumns → pass 3 trigger): once ZERO, the baseline will be fully e
 
 import json
 import pathlib
+import re
 import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[3]
@@ -174,12 +175,92 @@ def self_test() -> int:
     return 0
 
 
+THEME_DIR = REPO / 'theme' / 'sgs-theme'
+BOX_SIDES = {'top', 'right', 'bottom', 'left'}
+BOX_ATTRS = ('padding', 'margin', 'gridItemPadding')
+BLOCK_COMMENT = re.compile(r'<!-- wp:(sgs/[a-z0-9-]+) (?=\{)')
+
+
+def tier_box_attrs() -> dict:
+    """Map block name -> attrs stored as a tier of boxes ({desktop:{top,...}}).
+
+    An attr is tier-of-boxes when it is type object and its default is a dict
+    keyed by `desktop`. Content saved with a flat {top,bottom} box under such an
+    attr emits no rule, so the spacing silently vanishes.
+    """
+    out = {}
+    for bj in BLOCKS_DIR.glob('*/block.json'):
+        try:
+            data = json.loads(bj.read_text(encoding='utf-8'))
+        except json.JSONDecodeError:
+            continue
+        attrs = data.get('attributes', {})
+        boxes = {
+            name for name, spec in attrs.items()
+            if isinstance(spec, dict) and spec.get('type') == 'object'
+            and isinstance(spec.get('default'), dict) and 'desktop' in spec['default']
+            and name in BOX_ATTRS
+        }
+        if boxes and data.get('name'):
+            out[data['name']] = boxes
+    return out
+
+
+def flat_boxes_in_markup(markup: str, tier_attrs: dict) -> list:
+    """Return (block, attr) for every flat box saved under a tier-of-boxes attr."""
+    decoder = json.JSONDecoder()
+    found = []
+    for m in BLOCK_COMMENT.finditer(markup):
+        try:
+            attrs, _ = decoder.raw_decode(markup, m.end())
+        except json.JSONDecodeError:
+            continue
+        for name in tier_attrs.get(m.group(1), ()):
+            value = attrs.get(name)
+            if isinstance(value, dict) and value and set(value) <= BOX_SIDES:
+                found.append((m.group(1), name))
+    return found
+
+
+def scan_theme_markup() -> list:
+    """Scan theme templates and parts for flat boxes under tier-of-boxes attrs."""
+    tier_attrs = tier_box_attrs()
+    findings = []
+    for folder in ('templates', 'parts'):
+        for f in sorted((THEME_DIR / folder).glob('*.html')):
+            text = f.read_text(encoding='utf-8')
+            for block, attr in flat_boxes_in_markup(text, tier_attrs):
+                findings.append((f.relative_to(REPO).as_posix(), block, attr))
+    return findings
+
+
+def markup_self_test() -> int:
+    """Positive and negative control for the theme markup scan."""
+    tier_attrs = {'sgs/container': {'padding'}}
+    bad = '<!-- wp:sgs/container {"padding":{"top":"1","bottom":"2"}} -->'
+    good = '<!-- wp:sgs/container {"padding":{"desktop":{"top":"1"}}} -->'
+    core = '<!-- wp:group {"padding":{"top":"1"}} -->'
+    if not flat_boxes_in_markup(bad, tier_attrs):
+        print('POSITIVE control FAILED: a flat box was not reported.', file=sys.stderr)
+        return 1
+    if flat_boxes_in_markup(good, tier_attrs) or flat_boxes_in_markup(core, tier_attrs):
+        print('NEGATIVE control FAILED: a tier box or a core block was reported.', file=sys.stderr)
+        return 1
+    return 0
+
+
 def main() -> int:
     argv = sys.argv[1:]
     if '--self-test' in argv:
-        return self_test()
+        return self_test() or markup_self_test()
 
     check = '--check' in argv
+    flat = scan_theme_markup()
+    for path, block, attr in flat:
+        print(f'  {path}: {block} "{attr}" is a flat box; it must be {{"desktop":{{...}}}}')
+    if flat and check:
+        print(f'\n--check: FAIL - {len(flat)} flat box(es) in theme templates/parts.')
+        return 1
     findings = scan()
 
     if not findings:
