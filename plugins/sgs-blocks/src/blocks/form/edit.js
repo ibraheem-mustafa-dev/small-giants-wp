@@ -17,6 +17,7 @@ import {
 	resolveTextColourPreviewStyle,
 	backgroundPaintPreview,
 	borderBoxPreview,
+	sgsBorderPreview,
 	typographyPreviewStyle,
 	typographyPreviewCss,
 	textIndentPreviewCss,
@@ -441,6 +442,16 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 			.filter( ( [ , value ] ) => '' !== value )
 			.map( ( [ prop, value ] ) => `${ prop }:${ value };` )
 			.join( '' );
+	// The upload zone's box and its icon holder's corners, as render.php prints them through sgs_border_element_decls()
+	// and sgs_emit_responsive_css() (the zone's border colour is fileLabelBorderPreviewDecl above).
+	const zoneBoxDecls = [
+		typographyDecls( sgsBorderPreview( { widthValues: attributes.fileLabelBorderWidth, styleValue: attributes.fileLabelBorderStyle, radiusValues: attributes.fileLabelBorderRadius }, previewTier, palette ) ),
+		typographyDecls( tierBoxLonghands( attributes.fileLabelPadding, previewTier, 'padding' ) ),
+		tierLengthPreview( attributes.fileLabelGap, previewTier ) && `gap:${ tierLengthPreview( attributes.fileLabelGap, previewTier ) };`,
+	]
+		.filter( Boolean )
+		.join( '' );
+	const zoneIconRadiusDecls = typographyDecls( sgsBorderPreview( { radiusValues: attributes.fileIconRadius }, previewTier, palette ) );
 	const labelTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'label', previewTier ) );
 	const fieldTypographyDecls = typographyDecls( typographyPreviewStyle( attributes, 'field', previewTier ) );
 	// Tile icon, tile label, consent text, review term and answer, help, error,
@@ -478,6 +489,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		fileIconColourValue && `.${ formPreviewScope } .sgs-form-field__file-icon{color:${ fileIconColourValue };}`,
 		fileIconBoxValue && `.${ formPreviewScope } .sgs-form-field__file-icon{width:${ fileIconBoxValue };height:${ fileIconBoxValue };}`,
 		fileIconSizeValue && `.${ formPreviewScope } .sgs-form-field__file-icon svg{width:${ fileIconSizeValue };height:${ fileIconSizeValue };}`,
+		zoneBoxDecls && `.${ formPreviewScope } .sgs-form-field__file-label{${ zoneBoxDecls }}`,
+		zoneIconRadiusDecls && `.${ formPreviewScope } .sgs-form-field__file-icon{${ zoneIconRadiusDecls }}`,
 		tierValueOf( attributes.requiredMarkHidden, previewTier ) && `.${ formPreviewScope } .sgs-form-field__required{display:none;}`,
 		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
 		trackColourValue && `.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,

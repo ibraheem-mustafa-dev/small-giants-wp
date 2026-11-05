@@ -29,6 +29,18 @@ const SR_ONLY = {
 	whiteSpace: 'nowrap',
 };
 
+/**
+ * The row layout's text column: render.php wraps the prompt and hint in .sgs-form-field__file-text there only.
+ *
+ * @param {Object}  props          Props.
+ * @param {boolean} props.isRow    Whether the zone uses the row layout.
+ * @param {*}       props.children The prompt and the hint.
+ * @return {*} The wrapped or bare children.
+ */
+function ZoneText( { isRow, children } ) {
+	return isRow ? <span className="sgs-form-field__file-text">{ children }</span> : children;
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const {
 		fieldName,
@@ -50,6 +62,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isPanel = 'panel' === attributes.zoneStyle;
 	const isNative = 'native' === attributes.zoneStyle;
+	// The row layout belongs to the dashed look, as in render.php.
+	const isRow = 'row' === attributes.zoneLayout && ! isPanel;
 	const blockProps = useBlockProps( { className } );
 
 	return (
@@ -229,47 +243,33 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					</label>
 				) }
-				<div
-					className={ isPanel ? 'sgs-form-field__file-zone sgs-form-field__file-zone--panel' : `sgs-form-field__file-zone${ isNative ? ' sgs-form-field__file-zone--native' : '' }` }
-					style={ isPanel || isNative ? undefined : {
-						border: '2px dashed #ccc',
-						borderRadius: '8px',
-						padding: '40px',
-						textAlign: 'center',
-						backgroundColor: '#f9f9f9',
-					} }
-				>
+				{ /* The same markup render.php prints, so the form's stylesheet and its upload-zone settings paint the canvas. */ }
+				<div className={ `sgs-form-field__file-zone${ isPanel ? ' sgs-form-field__file-zone--panel' : '' }${ isNative ? ' sgs-form-field__file-zone--native' : '' }` }>
 					{ isNative && (
 						<input type="file" className="sgs-form-field__file-input sgs-form-field__input" disabled />
 					) }
 					{ ! isNative && (
-					<div className="sgs-form-field__file-label" style={ isPanel ? undefined : { border: 'none', padding: 0 } }>
+					<div className={ `sgs-form-field__file-label${ isRow ? ' sgs-form-field__file-label--row' : '' }` }>
 						{ attributes.zoneIcon && (
 							<span className="sgs-form-field__file-icon" aria-hidden="true">
 								<IconPreview source="lucide" name={ attributes.zoneIcon } />
 							</span>
 						) }
-						<span>
-							<AuthoredText
-								value={ uploadText || __( 'Drag a file here or click to browse', 'sgs-blocks' ) }
-							/>
-						</span>
-						<span
-							className="sgs-form-field__file-hint"
-							style={ isPanel ? undefined : {
-								display: 'block',
-								marginTop: '8px',
-								fontSize: '14px',
-								color: '#666',
-							} }
-						>
-							{ attributes.hintText || (
-								<>
-									{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
-									{ __( 'MB', 'sgs-blocks' ) }
-								</>
-							) }
-						</span>
+						<ZoneText isRow={ isRow }>
+							<span>
+								<AuthoredText
+									value={ uploadText || __( 'Drag a file here or click to browse', 'sgs-blocks' ) }
+								/>
+							</span>
+							<span className="sgs-form-field__file-hint">
+								{ attributes.hintText || (
+									<>
+										{ __( 'Max', 'sgs-blocks' ) } { maxSize }{ ' ' }
+										{ __( 'MB', 'sgs-blocks' ) }
+									</>
+								) }
+							</span>
+						</ZoneText>
 						{ isPanel && helpText && (
 							<p className="sgs-form-field__help">{ helpText }</p>
 						) }

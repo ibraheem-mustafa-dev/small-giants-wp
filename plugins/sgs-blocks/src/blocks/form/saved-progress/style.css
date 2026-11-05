@@ -68,10 +68,10 @@
 	font-weight: 700;
 }
 
-/* The 44px touch target is a zero-specificity default; the Edit button's minimum height setting wins. */
+/* The 44px touch target is the fallback; the Edit button's minimum height setting replaces it. */
 :where(.sgs-form-review__edit) {
 	min-width: 44px;
-	min-height: 44px;
+	min-height: var(--sgs-form-review-edit-min-height, 44px);
 }
 
 .sgs-form-review__edit {

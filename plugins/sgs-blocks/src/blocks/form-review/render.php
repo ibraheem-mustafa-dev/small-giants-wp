@@ -157,6 +157,12 @@ $sgs_fr_css .= sgs_emit_responsive_css(
 			'css'          => 'min-height',
 			'unit_default' => 'px',
 		),
+		// The stylesheet's 44px tap floor reads this, so a set height replaces the floor (check-tap-floors).
+		array(
+			'value'        => sgs_responsive_normalise_object( $attributes['editButtonMinHeight'] ?? null ),
+			'css'          => '--sgs-form-review-edit-min-height',
+			'unit_default' => 'px',
+		),
 	)
 );
 $sgs_fr_css .= sgs_typography_css_rule( $attributes, 'editButton', $sgs_fr_edit_sel, '', false, false, sgs_object_attr_keys( $block ) );

@@ -133,6 +133,7 @@
 					}
 				},
 				"current": {
+					"state": "current",
 					"selector": ".sgs-breadcrumbs__item--current",
 					"label": "Current page",
 					"order": 4,

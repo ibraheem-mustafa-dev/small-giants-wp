@@ -813,12 +813,12 @@ select.sgs-form-field__input {
 	display: inline-flex;
 	align-items: center;
 	margin-top: 6px;
-	padding: 10px 20px;
 	border: 1px solid currentColor;
 	color: var(--wp--preset--color--text, #1a202c);
 }
 
 :where(.sgs-form-field__file-button) {
+	padding: 10px 20px;
 	font-size: 12.5px;
 	line-height: 1.5;
 	letter-spacing: 0.12em;
