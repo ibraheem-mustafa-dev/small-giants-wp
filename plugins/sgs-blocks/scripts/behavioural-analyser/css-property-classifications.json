@@ -12588,14 +12588,6 @@
       }
     },
     {
-      "slug": "sgs/gift-order",
-      "attr": "giftTileMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "tile"
-      }
-    },
-    {
       "slug": "sgs/google-rating-badge",
       "attr": "accentStripeColourGradient",
       "fields": {
@@ -37839,6 +37831,14 @@
       "attr": "giftTileBorderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "tile"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileMinHeight",
+      "fields": {
+        "css_property": "min-height",
         "css_element": "tile"
       }
     },

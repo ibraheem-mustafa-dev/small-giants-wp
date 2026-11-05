@@ -3615,7 +3615,7 @@
     "sgs/form-field-tiles::tileSelectedBackgroundColour": "color",
     "sgs/form-field-tiles::tileSelectedBorderColour": "color",
     "sgs/form-field-tiles::tileSelectedBorderWidth": "visual",
-    "sgs/form-field-tiles::tileSelectedOffset": null,
+    "sgs/form-field-tiles::tileSelectedOffset": "styling",
     "sgs/form-field-tiles::tileSelectedShadow": "visual",
     "sgs/form-field-tiles::tileSelectedShadowColour": "color",
     "sgs/form-field-tiles::tiles": "content",
