@@ -61,6 +61,28 @@
 	background: transparent;
 }
 
+.sgs-accordion__filter--canvas .sgs-accordion__search {
+	position: relative;
+}
+
+.sgs-accordion__filter--canvas .sgs-accordion__search-icon {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 1rem;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+}
+
+.sgs-accordion__filter--canvas .sgs-accordion__search-icon svg {
+	width: var(--sgs-accordion-search-icon-size, 1.25rem);
+	height: var(--sgs-accordion-search-icon-size, 1.25rem);
+}
+
+.sgs-accordion__filter--canvas .sgs-accordion__search--has-icon .sgs-accordion__search-input {
+	padding-inline-start: calc(1rem + var(--sgs-accordion-search-icon-size, 1.25rem) + 0.75rem);
+}
+
 .sgs-accordion__filter--canvas .sgs-accordion__chips {
 	display: flex;
 	flex-wrap: wrap;

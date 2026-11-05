@@ -12,6 +12,7 @@ import { PanelBody, TextControl, TextareaControl, ToggleControl } from '@wordpre
 import { DesignTokenPicker, LinkPopoverField, SgsLengthControl } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
+import { ChipLookFields, SearchLookFields } from './FilterStyleFields';
 
 /** Defaults mirror block.json; the reset of a field writes its default back. */
 export const FILTER_DEFAULTS = {
@@ -78,6 +79,27 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 			filterChipColourPressed: '',
 			filterChipBackgroundPressed: '',
 			filterCountColour: '',
+			filterChipFontSize: {},
+			filterChipShadow: '',
+			filterChipShadowColour: '',
+			filterChipSelectedShadow: '',
+			filterChipSelectedShadowColour: '',
+			filterChipSelectedOffsetX: '',
+			filterChipSelectedOffsetY: '',
+			filterChipsWrap: {},
+			filterChipsJustify: {},
+			filterChipsPadding: {},
+			filterSearchBackground: '',
+			filterSearchMaxWidth: {},
+			filterSearchAlign: {},
+			filterSearchHeight: {},
+			filterSearchPadding: {},
+			filterSearchFontSize: {},
+			filterSearchShadow: '',
+			filterSearchShadowColour: '',
+			filterSearchIcon: '',
+			filterSearchIconColour: '',
+			filterSearchIconSize: '',
 		} );
 
 	return (
@@ -122,6 +144,11 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 									__next40pxDefaultSize
 								/>
 							</Field>
+							<ColourField label={ __( 'Search box fill', 'sgs-blocks' ) } attribute="filterSearchBackground" { ...shared } />
+							<SearchLookFields { ...shared } />
+							{ !! attributes.filterSearchIcon && (
+								<ColourField label={ __( 'Search icon colour', 'sgs-blocks' ) } attribute="filterSearchIconColour" { ...shared } />
+							) }
 						</>
 					) }
 					<Field label={ __( 'Topic chips', 'sgs-blocks' ) } attribute="filterChips" { ...shared }>
@@ -157,6 +184,7 @@ export default function FilterPanel( { attributes, setAttributes } ) {
 							<ColourField label={ __( 'Chip border colour', 'sgs-blocks' ) } attribute="filterChipBorderColour" { ...shared } />
 							<ColourField label={ __( 'Selected chip text colour', 'sgs-blocks' ) } attribute="filterChipColourPressed" { ...shared } />
 							<ColourField label={ __( 'Selected chip background', 'sgs-blocks' ) } attribute="filterChipBackgroundPressed" { ...shared } />
+							<ChipLookFields { ...shared } />
 							<ToolsPanelItem
 								label={ __( 'Chip corner radius', 'sgs-blocks' ) }
 								hasValue={ () => '' !== ( attributes.filterChipRadius ?? '' ) }

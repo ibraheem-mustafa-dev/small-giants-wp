@@ -278,17 +278,87 @@
             "css:color": "filterChipColour",
             "css:background-color": "filterChipBackground",
             "css:border-color": "filterChipBorderColour",
-            "css:border-radius": "filterChipRadius"
+            "css:border-radius": "filterChipRadius",
+            "css:font-size": "filterChipFontSize",
+            "css:box-shadow": "filterChipShadow",
+            "css:box-shadow-color": "filterChipShadowColour"
           },
           "states": {
             "current": {
               "attrMap": {
                 "css:color": "filterChipColourPressed",
-                "css:background-color": "filterChipBackgroundPressed"
+                "css:background-color": "filterChipBackgroundPressed",
+                "css:box-shadow": "filterChipSelectedShadow",
+                "css:box-shadow-color": "filterChipSelectedShadowColour",
+                "css:translate": "filterChipSelectedOffsetX",
+                "css:translate-y": "filterChipSelectedOffsetY"
               }
             }
           },
-          "_note": "A chip never takes motion. Chip typography follows the accordion's own Typography panel; a separate chip font size is a gap."
+          "_note": "A chip never takes motion. Chip text size is filterChipFontSize; the rest of the chip typography follows the accordion's own Typography panel."
+        },
+        "chips": {
+          "selector": ".sgs-accordion__chips",
+          "motion": false,
+          "label": "Filter chip row",
+          "order": 7.05,
+          "clusters": [
+            "layout"
+          ],
+          "attrMap": {
+            "css:flex-wrap": "filterChipsWrap",
+            "css:justify-content": "filterChipsJustify",
+            "css:padding": "filterChipsPadding"
+          },
+          "_note": "One row of chips. A one-row setting also scrolls the row sideways and keeps each chip at its own width (filterChipsWrap)."
+        },
+        "search": {
+          "selector": ".sgs-accordion__search-input",
+          "motion": false,
+          "label": "Filter search box",
+          "order": 7.06,
+          "clusters": [
+            "text",
+            "fill",
+            "layout"
+          ],
+          "attrMap": {
+            "css:background-color": "filterSearchBackground",
+            "css:min-height": "filterSearchHeight",
+            "css:padding": "filterSearchPadding",
+            "css:font-size": "filterSearchFontSize",
+            "css:box-shadow": "filterSearchShadow",
+            "css:box-shadow-color": "filterSearchShadowColour"
+          }
+        },
+        "searchwrap": {
+          "selector": ".sgs-accordion__search",
+          "motion": false,
+          "label": "Filter search box width",
+          "order": 7.065,
+          "clusters": [
+            "layout"
+          ],
+          "attrMap": {
+            "css:max-width": "filterSearchMaxWidth",
+            "css:margin-inline": "filterSearchAlign"
+          }
+        },
+        "searchicon": {
+          "selector": ".sgs-accordion__search-icon",
+          "motion": false,
+          "label": "Filter search icon",
+          "order": 7.07,
+          "clusters": [
+            "text",
+            "layout"
+          ],
+          "prefix": "filterSearchIcon",
+          "attrMap": {
+            "css:color": "filterSearchIconColour",
+            "css:width": "filterSearchIconSize"
+          },
+          "_note": "A Lucide icon inside the search box's start edge (filterSearchIcon, filterSearchIconColour, filterSearchIconSize); the input's start padding clears it."
         },
         "count": {
           "selector": ".sgs-accordion__count",
@@ -471,6 +541,111 @@
       "type": "string",
       "default": "",
       "description": "Colour of the count line. Empty inherits the text colour."
+    },
+    "filterChipFontSize": {
+      "type": "object",
+      "default": {},
+      "description": "Chip text size per device {desktop,tablet,mobile}, each a CSS length. Empty inherits the accordion's text size."
+    },
+    "filterChipShadow": {
+      "type": "string",
+      "default": "",
+      "description": "Shadow shape of every chip while resting (the shared layered shadow control). Empty = no shadow."
+    },
+    "filterChipShadowColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of the resting chip's shadow."
+    },
+    "filterChipSelectedShadow": {
+      "type": "string",
+      "default": "",
+      "description": "Shadow shape of the selected chip (the shared layered shadow control). Empty = no shadow."
+    },
+    "filterChipSelectedShadowColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of the selected chip's shadow."
+    },
+    "filterChipSelectedOffsetX": {
+      "type": "string",
+      "default": "",
+      "description": "Horizontal offset of the selected chip (CSS length, e.g. \"-2px\"). Empty = no shift."
+    },
+    "filterChipSelectedOffsetY": {
+      "type": "string",
+      "default": "",
+      "description": "Vertical offset of the selected chip (CSS length, e.g. \"-2px\"). Empty = no shift."
+    },
+    "filterChipsWrap": {
+      "type": "object",
+      "default": {},
+      "description": "Chip row wrapping per device {desktop,tablet,mobile}, each \"wrap\" (chips drop onto further rows) or \"nowrap\" (one row that scrolls sideways). Empty = the stylesheet's wrapping."
+    },
+    "filterChipsJustify": {
+      "type": "object",
+      "default": {},
+      "description": "Chip row alignment per device {desktop,tablet,mobile}, each \"left\", \"center\" or \"right\". Empty = the stylesheet's start alignment."
+    },
+    "filterChipsPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Chip row padding as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Gives a scrolling row room for the chips' shadow and lift. Empty = no padding."
+    },
+    "filterSearchBackground": {
+      "type": "string",
+      "default": "",
+      "description": "Search box fill (palette slug or CSS colour). Empty keeps it transparent."
+    },
+    "filterSearchMaxWidth": {
+      "type": "object",
+      "default": {},
+      "description": "Search box maximum width per device {desktop,tablet,mobile}, each a CSS length. Empty = the full width of the filter bar."
+    },
+    "filterSearchAlign": {
+      "type": "object",
+      "default": {},
+      "description": "Where a search box narrower than the bar sits, per device {desktop,tablet,mobile}, each \"left\", \"center\" or \"right\". Empty = the start edge."
+    },
+    "filterSearchHeight": {
+      "type": "object",
+      "default": {},
+      "description": "Search box minimum height per device {desktop,tablet,mobile}, each a CSS length. Empty = the stylesheet's 44px."
+    },
+    "filterSearchPadding": {
+      "type": "object",
+      "default": {},
+      "description": "Search box padding as a per-device box {desktop,tablet,mobile}, each a {top,right,bottom,left} box. Empty = the stylesheet's 1rem each side, widened at the start when an icon is set."
+    },
+    "filterSearchFontSize": {
+      "type": "object",
+      "default": {},
+      "description": "Search box text size per device {desktop,tablet,mobile}, each a CSS length. Empty inherits the accordion's text size."
+    },
+    "filterSearchShadow": {
+      "type": "string",
+      "default": "",
+      "description": "Shadow shape of the search box (the shared layered shadow control). Empty = no shadow."
+    },
+    "filterSearchShadowColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of the search box's shadow."
+    },
+    "filterSearchIcon": {
+      "type": "string",
+      "default": "",
+      "description": "Lucide icon slug printed inside the start edge of the search box (for example 'search'). Empty = no icon."
+    },
+    "filterSearchIconColour": {
+      "type": "string",
+      "default": "",
+      "description": "Colour of the search icon (palette slug or CSS colour). Empty inherits the text colour."
+    },
+    "filterSearchIconSize": {
+      "type": "string",
+      "default": "",
+      "description": "Width and height of the search icon as one CSS length. Empty = 1.25rem."
     },
     "borderWidth": {
       "type": "object",

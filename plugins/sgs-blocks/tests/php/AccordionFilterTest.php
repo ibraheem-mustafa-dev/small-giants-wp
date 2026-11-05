@@ -180,6 +180,105 @@ final class AccordionFilterTest extends TestCase {
 		$this->assertStringContainsString( 'Nothing matches that yet.', $html );
 	}
 
+	/**
+	 * Every look setting of the filter bar is off by default: the bar renders byte-identical with none set, and with each at its block.json default.
+	 */
+	public function test_the_filter_look_settings_print_nothing_when_unset(): void {
+		$root     = dirname( __DIR__, 2 );
+		$bare     = $this->render_fixture( $root, 'indus', array( 'filterEnabled' => true ), array( 'category' => 'Trade' ) );
+		$defaults = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'                  => true,
+				'filterChipFontSize'             => array(),
+				'filterChipShadow'               => '',
+				'filterChipShadowColour'         => '',
+				'filterChipSelectedShadow'       => '',
+				'filterChipSelectedShadowColour' => '',
+				'filterChipSelectedOffsetX'      => '',
+				'filterChipSelectedOffsetY'      => '',
+				'filterChipsWrap'                => array(),
+				'filterChipsJustify'             => array(),
+				'filterChipsPadding'             => array(),
+				'filterSearchBackground'         => '',
+				'filterSearchMaxWidth'           => array(),
+				'filterSearchAlign'              => array(),
+				'filterSearchHeight'             => array(),
+				'filterSearchPadding'            => array(),
+				'filterSearchFontSize'           => array(),
+				'filterSearchShadow'             => '',
+				'filterSearchShadowColour'       => '',
+				'filterSearchIcon'               => '',
+				'filterSearchIconColour'         => '',
+				'filterSearchIconSize'           => '',
+			),
+			array( 'category' => 'Trade' )
+		);
+		$uid = static fn ( string $html ): string => (string) preg_replace( '#-[0-9a-f]{8}#', '-uid', $html );
+		$this->assertSame( $uid( $bare ), $uid( $defaults ) );
+		$this->assertStringNotContainsString( 'sgs-accordion__search-icon', $bare );
+		$this->assertStringNotContainsString( 'sgs-accordion__search--has-icon', $bare );
+	}
+
+	public function test_the_chip_row_chip_text_and_selected_chip_settings_print_real_properties(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'                  => true,
+				'filterChipsWrap'                => array( 'desktop' => 'nowrap', 'mobile' => 'wrap' ),
+				'filterChipsJustify'             => array( 'desktop' => 'center', 'mobile' => 'left' ),
+				'filterChipsPadding'             => array( 'desktop' => array( 'top' => '2px', 'right' => '2px', 'bottom' => '6px', 'left' => '2px' ) ),
+				'filterChipFontSize'             => array( 'desktop' => '15px' ),
+				'filterChipShadow'               => '1px 1px 0 0',
+				'filterChipShadowColour'         => '#3A2A22',
+				'filterChipSelectedShadow'       => '3px 3px 0 0',
+				'filterChipSelectedShadowColour' => '#3A2A22',
+				'filterChipSelectedOffsetX'      => '-2px',
+				'filterChipSelectedOffsetY'      => '-2px',
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertStringContainsString( ' .sgs-accordion__chips{flex-wrap:nowrap;overflow-x:auto;justify-content:center;padding-top:2px;padding-right:2px;padding-bottom:6px;padding-left:2px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__chips{flex-wrap:wrap;overflow-x:visible;justify-content:flex-start;}', $html, 'the mobile tier' );
+		$this->assertStringContainsString( ' .sgs-accordion__chip{flex:none;white-space:nowrap;font-size:15px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__chip{box-shadow:1px 1px 0px 0px #3A2A22;', $html, 'the resting chip shadow' );
+		$this->assertMatchesRegularExpression( '#\.sgs-accordion__chip\[aria-pressed="true"\]\{box-shadow:.*?translate:-2px -2px;\}#s', $html );
+	}
+
+	public function test_the_search_box_fill_height_padding_shadow_and_icon_settings_print_real_properties(): void {
+		$root = dirname( __DIR__, 2 );
+		$html = $this->render_fixture(
+			$root,
+			'indus',
+			array(
+				'filterEnabled'            => true,
+				'filterSearchBackground'   => '#FFFAF0',
+				'filterSearchMaxWidth'     => array( 'desktop' => '640px' ),
+				'filterSearchAlign'        => array( 'desktop' => 'center', 'mobile' => 'left' ),
+				'filterSearchHeight'       => array( 'desktop' => '62px' ),
+				'filterSearchPadding'      => array( 'desktop' => array( 'top' => '0', 'right' => '20px', 'bottom' => '0', 'left' => '52px' ) ),
+				'filterSearchFontSize'     => array( 'desktop' => '17px' ),
+				'filterSearchShadow'       => '4px 4px 0 0',
+				'filterSearchShadowColour' => '#3A2A22',
+				'filterSearchIcon'         => 'search',
+				'filterSearchIconColour'   => '#3A2A22',
+				'filterSearchIconSize'     => '20px',
+			),
+			array( 'category' => 'Trade' )
+		);
+		$this->assertStringContainsString( 'class="sgs-accordion__search sgs-accordion__search--has-icon"', $html );
+		$this->assertMatchesRegularExpression( '#<span class="sgs-accordion__search-icon" aria-hidden="true">.*?<svg#s', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search-input{background-color:#FFFAF0;box-shadow:', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search-input{min-height:62px;padding-top:0px;padding-right:20px;padding-bottom:0px;padding-left:52px;font-size:17px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{--sgs-accordion-search-icon-size:20px;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{max-width:640px;margin-inline:auto;}', $html );
+		$this->assertStringContainsString( ' .sgs-accordion__search{margin-inline:0 auto;}', $html, 'the mobile tier' );
+		$this->assertStringContainsString( ' .sgs-accordion__search-icon{color:#3A2A22;}', $html );
+	}
+
 	public function test_the_empty_link_label_is_escaped_and_the_message_and_url_go_through_the_core_sanitisers(): void {
 		$root = dirname( __DIR__, 2 );
 		$html = $this->render_fixture( $root, 'eye-care', array( 'filterEnabled' => true, 'filterEmptyLink' => array( 'url' => 'https://example.test/ask', 'label' => 'Ask <b>us</b>' ) ) );

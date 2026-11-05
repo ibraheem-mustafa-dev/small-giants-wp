@@ -8,7 +8,12 @@
 
 import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { resolveColourToken } from '../../components';
+import { IconPreview, resolveColourToken } from '../../components';
+import { resolveShadowPreviewComposed, sgsLengthPreview, spacingPreview, tierValueOf } from '../../utils';
+
+const WRAP_CSS = { wrap: { flexWrap: 'wrap', overflowX: 'visible' }, nowrap: { flexWrap: 'nowrap', overflowX: 'auto' } };
+const MARGIN_CSS = { left: '0 auto', center: 'auto', right: 'auto 0' };
+const JUSTIFY_CSS = { left: 'flex-start', center: 'center', right: 'flex-end' };
 
 function countLine( attributes, count ) {
 	const plural = attributes.filterCountTemplate || '{count}';
@@ -16,7 +21,7 @@ function countLine( attributes, count ) {
 	return ( 1 === count ? singular : plural ).replace( '{count}', String( count ) );
 }
 
-export default function FilterCanvasBar( { attributes, clientId, palette } ) {
+export default function FilterCanvasBar( { attributes, clientId, palette, tier = 'desktop' } ) {
 	const items = useSelect(
 		( select ) =>
 			select( 'core/block-editor' )
@@ -32,30 +37,70 @@ export default function FilterCanvasBar( { attributes, clientId, palette } ) {
 		}
 	} );
 	const colour = ( value ) => ( value ? resolveColourToken( value, palette ) : undefined );
+	const length = ( value ) => sgsLengthPreview( tierValueOf( value, tier ) );
+	const wrap = tierValueOf( attributes.filterChipsWrap, tier, ( v ) => ( WRAP_CSS[ v ] ? v : undefined ) );
+	const offsetX = sgsLengthPreview( attributes.filterChipSelectedOffsetX );
+	const offsetY = sgsLengthPreview( attributes.filterChipSelectedOffsetY );
 	const chipStyle = ( pressed ) => ( {
 		color: colour( pressed ? attributes.filterChipColourPressed : attributes.filterChipColour ),
 		backgroundColor: colour( pressed ? attributes.filterChipBackgroundPressed : attributes.filterChipBackground ),
 		borderColor: colour( attributes.filterChipBorderColour ),
 		borderRadius: attributes.filterChipRadius || undefined,
+		fontSize: length( attributes.filterChipFontSize ),
+		...( wrap ? { flex: 'wrap' === wrap ? '0 1 auto' : 'none', whiteSpace: 'wrap' === wrap ? 'normal' : 'nowrap' } : {} ),
+		boxShadow: resolveShadowPreviewComposed( attributes.filterChipShadow, attributes.filterChipShadowColour ),
+		...( pressed
+			? {
+					boxShadow: resolveShadowPreviewComposed( attributes.filterChipSelectedShadow, attributes.filterChipSelectedShadowColour ),
+					translate: offsetX || offsetY ? `${ offsetX || '0' } ${ offsetY || '0' }` : undefined,
+			  }
+			: {} ),
 	} );
+	const chipsStyle = {
+		...( wrap ? WRAP_CSS[ wrap ] : {} ),
+		justifyContent: tierValueOf( attributes.filterChipsJustify, tier, ( v ) => JUSTIFY_CSS[ v ] ),
+		...spacingPreview( { padding: attributes.filterChipsPadding }, tier ),
+	};
+	const searchStyle = {
+		backgroundColor: colour( attributes.filterSearchBackground ),
+		minHeight: length( attributes.filterSearchHeight ),
+		fontSize: length( attributes.filterSearchFontSize ),
+		boxShadow: resolveShadowPreviewComposed( attributes.filterSearchShadow, attributes.filterSearchShadowColour ),
+		...spacingPreview( { padding: attributes.filterSearchPadding }, tier ),
+	};
+	const searchWrapStyle = {
+		maxWidth: length( attributes.filterSearchMaxWidth ),
+		marginInline: tierValueOf( attributes.filterSearchAlign, tier, ( v ) => MARGIN_CSS[ v ] ),
+	};
+	const searchIcon = ( attributes.filterSearchIcon || '' ).trim();
+	const iconSize = sgsLengthPreview( attributes.filterSearchIconSize );
 	const showSearch = false !== attributes.filterSearch;
 	const showChips = false !== attributes.filterChips && categories.length > 0;
 
 	return (
 		<div className="sgs-accordion__filter sgs-accordion__filter--canvas" contentEditable={ false }>
 			{ showSearch && (
-				<div className="sgs-accordion__search">
+				<div
+					className={ 'sgs-accordion__search' + ( searchIcon ? ' sgs-accordion__search--has-icon' : '' ) }
+					style={ { ...searchWrapStyle, ...( iconSize ? { '--sgs-accordion-search-icon-size': iconSize } : {} ) } }
+				>
+					{ searchIcon && (
+						<span className="sgs-accordion__search-icon" style={ { color: colour( attributes.filterSearchIconColour ) } } aria-hidden="true">
+							<IconPreview source="lucide" name={ searchIcon } />
+						</span>
+					) }
 					<input
 						className="sgs-accordion__search-input"
 						type="search"
 						disabled
+						style={ searchStyle }
 						aria-label={ attributes.filterSearchLabel || __( 'Search', 'sgs-blocks' ) }
 						placeholder={ attributes.filterSearchPlaceholder || '' }
 					/>
 				</div>
 			) }
 			{ showChips && (
-				<div className="sgs-accordion__chips">
+				<div className="sgs-accordion__chips" style={ chipsStyle }>
 					<span className="sgs-accordion__chip" aria-pressed="true" style={ chipStyle( true ) }>
 						{ attributes.filterAllLabel || __( 'All', 'sgs-blocks' ) }
 					</span>

@@ -79,8 +79,15 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 			$label       = (string) ( $attributes['filterSearchLabel'] ?? '' );
 			$label       = '' !== trim( $label ) ? $label : __( 'Search', 'sgs-blocks' );
 			$placeholder = (string) ( $attributes['filterSearchPlaceholder'] ?? '' );
-			$out        .= '<div class="sgs-accordion__search" role="search">'
+			$icon_name   = trim( (string) ( $attributes['filterSearchIcon'] ?? '' ) );
+			$icon_markup = '';
+			if ( '' !== $icon_name ) {
+				require_once __DIR__ . '/lucide-icons.php';
+				$icon_markup = sgs_get_lucide_icon( $icon_name );
+			}
+			$out        .= '<div class="sgs-accordion__search' . ( '' !== $icon_markup ? ' sgs-accordion__search--has-icon' : '' ) . '" role="search">'
 				. '<label class="sgs-accordion__sr-only" for="' . esc_attr( $search_id ) . '">' . esc_html( $label ) . '</label>'
+				. ( '' !== $icon_markup ? '<span class="sgs-accordion__search-icon" aria-hidden="true">' . $icon_markup . '</span>' : '' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns pre-sanitised SVG markup.
 				. '<input class="sgs-accordion__search-input" type="search" id="' . esc_attr( $search_id ) . '" autocomplete="off" placeholder="' . esc_attr( $placeholder ) . '">'
 				. '</div>';
 		}
@@ -132,7 +139,7 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 	}
 
 	/**
-	 * Scoped CSS for the chip, pressed-chip and count settings.
+	 * Scoped CSS for the chip, selected-chip, count, chip-row and search-box settings.
 	 *
 	 * @param array  $attributes Accordion attributes.
 	 * @param string $root_sel   The accordion's scoped root selector.
@@ -156,18 +163,200 @@ if ( ! function_exists( 'sgs_accordion_filter_categories' ) ) {
 			'.sgs-accordion__count'                     => array(
 				'color' => $colour( 'filterCountColour' ),
 			),
+			'.sgs-accordion__search-input'              => array(
+				'background-color' => $colour( 'filterSearchBackground' ),
+			),
+			'.sgs-accordion__search-icon'               => array(
+				'color' => $colour( 'filterSearchIconColour' ),
+			),
+			'.sgs-accordion__search'                    => array(
+				'--sgs-accordion-search-icon-size' => sgs_css_single_length_value( (string) ( $attributes['filterSearchIconSize'] ?? '' ) ),
+			),
 		);
-		$css    = '';
+
+		// Selector => ready "prop:value" declarations.
+		$lists = array();
 		foreach ( $rules as $selector => $decls ) {
-			$parts = array();
 			foreach ( $decls as $prop => $value ) {
 				if ( '' !== $value ) {
-					$parts[] = $prop . ':' . $value;
+					$lists[ $selector ][] = $prop . ':' . $value;
 				}
 			}
-			if ( $parts ) {
-				$css .= $root_sel . ' ' . $selector . '{' . implode( ';', $parts ) . ';}';
-			}
+		}
+
+		// The chips (resting and selected) and the search box take the shared layered shadow; the selected chip also takes an offset
+		// through the individual `translate` property, so the chip's hover `transform` is untouched.
+		$resting_sh = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'   => 'filterChipShadow',
+				'colour' => 'filterChipShadowColour',
+			),
+			'sgs/accordion'
+		)['normal'];
+		foreach ( $resting_sh as $decl ) {
+			$lists['.sgs-accordion__chip'][] = $decl;
+		}
+		$selected = '.sgs-accordion__chip[aria-pressed="true"]';
+		$chip_sh  = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'   => 'filterChipSelectedShadow',
+				'colour' => 'filterChipSelectedShadowColour',
+			),
+			'sgs/accordion'
+		)['normal'];
+		foreach ( $chip_sh as $decl ) {
+			$lists[ $selected ][] = $decl;
+		}
+		$offset_x = sgs_css_length_value( (string) ( $attributes['filterChipSelectedOffsetX'] ?? '' ) );
+		$offset_y = sgs_css_length_value( (string) ( $attributes['filterChipSelectedOffsetY'] ?? '' ) );
+		if ( '' !== $offset_x || '' !== $offset_y ) {
+			$lists[ $selected ][] = 'translate:' . ( '' !== $offset_x ? $offset_x : '0' ) . ' ' . ( '' !== $offset_y ? $offset_y : '0' );
+		}
+		$search_sh = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'   => 'filterSearchShadow',
+				'colour' => 'filterSearchShadowColour',
+			),
+			'sgs/accordion'
+		)['normal'];
+		foreach ( $search_sh as $decl ) {
+			$lists['.sgs-accordion__search-input'][] = $decl;
+		}
+
+		$css = '';
+		foreach ( $lists as $selector => $parts ) {
+			$css .= $root_sel . ' ' . $selector . '{' . implode( ';', $parts ) . ';}';
+		}
+		return $css . sgs_accordion_filter_tier_css( $attributes, $root_sel );
+	}
+
+	/**
+	 * Per-device CSS for the chip row, the chips' text size and the search box's height, padding and text size.
+	 *
+	 * Every setting is a `{desktop,tablet,mobile}` object read through sgs_emit_responsive_css; an unset one prints nothing.
+	 * A "nowrap" tier is a one-row scrolling lane: the row scrolls sideways and each chip keeps its own width.
+	 *
+	 * @param array  $attributes Accordion attributes.
+	 * @param string $root_sel   The accordion's scoped root selector.
+	 * @return string CSS ('' when no setting is set).
+	 */
+	function sgs_accordion_filter_tier_css( array $attributes, string $root_sel ): string {
+		$tier = static function ( string $key ) use ( $attributes ): array {
+			return is_array( $attributes[ $key ] ?? null ) ? $attributes[ $key ] : array();
+		};
+		$pick = static function ( array $map ): callable {
+			return static function ( $raw ) use ( $map ) {
+				return ( is_string( $raw ) && isset( $map[ $raw ] ) ) ? $map[ $raw ] : '';
+			};
+		};
+		$wrap = $tier( 'filterChipsWrap' );
+
+		$rules = array(
+			'.sgs-accordion__chips'        => array(
+				array(
+					'value'     => $wrap,
+					'css'       => 'flex-wrap',
+					'transform' => $pick(
+						array(
+							'wrap'   => 'wrap',
+							'nowrap' => 'nowrap',
+						)
+					),
+				),
+				array(
+					'value'     => $wrap,
+					'css'       => 'overflow-x',
+					'transform' => $pick(
+						array(
+							'wrap'   => 'visible',
+							'nowrap' => 'auto',
+						)
+					),
+				),
+				array(
+					'value'     => $tier( 'filterChipsJustify' ),
+					'css'       => 'justify-content',
+					'transform' => $pick(
+						array(
+							'left'   => 'flex-start',
+							'center' => 'center',
+							'right'  => 'flex-end',
+						)
+					),
+				),
+				array(
+					'value'        => $tier( 'filterChipsPadding' ),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			),
+			'.sgs-accordion__chip'         => array(
+				array(
+					'value'     => $wrap,
+					'css'       => 'flex',
+					'transform' => $pick(
+						array(
+							'wrap'   => '0 1 auto',
+							'nowrap' => 'none',
+						)
+					),
+				),
+				array(
+					'value'     => $wrap,
+					'css'       => 'white-space',
+					'transform' => $pick(
+						array(
+							'wrap'   => 'normal',
+							'nowrap' => 'nowrap',
+						)
+					),
+				),
+				array(
+					'value' => $tier( 'filterChipFontSize' ),
+					'css'   => 'font-size',
+				),
+			),
+			'.sgs-accordion__search'       => array(
+				array(
+					'value' => $tier( 'filterSearchMaxWidth' ),
+					'css'   => 'max-width',
+				),
+				array(
+					'value'     => $tier( 'filterSearchAlign' ),
+					'css'       => 'margin-inline',
+					'transform' => $pick(
+						array(
+							'left'   => '0 auto',
+							'center' => 'auto',
+							'right'  => 'auto 0',
+						)
+					),
+				),
+			),
+			'.sgs-accordion__search-input' => array(
+				array(
+					'value' => $tier( 'filterSearchHeight' ),
+					'css'   => 'min-height',
+				),
+				array(
+					'value'        => $tier( 'filterSearchPadding' ),
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+				array(
+					'value' => $tier( 'filterSearchFontSize' ),
+					'css'   => 'font-size',
+				),
+			),
+		);
+		$css   = '';
+		foreach ( $rules as $selector => $specs ) {
+			$css .= sgs_emit_responsive_css( $root_sel . ' ' . $selector, $specs );
 		}
 		return $css;
 	}
