@@ -264,11 +264,13 @@ h2.wc-block-mini-cart__title {
  * UNVERIFIED: .wc-block-components-checkout-step__heading
  */
 
-/* Checkout page — mobile overflow safety */
+/* Checkout page — mobile overflow safety. `clip`, not `hidden`: hidden makes this block a scroll
+   container, so WooCommerce's sticky order-summary sidebar never sticks; clip crops the overflow
+   without creating one. */
 .wp-block-woocommerce-checkout {
 	width: 100%;
 	max-width: 100%;
-	overflow-x: hidden;
+	overflow-x: clip;
 }
 
 /* Form fields — consistent with theme inputs */
