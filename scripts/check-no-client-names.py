@@ -124,6 +124,11 @@ ALLOWLIST: Tuple[Tuple[str, str], ...] = (
         "identifier until the target registry moves into sites/<client>/",
     ),
     (
+        "scripts/data/first-paint.json",
+        "its sites are keyed by deploy target (TARGETS keys, which name each client's own test site) and its pages are that site's own URLs; "
+        "the file is the live first-paint gate's per-site fixture list and baseline, not framework logic",
+    ),
+    (
         "scripts/computed-route/data/skeleton-decisions.json",
         "each ratchet rule's taughtBy and clients records name the client whose export taught the rule and the "
         "clients it was checked on (Spec 48 FR-48-7); the record is data, not framework logic",

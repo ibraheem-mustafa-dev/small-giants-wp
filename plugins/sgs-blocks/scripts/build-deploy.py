@@ -58,7 +58,7 @@ from deploy_selftest import self_test
 from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
 from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
 from deploy_qa_tier import motion_qa_action, shipped_uncommitted
-from deploy_verify import step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
+from deploy_verify import step_first_paint, step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
 
 def step_gate_full(dry_run: bool) -> int:
@@ -218,6 +218,9 @@ def parse_args() -> argparse.Namespace:
                         "release that touches motion, shared effects or the theme tokens.")
     p.add_argument("--motion-qa-parallel", type=int, choices=range(1, 9), default=1, metavar="N",
                    help="run N motion probes at once, 1 to 8 (default 1). Above 1 tripped the Hostinger canary CDN bot protection (2026-10-17): do not use.")
+    p.add_argument("--first-paint", action="store_true",
+                   help="after the upload, run the live first-paint gate (CLS, late CSS, stylesheet-name stability) against this target; "
+                        "the target needs an entry in scripts/data/first-paint.json")
     p.add_argument("--skip-purge", action="store_true",
                    help="Skip the post-deploy cache purge (OPcache + LiteSpeed). "
                         "NOT recommended: the deploy still lands, but warm caches "
@@ -532,6 +535,15 @@ def main() -> int:
                   "responds and the payload matches, but a live motion probe failed. "
                   "Read the probe output: it distinguishes a real regression from a "
                   "rotted canary fixture, and re-running the deploy fixes neither.",
+                  flush=True)
+            return 1
+
+    # Post-deploy LIVE first-paint gate (opt-in): it measures the site as just deployed.
+    if args.first_paint and deploy_blocks:
+        rc = timed("first-paint", step_first_paint, args.dry_run, target_key)
+        if rc != 0:
+            print("[DEPLOYED-BUT-FIRST-PAINT-FAILED] the deploy completed and the payload matches, but the live first-paint "
+                  "gate failed (CLS above its limit, late CSS, or an unstable collected stylesheet name). Read the table above.",
                   flush=True)
             return 1
 

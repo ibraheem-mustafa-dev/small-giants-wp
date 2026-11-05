@@ -1,0 +1,59 @@
+{
+  "_note": "Data for scripts/check-first-paint.mjs. cls.limit is the target; a page fails above max(limit, baseline + tolerance). Fixes ratchet baselines down with --update-baseline. lateCssAllowlist entries are {site, page, handle, reason}; handle is the stylesheet's id attribute (or 'inline#N' for an unnamed <style>).",
+  "cls": {
+    "limit": 0.02,
+    "tolerance": 0.005
+  },
+  "widths": [
+    [
+      375,
+      812
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1440,
+      900
+    ]
+  ],
+  "sites": {
+    "sandybrown": {
+      "url": "https://sandybrown-nightingale-600381.hostingersite.com",
+      "pages": [
+        "/"
+      ]
+    },
+    "eye-care-test": {
+      "url": "https://darkcyan-grouse-898606.hostingersite.com",
+      "pages": [
+        "/",
+        "/shop/",
+        "/product/gucci-oversized-cat-eye/",
+        "/help/",
+        "/about/"
+      ]
+    }
+  },
+  "lateCssAllowlist": [],
+  "baseline": {
+    "eye-care-test": {
+      "/@375": 0.183,
+      "/@768": 0.012,
+      "/@1440": 0.012,
+      "/shop/@375": 0.602,
+      "/shop/@768": 0.641,
+      "/shop/@1440": 0.008,
+      "/product/gucci-oversized-cat-eye/@375": 0.001,
+      "/product/gucci-oversized-cat-eye/@768": 0,
+      "/product/gucci-oversized-cat-eye/@1440": 0,
+      "/help/@375": 0.001,
+      "/help/@768": 0.011,
+      "/help/@1440": 0.01,
+      "/about/@375": 0.001,
+      "/about/@768": 0.001,
+      "/about/@1440": 0.001
+    }
+  }
+}

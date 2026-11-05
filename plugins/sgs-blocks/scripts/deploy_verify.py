@@ -226,6 +226,24 @@ def motion_qa_command(npm: str, tier: str = "full", parallel: int = 1) -> list[s
     return cmd
 
 
+def step_first_paint(dry_run: bool, target_key: str) -> int:
+    """Post-deploy LIVE first-paint gate (`scripts/check-first-paint.mjs`): CLS, late CSS, stylesheet-name stability.
+
+    It runs after the upload because a pre-deploy tier would measure the OLD live code. A target with no entry in
+    `scripts/data/first-paint.json` is skipped with a log line; a dry run only prints the command.
+    """
+    import json
+    if target_key not in json.loads((REPO_ROOT / "scripts" / "data" / "first-paint.json").read_text(encoding="utf-8"))["sites"]:
+        log(f"[first-paint] SKIPPED: no entry for {target_key} in scripts/data/first-paint.json")
+        return 0
+    node = "node.exe" if os.name == "nt" else "node"
+    cmd = [node, str(REPO_ROOT / "scripts" / "check-first-paint.mjs"), "--site", target_key, "--check", "--only", "cls,css,name"]
+    if dry_run:
+        log(f"[first-paint] SKIPPED (--dry-run); would run: {' '.join(cmd)}")
+        return 0
+    return run(cmd, dry_run=False, cwd=REPO_ROOT)
+
+
 def step_motion_qa(dry_run: bool, tier: str = "full", parallel: int = 1, uncommitted: list[str] | None = None,
                    skip_verify: bool = False) -> int:
     """Post-deploy LIVE motion regression check.
