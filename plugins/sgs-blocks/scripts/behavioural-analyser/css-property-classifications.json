@@ -25179,6 +25179,15 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "swatchMoreBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "swatchMoreRing"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "swatchMoreFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -34392,6 +34401,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "stockLineHairlineMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "stock-hairline"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "stockLowStockColour",
       "fields": {
         "css_property": "color",
@@ -42619,6 +42636,16 @@
       "fields": {
         "css_property": "width",
         "css_element": "brandLogo"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cardShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
