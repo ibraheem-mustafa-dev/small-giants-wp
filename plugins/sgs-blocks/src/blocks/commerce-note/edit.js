@@ -13,12 +13,26 @@ import {
 import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import {
 	LinkPopoverField,
+	LinkUnderlineControl,
+	ResponsiveOverride,
 	SGS_FONT_WEIGHT_OPTIONS,
 	SgsColourPanel,
+	SgsLengthControl,
 	TypographyControls,
 	textRow,
 } from '../../components';
-import { colourVar, typographyPreviewStyle, usePreviewTier } from '../../utils';
+import {
+	colourVar,
+	linkUnderlinePreviewCss,
+	typographyPreviewStyle,
+	usePreviewTier,
+} from '../../utils';
+
+const TAP_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+];
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
 
@@ -29,7 +43,22 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const linkColour = colourVar( attributes.commerceNoteLinkColour );
 	const linkHover = colourVar( attributes.commerceNoteLinkColourHover );
 	const linkWeight = attributes.commerceNoteLinkFontWeight;
+	const minHeight = attributes.commerceNoteLinkMinHeight?.[ tier ];
 	const linkCss = [
+		linkUnderlinePreviewCss( `#block-${ clientId }`, {
+			mode: attributes.commerceNoteLinkUnderline,
+			thickness: attributes.commerceNoteLinkUnderlineThickness,
+			colour: attributes.commerceNoteLinkUnderlineColour,
+			colourHover: attributes.commerceNoteLinkUnderlineColourHover,
+			offset: attributes.commerceNoteLinkUnderlineOffset,
+		} ),
+		minHeight
+			? `#block-${ clientId } .sgs-commerce-note__link{min-height:${
+					/^-?\d+(\.\d+)?$/.test( String( minHeight ) )
+						? `${ minHeight }px`
+						: minHeight
+			  };}`
+			: '',
 		linkWeight
 			? `#block-${ clientId } .sgs-commerce-note__link{font-weight:${ linkWeight };}`
 			: '',
@@ -88,6 +117,54 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								},
 								attributes,
 								setAttributes,
+								after: (
+									<LinkUnderlineControl
+										mode={
+											attributes.commerceNoteLinkUnderline
+										}
+										thickness={
+											attributes.commerceNoteLinkUnderlineThickness
+										}
+										colour={
+											attributes.commerceNoteLinkUnderlineColour
+										}
+										colourHover={
+											attributes.commerceNoteLinkUnderlineColourHover
+										}
+										offset={
+											attributes.commerceNoteLinkUnderlineOffset
+										}
+										onModeChange={ ( val ) =>
+											setAttributes( {
+												commerceNoteLinkUnderline: val,
+											} )
+										}
+										onThicknessChange={ ( val ) =>
+											setAttributes( {
+												commerceNoteLinkUnderlineThickness:
+													val,
+											} )
+										}
+										onColourChange={ ( val ) =>
+											setAttributes( {
+												commerceNoteLinkUnderlineColour:
+													val,
+											} )
+										}
+										onColourHoverChange={ ( val ) =>
+											setAttributes( {
+												commerceNoteLinkUnderlineColourHover:
+													val,
+											} )
+										}
+										onOffsetChange={ ( val ) =>
+											setAttributes( {
+												commerceNoteLinkUnderlineOffset:
+													val,
+											} )
+										}
+									/>
+								),
 							} ),
 						] }
 					/>
@@ -107,6 +184,26 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ResponsiveOverride
+						label={ __( 'Link tap height', 'sgs-blocks' ) }
+						value={ attributes.commerceNoteLinkMinHeight }
+						onChange={ ( obj ) =>
+							setAttributes( { commerceNoteLinkMinHeight: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								scale="spacing"
+								label={ __( 'Link tap height', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder="44px"
+								units={ TAP_UNITS }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
 					<TextControl
 						label={ __( 'Link text', 'sgs-blocks' ) }
 						value={ linkLabel }

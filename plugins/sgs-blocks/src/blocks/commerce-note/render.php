@@ -52,6 +52,7 @@ if ( '' === $sgs_note_html ) {
 
 // Look settings: one scoped <style> and a scope class, only while a setting is in use.
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-underline.php';
 
 $sgs_note_class = 'sgs-commerce-note';
 $sgs_note_css   = '';
@@ -67,6 +68,17 @@ $sgs_note_css  .= sgs_text_states_css(
 	)
 );
 $sgs_note_css  .= sgs_link_weight_css( $attributes, 'commerceNoteLinkFontWeight', $sgs_note_sel );
+$sgs_note_css  .= sgs_link_underline_css( $attributes, 'commerceNote', $sgs_note_sel );
+$sgs_note_css  .= sgs_emit_responsive_css(
+	$sgs_note_sel . ' .sgs-commerce-note__link',
+	array(
+		array(
+			'value'        => $attributes['commerceNoteLinkMinHeight'] ?? null,
+			'css'          => 'min-height',
+			'unit_default' => 'px',
+		),
+	)
+);
 if ( '' !== $sgs_note_css ) {
 	$sgs_note_class .= ' ' . $sgs_note_uid;
 	echo '<style>' . wp_strip_all_tags( $sgs_note_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is pre-sanitised by the shared helpers.

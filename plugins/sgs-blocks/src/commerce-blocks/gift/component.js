@@ -1,6 +1,7 @@
 /**
  * Gift order: one component, two placements (Spec 27, FR-30-21).
  *
+ * On a product page (editor preview; the front end is drawn by view.js) it is the same switch with only the note under it.
  * In the basket (inside the cart items area) it is a "This is a gift" switch
  * with the recipient name and note under it. In the checkout it is its own step:
  * two choice tiles that form a radio group and stack when the column is narrow,
@@ -69,6 +70,7 @@ export default function GiftOrder( { config, settings, forcePlacement } ) {
 
 	const fields = (
 		<Fields
+			product={ placement === 'product' }
 			idBase={ idBase }
 			config={ copy }
 			gift={ gift }
@@ -84,9 +86,12 @@ export default function GiftOrder( { config, settings, forcePlacement } ) {
 		</p>
 	) : null;
 
-	if ( placement === 'basket' ) {
+	if ( placement === 'basket' || placement === 'product' ) {
 		return (
-			<div ref={ root } className="sgs-gift-order sgs-gift-order--basket">
+			<div
+				ref={ root }
+				className={ 'sgs-gift-order sgs-gift-order--' + placement }
+			>
 				<label
 					className="sgs-gift-order__switch"
 					htmlFor={ idBase + '-switch' }

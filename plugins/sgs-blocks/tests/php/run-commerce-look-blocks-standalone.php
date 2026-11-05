@@ -17,6 +17,17 @@ define( 'ABSPATH', __DIR__ );
 require dirname( __DIR__, 2 ) . '/scripts/qa/lib/wp-stubs.php';
 require dirname( __DIR__, 2 ) . '/includes/render-helpers.php';
 require dirname( __DIR__, 2 ) . '/includes/gift-order/helpers-gift-order-look.php';
+if ( ! function_exists( 'checked' ) ) {
+	function checked( $a, $b = true, $echo = true ) {
+		return (string) $a === (string) $b ? ' checked="checked"' : '';
+	}
+}
+if ( ! function_exists( 'esc_textarea' ) ) {
+	function esc_textarea( $t ) {
+		return htmlspecialchars( (string) $t, ENT_QUOTES );
+	}
+}
+require dirname( __DIR__, 2 ) . '/includes/gift-order/helpers-gift-order-product.php';
 
 $failures = 0;
 function ok( bool $cond, string $label ): void {
@@ -75,6 +86,62 @@ ok( str_contains( $gift, 'box-shadow:4px 4px 0px 0px #3a2a22' ), 'gift: chosen t
 ok( str_contains( $gift, '--sgs-gift-tile-min-height:76px;' ) && str_contains( $gift, '--sgs-gift-tile-min-height:60px;' ), 'gift: tile minimum height per device' );
 ok( ! str_contains( sgs_gift_order_look_css( array() ), 'min-height' ), 'gift: tile height unset prints nothing' );
 
+// sgs/gift-order: field sizing and text settings (basket, checkout and product page).
+$sizing = sgs_gift_order_look_css(
+	array(
+		'giftTilePadding'     => array( 'desktop' => $box( '14' ), 'mobile' => $box( '10' ) ),
+		'giftFieldPadding'    => array( 'desktop' => array( 'top' => '12', 'right' => '14', 'bottom' => '12', 'left' => '14' ) ),
+		'giftInputMinHeight'  => array( 'desktop' => '54px' ),
+		'giftNoteMinHeight'   => array( 'desktop' => '114px', 'mobile' => 96 ),
+		'giftSwitchMinHeight' => array( 'desktop' => '52px' ),
+		'giftCheckboxColour'  => '#ee8088',
+		'giftLabelFontSize'   => array( 'desktop' => 15 ),
+		'giftLabelFontWeight' => '700',
+		'giftNoteFontSize'    => array( 'desktop' => 24 ),
+		'giftNoteFontFamily'  => 'Caveat',
+		'giftNoteLineHeight'  => array( 'desktop' => 1.2 ),
+		'giftHelpFontSize'    => array( 'desktop' => 14 ),
+		'giftHelpColour'      => '#5e4a3d',
+		'giftCountFontSize'   => array( 'desktop' => 13 ),
+		'giftCountColour'     => '#5e4a3d',
+		'giftCountTextAlign'  => array( 'desktop' => 'right' ),
+	)
+);
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__tile{padding-top:14px;padding-right:14px;' ) && str_contains( $sizing, 'padding-top:10px;' ), 'gift: tile padding per device' );
+ok( str_contains( $sizing, 'padding-top:12px;padding-right:14px;padding-bottom:12px;padding-left:14px;' ), 'gift: field padding' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__input{min-height:54px;}' ), 'gift: name field minimum height' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__textarea{min-height:114px;}' ) && str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__textarea{min-height:96px;}' ), 'gift: note box minimum height per device' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__switch{min-height:52px;}' ), 'gift: tick box row minimum height' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__checkbox{accent-color:#ee8088;}' ), 'gift: tick box colour' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__label{' ) && str_contains( $sizing, 'font-size:15px' ) && str_contains( $sizing, 'font-weight:700' ), 'gift: label typography' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__textarea{' ) && str_contains( $sizing, 'font-size:24px' ) && str_contains( $sizing, 'font-family:' ) && str_contains( $sizing, 'line-height:1.2' ), 'gift: note box typography' );
+ok( str_contains( $sizing, '.sgs-gift-order .sgs-gift-order__help{' ) && str_contains( $sizing, 'font-size:14px' ) && str_contains( $sizing, 'color:#5e4a3d' ), 'gift: hint text' );
+ok( str_contains( $sizing, 'text-align:right' ) && str_contains( $sizing, 'font-size:13px' ), 'gift: character count' );
+foreach ( array( 'padding', 'min-height', 'accent-color', 'font-size', 'text-align' ) as $prop ) {
+	ok( ! str_contains( sgs_gift_order_look_css( array() ), $prop ), 'gift: ' . $prop . ' unset prints nothing' );
+}
+
+// sgs/gift-order on a product page: the tick box, the hint and the note box, ticked and not.
+$cfg = array(
+	'basketLabel'        => 'Send it as a gift',
+	'basketHelp'         => 'Add a note.',
+	'messageLabel'       => 'Your note',
+	'messagePlaceholder' => 'Congratulations, mama!',
+	'characterCountText' => '%3$d characters left',
+	'messageLimit'       => 200,
+);
+$off_html = sgs_gift_order_product_html( array(), $cfg, array( 'on' => false, 'to' => '', 'message' => '' ) );
+$on_html  = sgs_gift_order_product_html( array(), $cfg, array( 'on' => true, 'to' => 'Sam', 'message' => 'Hello' ) );
+ok( str_contains( $off_html, 'sgs-gift-order--product' ) && str_contains( $off_html, 'Send it as a gift' ) && str_contains( $off_html, 'sgs-gift-order__help' ), 'gift product: tick box row and hint' );
+ok( ! str_contains( $off_html, ' checked' ) && str_contains( $off_html, 'sgs-gift-order__fields" hidden' ), 'gift product: unticked hides the note' );
+ok( str_contains( $on_html, ' checked' ) && ! str_contains( $on_html, 'sgs-gift-order__fields" hidden' ) && str_contains( $on_html, '>Hello</textarea>' ), 'gift product: ticked shows the note it holds' );
+ok( str_contains( $on_html, '195 characters left' ) && str_contains( $off_html, '200 characters left' ), 'gift product: characters left' );
+ok( str_contains( $on_html, 'maxlength="200"' ) && str_contains( $on_html, 'placeholder="Congratulations, mama!"' ), 'gift product: limit and placeholder' );
+ok( str_contains( $on_html, 'Sam' ) && ! str_contains( $off_html, 'Sam' ), 'gift product: the stored name travels to view.js' );
+ok( ! str_contains( $on_html, 'style=' ) && ! str_contains( $on_html, 'sgs-gift-order__input' ), 'gift product: no inline style and no recipient field' );
+ok( str_contains( $on_html, 'nonce' ), 'gift product: the route nonce travels with the markup' );
+ok( 'Left 3 of 10: 7' === sgs_gift_order_count_text( 'Left %1$d of %2$d: %3$d', 3, 10 ), 'gift product: count text placeholders' );
+
 // sgs/commerce-note.
 $base = array( 'text' => 'Hello', 'linkLabel' => 'Go', 'linkUrl' => 'https://example.test' );
 $off  = harness( 'sgs/commerce-note', $base );
@@ -93,6 +160,12 @@ $wt = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkFontWeight' 
 ok( str_contains( $wt['css'], 'a{font-weight:700;}' ), 'note: link weight' );
 ok( ! str_contains( $on['css'], 'font-weight' ), 'note: link weight unset prints nothing' );
 ok( str_contains( $on['css'], '.sgs-commerce-note__link{color:#ff0000}' ) && str_contains( $on['css'], 'color:#00ff00' ), 'note: link colour and hover' );
+
+$ul = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkUnderline' => 'always', 'commerceNoteLinkUnderlineOffset' => '3px' ) );
+ok( str_contains( $ul['css'], ' a{text-decoration-line:underline;' ) && str_contains( $ul['css'], 'text-underline-offset:3px' ), 'note: link underline always' );
+ok( ! str_contains( $off['css'], 'text-decoration' ) && ! str_contains( $off['css'], 'min-height' ), 'note: link underline and tap height unset print nothing' );
+$mh = harness( 'sgs/commerce-note', $base + array( 'commerceNoteLinkMinHeight' => array( 'desktop' => 0, 'mobile' => '44px' ) ) );
+ok( str_contains( $mh['css'], '.sgs-commerce-note__link{min-height:0px;}' ) && str_contains( $mh['css'], '.sgs-commerce-note__link{min-height:44px;}' ), 'note: link tap height per device' );
 
 // sgs/free-delivery-bar: track border.
 $fd_off = harness( 'sgs/free-delivery-bar', array( 'freeDeliveryThresholdOverride' => '35' ) );

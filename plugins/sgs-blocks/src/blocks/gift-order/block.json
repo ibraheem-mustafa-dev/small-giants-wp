@@ -15,10 +15,6 @@
 	],
 	"textdomain": "sgs-blocks",
 	"icon": "heart",
-	"parent": [
-		"woocommerce/cart-items-block",
-		"woocommerce/checkout-fields-block"
-	],
 	"supports": {
 		"html": false,
 		"multiple": false,
@@ -26,6 +22,14 @@
 		"inserter": true,
 		"sgs": {
 			"specRef": "30",
+			"spacingDefaults": {
+				"giftTilePadding": {
+					"top": "0.75rem",
+					"right": "var(--wp--preset--spacing--30)",
+					"bottom": "0.75rem",
+					"left": "var(--wp--preset--spacing--30)"
+				}
+			},
 			"elements": {
 				"panel": {
 					"selector": ".sgs-gift-order",
@@ -64,7 +68,8 @@
 						"css:border-style": "giftTileBorderStyle",
 						"css:border-color": "giftTileBorderColour",
 						"css:border-radius": "giftTileBorderRadius",
-						"css:min-height": "giftTileMinHeight"
+						"css:min-height": "giftTileMinHeight",
+						"css:padding": "giftTilePadding"
 					}
 				},
 				"tileSelected": {
@@ -100,7 +105,86 @@
 						"css:border-color": "fieldBorderColour",
 						"css:border-radius": "fieldBorderRadius",
 						"css:box-shadow": "fieldShadow",
-						"css:box-shadow-color": "fieldShadowColour"
+						"css:box-shadow-color": "fieldShadowColour",
+						"css:padding": "giftFieldPadding",
+						"css:min-height": "giftInputMinHeight"
+					}
+				},
+				"label": {
+					"selector": ".sgs-gift-order__label",
+					"motion": false,
+					"label": "Field labels",
+					"order": 5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftLabel",
+					"attrMap": {
+						"css:font-size": "giftLabelFontSize",
+						"css:font-family": "giftLabelFontFamily",
+						"css:font-weight": "giftLabelFontWeight",
+						"css:line-height": "giftLabelLineHeight"
+					}
+				},
+				"note": {
+					"selector": ".sgs-gift-order__textarea",
+					"motion": false,
+					"label": "Note box",
+					"order": 6,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "giftNote",
+					"attrMap": {
+						"css:font-size": "giftNoteFontSize",
+						"css:font-family": "giftNoteFontFamily",
+						"css:font-weight": "giftNoteFontWeight",
+						"css:line-height": "giftNoteLineHeight",
+						"css:min-height": "giftNoteMinHeight"
+					}
+				},
+				"switch": {
+					"selector": ".sgs-gift-order__switch",
+					"motion": false,
+					"label": "Gift tick box row",
+					"order": 7,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "giftSwitch",
+					"attrMap": {
+						"css:min-height": "giftSwitchMinHeight",
+						"css:accent-color": "giftCheckboxColour"
+					}
+				},
+				"help": {
+					"selector": ".sgs-gift-order__help",
+					"motion": false,
+					"label": "Text under the tick box",
+					"order": 8,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftHelp",
+					"attrMap": {
+						"css:font-size": "giftHelpFontSize",
+						"css:color": "giftHelpColour"
+					}
+				},
+				"count": {
+					"selector": ".sgs-gift-order__count",
+					"motion": false,
+					"label": "Character count",
+					"order": 9,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftCount",
+					"attrMap": {
+						"css:font-size": "giftCountFontSize",
+						"css:color": "giftCountColour",
+						"css:text-align": "giftCountTextAlign"
 					}
 				}
 			}
@@ -329,10 +413,130 @@
 			"type": "object",
 			"default": {},
 			"description": "Minimum height of the two choice tiles per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet's 44px."
+		},
+		"giftTilePadding": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile padding per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Unset keeps the stylesheet padding."
+		},
+		"giftFieldPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Name and note field padding per device: {desktop,tablet,mobile}, each a box {top,right,bottom,left}. Unset keeps the stylesheet padding."
+		},
+		"giftInputMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height of the name field per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet value."
+		},
+		"giftNoteMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height of the note box per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet value."
+		},
+		"giftSwitchMinHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Minimum height of the tick box row per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Unset keeps the stylesheet value."
+		},
+		"giftCheckboxColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the ticked box (the browser accent colour): a palette slug or any CSS colour."
+		},
+		"giftLabelFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Field label size per device: {desktop,tablet,mobile}, a number in the unit below or a theme size slug."
+		},
+		"giftLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftLabelFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Field label font family: a theme font slug or a CSS family. Unset keeps the inherited font."
+		},
+		"giftLabelFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Field label weight. Unset keeps the stylesheet weight."
+		},
+		"giftLabelLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Field label line height per device: {desktop,tablet,mobile}."
+		},
+		"giftLabelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"giftNoteFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Note box text size per device: {desktop,tablet,mobile}, a number in the unit below or a theme size slug."
+		},
+		"giftNoteFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftNoteFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Note box text font family: a theme font slug or a CSS family. Unset keeps the inherited font."
+		},
+		"giftNoteFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Note box text weight. Unset keeps the stylesheet weight."
+		},
+		"giftNoteLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Note box text line height per device: {desktop,tablet,mobile}."
+		},
+		"giftNoteLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"giftHelpFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Size of the text under the tick box per device: {desktop,tablet,mobile}."
+		},
+		"giftHelpFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftHelpColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the text under the tick box: a palette slug or any CSS colour."
+		},
+		"giftCountFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Size of the character count per device: {desktop,tablet,mobile}."
+		},
+		"giftCountFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftCountColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the character count: a palette slug or any CSS colour."
+		},
+		"giftCountTextAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Alignment of the character count per device: {desktop,tablet,mobile}, each left, center or right."
 		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
-	"render": "file:./render.php"
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js"
 }

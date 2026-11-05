@@ -79,13 +79,20 @@ function KeepResponse( { children } ) {
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
 	const placement = useSelect(
-		( select ) =>
-			select( 'core/block-editor' ).getBlockParentsByBlockName(
-				clientId,
-				'woocommerce/checkout'
-			).length
-				? 'checkout'
-				: 'basket',
+		( select ) => {
+			const { getBlockParentsByBlockName } =
+				select( 'core/block-editor' );
+			if (
+				getBlockParentsByBlockName( clientId, 'woocommerce/checkout' )
+					.length
+			) {
+				return 'checkout';
+			}
+			return getBlockParentsByBlockName( clientId, 'woocommerce/cart' )
+				.length
+				? 'basket'
+				: 'product';
+		},
 		[ clientId ]
 	);
 	const rows = { attributes, setAttributes };
@@ -93,7 +100,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// no second copy of the rules, and editing the words never asks again.
 	const lookAttributes = Object.fromEntries(
 		Object.entries( attributes ).filter( ( [ name ] ) =>
-			/^(giftPanel|giftTile|field)/.test( name )
+			/^(giftPanel|giftTile|giftField|giftInput|giftNote|giftLabel|giftSwitch|giftCheckbox|giftHelp|giftCount|field)/.test(
+				name
+			)
 		)
 	);
 	return (
