@@ -17,8 +17,8 @@
  *
  * GROUND-TRUTH: product-card/render.php L684-750 live-read 2026-06-12:
  * confirmed .product-card__media wrapping img, .product-card__thumbs with
- * role="list" + data-wp-bind--hidden, .product-card__thumb buttons with
- * role="listitem" + data-index + aria-current. No product-card/view.js edits.
+ * role="group" + data-wp-bind--hidden, .product-card__thumb buttons with
+ * data-index + aria-current (no list roles: a button is not a list item). No product-card/view.js edits.
  *
  * @package SGS\Blocks
  * @since   1.18.0 (FR-30-10 Step-10a)
@@ -83,12 +83,13 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 		<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="9" cy="9" r="2"></circle><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path></svg>
 	</div>
 <?php endif; ?>
+<?php echo sgs_buybox_gallery_sticker_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the builder. ?>
 </div><?php // end .product-card__media — aspect-ratio/overflow:hidden MUST NOT wrap the thumbnail strip. ?>
 
 <?php // ── Thumbnail strip (mirrors product-card L719-750 exactly). ?>
 <div
 	class="product-card__thumbs"
-	role="list"
+	role="group"
 	aria-label="<?php esc_attr_e( 'Product images', 'sgs-blocks' ); ?>"
 	data-wp-bind--hidden="context.thumbsHidden"
 	<?php echo $buybox_thumbs_hidden ? 'hidden' : ''; ?>
@@ -102,7 +103,6 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 	<button
 		type="button"
 		class="product-card__thumb sgs-buybox__gallery-thumb"
-		role="listitem"
 		data-index="<?php echo esc_attr( (string) $buybox_thumb_idx ); ?>"
 		aria-current="<?php echo 0 === $buybox_thumb_idx ? 'true' : 'false'; ?>"
 		aria-label="<?php echo $buybox_thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"

@@ -271,7 +271,9 @@
 						"css:text-transform": "addToCartTextTransform",
 						"css:letter-spacing": "addToCartLetterSpacing",
 						"css:min-height": "addToCartMinHeight",
-						"css:padding": "addToCartPadding"
+						"css:padding": "addToCartPadding",
+						"css:box-shadow": "addToCartShadow",
+						"css:box-shadow-color": "addToCartShadowColour"
 					},
 					"_note": "The add-to-cart button (.buybox__add-to-cart): its own look, distinct from the wrapper's border and the price's typography."
 				},
@@ -573,6 +575,31 @@
 							}
 						}
 					}
+				},
+				"gallery-sticker": {
+					"selector": ".sgs-buybox__gallery-sticker",
+					"label": "Photo sticker",
+					"order": 16,
+					"motion": false,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "gallerySticker",
+					"attrMap": {
+						"css:background": "galleryStickerBackgroundColour",
+						"css:color": "galleryStickerTextColour",
+						"css:border-width": "galleryStickerBorderWidth",
+						"css:border-style": "galleryStickerBorderStyle",
+						"css:border-color": "galleryStickerBorderColour",
+						"css:border-radius": "galleryStickerRadius",
+						"css:transform": "galleryStickerRotation",
+						"css:top": "galleryStickerOffsetY",
+						"css:right": "galleryStickerOffsetX",
+						"css:padding": "galleryStickerPadding"
+					},
+					"_note": "The sticker over the main photo (.sgs-buybox__gallery-sticker, gallery-sticker.php). The text, corner and shape are layout settings, not paint: galleryStickerText, galleryStickerPosition, galleryStickerShape, galleryStickerDecorative. Offsets print on the side the corner names (top or bottom, left or right). Typography prints under the gallerySticker prefix."
 				},
 				"stock": {
 					"text": true,
@@ -1855,6 +1882,123 @@
 				"bottom-left"
 			],
 			"description": "Where the badge sits on the main photo."
+		},
+		"galleryStickerText": {
+			"type": "string",
+			"default": "",
+			"description": "A short phrase (for example \"baked with love\") printed on a corner of the main photo, inside the gallery column, so it stays on the photo while the column is pinned. Empty = no sticker, byte-identical to today."
+		},
+		"galleryStickerPosition": {
+			"type": "string",
+			"enum": [
+				"top-left",
+				"top-right",
+				"bottom-left",
+				"bottom-right"
+			],
+			"default": "bottom-right",
+			"description": "Which corner of the main photo the sticker sits on."
+		},
+		"galleryStickerOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the photo's side edge, as a CSS length. Empty = 14px."
+		},
+		"galleryStickerOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the photo's top or bottom edge, as a CSS length. Empty = 14px."
+		},
+		"galleryStickerBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the sticker (palette slug or colour). Empty keeps the stylesheet's text-colour fill."
+		},
+		"galleryStickerTextColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the sticker (palette slug or colour). Empty keeps the stylesheet's inverse text colour."
+		},
+		"galleryStickerBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of the sticker, a {top, right, bottom, left} box of CSS lengths, or per-device {desktop, tablet, mobile} boxes. Empty = no border."
+		},
+		"galleryStickerBorderStyle": {
+			"type": "string",
+			"enum": [
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double",
+				"groove",
+				"ridge",
+				"inset",
+				"outset"
+			],
+			"default": "solid",
+			"description": "Border style of the sticker. Read only when a width is set."
+		},
+		"galleryStickerBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of the sticker (palette slug or colour)."
+		},
+		"galleryStickerShape": {
+			"type": "string",
+			"enum": [
+				"rounded",
+				"pill",
+				"tag"
+			],
+			"default": "rounded",
+			"description": "The sticker's outline: rounded corners (see galleryStickerRadius), a pill, or a tag with a notched end."
+		},
+		"galleryStickerRadius": {
+			"type": "string",
+			"default": "",
+			"description": "Corner radius of the rounded shape as a CSS length. Empty = square corners."
+		},
+		"galleryStickerRotation": {
+			"type": "number",
+			"default": 0,
+			"description": "Tilt of the sticker in degrees (negative tilts left). 0 = upright."
+		},
+		"galleryStickerPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the sticker, a {top, right, bottom, left} box. An unset side keeps the stylesheet's 8px 12px."
+		},
+		"galleryStickerDecorative": {
+			"type": "boolean",
+			"default": true,
+			"description": "On = the sticker is hidden from screen readers (decoration). Off = it is read as text."
+		},
+		"addToCartShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Resting shadow of the add-to-cart button (shadow preset or value). Empty = none."
+		},
+		"addToCartShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-cart button's resting shadow (palette slug or colour)."
+		},
+		"addToCartShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover shadow shape of the add-to-cart button. Empty = the automatic lift of the resting shadow."
+		},
+		"addToCartShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the add-to-cart button's hover shadow (palette slug or colour)."
+		},
+		"addToCartShadowLiftOnHover": {
+			"type": "boolean",
+			"default": true,
+			"description": "With a resting shadow set and no hover shadow, the hover shadow grows by the automatic lift. Off keeps the resting shadow on hover."
 		},
 		"addToCartStyle": {
 			"type": "string",
@@ -3413,6 +3557,105 @@
 			"type": "number"
 		},
 		"rrpPriceWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
+		},
+		"galleryStickerFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"galleryStickerFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"galleryStickerTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"galleryStickerTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"galleryStickerLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"galleryStickerLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"galleryStickerTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"galleryStickerTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"galleryStickerTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"galleryStickerTextColumns": {
+			"type": "number"
+		},
+		"galleryStickerWritingMode": {
 			"type": "string",
 			"enum": [
 				"",

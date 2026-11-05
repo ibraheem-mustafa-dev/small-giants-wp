@@ -13,6 +13,7 @@ import { BuyboxExtraPanels, getBuyboxExtraColourRows } from './inspector-extra';
 import { BuyboxExtraSettingsPanels2 } from './inspector-extra-2';
 import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
+import { BuyboxStickerPanels } from './inspector-sticker';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
@@ -346,6 +347,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 				<BuyboxExtraSettingsPanels3
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
+				<BuyboxStickerPanels
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>

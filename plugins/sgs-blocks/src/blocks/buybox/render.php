@@ -52,6 +52,9 @@ require_once __DIR__ . '/picker-label-map.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-picker-band.php';
 require_once __DIR__ . '/picker-variation-swatch.php';
 require_once __DIR__ . '/gallery-saving-badge.php';
+require_once __DIR__ . '/gallery-sticker.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-state.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32 / per-block migration contract): a CSS-length sanitiser
@@ -957,6 +960,26 @@ if ( '' !== $sgs_bb_ladder_typo_css ) {
 $sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root_sel . ' .buybox__stock', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpPrice', $root_sel . ' .buybox__rrp-price', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_buybox_gallery_sticker_css( $attributes, $root_sel, sgs_object_attr_keys( $block ) );
+// The add-to-cart button's resting and hover shadow (the shared shadow composer; the stylesheet's own button
+// transition already runs box-shadow). Unset prints nothing.
+$sgs_bb_cart_shadow = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'addToCartShadow',
+		'colour'       => 'addToCartShadowColour',
+		'hover'        => 'addToCartShadowHover',
+		'hover_colour' => 'addToCartShadowColourHover',
+		'lift_prefix'  => 'addToCart',
+	),
+	'sgs/buybox'
+);
+if ( $sgs_bb_cart_shadow['normal'] ) {
+	$sgs_bb_surface_typo_css .= $root_sel . ' .buybox__add-to-cart{' . implode( ';', $sgs_bb_cart_shadow['normal'] ) . ';}';
+}
+if ( $sgs_bb_cart_shadow['hover'] ) {
+	$sgs_bb_surface_typo_css .= sgs_hover_state_rules( $root_sel . ' .buybox__add-to-cart:not([disabled])', implode( ';', $sgs_bb_cart_shadow['hover'] ) );
+}
 $sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
 	array(
 		'padding' => is_array( $attributes['addToCartPadding'] ?? null ) ? $attributes['addToCartPadding'] : array(),

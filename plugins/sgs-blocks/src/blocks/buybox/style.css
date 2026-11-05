@@ -765,6 +765,45 @@
 	left: 18px;
 }
 
+/* ── Photo sticker (galleryStickerText) ────────────────────────
+   Sits inside the photo box so it stays on the photo while the gallery column is pinned. The corner picks the
+   inset sides (14px by default); the block's sticker settings paint everything else. The type default sits at
+   zero specificity so the sticker's typography controls win. */
+.sgs-buybox .sgs-buybox__gallery-sticker {
+	position: absolute;
+	z-index: 1;
+	background: var(--wp--preset--color--text, #141414);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	padding: 8px 12px;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+:where(.sgs-buybox .sgs-buybox__gallery-sticker) {
+	font-size: 12px;
+	line-height: 1.2;
+}
+
+.sgs-buybox .sgs-buybox__gallery-sticker--top-right {
+	top: 14px;
+	right: 14px;
+}
+
+.sgs-buybox .sgs-buybox__gallery-sticker--top-left {
+	top: 14px;
+	left: 14px;
+}
+
+.sgs-buybox .sgs-buybox__gallery-sticker--bottom-right {
+	bottom: 14px;
+	right: 14px;
+}
+
+.sgs-buybox .sgs-buybox__gallery-sticker--bottom-left {
+	bottom: 14px;
+	left: 14px;
+}
+
 @media (min-width: 1024px) {
 	.sgs-buybox__gallery-col {
 		/* Sticky gallery while the configurator column scrolls. */
@@ -776,6 +815,7 @@
 /* ── Main image (scoped: MUST NOT leak to product cards in listing rows) ── */
 
 .sgs-buybox .product-card__media {
+	position: relative;
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
 	border-radius: var(--sgs-buybox-img-radius, var(--wp--preset--spacing--10, 8px));

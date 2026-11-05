@@ -31,6 +31,7 @@ import {
 import AuthoredText from '../../components/AuthoredText';
 import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
+import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
 	'top-right',
@@ -147,6 +148,7 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		`${ root } .sgs-buybox__saving-badge`,
 		tier
 	);
+	css += galleryStickerPreviewCss( attributes, root, palette, tier );
 	css += typographyPreviewCss(
 		attributes,
 		'rrpPrice',
@@ -1079,6 +1081,13 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras } ) {
 					} }
 				>
 					{ __( 'Product image', 'sgs-blocks' ) }
+					{ attributes.galleryStickerText && (
+						<span
+							className={ `sgs-buybox__gallery-sticker sgs-buybox__gallery-sticker--${ stickerCorner( attributes ) }` }
+						>
+							{ attributes.galleryStickerText }
+						</span>
+					) }
 				</div>
 				<div
 					className="product-card__thumbs"
