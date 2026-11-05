@@ -160,7 +160,8 @@
 					],
 					"attrMap": {
 						"css:background-color": "menuActiveIndicatorColour",
-						"css:background-image": "menuActiveIndicatorColourGradient"
+						"css:background-image": "menuActiveIndicatorColourGradient",
+						"css:width": "menuActiveIndicatorWidth"
 					}
 				},
 				"heading": {
@@ -318,7 +319,9 @@
 					],
 					"prefix": "cardTitle",
 					"_note": "Card titles share the headings colour (headingColour); only their typography is separate.",
-					"absentIn": [ "logged-out" ],
+					"absentIn": [
+						"logged-out"
+					],
 					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"chip": {
@@ -335,7 +338,9 @@
 						"css:background-color": "chipBackgroundColour",
 						"css:background-image": "chipBackgroundColourGradient"
 					},
-					"absentIn": [ "logged-out" ],
+					"absentIn": [
+						"logged-out"
+					],
 					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"track": {
@@ -348,7 +353,9 @@
 					"attrMap": {
 						"css:border-color": "trackColour"
 					},
-					"absentIn": [ "logged-out" ],
+					"absentIn": [
+						"logged-out"
+					],
 					"absentWhy": "The card titles, status chip and order progress track print only on the logged-in dashboard (includes/account/templates/dashboard.php); a visitor sees the login form and the tracking card."
 				},
 				"trackDone": {
@@ -380,6 +387,501 @@
 								"css:color": "contentLinkColourHover"
 							}
 						}
+					}
+				},
+				"headerEyebrow": {
+					"selector": ".sgs-account__header-eyebrow",
+					"motion": false,
+					"label": "Page header eyebrow",
+					"order": 40,
+					"clusters": [
+						"text"
+					],
+					"prefix": "headerEyebrow",
+					"attrMap": {
+						"css:color": "headerEyebrowColour"
+					}
+				},
+				"headerTitle": {
+					"selector": ".sgs-account__header-title",
+					"motion": false,
+					"label": "Page header title",
+					"order": 41,
+					"clusters": [
+						"text"
+					],
+					"prefix": "headerTitle",
+					"attrMap": {
+						"css:color": "headerTitleColour"
+					}
+				},
+				"headerIntro": {
+					"selector": ".sgs-account__header-intro",
+					"motion": false,
+					"label": "Page header intro",
+					"order": 42,
+					"clusters": [
+						"text"
+					],
+					"prefix": "headerIntro",
+					"attrMap": {
+						"css:color": "headerIntroColour"
+					}
+				},
+				"headerMeta": {
+					"selector": ".sgs-account__header-meta",
+					"motion": false,
+					"label": "Page header signed-in line",
+					"order": 43,
+					"clusters": [
+						"text"
+					],
+					"prefix": "headerMeta",
+					"attrMap": {
+						"css:color": "headerMetaColour"
+					}
+				},
+				"headerBack": {
+					"selector": ".sgs-account__header-back",
+					"motion": false,
+					"label": "Back to sign in link",
+					"order": 44,
+					"clusters": [
+						"text"
+					],
+					"attrMap": {
+						"css:color": "headerBackColour"
+					}
+				},
+				"headerRule": {
+					"selector": ".sgs-account__header--rule",
+					"motion": false,
+					"label": "Page header rule",
+					"order": 45,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-bottom-width": "headerAccountRule",
+						"css:border-color": "headerRuleColour"
+					}
+				},
+				"menuCount": {
+					"selector": ".sgs-account__menu-count",
+					"motion": false,
+					"label": "Orders count in the menu",
+					"order": 46,
+					"clusters": [
+						"text"
+					],
+					"prefix": "menuCount",
+					"attrMap": {
+						"css:color": "menuCountColour"
+					}
+				},
+				"ordersRows": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row",
+					"motion": false,
+					"label": "Order rows",
+					"order": 47,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:display": "ordersLook",
+						"css:background-color": "ordersRowBackground",
+						"css:border-color": "ordersRowBorderColour",
+						"css:padding": "ordersRowPadding"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "ordersRowBackgroundHover"
+							}
+						}
+					},
+					"_note": "The orders table drawn as bordered rows (ordersLook). The border colour paints the frame and the hairlines between rows."
+				},
+				"ordersNumber": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-number",
+					"motion": false,
+					"label": "Order number",
+					"order": 48,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ordersNumber",
+					"attrMap": {
+						"css:color": "ordersNumberColour"
+					}
+				},
+				"ordersDate": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-date",
+					"motion": false,
+					"label": "Order date",
+					"order": 49,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ordersDate",
+					"attrMap": {
+						"css:color": "ordersDateColour"
+					}
+				},
+				"ordersTotal": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-total",
+					"motion": false,
+					"label": "Order total",
+					"order": 50,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ordersTotal",
+					"attrMap": {
+						"css:color": "ordersTotalColour"
+					}
+				},
+				"ordersPill": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill",
+					"order": 51,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"prefix": "ordersPill",
+					"attrMap": {
+						"css:color": "ordersPillText",
+						"css:background-color": "ordersPillBackground"
+					}
+				},
+				"ordersPillPending": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-pending .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: pending",
+					"order": 52,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillPendingText",
+						"css:background-color": "ordersPillPendingBackground"
+					}
+				},
+				"ordersPillProcessing": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-processing .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: processing",
+					"order": 53,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillProcessingText",
+						"css:background-color": "ordersPillProcessingBackground"
+					}
+				},
+				"ordersPillOnHold": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-on-hold .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: onHold",
+					"order": 54,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillOnHoldText",
+						"css:background-color": "ordersPillOnHoldBackground"
+					}
+				},
+				"ordersPillCompleted": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-completed .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: completed",
+					"order": 55,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillCompletedText",
+						"css:background-color": "ordersPillCompletedBackground"
+					}
+				},
+				"ordersPillCancelled": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-cancelled .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: cancelled",
+					"order": 56,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillCancelledText",
+						"css:background-color": "ordersPillCancelledBackground"
+					}
+				},
+				"ordersPillRefunded": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-refunded .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: refunded",
+					"order": 57,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillRefundedText",
+						"css:background-color": "ordersPillRefundedBackground"
+					}
+				},
+				"ordersPillFailed": {
+					"selector": ".sgs-account--orders-rows .woocommerce-orders-table__row--status-failed .woocommerce-orders-table__cell-order-status",
+					"motion": false,
+					"label": "Order status pill: failed",
+					"order": 58,
+					"clusters": [
+						"text",
+						"fill"
+					],
+					"attrMap": {
+						"css:color": "ordersPillFailedText",
+						"css:background-color": "ordersPillFailedBackground"
+					}
+				},
+				"ordersEmpty": {
+					"selector": ".sgs-account__orders-empty",
+					"motion": false,
+					"label": "Orders empty state card",
+					"order": 59,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:display": "ordersEmptyState",
+						"css:background-color": "ordersEmptyBackground",
+						"css:border-color": "ordersEmptyBorderColour",
+						"css:padding": "ordersEmptyPadding"
+					}
+				},
+				"ordersEmptyTitle": {
+					"selector": ".sgs-account__orders-empty-title",
+					"motion": false,
+					"label": "Orders empty state heading",
+					"order": 60,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ordersEmptyTitle",
+					"attrMap": {
+						"css:color": "ordersEmptyTitleColour"
+					}
+				},
+				"ordersEmptyTextType": {
+					"selector": ".sgs-account__orders-empty-text",
+					"motion": false,
+					"label": "Orders empty state text",
+					"order": 61,
+					"clusters": [
+						"text"
+					],
+					"prefix": "ordersEmptyTextType",
+					"attrMap": {
+						"css:color": "ordersEmptyTextColour"
+					}
+				},
+				"addressCard": {
+					"selector": ".woocommerce-Address",
+					"motion": false,
+					"label": "Address cards",
+					"order": 62,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "addressCardBackgroundColour",
+						"css:border-color": "addressCardBorderColour",
+						"css:border-width": "addressCardBorderWidth",
+						"css:border-style": "addressCardBorderStyle",
+						"css:border-radius": "addressCardBorderRadius",
+						"css:padding": "addressCardPadding",
+						"css:box-shadow": "addressCardShadow",
+						"css:box-shadow-color": "addressCardShadowColour"
+					}
+				},
+				"addressTitle": {
+					"selector": ".woocommerce-Address-title :is(h2,h3)",
+					"motion": false,
+					"label": "Address card titles",
+					"order": 63,
+					"clusters": [
+						"text"
+					],
+					"prefix": "addressTitle",
+					"attrMap": {
+						"css:color": "addressTitleColour"
+					}
+				},
+				"addressHelper": {
+					"selector": ".sgs-account__address-helper",
+					"motion": false,
+					"label": "Addresses helper line",
+					"order": 64,
+					"clusters": [
+						"text"
+					],
+					"prefix": "addressHelper",
+					"attrMap": {
+						"css:color": "addressHelperColour"
+					}
+				},
+				"accountForm": {
+					"selector": ".woocommerce-EditAccountForm",
+					"motion": false,
+					"label": "Account details form",
+					"order": 65,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:grid-template-columns": "accountFormColumns",
+						"css:gap": "accountFormGap"
+					}
+				},
+				"accountSection": {
+					"selector": ".woocommerce-EditAccountForm fieldset > legend",
+					"motion": false,
+					"label": "Change password heading",
+					"order": 66,
+					"clusters": [
+						"text"
+					],
+					"prefix": "accountSection",
+					"attrMap": {
+						"css:color": "accountSectionColour"
+					}
+				},
+				"accountSectionRule": {
+					"selector": ".woocommerce-EditAccountForm fieldset",
+					"motion": false,
+					"label": "Change password rule",
+					"order": 67,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:border-color": "accountSectionRuleColour"
+					}
+				},
+				"accountPasswordHelperText": {
+					"selector": ".sgs-account__password-helper",
+					"motion": false,
+					"label": "Change password helper text",
+					"order": 68,
+					"clusters": [
+						"text"
+					],
+					"prefix": "accountPasswordHelperType",
+					"attrMap": {
+						"css:color": "accountPasswordHelperColour"
+					}
+				},
+				"accountSave": {
+					"selector": ".woocommerce-EditAccountForm button[type=\"submit\"]",
+					"motion": false,
+					"label": "Account details save button",
+					"order": 69,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:width": "accountSaveFullWidth"
+					}
+				},
+				"loginButton": {
+					"selector": ".sgs-account__wc form .woocommerce-form-login__submit",
+					"motion": false,
+					"label": "Form submit button",
+					"order": 70,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "loginButton",
+					"attrMap": {
+						"css:color": "loginButtonText",
+						"css:background-color": "loginButtonBackground",
+						"css:border-color": "loginButtonBorderColour",
+						"css:border-width": "loginButtonBorderWidth",
+						"css:border-style": "loginButtonBorderStyle",
+						"css:border-radius": "loginButtonBorderRadius",
+						"css:padding": "loginButtonPadding",
+						"css:min-height": "loginButtonMinHeight",
+						"css:box-shadow": "loginButtonShadow",
+						"css:box-shadow-color": "loginButtonShadowColour",
+						"css:width": "loginButtonFullWidth"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "loginButtonTextHover",
+								"css:background-color": "loginButtonBackgroundHover"
+							}
+						}
+					},
+					"_note": "The sign-in button; with loginButtonScope all-forms it is also the register, lost-password, account-details and address buttons. loginButtonPreset takes the site's button preset variables."
+				},
+				"loginLink": {
+					"selector": ".sgs-account__wc form .lost_password a",
+					"motion": false,
+					"label": "Lost-password link",
+					"order": 71,
+					"clusters": [
+						"text"
+					],
+					"prefix": "loginLink",
+					"attrMap": {
+						"css:color": "loginLinkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "loginLinkColourHover"
+							}
+						}
+					}
+				},
+				"loginRow": {
+					"selector": ".sgs-account__wc form.woocommerce-form-login",
+					"motion": false,
+					"label": "Sign-in form layout",
+					"order": 72,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:grid-template-columns": "loginLinkPlacement"
+					}
+				},
+				"rememberMe": {
+					"selector": ".sgs-account__wc form .woocommerce-form-login__rememberme",
+					"motion": false,
+					"label": "Remember me checkbox",
+					"order": 73,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:display": "hideRememberMe"
 					}
 				}
 			}
@@ -1371,6 +1873,1228 @@
 		"contentMaxWidth": {
 			"type": "object",
 			"default": {}
+		},
+		"strings": {
+			"type": "object",
+			"default": {},
+			"description": "Wording overrides: WooCommerce default string key to the client's string. Applied only while this block renders."
+		},
+		"headerSignInEyebrow": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerSignInTitle": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerSignInIntro": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerLostEyebrow": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerLostTitle": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerLostIntro": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerLostBackLabel": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerAccountEyebrow": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerAccountTitle": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerAccountMeta": {
+			"type": "string",
+			"role": "content"
+		},
+		"headerAccountRule": {
+			"type": "boolean"
+		},
+		"headerTitleTag": {
+			"type": "string",
+			"enum": [
+				"",
+				"h1",
+				"h2",
+				"h3"
+			],
+			"description": "Heading level of the page header title. Unset = h2."
+		},
+		"headerEyebrowFontSize": {
+			"type": "object"
+		},
+		"headerEyebrowFontSizeUnit": {
+			"type": "string"
+		},
+		"headerEyebrowFontFamily": {
+			"type": "string"
+		},
+		"headerEyebrowFontWeight": {
+			"type": "string"
+		},
+		"headerEyebrowFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"headerEyebrowLineHeight": {
+			"type": "object"
+		},
+		"headerEyebrowLineHeightUnit": {
+			"type": "string"
+		},
+		"headerEyebrowLetterSpacing": {
+			"type": "object"
+		},
+		"headerEyebrowLetterSpacingUnit": {
+			"type": "string"
+		},
+		"headerEyebrowTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"headerEyebrowTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"headerEyebrowColour": {
+			"type": "string"
+		},
+		"headerTitleFontSize": {
+			"type": "object"
+		},
+		"headerTitleFontSizeUnit": {
+			"type": "string"
+		},
+		"headerTitleFontFamily": {
+			"type": "string"
+		},
+		"headerTitleFontWeight": {
+			"type": "string"
+		},
+		"headerTitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"headerTitleLineHeight": {
+			"type": "object"
+		},
+		"headerTitleLineHeightUnit": {
+			"type": "string"
+		},
+		"headerTitleLetterSpacing": {
+			"type": "object"
+		},
+		"headerTitleLetterSpacingUnit": {
+			"type": "string"
+		},
+		"headerTitleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"headerTitleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"headerTitleColour": {
+			"type": "string"
+		},
+		"headerIntroFontSize": {
+			"type": "object"
+		},
+		"headerIntroFontSizeUnit": {
+			"type": "string"
+		},
+		"headerIntroFontFamily": {
+			"type": "string"
+		},
+		"headerIntroFontWeight": {
+			"type": "string"
+		},
+		"headerIntroFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"headerIntroLineHeight": {
+			"type": "object"
+		},
+		"headerIntroLineHeightUnit": {
+			"type": "string"
+		},
+		"headerIntroLetterSpacing": {
+			"type": "object"
+		},
+		"headerIntroLetterSpacingUnit": {
+			"type": "string"
+		},
+		"headerIntroTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"headerIntroTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"headerIntroColour": {
+			"type": "string"
+		},
+		"headerMetaFontSize": {
+			"type": "object"
+		},
+		"headerMetaFontSizeUnit": {
+			"type": "string"
+		},
+		"headerMetaFontFamily": {
+			"type": "string"
+		},
+		"headerMetaFontWeight": {
+			"type": "string"
+		},
+		"headerMetaFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"headerMetaLineHeight": {
+			"type": "object"
+		},
+		"headerMetaLineHeightUnit": {
+			"type": "string"
+		},
+		"headerMetaLetterSpacing": {
+			"type": "object"
+		},
+		"headerMetaLetterSpacingUnit": {
+			"type": "string"
+		},
+		"headerMetaTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"headerMetaTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"headerMetaColour": {
+			"type": "string"
+		},
+		"headerBackColour": {
+			"type": "string"
+		},
+		"headerRuleColour": {
+			"type": "string"
+		},
+		"menuActiveIndicatorWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Width of the active menu item bar per device. Unset = 3px."
+		},
+		"menuOrdersCount": {
+			"type": "boolean"
+		},
+		"menuCountFontSize": {
+			"type": "object"
+		},
+		"menuCountFontSizeUnit": {
+			"type": "string"
+		},
+		"menuCountFontFamily": {
+			"type": "string"
+		},
+		"menuCountFontWeight": {
+			"type": "string"
+		},
+		"menuCountFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"menuCountLineHeight": {
+			"type": "object"
+		},
+		"menuCountLineHeightUnit": {
+			"type": "string"
+		},
+		"menuCountLetterSpacing": {
+			"type": "object"
+		},
+		"menuCountLetterSpacingUnit": {
+			"type": "string"
+		},
+		"menuCountTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"menuCountTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"menuCountColour": {
+			"type": "string"
+		},
+		"ordersLook": {
+			"type": "boolean"
+		},
+		"ordersRowBackground": {
+			"type": "string"
+		},
+		"ordersRowBackgroundHover": {
+			"type": "string"
+		},
+		"ordersRowBorderColour": {
+			"type": "string"
+		},
+		"ordersNumberColour": {
+			"type": "string"
+		},
+		"ordersDateColour": {
+			"type": "string"
+		},
+		"ordersTotalColour": {
+			"type": "string"
+		},
+		"ordersPillBackground": {
+			"type": "string"
+		},
+		"ordersPillText": {
+			"type": "string"
+		},
+		"ordersRowPadding": {
+			"type": "object"
+		},
+		"ordersNumberFontSize": {
+			"type": "object"
+		},
+		"ordersNumberFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersNumberFontFamily": {
+			"type": "string"
+		},
+		"ordersNumberFontWeight": {
+			"type": "string"
+		},
+		"ordersNumberFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersNumberLineHeight": {
+			"type": "object"
+		},
+		"ordersNumberLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersNumberLetterSpacing": {
+			"type": "object"
+		},
+		"ordersNumberLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersNumberTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersNumberTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"ordersDateFontSize": {
+			"type": "object"
+		},
+		"ordersDateFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersDateFontFamily": {
+			"type": "string"
+		},
+		"ordersDateFontWeight": {
+			"type": "string"
+		},
+		"ordersDateFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersDateLineHeight": {
+			"type": "object"
+		},
+		"ordersDateLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersDateLetterSpacing": {
+			"type": "object"
+		},
+		"ordersDateLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersDateTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersDateTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"ordersTotalFontSize": {
+			"type": "object"
+		},
+		"ordersTotalFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersTotalFontFamily": {
+			"type": "string"
+		},
+		"ordersTotalFontWeight": {
+			"type": "string"
+		},
+		"ordersTotalFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersTotalLineHeight": {
+			"type": "object"
+		},
+		"ordersTotalLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersTotalLetterSpacing": {
+			"type": "object"
+		},
+		"ordersTotalLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersTotalTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersTotalTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"ordersPillFontSize": {
+			"type": "object"
+		},
+		"ordersPillFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersPillFontFamily": {
+			"type": "string"
+		},
+		"ordersPillFontWeight": {
+			"type": "string"
+		},
+		"ordersPillFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersPillLineHeight": {
+			"type": "object"
+		},
+		"ordersPillLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersPillLetterSpacing": {
+			"type": "object"
+		},
+		"ordersPillLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersPillTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersPillTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"ordersPillPendingBackground": {
+			"type": "string"
+		},
+		"ordersPillPendingText": {
+			"type": "string"
+		},
+		"ordersPillProcessingBackground": {
+			"type": "string"
+		},
+		"ordersPillProcessingText": {
+			"type": "string"
+		},
+		"ordersPillOnHoldBackground": {
+			"type": "string"
+		},
+		"ordersPillOnHoldText": {
+			"type": "string"
+		},
+		"ordersPillCompletedBackground": {
+			"type": "string"
+		},
+		"ordersPillCompletedText": {
+			"type": "string"
+		},
+		"ordersPillCancelledBackground": {
+			"type": "string"
+		},
+		"ordersPillCancelledText": {
+			"type": "string"
+		},
+		"ordersPillRefundedBackground": {
+			"type": "string"
+		},
+		"ordersPillRefundedText": {
+			"type": "string"
+		},
+		"ordersPillFailedBackground": {
+			"type": "string"
+		},
+		"ordersPillFailedText": {
+			"type": "string"
+		},
+		"ordersEmptyState": {
+			"type": "boolean"
+		},
+		"ordersEmptyHeading": {
+			"type": "string",
+			"role": "content"
+		},
+		"ordersEmptyText": {
+			"type": "string",
+			"role": "content"
+		},
+		"ordersEmptyButtonLabel": {
+			"type": "string",
+			"role": "content"
+		},
+		"ordersEmptyButtonUrl": {
+			"type": "string",
+			"role": "content"
+		},
+		"ordersEmptyBackground": {
+			"type": "string"
+		},
+		"ordersEmptyBorderColour": {
+			"type": "string"
+		},
+		"ordersEmptyTitleColour": {
+			"type": "string"
+		},
+		"ordersEmptyTextColour": {
+			"type": "string"
+		},
+		"ordersEmptyPadding": {
+			"type": "object"
+		},
+		"ordersEmptyTitleFontSize": {
+			"type": "object"
+		},
+		"ordersEmptyTitleFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTitleFontFamily": {
+			"type": "string"
+		},
+		"ordersEmptyTitleFontWeight": {
+			"type": "string"
+		},
+		"ordersEmptyTitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersEmptyTitleLineHeight": {
+			"type": "object"
+		},
+		"ordersEmptyTitleLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTitleLetterSpacing": {
+			"type": "object"
+		},
+		"ordersEmptyTitleLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTitleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersEmptyTitleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"ordersEmptyTextTypeFontSize": {
+			"type": "object"
+		},
+		"ordersEmptyTextTypeFontSizeUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTextTypeFontFamily": {
+			"type": "string"
+		},
+		"ordersEmptyTextTypeFontWeight": {
+			"type": "string"
+		},
+		"ordersEmptyTextTypeFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"ordersEmptyTextTypeLineHeight": {
+			"type": "object"
+		},
+		"ordersEmptyTextTypeLineHeightUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTextTypeLetterSpacing": {
+			"type": "object"
+		},
+		"ordersEmptyTextTypeLetterSpacingUnit": {
+			"type": "string"
+		},
+		"ordersEmptyTextTypeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"ordersEmptyTextTypeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"addressCardBackgroundColour": {
+			"type": "string"
+		},
+		"addressCardBorderColour": {
+			"type": "string"
+		},
+		"addressCardShadow": {
+			"type": "string"
+		},
+		"addressCardShadowColour": {
+			"type": "string"
+		},
+		"addressTitleColour": {
+			"type": "string"
+		},
+		"addressHelperColour": {
+			"type": "string"
+		},
+		"addressCardBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double"
+			]
+		},
+		"addressCardBorderWidth": {
+			"type": "object"
+		},
+		"addressCardBorderRadius": {
+			"type": "object"
+		},
+		"addressCardPadding": {
+			"type": "object"
+		},
+		"addressHelperText": {
+			"type": "string",
+			"role": "content"
+		},
+		"addressTitleFontSize": {
+			"type": "object"
+		},
+		"addressTitleFontSizeUnit": {
+			"type": "string"
+		},
+		"addressTitleFontFamily": {
+			"type": "string"
+		},
+		"addressTitleFontWeight": {
+			"type": "string"
+		},
+		"addressTitleFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"addressTitleLineHeight": {
+			"type": "object"
+		},
+		"addressTitleLineHeightUnit": {
+			"type": "string"
+		},
+		"addressTitleLetterSpacing": {
+			"type": "object"
+		},
+		"addressTitleLetterSpacingUnit": {
+			"type": "string"
+		},
+		"addressTitleTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"addressTitleTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"addressHelperFontSize": {
+			"type": "object"
+		},
+		"addressHelperFontSizeUnit": {
+			"type": "string"
+		},
+		"addressHelperFontFamily": {
+			"type": "string"
+		},
+		"addressHelperFontWeight": {
+			"type": "string"
+		},
+		"addressHelperFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"addressHelperLineHeight": {
+			"type": "object"
+		},
+		"addressHelperLineHeightUnit": {
+			"type": "string"
+		},
+		"addressHelperLetterSpacing": {
+			"type": "object"
+		},
+		"addressHelperLetterSpacingUnit": {
+			"type": "string"
+		},
+		"addressHelperTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"addressHelperTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"accountFormColumns": {
+			"type": "string",
+			"enum": [
+				"",
+				"1",
+				"2"
+			],
+			"description": "Columns of the account details fields. Unset = WooCommerce default."
+		},
+		"accountFormGap": {
+			"type": "object"
+		},
+		"accountDisplayFromNames": {
+			"type": "boolean"
+		},
+		"accountShowMobile": {
+			"type": "boolean"
+		},
+		"accountMobileLabel": {
+			"type": "string",
+			"role": "content"
+		},
+		"accountPasswordHelper": {
+			"type": "string",
+			"role": "content"
+		},
+		"accountSaveFullWidth": {
+			"type": "boolean"
+		},
+		"accountSectionColour": {
+			"type": "string"
+		},
+		"accountSectionRuleColour": {
+			"type": "string"
+		},
+		"accountPasswordHelperColour": {
+			"type": "string"
+		},
+		"accountSectionFontSize": {
+			"type": "object"
+		},
+		"accountSectionFontSizeUnit": {
+			"type": "string"
+		},
+		"accountSectionFontFamily": {
+			"type": "string"
+		},
+		"accountSectionFontWeight": {
+			"type": "string"
+		},
+		"accountSectionFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"accountSectionLineHeight": {
+			"type": "object"
+		},
+		"accountSectionLineHeightUnit": {
+			"type": "string"
+		},
+		"accountSectionLetterSpacing": {
+			"type": "object"
+		},
+		"accountSectionLetterSpacingUnit": {
+			"type": "string"
+		},
+		"accountSectionTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"accountSectionTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"accountPasswordHelperTypeFontSize": {
+			"type": "object"
+		},
+		"accountPasswordHelperTypeFontSizeUnit": {
+			"type": "string"
+		},
+		"accountPasswordHelperTypeFontFamily": {
+			"type": "string"
+		},
+		"accountPasswordHelperTypeFontWeight": {
+			"type": "string"
+		},
+		"accountPasswordHelperTypeFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"accountPasswordHelperTypeLineHeight": {
+			"type": "object"
+		},
+		"accountPasswordHelperTypeLineHeightUnit": {
+			"type": "string"
+		},
+		"accountPasswordHelperTypeLetterSpacing": {
+			"type": "object"
+		},
+		"accountPasswordHelperTypeLetterSpacingUnit": {
+			"type": "string"
+		},
+		"accountPasswordHelperTypeTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"accountPasswordHelperTypeTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"loginButtonPreset": {
+			"type": "string",
+			"enum": [
+				"",
+				"primary",
+				"secondary"
+			],
+			"description": "Takes the site's button preset for the form submit button. Unset = WooCommerce's button."
+		},
+		"loginButtonScope": {
+			"type": "string",
+			"enum": [
+				"",
+				"all-forms"
+			],
+			"description": "Unset = the sign-in button only. all-forms = also register, lost password, account details and address save."
+		},
+		"loginButtonBackground": {
+			"type": "string"
+		},
+		"loginButtonText": {
+			"type": "string"
+		},
+		"loginButtonBackgroundHover": {
+			"type": "string"
+		},
+		"loginButtonTextHover": {
+			"type": "string"
+		},
+		"loginButtonBorderColour": {
+			"type": "string"
+		},
+		"loginButtonShadow": {
+			"type": "string"
+		},
+		"loginButtonShadowColour": {
+			"type": "string"
+		},
+		"loginLinkColour": {
+			"type": "string"
+		},
+		"loginLinkColourHover": {
+			"type": "string"
+		},
+		"loginButtonBorderStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"solid",
+				"dashed",
+				"dotted",
+				"double"
+			]
+		},
+		"loginButtonBorderWidth": {
+			"type": "object"
+		},
+		"loginButtonBorderRadius": {
+			"type": "object"
+		},
+		"loginButtonPadding": {
+			"type": "object"
+		},
+		"loginButtonMinHeight": {
+			"type": "object"
+		},
+		"loginButtonFullWidth": {
+			"type": "boolean"
+		},
+		"loginLinkPlacement": {
+			"type": "string",
+			"enum": [
+				"",
+				"remember-row",
+				"beside-button"
+			],
+			"description": "Where the lost-password link sits. Unset = WooCommerce default (its own line)."
+		},
+		"hideRememberMe": {
+			"type": "boolean"
+		},
+		"loginButtonFontSize": {
+			"type": "object"
+		},
+		"loginButtonFontSizeUnit": {
+			"type": "string"
+		},
+		"loginButtonFontFamily": {
+			"type": "string"
+		},
+		"loginButtonFontWeight": {
+			"type": "string"
+		},
+		"loginButtonFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"loginButtonLineHeight": {
+			"type": "object"
+		},
+		"loginButtonLineHeightUnit": {
+			"type": "string"
+		},
+		"loginButtonLetterSpacing": {
+			"type": "object"
+		},
+		"loginButtonLetterSpacingUnit": {
+			"type": "string"
+		},
+		"loginButtonTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"loginButtonTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
+		},
+		"loginLinkFontSize": {
+			"type": "object"
+		},
+		"loginLinkFontSizeUnit": {
+			"type": "string"
+		},
+		"loginLinkFontFamily": {
+			"type": "string"
+		},
+		"loginLinkFontWeight": {
+			"type": "string"
+		},
+		"loginLinkFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			]
+		},
+		"loginLinkLineHeight": {
+			"type": "object"
+		},
+		"loginLinkLineHeightUnit": {
+			"type": "string"
+		},
+		"loginLinkLetterSpacing": {
+			"type": "object"
+		},
+		"loginLinkLetterSpacingUnit": {
+			"type": "string"
+		},
+		"loginLinkTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			]
+		},
+		"loginLinkTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			]
 		}
 	},
 	"editorScript": "file:./index.js",
