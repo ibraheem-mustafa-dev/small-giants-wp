@@ -329,6 +329,15 @@ h2.wc-block-mini-cart__title {
 	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, var(--wp--preset--color--primary-text, #fff)));
 }
 
+/* Below WooCommerce's own 920px layout break (a container query on the checkout block) the
+   collapsed summary sits at the top of the sidebar and the full summary repeats above the
+   place-order button. Keep the full one, hide the top copy. */
+@container (max-width: 919px) {
+	.wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block:not(.checkout-order-summary-block-fill-wrapper) {
+		display: none;
+	}
+}
+
 /* Mobile — checkout zero horizontal overflow */
 @media (max-width: 767px) {
 	.wp-block-woocommerce-checkout,
