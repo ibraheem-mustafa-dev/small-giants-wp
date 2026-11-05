@@ -85,6 +85,9 @@ _ROLE_VOCABULARY: frozenset[str] = frozenset({
     # the three movements of hover-transform, derived by
     # includes/class-sgs-button-hover-parts.php (button/style.css composes them)
     "hover-lift", "hover-scale", "hover-rotate",
+    # the resting and hover box-shadow WooCommerce's primary shop buttons read
+    # (theme/sgs-theme/assets/css/woocommerce.css; absent means no shadow)
+    "shadow", "hover-shadow",
 })
 
 # Component roles (Spec 32 FR-32-9): a component whose painted parts are not a
