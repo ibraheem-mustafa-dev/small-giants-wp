@@ -137,9 +137,12 @@ h2.wc-block-mini-cart__title {
 	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--button-presets--primary--border-radius, var(--wp--custom--border-radius--medium, 8px));
 	box-shadow: var(--wp--custom--button-presets--primary--shadow, none);
-	font-weight: 600;
-	min-height: 44px;
-	padding: 0.75em 1.5em;
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--regular));
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
+	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
+	padding: var(--wp--custom--button-presets--primary--padding, 0.75em 1.5em);
 	transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 @media (forced-colors:active){.wc-block-mini-cart__footer-checkout.wc-block-components-button:not(:focus-visible),.wc-block-mini-cart__footer-checkout.wp-element-button:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
@@ -205,9 +208,12 @@ h2.wc-block-mini-cart__title {
 	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--button-presets--primary--border-radius, var(--wp--custom--border-radius--medium, 8px));
 	box-shadow: var(--wp--custom--button-presets--primary--shadow, none);
-	font-weight: 600;
-	min-height: 44px;
-	padding: 0.85em 2em;
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--regular));
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
+	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
+	padding: var(--wp--custom--button-presets--primary--padding, 0.85em 2em);
 	width: 100%;
 	transition: background-color 0.18s ease, border-color 0.18s ease;
 }
@@ -299,9 +305,12 @@ h2.wc-block-mini-cart__title {
 	border-color: var(--wp--preset--color--primary);
 	border-radius: var(--wp--custom--button-presets--primary--border-radius, var(--wp--custom--border-radius--medium, 8px));
 	box-shadow: var(--wp--custom--button-presets--primary--shadow, none);
-	font-weight: 600;
-	min-height: 44px;
-	padding: 0.85em 2em;
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--regular));
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
+	letter-spacing: var(--wp--custom--button-presets--primary--letter-spacing, normal);
+	text-transform: var(--wp--custom--button-presets--primary--text-transform, none);
+	min-height: var(--wp--custom--button-presets--primary--min-height, 44px);
+	padding: var(--wp--custom--button-presets--primary--padding, 0.85em 2em);
 	width: 100%;
 	transition: background-color 0.18s ease, border-color 0.18s ease;
 }
