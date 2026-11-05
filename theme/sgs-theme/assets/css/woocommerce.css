@@ -3279,3 +3279,14 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 	margin: 0;
 	float: none;
 }
+
+/* Thank-you page: the shipping and billing address columns. An order with no shipping address
+   renders WooCommerce's shipping wrapper as '', which leaves its grid cell empty. The empty cell
+   takes no track, so the billing address spans the row instead of sitting in half of it. */
+.wc-block-order-confirmation-address-wrapper > :not(:has([class*="order-confirmation-"][class*="-wrapper"])) {
+	display: none;
+}
+
+.wc-block-order-confirmation-address-wrapper:has(> :not(:has([class*="order-confirmation-"][class*="-wrapper"]))) {
+	grid-template-columns: minmax(0, 1fr);
+}
