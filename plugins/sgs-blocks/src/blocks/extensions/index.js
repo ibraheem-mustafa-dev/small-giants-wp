@@ -63,6 +63,9 @@ import './product-collection-same-term';
 import './product-filter-chips-gap';
 import './product-filter-look';
 import './commerce-look';
+// Per-field Optional tag switch for the form field blocks; the canvas preview rule is imported here for the same reason as child-sizing.scss.
+import './form-optional-tag';
+import './form-optional-tag.scss';
 import './product-collection-card-min';
 import './post-content-lists';
 import './post-time-to-read-short';

@@ -949,7 +949,7 @@
 						"css:column-count": "optionalTextColumns",
 						"css:writing-mode": "optionalWritingMode"
 					},
-					"_note": "The tag after the label of a field that is not required, text from optionalText (a content attribute), printed by includes/forms/field-render-helpers.php::field_optional_tag and by the checkbox and tiles legends. Typography is the optional* family (render.php sgs_typography_css_rule); colour is optionalColour.",
+					"_note": "The tag after the label of a field that is not required, text from optionalText (a content attribute), printed on fields whose optionalTag is on by includes/forms/field-render-helpers.php::field_optional_tag and by the checkbox and tiles legends. Typography is the optional* family (render.php sgs_typography_css_rule); colour is optionalColour.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -1851,7 +1851,7 @@
 			"type": "string",
 			"default": "",
 			"role": "content",
-			"description": "Text of the tag printed after the label of every field that is not required (for example \"Optional\"). Empty = no tag. Read by includes/forms/field-render-helpers.php::field_optional_tag through the form's render scope."
+			"description": "Text of the tag printed after the label of each field that switches its own Optional tag on (for example \"Optional\"). Empty = \"Optional\". Read by includes/forms/field-render-helpers.php::field_optional_tag through the form's render scope."
 		},
 		"requiredMarkGap": {
 			"type": "object",

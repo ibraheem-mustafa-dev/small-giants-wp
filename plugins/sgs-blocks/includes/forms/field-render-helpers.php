@@ -159,18 +159,22 @@ function field_required_mark(): string {
 }
 
 /**
- * The optional tag printed after the label of a field that is not required, from the form's Optional tag
- * text (read from the open form's render scope, field-name-scope.php). Empty text prints nothing.
+ * The optional tag printed after the label of a field that is not required and switches the tag on (its
+ * `optionalTag` attribute). The text is the open form's Optional tag text (read from the form's render scope,
+ * field-name-scope.php), else "Optional".
  *
  * @param array<string, mixed> $attributes Field block attributes.
- * @return string Tag HTML (empty for a required field or when the form sets no text).
+ * @return string Tag HTML (empty for a required field or one that leaves the tag off).
  */
 function field_optional_tag( array $attributes ): string {
-	if ( ! empty( $attributes['required'] ) ) {
+	if ( ! empty( $attributes['required'] ) || empty( $attributes['optionalTag'] ) ) {
 		return '';
 	}
 	$text = form_scope_optional_text();
-	return '' === $text ? '' : '<span class="sgs-form-field__optional">' . esc_html( $text ) . '</span>';
+	if ( '' === $text ) {
+		$text = __( 'Optional', 'sgs-blocks' );
+	}
+	return '<span class="sgs-form-field__optional">' . esc_html( $text ) . '</span>';
 }
 
 /**

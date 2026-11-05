@@ -75,6 +75,12 @@
             "type": "boolean",
             "default": false
         },
+        "optionalTag": {
+            "type": "boolean",
+            "default": false,
+            "role": "behaviour",
+            "description": "Shows the form's Optional tag after the label when the field is not required. The form sets the tag's text and look."
+        },
         "width": {
             "type": "string",
             "default": "full"

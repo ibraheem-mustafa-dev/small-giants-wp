@@ -1,5 +1,5 @@
 /**
- * The marks after a field label: the optional tag's text and the space before the required mark and the optional tag.
+ * The marks after a field label: the optional tag's text (each field switches the tag on itself) and the space before the required mark and the optional tag.
  * The mark and tag colours are rows in the form's Colours panel and the tag's type is the Optional tag target in
  * Typography.
  *
@@ -33,7 +33,7 @@ export default function FieldMarksPanel( { attributes, setAttributes } ) {
 					<TextControl
 						label={ __( 'Optional tag text', 'sgs-blocks' ) }
 						value={ attributes.optionalText ?? '' }
-						help={ __( 'Printed after the label of every field that is not required, for example "Optional". Empty prints no tag.', 'sgs-blocks' ) }
+						help={ __( 'The words of the Optional tag, shown on each field that switches the tag on (Show the Optional tag in the field settings). Empty uses "Optional".', 'sgs-blocks' ) }
 						onChange={ ( optionalText ) => setAttributes( { optionalText } ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize

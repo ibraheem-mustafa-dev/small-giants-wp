@@ -1,0 +1,8 @@
+// Editor-canvas preview of the per-field Optional tag (form-optional-tag.js). The front end prints the real
+// .sgs-form-field__optional span; the canvas draws the same words after the label.
+:where(.sgs-form-field--optional-tag) .sgs-form-field__label::after {
+	content: var(--sgs-optional-tag);
+	margin-inline-start: 0.25em;
+	font-weight: 400;
+	opacity: 0.7;
+}
