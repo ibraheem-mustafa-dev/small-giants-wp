@@ -67,24 +67,25 @@ function sgs_commerce_look_validate_attrs( $decoded ): array {
 	$clean  = array();
 	foreach ( $decoded as $name => $value ) {
 		$type = $schema[ $name ]['type'] ?? '';
-		if ( ! is_string( $name ) || '' === $type ) {
+		if ( ! is_string( $name ) || array() === (array) $type || '' === $type ) {
 			continue;
 		}
-		switch ( $type ) {
-			case 'string':
-				$ok = is_string( $value );
-				break;
-			case 'number':
-				$ok = is_int( $value ) || is_float( $value );
-				break;
-			case 'boolean':
-				$ok = is_bool( $value );
-				break;
-			case 'object':
-				$ok = is_array( $value );
-				break;
-			default:
-				$ok = false;
+		$ok = false;
+		foreach ( (array) $type as $one ) {
+			switch ( $one ) {
+				case 'string':
+					$ok = $ok || is_string( $value );
+					break;
+				case 'number':
+					$ok = $ok || is_int( $value ) || is_float( $value );
+					break;
+				case 'boolean':
+					$ok = $ok || is_bool( $value );
+					break;
+				case 'object':
+					$ok = $ok || is_array( $value );
+					break;
+			}
 		}
 		if ( $ok ) {
 			$clean[ $name ] = $value;

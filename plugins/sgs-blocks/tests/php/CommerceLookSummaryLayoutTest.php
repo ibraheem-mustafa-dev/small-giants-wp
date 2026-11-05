@@ -129,12 +129,21 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		}
 	}
 
+	public function test_a_saved_string_picture_size_prints_the_rule_it_always_printed(): void {
+		$css = $this->css( array( 'sgsItemThumbSize' => '96px' ), 'cart' );
+		// md5 of the output of 28ab49ec8 for this attribute.
+		$this->assertSame( '8637bc9c27b4a43ee9e5f9c52bf56c21', md5( $css ) );
+		$checkout = $this->css( array( 'sgsItemThumbSize' => '96px' ), 'checkout' );
+		$this->assertStringContainsString( '{width:96px;max-width:100%;height:auto;}', $checkout, 'same declarations; the checkout selector now out-ranks WooCommerce' );
+		$this->assertStringNotContainsString( 'flex-shrink', $checkout );
+	}
+
 	public function test_the_settings_are_declared_and_the_rows_exist(): void {
 		$js = (string) file_get_contents( $this->root() . 'src/blocks/extensions/commerce-look/attributes.js' );
 		foreach ( array_keys( self::NEW_ATTRS ) as $name ) {
 			$this->assertStringContainsString( "\t{$name}:", $js, "{$name} must be declared or WordPress drops it on save" );
 		}
-		$this->assertStringContainsString( "sgsItemThumbSize: { type: 'object' }", $js );
+		$this->assertStringContainsString( "sgsItemThumbSize: { type: [ 'string', 'object' ] }", $js );
 		$this->assertStringNotContainsString( 'sgsTotalRow', $js );
 		$rows = json_decode( (string) file_get_contents( $this->root() . 'includes/woocommerce/commerce-look/selectors.json' ), true )['rows'];
 		foreach ( array( 'total_label', 'total_value', 'summary_row_label', 'summary_row_value', 'summary_row_divider', 'total_divider', 'item_variant', 'sidebar_wide', 'layout' ) as $id ) {

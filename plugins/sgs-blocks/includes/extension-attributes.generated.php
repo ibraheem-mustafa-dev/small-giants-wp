@@ -141,7 +141,7 @@ return array(
 	'sgsItemShadow' => array( 'type' => 'string' ),
 	'sgsItemShadowColour' => array( 'type' => 'string' ),
 	'sgsItemStepperRadius' => array( 'type' => 'string' ),
-	'sgsItemThumbSize' => array( 'type' => 'object' ),
+	'sgsItemThumbSize' => array( 'type' => array( 'string', 'object' ) ),
 	'sgsItemVariantColour' => array( 'type' => 'string' ),
 	'sgsItemVariantFontFamily' => array( 'type' => 'string' ),
 	'sgsItemVariantFontSize' => array( 'type' => 'number' ),

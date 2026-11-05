@@ -321,7 +321,7 @@
 				"sgsItemGap": { "type": "string", "role": "layout", "css_property": "margin-bottom", "css_element": "line-item" },
 				"sgsItemHideHeader": { "type": "boolean", "role": "boolean-visibility", "css_property": "display", "css_element": "line-item-header" },
 				"sgsItemHideUnitPrice": { "type": "boolean", "role": "boolean-visibility", "css_property": "display", "css_element": "line-item-unit-price" },
-				"sgsItemThumbSize": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "width", "css_element": "line-item-image" },
+				"sgsItemThumbSize": { "type": [ "string", "object" ], "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "width", "css_element": "line-item-image" },
 				"sgsItemStepperRadius": { "type": "string", "role": "visual", "css_property": "border-radius", "css_element": "line-item-stepper" },
 				"sgsFieldLabelFontSize": { "type": "number", "role": "typography", "css_property": "font-size", "css_element": "field-label" },
 				"sgsFieldLabelFontSizeUnit": { "type": "string", "role": "typography" },

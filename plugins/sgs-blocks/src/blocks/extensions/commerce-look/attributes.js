@@ -148,7 +148,7 @@ export const COMMERCE_LOOK_ATTRIBUTES = {
 	sgsItemGap: { type: 'string' },
 	sgsItemHideHeader: { type: 'boolean' },
 	sgsItemHideUnitPrice: { type: 'boolean' },
-	sgsItemThumbSize: { type: 'object' },
+	sgsItemThumbSize: { type: [ 'string', 'object' ] },
 	sgsItemStepperRadius: { type: 'string' },
 	sgsFieldLabelFontSize: { type: 'number' },
 	sgsFieldLabelFontSizeUnit: { type: 'string' },
