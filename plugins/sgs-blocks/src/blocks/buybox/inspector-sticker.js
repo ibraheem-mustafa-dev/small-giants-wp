@@ -5,6 +5,7 @@ import {
 	ToggleGroupControl,
 	ToggleGroupControlOption,
 } from '../../components/primitives';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	SgsLengthControl,
 	SgsBoxControl,
@@ -179,6 +180,10 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 						<SgsBoxControl
 							label={ __( 'Sticker padding', 'sgs-blocks' ) }
 							values={ galleryStickerPadding ?? {} }
+							defaults={ spacingDefaultsFor(
+								'sgs/buybox',
+								'galleryStickerPadding'
+							) }
 							presets
 							onChange={ ( next ) =>
 								setAttributes( { galleryStickerPadding: next } )

@@ -774,7 +774,7 @@
 	z-index: 1;
 	background: var(--wp--preset--color--text, #141414);
 	color: var(--wp--preset--color--text-inverse, #fff);
-	padding: 8px 12px;
+	padding: var(--wp--preset--spacing--20, 8px) 12px;
 	white-space: nowrap;
 	pointer-events: none;
 }
