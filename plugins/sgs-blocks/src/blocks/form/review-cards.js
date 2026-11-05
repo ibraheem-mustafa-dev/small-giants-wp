@@ -12,6 +12,36 @@ let cardCounter = 0;
 const wired = new WeakSet();
 
 /**
+ * The label element of an input: the one whose `for` names it (the id is escaped for the selector), else, when
+ * asked, the label that wraps it.
+ *
+ * @param {HTMLElement}      field  A `.sgs-form-field` element.
+ * @param {HTMLInputElement} input  The input.
+ * @param {boolean}          [wrap] Fall back to the wrapping label.
+ * @return {HTMLElement|null} The label.
+ */
+function labelOf( field, input, wrap = true ) {
+	let label = null;
+	if ( input.id ) {
+		label = 'function' === typeof CSS && CSS.escape
+			? field.querySelector( `label[for="${ CSS.escape( input.id ) }"]` )
+			: Array.from( field.querySelectorAll( 'label' ) ).find( ( candidate ) => candidate.htmlFor === input.id ) || null;
+	}
+	return label || ( wrap ? input.closest( 'label' ) : null );
+}
+
+/**
+ * Whether the field prints a question of its own: a legend, a field label, a consent text or an
+ * aria-labelledby group. A lone checkbox in such a field is an option, not a yes/no question.
+ *
+ * @param {HTMLElement} field A `.sgs-form-field` element.
+ * @return {boolean} True when the field asks its own question.
+ */
+function printsOwnQuestion( field ) {
+	return !! field.querySelector( 'legend, .sgs-form-field__label, .sgs-form-field__consent-text, [aria-labelledby]' );
+}
+
+/**
  * Human-readable answer for one field wrapper, or '' when unanswered.
  *
  * @param {HTMLElement} field A `.sgs-form-field` element.
@@ -34,7 +64,7 @@ export function fieldValueText( field ) {
 	}
 
 	const labelFor = ( input ) => {
-		const label = input.id ? field.querySelector( `label[for="${ input.id }"]` ) : null;
+		const label = labelOf( field, input, false );
 		return label ? label.textContent.trim() : input.value;
 	};
 
@@ -73,7 +103,7 @@ export function fieldValueText( field ) {
 
 	// A lone checkbox ("Deliver to this address") answers yes or no, ticked or not.
 	const lone = loneCheckbox( field );
-	if ( lone ) {
+	if ( lone && ! printsOwnQuestion( field ) ) {
 		valueText = lone.checked ? 'Yes' : 'No';
 	}
 
@@ -113,8 +143,8 @@ function fallbackLabelText( field ) {
 		return data;
 	}
 	// A lone checkbox with no question asks its own words, shortened to 40 characters.
-	const lone = loneCheckbox( field );
-	const own = lone && lone.id ? field.querySelector( `label[for="${ lone.id }"]` ) : lone?.closest( 'label' );
+	const lone = printsOwnQuestion( field ) ? null : loneCheckbox( field );
+	const own = lone ? labelOf( field, lone ) : null;
 	const words = own ? own.textContent.replace( /\s+/g, ' ' ).trim() : '';
 	if ( words ) {
 		return words.length > 40 ? `${ words.slice( 0, 40 ) }…` : words;

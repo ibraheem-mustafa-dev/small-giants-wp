@@ -46,6 +46,7 @@ use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_required_mark;
 use function SGS\Blocks\Forms\field_optional_tag;
+use function SGS\Blocks\Forms\field_message_attrs;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
@@ -168,6 +169,7 @@ $help_text      = $attributes['helpText'] ?? '';
 $selected_style = $attributes['selectedStyle'] ?? 'checkmark'; // border | background | checkmark.
 $input_type     = $multi ? 'checkbox' : 'radio';
 $input_name     = $multi ? $name . '[]' : $name;
+$msg_attrs      = field_message_attrs( $attributes );
 
 // Sanitise selectedStyle to avoid unexpected CSS classes.
 $allowed_styles = array( 'border', 'background', 'checkmark' );
@@ -397,6 +399,9 @@ foreach ( $tiles as $i => $tile ) {
 	// First tile carries aria-describedby for the whole group.
 	if ( 0 === $i ) {
 		echo ' ' . $described_by_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — $described_by_attr built with esc_attr above.
+	}
+	if ( $msg_attrs ) {
+		echo ' ' . implode( ' ', $msg_attrs ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- field_message_attrs() returns escaped attribute strings.
 	}
 	echo ' />';
 

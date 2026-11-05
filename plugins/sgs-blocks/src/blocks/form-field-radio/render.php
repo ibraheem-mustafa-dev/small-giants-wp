@@ -19,6 +19,8 @@ use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_message_attrs;
 use function SGS\Blocks\Forms\field_value_param_attr;
+use function SGS\Blocks\Forms\field_required_mark;
+use function SGS\Blocks\Forms\field_optional_tag;
 
 $fid     = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $options = $attributes['options'] ?? array();
@@ -43,9 +45,7 @@ echo '<fieldset class="sgs-form-field__group"' . ( '' !== $param_attr ? ' ' . $p
 if ( ! empty( $label ) ) {
 	echo '<legend class="sgs-form-field__label">';
 	echo sgs_rich_text_kses( (string) $label, false );
-	if ( $required ) {
-		echo ' <span class="sgs-form-field__required" aria-hidden="true">*</span>';
-	}
+	echo $required ? field_required_mark() : field_optional_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- both helpers return escaped markup.
 	echo '</legend>';
 }
 

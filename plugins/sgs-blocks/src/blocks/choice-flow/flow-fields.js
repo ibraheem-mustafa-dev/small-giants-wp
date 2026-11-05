@@ -111,9 +111,9 @@ function fieldLabel( fieldEl ) {
 	if ( ! labelEl ) {
 		return '';
 	}
-	// Without the required marker and its screen-reader "(required)".
+	// Without the required marker, the Optional tag and their screen-reader text.
 	const copy = labelEl.cloneNode( true );
-	copy.querySelectorAll( '.sgs-form-field__required, .sgs-sr-only' ).forEach( ( el ) => el.remove() );
+	copy.querySelectorAll( '.sgs-form-field__required, .sgs-form-field__optional, .sgs-sr-only, .screen-reader-text' ).forEach( ( el ) => el.remove() );
 	return copy.textContent.trim();
 }
 

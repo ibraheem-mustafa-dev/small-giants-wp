@@ -17,6 +17,15 @@ import { InspectorControls, store as blockEditorStore } from '@wordpress/block-e
 import { PanelBody, ToggleControl } from '@wordpress/components';
 
 const FORM_BLOCK = 'sgs/form';
+/** A CSS string token: quoted, with backslash, quote and line breaks as CSS hex escapes and other control characters dropped. */
+const cssString = ( text ) =>
+	'"' +
+	String( text )
+		.replace( /[\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f]/g, '' )
+		.replace( /\\/g, '\\5c ' )
+		.replace( /"/g, '\\22 ' )
+		.replace( /\r\n|\r|\n/g, '\\a ' ) +
+	'"';
 const hasOptionalTag = ( name ) => !! getBlockType( name )?.attributes?.optionalTag;
 
 /** Guard against double registration (a CJS + ESM double-load would register every filter twice). */
@@ -74,7 +83,7 @@ if ( ! window.__sgsFormOptionalTagRegistered ) {
 		const wrapperProps = {
 			...( props.wrapperProps || {} ),
 			className: [ props.wrapperProps?.className, 'sgs-form-field--optional-tag' ].filter( Boolean ).join( ' ' ),
-			style: { ...( props.wrapperProps?.style || {} ), '--sgs-optional-tag': JSON.stringify( text ) },
+			style: { ...( props.wrapperProps?.style || {} ), '--sgs-optional-tag': cssString( text ) },
 		};
 		return <BlockListBlock { ...props } wrapperProps={ wrapperProps } />;
 	}, 'withOptionalTagPreview' );
