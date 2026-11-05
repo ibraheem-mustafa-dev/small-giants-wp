@@ -42,7 +42,9 @@ function sgs_commerce_look_border_tiers( string $selector, array $border ): stri
  */
 function sgs_commerce_look_cards_css( array $attrs, string $block, string $root ): string {
 	$item    = sgs_commerce_look_selector( 'item', $block, $root );
-	$summary = sgs_commerce_look_selector( 'summary', $block, $root );
+	$summary = sgs_commerce_look_selector( true === ( $attrs['sgsSummaryWrapsButton'] ?? false ) && 'cart' === $block ? 'summary_sidebar' : 'summary', $block, $root );
+	$image   = sgs_commerce_look_selector( 'item_image_img', $block, $root );
+	$stepper = sgs_commerce_look_selector( 'item_stepper', $block, $root );
 	$step    = sgs_commerce_look_selector( 'step', $block, $root );
 	$option  = sgs_commerce_look_selector( 'option', $block, $root );
 	$notice  = sgs_commerce_look_selector( 'notice', $block, $root );
@@ -50,6 +52,10 @@ function sgs_commerce_look_cards_css( array $attrs, string $block, string $root 
 
 	$b_item = sgs_border_element_decls( $attrs, 'sgsItem', $item, array( 'colour' => array( 'base' => 'sgsItemBorderColour' ) ) );
 	$css = sgs_commerce_look_card_css( $attrs, 'sgsItem', $item, $b_item ) . sgs_commerce_look_border_tiers( $item, $b_item );
+	$b_image = sgs_border_element_decls( $attrs, 'sgsItemImage', $image, array( 'colour' => array( 'base' => 'sgsItemImageBorderColour' ) ) );
+	$css .= sgs_commerce_look_card_css( $attrs, 'sgsItemImage', $image, $b_image ) . sgs_commerce_look_border_tiers( $image, $b_image );
+	$b_stepper = sgs_border_element_decls( $attrs, 'sgsItemStepper', $stepper, array( 'colour' => array( 'base' => 'sgsItemStepperBorderColour' ) ) );
+	$css .= sgs_commerce_look_card_css( $attrs, 'sgsItemStepper', $stepper, $b_stepper ) . sgs_commerce_look_border_tiers( $stepper, $b_stepper );
 	$b_summary = sgs_border_element_decls( $attrs, 'sgsSummary', $summary, array( 'colour' => array( 'base' => 'sgsSummaryBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsSummary', $summary, $b_summary ) . sgs_commerce_look_border_tiers( $summary, $b_summary );
 	$b_step = sgs_border_element_decls( $attrs, 'sgsStep', $step, array( 'colour' => array( 'base' => 'sgsStepBorderColour' ) ) );
@@ -88,4 +94,17 @@ function sgs_commerce_look_cards_css( array $attrs, string $block, string $root 
 		$css .= $bar . '{color:' . $bar_colour . ';}';
 	}
 	return $css;
+}
+
+/**
+ * The primary button's edge (width, style, colour) per device, painted on the button of a block.
+ *
+ * @param array<string, mixed> $attrs    Set attributes.
+ * @param string               $selector Scoped selector list of the button.
+ * @return string CSS text; '' when no edge setting is set.
+ */
+function sgs_commerce_look_button_edge_css( array $attrs, string $selector ): string {
+	$border = sgs_border_element_decls( $attrs, 'sgsButton', $selector, array( 'colour' => array( 'base' => 'sgsButtonBorderColour' ) ) );
+	$base   = array() === $border['base'] ? '' : $selector . '{' . implode( ';', $border['base'] ) . ';}';
+	return $base . implode( '', $border['rules'] ) . sgs_commerce_look_border_tiers( $selector, $border );
 }

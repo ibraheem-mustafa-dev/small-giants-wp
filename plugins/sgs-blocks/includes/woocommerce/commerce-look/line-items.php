@@ -62,11 +62,20 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= sgs_emit_responsive_css( $cell, array( array( 'value' => $attrs['sgsItemCellPadding'] ?? null, 'css' => 'padding', 'box' => true, 'unit_default' => 'px' ) ) );
 	}
 
-	// Quantity stepper corners; the buttons inherit the radius, so the stepper clips them.
+	// Quantity stepper: corners (the buttons inherit the radius, so the stepper clips them) and width; its fill and edge print with the cards (cards.php).
 	$stepper = sgs_commerce_look_selector( 'item_stepper', $block, $root );
 	$radius  = sgs_css_single_length_value( (string) ( $attrs['sgsItemStepperRadius'] ?? '' ) );
 	if ( '' !== $stepper && '' !== $radius ) {
 		$css .= $stepper . '{border-radius:' . $radius . ';overflow:hidden;}';
+	}
+	if ( '' !== $stepper ) {
+		$css .= sgs_emit_responsive_css( $stepper, array( array( 'value' => $attrs['sgsItemStepperWidth'] ?? null, 'css' => 'width', 'unit_default' => 'px' ) ) );
+	}
+
+	// WooCommerce's 1px rules above the picture, name and total cells of each line item.
+	$separator = sgs_commerce_look_selector( 'item_cell', $block, $root );
+	if ( '' !== $separator && true === ( $attrs['sgsItemHideSeparators'] ?? false ) ) {
+		$css .= $separator . '{border-top-width:0;}';
 	}
 
 	// Space between line-item cards.

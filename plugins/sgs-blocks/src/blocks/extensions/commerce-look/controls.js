@@ -75,12 +75,15 @@ export function ColourRow( { label, attributes, setAttributes, name } ) {
  * @param {Function} props.setAttributes Block setAttributes.
  * @param {string}   props.prefix        Attribute prefix (`sgsItem`, `sgsSummary`, ...).
  * @param {boolean}  [props.noPadding]   Omit the padding row.
+ * @param {boolean}  [props.noShadow]    Omit the shadow row.
+ * @param {boolean}  [props.noRadius]    Omit the corner radius (the element has its own radius setting).
+ * @param {boolean}  [props.noFill]      Omit the fill row (the element's colours come from elsewhere).
  * @return {JSX.Element} The rows.
  */
-export function CardControls( { attributes, setAttributes, prefix, noPadding = false } ) {
+export function CardControls( { attributes, setAttributes, prefix, noPadding = false, noShadow = false, noRadius = false, noFill = false } ) {
 	return (
 		<>
-			<ColourRow label={ __( 'Fill', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Background' } />
+			{ ! noFill && <ColourRow label={ __( 'Fill', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } name={ prefix + 'Background' } /> }
 			<SgsBorderControl
 				widthValues={ attributes[ prefix + 'BorderWidth' ] ?? {} }
 				onWidthChange={ ( next ) => setAttributes( { [ prefix + 'BorderWidth' ]: next } ) }
@@ -90,15 +93,17 @@ export function CardControls( { attributes, setAttributes, prefix, noPadding = f
 				colourValue={ attributes[ prefix + 'BorderColour' ] }
 				onColourChange={ ( val ) => setAttributes( { [ prefix + 'BorderColour' ]: val || undefined } ) }
 				colourLinked
-				radiusValues={ boxTiers( attributes[ prefix + 'BorderRadius' ] ) }
-				onRadiusChange={ ( tier, next ) => setAttributes( { [ prefix + 'BorderRadius' ]: writeTier( attributes[ prefix + 'BorderRadius' ], tier, next ) } ) }
+				radiusValues={ noRadius ? undefined : boxTiers( attributes[ prefix + 'BorderRadius' ] ) }
+				onRadiusChange={ noRadius ? undefined : ( tier, next ) => setAttributes( { [ prefix + 'BorderRadius' ]: writeTier( attributes[ prefix + 'BorderRadius' ], tier, next ) } ) }
 			/>
-			<ShadowControl
-				label={ __( 'Shadow', 'sgs-blocks' ) }
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				attrNames={ { base: prefix + 'Shadow', colour: prefix + 'ShadowColour' } }
-			/>
+			{ ! noShadow && (
+				<ShadowControl
+					label={ __( 'Shadow', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					attrNames={ { base: prefix + 'Shadow', colour: prefix + 'ShadowColour' } }
+				/>
+			) }
 			{ ! noPadding && (
 				<ResponsiveBoxControl
 					presets

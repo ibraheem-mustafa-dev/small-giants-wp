@@ -43,7 +43,7 @@ if ( ! window.__sgsCommerceLookRegistered ) {
 				<InspectorControls group="styles">
 					<FieldsPanel { ...shared } />
 					<LineItemsPanel { ...shared } isCart={ isCart } />
-					<SummaryPanel { ...shared } />
+					<SummaryPanel { ...shared } isCart={ isCart } />
 					<NoticePanel { ...shared } />
 					<ColumnsPanel { ...shared } />
 					<ButtonPanel { ...shared } />

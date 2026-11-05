@@ -87,13 +87,28 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 					onChange={ ( tier, next ) => setAttributes( { sgsItemCellPadding: writeTier( attributes.sgsItemCellPadding, tier, next ) } ) }
 				/>
 			) }
-			{ isCart && <SgsLengthControl
-				scale="spacing"
-				label={ __( 'Quantity stepper corner radius', 'sgs-blocks' ) }
-				value={ attributes.sgsItemStepperRadius || '' }
-				units={ LENGTH_UNITS }
-				onChange={ ( val ) => setAttributes( { sgsItemStepperRadius: val || undefined } ) }
-			/> }
+			<PanelBody title={ __( 'Picture look', 'sgs-blocks' ) } initialOpen={ false }>
+				<CardControls { ...shared } prefix="sgsItemImage" noShadow noPadding />
+			</PanelBody>
+			{ isCart && (
+				<PanelBody title={ __( 'Quantity stepper', 'sgs-blocks' ) } initialOpen={ false }>
+					<CardControls { ...shared } prefix="sgsItemStepper" noShadow noPadding noRadius />
+					<ResponsiveLengthControl
+						scale="spacing"
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ attributes.sgsItemStepperWidth }
+						units={ LENGTH_UNITS }
+						onChange={ ( next ) => setAttributes( { sgsItemStepperWidth: next } ) }
+					/>
+					<SgsLengthControl
+						scale="spacing"
+						label={ __( 'Corner radius', 'sgs-blocks' ) }
+						value={ attributes.sgsItemStepperRadius || '' }
+						units={ LENGTH_UNITS }
+						onChange={ ( val ) => setAttributes( { sgsItemStepperRadius: val || undefined } ) }
+					/>
+				</PanelBody>
+			) }
 			{ isCart && (
 				<ToggleControl
 					label={ __( 'Hide the header row', 'sgs-blocks' ) }
@@ -107,6 +122,15 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 					label={ __( 'Hide the unit price under the name', 'sgs-blocks' ) }
 					checked={ !! attributes.sgsItemHideUnitPrice }
 					onChange={ ( val ) => setAttributes( { sgsItemHideUnitPrice: val || undefined } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
+			{ isCart && (
+				<ToggleControl
+					label={ __( 'Hide the lines WooCommerce draws inside each item', 'sgs-blocks' ) }
+					help={ __( 'The thin rules above the picture, the name and the price.', 'sgs-blocks' ) }
+					checked={ !! attributes.sgsItemHideSeparators }
+					onChange={ ( val ) => setAttributes( { sgsItemHideSeparators: val || undefined } ) }
 					__nextHasNoMarginBottom
 				/>
 			) }
@@ -134,11 +158,20 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
  * @param {Object} props Block attributes and setter.
  * @return {JSX.Element} The panel.
  */
-export function SummaryPanel( { attributes, setAttributes } ) {
+export function SummaryPanel( { attributes, setAttributes, isCart } ) {
 	const shared = { attributes, setAttributes };
 	return (
 		<PanelBody title={ __( 'Summary and totals', 'sgs-blocks' ) } initialOpen={ false }>
 			<CardControls { ...shared } prefix="sgsSummary" />
+			{ isCart && (
+				<ToggleControl
+					label={ __( 'Card wraps the checkout button', 'sgs-blocks' ) }
+					help={ __( 'Paints the card on the whole side column, so Proceed to checkout sits inside it.', 'sgs-blocks' ) }
+					checked={ !! attributes.sgsSummaryWrapsButton }
+					onChange={ ( val ) => setAttributes( { sgsSummaryWrapsButton: val || undefined } ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 			<PanelBody title={ __( 'Summary heading', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsSummaryHeading" />
 			</PanelBody>
@@ -258,6 +291,7 @@ export function ButtonPanel( { attributes, setAttributes } ) {
 	return (
 		<PanelBody title={ __( 'Primary button', 'sgs-blocks' ) } initialOpen={ false }>
 			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsButton" noColour />
+			<CardControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsButton" noShadow noPadding noRadius noFill />
 			<ResponsiveLengthControl
 				scale="spacing"
 				label={ __( 'Minimum height', 'sgs-blocks' ) }
