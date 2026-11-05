@@ -36,6 +36,7 @@ import { BRANDS } from '../../utils/brand-registry';
 import { isOutlineShape } from '../../utils/icon-shapes';
 import ShapePanels from './inspector-shape';
 import IconLabelPanel from './inspector-label';
+import IconDotPanel from './inspector-dot';
 import IconSizeControl, { ICON_SIZE_HELP } from './icon-size-control';
 import { metadataWithoutLinkBinding } from './icon-state';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
@@ -153,6 +154,22 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 							} ),
 							outlineShown
 						),
+					attributes.showSignedInDot &&
+						fillRow( {
+							key: 'signedInDot',
+							label: __( 'Signed-in dot colour', 'sgs-blocks' ),
+							attrs: { base: 'signedInDotColour' },
+							attributes,
+							setAttributes,
+						} ),
+					attributes.showSignedInDot &&
+						fillRow( {
+							key: 'signedInDotRing',
+							label: __( 'Signed-in dot ring colour', 'sgs-blocks' ),
+							attrs: { base: 'signedInDotRingColour' },
+							attributes,
+							setAttributes,
+						} ),
 					labelOn &&
 						textRow( {
 							key: 'label',
@@ -283,6 +300,7 @@ export default function IconInspector( { attributes, setAttributes, state } ) {
 				</PanelBody>
 				<ShapePanels attributes={ attributes } setAttributes={ setAttributes } brandOn={ brand.brandOn } outlineShown={ outlineShown } />
 				<IconLabelPanel attributes={ attributes } setAttributes={ setAttributes } state={ { labelOn, labelFromRow, defaultLabel } } />
+				<IconDotPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
 					<TextControl
 						label={ __( 'Accessible label', 'sgs-blocks' ) }

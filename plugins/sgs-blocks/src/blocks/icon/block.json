@@ -152,6 +152,27 @@
 						}
 					},
 					"_note": "`.sgs-icon__label-text`: the optional visible label inside the link (showLabel), beside, below or above the shape (labelPosition). Its text is the link's accessible name. labelGap is the space between the shape and the label (the link's gap). Colours print as --sgs-icon-label-colour[-hover] only when set, so a wrapping sgs/social-icons group default (--sgs-si-label-colour) shows through; unset, the label takes the icon colour a client set, else the site's text colour."
+				},
+				"signedInDot": {
+					"selector": ".sgs-icon__dot",
+					"motion": false,
+					"label": "Signed-in dot",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout",
+						"position"
+					],
+					"attrMap": {
+						"css:display": "showSignedInDot",
+						"css:background-color": "signedInDotColour",
+						"css:width": "signedInDotSize",
+						"css:top": "signedInDotTop",
+						"css:border-color": "signedInDotRingColour",
+						"css:border-width": "signedInDotRingWidth",
+						"css:margin": "signedInDotRight"
+					},
+					"_note": "A dot on the icon shape. The element always prints while showSignedInDot is on; style.css shows it only under body.logged-in, so a cached logged-out page needs no per-visitor HTML."
 				}
 			}
 		}
@@ -547,6 +568,41 @@
 		"textAlign": {
 			"type": "object",
 			"default": {}
+		},
+		"showSignedInDot": {
+			"type": "boolean",
+			"default": false,
+			"description": "Prints a small dot on the icon that shows only for a signed-in visitor. The element is always printed (page caches serve one HTML to everyone); CSS shows it under body.logged-in."
+		},
+		"signedInDotColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the signed-in dot. Unset = the theme accent."
+		},
+		"signedInDotSize": {
+			"type": "object",
+			"default": {},
+			"description": "Width and height of the signed-in dot per device {desktop,tablet,mobile}. Unset = 8px."
+		},
+		"signedInDotTop": {
+			"type": "object",
+			"default": {},
+			"description": "Distance of the signed-in dot from the top of the icon shape per device. Unset = 0."
+		},
+		"signedInDotRight": {
+			"type": "object",
+			"default": {},
+			"description": "Distance of the signed-in dot from the end edge of the icon shape per device. Unset = 0."
+		},
+		"signedInDotRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the ring around the signed-in dot. Unset = no ring."
+		},
+		"signedInDotRingWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Width of the ring around the signed-in dot. Unset = 2px."
 		}
 	},
 	"editorScript": "file:./index.js",
