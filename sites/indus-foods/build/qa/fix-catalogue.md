@@ -388,3 +388,13 @@ Site, measured against the draft at 375/768/1440:
 | R7-04 | apply Back button | 54 vs 52: form button line-height 1.5 vs the draft's normal | site or framework (check `navButtonLineHeight` accepts normal) |
 | R7-05 | heritage section | 14px taller at 375 and 768, 9px shorter at 1440, outside the steps block | investigate |
 | R7-06 | blog row 2 | one read-more sits at 1598 vs the draft's 1649 | investigate |
+| R7-07 | mega photos, 1440 | photos are `loading="lazy"`, so the first hover waits for the fetch (up to 3 s on the live server); hidden header copies of the About photo also fetch a 768px file at page load | framework: preload panel images on nav intent (pointerenter or focus of the nav), not on first paint |
+| R7-08 | breadcrumbs | current crumb weight 600 vs the draft's 500; no current-crumb weight setting | framework: `currentFontWeight` |
+| R7-09 | apply form fields | no "Optional" tag setting on a field label; no gap setting between the label and the required asterisk (draft 6px, live a space) | framework: field label extras in `includes/forms/field-render-helpers.php::field_label` |
+| R7-10 | apply file drop zone | no icon, alignment, height/padding or hint-line settings (the hint is a fixed "Max %d MB"; the draft says "PDF, JPG or PNG, up to 10MB") | framework: `form-field-file` settings |
+| R7-11 | hero decorative rings | the ring is positioned from `.sgs-hero__content`, so its per-device offsets only hold while the hero content keeps its size | framework: an "anchor to section" option on `sgs/decorative-image` |
+| R7-12 | drawer Brands pill and default-layout card | the new drawer tag font settings apply to stacked and compact cards only; the Brands card uses the default layout | framework: extend the drawer tag typography to the default layout |
+| R7-13 | apply review Edit pill | 44px tall (the shared touch-target minimum) vs the draft's 37px; no min-height setting | framework or accept |
+| R7-14 | editor check | page 231 ("Track F live check", a draft test page on local-indus) logs a Google Maps network error in the editor and fails the editor check | site: delete the test page, or tooling: ignore third-party network errors |
+| R7-16 | apply step 4 "Ranges" tiles | `required` on a multi-select `form-field-tiles` group marks every checkbox required, so Continue needs all of them ticked; the draft requires at least one. Required is unset on the site until fixed | framework: a required checkbox group requires one or more |
+| R7-15 | `sync-build.sh` | synced an empty plugin build into local-indus when the worktree had no `build/` (a stopped `npm run build` had cleaned it) | tooling: refuse to sync a missing or incomplete build |
