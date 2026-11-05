@@ -1078,7 +1078,7 @@ WooCommerce cart count badge. Category: `sgs-interactive`. Displays a live item 
 
 Attributes: `/wp-blocks schema sgs/cart`. The badge is hidden at a count of 0 unless `showWhenEmpty` is on.  `freeDeliveryTextFontWeight` sets the weight of the free-delivery message.
 
-Render: Dynamic `render.php`. `viewScriptModule` uses the WC `wc-cart-fragments` mechanism to update count without full page reload.
+Render: dynamic `render.php`; the free-delivery threshold comes from `includes/helpers-free-delivery.php::sgs_free_delivery_threshold`, shared with `sgs/free-delivery-bar`. `view.js` reads the cart through the Store API (`store-api.js::fetchCart`) on WooCommerce's add and remove events, so the count updates without a page reload.
 
 SGS-BEM: `.sgs-cart` root + `__icon` / `__count` + `--empty` modifier.
 

@@ -91,7 +91,11 @@ These govern how the SGS layer and WooCommerce relate.
 | `sgs-product/field` Block Bindings source | built | `plugins/sgs-blocks/includes/class-product-bindings.php` | Binding source section |
 | Editor product picker (WC products) and `sourceMode` auto-set | built | `plugins/sgs-blocks/src/blocks/product-card/edit.js` | FR-24-3 |
 | Add-to-cart through the SGS proxy (FP-14-clean) | built | `plugins/sgs-blocks/includes/class-cart-proxy.php`, `plugins/sgs-blocks/src/blocks/product-card/view.js` | FR-27-G1 |
-| `sgs/cart` mini-cart count badge | built; drawer not built | `plugins/sgs-blocks/src/blocks/cart/` | Cart section |
+| `sgs/cart` mini-cart count badge | built (badge, flyout and drawer); the drawer extras area is not built (FR-30-17) | `plugins/sgs-blocks/src/blocks/cart/` | Cart section |
+| Shop look settings on WooCommerce's Cart and Checkout blocks (`commerceLook`) and `sgs/account` field settings | built | `plugins/sgs-blocks/includes/woocommerce/commerce-look/`, `plugins/sgs-blocks/src/blocks/extensions/commerce-look/`, `plugins/sgs-blocks/includes/account/helpers-account-field-css.php` | FR-30-18 |
+| `sgs/free-delivery-bar` and the shared live cart reader | built | `plugins/sgs-blocks/src/blocks/free-delivery-bar/`, `plugins/sgs-blocks/src/shared/cart-live/`, `plugins/sgs-blocks/includes/helpers-free-delivery.php` | FR-30-20 |
+| `sgs/gift-order` and `sgs/commerce-note` (inner blocks of the Cart and Checkout blocks) | built | `plugins/sgs-blocks/src/blocks/gift-order/`, `plugins/sgs-blocks/src/blocks/commerce-note/`, `plugins/sgs-blocks/src/commerce-blocks/`, `plugins/sgs-blocks/includes/gift-order/` | FR-30-21, FR-30-22 |
+| "Basket count" inline format | built | `plugins/sgs-blocks/src/blocks/extensions/inline-formats/`, `plugins/sgs-blocks/src/shared/cart-live/basket-count.js` | FR-30-24 |
 | `sgs/option-picker` atomic block | built | `plugins/sgs-blocks/src/blocks/option-picker/` | FR-24-15 |
 | Collection query (own `WP_Query`, selection rules) in `sgs/card-grid` collection mode | built | `plugins/sgs-blocks/src/blocks/card-grid/`, `plugins/sgs-blocks/includes/class-cpt-collection-query.php` | FR-24-4, FR-24-5, FR-24-6 |
 | Pill-to-price/image swap via the Interactivity API (0-XHR multi-axis swap from the seeded manifest) | built | `plugins/sgs-blocks/src/blocks/product-card/view.js`, `plugins/sgs-blocks/includes/class-product-manifest.php` | FR-27-A1, FR-27-A2 |
@@ -865,7 +869,7 @@ The `sgs/cart` drawer (`displayMode: drawer`) is styled through its own settings
 
 **Done when:** an interactive block placed in the extras area (a text input and a working button) renders in the open drawer at 375/768/1440; the input keeps its typed value and the button still works through open, add, quantity change and remove, without a reload; a drawer with an empty extras area renders exactly as today; and opening the editor on every existing page with a cart block (Eye Care's header among them) shows zero block-recovery prompts. Needed first by the Mama's Munches clone (Spec 48 §16).
 
-#### FR-30-18 -- Shop look settings on the Cart, Checkout and account blocks -- not built
+#### FR-30-18 -- Shop look settings on the Cart, Checkout and account blocks -- built, with gaps
 
 Bean, 2026-10-26: WooCommerce's cart, checkout and account pages keep WooCommerce's own forms, because those forms take orders and save accounts; a client's look is written into settings, never made by rebuilding the forms from SGS blocks. Today nothing carries that look: `sgs/account` paints WooCommerce's inputs from a fixed stylesheet (`plugins/sgs-blocks/src/blocks/account/style.css::.sgs-account form input.input-text`) with no settings, and the Cart and Checkout blocks have no SGS settings at all.
 - **Host (decided 2026-11-04, plan `.claude/plans/2026-11-04-mamas-commerce.md`).** The settings sit on WooCommerce's own `woocommerce/cart` and `woocommerce/checkout` blocks as a named extension (`plugins/sgs-blocks/src/blocks/extensions/extension-roster.json`, the route `chipGap` and `filterLook` take), not on a wrapper block: the client selects the block they already see, templates need no restructuring, and the route is proven on WooCommerce blocks. `sgs/account` carries the same settings as its own block attributes.
@@ -873,19 +877,23 @@ Bean, 2026-10-26: WooCommerce's cart, checkout and account pages keep WooCommerc
 - **One writer.** `plugins/sgs-blocks/includes/woocommerce/commerce-look/` builds every rule from the shared helpers (`sgs_fill_decls`, `sgs_border_element_decls`, `sgs_shadow_decls`, `sgs_typography_css_rule`, `sgs_emit_responsive_css`, `sgs_emit_tier_decls`) and prints it through `sgs_inject_scoped_block_css()`. Every rule starts with the block's scope class, which is added only when a setting is set. The WooCommerce selectors live in one table in that folder, each row carrying the WooCommerce version it was read on and the basket, user and viewport state it needs; `sgs-update-v2.py` seeds the extension's attribute rows so the cloning route finds them. The editor canvas, which WooCommerce draws in React, takes the same PHP output from `GET sgs/v1/commerce-look/css` (nonce, `edit_posts`, attributes validated against the roster).
 - **Unset means today's look.** New attributes carry no `default`, so saved WooCommerce markup and uid hashes do not change; the theme's `theme/sgs-theme/assets/css/woocommerce.css` keeps styling from the client's tokens, and a setting overrides its token on that block only. Buttons follow the site-wide button style.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC; the look groups the drafts still need (checkout label type, summary row type and dashed divider, separate total label and value type, variant and remove-link type, per-device thumbnail, column widths) are open in `.claude/plans/2026-11-04-mamas-commerce.md`, Status.
+
 **Done when:** on mamas-test, the look set on the Cart, Checkout and `sgs/account` blocks paints the line items, summary card, steps, option cards, notice panels and every input (log in, register, address, account details, contact, payment) to the drafts' computed values (box geometry within 1px, colours exact, type size and weight exact) at 375/768/1440; `site-check.mjs`'s selector probe finds every table row in its stated state; with no settings set, eye-care-test's and the canary's cart, checkout and account pages render byte-identical HTML and the editor opens them with zero block-recovery prompts (negative control); an order still completes on the canary through the FR-30-0 gateway and an account still saves an address; axe 0 per surface. The cloning route writes these settings (Spec 48 FR-48-87).
 
 #### FR-30-19 -- Shop wording settings page -- built
 
 The sentences a shopper reads after adding to the bag are site settings, not code. WooCommerce > Shop wording (`plugins/sgs-blocks/includes/cart-line-summary/class-cart-line-summary-admin.php::Cart_Line_Summary_Admin`, capability and nonce checked on save) stores `addedToBag`, `addedWithAddons` and `labelSeparator` (the text between a bag line's label and its value, default `: ` with its spaces kept) in the `sgs_cart_line_summary` option, read through `includes/cart-line-summary/wording.php::sgs_cart_line_summary_wording`. The toast reads the two sentences from the `sgs/toast` interactivity state (`includes/class-sgs-toast.php`), so the added-to-bag messages follow the setting. Status: built.
 
-#### FR-30-20 -- Free-delivery progress block -- not built
+#### FR-30-20 -- Free-delivery progress block -- built
 
 `sgs/free-delivery-bar`, a server-rendered block usable on the cart page and anywhere else: "Add {amount} more for free delivery" with a progress bar, then a success line. Its settings reuse `sgs/cart`'s `freeDelivery*` names (threshold override, message with `%s` for the amount, success message, hide when empty, fill duration and easing, fill, track and text colours, track height and radius) and its card look comes from the shared controls. The threshold comes from one resolver both blocks call, `plugins/sgs-blocks/includes/helpers-free-delivery.php::sgs_free_delivery_threshold` (an override wins, else the store base country's zone `free_shipping` minimum); with none, the editor says so and the page prints nothing. The amount is formatted with `wc_price`. Live updates come from one page-wide module, `plugins/sgs-blocks/src/shared/cart-live/`, reading the Store API, WooCommerce's add and remove events and the `wc/store/cart` data store where the page has it. `role="progressbar"` with its value, a polite live message, no fill animation under reduced motion, and reserved height so filling moves nothing.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC; the bar inside the basket items column (an inner-block twin) and a track border are open in the commerce plan.
+
 **Done when:** on local-mamas and mamas-test with a £35 threshold, a £21.50 basket reads "Add £13.50 more ..." with the bar at 61%, changing quantity on the cart page updates both without a reload, and a £35 basket shows the success line; with no threshold set the block prints nothing; `sgs/cart`'s drawer on eye-care-test renders byte-identical and makes the same Store API requests on open, add, quantity change and remove as before (Playwright network count); axe 0.
 
-#### FR-30-21 -- Gift order -- not built
+#### FR-30-21 -- Gift order -- built
 
 A shopper marks an order as a gift, names the recipient and writes a note, in the basket and at checkout; the shop sees it on the order. One value per basket, `{ on, to, message }`, held in the WooCommerce session.
 - **Writes** go through `POST /sgs/v1/cart/gift` (`plugins/sgs-blocks/includes/class-cart-proxy.php`: nonce, sanitisation, rate limit); turning the gift off clears the name and note. **Reads** come from Store API endpoint data on namespace `sgs_gift`, registered only on a page that holds the gift block. Length limits are block settings under a filterable server cap (`sgs_gift_limits`: 100 characters for the name, 500 for the note); over the cap the route answers 400 with a message the block shows.
@@ -893,35 +901,47 @@ A shopper marks an order as a gift, names the recipient and writes a note, in th
 - **The order.** The value becomes order meta (HPOS-safe) when the order is placed and the session value is cleared. The admin order screen opens with a "Gift order" box showing the recipient and the full note, large enough to copy by hand; the orders list shows a gift badge; the shop's new-order email carries the recipient and note; the buyer's email and the order-received page say the order is a gift for the recipient and never put the note in a subject line. The recipient's name pre-fills WooCommerce's shipping first name. WooCommerce's personal-data export and erasure include the meta. Labels in emails and admin are generic translatable strings.
 - Nothing is printed into the parcel by the framework (Bean, 2026-11-04: the shop hand-writes the note), so a draft's "prices off the packing slip" line is block copy, not a feature.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC; a test gift order on local-mamas (#584) proved the order record, admin box, badge, both emails and privacy export; the block's own panel and tile look is open in the commerce plan.
+
 **Done when:** on local-mamas, switching gift on in the basket shows it on at checkout and the reverse; a reload and a sign-in during checkout keep it; switching off then paying leaves no gift meta; a test gift order shows the admin box, the badge, both captured emails and the order-received line; a 501-character note is refused with the block's message; the privacy export lists the meta and erasure removes it; on eye-care-test and the canary the Store API cart response, enqueued scripts and order emails are unchanged (negative control); axe 0; 44px targets.
 
-#### FR-30-22 -- Commerce note block -- not built
+#### FR-30-22 -- Commerce note block -- built
 
 `sgs/commerce-note`, registered inside the Cart and Checkout blocks like FR-30-21: a line of text with an optional link, styled by FR-30-18's notice-panel settings. It carries what WooCommerce's blocks have no place for: an allergen panel, a "baked fresh" line, a "Keep shopping" link.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC; its typography, alignment and link colour settings are open in the commerce plan.
+
 **Done when:** on local-mamas a note placed in the basket and in the checkout renders where placed at 375/768/1440, its text and link are editable in the editor, and pages without it load no new script (negative control).
 
-#### FR-30-23 -- Postcode lookup -- not built (none for now, Bean 2026-11-04)
+#### FR-30-23 -- Postcode lookup -- none for now (Bean 2026-11-04); the dead lookup removed
 
 Customers type their address in WooCommerce's own fields. Research (2026-11-04): a house-level lookup needs Royal Mail's licensed PAF data, which every service and self-hosted tool (for example the MIT-licensed paf-monorepo) depends on; open data (postcodes.io, MIT, ONS open data) checks a postcode and returns its town but lists no houses, and OpenStreetMap's UK house numbers are patchy. Paid options: Ideal Postcodes (official block-checkout plugin, 4.5p to 2.8p per address, no monthly fee), Swiftcomplete (3p, £10 minimum), Loqate (7.3p to 4.2p; its official plugin is retired). getAddress.io stopped trading on 4 February 2026. `sgs/form-field-address`'s `enableLookup` printed a "Find Address" button with nothing behind it; the setting and the button are removed until a provider is chosen. No saved block on any reachable site had `enableLookup` on (a read-only scan of every post type's content on the four local mirrors and the canary and four test sites found none), so no migration was needed.
 
+Status: the lookup setting and widget are removed from `sgs/form-field-address` (no saved block had it on); no lookup is built.
+
 **Done when:** `sgs/form-field-address` has no lookup setting or button, saved blocks that had it on were migrated by a WP-CLI batch (FP-14), and the decision is revisited when a client needs a lookup.
 
-#### FR-30-24 -- Basket count in text -- not built
+#### FR-30-24 -- Basket count in text -- built
 
 A "Basket count" inline format (`plugins/sgs-blocks/src/blocks/extensions/inline-formats/`) wraps text in `<span class="sgs-basket-count">` in any rich text (a heading, a pill, a button). A small view module, loaded only on pages that hold the class, fills the number from `cart-live` (FR-30-20) and keeps it current. The span stays empty until filled, never a flashing 0; on cart and checkout, which WooCommerce sends uncached, the server prints the count.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC (text and button labels).
+
 **Done when:** on local-mamas the basket heading pill shows the item count at load, updates when a quantity changes on the cart page and when an item is added from a product card elsewhere, and pages without the format load no new script (negative control).
 
-#### FR-30-25 -- Account signed-out card and sign-in tabs -- not built
+#### FR-30-25 -- Account signed-out card and sign-in tabs -- built
 
 `sgs/account` gains a signed-out view setting (`signedOutView`): WooCommerce's log-in form (absent, today's behaviour) or a card with a heading, text, a sign-in button and a create-account button, whose links are link controls (an empty sign-in link opens the same page with the form, `?sgs-login=1`; an empty create-account link adds `mode=register`). The card is the account page's front door only: WooCommerce's lost-password and reset pages still show its own forms. The card is painted by `sgs_account_auth_card_css()` through the shared fill, border, per-device corner, shadow and per-device padding emitters; its heading and text take the block's existing heading and card-description typography; its buttons are rendered by `sgs/button` (primary and secondary presets, with the card's own button height, shadow, hover shadow and gap settings). The create-account button hides while WooCommerce registration is off. The log-in layout (`authLayout`) gains `tabs`: Sign in and Create account as an ARIA tabs pattern (roving tabindex, arrow keys, Home and End), `?mode=register` opening the second, the container taking the same card settings; the tabs are real links so the right form shows with no script, and the small view module loads only when tabs are on. Forgotten and reset password stay WooCommerce's own pages. New attributes carry no `default`, so existing blocks keep their uid class.
 
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC; Mama's Sign in page is page 628.
+
 **Done when:** on mamas-test the signed-out account page shows the card to the Account draft's computed values and the sign-in page shows the tabs to the SignIn draft's, at 375/768/1440; both buttons and both tabs reach the right form by keyboard; eye-care-test's account page renders byte-identical with its uid class unchanged (negative control); axe 0.
 
-#### FR-30-26 -- Free delivery replaces the paid rate it covers -- not built
+#### FR-30-26 -- Free delivery replaces the paid rate it covers -- built
 
 WooCommerce lists a paid rate and the free-shipping rate side by side once free shipping applies. The free-shipping method gains a setting, "Hide these rates when free shipping applies", listing the zone's other rates; unset, WooCommerce's behaviour stays (`woocommerce_package_rates`).
+
+Status: built and live on mamas-test 2026-11-05 (main `a29d4e466`), checked by site-check and QC (Mama's UK zone set as in the Done-when).
 
 **Done when:** in Mama's UK zone (Royal Mail Tracked 48 £3.95, Tracked 24 £5.45, free shipping at £35 hiding Tracked 48), a £20 basket offers Tracked 48 at £3.95 and Tracked 24 at £5.45, and a £40 basket offers free Tracked 48 and Tracked 24 at £5.45; a zone without the setting lists every rate as before (negative control).
 
