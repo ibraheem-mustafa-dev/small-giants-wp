@@ -21,7 +21,7 @@ import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
-const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list' ];
+const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list', 'sgs/gift-order' ];
 
 /**
  * Editor view for sgs/buybox: the canvas draws a sample product with the real
