@@ -46,7 +46,10 @@
 
 .sgs-media-el {
 	height: var( --sgs-media-height, auto );
-	width: var( --sgs-media-width, auto );
+	/* Unset, the width is the element's own width attribute (the browser's presentation mapping, which this
+	   rule would otherwise cancel): a not-yet-loaded image has no intrinsic size, so a bare `auto` painted it
+	   0px wide and the box below it collapsed until the file arrived. `max-width: 100%` still clamps it. */
+	width: var( --sgs-media-width, attr( width px, auto ) );
 	/* Unset, the ratio is the element's own width and height attributes (what the browser maps them to):
 	   a lazy image with sizes="auto" is size-contained in Chrome, so a bare `auto` would leave it at
 	   core's 1500px contain-intrinsic-size. An element without the attributes resolves to `auto`. */
@@ -100,7 +103,7 @@
 @media ( max-width: 1023px ) {
 	.sgs-media-el {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
-		width: var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) );
+		width: var( --sgs-media-width-tablet, var( --sgs-media-width, attr( width px, auto ) ) );
 		border-top-left-radius: var( --sgs-media-border-top-left-radius-tablet, var( --sgs-media-border-top-left-radius, 0 ) );
 		border-top-right-radius: var( --sgs-media-border-top-right-radius-tablet, var( --sgs-media-border-top-right-radius, 0 ) );
 		border-bottom-right-radius: var( --sgs-media-border-bottom-right-radius-tablet, var( --sgs-media-border-bottom-right-radius, 0 ) );
@@ -118,7 +121,7 @@
 		);
 		width: var(
 			--sgs-media-width-mobile,
-			var( --sgs-media-width-tablet, var( --sgs-media-width, auto ) )
+			var( --sgs-media-width-tablet, var( --sgs-media-width, attr( width px, auto ) ) )
 		);
 		border-top-left-radius: var(
 			--sgs-media-border-top-left-radius-mobile,
