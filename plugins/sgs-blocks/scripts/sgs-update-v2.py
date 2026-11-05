@@ -636,6 +636,41 @@ def _block_render_text(block_dir: Path) -> str:
     return "\n".join(parts)
 
 
+# Every block reaches the same shared includes/*.php files, so scanning per block read and scanned each of them about
+# 60 times in one run (6,577 scans for 100 blocks). Within one run a PHP file does not change, so its text and each
+# scan's verdict are remembered by path. _index_sgs_block_files clears both first, so a second call in one process sees
+# the files as they are then.
+_PHP_TEXT_MEMO: dict = {}
+_PHP_SCAN_MEMO: dict = {}
+
+
+def _reset_php_scan_memo() -> None:
+    _PHP_TEXT_MEMO.clear()
+    _PHP_SCAN_MEMO.clear()
+
+
+def _php_text_once(path: Path) -> str:
+    """The file's text, read once per run; raises OSError exactly as read_text does (the error is remembered too)."""
+    key = str(path)
+    if key not in _PHP_TEXT_MEMO:
+        try:
+            _PHP_TEXT_MEMO[key] = path.read_text(encoding="utf-8")
+        except OSError as exc:
+            _PHP_TEXT_MEMO[key] = exc
+    value = _PHP_TEXT_MEMO[key]
+    if isinstance(value, OSError):
+        raise value
+    return value
+
+
+def _scan_once(scan: Callable[[Path], set], path: Path) -> set:
+    """scan(path), computed once per run per (scan, path); callers get a copy so they may mutate the set."""
+    key = (scan, str(path))
+    if key not in _PHP_SCAN_MEMO:
+        _PHP_SCAN_MEMO[key] = frozenset(scan(path))
+    return set(_PHP_SCAN_MEMO[key])
+
+
 def _render_tier_attrs_for_block(
     render_path: Path, scan: Callable[[Path], set] = _tier_object_attrs_from_php
 ) -> set:
@@ -648,16 +683,16 @@ def _render_tier_attrs_for_block(
     `_context_tier_keys_from_php` finds the block-context keys a child unpacks
     per tier.
     """
-    found = set(scan(render_path))
+    found = _scan_once(scan, render_path)
     if not render_path.is_file():
         return found
     own_files = [render_path] + _block_sibling_php(render_path.parent)
     queue = []
     for own in own_files:
         if own != render_path:
-            found |= scan(own)
+            found |= _scan_once(scan, own)
         try:
-            text = own.read_text(encoding="utf-8")
+            text = _php_text_once(own)
         except OSError:
             continue
         queue.extend(m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(text))
@@ -668,11 +703,11 @@ def _render_tier_attrs_for_block(
             continue
         seen.add(name)
         include_path = _INCLUDES_DIR / name
-        found |= scan(include_path)
+        found |= _scan_once(scan, include_path)
         if not include_path.is_file():
             continue
         try:
-            include_text = include_path.read_text(encoding="utf-8")
+            include_text = _php_text_once(include_path)
         except OSError:
             continue
         queue.extend(m.group(1) for m in _REQUIRE_INCLUDES_RE.finditer(include_text))
@@ -1029,6 +1064,7 @@ def _index_sgs_block_files(
     helper returns — keeping the commit responsibility at one frame up keeps
     helper signatures lean.
     """
+    _reset_php_scan_memo()
     scanned = 0
     new_blocks = 0
     new_attrs = 0
@@ -1853,19 +1889,26 @@ def _run_canonical_assignment(conn: sqlite3.Connection) -> None:
     if not ac_script.exists():
         return
     conn.commit()
+    # Only a file this run's early detectors just wrote may reach the child: a value inherited from the shell would make it
+    # read some earlier run's findings instead of running the detectors.
+    child_env = {k: v for k, v in os.environ.items() if k != _DETECTORS_ENV}
+    child_env.update(_collect_content_role_detectors())
     try:
         result = subprocess.run(
             ["python", str(ac_script)],
             capture_output=True, text=True, timeout=900,
             encoding="utf-8", errors="replace",
+            env=child_env,
         )
     except subprocess.TimeoutExpired:
+        _discard_content_role_detectors()
         print(
             "Stage 1 tail (canonical assignment): FAILED, timed out after 900s. "
             "block_attributes.role is incomplete; re-run this stage before any build, "
             "deploy or role-map regeneration."
         )
         raise SystemExit(1)
+    _discard_content_role_detectors()
     if result.returncode != 0:
         print(
             f"Stage 1 tail (canonical assignment): FAILED exit={result.returncode}; "
@@ -2019,6 +2062,69 @@ def _discard_component_scan() -> None:
         handle.close()
     if out is not None:
         shutil.rmtree(out.parent, ignore_errors=True)
+
+
+_DETECTOR_RUN: dict = {}
+_DETECTORS_ENV = "SGS_CONTENT_ROLE_DETECTORS_JSON"
+
+
+def _kill_process_tree(proc) -> None:
+    """Stops the process and its children. On Windows Popen.kill() ends the parent only, which would leave the detectors'
+    own php/python children running; taskkill /T takes the tree by the parent's PID."""
+    if sys.platform == "win32":
+        subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"], capture_output=True)
+    else:
+        proc.kill()
+    proc.wait()
+
+
+def _discard_content_role_detectors() -> None:
+    """Reaps the early detector run: stops it if it is still running and removes its temp folder."""
+    proc = _DETECTOR_RUN.pop("proc", None)
+    out = _DETECTOR_RUN.pop("out", None)
+    if proc is not None and proc.poll() is None:
+        _kill_process_tree(proc)
+    if out is not None:
+        shutil.rmtree(out.parent, ignore_errors=True)
+
+
+def _start_content_role_detectors() -> None:
+    """Starts the three content-role detectors at the top of Stage 1. They only read block source files, so they overlap
+    block indexing; assign-canonical.py reads their output through $SGS_CONTENT_ROLE_DETECTORS_JSON instead of running them
+    after the earlier steps. Nothing here is fatal: if they cannot start or fail, assign-canonical.py runs them itself and
+    a real detector crash still stops the reseed there."""
+    script = Path(__file__).resolve().parent / "content-role-detect" / "fingerprint_content_roles.py"
+    if not script.exists():
+        return
+    try:
+        folder = Path(tempfile.mkdtemp(prefix="sgs-detectors-"))
+        out = folder / "detectors.json"
+        proc = subprocess.Popen(
+            [sys.executable, str(script), "--write-detectors", str(out)],
+            cwd=str(script.parent), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        _discard_content_role_detectors()  # a run left over from an earlier call in this process
+        _DETECTOR_RUN.update(proc=proc, out=out)
+        atexit.register(_discard_content_role_detectors)
+    except OSError as exc:
+        print(f"Stage 1 (content-role detectors): not started early ({exc}); canonical assignment will run them")
+
+
+def _collect_content_role_detectors() -> dict:
+    """Waits for the early run; returns the environment entry that hands its output to assign-canonical.py, or {} when
+    canonical assignment must run the detectors itself."""
+    proc, out = _DETECTOR_RUN.get("proc"), _DETECTOR_RUN.get("out")
+    if proc is None:
+        return {}
+    try:
+        returncode = proc.wait(timeout=600)
+    except subprocess.TimeoutExpired:
+        _kill_process_tree(proc)
+        returncode = None
+    if returncode == 0 and out.is_file() and out.stat().st_size > 0:
+        return {_DETECTORS_ENV: str(out)}
+    print(f"Stage 1 (content-role detectors): the early run did not finish (exit {returncode}); canonical assignment runs them itself")
+    return {}
 
 
 def _start_component_scan() -> None:
@@ -3506,6 +3612,7 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
     c = conn.cursor()
     timings: list = []
     if not dry_run:
+        _start_content_role_detectors()
         _start_component_scan()
     counts = _timed(timings, "index block files", _index_sgs_block_files, blocks_dir, c, dry_run)
     scanned = counts["scanned"]

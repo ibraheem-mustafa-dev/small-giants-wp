@@ -295,6 +295,25 @@ def run_detectors(root: Path | None = None) -> dict[str, list[dict]]:
         return {"D1": first.result(), "D2": second.result(), "D3": third.result()}
 
 
+# Stage 1 of sgs-update-v2.py starts the three detectors (they only read files) at its top and names their output
+# here, so compute() does not run them again after the earlier Stage 1 steps. Unset: compute() runs them itself.
+DETECTORS_ENV = "SGS_CONTENT_ROLE_DETECTORS_JSON"
+
+
+def detectors_from_file(path: str | Path) -> dict[str, list[dict]]:
+    """The findings run_detectors() wrote with `--write-detectors`. A file that is unreadable or has the wrong shape
+    raises: the variable is only set by a run that saw the detectors succeed, so a bad file is a fault, not 'no findings'."""
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or sorted(data) != ["D1", "D2", "D3"] or not all(isinstance(v, list) for v in data.values()):
+        raise ValueError(f"{path} does not hold the D1/D2/D3 findings lists")
+    return data
+
+
+def detector_findings() -> dict[str, list[dict]]:
+    named = os.environ.get(DETECTORS_ENV)
+    return detectors_from_file(named) if named else run_detectors()
+
+
 BLOCKS_DIR = PLUGIN_SCRIPTS.parent / "src" / "blocks"
 _a11y_cache: dict[tuple[str, str], bool] = {}
 
@@ -848,7 +867,7 @@ def compute(db_path: Path | None = None) -> dict:
         sgs_rows = all_sgs_rows(conn)
     finally:
         conn.close()
-    result = fingerprint(run_detectors(), pool)
+    result = fingerprint(detector_findings(), pool)
     result["styling_upgrades"] = _styling_upgrades(styling_rows)
     result["icon_family_corrections"] = _icon_family_corrections(sgs_rows)
     return result
@@ -1092,10 +1111,17 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     ap.add_argument("--json", action="store_true", help="emit the full result as JSON")
     ap.add_argument("--self-test", action="store_true", help="prove the rule can fail")
+    ap.add_argument("--write-detectors", metavar="FILE", help="run the three detectors and write their findings to FILE")
     args = ap.parse_args()
 
     if args.self_test:
         return self_test()
+    if args.write_detectors:
+        target = Path(args.write_detectors)
+        partial = target.with_name(target.name + ".part")
+        partial.write_text(json.dumps(run_detectors()), encoding="utf-8")
+        os.replace(str(partial), str(target))
+        return 0
 
     result = compute()
     if args.json:
