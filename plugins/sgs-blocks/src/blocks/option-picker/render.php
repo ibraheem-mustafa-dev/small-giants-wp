@@ -199,6 +199,11 @@ foreach ( $option_items as $item ) {
 	if ( '' !== $item_image ) {
 		$valid_item['image'] = $item_image;
 	}
+	// A caller's per-item second line (the buybox pack tile's variation price) wins over the term-meta sub-label.
+	$item_sub_label_text = isset( $item['subLabel'] ) ? sanitize_text_field( trim( (string) $item['subLabel'] ) ) : '';
+	if ( '' !== $item_sub_label_text ) {
+		$valid_item['subLabel'] = $item_sub_label_text;
+	}
 	$valid_items[] = $valid_item;
 }
 
@@ -233,7 +238,7 @@ if ( '' === $resolved_default && empty( $attributes['requireChoice'] ) ) {
 // fragment-cached renders; a CLASS not an id so the anchor `id` stays free).
 // ---------------------------------------------------------------------------
 
-$uid        = 'sgs-op-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$uid        = 'sgs-op-' . sgs_instance_scope_hash( $attributes, $block );
 $radio_name = $uid . '-choice';
 $legend_id  = $uid . '-legend';
 $root_sel   = '.' . $uid . '.wp-block-sgs-option-picker';
@@ -394,8 +399,40 @@ if ( '' !== $sgs_op_swatch_scope && class_exists( 'SGS_Media_Element' ) ) {
 
 // --- Root custom-property VALUES (§6) — the ONLY per-instance override
 // channel (Spec 32 FR-32-4), scoped here rather than emitted inline. ---
+$swatch_tick_inside = ! empty( $attributes['swatchTickInside'] );
+$swatch_tick_colour = sgs_colour_value( (string) ( $attributes['swatchTickColour'] ?? '' ) );
+if ( $swatch_tick_inside && '' !== $swatch_tick_colour ) {
+	$var_decls[] = '--sgs-op-swatch-tick:' . $swatch_tick_colour;
+}
 if ( $var_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $var_decls ) . ';}';
+}
+
+// --- Colour dot shape, size and ring (a tile keeps its full-width colour block). Unset prints nothing. ---
+if ( 'tile' !== $pill_style_safe ) {
+	$swatch_decls = array();
+	$swatch_shape = (string) ( $attributes['swatchShape'] ?? '' );
+	if ( 'round' === $swatch_shape ) {
+		$swatch_decls[] = 'border-radius:50%';
+	} elseif ( 'square' === $swatch_shape ) {
+		$swatch_decls[] = 'border-radius:0';
+	}
+	$swatch_size = sgs_css_length_value( (string) ( $attributes['swatchSize'] ?? '' ) );
+	if ( '' !== $swatch_size ) {
+		$swatch_decls[] = 'width:' . $swatch_size;
+		$swatch_decls[] = 'height:' . $swatch_size;
+	}
+	$swatch_ring_width = sgs_css_length_value( (string) ( $attributes['swatchRingWidth'] ?? '' ) );
+	if ( '' !== $swatch_ring_width ) {
+		$swatch_decls[] = 'border-width:' . $swatch_ring_width;
+	}
+	$swatch_ring_colour = sgs_colour_value( (string) ( $attributes['swatchRingColour'] ?? '' ) );
+	if ( '' !== $swatch_ring_colour ) {
+		$swatch_decls[] = 'border-color:' . $swatch_ring_colour;
+	}
+	if ( $swatch_decls ) {
+		$scoped_css[] = "{$root_sel} .sgs-option-picker__swatch--colour{" . implode( ';', $swatch_decls ) . ';}';
+	}
 }
 
 // --- Root box declarations (border-style/width, width, max-width) ---
@@ -488,6 +525,26 @@ if ( '' !== $sel_offset_x || '' !== $sel_offset_y ) {
 }
 if ( $sel_pill_decls ) {
 	$scoped_css[] = "{$root_sel} .sgs-option-picker__option input[type=\"radio\"]:checked ~ .sgs-option-picker__pill{" . implode( ';', $sel_pill_decls ) . ';}';
+}
+
+// --- Hover shift, and no brightening on hover. The shift uses the individual `translate` property so the tile's own
+// hover transform is cleared only when a shift is set. Unset prints nothing. ---
+$hover_offset_x = sgs_css_length_value( (string) ( $attributes['pillHoverOffsetX'] ?? '' ) );
+$hover_offset_y = sgs_css_length_value( (string) ( $attributes['pillHoverOffsetY'] ?? '' ) );
+if ( '' !== $hover_offset_x || '' !== $hover_offset_y ) {
+	$scoped_css[] = "{$root_sel} .sgs-option-picker__option:hover .sgs-option-picker__pill{transform:none;translate:" . ( '' !== $hover_offset_x ? $hover_offset_x : '0' ) . ' ' . ( '' !== $hover_offset_y ? $hover_offset_y : '0' ) . ';}';
+}
+if ( ! empty( $attributes['pillHoverStill'] ) ) {
+	$still_vars = array();
+	if ( '' === (string) $pill_bg_colour_hover && '' === (string) $pill_bg_colour_hover_gradient ) {
+		$still_vars[] = '--sgs-op-bg-hover:var(--sgs-op-bg,transparent)';
+	}
+	if ( '' === (string) $pill_text_colour_hover ) {
+		$still_vars[] = '--sgs-op-text-hover:currentcolor';
+	}
+	if ( $still_vars ) {
+		$scoped_css[] = "{$root_sel}{" . implode( ';', $still_vars ) . ';}';
+	}
 }
 
 // --- Base WP-native style.* — skip-serialised, emitted scoped (contract §A/§b) ---
@@ -850,7 +907,7 @@ foreach ( $valid_items as $item ) {
 	// unaffected. Same accessible name either way: both spans stay inside the
 	// <label>, so a sub-label is simply extra text an AT reads as part of the
 	// existing option label -- no separate aria-* wiring needed.
-	$item_sub_label   = isset( $sub_label_map[ $item['key'] ] ) ? $sub_label_map[ $item['key'] ] : '';
+	$item_sub_label   = isset( $item['subLabel'] ) ? $item['subLabel'] : ( isset( $sub_label_map[ $item['key'] ] ) ? $sub_label_map[ $item['key'] ] : '' );
 	$item_term_badge  = isset( $term_details_map[ $item['key'] ]['badge'] ) ? $term_details_map[ $item['key'] ]['badge'] : '';
 	$item_term_desc   = isset( $term_details_map[ $item['key'] ]['description'] ) ? $term_details_map[ $item['key'] ]['description'] : '';
 	$pill_text_html   = '<span class="sgs-option-picker__pill-text"><span class="sgs-option-picker__pill-label">' . esc_html( $item['label'] ) . '</span>';
@@ -912,8 +969,11 @@ $root_classes = array(
 if ( '' !== $safe_preset ) {
 	$root_classes[] = 'sgs-option-picker--' . $safe_preset;
 }
-if ( ! $show_selected_tick ) {
+if ( ! $show_selected_tick || ( $swatch_tick_inside && 'tile' !== $pill_style_safe ) ) {
 	$root_classes[] = 'sgs-option-picker--no-tick';
+}
+if ( $swatch_tick_inside && 'tile' !== $pill_style_safe ) {
+	$root_classes[] = 'sgs-option-picker--swatch-tick';
 }
 
 // Preset colour slugs — the `color` support is skip-serialised, so re-add the

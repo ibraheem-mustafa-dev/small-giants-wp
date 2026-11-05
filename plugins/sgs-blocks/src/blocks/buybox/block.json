@@ -772,7 +772,9 @@
 						"css:background-color": "pickerBoxBackgroundColour",
 						"css:border-color": "pickerBoxBorderColour",
 						"css:border-width": "pickerBoxBorderWidth",
-						"css:border-radius": "pickerBoxRadius"
+						"css:border-radius": "pickerBoxRadius",
+						"css:padding": "pickerBoxPadding",
+						"css:gap": "pickerBoxGap"
 					}
 				},
 				"pick-preview": {
@@ -873,6 +875,111 @@
 						"css:gap": "pickTileGap"
 					}
 				},
+				"pick-pill-look": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__pill, .sgs-buybox__pick-option",
+					"motion": false,
+					"label": "Pick a set option look",
+					"order": 28,
+					"clusters": [
+						"fill",
+						"text"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:background-color": "pickerPillBackgroundColour",
+						"css:border-color": "pickerPillBorderColour",
+						"css:font-weight": "pickerPillFontWeight"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:translate": "pickerPillHoverOffsetX",
+								"css:translate-y": "pickerPillHoverOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:translate",
+								"css:translate-y"
+							],
+							"_noBaseByDesignNote": "An option's resting shift is none by definition; the hover shift is the hover look itself. Not a suppression hatch."
+						},
+						"current": {
+							"attrMap": {
+								"css:box-shadow": "pickerPillSelectedShadow",
+								"css:box-shadow-color": "pickerPillSelectedShadowColour",
+								"css:translate": "pickerPillSelectedOffsetX",
+								"css:translate-y": "pickerPillSelectedOffsetY"
+							},
+							"noBaseByDesign": [
+								"css:box-shadow",
+								"css:box-shadow-color"
+							],
+							"_noBaseByDesignNote": "The selected option's offset shadow is the selected look itself: an option's resting shadow is none by definition here, as is its resting shift (pickerPillSelectedOffsetX/Y have no resting twin either). Not a suppression hatch: the option picker's own resting pillShadow stays reachable through the picker."
+						}
+					},
+					"_note": "The resting fill, border and weight and the selected shadow and shift of every option in the pick area: forwarded to each sgs/option-picker, printed as custom properties and a checked-option rule for the flavour pills."
+				},
+				"pick-dot": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker__swatch--colour, .sgs-buybox-pick__swatch",
+					"motion": false,
+					"label": "Pick a set colour dot",
+					"order": 29,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:border-radius": "pickerDotShape",
+						"css:width": "pickerDotSize",
+						"css:height": "pickerGroupDotSize",
+						"css:border-width": "pickerDotRingThickness",
+						"css:border-color": "pickerDotRingColour",
+						"css:color": "pickerDotTickColour"
+					},
+					"_note": "pickerDotSize sizes the option pickers' dots and pickerGroupDotSize the pick-several groups' dots; pickerDotTickInside moves the selected tick into the dot."
+				},
+				"pick-heading": {
+					"selector": ".sgs-buybox-pick__hint, .sgs-buybox__picker-hint",
+					"motion": false,
+					"label": "Pick a set heading hint",
+					"order": 30,
+					"clusters": [
+						"colour"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:color": "pickerHintColour"
+					}
+				},
+				"pick-tile-columns": {
+					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__options",
+					"motion": false,
+					"label": "Pick a set tile columns",
+					"order": 31,
+					"clusters": [
+						"layout"
+					],
+					"absentIn": [
+						"main",
+						"guided"
+					],
+					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
+					"attrMap": {
+						"css:grid-template-columns": "pickTileColumns"
+					}
+				},
 				"pick-tile-number": {
 					"selector": ".sgs-buybox__pick-box .sgs-option-picker--tile .sgs-option-picker__pill-label",
 					"motion": false,
@@ -887,7 +994,8 @@
 					],
 					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
 					"attrMap": {
-						"css:font-size": "pickTileNumberSize"
+						"css:font-size": "pickTileNumberSize",
+						"css:font-weight": "pickTileNumberWeight"
 					}
 				},
 				"pick-tile-price": {
@@ -904,7 +1012,8 @@
 					],
 					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
 					"attrMap": {
-						"css:font-size": "pickTilePriceSize"
+						"css:font-size": "pickTilePriceSize",
+						"css:font-weight": "pickTilePriceWeight"
 					}
 				},
 				"pick-tile-each": {
@@ -3174,6 +3283,146 @@
 			"default": "",
 			"description": "Pick a set only: corner radius of the box around the pickers (CSS length)."
 		},
+		"pickerBoxPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: padding inside the box around the pickers, per device {desktop, tablet, mobile}, each a top/right/bottom/left box. Empty keeps the box default."
+		},
+		"pickerBoxGap": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: space between the pick groups inside the box, per device {desktop, tablet, mobile}, each a CSS length such as 20px. Empty keeps the stylesheet gap."
+		},
+		"pickerPillBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: resting fill of every option pill and tile (the pack tiles, base and chip pills and the flavour pills), forwarded to sgs/option-picker as pillBgColour. A palette slug or a hex colour. Empty = each picker's own fill."
+		},
+		"pickerPillBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: resting border colour of every option pill and tile, forwarded to sgs/option-picker as pillBorderColour."
+		},
+		"pickerPillFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of every option pill and tile text (a number such as 700), forwarded to sgs/option-picker as pillFontWeight. Empty = each picker's own weight."
+		},
+		"pickerPillSelectedShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: shadow of a selected option pill or tile as a shape (X Y blur spread, for example 3px 3px 0 0), forwarded to sgs/option-picker as pillSelectedShadow. Empty = no shadow."
+		},
+		"pickerPillSelectedShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the selected option shadow (palette slug or colour)."
+		},
+		"pickerPillSelectedOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: horizontal shift of a selected option (CSS length, for example -2px)."
+		},
+		"pickerPillSelectedOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: vertical shift of a selected option (CSS length, for example -2px)."
+		},
+		"pickerPillHoverOffsetX": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: horizontal shift of an unselected option while the pointer is over it (CSS length, for example -2px), forwarded to sgs/option-picker as pillHoverOffsetX and printed for the flavour pills."
+		},
+		"pickerPillHoverOffsetY": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: vertical shift of an option on hover (CSS length, for example -2px)."
+		},
+		"pickerPillHoverStill": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: options keep their fill and text colour on hover (no brightening); only the hover shift moves them. Off by default."
+		},
+		"pickerLabelFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Font weight of each group heading, forwarded to sgs/option-picker as labelFontWeight and also applied to the pick-several group title. Empty = the stylesheet weight."
+		},
+		"pickGroupHeadings": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: per-group heading text and hint, keyed by the attribute key, for example {\"pa_size\":{\"text\":\"How many\",\"hint\":\"\"}}. Empty text keeps the WooCommerce attribute name."
+		},
+		"pickGroupNumbers": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: number the group headings in order (1 · How many, 2 · Base). Off by default."
+		},
+		"pickerHintColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the hint beside a group heading (palette slug or colour)."
+		},
+		"pickerDotShape": {
+			"type": "string",
+			"enum": [
+				"",
+				"round",
+				"square"
+			],
+			"default": "",
+			"description": "Pick a set only: shape of the colour dots in the pickers (round or square), forwarded to sgs/option-picker as swatchShape. Empty keeps the stylesheet shape."
+		},
+		"pickerDotSize": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: size of the colour dot in an option picker (CSS length such as 20px), forwarded as swatchSize."
+		},
+		"pickerGroupDotSize": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: size of the colour dot in the pick-several groups (CSS length such as 22px)."
+		},
+		"pickerDotRingThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: width of the ring around every colour dot (CSS length such as 2px)."
+		},
+		"pickerDotRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the ring around every colour dot (palette slug or colour)."
+		},
+		"pickerDotTickInside": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: draw the selected tick inside the colour dot instead of the separate tick. Off by default."
+		},
+		"pickerDotTickColour": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: colour of the tick inside the colour dot (palette slug or colour). Empty = white."
+		},
+		"pickTilePriceLine": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: show each pack tile's total price (for example £9.50) between the number and the each-price. Off by default."
+		},
+		"pickTilePriceWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of the price line on a pack tile (a number such as 700)."
+		},
+		"pickTileNumberWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: font weight of the number on a pack tile (a number such as 400)."
+		},
+		"pickTileColumns": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: number of columns of pack tiles per device {desktop, tablet, mobile}, each a whole number from 1 to 12. Empty keeps the automatic columns."
+		},
 		"pickSummaryFontSize": {
 			"type": "object",
 			"default": {}
@@ -3277,6 +3526,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Pick a set only: hide the product photo gallery so the picker, preview and summary fill the width. Off by default."
+		},
+		"pickHidePreview": {
+			"type": "boolean",
+			"default": false,
+			"description": "Pick a set only: hide the preview picture (image and flavour dots). The summary line and per-unit line then sit under the pick groups at full width. Off by default."
 		},
 		"previewBackgroundColour": {
 			"type": "string",

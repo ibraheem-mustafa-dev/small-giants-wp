@@ -247,3 +247,6 @@ require_once __DIR__ . '/media/atoms/link.php';
 // Spec 43 FR-43-25 — a term's badge/description fallback for choice-flow
 // product-option steps that don't override them.
 require_once __DIR__ . '/choice-flow-term-details.php';
+
+// The per-instance scope hash (defaults left out, so a new setting never renames an existing instance).
+require_once __DIR__ . '/helpers-instance-scope-hash.php';

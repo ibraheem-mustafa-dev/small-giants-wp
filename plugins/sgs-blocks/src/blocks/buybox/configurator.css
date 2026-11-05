@@ -30,10 +30,23 @@
 		align-items: start;
 	}
 
+	.sgs-buybox-pick--no-preview {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	.sgs-buybox-pick__live,
 	.sgs-buybox-pick__undo-row {
 		grid-column: 1 / -1;
 	}
+}
+
+/* Preview picture hidden: the summary and per-unit lines flow under the groups, start-aligned. */
+.sgs-buybox-pick--no-preview .sgs-buybox-pick__side {
+	justify-items: start;
+}
+
+.sgs-buybox-pick--no-preview .sgs-buybox-pick__caption {
+	text-align: start;
 }
 
 /* ── Group ─────────────────────────────────────────────────────────── */
@@ -48,6 +61,16 @@
 	margin: 0;
 	font-weight: 700;
 	color: var(--wp--preset--color--text);
+}
+
+/* The quiet line beside a group heading (for example "Up to 3, split evenly"): normal weight and case, muted. */
+.sgs-buybox-pick__hint,
+.sgs-buybox__picker-hint {
+	margin-inline-start: 0.5em;
+	font-weight: 400;
+	text-transform: none;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--text-muted, var(--wp--preset--color--text));
 }
 
 .sgs-buybox-pick__group-error {
@@ -88,9 +111,11 @@
 	min-width: 44px;
 	padding: 0.5rem 0.9rem;
 	cursor: pointer;
+	margin-bottom: 0;
+	font-weight: var(--sgs-pick-weight, inherit);
 	color: var(--wp--preset--color--text);
-	background: var(--wp--preset--color--surface);
-	border: 2px solid color-mix(in srgb, var(--wp--preset--color--text) 35%, transparent);
+	background: var(--sgs-pick-bg, var(--wp--preset--color--surface));
+	border: 2px solid var(--sgs-pick-border, color-mix(in srgb, var(--wp--preset--color--text) 35%, transparent));
 	border-radius: var(--wp--custom--border-radius--medium, 0.75rem);
 	transition: background-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease), border-color var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease, ease);
 }
@@ -106,8 +131,8 @@
 }
 
 .sgs-buybox-pick__option:hover {
-	background: color-mix(in srgb, var(--wp--preset--color--surface) 70%, white);
-	border-color: var(--wp--preset--color--text);
+	background: var(--sgs-pick-bg-hover, color-mix(in srgb, var(--wp--preset--color--surface) 70%, white));
+	border-color: var(--sgs-pick-border-hover, var(--wp--preset--color--text));
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked) {
@@ -117,7 +142,7 @@
 }
 
 .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked):hover {
-	background: color-mix(in srgb, var(--wp--preset--color--accent) 80%, white);
+	background: var(--sgs-pick-sel-hover-bg, color-mix(in srgb, var(--wp--preset--color--accent) 80%, white));
 }
 
 .sgs-buybox-pick__option-body {
@@ -176,9 +201,12 @@
 	top: -0.75rem;
 	left: 50%;
 	transform: translateX(-50%);
-	padding: 0.05rem 0.6rem;
+	padding: 1px 0.5625rem;
 	font-size: var(--wp--preset--font-size--small);
 	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: normal;
+	box-shadow: none;
 	white-space: nowrap;
 	border: 2px solid var(--wp--preset--color--text);
 	border-radius: 999px;
@@ -189,13 +217,13 @@
 /* Looks mapped from the option picker's own enum. */
 
 .sgs-buybox-pick__options--filled .sgs-buybox-pick__option {
-	background: var(--wp--preset--color--surface-alt);
-	border-color: transparent;
+	background: var(--sgs-pick-bg, var(--wp--preset--color--surface-alt));
+	border-color: var(--sgs-pick-border, transparent);
 }
 
 .sgs-buybox-pick__options--ghost .sgs-buybox-pick__option {
-	background: transparent;
-	border-color: transparent;
+	background: var(--sgs-pick-bg, transparent);
+	border-color: var(--sgs-pick-border, transparent);
 }
 
 .sgs-buybox-pick__options--ghost .sgs-buybox-pick__option:hover {
@@ -213,6 +241,24 @@
 	width: 100%;
 	height: 4rem;
 	border-radius: var(--wp--custom--border-radius--small, 0.5rem);
+}
+
+/* Selected tick drawn inside the dot (pickerDotTickInside): transparent until the option is checked. */
+.sgs-buybox-pick--dot-tick .sgs-buybox-pick__swatch {
+	display: inline-grid;
+	place-items: center;
+}
+
+.sgs-buybox-pick--dot-tick .sgs-buybox-pick__swatch::after {
+	content: "\2713";
+	color: transparent;
+	font-size: 0.7rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.sgs-buybox-pick--dot-tick .sgs-buybox-pick__option:has(.sgs-buybox-pick__input:checked) .sgs-buybox-pick__swatch::after {
+	color: var(--sgs-pick-dot-tick, #fff);
 }
 
 /* ── Shopper-set counts stepper ────────────────────────────────────── */

@@ -542,6 +542,86 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( selVars.length ) {
 			css += `${ root }{${ selVars.join( ';' ) };}`;
 		}
+		// The look settings render.php forwards to the pickers and prints for the flavour pills.
+		const box = `${ root } .sgs-buybox__pick-box`;
+		const pickerVars = [];
+		const pickVars = [];
+		[
+			[ attributes.pickerPillBackgroundColour, '--sgs-op-bg', '--sgs-pick-bg' ],
+			[ attributes.pickerPillBorderColour, '--sgs-op-border', '--sgs-pick-border' ],
+		].forEach( ( [ value, opVar, pickVar ] ) => {
+			if ( value ) {
+				pickerVars.push( `${ opVar }:${ resolve( value ) }` );
+				pickVars.push( `${ pickVar }:${ resolve( value ) }` );
+			}
+		} );
+		if ( /^[1-9]00$/.test( attributes.pickerPillFontWeight || '' ) ) {
+			pickVars.push( `--sgs-pick-weight:${ attributes.pickerPillFontWeight }` );
+			css += `${ box } .sgs-option-picker:not(.sgs-option-picker--tile) .sgs-option-picker__pill{font-weight:${ attributes.pickerPillFontWeight };}`;
+		}
+		if ( pickerVars.length ) {
+			css += `${ box } .sgs-option-picker{${ pickerVars.join( ';' ) };}`;
+		}
+		if ( attributes.pickerDotTickInside && attributes.pickerDotTickColour ) {
+			pickVars.push( `--sgs-pick-dot-tick:${ resolve( attributes.pickerDotTickColour ) }` );
+		}
+		if ( pickVars.length ) {
+			css += `${ root }{${ pickVars.join( ';' ) };}`;
+		}
+		const selShadow = composeShadow( attributes.pickerPillSelectedShadow, attributes.pickerPillSelectedShadowColour );
+		const selDecls = [];
+		if ( selShadow ) {
+			selDecls.push( `box-shadow:${ selShadow }` );
+		}
+		if ( attributes.pickerPillSelectedOffsetX || attributes.pickerPillSelectedOffsetY ) {
+			selDecls.push( `translate:${ attributes.pickerPillSelectedOffsetX || '0' } ${ attributes.pickerPillSelectedOffsetY || '0' }` );
+		}
+		if ( selDecls.length ) {
+			css += `${ box } .sgs-option-picker__option--selected .sgs-option-picker__pill,${ box } .sgs-option-picker__option input:checked ~ .sgs-option-picker__pill{${ selDecls.join( ';' ) };}`;
+		}
+		const dotDecls = [];
+		if ( 'round' === attributes.pickerDotShape ) {
+			dotDecls.push( 'border-radius:50%' );
+		} else if ( 'square' === attributes.pickerDotShape ) {
+			dotDecls.push( 'border-radius:0' );
+		}
+		if ( attributes.pickerGroupDotSize ) {
+			dotDecls.push( `width:${ safeLength( attributes.pickerGroupDotSize ) }`, `height:${ safeLength( attributes.pickerGroupDotSize ) }` );
+		}
+		if ( attributes.pickerDotRingThickness ) {
+			dotDecls.push( `border-width:${ safeLength( attributes.pickerDotRingThickness ) }` );
+		}
+		if ( attributes.pickerDotRingColour ) {
+			dotDecls.push( `border-color:${ resolve( attributes.pickerDotRingColour ) }` );
+		}
+		if ( dotDecls.length ) {
+			css += `${ root } .sgs-buybox-pick__swatch{${ dotDecls.join( ';' ) };}`;
+		}
+		css += typographyPreviewCss( attributes, 'pickerLabel', `${ root } .sgs-buybox-pick__group-title`, tier );
+		if ( attributes.pickerLabelColour ) {
+			css += `${ root } .sgs-buybox-pick__group-title{color:${ resolve( attributes.pickerLabelColour ) };}`;
+		}
+		if ( attributes.pickerHintColour ) {
+			css += `${ root } .sgs-buybox-pick__hint{color:${ resolve( attributes.pickerHintColour ) };}`;
+		}
+		const boxPad = Object.entries( tierBoxLonghands( attributes.pickerBoxPadding, tier, 'padding' ) ).map( ( [ prop, val ] ) => `${ kebab( prop ) }:${ val }` );
+		if ( boxPad.length ) {
+			css += `${ box }{${ boxPad.join( ';' ) };}`;
+		}
+		const boxGap = tierValueOf( attributes.pickerBoxGap, tier );
+		if ( boxGap ) {
+			css += `${ box }{gap:${ safeLength( boxGap ) };}`;
+		}
+		const cols = attributes.pickTileColumns && 'object' === typeof attributes.pickTileColumns ? attributes.pickTileColumns[ tier ] || attributes.pickTileColumns.desktop : 0;
+		if ( cols >= 1 && cols <= 12 ) {
+			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__options{grid-template-columns:repeat(${ parseInt( cols, 10 ) },minmax(0,1fr));}`;
+		}
+		if ( /^[1-9]00$/.test( attributes.pickTileNumberWeight || '' ) ) {
+			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__pill-label{font-weight:${ attributes.pickTileNumberWeight };}`;
+		}
+		if ( /^[1-9]00$/.test( attributes.pickTilePriceWeight || '' ) ) {
+			css += `${ box } .sgs-option-picker--tile .sgs-option-picker__sub-label{font-weight:${ attributes.pickTilePriceWeight };}`;
+		}
 	}
 	// Pick a set: the box around the pickers (render.php paints the same four settings on .sgs-buybox-pick__groups).
 	if ( 'configurator' === attributes.buyboxLayout ) {
@@ -700,11 +780,23 @@ function SampleOptionGroup( {
 function SamplePickSet( { attributes } ) {
 	const looks = attributes.groupStyles && 'object' === typeof attributes.groupStyles ? Object.values( attributes.groupStyles ) : [];
 	const style = [ 'filled', 'outlined', 'ghost', 'tile' ].includes( looks[ 0 ] ) ? looks[ 0 ] : 'outlined';
+	// The sample group is the last one, after three variation pickers, so an auto number reads 4.
+	const row = attributes.pickGroupHeadings && 'object' === typeof attributes.pickGroupHeadings ? Object.values( attributes.pickGroupHeadings )[ 0 ] || {} : {};
+	const heading = row.text || row.hint || attributes.pickGroupNumbers
+		? { text: `${ attributes.pickGroupNumbers ? '4 · ' : '' }${ row.text || __( 'Flavour', 'sgs-blocks' ) }`, hint: row.hint || '' }
+		: null;
 	return (
-		<div className="sgs-buybox-pick">
+		<div className={ `sgs-buybox-pick${ true === attributes.pickHidePreview ? ' sgs-buybox-pick--no-preview' : '' }${ attributes.pickerDotTickInside ? ' sgs-buybox-pick--dot-tick' : '' }` }>
 			<div className="sgs-buybox-pick__groups sgs-buybox__pick-box">
 				<div className="sgs-buybox-pick__group" role="group" aria-label={ __( 'Flavour', 'sgs-blocks' ) }>
-					<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
+					{ heading ? (
+						<p className="sgs-buybox-pick__group-title">
+							{ heading.text }
+							{ heading.hint && <span className="sgs-buybox-pick__hint">{ heading.hint }</span> }
+						</p>
+					) : (
+						<p className="sgs-buybox-pick__group-title">{ __( 'Flavour, choose up to 3', 'sgs-blocks' ) }</p>
+					) }
 					<div className={ `sgs-buybox-pick__options sgs-buybox-pick__options--${ style }` }>
 						{ [ __( 'Vanilla', 'sgs-blocks' ), __( 'Mango', 'sgs-blocks' ), __( 'Mint', 'sgs-blocks' ) ].map( ( name ) => (
 							<span key={ name } className="sgs-buybox-pick__option">
@@ -718,7 +810,7 @@ function SamplePickSet( { attributes } ) {
 				</div>
 			</div>
 			<div className="sgs-buybox-pick__side">
-				<div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" />
+				{ true !== attributes.pickHidePreview && <div className="sgs-buybox-pick__preview-box sgs-buybox__pick-preview sgs-buybox-pick__preview-box--plain" aria-hidden="true" /> }
 				<p className="sgs-buybox-pick__caption sgs-buybox__pick-summary">{ ( attributes.summaryText || 'Your {pack}: {split}' ).replace( '{pack}', '20' ).replace( '{split}', '7 Vanilla · 7 Mango · 6 Mint' ).replace( /\{[a-z_]+\}/g, '' ) }</p>
 			</div>
 		</div>

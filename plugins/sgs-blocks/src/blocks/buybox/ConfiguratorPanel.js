@@ -5,6 +5,7 @@ import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
+import ConfiguratorLookPanel from './ConfiguratorLookPanel';
 import { fillRow, textRow, ResponsiveBoxControl, ResponsiveLengthControl, SgsLengthControl } from '../../components';
 
 const STYLE_OPTIONS = [
@@ -164,7 +165,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, showPriceRow: true } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewImageId: 0, previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, showPriceRow: true } ) }>
 				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
 						<SelectControl
@@ -225,6 +226,15 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						checked={ true === attributes.pickHideGallery }
 						onChange={ ( val ) => setAttributes( { pickHideGallery: val } ) }
 						help={ __( 'The picker, preview and summary then fill the width.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+					/>
+				</Item>
+				<Item label={ __( 'Hide the preview picture', 'sgs-blocks' ) } name="pickHidePreview" fallback={ false } attributes={ attributes } setAttributes={ setAttributes }>
+					<ToggleControl
+						label={ __( 'Hide the preview picture', 'sgs-blocks' ) }
+						checked={ true === attributes.pickHidePreview }
+						onChange={ ( val ) => setAttributes( { pickHidePreview: val } ) }
+						help={ __( 'The summary line then sits under the pick groups at full width.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 					/>
 				</Item>
@@ -387,6 +397,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 				</Item>
 				</ToolsPanel>
 			</PanelBody>
+			<ConfiguratorLookPanel attributes={ attributes } setAttributes={ setAttributes } list={ state.list } />
 		</InspectorControls>
 	);
 }
@@ -413,6 +424,11 @@ export function configuratorColourRows( { attributes, setAttributes } ) {
 		fillRow( { key: 'pickSelectedBorder', label: __( 'Selected option border colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedBorderColour' }, attributes, setAttributes } ),
 		fillRow( { key: 'pickBadgeFill', label: __( 'Term badge fill', 'sgs-blocks' ), attrs: { base: 'pickBadgeBackgroundColour' }, attributes, setAttributes } ),
 		textRow( { key: 'pickBadgeText', label: __( 'Term badge text colour', 'sgs-blocks' ), attrs: { base: 'pickBadgeTextColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerPillFill', label: __( 'Option fill (resting)', 'sgs-blocks' ), attrs: { base: 'pickerPillBackgroundColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerPillBorder', label: __( 'Option border colour (resting)', 'sgs-blocks' ), attrs: { base: 'pickerPillBorderColour' }, attributes, setAttributes } ),
+		fillRow( { key: 'pickerDotRing', label: __( 'Colour dot ring colour', 'sgs-blocks' ), attrs: { base: 'pickerDotRingColour' }, attributes, setAttributes } ),
+		textRow( { key: 'pickerDotTick', label: __( 'Tick colour inside the colour dot', 'sgs-blocks' ), attrs: { base: 'pickerDotTickColour' }, attributes, setAttributes } ),
+		textRow( { key: 'pickerHint', label: __( 'Heading hint colour', 'sgs-blocks' ), attrs: { base: 'pickerHintColour' }, attributes, setAttributes } ),
 		textRow( { key: 'pickSelectedText', label: __( 'Selected option text colour', 'sgs-blocks' ), attrs: { base: 'pickSelectedTextColour' }, attributes, setAttributes } ),
 	];
 }

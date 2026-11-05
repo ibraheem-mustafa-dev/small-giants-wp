@@ -147,6 +147,7 @@ $buybox_is_guided       = ( 'guided' === $buybox_layout );
 $buybox_is_configurator = ( 'configurator' === $buybox_layout );
 $buybox_cfg_state       = array();
 $buybox_cfg_form_id     = '';
+$buybox_cfg_heading_n   = 0;
 if ( $buybox_is_configurator ) {
 	// The "Pick a set" mode: pick-several groups, preview and summary (configurator.php). Loaded only in this mode.
 	require_once dirname( __DIR__, 3 ) . '/includes/configurator-picks/functions.php';
@@ -548,13 +549,13 @@ if ( $add_to_cart_hover_lift ) {
 // attrs below — padding is off, so nothing else to route.
 // ---------------------------------------------------------------------------
 
-$uid      = 'sgs-bb-' . substr( md5( wp_json_encode( $attributes ) . wp_json_encode( $block->context ) ), 0, 8 );
+$uid      = 'sgs-bb-' . sgs_instance_scope_hash( $attributes, $block, wp_json_encode( $block->context ) );
 $root_sel = '.' . $uid . '.wp-block-sgs-buybox';
 
 $scoped_css = array();
 if ( $buybox_is_configurator ) {
 	$buybox_cfg_form_id = $uid . '-form';
-	$scoped_css         = array_merge( $scoped_css, sgs_buybox_configurator_css( $buybox_cfg_state, $attributes, $root_sel ) );
+	$scoped_css         = array_merge( $scoped_css, sgs_buybox_configurator_css( $buybox_cfg_state, $attributes, $root_sel, sgs_object_attr_keys( $block ) ) );
 	// The summary's own typography and colour (the saving badge's typography set under the prefix pickSummary).
 	$buybox_pick_summary_css = sgs_typography_css_rule( $attributes, 'pickSummary', $root_sel . ' .sgs-buybox__pick-summary', '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $buybox_pick_summary_css ) {
@@ -881,7 +882,7 @@ if ( '' !== $sgs_bb_add_to_cart_border_css ) {
 // comment for why forwarding is the default path.
 // $buybox_picker_show_selected_value/$buybox_picker_has_link are computed
 // early, above the RRP block.
-if ( $buybox_picker_show_selected_value || $buybox_picker_has_link ) {
+if ( $buybox_picker_show_selected_value || $buybox_picker_has_link || ( $buybox_is_configurator && ! empty( $attributes['pickGroupHeadings'] ) ) ) {
 	$sgs_bb_picker_label_typo_css = sgs_typography_css_rule( $attributes, 'pickerLabel', $root_sel . ' .sgs-buybox__picker-label-text', '', false, false, sgs_object_attr_keys( $block ) );
 	if ( '' !== $sgs_bb_picker_label_typo_css ) {
 		$scoped_css[] = $sgs_bb_picker_label_typo_css;
@@ -1353,6 +1354,12 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 				continue;
 			}
 
+			// Pick a set: the group heading settings (text, auto number, hint) rename this axis's label.
+			if ( $buybox_is_configurator ) {
+				++$buybox_cfg_heading_n;
+				$axis = sgs_buybox_configurator_axis_heading( $axis, $attributes, $buybox_cfg_heading_n );
+			}
+
 			$buybox_axis_has_swatch = sgs_buybox_axis_has_swatch( $buybox_axis_taxonomy, $terms );
 			$buybox_axis_style      = $buybox_axis_has_swatch
 				? $buybox_picker_swatch_style
@@ -1421,7 +1428,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			// itself never shows both on the same row).
 			$buybox_axis_has_link = $buybox_picker_has_link && $buybox_axis_taxonomy === $buybox_picker_link_axis;
 
-			if ( $buybox_axis_has_link || $buybox_picker_show_selected_value ) {
+			if ( $buybox_axis_has_link || $buybox_picker_show_selected_value || '' !== (string) ( $axis['hint'] ?? '' ) ) {
 				// This block replaces option-picker's own visible legend with
 				// its own label(+value/+link) row below — option-picker has no
 				// "show selected value"/"label link" concept to forward to, so
@@ -1436,6 +1443,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 						esc_url( $buybox_picker_link_url ),
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_rich_text_kses() is wp_kses over an allowlist.
 						sgs_rich_text_kses( $buybox_picker_link_text, false )
+					);
+				} elseif ( ! $buybox_picker_show_selected_value ) {
+					// Pick a set heading hint: the label and a quiet line beside it.
+					printf(
+						'<div class="sgs-buybox__picker-label-row"><span class="sgs-buybox__picker-label-text">%s</span><span class="sgs-buybox__picker-hint">%s</span></div>',
+						esc_html( $axis['label'] ),
+						esc_html( (string) $axis['hint'] )
 					);
 				} else {
 					$buybox_axis_default_slug  = (string) ( $manifest['defaultAxes'][ $buybox_axis_taxonomy ] ?? '' );
@@ -1470,6 +1484,10 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 				}
 			}
 
+			if ( $buybox_is_configurator ) {
+				$buybox_picker_attrs = sgs_buybox_configurator_picker_attrs( $buybox_picker_attrs, $attributes, $buybox_axis_style, $axis, $manifest, array( 'mode' => $tax_mode, 'suffix' => $price_suffix, 'pack_axis' => (string) ( $buybox_cfg_state['pack']['key'] ?? '' ) ) );
+			}
+
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() returns fully-rendered, escaped block markup.
 			echo render_block(
 				array(
@@ -1479,7 +1497,7 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 			);
 		}
 		if ( $buybox_is_configurator ) {
-			echo sgs_buybox_configurator_close( $buybox_cfg_state, $attributes, $buybox_cfg_form_id, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
+			echo sgs_buybox_configurator_close( $buybox_cfg_state, $attributes, $buybox_cfg_form_id, $uid, $buybox_cfg_heading_n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
 		}
 	endif;
 	?>

@@ -15,6 +15,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/configurator-look.php';
+
 if ( ! function_exists( 'sgs_buybox_configurator_styles' ) ) {
 	/**
 	 * The picker looks a group may wear, mapped onto the option picker's own `pickerStyle` enum.
@@ -65,9 +67,10 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 	 * @param array<string,mixed> $state      From sgs_buybox_configurator_state().
 	 * @param array<string,mixed> $attributes Block attributes.
 	 * @param string              $root_sel   The block's scoped root selector.
+	 * @param string[]            $tiered_keys Attribute keys declared as per-device objects.
 	 * @return string[] CSS rules.
 	 */
-	function sgs_buybox_configurator_css( array $state, array $attributes, string $root_sel ): array {
+	function sgs_buybox_configurator_css( array $state, array $attributes, string $root_sel, array $tiered_keys = array() ): array {
 		$css = array();
 		foreach ( $state['all'] as $group ) {
 			foreach ( $group['terms'] as $term ) {
@@ -105,7 +108,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_css' ) ) {
 		if ( $box ) {
 			$css[] = $root_sel . ' .sgs-buybox__pick-box{' . implode( ';', $box ) . ';padding:var(--wp--preset--spacing--30,1rem);}';
 		}
-		return $css;
+		return array_merge( $css, sgs_buybox_configurator_extra_css( $attributes, $root_sel, $tiered_keys ) );
 	}
 }
 
@@ -300,14 +303,15 @@ if ( ! function_exists( 'sgs_buybox_configurator_group_html' ) ) {
 	/**
 	 * One pick-several group: a heading with its limit, then one real checkbox per option.
 	 *
-	 * @param array<string,mixed> $group      Group from the resolver.
-	 * @param string              $style      filled|outlined|ghost|tile.
-	 * @param string              $form_id    The add-to-cart form's id (inputs are tied to it with `form`).
-	 * @param string              $uid        Block uid (makes the heading id unique per box).
-	 * @param int                 $pack_max   Largest pack, for the counts steppers (0 when none).
+	 * @param array<string,mixed>  $group    Group from the resolver.
+	 * @param string               $style    filled|outlined|ghost|tile.
+	 * @param string               $form_id  The add-to-cart form's id (inputs are tied to it with `form`).
+	 * @param string               $uid      Block uid (makes the heading id unique per box).
+	 * @param int                  $pack_max Largest pack, for the counts steppers (0 when none).
+	 * @param array<string,string> $heading  Heading text and hint from sgs_buybox_configurator_heading_parts(); empty keeps the default heading.
 	 * @return string Escaped markup.
 	 */
-	function sgs_buybox_configurator_group_html( array $group, string $style, string $form_id, string $uid, int $pack_max ): string {
+	function sgs_buybox_configurator_group_html( array $group, string $style, string $form_id, string $uid, int $pack_max, array $heading = array() ): string {
 		$flags   = $group['flags'];
 		$key     = (string) $group['key'];
 		$label   = (string) $group['label'];
@@ -332,7 +336,16 @@ if ( ! function_exists( 'sgs_buybox_configurator_group_html' ) ) {
 		/* translators: %1$d: fewest picks, %2$s: option group name. */
 		$out .= ' data-least-message="' . esc_attr( sprintf( __( 'Please choose at least %1$d for %2$s.', 'sgs-blocks' ), $least, $label ) ) . '"';
 		$out .= ' data-err-id="' . esc_attr( $err_id ) . '">';
-		$out .= '<p class="sgs-buybox-pick__group-title" id="' . esc_attr( $head_id ) . '">' . esc_html( $title ) . '</p>';
+		if ( array() === $heading ) {
+			$out .= '<p class="sgs-buybox-pick__group-title" id="' . esc_attr( $head_id ) . '">' . esc_html( $title ) . '</p>';
+		} else {
+			// The author's heading; the limit stays in the accessible name through a screen-reader-only tail.
+			$out .= '<p class="sgs-buybox-pick__group-title" id="' . esc_attr( $head_id ) . '">' . esc_html( $heading['text'] );
+			if ( '' !== $heading['hint'] ) {
+				$out .= ' <span class="sgs-buybox-pick__hint">' . esc_html( $heading['hint'] ) . '</span>';
+			}
+			$out .= '<span class="sgs-sr-only">' . esc_html( substr( $title, strlen( $label ) ) ) . '</span></p>';
+		}
 		$out .= '<div class="sgs-buybox-pick__options sgs-buybox-pick__options--' . esc_attr( $style ) . '">';
 		foreach ( $group['terms'] as $term ) {
 			$slug    = (string) $term['slug'];
@@ -396,7 +409,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 				}
 			}
 		}
-		$out  = '<div class="sgs-buybox-pick" data-sgs-pick';
+		$out  = '<div class="sgs-buybox-pick' . ( ! empty( $attributes['pickHidePreview'] ) ? ' sgs-buybox-pick--no-preview' : '' ) . ( ! empty( $attributes['pickerDotTickInside'] ) ? ' sgs-buybox-pick--dot-tick' : '' ) . '" data-sgs-pick';
 		$out .= ' data-summary="' . esc_attr( $template ) . '"';
 		$out .= ' data-pack-axis="' . esc_attr( $pack['key'] ) . '"';
 		$out .= ' data-pack-units="' . esc_attr( (string) wp_json_encode( (object) $pack['units'] ) ) . '"';
@@ -410,24 +423,27 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 	/**
-	 * Everything after the pickers: the pick groups, then the side column (preview, caption) and the shared messages.
+	 * Everything after the pickers: the pick groups, then the side column (preview, caption; the preview box is left out when `pickHidePreview` is on) and the shared messages.
 	 *
 	 * @param array<string,mixed> $state      From sgs_buybox_configurator_state().
 	 * @param array<string,mixed> $attributes Block attributes.
 	 * @param string              $form_id    The add-to-cart form's id.
 	 * @param string              $uid        Block uid.
+	 * @param int                 $heading_offset Groups numbered before these (the variation pickers), for the auto number.
 	 * @return string Escaped markup.
 	 */
-	function sgs_buybox_configurator_close( array $state, array $attributes, string $form_id, string $uid ): string {
+	function sgs_buybox_configurator_close( array $state, array $attributes, string $form_id, string $uid, int $heading_offset = 0 ): string {
 		$styles    = sgs_buybox_configurator_styles();
 		$by_key    = is_array( $attributes['groupStyles'] ?? null ) ? $attributes['groupStyles'] : array();
 		$fallback  = sanitize_key( (string) ( $attributes['pickerStyle'] ?? '' ) );
 		$pack_max  = array() !== $state['pack']['units'] ? max( $state['pack']['units'] ) : 0;
 		$out       = '';
+		$position  = $heading_offset;
 		foreach ( $state['groups'] as $key => $group ) {
+			++$position;
 			$style = sanitize_key( (string) ( $by_key[ $key ] ?? '' ) );
 			$style = in_array( $style, $styles, true ) ? $style : ( in_array( $fallback, $styles, true ) ? $fallback : 'outlined' );
-			$out  .= sgs_buybox_configurator_group_html( $group, $style, $form_id, $uid, $pack_max );
+			$out  .= sgs_buybox_configurator_group_html( $group, $style, $form_id, $uid, $pack_max, sgs_buybox_configurator_heading_parts( $attributes, (string) $key, (string) $group['label'], $position ) );
 		}
 		$out .= '</div>'; // End .sgs-buybox-pick__groups.
 
@@ -435,7 +451,9 @@ if ( ! function_exists( 'sgs_buybox_configurator_close' ) ) {
 		$image    = $image_id > 0 ? wp_get_attachment_image( $image_id, 'large', false, array( 'class' => 'sgs-buybox-pick__preview-image', 'alt' => '', 'loading' => 'lazy' ) ) : '';
 		$out     .= '<div class="sgs-buybox-pick__side">';
 		$out     .= '<figure class="sgs-buybox-pick__preview">';
-		$out     .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+		if ( empty( $attributes['pickHidePreview'] ) ) {
+			$out .= '<div class="sgs-buybox-pick__preview-box sgs-buybox__pick-preview' . ( '' === $image ? ' sgs-buybox-pick__preview-box--plain' : '' ) . '" role="img" aria-label="" data-sgs-preview>' . $image . '<span class="sgs-buybox-pick__dots" data-sgs-dots aria-hidden="true"></span></div>';
+		}
 		$out     .= '<figcaption class="sgs-buybox-pick__caption sgs-buybox__pick-summary" data-sgs-caption></figcaption>';
 		$out     .= '</figure>';
 		$out     .= '<p class="sgs-buybox-pick__per-unit" data-sgs-per-unit hidden></p>';
