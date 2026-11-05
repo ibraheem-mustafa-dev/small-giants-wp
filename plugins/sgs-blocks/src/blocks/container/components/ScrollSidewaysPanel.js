@@ -11,6 +11,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
+import { TextControl } from '@wordpress/components';
 import {
 	ResponsiveOverride,
 	ResponsiveTriStateControl,
@@ -25,7 +26,7 @@ import { resolveOnTiers } from '../../../utils/responsive';
  * @return {Element|null} The controls (mounted inside the container's Layout panel).
  */
 export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
-	const { scrollSideways, scrollItemWidth } = attributes;
+	const { scrollSideways, scrollItemWidth, scrollRegionLabel } = attributes;
 	// `fx` is the effects extension's attribute (not declared in this block.json).
 	if ( 'horizontal-panel' === attributes.fx ) {
 		return null;
@@ -61,6 +62,19 @@ export default function ScrollSidewaysPanel( { attributes, setAttributes } ) {
 						/>
 					) }
 				</ResponsiveOverride>
+			) }
+			{ onAnywhere && (
+				<TextControl
+					label={ __( 'Row name for screen readers', 'sgs-blocks' ) }
+					help={ __(
+						'Read out when a keyboard or screen-reader user reaches the row. Empty: the nearest heading before it, then "Scrolling row".',
+						'sgs-blocks'
+					) }
+					value={ scrollRegionLabel || '' }
+					onChange={ ( value ) => setAttributes( { scrollRegionLabel: value } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
 			) }
 		</>
 	);

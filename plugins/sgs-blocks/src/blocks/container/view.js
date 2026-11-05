@@ -12,6 +12,7 @@
  */
 
 import { initSeparators } from '../../shared/separators';
+import { initScrollRegions } from '../../shared/scroll-region/index.js';
 
 ( function () {
 	'use strict';
@@ -68,6 +69,8 @@ import { initSeparators } from '../../shared/separators';
 	 */
 	function init() {
 		initSeparators();
+		// "Scroll sideways" rows become focusable, named regions while they overflow.
+		initScrollRegions( '.sgs-container__inner[data-sgs-scroll-region]' );
 
 		const responsiveVideos = document.querySelectorAll(
 			'.sgs-container__video-bg--responsive'

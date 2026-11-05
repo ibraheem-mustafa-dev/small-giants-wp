@@ -92,9 +92,13 @@
 					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},
 				"track": {
+					"motion": false,
 					"label": "Slide track",
 					"order": 5,
 					"clusters": [],
+					"attrMap": {
+						"css:padding": "slideBleed"
+					},
 					"_note": "The `.sgs-testimonial-slider__track` scroll strip inside `.stage` — distinct from the `slider` wrapper element above. `slidesVisible` sets the `--sgs-slides-visible` custom property consumed by this element's own CSS. `clusters: []` — slidesVisible is a slide-count control, not a Text/Fill/Layout style value, so it stays an honest by-design orphan rather than being force-mapped to a cluster member that doesn't exist for it."
 				},
 				"list": {
@@ -275,6 +279,22 @@
 			"sgs": {
 				"meaning": {
 					"what": "Sets the space between the testimonial cards in the slider.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "CSS length"
+						}
+					}
+				}
+			}
+		},
+		"slideBleed": {
+			"type": "object",
+			"default": {},
+			"description": "Room around the slide track so a tilted card, a hover lift or an offset shadow is not clipped by the track's overflow, per device: a CSS length. Empty adds none. Printed as padding on the track and an equal negative margin, so the cards stay where they are.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how far a card may paint outside the slider's clip, so tilts, lifts and shadows show in full.",
 					"trigger": "always, from page load",
 					"parameters": {
 						"value": {

@@ -331,6 +331,25 @@ if ( isset( $attributes['slideGap'] ) && is_array( $attributes['slideGap'] ) ) {
 		)
 	);
 }
+// The bleed: room around the track inside its own clip, so a tilted card, a hover lift or an offset shadow is not cut off
+// by the track's overflow. A real padding on the track and an equal negative margin, so the cards do not move.
+if ( isset( $attributes['slideBleed'] ) && is_array( $attributes['slideBleed'] ) ) {
+	$slider_scoped_css .= sgs_emit_responsive_css(
+		$root_sel . ' .sgs-testimonial-slider__track',
+		array(
+			array(
+				'value'     => $attributes['slideBleed'],
+				'css'       => 'padding',
+				'transform' => 'sgs_css_single_length_value',
+			),
+			array(
+				'value'     => $attributes['slideBleed'],
+				'css'       => 'margin',
+				'transform' => 'sgs_css_negated_length_value',
+			),
+		)
+	);
+}
 $track_style_attr   = '';
 
 // ── Unique prefix for slide/dot IDs ────────────────────────────────────────

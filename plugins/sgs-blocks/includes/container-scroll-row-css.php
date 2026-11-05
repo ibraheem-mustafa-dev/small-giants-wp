@@ -107,3 +107,20 @@ if ( ! function_exists( 'sgs_container_scroll_row_css' ) ) {
 		return $css;
 	}
 }
+
+if ( ! function_exists( 'sgs_container_scroll_region_attrs' ) ) {
+	/**
+	 * The attributes that let the container's view script (src/shared/scroll-region) make the row a focusable, named
+	 * region while it overflows: the name from the `scrollRegionLabel` setting (empty: the nearest heading before the row
+	 * names it in the browser), and the name to fall back to when there is no heading.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return string Attribute markup with a leading space, ready for the row's opening tag.
+	 */
+	function sgs_container_scroll_region_attrs( array $attributes ): string {
+		$label = isset( $attributes['scrollRegionLabel'] ) && is_string( $attributes['scrollRegionLabel'] )
+			? trim( sanitize_text_field( $attributes['scrollRegionLabel'] ) )
+			: '';
+		return ' data-sgs-scroll-region="' . esc_attr( $label ) . '" data-sgs-scroll-region-default="' . esc_attr__( 'Scrolling row', 'sgs-blocks' ) . '"';
+	}
+}

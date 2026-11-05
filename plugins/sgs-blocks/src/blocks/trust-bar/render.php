@@ -321,9 +321,7 @@ $tb_extra_scoped_css .= sgs_hover_media_wrap(
 );
 $tb_extra_scoped_css .= sgs_text_colour_gradient_fallback_rule( $root_sel . ':focus-visible', $tb_text_colour_hover_effective );
 
-$tb_extra_attrs = array(
-	'aria-label' => __( 'Trust signals', 'sgs-blocks' ),
-);
+$tb_extra_attrs = array();
 
 // data-columns removed: grid columns are now driven by gridTemplateColumns attr
 // via the universal wrapper mechanism. No CSS selector overrides needed.
@@ -334,14 +332,22 @@ if ( $tb_overflow_drop ) {
 	$tb_extra_attrs['data-overflow-mode'] = 'drop';
 }
 
-// Landmark label override — a fixed 'Trust signals' aria-label is set above
-// regardless of tag (it also names the default <section>'s region landmark).
-// nav/aside only: let the client override it (main was removed from the
-// tagName allowlist entirely; header/footer lose their landmark role once
-// nested so need no label).
+// Landmark name. A <section> is a region landmark only when it has a name, and a <nav> or <aside> is a landmark whatever
+// its name, so:
+// - the Landmark label setting names the bar on every tag (a <div>, <header> or <footer> gets role="region" so the name
+//   is valid on it);
+// - with no label set, a <nav> or <aside> keeps the default "Trust signals" (a landmark should be told apart from its
+//   siblings), and every other tag stays unnamed, because a page with several trust bars would otherwise carry the same
+//   region name more than once (axe landmark-unique) and a decorative strip does not need a landmark of its own.
 $tb_tag_name = isset( $attributes['tagName'] ) ? sanitize_key( $attributes['tagName'] ) : 'section';
-if ( in_array( $tb_tag_name, array( 'nav', 'aside' ), true ) && ! empty( $attributes['ariaLabel'] ) ) {
-	$tb_extra_attrs['aria-label'] = sanitize_text_field( $attributes['ariaLabel'] );
+$tb_label    = isset( $attributes['ariaLabel'] ) && is_string( $attributes['ariaLabel'] ) ? trim( sanitize_text_field( $attributes['ariaLabel'] ) ) : '';
+if ( '' !== $tb_label ) {
+	$tb_extra_attrs['aria-label'] = $tb_label;
+	if ( in_array( $tb_tag_name, array( 'div', 'header', 'footer' ), true ) ) {
+		$tb_extra_attrs['role'] = 'region';
+	}
+} elseif ( in_array( $tb_tag_name, array( 'nav', 'aside' ), true ) ) {
+	$tb_extra_attrs['aria-label'] = __( 'Trust signals', 'sgs-blocks' );
 }
 
 // Wrapper opts — the helper owns the OUTER <div> wrapper + any mirrored

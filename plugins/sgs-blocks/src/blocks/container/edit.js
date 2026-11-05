@@ -584,6 +584,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						? 'sgs-container__inner sgs-container__content-band sgs-container--scroll-row'
 						: 'sgs-container__inner sgs-container__content-band',
 					style: bandStyle,
+					// The same marker the frontend prints on the row (the view script is not loaded in the editor).
+					'data-sgs-scroll-region': scrollRowPreview
+						? attributes.scrollRegionLabel || ''
+						: undefined,
 					ref: gridRef,
 			  }
 			: { ...blockProps, ref: rootRef },

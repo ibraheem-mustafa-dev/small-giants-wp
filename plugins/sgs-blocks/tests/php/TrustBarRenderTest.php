@@ -45,7 +45,7 @@ final class TrustBarRenderTest extends TestCase {
 		. "\n" . '.sgs-container-4a51e85e{--sgs-trust-badge-circle-bg: var(--wp--preset--color--surface, currentColor);--sgs-trust-badge-icon-colour: var(--wp--preset--color--primary-dark, currentColor);--sgs-trust-badge-text-colour: var(--wp--preset--color--text, currentColor);--sgs-trust-badge-circle-shadow: var(--wp--preset--shadow--whisper);}';
 
 	/** Golden wrapper opening tag of the pre-change render for scroll_attrs(). */
-	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-4a51e85e" aria-label="Trust signals">';
+	private const GOLDEN_SCROLL_OPEN_TAG = '<section class="sgs-container sgs-trust-bar sgs-trust-bar--icon-circle sgs-trust-bar--medium sgs-tb-1 sgs-container-4a51e85e">';
 
 	/** @return array<string, mixed> */
 	private function circle_attrs(): array {
