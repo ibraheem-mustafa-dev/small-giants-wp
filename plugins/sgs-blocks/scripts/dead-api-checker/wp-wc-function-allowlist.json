@@ -377,6 +377,7 @@
     "wp_enqueue_style",
     "wp_error",
     "wp_generate_attachment_metadata",
+    "wp_get_global_styles",
     "wp_get_attachment_image",
     "wp_get_attachment_image_sizes",
     "wp_get_attachment_image_src",

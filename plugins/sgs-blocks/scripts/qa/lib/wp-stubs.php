@@ -1102,10 +1102,17 @@ if ( ! function_exists( 'attachment_url_to_postid' ) ) {
 	}
 }
 
-// Image-size lookups (includes/helpers-image-dimensions.php): no transients, no attachment metadata, no uploads folder.
-// A URL then yields no size and the <img> prints without width/height, as for any file the harness cannot read.
+// Image-size lookups (includes/helpers-image-dimensions.php): no attachment metadata, no uploads folder, so a URL yields
+// no size and the <img> prints without width/height, as for any file the harness cannot read. The one transient the
+// harness answers is the product manifest's cache key (`sgs_manifest_v<N>_<product id>_…`, from manifest-stub.php's
+// $GLOBALS['sgs_qa_manifest']), whichever stub file loads first; every other key reads as unset.
 if ( ! function_exists( 'get_transient' ) ) {
 	function get_transient( $key ) {
+		$manifest = $GLOBALS['sgs_qa_manifest'] ?? null;
+		$id       = (int) ( $GLOBALS['sgs_qa_product']['id'] ?? 0 );
+		if ( is_array( $manifest ) && 1 === preg_match( '/^sgs_manifest_v\d+_(\d+)_/', (string) $key, $m ) && (int) $m[1] === $id ) {
+			return $manifest;
+		}
 		return false;
 	}
 }
