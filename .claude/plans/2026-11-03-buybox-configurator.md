@@ -1,6 +1,6 @@
 # Buybox configurator: a universal "Pick a set" mode for `sgs/buybox` (Mama's batch item B8)
 
-Status: built (`f9490d358`) and live on mamas-test 2026-11-03; four items open ("Status and open after the live check"). Replaces the earlier "third choice-flow layout" plan. Research: `.claude/plans/2026-11-03-buybox-configurator-research.md`. Home spec: Spec 27, new group FR-27-PS (Pick-a-set); Spec 43 FR-43-7 is re-pointed to it.
+Status: built (`f9490d358`) and live on mamas-test 2026-11-03; two items open ("Status and open after the live check"). Replaces the earlier "third choice-flow layout" plan. Research: `.claude/plans/2026-11-03-buybox-configurator-research.md`. Home spec: Spec 27, new group FR-27-PS (Pick-a-set); Spec 43 FR-43-7 is re-pointed to it.
 
 ## In plain English
 
@@ -125,11 +125,10 @@ Status: built (`f9490d358`) and live on mamas-test 2026-11-03; four items open (
 ## Status and open after the live check (2026-11-03)
 
 - Built, on main (`f9490d358`), deployed to mamas-test, set up on local-mamas and pushed: Home (page 154, buy box `cr-ref-home-41b`, pinned to product 257, gallery hidden) and the Product template (wp_template 202, `cr-ref-product-18`). Live-checked at 375/768/1440: every group at once; Vanilla pre-selected; a 4th flavour swaps the oldest with the announcement and Undo; "Your 20: 7 Vanilla · 7 Mango · 6 Strawberry"; the right variation and the server-built Flavour text in the cart; two lines for different picks; the 375 sticky bar; keyboard-only; the no-JS form; content audit 0 HIGH. Flavour pills, preview box, summary, Add button, page box and pack tiles match the draft's computed styles.
-- Open, in order:
-  1. Flavour option order is alphabetical: `includes/configurator-picks/class-configurator-groups.php::terms` reads `wc_get_product_terms`, which returns this attribute's terms alphabetically, so `sgs_picks_order_terms` has nothing to reorder; sort by the term's `order_pa_*` meta (WooCommerce's custom ordering) or the product's own option order. `configurator-data.php` already writes `order_pa_flavour` in the draft's order.
-  2. Base and chip pills (priced groups) take the pack tiles' `pickTile*` and `pickSelected*` settings; the draft gives them pill looks (radius 999px, padding 0 18px 0 12px, gap 8px, 16px text). Give priced groups their own pill style settings.
-  3. Pack tile text: the draft splits number 26px, price 14px, each-line 12px; `pickerPillFontSize` scales one label (9.9px live).
-  4. Accessibility: axe colour-contrast (serious) on the selected pack tile's small label (yellow fill); fix with the label colour or size, re-run axe at 375 and 1440.
+- Built since (Track A, 2026-11-04 to 05, on main from `f05693824`, deployed to mamas-test, set on local-mamas from the draft): flavour order follows WooCommerce's term order; priced pills have their own look (`pickPricedRadius`, `pickPricedPadding`, `pickPricedGap`, `pickPricedFontSize`); pack tiles have `pickTileNumberSize`, `pickTilePriceSize` and `pickTileEachSize`; selected-tile text colour is automatic at 4.5:1 (`pickSelectedTextColour`); per-device `galleryColumnGap`, `thumbGap` and `galleryThumbSize` (renamed from `thumbSize`, which the media atom owns).
+- Open, in order (both belong to the merged Mama's stream's next B9 round, `plans/2026-11-02-clone-finishing-streams.md`, "Mama's stream"):
+  1. Priced pill layout: the pills sit in a fixed 3-column grid at 24px tall, where the draft has auto-width 48px pills; add columns or auto width and a height setting (Spec 27 FR-27-PS3).
+  2. The pack tile's term badge ("Most popular", "Best value") fails axe colour-contrast (serious) at 1.42:1 (`#fffaf0` on `#f9cf6e`, 11px bold) on Home and Product; give the badge a colour that reads 4.5:1 on its fill, then re-run axe at 375 and 1440 (FR-27-PS5).
 - The main-photo frame is built (`144908b14`): `mainPhotoBackgroundColour`, `mainPhotoBorderWidth` / `Style` / `Colour`, `mainPhotoRadius`, `mainPhotoShadow` / `mainPhotoShadowColour` in the buy box's "Main photo frame" panel; Mama's sets its values on the product template (2px cocoa border, 28px radius, 8px offset shadow).
 
 ## Parked (named)
