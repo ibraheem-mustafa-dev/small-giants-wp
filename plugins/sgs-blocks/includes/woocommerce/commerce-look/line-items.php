@@ -29,7 +29,7 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= $header . '{display:none;}';
 	}
 
-	// Hide the unit price under the product name (cart only: the line total stays in its own column).
+	// Hide the unit price under the product name (the line total stays in its own column).
 	$unit = sgs_commerce_look_selector( 'item_unit_price', $block, $root );
 	if ( '' !== $unit && true === ( $attrs['sgsItemHideUnitPrice'] ?? false ) ) {
 		$css .= $unit . '{display:none;}';

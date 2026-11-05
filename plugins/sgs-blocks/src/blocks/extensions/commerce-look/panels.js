@@ -102,14 +102,12 @@ export function LineItemsPanel( { attributes, setAttributes, isCart } ) {
 					__nextHasNoMarginBottom
 				/>
 			) }
-			{ isCart && (
-				<ToggleControl
-					label={ __( 'Hide the unit price under the name', 'sgs-blocks' ) }
-					checked={ !! attributes.sgsItemHideUnitPrice }
-					onChange={ ( val ) => setAttributes( { sgsItemHideUnitPrice: val || undefined } ) }
-					__nextHasNoMarginBottom
-				/>
-			) }
+			<ToggleControl
+				label={ __( 'Hide the unit price under the name', 'sgs-blocks' ) }
+				checked={ !! attributes.sgsItemHideUnitPrice }
+				onChange={ ( val ) => setAttributes( { sgsItemHideUnitPrice: val || undefined } ) }
+				__nextHasNoMarginBottom
+			/>
 			<PanelBody title={ __( 'Item name', 'sgs-blocks' ) } initialOpen={ false }>
 				<TextControls { ...shared } prefix="sgsItemName" />
 			</PanelBody>

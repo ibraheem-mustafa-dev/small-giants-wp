@@ -139,9 +139,9 @@
 		},
 		"summary_heading": {
 			"cart": ".wc-block-cart__totals-title",
-			"checkout": ".wc-block-components-checkout-order-summary__title-text",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title .wc-block-components-checkout-order-summary__title-text, .wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper .wc-block-components-title",
 			"wc_version": "11.2.1",
-			"state": "basket filled; any user; checkout title shows at narrow widths only",
+			"state": "basket filled; any user; the sidebar title shows at every width, the title above the place-order button at narrow widths only",
 			"needs": {
 				"basket": "filled"
 			}
@@ -314,6 +314,7 @@
 		},
 		"item_unit_price": {
 			"cart": "table.wc-block-cart-items .wc-block-cart-items__row .wc-block-cart-item__prices",
+			"checkout": ".wc-block-components-order-summary-item__individual-prices",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; any width (the unit price line under the product name)",
 			"needs": {
