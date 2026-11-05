@@ -71,12 +71,32 @@ export function fieldValueText( field ) {
 		valueText = consentCheckbox.checked ? 'Yes' : 'No';
 	}
 
+	// A lone checkbox ("Deliver to this address") answers yes or no, ticked or not.
+	const lone = loneCheckbox( field );
+	if ( lone ) {
+		valueText = lone.checked ? 'Yes' : 'No';
+	}
+
 	return valueText;
 }
 
 /**
+ * The only checkbox of a field that holds exactly one and is not a consent field, else null.
+ *
+ * @param {HTMLElement} field A `.sgs-form-field` element.
+ * @return {HTMLInputElement|null} The checkbox.
+ */
+function loneCheckbox( field ) {
+	if ( field.classList.contains( 'sgs-form-field--consent' ) ) {
+		return null;
+	}
+	const boxes = field.querySelectorAll( 'input[type="checkbox"]' );
+	return 1 === boxes.length ? boxes[ 0 ] : null;
+}
+
+/**
  * The question of a field that prints no visible label element: its aria-label, then its data-label, then its
- * input name made readable ("trade_type[]" reads "Trade type").
+ * a lone checkbox's own words, then its input name made readable ("trade_type[]" reads "Trade type").
  *
  * @param {HTMLElement} field A `.sgs-form-field` element.
  * @return {string} Label text, or '' when the field carries none of the three.
@@ -91,6 +111,13 @@ function fallbackLabelText( field ) {
 	const data = dataEl ? dataEl.getAttribute( 'data-label' ).trim() : '';
 	if ( data ) {
 		return data;
+	}
+	// A lone checkbox with no question asks its own words, shortened to 40 characters.
+	const lone = loneCheckbox( field );
+	const own = lone && lone.id ? field.querySelector( `label[for="${ lone.id }"]` ) : lone?.closest( 'label' );
+	const words = own ? own.textContent.replace( /\s+/g, ' ' ).trim() : '';
+	if ( words ) {
+		return words.length > 40 ? `${ words.slice( 0, 40 ) }…` : words;
 	}
 	const named = field.querySelector( 'input[name], select[name], textarea[name]' );
 	const name = named ? named.getAttribute( 'name' ).replace( /\[\d*\]$/, '' ).replace( /[-_]+/g, ' ' ).replace( /\s+/g, ' ' ).trim() : '';
