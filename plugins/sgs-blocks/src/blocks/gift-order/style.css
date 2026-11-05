@@ -39,9 +39,12 @@
 	min-height: 44px;
 	padding: 0.75rem 1rem;
 	border: 2px solid currentcolor;
-	border-radius: 0.5rem;
 	text-align: center;
 	cursor: pointer;
+}
+
+:where(.sgs-gift-order__tile) {
+	border-radius: 0.5rem;
 }
 
 .sgs-gift-order__tile--selected {

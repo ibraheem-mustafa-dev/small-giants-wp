@@ -169,7 +169,7 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 		// Links in the account content and the log-in forms (not the menu,
 		// buttons or quick cards, which have their own controls).
 		$css[] = sgs_text_states_css(
-			$root_sel . ' .sgs-account__wc a:where(:not(nav *, .button, .wp-element-button, .sgs-account__quick-card))',
+			$root_sel . ' .sgs-account__wc a:where(:not(nav *, .button, .wp-element-button, .sgs-account__quick-card, .sgs-account__auth-tab))',
 			$attributes,
 			array(
 				'base'  => 'contentLinkColour',

@@ -13,7 +13,13 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, AlignItemsTierControl } from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl, AlignItemsTierControl } from '../../components';
+
+const CONTENT_GAP_UNITS = [
+	{ value: 'px', label: 'px', default: 0 },
+	{ value: 'rem', label: 'rem', default: 0 },
+	{ value: 'em', label: 'em', default: 0 },
+];
 import {
 	HeroSplitMediaSourceSection,
 	HeroSplitMediaStylingSection,
@@ -1084,6 +1090,34 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						     box-object attrs) — the legacy mediaBackgroundColour control
 						     was removed (one control per setting); the former deprecated.js v7
 						     migrates the legacy value. */ }
+
+						<ToolsPanelItem
+							label={ __( 'Content stack gap', 'sgs-blocks' ) }
+							hasValue={ () =>
+								!! attributes.contentGap?.desktop ||
+								!! attributes.contentGap?.tablet ||
+								!! attributes.contentGap?.mobile
+							}
+							onDeselect={ () => setAttributes( { contentGap: {} } ) }
+						>
+							<ResponsiveOverride
+								label={ __( 'Space between content items', 'sgs-blocks' ) }
+								value={ attributes.contentGap }
+								onChange={ ( obj ) => setAttributes( { contentGap: obj } ) }
+							>
+								{ ( { ownValue, setOwnValue } ) => (
+									<SgsLengthControl
+										presets={ false }
+										scale="spacing"
+										label={ __( 'Space between content items', 'sgs-blocks' ) }
+										hideLabelFromVision
+										value={ ownValue || '' }
+										units={ CONTENT_GAP_UNITS }
+										onChange={ ( val ) => setOwnValue( val || '' ) }
+									/>
+								) }
+							</ResponsiveOverride>
+						</ToolsPanelItem>
 
 						<ToolsPanelItem
 							label={ __( 'Content area', 'sgs-blocks' ) }

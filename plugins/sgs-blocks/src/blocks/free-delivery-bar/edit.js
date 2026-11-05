@@ -373,6 +373,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						attrNames={ shadowAttrKeys( 'boxShadow' ) }
 					/>
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Bar track border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SgsBorderControl
+						widthValues={
+							attributes.freeDeliveryTrackBorderWidth ?? {}
+						}
+						onWidthChange={ ( next ) =>
+							setAttributes( {
+								freeDeliveryTrackBorderWidth: next,
+							} )
+						}
+						styleValue={ attributes.freeDeliveryTrackBorderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( {
+								freeDeliveryTrackBorderStyle: val,
+							} )
+						}
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourLinked={ true }
+						contrastAgainst={ attributes.freeDeliveryTrackColour }
+						colourValue={ attributes.freeDeliveryTrackBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( {
+								freeDeliveryTrackBorderColour: val ?? '',
+							} )
+						}
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			<div { ...blockProps }>

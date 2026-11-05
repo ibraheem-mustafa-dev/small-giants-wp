@@ -1067,6 +1067,19 @@ if ( $content_bg_gradient_value ) {
 }
 $responsive_css .= '.' . $uid . ' .sgs-hero__content{' . implode( ';', $content_decls ) . '}';
 
+// ── contentGap: the space between the content column's stacked items, per device ──
+// `.sgs-hero__content` is a flex column, so `gap` is the vertical space between its children.
+$responsive_css .= sgs_emit_responsive_css(
+	'.' . $uid . ' .sgs-hero__content',
+	array(
+		array(
+			'value'        => $attributes['contentGap'] ?? null,
+			'css'          => 'gap',
+			'unit_default' => 'px',
+		),
+	)
+);
+
 // ── HC2: text-align on .sgs-hero__content ──────────────────────────────────
 // Desktop = base rule (no @media); tablet/mobile = scoped @media overrides.
 // Each value is allowlisted; empty / unrecognised = no emit (keeps variant

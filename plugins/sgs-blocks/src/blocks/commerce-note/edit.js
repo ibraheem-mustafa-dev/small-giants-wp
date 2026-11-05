@@ -10,18 +10,103 @@ import {
 	RichText,
 	useBlockProps,
 } from '@wordpress/block-editor';
-import { PanelBody, TextControl } from '@wordpress/components';
-import { LinkPopoverField } from '../../components';
+import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
+import {
+	LinkPopoverField,
+	SGS_FONT_WEIGHT_OPTIONS,
+	SgsColourPanel,
+	TypographyControls,
+	textRow,
+} from '../../components';
+import { colourVar, typographyPreviewStyle, usePreviewTier } from '../../utils';
 import { LINK_SOURCES_ALL } from '../../shared/link-source-options';
 import { RICH_TEXT_EMPHASIS } from '../../utils/rich-text-formats';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { text, linkLabel, linkUrl, linkTarget, linkRel, linkUrlSource } =
 		attributes;
+	const tier = usePreviewTier();
+	const linkColour = colourVar( attributes.commerceNoteLinkColour );
+	const linkHover = colourVar( attributes.commerceNoteLinkColourHover );
+	const linkWeight = attributes.commerceNoteLinkFontWeight;
+	const linkCss = [
+		linkWeight
+			? `#block-${ clientId } .sgs-commerce-note__link{font-weight:${ linkWeight };}`
+			: '',
+		linkColour
+			? `#block-${ clientId } .sgs-commerce-note__link{color:${ linkColour };}`
+			: '',
+		linkHover
+			? `#block-${ clientId } .sgs-commerce-note__link:hover{color:${ linkHover };}`
+			: '',
+	].join( '' );
 	return (
-		<div { ...useBlockProps( { className: 'sgs-commerce-note' } ) }>
+		<div
+			{ ...useBlockProps( {
+				className: 'sgs-commerce-note',
+				style: {
+					...typographyPreviewStyle(
+						attributes,
+						'commerceNote',
+						tier
+					),
+				},
+			} ) }
+		>
+			{ linkCss ? <style>{ linkCss }</style> : null }
+			<InspectorControls group="styles">
+				<PanelBody
+					title={ __( 'Note text', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TypographyControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						prefix="commerceNote"
+						showResponsive
+						fontSizePresets
+						showFontFamily
+						showWeight
+						showLineHeight
+						showLetterSpacing
+						showTransform
+						showTextAlign
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Colours', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SgsColourPanel
+						rows={ [
+							textRow( {
+								key: 'noteLink',
+								label: __( 'Link', 'sgs-blocks' ),
+								attrs: {
+									base: 'commerceNoteLinkColour',
+									hover: 'commerceNoteLinkColourHover',
+								},
+								attributes,
+								setAttributes,
+							} ),
+						] }
+					/>
+				</PanelBody>
+			</InspectorControls>
 			<InspectorControls>
 				<PanelBody title={ __( 'Link', 'sgs-blocks' ) }>
+					<SelectControl
+						label={ __( 'Link weight', 'sgs-blocks' ) }
+						value={ attributes.commerceNoteLinkFontWeight || '' }
+						options={ SGS_FONT_WEIGHT_OPTIONS }
+						onChange={ ( value ) =>
+							setAttributes( {
+								commerceNoteLinkFontWeight: value,
+							} )
+						}
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<TextControl
 						label={ __( 'Link text', 'sgs-blocks' ) }
 						value={ linkLabel }
