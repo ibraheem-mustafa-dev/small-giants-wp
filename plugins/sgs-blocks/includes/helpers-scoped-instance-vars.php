@@ -31,12 +31,44 @@ defined( 'ABSPATH' ) || exit;
 const SGS_SCOPE_PLACEHOLDER = 'sgs-scope-placeholder';
 
 /**
+ * Prefixes of the scope classes the injectors mint (the `$prefix` every caller of sgs_scope_class_for_root passes).
+ * A minted class is shared by every block whose rules match, so it is never reused as another injector's scope.
+ */
+const SGS_MINTED_SCOPE_PREFIXES = array(
+	'sgs-child-sizing',
+	'sgs-imgctl',
+	'sgs-fxpath',
+	'sgs-fxshape',
+	'sgs-post-content-lists',
+	'sgs-card-min',
+	'sgs-filter-look',
+	'sgs-commerce-look',
+	'sgs-chip-gap',
+);
+
+/**
+ * Whether a class is one an injector minted (prefix plus eight hex digits), not a block's own uid class.
+ *
+ * @param string $class_name Class token.
+ * @return bool
+ */
+function sgs_scope_class_is_minted( string $class_name ): bool {
+	foreach ( SGS_MINTED_SCOPE_PREFIXES as $prefix ) {
+		if ( 1 === preg_match( '/^' . preg_quote( $prefix, '/' ) . '-[0-9a-f]{8}$/', $class_name ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern
  * every migrated render.php already emits as its scoping selector, e.g.
  * `sgs-info-box-a1b2c3d4`) within a root tag's class attribute, or mint a
  * scoping class with the given prefix when none exists. This function only
  * DECIDES the class name; the caller adds it to the root tag's class list.
  *
+ * Only a block's own uid class is reused; a class an injector minted (SGS_MINTED_SCOPE_PREFIXES) never is.
  * A minted suffix is the hash of the CSS rules it scopes, so the same rules
  * give the same class on every request, render order, editor and REST render.
  * Blocks with identical rules share one class and the collector keeps one
@@ -58,8 +90,12 @@ const SGS_SCOPE_PLACEHOLDER = 'sgs-scope-placeholder';
  */
 function sgs_scope_class_for_root( string $root_tag_html, string $prefix, ?callable $rules_for_scope = null, bool $per_instance = false ): string {
 	if ( preg_match( '/\bclass=["\']([^"\']*)["\']/', $root_tag_html, $class_match ) ) {
-		if ( preg_match( '/sgs-[a-z-]+-[0-9a-f]{8}/', $class_match[1], $uid_match ) ) {
-			return $uid_match[0];
+		if ( preg_match_all( '/(?<![\w-])sgs-[a-z-]+-[0-9a-f]{8}(?![\w-])/', $class_match[1], $uid_matches ) ) {
+			foreach ( $uid_matches[0] as $candidate ) {
+				if ( ! sgs_scope_class_is_minted( $candidate ) ) {
+					return $candidate;
+				}
+			}
 		}
 	}
 	$seed = $prefix . '|' . ( null === $rules_for_scope ? $root_tag_html : (string) $rules_for_scope( SGS_SCOPE_PLACEHOLDER ) );
