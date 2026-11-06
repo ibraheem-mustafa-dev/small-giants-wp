@@ -19,6 +19,7 @@ import { validateField } from './custom-messages.js';
 import { applyLinkValues } from './field-from-link.js';
 import { populateReview } from './review-cards.js';
 import { initSavedProgress, saveStep, clearProgress } from './saved-progress.js';
+import { initStickyActions } from './sticky-actions.js';
 
 /**
  * The progress fill as a 0 to 1 fraction. "current" counts the step being shown (step 1 of 5 is 0.2);
@@ -690,10 +691,19 @@ if ( document.readyState === 'loading' ) {
 	document.addEventListener( 'DOMContentLoaded', () => {
 		initForms();
 		initConditionalLogic();
+		initStickyActionsAll();
 	} );
 } else {
 	initForms();
 	initConditionalLogic();
+	initStickyActionsAll();
+}
+
+/**
+ * Let each form's sticky buttons row publish its height for floating widgets.
+ */
+function initStickyActionsAll() {
+	document.querySelectorAll( '[data-wp-interactive="sgs/form"]' ).forEach( initStickyActions );
 }
 
 /**

@@ -103,8 +103,8 @@ function sgs_whatsapp_cta_card_markup( array $attributes, string $whatsapp_svg )
 /**
  * Floating variant's "hide label below" scoped @media rule — hides the
  * visible label below the given viewport width; the button keeps its pill
- * padding, radius and minimum height, so it stays the same shape around the
- * icon alone (its aria-label names it). Emitted only when a visible label exists AND a threshold > 0 is
+ * radius and minimum height and evens its side padding, so it stays the same shape around the
+ * icon alone, centred (its aria-label names it). Emitted only when a visible label exists AND a threshold > 0 is
  * set (0 = never hide — the default, matching the block's off-by-default
  * contract: an existing floating button with no label renders unchanged).
  *
@@ -121,6 +121,7 @@ function sgs_whatsapp_cta_floating_hide_label_css( string $root_sel, int $hide_b
 	// "Below N" stops just under N, like every other below-N setting.
 	return SGS_Breakpoints::media_width( 'max', ( $hide_below - 1 ) ) . '{'
 		. "{$root_sel} .sgs-whatsapp-cta__label--floating{display:none}"
+		. "{$root_sel}{--sgs-wa-pill-pad-left:16px;--sgs-wa-pill-pad-right:16px}"
 		. '}';
 }
 

@@ -17,6 +17,11 @@
  * untouched (degrade to more content: a script failure/absence just leaves
  * the bubble visible, never hidden with no way back).
  *
+ * Stacking: a fixed button is ranked by the layer it sits in. Every direct child of a container is a
+ * z-index:1 stacking context and the layer holding keyboard focus rises to 2, so a button left inside a
+ * footer layer is painted over by a focused form above it. On load each floating button moves to the end of
+ * `<body>`, outside every layer, so its own z-index ranks against the whole page.
+ *
  * Loaded as a viewScriptModule (ES module, frontend only).
  */
 
@@ -25,6 +30,12 @@ const floatingBtns = document.querySelectorAll(
 );
 
 if ( floatingBtns.length ) {
+	floatingBtns.forEach( ( btn ) => {
+		if ( btn.parentElement !== document.body ) {
+			document.body.appendChild( btn );
+		}
+	} );
+
 	const toggleVisibility = () => {
 		floatingBtns.forEach( ( btn ) => {
 			const threshold = parseInt( btn.dataset.scrollThreshold, 10 ) || 0;

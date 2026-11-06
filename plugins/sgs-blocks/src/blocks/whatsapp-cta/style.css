@@ -161,7 +161,8 @@
 	height: auto;
 	min-height: 52px;
 	border-radius: 999px;
-	padding: 0 18px 0 14px;
+	/* The labelled pill is lopsided toward the icon; the hide-label media rule (variant-render.php) sets both sides equal so the icon-only state is centred. */
+	padding: 0 var(--sgs-wa-pill-pad-right, 18px) 0 var(--sgs-wa-pill-pad-left, 14px);
 	justify-content: flex-start;
 	/* No gap here: .sgs-whatsapp-cta__btn's own default applies, and at (0,3,0) a gap would outrank the iconGap setting's scoped rule. */
 }

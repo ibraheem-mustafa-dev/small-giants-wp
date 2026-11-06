@@ -18,7 +18,7 @@
  * follows the `sgs:option-selected` events with the same combo-key rule
  * product-card/view.js::applyPillSelection uses.
  *
- * While a bar is showing, `--sgs-sticky-bar-h` on `:root` holds its height so
+ * While a bar is showing, `--sgs-sticky-bar-h` on `:root` (utils/sticky-bar-height.js) holds its height so
  * the page can leave room under it (style.css pads the body and the scroll
  * margin; whatsapp-cta lifts its floating button). Reduced motion is handled
  * in style.css by removing the transition.
@@ -27,22 +27,9 @@
  */
 
 import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
+import { setStickyBarHeight } from '../../utils/sticky-bar-height';
 
 const ROOT_SELECTOR = '.sgs-buybox[data-sgs-bar]';
-const HEIGHT_PROPERTY = '--sgs-sticky-bar-h';
-
-/** Heights of the bars that are showing now, keyed by bar element. */
-const showing = new Map();
-
-function publishHeight() {
-	const style = document.documentElement.style;
-	if ( showing.size ) {
-		style.setProperty( HEIGHT_PROPERTY, Math.max( ...showing.values() ) + 'px' );
-	} else {
-		style.removeProperty( HEIGHT_PROPERTY );
-	}
-}
-
 /** @param {string|null} text JSON text. @return {Object} The parsed object, or {}. */
 function parseObject( text ) {
 	try {
@@ -106,12 +93,7 @@ function initStickyBar( root ) {
 	function apply() {
 		const on = controlAbove && tierIsOn();
 		bar.classList.toggle( 'is-on', on );
-		if ( on ) {
-			showing.set( bar, Math.ceil( bar.getBoundingClientRect().height ) );
-		} else {
-			showing.delete( bar );
-		}
-		publishHeight();
+		setStickyBarHeight( bar, on ? Math.ceil( bar.getBoundingClientRect().height ) : 0 );
 	}
 
 	function refreshVariantLine() {
