@@ -194,6 +194,18 @@ $img_alt         = $logo_decorative ? '' : $alt;
 $logo_size       = sgs_image_intrinsic_size( $desktop_url );
 $logo_height     = null !== $logo_size ? max( 1, (int) round( $width * $logo_size[1] / $logo_size[0] ) ) : 0;
 $img_tail_attrs = ( $logo_height > 0 ? ' height="' . $logo_height . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' );
+// The same box for any other file the picture swaps in: the printed width and the height that keeps THAT file's ratio.
+$sgs_logo_height_for = static function ( string $url ) use ( $width, $desktop_url, $logo_height ): int {
+	if ( $url === $desktop_url ) {
+		return $logo_height;
+	}
+	$size = sgs_image_intrinsic_size( $url );
+	return null !== $size ? max( 1, (int) round( $width * $size[1] / $size[0] ) ) : 0;
+};
+$sgs_logo_source_size = static function ( string $url ) use ( $width, $sgs_logo_height_for ): string {
+	$height = $sgs_logo_height_for( $url );
+	return $height > 0 ? ' width="' . absint( $width ) . '" height="' . $height . '"' : '';
+};
 
 // The wrapping <a>'s accessible name is driven DISTINCTLY from the <img alt>
 // (FR-36-22): the image alt describes WHAT the graphic depicts, the link's
@@ -576,8 +588,8 @@ if ( $has_svg_animation && $svg_html ) {
 	// Hidden static images for tablet and mobile (displayed by CSS media queries).
 	printf(
 		'<picture class="sgs-responsive-logo__picture sgs-responsive-logo__picture--fallback">' .
-		'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s">' .
-		'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s">' .
+		'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $effective_mobile_url ) . '>' .
+		'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s"' . $sgs_logo_source_size( $effective_tablet_url ) . '>' .
 		'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager"%6$s>' .
 		'</picture>',
 		esc_url( $effective_mobile_url ),
@@ -602,7 +614,7 @@ if ( $has_svg_animation && $svg_html ) {
 			esc_url( $inline_compact_url ),
 			esc_attr( $img_alt ),
 			absint( $width ),
-			$img_tail_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
+			( $sgs_logo_height_for( $inline_compact_url ) > 0 ? ' height="' . $sgs_logo_height_for( $inline_compact_url ) . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute string, no user input.
 		);
 	}
 } else {
@@ -621,7 +633,7 @@ if ( $has_svg_animation && $svg_html ) {
 		$custom_px = max( 320, min( 2000, absint( $attributes['logoSwitchCustomPx'] ?? 1024 ) ) );
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="(max-width: %5$dpx)" srcset="%1$s">' .
+			'<source media="(max-width: %5$dpx)" srcset="%1$s"' . $sgs_logo_source_size( $compact_url ) . '>' .
 			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
@@ -635,7 +647,7 @@ if ( $has_svg_animation && $svg_html ) {
 		// The compact logo covers the whole tablet + mobile band (<=1023px viewport).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%1$s">' .
+			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $compact_url ) . '>' .
 			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%2$s" alt="%3$s" width="%4$d" loading="eager" decoding="async"%5$s>' .
 			'</picture>',
 			esc_url( $compact_url ),
@@ -649,8 +661,8 @@ if ( $has_svg_animation && $svg_html ) {
 		// the 768-1023 band. Empty slots fall back to desktop (no switch = one logo).
 		printf(
 			'<picture class="sgs-responsive-logo__picture">' .
-			'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s">' .
-			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s">' .
+			'<source media="' . SGS_Breakpoints::query( 'mobile' ) . '" srcset="%1$s"' . $sgs_logo_source_size( $effective_mobile_url ) . '>' .
+			'<source media="' . SGS_Breakpoints::query( 'tablet' ) . '" srcset="%2$s"' . $sgs_logo_source_size( $effective_tablet_url ) . '>' .
 			'<img class="sgs-responsive-logo__image sgs-responsive-logo__image--desktop" src="%3$s" alt="%4$s" width="%5$d" loading="eager" decoding="async"%6$s>' .
 			'</picture>',
 			esc_url( $effective_mobile_url ),

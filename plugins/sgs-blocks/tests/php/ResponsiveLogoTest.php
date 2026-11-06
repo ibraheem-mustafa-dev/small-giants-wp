@@ -176,6 +176,58 @@ if ( ! function_exists( 'get_attached_file' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_transient' ) ) {
+	/**
+	 * Stub for WP get_transient(). Serves the intrinsic sizes a test registers in $GLOBALS['sgs_test_img_sizes']
+	 * (URL => [w, h]); any other file reads as "size unknown" (an empty cached array).
+	 *
+	 * @param string $key Transient key (`sgs_imgdim_` + md5 of the URL).
+	 * @return array<int, int>
+	 */
+	function get_transient( string $key ): array {
+		foreach ( (array) ( $GLOBALS['sgs_test_img_sizes'] ?? array() ) as $url => $size ) {
+			if ( 'sgs_imgdim_' . md5( $url ) === $key ) {
+				return $size;
+			}
+		}
+		return array();
+	}
+}
+
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	/**
+	 * Stub for WP wp_json_encode().
+	 *
+	 * @param mixed $data Data.
+	 * @return string|false
+	 */
+	function wp_json_encode( $data ) {
+		return json_encode( $data );
+	}
+}
+
+if ( ! function_exists( 'add_action' ) ) {
+	/**
+	 * Stub for WP add_action(): hooks are not run in these tests.
+	 *
+	 * @return bool
+	 */
+	function add_action(): bool {
+		return true;
+	}
+}
+
+if ( ! function_exists( 'add_filter' ) ) {
+	/**
+	 * Stub for WP add_filter(): hooks are not run in these tests.
+	 *
+	 * @return bool
+	 */
+	function add_filter(): bool {
+		return true;
+	}
+}
+
 // ── Test helper ───────────────────────────────────────────────────────────────
 
 /**
@@ -341,6 +393,34 @@ class ResponsiveLogoTest extends TestCase {
 			$html,
 			'img src must use logoId URL.'
 		);
+	}
+
+	// ── render.php: each swapped file keeps its own ratio ─────────────────────
+
+	/**
+	 * Each <source> prints the width and the height of ITS file, so a compact logo with another ratio does not
+	 * take the desktop logo's height when it swaps in. The <img> keeps the desktop file's pair.
+	 */
+	public function test_render_sources_carry_their_own_file_height(): void {
+		$base = 'https://example.com/wp-content/uploads/';
+		$GLOBALS['sgs_test_img_sizes'] = array(
+			$base . 'logo-10.png' => array( 400, 100 ),
+			$base . 'logo-20.png' => array( 300, 150 ),
+			$base . 'logo-30.png' => array( 100, 100 ),
+		);
+		$html = render_responsive_logo(
+			array(
+				'logoId'       => 10,
+				'logoIdTablet' => 20,
+				'logoIdMobile' => 30,
+				'width'        => 200,
+			)
+		);
+		unset( $GLOBALS['sgs_test_img_sizes'] );
+
+		$this->assertStringContainsString( 'srcset="' . $base . 'logo-30.png" width="200" height="200">', $html, 'The mobile source keeps its square ratio.' );
+		$this->assertStringContainsString( 'srcset="' . $base . 'logo-20.png" width="200" height="100">', $html, 'The tablet source keeps its 2:1 ratio.' );
+		$this->assertMatchesRegularExpression( '#<img [^>]*src="' . preg_quote( $base . 'logo-10.png', '#' ) . '"[^>]*width="200"[^>]*height="50"#', $html, 'The img keeps the desktop file pair.' );
 	}
 
 	// ── render.php: linkToHome ────────────────────────────────────────────────
