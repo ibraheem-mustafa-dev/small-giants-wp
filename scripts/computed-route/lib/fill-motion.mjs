@@ -11,7 +11,7 @@ import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, place, sharedLayerRow } from './fill-behaviour.mjs';
-import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths } from './fill-motion-account.mjs';
+import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths, styleSourceIds } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
 import { paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
@@ -415,7 +415,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	}
 	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
 	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx } );
-	out.unmapped.push( ...silentRows( { records, accounted: accountedIds( { used, written, out } ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
+	out.unmapped.push( ...silentRows( { records, accounted: new Set( [ ...accountedIds( { used, written, out } ), ...styleSourceIds( { written, records } ) ] ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
 	out.handover.push( ...readingProgressHandover( { found: idx.found, homeOf } ) );
 	deferred.forEach( ( write ) => write() );
 	return out;

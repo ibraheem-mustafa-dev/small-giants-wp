@@ -95,9 +95,10 @@ function declarationsOf( rec ) {
 	return out;
 }
 
-// The effect element's declarations for an animation record, from `records` (the whole inventory): { <property>:
-// { value, holes } }, or null when the record does not animate a code-created element or no style record is found.
-export function effectElementStyle( r, records ) {
+// The style record that gives the declarations of the code-created element an animation record animates (the JS style-write
+// record on a created element, same trigger, in the call path's innermost function at the nearest line before the call), or
+// null when the record does not animate a code-created element or no style record is found. records: the whole inventory.
+export function effectElementSource( r, records ) {
 	if ( ! CREATED.test( String( r.element?.selection_rule ?? '' ) ) || ! Array.isArray( records ) ) {
 		return null;
 	}
@@ -106,10 +107,17 @@ export function effectElementStyle( r, records ) {
 	for ( const { fn, line } of callPathOf( r ) ) {
 		const near = styles.filter( ( x ) => x.source?.function === fn && Number( x.source?.line ) <= line ).sort( ( a, b ) => b.source.line - a.source.line )[ 0 ];
 		if ( near ) {
-			return declarationsOf( near );
+			return near;
 		}
 	}
 	return null;
+}
+
+// The effect element's declarations for an animation record, from `records` (the whole inventory): { <property>:
+// { value, holes } }, or null when the record does not animate a code-created element or no style record is found.
+export function effectElementStyle( r, records ) {
+	const near = effectElementSource( r, records );
+	return near ? declarationsOf( near ) : null;
 }
 
 // A single colour value (`rgba(255,255,255,.35)`, `rgb(…)`, `#fff`) as { hex, alpha }, or null (a gradient, a variable).

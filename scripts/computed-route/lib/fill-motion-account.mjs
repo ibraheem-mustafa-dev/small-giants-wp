@@ -9,6 +9,7 @@
 import { templateKey } from './fact-key.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { effectElementSource } from './motion-effect-element.mjs';
 
 const scriptFile = ( r ) => ( /\.m?js$/i.test( String( r.source?.file ?? '' ) ) ? String( r.source.file ) : null );
 const tplIds = ( r ) => [ r.element?.template_tpl_id, r.element?.nearest_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v );
@@ -82,7 +83,9 @@ export function makeHomeOf( { records, nodes, keyOf, idx } ) {
 // The UNMAPPED rows for the records nothing accounted for, per (record, target): a record expected at several targets
 // (`expected`: id -> { <target key>: where }) gets a row for each target no layer, row or note at that target holds, even when
 // another target of it was written; a record with no target of its own that no accounted id covers gets one row at its home
-// (see makeHomeOf) or, with no home, a row naming it as off the surface. refOf( node ): the node's ref.
+// (see makeHomeOf). A record that names a template element or a script file no target of this surface holds belongs to
+// another surface and raises nothing here; a record that names neither and has no home gets a row naming it with no node.
+// refOf( node ): the node's ref.
 export function silentRows( { records, accounted, accountedAt: done = new Set(), expected = new Map(), refOf, homeOf } ) {
 	const gap = ( r, text ) => `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) ${ text }`;
 	return ( records || [] ).flatMap( ( r ) => {
@@ -97,6 +100,9 @@ export function silentRows( { records, accounted, accountedAt: done = new Set(),
 			return [];
 		}
 		const home = homeOf( r );
+		if ( ! home && ( tplIds( r ).length || scriptFile( r ) ) ) {
+			return [];
+		}
 		if ( ! home ) {
 			return [ { node: '', block: '', slot: '', property: 'motion', value: r.id, reason: gap( r, 'belongs to this surface (draft inventory), but no effect, setting or handover holds it: no skeleton node holds its element (it has no home on this surface), and a record nothing places is named here' ) } ];
 		}
@@ -106,6 +112,13 @@ export function silentRows( { records, accounted, accountedAt: done = new Set(),
 			reason: gap( r, `belongs to this surface${ own }, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here` ),
 		} ];
 	} );
+}
+
+// The ids of the style records the written effects read their created element's declarations from (a sheen's band, a ripple's
+// circle): the effect holds them, so they are accounted. records: the inventory; written: record id -> placed layer.
+export function styleSourceIds( { written, records } ) {
+	const byId = new Map( ( records || [] ).map( ( r ) => [ r.id, r ] ) );
+	return [ ...written.keys() ].flatMap( ( id ) => ( byId.get( id ) ? [ effectElementSource( byId.get( id ), records )?.id ] : [] ) ).filter( Boolean );
 }
 
 // The page's reading progress bar: a record the effect recogniser reads as a page-scroll progress bar whose element is not on

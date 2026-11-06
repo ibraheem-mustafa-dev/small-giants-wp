@@ -73,8 +73,8 @@
 	},
 	{
 		"file": "lib/fill-motion-account.mjs",
-		"find": ".filter( ( r ) => ! accounted.has( r.id ) )",
-		"replace": ".filter( () => false )",
+		"find": "if ( accounted.has( r.id ) ) {",
+		"replace": "if ( true ) {",
 		"why": "no silent record would be named"
 	},
 	{
