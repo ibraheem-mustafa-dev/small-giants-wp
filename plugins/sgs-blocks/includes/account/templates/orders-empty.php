@@ -17,6 +17,9 @@ $sgs_url     = trim( (string) ( $sgs_attrs['ordersEmptyButtonUrl'] ?? '' ) );
 if ( '' === $sgs_url && function_exists( 'wc_get_page_permalink' ) ) {
 	$sgs_url = (string) wc_get_page_permalink( 'shop' );
 }
+
+// WooCommerce's own orders template fires these around its content; extensions hook them.
+do_action( 'woocommerce_before_account_orders', $has_orders ?? false );
 ?>
 <div class="sgs-account__orders-empty">
 	<?php if ( '' !== $sgs_heading ) : ?>
@@ -31,3 +34,4 @@ if ( '' === $sgs_url && function_exists( 'wc_get_page_permalink' ) ) {
 		</div>
 	<?php endif; ?>
 </div>
+<?php do_action( 'woocommerce_after_account_orders', $has_orders ?? false ); ?>
