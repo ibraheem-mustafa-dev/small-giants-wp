@@ -311,6 +311,12 @@ test( 'hero and heroInner: a page\'s first section holding its h1 is the split h
 	assert.notEqual( byTag( run( page, { kind: 'header' } ), 'section' ).rule, 'hero', 'a hero is a page section' );
 } );
 
+test( 'drawsChildren: an array attribute whose fields are all behaviour or technical (sgs/hero bgSvgParts) is no item list, so the block still holds inner blocks; a block with a content array draws its own items; MUST FAIL without the role filter', () => {
+	const rules = ( f ) => makeRules( { m: { els: [], byKey: {}, blockKids: () => [] }, facts: f, surface: { kind: 'page' }, hooks: {} } );
+	assert.equal( rules( facts() ).drawsChildren( 'sgs/hero' ), null, 'the hero holds its content as inner blocks' );
+	assert.match( rules( facts() ).drawsChildren( 'sgs/icon-list' ) || '', /array_item_schema/, 'an items array is drawn by the block' );
+} );
+
 test( 'marqueeFrame: the frame that clips and fades a logo marquee goes; MUST FAIL without the rule', () => {
 	const tree = section( [ E( 'div', { style: 'overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)' }, [ E( 'div', {}, [ E( 'a', { attrs: { href: '/a' } }, [ E( 'image-slot' ) ] ), E( 'a', { attrs: { href: '/b' } }, [ E( 'image-slot' ) ] ) ] ) ] ) ] );
 	const motion = new Set( [ 'Root/3' ] );

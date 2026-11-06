@@ -14,7 +14,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( label ? { [ T.label ]: label } : {} ),", "replace": "", "why": "the control's words are the pill label" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "leaves.filter( ( k ) => k !== count )", "replace": "leaves", "why": "the count is not part of the label" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "view.ownPaint( count ) ? T.bubble : T.plain", "replace": "T.bubble", "why": "an unpainted count is plain" },
-	{ "file": "lib/skeleton-rules.mjs", "find": "...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: true } : {} ),", "replace": "...( count ? { [ T.showZero ]: true } : {} ),", "why": "only a count showing zero at rest keeps showing it" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),", "replace": "...( count ? { [ T.showZero ]: { desktop: true } } : {} ),", "why": "only a count showing zero at rest keeps showing it" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "aria && ! /\\{\\{/.test( aria )", "replace": "aria", "why": "a bound aria-label is no typed name" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }", "replace": "attributes: { ...triggerOf( e, d.own.trigger ) }", "why": "the block keeps its owning entry's drawer mode" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "commerce, role, pageMap }", "replace": "commerce, role }", "why": "the rules see the page map" },
