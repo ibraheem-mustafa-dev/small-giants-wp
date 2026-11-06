@@ -29,7 +29,13 @@ function registry() {
  */
 export function setStickyBarHeight( bar, height ) {
 	const heights = registry();
-	if ( height > 0 ) {
+	// A bar removed from the page no longer contributes.
+	heights.forEach( ( _value, key ) => {
+		if ( ! key.isConnected ) {
+			heights.delete( key );
+		}
+	} );
+	if ( height > 0 && bar.isConnected ) {
 		heights.set( bar, height );
 	} else {
 		heights.delete( bar );

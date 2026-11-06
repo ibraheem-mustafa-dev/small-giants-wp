@@ -700,6 +700,28 @@ select.sgs-form-field__input {
 	justify-content: center;
 }
 
+/* A tile with an icon or a description: the icon takes the first row, the tick sits beside the label and the description
+   runs under the label. A label-only pill keeps the row above. */
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile:where(:has(.sgs-form-tile__description, .sgs-form-tile__icon)) {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__icon {
+	grid-column: 1 / -1;
+	order: -2;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__check {
+	grid-column: 1;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__label,
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__description {
+	grid-column: 2;
+}
+
 :where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__check {
 	color: inherit;
 	background-color: transparent;

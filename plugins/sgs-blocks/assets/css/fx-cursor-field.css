@@ -491,8 +491,8 @@
  * ========================================================================== */
 
 @media not all and (hover: hover) and (pointer: fine) {
-	/* The tap reveal of image-reveal paints this layer, so it stays while the flag is set. */
-	[data-sgs-cursor-field]:not([data-sgs-cursor-field="image-reveal"][data-sgs-reveal-open])::before {
+	/* The tap reveal of image-reveal paints this layer, so it stays while the open or tap flag is set. */
+	[data-sgs-cursor-field]:not([data-sgs-cursor-field="image-reveal"]:is([data-sgs-reveal-open], [data-sgs-reveal-tap]))::before {
 		display: none;
 	}
 
@@ -575,7 +575,7 @@
 	--sgs-cursor-field-mask-size: 100% 100%;
 }
 
-[data-sgs-cursor-field="image-reveal"]:hover::before {
+:where(:root:not(.sgs-touch-input)) [data-sgs-cursor-field="image-reveal"]:hover::before {
 	--sgs-cursor-field-radius: 90px;
 	--sgs-cursor-field-wash: 0.3;
 }

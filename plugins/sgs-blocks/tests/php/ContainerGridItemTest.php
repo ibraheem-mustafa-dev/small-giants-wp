@@ -51,7 +51,7 @@ final class ContainerGridItemTest extends TestCase {
 			$out['css']
 		);
 		$this->assertStringContainsString(
-			'.' . $out['uid'] . ' > ' . self::CELL . ':focus-within{background-color:var(--wp--preset--color--accent',
+			'.' . $out['uid'] . ' > ' . self::CELL . ':has(:focus-visible){background-color:var(--wp--preset--color--accent',
 			$out['css']
 		);
 		$this->assertStringNotContainsString( '> .sgs-container:hover', $out['css'] );

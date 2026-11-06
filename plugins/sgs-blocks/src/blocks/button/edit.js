@@ -600,7 +600,7 @@ export default function Edit( {
 						}
 						__nextHasNoMarginBottom
 						help={ __(
-							'For a button inside a card whose whole surface is the link (the container block-link setting). It prints as plain text styled as a button: no link, not focusable, hidden from screen readers, no lift of its own, and it follows the hover of the card.',
+							'For a button inside a card whose whole surface is the link (the container block-link setting). It prints as plain text styled as a button: no link, not focusable, no lift of its own, and it follows the hover of the card. Its words stay readable as plain text, so use it only inside a linked card: set anywhere else it is just text, and any link settings are ignored.',
 							'sgs-blocks'
 						) }
 					/>

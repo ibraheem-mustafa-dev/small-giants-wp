@@ -232,8 +232,11 @@
 [data-sgs-mitem] { --sgs-mh-item-on: 0; }
 
 [data-sgs-mh="self"]:focus-visible:not([data-sgs-focus-rests]) { --sgs-mh-on: 1; }
+[data-sgs-mroot]:focus-visible:not([data-sgs-focus-rests]),
 [data-sgs-mroot]:has(:focus-visible):not([data-sgs-focus-rests]) { --sgs-mh-root-on: 1; }
+[data-sgs-hover-group]:focus-visible:not([data-sgs-focus-rests]),
 [data-sgs-hover-group]:has(:focus-visible):not([data-sgs-focus-rests]) { --sgs-mh-group-on: 1; }
+[data-sgs-mitem]:focus-visible:not([data-sgs-focus-rests]),
 [data-sgs-mitem]:has(:focus-visible):not([data-sgs-focus-rests]) { --sgs-mh-item-on: 1; }
 
 :where(:root:not(.sgs-touch-input)) [data-sgs-mh="self"]:hover { --sgs-mh-on: 1; }

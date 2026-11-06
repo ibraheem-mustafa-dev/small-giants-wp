@@ -268,7 +268,7 @@ body.admin-bar html {
 	border-bottom: 2px solid transparent;
 	transition: border-color 0.25s ease-in-out;
 }
-.sgs-hover-underline-fade:hover,
+:where(:root:not(.sgs-touch-input)) .sgs-hover-underline-fade:hover,
 .sgs-hover-underline-fade:focus-visible {
 	border-color: var(--sgs-link-hover-color, currentColor);
 }
@@ -276,7 +276,7 @@ body.admin-bar html {
 .sgs-hover-highlight-fill {
 	transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
 }
-.sgs-hover-highlight-fill:hover,
+:where(:root:not(.sgs-touch-input)) .sgs-hover-highlight-fill:hover,
 .sgs-hover-highlight-fill:focus-visible {
 	background-color: var(--sgs-link-hover-bg, var(--wp--preset--color--primary));
 	color: var(--sgs-link-hover-text, #fff);

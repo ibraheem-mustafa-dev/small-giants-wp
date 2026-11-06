@@ -216,6 +216,21 @@ class Post_Grid_REST {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_text_field',
 			],
+			'categoryBadgeBgColourGradient' => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+			'categoryBadgeBgColourHover' => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
+			'categoryBadgeBgColourHoverGradient' => [
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			],
 			'readMoreColour'       => [
 				'type'              => 'string',
 				'default'           => '',

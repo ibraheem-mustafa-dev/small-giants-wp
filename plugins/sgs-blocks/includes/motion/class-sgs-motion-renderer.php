@@ -24,7 +24,10 @@
  *
  * The LCP rule (§9): a `load` or `scroll` entrance in the page's first top-level section (the first top-level block of the main
  * content, filterable through `sgs_motion_is_first_section`) or on an `<img fetchpriority="high">` keeps its
- * from-opacity at 1 unless the entrance sets `allowLcpFade`.
+ * from-opacity at 1 unless the entrance sets `allowLcpFade`. When the main content is one top-level block with
+ * `tagName` `main`, that wrapper is transparent: it does not take the mark, its first child block does, and the
+ * wrapper's other children and the wrapper's own entrance fade as usual. A `main` block with top-level siblings is a
+ * section among sections and takes the mark itself.
  *
  * Hover groups: any block whose root carries a whole-block link (`sgsBlockLink` or `sgsBlockLinkAuto`, the blockLink
  * extension that also adds `.sgs-has-block-link`) or a container set to `hoverAsCard` gets `data-sgs-hover-group`. While a block whose hover layers use
@@ -67,6 +70,14 @@ final class Sgs_Motion_Renderer {
 	private static $first_pending = false;
 
 	/**
+	 * Whether the main content is one top-level block that is a `main` wrapper: the first top-level block then passes
+	 * the mark to its first child.
+	 *
+	 * @var bool
+	 */
+	private static $lone_main = false;
+
+	/**
 	 * Whether the main content has started rendering.
 	 *
 	 * @var bool
@@ -101,6 +112,7 @@ final class Sgs_Motion_Renderer {
 	public static function reset(): void {
 		self::$stack                       = array();
 		self::$first_pending               = false;
+		self::$lone_main                   = false;
 		self::$content_seen                = false;
 		self::$used                        = array();
 		$GLOBALS['sgs_hover_group_active'] = false;
@@ -180,7 +192,8 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Arm the first-section rule when the main content starts.
+	 * Arm the first-section rule when the main content starts, and note whether the content is one lone `main` wrapper
+	 * (the filter runs before the blocks are parsed for rendering, so the top-level blocks are counted from the string).
 	 *
 	 * @param mixed $content Post content.
 	 * @return mixed
@@ -190,8 +203,40 @@ final class Sgs_Motion_Renderer {
 		if ( ! self::$content_seen && ( array() !== self::$stack || $in_loop ) ) {
 			self::$content_seen  = true;
 			self::$first_pending = true;
+			self::$lone_main     = self::is_lone_main( $content );
 		}
 		return $content;
+	}
+
+	/**
+	 * Whether the content is exactly one top-level block whose `tagName` is `main`.
+	 *
+	 * @param mixed $content Post content.
+	 * @return bool
+	 */
+	private static function is_lone_main( $content ): bool {
+		if ( ! is_string( $content ) || ! function_exists( 'parse_blocks' ) || false === strpos( $content, '"main"' ) ) {
+			return false;
+		}
+		$top = array_values(
+			array_filter(
+				parse_blocks( $content ),
+				static function ( $block ): bool {
+					return is_array( $block ) && ! empty( $block['blockName'] );
+				}
+			)
+		);
+		return 1 === count( $top ) && self::is_main_wrapper( $top[0] );
+	}
+
+	/**
+	 * Whether a parsed block is a `main` wrapper.
+	 *
+	 * @param array<string,mixed> $block Parsed block.
+	 * @return bool
+	 */
+	private static function is_main_wrapper( array $block ): bool {
+		return 'main' === ( $block['attrs']['tagName'] ?? null );
 	}
 
 	/**
@@ -238,7 +283,16 @@ final class Sgs_Motion_Renderer {
 		$top   = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$doc   = self::document( $block );
 		$first = null !== $top && ! empty( $top['first'] );
+		$transparent = false;
 		if ( null === $parent_block && self::$first_pending ) {
+			if ( self::$lone_main && self::is_main_wrapper( $block ) ) {
+				$transparent = true;
+			} else {
+				self::$first_pending = false;
+				$first               = true;
+			}
+			self::$lone_main = false;
+		} elseif ( null !== $parent_block && self::$first_pending && null !== $top && ! empty( $top['transparent'] ) ) {
 			self::$first_pending = false;
 			$first               = true;
 		}
@@ -255,12 +309,13 @@ final class Sgs_Motion_Renderer {
 		$group = self::uses_source( $doc, 'group' );
 
 		self::$stack[]                     = array(
-			'name'    => (string) ( $block['blockName'] ?? '' ),
-			'doc'     => $doc,
-			'first'   => (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block ),
-			'group'   => $group,
-			'dropped' => $dropped,
-			'parent'  => is_object( $parent_block ) && isset( $parent_block->name ) && is_string( $parent_block->name ) ? $parent_block->name : '',
+			'name'        => (string) ( $block['blockName'] ?? '' ),
+			'doc'         => $doc,
+			'first'       => (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block ),
+			'transparent' => $transparent,
+			'group'       => $group,
+			'dropped'     => $dropped,
+			'parent'      => is_object( $parent_block ) && isset( $parent_block->name ) && is_string( $parent_block->name ) ? $parent_block->name : '',
 		);
 		$GLOBALS['sgs_hover_group_active'] = $group;
 		return $parsed_block;
@@ -321,7 +376,10 @@ final class Sgs_Motion_Renderer {
 	 */
 	public static function close_frame( $block_content, $block ) {
 		unset( $block );
-		array_pop( self::$stack );
+		$closed = array_pop( self::$stack );
+		if ( is_array( $closed ) && ! empty( $closed['transparent'] ) ) {
+			self::$first_pending = false;
+		}
 		$top                               = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$GLOBALS['sgs_hover_group_active'] = null !== $top && ! empty( $top['group'] );
 		return $block_content;

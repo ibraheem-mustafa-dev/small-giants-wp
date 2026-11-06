@@ -817,7 +817,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
-.sgs-media-box:hover::after,
+:where(:root:not(.sgs-touch-input)) .sgs-media-box:hover::after,
 .sgs-media-box:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
@@ -850,8 +850,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  *
  * Custom-property names match `shadow.js`/`shadow.php`'s `css()` output
  * exactly: `--sgs-media-box-shadow`, `--sgs-media-box-shadow-hover`.
- * `:has(:focus-visible)` rides alongside `:hover` because the media element itself
- * has no meaningful focus state, but a caption/link wrapper around it does; a tap
+ * `:focus-visible` (the element itself) and `:has(:focus-visible)` (a caption/link wrapper inside it) ride alongside `:hover`; a tap
  * or click on that link does not paint it, keyboard focus does.
  */
 
@@ -874,9 +873,10 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 /* Pointer hover carries the touch guard of includes/helpers-hover-state.php (active only when the
- * site chose "Desktop only"); keyboard focus stays unguarded and is keyed on :has(:focus-visible),
+ * site chose "Desktop only"); keyboard focus stays unguarded and is keyed on :focus-visible and :has(:focus-visible),
  * so a tap or click does not paint it. */
 :where(:root:not(.sgs-touch-input)) .sgs-media-el:hover,
+.sgs-media-el:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)),
 .sgs-media-el:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
 }

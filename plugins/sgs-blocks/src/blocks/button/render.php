@@ -1065,8 +1065,8 @@ $allowed_inner = sgs_button_inner_allowed_html();
 
 // Build the element.
 if ( 'span' === $tag_name ) {
-	// The card's overlay link carries the accessible name, so the cue is hidden from assistive technology.
-	echo '<span aria-hidden="true" ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is trusted WP output
+	// Plain text, no role, no tab stop: the words stay readable, so a CTA set outside a linked card is never lost.
+	echo '<span ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is trusted WP output
 	echo wp_kses( $inner_html, $allowed_inner );
 	echo '</span>';
 } elseif ( 'button' === $tag_name ) {

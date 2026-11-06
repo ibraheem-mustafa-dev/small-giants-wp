@@ -1,7 +1,8 @@
 /**
- * The form's sticky buttons row publishes its height as `--sgs-sticky-bar-h` while it is pinned and the
+ * The form's sticky buttons row publishes its height as `--sgs-sticky-bar-h` while it is stuck to the bottom of the screen and the
  * form is on screen, so a floating widget (whatsapp-cta) rides above it instead of covering Continue / Submit.
- * The row is sticky only at the device tiers render.php switches on, so the computed position decides.
+ * The row is sticky only at the device tiers render.php switches on, so the computed position decides; the bar's
+ * bottom edge against the viewport bottom says whether it is pinned now. A scroll listener keeps that current.
  *
  * @package
  */
@@ -20,8 +21,14 @@ export function initStickyActions( formRoot ) {
 
 	function apply() {
 		const sticky = 'sticky' === window.getComputedStyle( bar ).position;
+		// Pinned means the bar's bottom edge sits at the viewport bottom (within a pixel); in the flow it floats above it.
+		const pinned =
+			sticky &&
+			Math.abs(
+				bar.getBoundingClientRect().bottom - window.innerHeight
+			) <= 1;
 		const height =
-			sticky && formVisible
+			pinned && formVisible
 				? Math.ceil( bar.getBoundingClientRect().height )
 				: 0;
 		setStickyBarHeight( bar, height );
@@ -37,4 +44,5 @@ export function initStickyActions( formRoot ) {
 		new window.ResizeObserver( apply ).observe( bar );
 	}
 	window.addEventListener( 'resize', apply );
+	window.addEventListener( 'scroll', apply, { passive: true } );
 }

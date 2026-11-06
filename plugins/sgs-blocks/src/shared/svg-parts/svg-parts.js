@@ -22,7 +22,10 @@
  * @package
  */
 
+import { isTouchInput, prefersReducedMotion } from '../effects/motion-utils';
+
 const SELECTOR = '[data-sgs-svg-parts]';
+const BOOTED_ATTR = 'data-sgs-svg-parts-booted';
 const EASINGS = {
 	linear: 'linear',
 	ease: 'ease',
@@ -38,7 +41,6 @@ const ORIGINS = {
 	left: 'left center',
 	right: 'right center',
 };
-const booted = new WeakSet();
 
 /**
  * The document stored on an element, or null when it is not valid JSON with a parts list.
@@ -100,20 +102,16 @@ function entranceFrames( part ) {
 	if ( Number.isFinite( part.fromOpacity ) ) {
 		from.opacity = part.fromOpacity;
 	}
-	const transforms = [];
+	// The individual `translate`, `rotate` and `scale` properties compose with the group's own `transform`
+	// attribute; a `transform` keyframe would replace it.
 	if ( part.fromX || part.fromY ) {
-		transforms.push(
-			`translate(${ part.fromX || 0 }px, ${ part.fromY || 0 }px)`
-		);
+		from.translate = `${ part.fromX || 0 }px ${ part.fromY || 0 }px`;
 	}
 	if ( part.fromRotate ) {
-		transforms.push( `rotate(${ part.fromRotate }deg)` );
+		from.rotate = `${ part.fromRotate }deg`;
 	}
 	if ( Number.isFinite( part.fromScale ) && 1 !== part.fromScale ) {
-		transforms.push( `scale(${ part.fromScale })` );
-	}
-	if ( transforms.length ) {
-		from.transform = transforms.join( ' ' );
+		from.scale = String( part.fromScale );
 	}
 	if ( part.draw ) {
 		return [
@@ -121,7 +119,9 @@ function entranceFrames( part ) {
 			{ strokeDasharray: 1, strokeDashoffset: 0 },
 		];
 	}
-	return Object.keys( from ).length ? [ from ] : null;
+	// A single keyframe is the END state of a WAAPI animation; the empty second keyframe makes `from` the start and the
+	// element's own look the end.
+	return Object.keys( from ).length ? [ from, {} ] : null;
 }
 
 /**
@@ -144,8 +144,13 @@ function boot( root ) {
 
 	const prepare = ( { part, els } ) => {
 		els.forEach( ( el ) => {
-			el.style.transformBox = 'fill-box';
-			el.style.transformOrigin = ORIGINS[ part.origin ] || ORIGINS.center;
+			// A pivot on an element that carries its own `transform` attribute would shift that matrix, so only
+			// an element without one gets the fill-box pivot.
+			if ( ! el.hasAttribute( 'transform' ) ) {
+				el.style.transformBox = 'fill-box';
+				el.style.transformOrigin =
+					ORIGINS[ part.origin ] || ORIGINS.center;
+			}
 			if ( part.draw ) {
 				el.setAttribute( 'pathLength', '1' );
 			}
@@ -224,7 +229,20 @@ function boot( root ) {
 		? cfg.hoverCooldown
 		: 1400;
 	let lastHover = -Infinity;
+	const rateTimers = new Map();
 	root.addEventListener( 'mouseenter', () => {
+		// "Desktop only" (`data-sgs-touch-hover="desktop"` on <html>) turns hover effects off while the last
+		// pointer was a touch, so a tap's emulated mouseenter does not replay; reduced motion is read live.
+		if (
+			prefersReducedMotion() ||
+			( isTouchInput() &&
+				'desktop' ===
+					document.documentElement.getAttribute(
+						'data-sgs-touch-hover'
+					) )
+		) {
+			return;
+		}
 		const now = window.performance.now();
 		if ( now - lastHover < cooldown ) {
 			return;
@@ -236,9 +254,13 @@ function boot( root ) {
 				return;
 			}
 			animation.updatePlaybackRate( part.hoverRate );
-			window.setTimeout(
-				() => animation.updatePlaybackRate( 1 ),
-				part.hoverRateDuration || 900
+			window.clearTimeout( rateTimers.get( animation ) );
+			rateTimers.set(
+				animation,
+				window.setTimeout(
+					() => animation.updatePlaybackRate( 1 ),
+					part.hoverRateDuration || 900
+				)
 			);
 		} );
 	} );
@@ -257,10 +279,11 @@ export function bootSvgParts( scope = document ) {
 		return;
 	}
 	scope.querySelectorAll( SELECTOR ).forEach( ( root ) => {
-		if ( booted.has( root ) ) {
+		// Each block's view script bundles its own copy of this module, so the flag lives on the element.
+		if ( root.hasAttribute( BOOTED_ATTR ) ) {
 			return;
 		}
-		booted.add( root );
+		root.setAttribute( BOOTED_ATTR, '' );
 		boot( root );
 	} );
 }

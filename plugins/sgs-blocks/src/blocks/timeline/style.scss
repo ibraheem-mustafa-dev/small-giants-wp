@@ -774,18 +774,18 @@
 // never less.
 @media (min-width: 768px) {
 	.sgs-timeline--horizontal[data-sgs-fx~='horizontal-panel'] {
+		// A real scroll container (hidden, not clip): Tab onto an off-screen card moves the root's scrollLeft natively,
+		// the keyboard path fx-horizontal-panel.js relies on. The root clips on both axes, so the cards' shadows get
+		// their room inside it instead: the list pads its bottom by --sgs-timeline-shadow-room and the root pulls the
+		// following content back up by the same amount, leaving the layout height as it was.
 		overflow: hidden;
-
-		// Clip only the sideways axis so the cards' shadows can fall below the root.
-		@supports (overflow: clip) {
-			overflow-x: clip;
-			overflow-y: visible;
-		}
+		margin-block-end: calc(-1 * var(--sgs-timeline-shadow-room, 5rem));
 
 		.sgs-timeline__list {
 			width: max-content;
 			overflow-x: visible;
 			scroll-snap-type: none;
+			padding-block-end: var(--sgs-timeline-shadow-room, 5rem);
 		}
 	}
 }

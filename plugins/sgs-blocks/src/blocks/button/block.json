@@ -459,7 +459,7 @@
 		"visualOnly": {
 			"type": "boolean",
 			"default": false,
-			"description": "Renders the button as a non-interactive <span> (no link, no button, not focusable, hidden from assistive technology) for a call-to-action inside a card that is itself the link (the container's block-link setting). It takes its hover look from the card and has no lift of its own."
+			"description": "Renders the button as a non-interactive <span> (no link, no button, not focusable, plain readable text) for a call-to-action inside a card that is itself the link (the container's block-link setting). It takes its hover look from the card and has no lift of its own."
 		},
 		"focusStyle": {
 			"type": "string",

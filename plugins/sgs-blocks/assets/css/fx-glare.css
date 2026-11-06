@@ -24,7 +24,7 @@
 	transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease-out, ease-out);
 }
 
-[data-sgs-fx~="glare"]:hover > .sgs-motion-layer[data-sgs-layer="glare"] {
+:where(:root:not(.sgs-touch-input)) [data-sgs-fx~="glare"]:hover > .sgs-motion-layer[data-sgs-layer="glare"] {
 	opacity: var(--sgs-glare-opacity, 0.42);
 }
 

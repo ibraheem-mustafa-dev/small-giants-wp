@@ -5,8 +5,8 @@
  * Focus look (fieldFocusBackground, fieldFocusBorderColour, fieldFocusBorderWidth, fieldFocusRingColour,
  * fieldFocusRingWidth, fieldFocusRingStyle): the ground, border colour and border width paint on `:focus` of
  * `.sgs-form-field__input` (input, select, textarea). The ring goes through the focus system's override contract
- * (theme assets/css/focus.css): `--sgs-focus-under` carries the ring as a box-shadow (the one shadow
- * layer the site's ring-only switch keeps), `--sgs-focus-halo` drops the default hairline and glow, and `--sgs-focus-ring` is made
+ * (theme assets/css/focus.css): `--sgs-focus-under` carries the ring as a box-shadow, with the field's own resting shadow (`--sgs-field-shadow`, set by
+ * field-own-style.php) layered beneath it (the one shadow layer the site's ring-only switch keeps), `--sgs-focus-halo` drops the default hairline and glow, and `--sgs-focus-ring` is made
  * transparent so the site outline stays only as a forced-colours indicator. Both are set on `:focus-visible`, the
  * state the focus system paints on, so a ring never shows on a mouse-opened select. An unset ring leaves the site
  * focus ring untouched; an unset attribute prints nothing.
@@ -59,7 +59,7 @@ function field_focus_css( array $attributes, string $uid ): string {
 		$css .= $field . ':focus{' . implode( ';', $decls ) . ';}';
 	}
 	if ( $has_ring ) {
-		$css .= $field . ':focus-visible{--sgs-focus-halo:0 0 #0000;--sgs-focus-under:' . ( $inset ? 'inset ' : '' ) . '0 0 0 ' . rtrim( rtrim( number_format( $ring_px, 2, '.', '' ), '0' ), '.' ) . 'px ' . $ring . ';--sgs-focus-ring:transparent;}';
+		$css .= $field . ':focus-visible{--sgs-focus-halo:0 0 #0000;--sgs-focus-under:' . ( $inset ? 'inset ' : '' ) . '0 0 0 ' . rtrim( rtrim( number_format( $ring_px, 2, '.', '' ), '0' ), '.' ) . 'px ' . $ring . ',var(--sgs-field-shadow,0 0 #0000);--sgs-focus-ring:transparent;}';
 	}
 
 	return $css . floated_label_css( $attributes, $uid );

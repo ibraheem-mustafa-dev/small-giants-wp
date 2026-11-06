@@ -14,7 +14,7 @@
  *
  * `:focus-visible` is KEYBOARD-reachable and stays OUTSIDE the guard. Every caller splits its hover selector from
  * its focus selector rather than emitting the single combined rule it used to. A paint that follows a container's
- * focus is keyed on `:has(:focus-visible)`, never `:focus-within`: a tap or a mouse click focuses a link, and
+ * focus is keyed on `:focus-visible` (the element itself) plus `:has(:focus-visible)` (a descendant), never `:focus-within`: a tap or a mouse click focuses a link, and
  * `:focus-within` would paint the container on that tap.
  *
  * The guard is wrapped in `:where()` so it contributes ZERO specificity. A hover rule must keep out-ranking its own
@@ -89,7 +89,8 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 	 * @param string $selector One or more comma-separated base selectors.
 	 * @param string $decls    CSS declarations, no braces.
 	 * @param string $focus    Focus pseudo-class, e.g. ':focus-visible'. ':focus-within' is emitted as
-	 *                         ':has(:focus-visible)' so a tap or click inside the element does not paint it.
+	 *                         both ':focus-visible' (the element itself) and ':has(:focus-visible)' (a descendant),
+	 *                         so keyboard focus paints it and a tap or click does not.
 	 * @param string $suffix   Optional pseudo-element suffix, e.g. '::after'.
 	 * @return string Both rules concatenated, or '' when inputs are empty.
 	 */
@@ -101,7 +102,8 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 			return '';
 		}
 
-		if ( ':focus-within' === $focus ) {
+		$focus_within = ':focus-within' === $focus;
+		if ( $focus_within ) {
 			$focus = ':has(:focus-visible)';
 		}
 
@@ -120,8 +122,10 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 		$focus_selector = implode(
 			',',
 			array_map(
-				static function ( $part ) use ( $focus, $suffix ) {
-					return $part . $focus . $suffix;
+				static function ( $part ) use ( $focus, $suffix, $focus_within ) {
+					$rule = $part . $focus . $suffix;
+					// The target can take focus itself (a button or link), which `:has()` never matches.
+					return $focus_within ? $part . ':focus-visible' . $suffix . ',' . $rule : $rule;
 				},
 				$parts
 			)

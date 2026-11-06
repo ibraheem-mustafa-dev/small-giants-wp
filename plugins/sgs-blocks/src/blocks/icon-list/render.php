@@ -677,14 +677,17 @@ $scoped_css[] = sgs_sibling_dim_css( $sgs_ilist_list_sel, '.sgs-icon-list__item'
 $scoped_css[] = sgs_label_roll_css( $root_sel, ' .sgs-icon-list__item', '', $attributes );
 $sgs_ilist_text_shift = is_numeric( $attributes['itemTextShiftHover'] ?? null ) ? max( 0, min( 60, (int) $attributes['itemTextShiftHover'] ) ) : 0;
 if ( $sgs_ilist_text_shift > 0 ) {
-	// The text slides toward the inline end while the marker stays put; the shared item-motion pair times it.
-	$sgs_ilist_shift_to = $item_row_sel . ':hover .sgs-icon-list__text';
-	$scoped_css[]       = "{$text_sel}{transition:transform " . sgs_item_motion_transition( $attributes ) . ';}';
-	$scoped_css[]       = sgs_hover_media_wrap( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_ilist_shift_to . '{transform:translateX(' . $sgs_ilist_text_shift . 'px);}' );
+	// The text slides toward the inline end while the marker stays put (the other way in a right-to-left list); the
+	// shared item-motion pair times it. The span is inline-block so a transform applies in every marker variant.
+	$sgs_ilist_shift_to  = $item_row_sel . ':hover .sgs-icon-list__text';
+	$sgs_ilist_shift_foc = $item_row_sel . ':has(:focus-visible) .sgs-icon-list__text';
+	$scoped_css[]        = "{$text_sel}{display:inline-block;transition:transform " . sgs_item_motion_transition( $attributes ) . ';}';
+	$scoped_css[]        = sgs_hover_media_wrap( SGS_HOVER_NOT_TOUCH . ' ' . $sgs_ilist_shift_to . '{transform:translateX(' . $sgs_ilist_text_shift . 'px);}' . SGS_HOVER_NOT_TOUCH . ' ' . $item_row_sel . ':hover:dir(rtl) .sgs-icon-list__text{transform:translateX(-' . $sgs_ilist_text_shift . 'px);}' );
 	if ( ! sgs_focus_rests_active() ) {
-		$scoped_css[] = $item_row_sel . ':has(:focus-visible) .sgs-icon-list__text{transform:translateX(' . $sgs_ilist_text_shift . 'px);}';
+		$scoped_css[] = $sgs_ilist_shift_foc . '{transform:translateX(' . $sgs_ilist_text_shift . 'px);}';
+		$scoped_css[] = $item_row_sel . ':has(:focus-visible):dir(rtl) .sgs-icon-list__text{transform:translateX(-' . $sgs_ilist_text_shift . 'px);}';
 	}
-	$scoped_css[] = '@media (prefers-reduced-motion: reduce){' . $text_sel . '{transition:none;}' . $sgs_ilist_shift_to . ',' . $item_row_sel . ':has(:focus-visible) .sgs-icon-list__text{transform:none;}}';
+	$scoped_css[] = '@media (prefers-reduced-motion: reduce){' . $text_sel . '{transition:none;}' . $sgs_ilist_shift_to . ',' . $sgs_ilist_shift_foc . ',' . $item_row_sel . ':hover:dir(rtl) .sgs-icon-list__text,' . $item_row_sel . ':has(:focus-visible):dir(rtl) .sgs-icon-list__text{transform:none;}}';
 }
 if ( 'numbered' === $marker_type ) {
 	$sgs_ilist_num_decls = array( 'color:var(--sgs-list-marker-colour, ' . ( '' !== trim( (string) ( $attributes['numberColour'] ?? '' ) ) ? sgs_colour_value( $attributes['numberColour'] ) : 'currentColor' ) . ')' );

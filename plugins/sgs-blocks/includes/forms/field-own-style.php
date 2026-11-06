@@ -63,7 +63,15 @@ function field_own_style_css( array $attributes, string $uid, string $field_sele
 		),
 		'sgs/form-field-text'
 	);
-	$decls     = array_merge( $decls, $shadow['normal'] );
+	// The resting shadow is also handed to the focus system (--sgs-focus-under) and to the form's focus ring
+	// (--sgs-field-shadow, layered under the ring in field_focus_css), so a focused field keeps it.
+	$shadow_normal = sgs_focus_under_decls( $shadow['normal'] );
+	foreach ( $shadow_normal as $shadow_decl ) {
+		if ( str_starts_with( (string) $shadow_decl, '--sgs-focus-under:' ) ) {
+			$shadow_normal[] = '--sgs-field-shadow:' . substr( (string) $shadow_decl, strlen( '--sgs-focus-under:' ) );
+		}
+	}
+	$decls = array_merge( $decls, $shadow_normal );
 
 	$css = '';
 	if ( array() !== $decls ) {

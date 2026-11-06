@@ -23,11 +23,11 @@
  * (`horizontal-panel-geometry.js`); without one nothing is pinned.
  *
  * KEYBOARD FOCUS: this branch only writes a `transform` on the track; it never touches `tabindex`, DOM order or
- * `overflow`. The host computes `overflow-x: hidden` (the stylesheet's `clip` normalises to it beside the base
- * `overflow-y: hidden`), a real scroll container, so every browser's native focus-time scroll-into-view moves
- * `host.scrollLeft` when Tab lands on a not-yet-travelled panel, with no code here (measured by
- * `scripts/motion-qa/probe-horizontal-panel-focus.mjs`). No focusin handler is added: a second mechanism would
- * compete with the browser's own. See `assets/css/fx-horizontal-panel.css` (D456) before touching its overflow rules.
+ * `overflow`. The host must stay a real scroll container (`overflow: hidden` on both axes; `clip` is not one), so every
+ * browser's native focus-time scroll-into-view moves `host.scrollLeft` when Tab lands on a not-yet-travelled panel, with
+ * no code here. No focusin handler is added: a second mechanism would compete with the browser's own. A block that
+ * needs room outside the host (a card shadow) pads inside it and pulls back with a negative margin rather than
+ * relaxing `overflow`. See `assets/css/fx-horizontal-panel.css` (D456) before touching its overflow rules.
  *
  * @package
  */
