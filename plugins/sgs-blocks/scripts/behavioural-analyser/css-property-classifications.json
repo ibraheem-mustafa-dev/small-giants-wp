@@ -24619,6 +24619,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "connectorHidden",
+      "fields": {
+        "css_property": "display",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "connectorOffset",
       "fields": {
         "css_property": "margin-top",
