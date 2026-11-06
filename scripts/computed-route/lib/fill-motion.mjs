@@ -11,7 +11,7 @@ import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
 import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, place, sharedLayerRow } from './fill-behaviour.mjs';
-import { accountedIds, silentRows, makeHomeOf, readingProgressHandover, motionWidths } from './fill-motion-account.mjs';
+import { accountedIds, accountedAt, targetKey, silentRows, makeHomeOf, readingProgressHandover, motionWidths } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
 import { paintTimings } from './fill-timing.mjs';
 import { openWords } from './motion-states.mjs';
@@ -273,6 +273,9 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	}
 	const blockDone = new Set();
 	const written = new Map();
+	// Per (record, target) accounting (lib/fill-motion-account.mjs): the targets each record was expected at, and the layers used at each.
+	const expected = new Map();
+	const usedAt = new Set();
 	const controls = [ ...idx.controls ];
 	const deferred = [];
 	let words = null;
@@ -285,7 +288,11 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		const doc = { v: 1, elements: {} };
 		const pending = [];
 		const boxes = [];
+		let at = null;
+		const flush = () => at && used.slice( at.from ).forEach( ( id ) => usedAt.add( `${ id }@${ at.key }` ) );
 		for ( const t of n.targets ) {
+			flush();
+			at = { from: used.length, key: targetKey( { node: ref, slot: t.slot } ) };
 			const sets = ( loops[ t.id ]?.[ 1440 ]?.smil || [] ).map( ( a, i ) => ( 'set' === a.tag ? setRecord( a, i ) : null ) ).filter( Boolean );
 			const key = elementKey( t.finder, rootComponent );
 			let own = [ ...( byElement.get( key ) || [] ), ...idx.hostedFor( key ).map( ( x ) => x.r ), ...sets.flatMap( ( s ) => ( s.record ? [ s.record ] : [] ) ) ];
@@ -321,6 +328,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			if ( reads && targetName( n, t, targets, home ) ) {
 				own = withStateHover( own, stateMotionRecords( reads, t ) );
 			}
+			own.forEach( ( r ) => expected.set( r.id, { ...( expected.get( r.id ) || {} ), [ at.key ]: where } ) );
 			const lists = staggers.filter( ( p ) => p.at?.t === t && ! p.refused );
 			out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused ).map( ( p ) => ( { ...where, property: 'motion', value: p.r.id, reason: p.refused } ) ) );
 			if ( ! own.length && ! sampled[ t.id ]?.[ 1440 ] && ! loops[ t.id ] && ! lists.length ) {
@@ -388,6 +396,8 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				applyBehaviours( { items: behaviours, n, target, doc, pending, written, controls, out, where, flat, finish: ( e, id ) => finishedEffect( e, { block: n.name, target, mdb, schema, offers, ctx, id } ), mdb, hasAttr } );
 			}
 		}
+		flush();
+		at = null;
 		if ( boxes.length ) {
 			writeLoopCss( n, boxes, { flat, ref, out } );
 		}
@@ -405,7 +415,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 	}
 	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
 	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx } );
-	out.unmapped.push( ...silentRows( { records, accounted: accountedIds( { used, written, out } ), refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
+	out.unmapped.push( ...silentRows( { records, accounted: accountedIds( { used, written, out } ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
 	out.handover.push( ...readingProgressHandover( { found: idx.found, homeOf } ) );
 	deferred.forEach( ( write ) => write() );
 	return out;

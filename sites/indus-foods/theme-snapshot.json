@@ -93,6 +93,24 @@
           "color": "#E3EFF4",
           "name": "Tint On Blue",
           "_source": "declared"
+        },
+        {
+          "slug": "custom-5e6873",
+          "color": "#5E6873",
+          "name": "Custom 5E6873",
+          "_source": "declared"
+        },
+        {
+          "slug": "custom-0a6e93",
+          "color": "#0A6E93",
+          "name": "Custom 0A6E93",
+          "_source": "declared"
+        },
+        {
+          "slug": "custom-dcebf1",
+          "color": "#DCEBF1",
+          "name": "Custom DCEBF1",
+          "_source": "declared"
         }
       ],
       "gradients": [
@@ -394,6 +412,26 @@
           "name": "Diffuse",
           "slug": "diffuse",
           "shadow": "0px 18px 44px 0px color-mix(in srgb, var(--wp--custom--shadow-colour) 9%, transparent)"
+        },
+        {
+          "slug": "button",
+          "name": "Button",
+          "shadow": "0 8px 18px -8px rgba(0,0,0,.45)"
+        },
+        {
+          "slug": "card",
+          "name": "Card",
+          "shadow": "0 20px 34px -20px rgba(44,62,80,.55)"
+        },
+        {
+          "slug": "panel",
+          "name": "Panel",
+          "shadow": "0 30px 80px -30px rgba(20,25,35,.28)"
+        },
+        {
+          "slug": "header",
+          "name": "Header",
+          "shadow": "0 10px 30px -18px rgba(20,40,60,.35)"
         }
       ]
     },
@@ -631,7 +669,11 @@
         "section-desktop",
         "section-mobile",
         "section-tablet"
-      ]
+      ],
+      "selection": {
+        "background": "var(--wp--preset--color--brand-gold)",
+        "colour": "var(--wp--preset--color--ink)"
+      }
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,

@@ -26,6 +26,26 @@ export function accountedIds( { used, written, out } ) {
 	return ids;
 }
 
+// The one key of a target: its skeleton node's ref and its slot (the `where` every row carries).
+export const targetKey = ( where ) => `${ where.node }|${ where.slot ?? '' }`;
+const rowTarget = ( x ) => ( null == x?.node || 'site' === x.node ? null : targetKey( x ) );
+
+// The (record, target) pairs a finished run has accounted for, as `<record id>@<target key>`: the layers used at a target
+// (`usedAt`, already in that form), the layers a control or behaviour placed there, and every UNMAPPED row or note that names the
+// record at that target. A write to a site option or by property carries no target and is the record's, counted by accountedIds.
+export function accountedAt( { usedAt, written, out } ) {
+	const pairs = new Set( usedAt );
+	for ( const [ id, w ] of written ) {
+		w.where && pairs.add( `${ id }@${ targetKey( w.where ) }` );
+	}
+	out.unmapped.forEach( ( u ) => rowTarget( u ) && String( u.value ).split( ',' ).forEach( ( v ) => pairs.add( `${ v.trim() }@${ rowTarget( u ) }` ) ) );
+	out.notes.forEach( ( x ) => {
+		const m = /^([^\s:]+):/.exec( String( x.text ?? '' ) );
+		m && rowTarget( x ) && pairs.add( `${ m[ 1 ] }@${ rowTarget( x ) }` );
+	} );
+	return pairs;
+}
+
 // Where a record sits on the surface: `homeOf( record )` is { n (the skeleton node), slot } or null for a record whose element
 // is not a target. nodes: skeletonNodes(); keyOf( finder ): the inventory key of a target's element; idx:
 // lib/fill-behaviour.mjs::behaviourIndex.
@@ -59,17 +79,31 @@ export function makeHomeOf( { records, nodes, keyOf, idx } ) {
 	return Object.assign( ( r ) => homeOf( r ) ?? ( scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null ), { direct: homeOf } );
 }
 
-// The UNMAPPED rows for the on-surface records nothing accounted for (see makeHomeOf); refOf( node ): the node's ref.
-export function silentRows( { records, accounted, refOf, homeOf } ) {
-	return ( records || [] ).filter( ( r ) => ! accounted.has( r.id ) ).flatMap( ( r ) => {
+// The UNMAPPED rows for the records nothing accounted for, per (record, target): a record expected at several targets
+// (`expected`: id -> { <target key>: where }) gets a row for each target no layer, row or note at that target holds, even when
+// another target of it was written; a record with no target of its own that no accounted id covers gets one row at its home
+// (see makeHomeOf) or, with no home, a row naming it as off the surface. refOf( node ): the node's ref.
+export function silentRows( { records, accounted, accountedAt: done = new Set(), expected = new Map(), refOf, homeOf } ) {
+	const gap = ( r, text ) => `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) ${ text }`;
+	return ( records || [] ).flatMap( ( r ) => {
+		const targets = Object.entries( expected.get( r.id ) || {} );
+		if ( targets.length ) {
+			return targets.filter( ( [ key ] ) => ! done.has( `${ r.id }@${ key }` ) ).map( ( [ , where ] ) => ( {
+				...where, property: 'motion', value: r.id,
+				reason: gap( r, `belongs to this surface and reaches ${ where.block } ${ where.slot || 'root' }, but no effect, setting or handover holds it there${ targets.length > 1 ? ` (it reaches ${ targets.length } targets of this surface, and another may be written)` : '' }` ),
+			} ) );
+		}
+		if ( accounted.has( r.id ) ) {
+			return [];
+		}
 		const home = homeOf( r );
 		if ( ! home ) {
-			return [];
+			return [ { node: '', block: '', slot: '', property: 'motion', value: r.id, reason: gap( r, 'belongs to this surface (draft inventory), but no effect, setting or handover holds it: no skeleton node holds its element (it has no home on this surface), and a record nothing places is named here' ) } ];
 		}
 		const own = scriptFile( r ) && ! homeOf.direct( r ) ? ` (written by the script ${ scriptFile( r ) } of an element on this surface)` : '';
 		return [ {
 			node: refOf( home.n ), block: home.n.name, slot: home.slot, property: 'motion', value: r.id,
-			reason: `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) belongs to this surface${ own }, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here`,
+			reason: gap( r, `belongs to this surface${ own }, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here` ),
 		} ];
 	} );
 }

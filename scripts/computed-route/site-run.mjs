@@ -38,6 +38,7 @@ import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
+import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -421,6 +422,18 @@ export async function main( argv ) {
 	} finally {
 		Object.hasOwn( shown, 'order-confirmation' ) && console.log( `test orders deleted: ${ String( runPhp( deleteTestOrdersPhp() ) ).trim().split( /\r?\n/ ).pop() }` );
 		await Promise.all( [ ...servers.values() ].map( async ( x ) => ( await x ).close() ) );
+	}
+	// PF11: the run ends by ranking every page's open walker rows (lib/site-run-rank.mjs), then the gate chain turns the ranked top rows into gaps.json and the framework backlog merges the F rows.
+	if ( stages.includes( 'walk' ) ) {
+		const ranking = writeRanking( { runDir: dir, parityOut: path.join( build, 'qa', 'parity', 'out' ), surfaces: keys, limit: TOP_N } );
+		console.log( `ranking: ${ ranking.total } open rows in ${ ranking.causes } causes, top ${ ranking.ranked.length } written to ${ ranking.file }` );
+		for ( const s of ranking.surfaces ) {
+			const g = path.join( dir, 'gate', s );
+			const r = await run( 'node', [ 'scripts/computed-route/gate-chain.mjs', path.join( g, 'solve-report.json' ), '--client', client ], { logFile: path.join( dir, `${ s }.gate-chain.log` ) } );
+			note( s, 'gate-chain', 0 === r.code, 0, r.tail );
+		}
+		const fb = await run( 'node', [ 'scripts/computed-route/framework-backlog.mjs' ], { logFile: path.join( dir, 'framework-backlog.log' ) } );
+		note( 'run', 'framework-backlog', 0 === fb.code, 0, fb.tail );
 	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );

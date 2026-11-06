@@ -4,16 +4,20 @@
 // settings on one block of the client's built trees (sites/<client>/build/trees), or a walker effect record (kind
 // `effects`) in a report given with --walk, and no effect row reporting the effect missing. A done state key needs a
 // walker run of that state in a --walk report with no open row.
-//   node scripts/computed-route/delivery-map.mjs <client> --check [--walk <report.json>]...
+//   node scripts/computed-route/delivery-map.mjs <client> --check [--walk <report.json>]... [--verify <verify.json>]
 //                                                                   exit 0 when right, 1 naming each problem, 2 usage
 //   node scripts/computed-route/delivery-map.mjs <client> --status  the same check, then open keys per unit and the
-//                                                                    done and accepted counts
+//                                                                    done and accepted counts, then each animation key's
+//                                                                    live status: "not read live" with no verify.json
+//                                                                    (lib/delivery-map.mjs top comment: its shape), else done
+//                                                                    only when every row for the key is ok; tree evidence
+//                                                                    is a separate column. --verify <file> overrides its path.
 import fs from 'fs';
 import path from 'path';
 import { REPO } from './lib/capabilities.mjs';
 import { loadCoverage } from './lib/clone-coverage.mjs';
 import { commitFiles, stateCommitEvidence, surfaceFiles } from './lib/delivery-state-files.mjs';
-import { animationEvidence, clientTrees, commitExists, expectedKeys, mapPath, mapProblems, planUnits, stateEvidence, treeFacts, walkerEffectRows } from './lib/delivery-map.mjs';
+import { animationEvidence, clientTrees, liveStatus, readVerify, verifyPath, commitExists, expectedKeys, mapPath, mapProblems, planUnits, stateEvidence, treeFacts, walkerEffectRows } from './lib/delivery-map.mjs';
 
 const [ client, mode, ...rest ] = process.argv.slice( 2 );
 if ( ! client || ! [ '--check', '--status' ].includes( mode ) ) {
@@ -48,13 +52,23 @@ const reports = rest.flatMap( ( a, i ) => ( '--walk' === a ? [ rest[ i + 1 ] ] :
 const walkRows = reports.flatMap( walkerEffectRows );
 const facts = treeFacts( clientTrees( client ) );
 const records = new Map( ( fs.existsSync( path.join( REPO, 'sites', client, 'handoff', 'animations.json' ) ) ? JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'handoff', 'animations.json' ), 'utf8' ) ).records || [] : [] ).map( ( r ) => [ `animation:${ r.id }`, r ] ) );
-const evidenceFor = ( k ) => ( k.startsWith( 'state:' ) ? stateEvidence( k )( reports ) : records.has( k ) ? animationEvidence( records.get( k ), facts, walkRows ) : { ok: false, why: 'the handoff animations.json has no record of it' } );
+const vi = rest.indexOf( '--verify' );
+const verify = readVerify( vi >= 0 && rest[ vi + 1 ] ? path.resolve( rest[ vi + 1 ] ) : verifyPath( client ) );
+const treeOk = ( k ) => animationEvidence( records.get( k ), facts, walkRows );
+const evidenceFor = ( k ) => ( k.startsWith( 'state:' ) ? stateEvidence( k )( reports ) : records.has( k ) ? ( verify ? ( ( l ) => ( { ok: 'done' === l.state, why: l.why } ) )( liveStatus( k, verify ) ) : treeOk( k ) ) : { ok: false, why: 'the handoff animations.json has no record of it' } );
+const liveLines = () => {
+	for ( const k of Object.keys( keys ).filter( ( x ) => x.startsWith( 'animation:' ) ).sort() ) {
+		const l = liveStatus( k, verify );
+		console.log( `${ k }: ${ l.state } (tree evidence: ${ records.has( k ) && treeOk( k ).ok ? 'yes' : 'no' })` );
+	}
+};
 const problems = mapProblems( { raw, expected: expectedKeys( client ), units, coverage: loadCoverage(), hasCommit: ( h ) => commitExists( h ), evidenceFor, touches: ( k, c ) => stateCommitEvidence( k, c, { filesOf: ( id ) => surfaceFiles( client, id ), changedIn: commitFiles } ) } );
 for ( const p of problems ) {
 	console.log( p );
 }
 if ( problems.length ) {
 	console.log( `${ problems.length } problem(s)` );
+	'--status' === mode && liveLines();
 	process.exit( 1 );
 }
 if ( '--check' === mode ) {
@@ -77,3 +91,4 @@ for ( const [ u, n ] of Object.entries( open ).sort() ) {
 	console.log( `${ u }: ${ n } open` );
 }
 console.log( `done ${ done }, accepted ${ accepted }` );
+liveLines();

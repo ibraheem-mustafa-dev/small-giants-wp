@@ -8,7 +8,7 @@ SGS\\Blocks\\Sgs_Site_Info). The clone pipeline (scripts/computed-route/fill.mjs
 address the draft shows (a social link, a tel: link, a mailto: link). This script proposes
 those addresses as the site's Site Info values and, with --apply, writes them.
 
-Entries with owner `wp-option` and key `blogname` (site title) or `blogdescription` (tagline) are the
+Entries with owner `wp-option` and key `blogname` (site title), `blogdescription` (tagline) or `timezone_string` (from --handoff) are the
 WordPress options of those names; no other option is ever read or written. The draft's <title> tags give
 both, and intake's `site_title` and `tagline` rows arrive the same way (the tagline also fills Site Info's
 `tagline`).
@@ -64,6 +64,7 @@ import re
 import shlex
 import subprocess
 import sys
+import zoneinfo
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -87,7 +88,9 @@ ALLOWED_KEYS = (
     *TEXT_KEYS, *LINK_KEYS,
 )
 # The WordPress options this script may read or write (owner `wp-option`): the site title and tagline.
-WP_OPTION_KEYS = ("blogname", "blogdescription")
+WP_OPTION_KEYS = ("blogname", "blogdescription", "timezone_string")
+# An IANA zone name as a handoff spells it (Europe/London); WordPress's sanitize_option() checks it against its own list.
+TIMEZONE = re.compile(r"\b((?:Africa|America|Antarctica|Asia|Atlantic|Australia|Europe|Indian|Pacific)/[A-Za-z_]+(?:/[A-Za-z_]+)?)\b")
 SITE_INFO_OWNER = "site-info"
 WP_OPTION_OWNER = "wp-option"
 MAX_URL = 2000
@@ -209,6 +212,8 @@ def wp_option_problem(key: str, value: str) -> str | None:
     """Why a value must not be written to this WordPress option, or None when it is acceptable (validated as text)."""
     if key not in WP_OPTION_KEYS:
         return "not a WordPress option this script fills"
+    if key == "timezone_string" and not (isinstance(value, str) and TIMEZONE.fullmatch(value.strip())):
+        return "not an IANA zone name"
     raw = value if isinstance(value, str) else ""
     if CONTROL.search(raw):
         return "control characters (CR/LF) in value"
@@ -221,6 +226,32 @@ def wp_option_problem(key: str, value: str) -> str | None:
     if scheme in DANGEROUS_SCHEMES:
         return f"scheme {scheme} is not text"
     return None
+
+
+def handoff_timezone(handoff: Path) -> str | None:
+    """The one time zone a client handoff states, or None (the site's zone is then left alone; no default is guessed).
+
+    A structured `timezone` key at the top of surfaces.json wins; otherwise the zone the handoff's README and surfaces.json
+    name in their text, when they name exactly one."""
+    surfaces = Path(handoff) / "surfaces.json"
+    if surfaces.is_file():
+        try:
+            data = json.loads(surfaces.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            data = None
+        stated = data.get("timezone") if isinstance(data, dict) else None
+        if isinstance(stated, str) and TIMEZONE.fullmatch(stated.strip()):
+            return stated.strip()
+    zones = set()
+    for name in ("README.md", "surfaces.json"):
+        file = Path(handoff) / name
+        if file.is_file():
+            zones.update(TIMEZONE.findall(file.read_text(encoding="utf-8", errors="replace")))
+    # Prose can hold a slash pair that is no zone ("Indian/South Asian"): only names the time zone database knows count, and
+    # with no database on this machine only the structured key does.
+    known = zoneinfo.available_timezones()
+    zones = {z for z in zones if z in known}
+    return zones.pop() if len(zones) == 1 else None
 
 
 def owner_of(entry: dict) -> str:
@@ -456,7 +487,7 @@ echo wp_json_encode( (object) $out );
 
 READ_WP_OPTIONS_PHP = r"""
 $keys    = json_decode( base64_decode( (string) ( $args[0] ?? '' ), true ), true );
-$allowed = array( 'blogname', 'blogdescription' );
+$allowed = array( 'blogname', 'blogdescription', 'timezone_string' );
 $out     = array();
 foreach ( (array) $keys as $k ) {
 	$k = (string) $k;
@@ -472,7 +503,7 @@ echo wp_json_encode( (object) $out );
 
 WRITE_WP_OPTIONS_PHP = r"""
 $items   = json_decode( base64_decode( (string) ( $args[0] ?? '' ), true ), true );
-$allowed = array( 'blogname', 'blogdescription' );
+$allowed = array( 'blogname', 'blogdescription', 'timezone_string' );
 $out     = array();
 foreach ( (array) $items as $k => $v ) {
 	$k = (string) $k;
@@ -542,6 +573,7 @@ def main() -> int:
     parser.add_argument("--handover", type=Path, action="append", default=[], nargs="+",
                         help="one or more handover.json paths")
     parser.add_argument("--intake", type=Path, help="intake.json: the confirmed siteInfo rows with Bean's review marks")
+    parser.add_argument("--handoff", type=Path, help="the client's handoff folder: its stated time zone becomes the timezone_string option")
     parser.add_argument("--set", dest="sets", action="append", default=[], metavar="KEY=VALUE",
                         help="a confirmed fact the draft does not hold (repeatable), e.g. maps_url=https://...")
     parser.add_argument("--apply", action="store_true", help="write the proposed keys (default: dry run)")
@@ -549,8 +581,8 @@ def main() -> int:
     args = parser.parse_args()
 
     paths = [p for group in args.handover for p in group]
-    if not paths and not args.intake and not args.sets:
-        parser.error("give --handover, --intake or --set")
+    if not paths and not args.intake and not args.sets and not args.handoff:
+        parser.error("give --handover, --intake, --set or --handoff")
     missing = [str(p) for p in [*paths, *([args.intake] if args.intake else [])] if not p.is_file()]
     if missing:
         sys.exit(f"ERROR: input file not found: {', '.join(missing)}")
@@ -568,6 +600,11 @@ def main() -> int:
     except ValueError as error:
         sys.exit(f"ERROR: {error}")
     entries += set_entries
+    if args.handoff:
+        zone = handoff_timezone(args.handoff)
+        print(f"handoff time zone: {zone or 'none stated, the site zone is left alone'}")
+        if zone:
+            entries.append({"owner": WP_OPTION_OWNER, "key": "timezone_string", "address": zone, "ref": "handoff", "source": str(args.handoff)})
     if set_entries:
         print(f"{len(set_entries)} --set entries")
     if not entries:

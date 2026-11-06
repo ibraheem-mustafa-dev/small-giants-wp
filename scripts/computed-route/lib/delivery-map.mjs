@@ -1,3 +1,8 @@
+// Live verification (sites/<client>/build/qa/apply/verify.json, written by the tool that reads the live page):
+//   { generated: <ISO time>, rows: [ { record: 'A-16', target: <the element or part measured>, state: <the state
+//   measured, e.g. 'load', 'hover'>, ok: <boolean>, measured: <what the page showed>, want: <what the draft showed> } ] }
+// A key `animation:<record>` is done live only when it has at least one row and every row for it has ok true. With no
+// verify.json no key is reported done: its status is "not read live". Tree evidence stays a separate column.
 // A client's delivery map (sites/<client>/build/qa/delivery-map.json): one key for every coverage id the client's
 // intake review names, every active record of its handoff animations.json and every state of its surfaces.json, each
 // owned by a unit of the plan the map names, or marked done or accepted. `mapProblems` is the check: a missing,
@@ -19,6 +24,30 @@ import { openRows } from './solve-rows.mjs';
 import { boundNodes, nodeElementKeys } from './delivery-bind.mjs';
 
 export const PRIOR = 'prior';
+
+// The live verification file's path for a client.
+export function verifyPath( client, root = REPO ) {
+	return path.join( root, 'sites', client, 'build', 'qa', 'apply', 'verify.json' );
+}
+
+// The verify.json at `file`, or null when it does not exist.
+export function readVerify( file ) {
+	return fs.existsSync( file ) ? readJson( file ) : null;
+}
+
+// { state: 'not read live' | 'done' | 'not done', why } for one `animation:<id>` key, from the parsed verify.json (null when absent).
+export function liveStatus( key, verify ) {
+	if ( ! verify ) {
+		return { state: 'not read live', why: 'no verify.json' };
+	}
+	const id = String( key ).replace( /^animation:/, '' );
+	const rows = ( Array.isArray( verify.rows ) ? verify.rows : [] ).filter( ( r ) => r && ( r.record === id || r.record === key ) );
+	if ( ! rows.length ) {
+		return { state: 'not done', why: 'verify.json has no row for it' };
+	}
+	const bad = rows.filter( ( r ) => true !== r.ok );
+	return bad.length ? { state: 'not done', why: `${ bad.length } of ${ rows.length } verify row(s) not ok (first: ${ bad[ 0 ].target ?? '?' } ${ bad[ 0 ].state ?? '' }, measured ${ JSON.stringify( bad[ 0 ].measured ) }, want ${ JSON.stringify( bad[ 0 ].want ) })` } : { state: 'done', why: `${ rows.length } verify row(s) ok` };
+}
 
 // The map file's path for a client.
 export function mapPath( client, root = REPO ) {
@@ -155,13 +184,22 @@ export function treeFacts( trees, rootComponent = null ) {
 	return facts;
 }
 
-// The trees under sites/<client>/build/trees, read.
+// The trees under sites/<client>/build/trees, read. A `*.shell.json` is not a tree: it is `{ chain: [block], surfaces?:
+// { <surface>: [block] }, from? }`, the wrapper blocks written to a template around a page's content, so its `chain` and
+// each surface's block list are the trees it holds.
 export function clientTrees( client, root = REPO ) {
 	const out = [];
 	const visit = ( d ) => {
 		for ( const e of fs.existsSync( d ) ? fs.readdirSync( d, { withFileTypes: true } ) : [] ) {
 			const f = path.join( d, e.name );
-			e.isDirectory() ? visit( f ) : e.name.endsWith( '.json' ) && out.push( readJson( f ) );
+			if ( e.isDirectory() ) {
+				visit( f );
+			} else if ( e.name.endsWith( '.shell.json' ) ) {
+				const shell = readJson( f );
+				[ shell?.chain, ...Object.values( shell?.surfaces || {} ) ].filter( Array.isArray ).forEach( ( t ) => out.push( t ) );
+			} else if ( e.name.endsWith( '.json' ) ) {
+				out.push( readJson( f ) );
+			}
 		}
 	};
 	visit( path.join( root, 'sites', client, 'build', 'trees' ) );
@@ -274,7 +312,7 @@ function walkerHit( record, needs, rows ) {
 const holds = ( node, list ) => list.every( ( s ) => JSON.stringify( node.attributes[ s.attr ] ) === JSON.stringify( s.value ) );
 
 // { ok, why } for one animation record's done mark: a walker effect row reporting the effect missing fails it; otherwise a
-// walker effect record shows it played, or the built block that renders the record's own draft element carries every
+// walker effect record shows it played, or every built block that renders the record's own draft element carries every
 // effect layer and flag the record needs (each enabled and holding settings), or the alternative settings the recogniser
 // names are on that block (lib/delivery-bind.mjs::boundNodes); a layer on a sibling or ancestor block is not evidence. A record that needs
 // nothing a tree can hold has no tree evidence. `needsOf` reads a record's needs (a test seam).
@@ -300,12 +338,12 @@ export function animationEvidence( record, facts, walkerRows = [], needsOf = ani
 	}
 	const missing = [];
 	const own = effects.length || flags.length || needs.alt ? boundNodes( record, facts ) : { nodes: [] };
-	if ( ( effects.length || flags.length ) && ! own.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) ) ) {
+	if ( ( effects.length || flags.length ) && ! ( own.nodes.length && own.nodes.every( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) ) ) ) {
 		const absent = [ ...effects.map( ( e ) => `${ e } effect layer` ), ...flags.map( ( f ) => `${ f } layer` ) ];
-		missing.push( own.why || `the block rendering the record's draft element carries no ${ absent.join( ' and ' ) } together` );
+		missing.push( own.why || `the block rendering the record's draft element carries no ${ absent.join( ' and ' ) } together (every block bound to the record must)` );
 	}
 	missing.push( ...blocks.filter( ( [ name, list ] ) => ! facts.nodes.some( ( n ) => n.name === name && holds( n, list ) ) ).map( ( [ name ] ) => `no ${ name } block with the settings it needs` ) );
-	if ( missing.length && needs.alt && own.nodes.some( ( n ) => holds( n, needs.alt ) ) ) {
+	if ( missing.length && needs.alt && own.nodes.length && own.nodes.every( ( n ) => holds( n, needs.alt ) ) ) {
 		return { ok: true, why: `the alternative settings ${ needs.alt.map( ( s ) => s.attr ).join( ', ' ) } are on the block rendering the record's draft element` };
 	}
 	return missing.length ? { ok: false, why: `${ missing.join( ', ' ) } in the built trees, and no walker effect record shows it` } : { ok: true, why: blocks.length && ! own.nodes.length ? 'the built blocks carry the settings it needs' : `the block rendering ${ own.nodes[ 0 ].keys.join( ', ' ) } carries its effect layers` };
