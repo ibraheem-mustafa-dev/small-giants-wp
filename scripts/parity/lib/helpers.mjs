@@ -56,7 +56,10 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 		route: async () => ( h.routed ? ( await import( '../../computed-route/lib/state-route.mjs' ) ).applyStateRoute( page ) : null ),
 		goto: async ( url ) => {
 			h.log.push( { type: 'goto', target: url } );
-			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
+			// A page with a payment widget (Stripe's fraud and wallet frames) never goes network-idle,
+			// so the load is the hard wait and idle is waited for as long as it comes.
+			await page.goto( cb( url ), { waitUntil: 'load' } );
+			await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 			await waitOutHostCheck( page );
 			h.routed = 'draft' === side && String( url ).includes( '#@state/' );
 			await h.route();

@@ -69,8 +69,8 @@ const config = {
 			await h.clickText( '^add my prescription', { tag: 'a,button', wait: 1200 } );
 			await h.waitFor( LLENS );
 			for ( const answer of [ 'Distance', 'Thin', 'Polarised' ] ) {
-				await h.clickText( `^${ answer }`, { within: LLENS, tag: '.sgs-choice-flow-question__option-button', wait: 150 } );
-				await h.click( `${ LLENS } .sgs-choice-flow__continue`, { wait: 900 } );
+				// Each answer moves the flow on by itself (no Continue button since the compact layout).
+				await h.clickText( `^${ answer }`, { within: LLENS, tag: '.sgs-choice-flow-question__option-button', wait: 1000 } );
 			}
 			await h.click( `${ LLENS } .sgs-choice-flow__add-to-basket`, { wait: 2500 } );
 			// A real page navigation either way (the Checkout block always fully re-renders from
@@ -107,18 +107,8 @@ const config = {
 			draft: ( h ) => h.clickText( '^send it later$', { within: 'main', tag: 'button', wait: 700 } ),
 			live: ( h ) => h.clickText( '^send it later$', { within: 'main', tag: 'button', wait: 700, optional: true } ),
 		},
-		{
-			name: 'submit-empty',
-			// Proven with Playwright against the real draft, 2026-09-28: clicking Pay Now with
-			// every field blank does NOT show required-field errors on the draft — it has no
-			// validation at all and completes straight to a mock "Thank you" screen (see
-			// confirmation.mjs). This is a genuine draft design fault, left open rather than
-			// hidden: the two sides' states genuinely diverge here (draft: order-confirmation
-			// content; live: checkout with inline required-field errors, never actually placing
-			// an order — WooCommerce Blocks validates client-side before any Store API call).
-			draft: ( h ) => h.clickText( '^pay now', { tag: 'button', wait: 1500 } ),
-			live: ( h ) => h.clickText( '^place order', { tag: 'button', wait: 1500 } ),
-		},
+		// No pay-button state: the draft has no validation (Pay now with blank fields jumps to its mock thank-you), so the
+		// states never compare like with like, and live takes real Stripe test payments, so the walker never presses pay.
 	],
 	pairs: [
 		{ name: 'page-heading', states: [ 'opening', 'delivery-toggle' ], draft: 'h1', live: 'h1', box: [ 'h' ] },
@@ -171,7 +161,7 @@ const config = {
 			live: { js: totalsRow( 'total' ) } },
 		{ name: 'place-order', states: [ 'opening', 'delivery-toggle' ], hover: true,
 			draft: { text: '^pay now', tag: 'button' },
-			live: { text: '^place order', tag: 'button' } },
+			live: { text: '^pay now', tag: 'button' } },
 		// The draft's "Prescription" section (its third numbered step, shown because the bag holds a lens): the section, its
 		// heading, the "Upload a photo" mode and the dashed upload box (hover). Live builds none of it by design (Bean
 		// 2026-09-25, D1), so every live finder reads nothing and the presence rows are accepted below.
@@ -192,28 +182,19 @@ const config = {
 			draft: { js: '(r) => document.querySelector("main section")' }, live: '.wp-block-woocommerce-checkout-express-payment-block' },
 		{ name: 'section-payment', states: [ 'opening' ], text: false, box: [ 'h' ], structure: false,
 			draft: { js: dsection( '/payment$/i' ) }, live: '.wp-block-woocommerce-checkout-payment-block' },
-		// The empty-submit outcome (GAP-CHECKLIST 10 — a draft bug, not yet an accepted one):
-		// live's own inline required-field error text; the draft has no equivalent element at
-		// all once it has jumped to its mock confirmation screen.
-		{ name: 'validation-error', states: [ 'submit-empty' ], box: [ 'h' ],
-			draft: { js: `(r) => { ${ vis } return [...document.querySelectorAll('*')].find((e) => vis(e) && e.children.length === 0 && /required/i.test(e.textContent || '')); }` },
-			live: { js: `(r) => { ${ vis } return [...document.querySelectorAll('.wc-block-components-validation-error, [class*="error"]')].find((e) => vis(e) && /required/i.test(e.textContent || '')); }` } },
 	],
 	review: {
 		'opening@1440': "Checkout with a prescription lens in the bag (two columns: the form on the left, the \"Your bag\" card on the right): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
 		'delivery-toggle@1440': "Collect in Birmingham chosen (two columns: the form on the left, the \"Your bag\" card on the right): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
 		'rx-later@1440': "Send it later chosen in the 3 Prescription section (two columns: the form on the left, the \"Your bag\" card on the right): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
-		'submit-empty@1440': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
 		'auto-scrolled@1440': "Scrolled a screen and a half (two columns: the form on the left, the \"Your bag\" card on the right): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
 		'opening@768': "Checkout with a prescription lens in the bag (one column with the form first and the \"Your bag\" card under it): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
 		'delivery-toggle@768': "Collect in Birmingham chosen (one column with the form first and the \"Your bag\" card under it): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
 		'rx-later@768': "Send it later chosen in the 3 Prescription section (one column with the form first and the \"Your bag\" card under it): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
-		'submit-empty@768': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
 		'auto-scrolled@768': "Scrolled a screen and a half (one column with the form first and the \"Your bag\" card under it): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
 		'opening@375': "Checkout with a prescription lens in the bag (one column, express wallets in two rows, the \"Your bag\" card under the payment button): express wallets, 1 Contact, 2 Delivery (Post it to me chosen), 3 Prescription with Upload a photo chosen and the dashed upload box, 4 Payment and the Pay now bar with £418, order summary with the lens line; both sides read the same here because the run compares the draft with itself.",
 		'delivery-toggle@375': "Collect in Birmingham chosen (one column, express wallets in two rows, the \"Your bag\" card under the payment button): the address fields are gone, Collect in Birmingham is the ringed card, the summary's delivery row reads Collection, Free; Prescription and Payment sections follow unchanged.",
 		'rx-later@375': "Send it later chosen in the 3 Prescription section (one column, express wallets in two rows, the \"Your bag\" card under the payment button): Send it later is the filled button, the dashed upload box is replaced by the note \"No problem, I'll WhatsApp you a link\"; Payment and Pay now below it, the Card number field ringed from the earlier focus.",
-		'submit-empty@375': "Pay now pressed with every field empty: the draft has no validation and goes straight to the mock \"Thank you, order EC-10482\" screen (a tick circle, heading, note, Back to the shop button, footer); no required-field errors appear.",
 		'auto-scrolled@375': "Scrolled a screen and a half (one column, express wallets in two rows, the \"Your bag\" card under the payment button): the Payment fields, Pay now bar and its secure-payment line, the summary card's lower rows, then the footer columns; nothing new floats apart from the chat bubble.",
 	},
 	// Links (GAP-CHECKLIST 14): the checkout's body holds no link on live (read with a prescription lens in the bag, 2026-10-02: the

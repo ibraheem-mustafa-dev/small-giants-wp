@@ -70,11 +70,11 @@ const config = {
 		// and clear, past full size, then settling). Live's order-received page has no tick: its status line is plain text.
 		{ name: 'tick-circle', states: [ 'opening' ], box: [ 'w', 'h' ],
 			draft: { js: `(r) => { ${ vis } return [...document.querySelectorAll('div')].find((d) => vis(d) && ! d.children.length && '✓' === d.textContent.trim()); }` },
-			live: '.woocommerce-order .sgs-order-confirmed__tick',
+			live: 'main .sgs-icon--shape-circle',
 			props: [ 'background-color', 'color', 'border-radius', 'font-size', 'animation-name', 'animation-duration' ] },
 		{ name: 'continue-link', states: [ 'opening' ], hover: true,
 			draft: { text: '^back to the shop$', tag: 'button,a' },
-			live: { js: `(r) => { ${ vis } return [...document.querySelectorAll('a')].find((a) => vis(a) && /continue shopping|back to shop|return to shop/i.test(a.textContent.trim())); }` } },
+			live: { js: `(r) => { ${ vis } return [...document.querySelectorAll('a')].find((a) => vis(a) && /continue shopping|back to (the )?shop|return to shop/i.test(a.textContent.trim())); }` } },
 	],
 	review: {
 		'opening@1440': "Order-confirmed screen: the 64px accent tick circle with its white check, \"Thank you, order EC-10482.\" heading, the collection note, the dark Back to the shop button, then the footer; draft against itself, so only the structure and the tick circle's look and pop motion are compared.",
