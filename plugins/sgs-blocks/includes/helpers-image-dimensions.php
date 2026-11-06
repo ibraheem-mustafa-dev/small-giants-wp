@@ -26,10 +26,13 @@ if ( ! function_exists( 'sgs_image_intrinsic_size' ) ) {
 		$key    = 'sgs_imgdim_' . md5( $url );
 		$cached = get_transient( $key );
 		if ( is_array( $cached ) ) {
-			return 2 === count( $cached ) ? array( (int) $cached[0], (int) $cached[1] ) : null;
+			return 2 === count( $cached ) && (int) $cached[0] >= 1 && (int) $cached[1] >= 1 ? array( (int) $cached[0], (int) $cached[1] ) : null;
 		}
 
 		$size = sgs_image_intrinsic_size_lookup( $url );
+		if ( null !== $size && ( $size[0] < 1 || $size[1] < 1 ) ) {
+			$size = null;
+		}
 		set_transient( $key, null === $size ? array() : $size, null === $size ? HOUR_IN_SECONDS : DAY_IN_SECONDS );
 		return $size;
 	}
@@ -114,12 +117,27 @@ if ( ! function_exists( 'sgs_image_svg_size' ) ) {
 		}
 		$number = '(\d+(?:\.\d+)?)';
 		if ( preg_match( '/\bviewBox\s*=\s*["\']\s*[-\d.]+[\s,]+[-\d.]+[\s,]+' . $number . '[\s,]+' . $number . '\s*["\']/i', $root[0], $m ) && (float) $m[1] > 0 && (float) $m[2] > 0 ) {
-			return array( (int) round( (float) $m[1] ), (int) round( (float) $m[2] ) );
+			return sgs_image_svg_rounded_pair( (float) $m[1], (float) $m[2] );
 		}
 		if ( preg_match( '/\bwidth\s*=\s*["\']' . $number . '(?:px)?["\']/i', $root[0], $w ) && preg_match( '/\bheight\s*=\s*["\']' . $number . '(?:px)?["\']/i', $root[0], $h ) && (float) $w[1] > 0 && (float) $h[1] > 0 ) {
-			return array( (int) round( (float) $w[1] ), (int) round( (float) $h[1] ) );
+			return sgs_image_svg_rounded_pair( (float) $w[1], (float) $h[1] );
 		}
 		return null;
+	}
+}
+
+if ( ! function_exists( 'sgs_image_svg_rounded_pair' ) ) {
+	/**
+	 * A width and height rounded to whole pixels, or null when either rounds below 1 (a 0.2px SVG has no usable box).
+	 *
+	 * @param float $width  Width.
+	 * @param float $height Height.
+	 * @return array{0:int,1:int}|null
+	 */
+	function sgs_image_svg_rounded_pair( float $width, float $height ): ?array {
+		$w = (int) round( $width );
+		$h = (int) round( $height );
+		return $w >= 1 && $h >= 1 ? array( $w, $h ) : null;
 	}
 }
 

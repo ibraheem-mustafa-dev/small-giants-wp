@@ -192,7 +192,7 @@ if ( '' === $alt ) {
 $img_alt         = $logo_decorative ? '' : $alt;
 // The box the desktop logo draws at: the printed width, and the height that keeps the file's own aspect ratio.
 $logo_size       = sgs_image_intrinsic_size( $desktop_url );
-$logo_height     = null !== $logo_size ? max( 1, (int) round( $width * $logo_size[1] / $logo_size[0] ) ) : 0;
+$logo_height     = null !== $logo_size && $logo_size[0] > 0 ? max( 1, (int) round( $width * $logo_size[1] / $logo_size[0] ) ) : 0;
 $img_tail_attrs = ( $logo_height > 0 ? ' height="' . $logo_height . '"' : '' ) . ( $logo_decorative ? ' aria-hidden="true"' : '' );
 // The same box for any other file the picture swaps in: the printed width and the height that keeps THAT file's ratio.
 $sgs_logo_height_for = static function ( string $url ) use ( $width, $desktop_url, $logo_height ): int {
@@ -200,7 +200,7 @@ $sgs_logo_height_for = static function ( string $url ) use ( $width, $desktop_ur
 		return $logo_height;
 	}
 	$size = sgs_image_intrinsic_size( $url );
-	return null !== $size ? max( 1, (int) round( $width * $size[1] / $size[0] ) ) : 0;
+	return null !== $size && $size[0] > 0 ? max( 1, (int) round( $width * $size[1] / $size[0] ) ) : 0;
 };
 $sgs_logo_source_size = static function ( string $url ) use ( $width, $sgs_logo_height_for ): string {
 	$height = $sgs_logo_height_for( $url );
