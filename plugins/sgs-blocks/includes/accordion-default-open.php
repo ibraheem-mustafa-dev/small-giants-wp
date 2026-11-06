@@ -54,7 +54,8 @@ function sgs_accordion_open_default_item( string $content, int $default_open ): 
 		list( $at, $length, $end ) = $items[ $i ];
 		$open_tag                  = substr( $content, $at, $length );
 		$body                      = substr( $content, $at + $length, $end - ( $at + $length ) );
-		$is_open                   = 1 === preg_match( '#\sopen(?=[\s=>])#i', $open_tag );
+		$tag_processor             = new WP_HTML_Tag_Processor( $open_tag );
+		$is_open                   = $tag_processor->next_tag( 'details' ) && null !== $tag_processor->get_attribute( 'open' );
 
 		if ( ! $is_open && $i === $default_open ) {
 			$open_tag = substr( $open_tag, 0, -1 ) . ' open>';
