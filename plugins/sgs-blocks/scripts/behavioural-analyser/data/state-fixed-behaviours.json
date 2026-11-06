@@ -123,6 +123,11 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-cursor-field=\"image-reveal\"]:hover::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
    "selector": "[data-sgs-cursor-field=\"image-reveal\"]:hover::before",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -149,6 +154,11 @@
   {
    "file": "plugins/sgs-blocks/assets/css/fx-generative-background.css",
    "selector": ".sgs-generative-background__toggle:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-glare.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) [data-sgs-fx~=\"glare\"]:hover > .sgs-motion-layer[data-sgs-layer=\"glare\"]",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -288,6 +298,11 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-hover-group]:focus-visible:not([data-sgs-focus-rests])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
    "selector": "[data-sgs-hover-group]:focus-within:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -298,7 +313,17 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-mitem]:focus-visible:not([data-sgs-focus-rests])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
    "selector": "[data-sgs-mitem]:focus-within:not([data-sgs-focus-rests])",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/motion.css",
+   "selector": "[data-sgs-mroot]:focus-visible:not([data-sgs-focus-rests])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
@@ -2559,6 +2584,16 @@
   {
    "file": "theme/sgs-theme/assets/css/utilities.css",
    "selector": ":where(:root:not(.sgs-touch-input)) .has-shadow-sm:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-hover-highlight-fill:hover",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/utilities.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-hover-underline-fade:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

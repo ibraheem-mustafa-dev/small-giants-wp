@@ -10,7 +10,8 @@ the old set back. The same is true of the hover map (H1): a snapshot missing
 empty. The presets and the hover map are framework-owned (only the site shadow colour follows the
 client's palette), so this script makes each `sites/<client>/theme-snapshot.json` equal to the
 framework `theme/sgs-theme/theme.json` for `settings.shadow`, `settings.custom.shadowColour` and
-`settings.custom.shadowHover`.
+`settings.custom.shadowHover`, keeping a client's own shadow roles from its draft (presets marked
+`_source: declared`, Spec 32 FR-32-18).
 
     python scripts/sync-snapshot-shadow-presets.py --survey          which snapshots differ
     python scripts/sync-snapshot-shadow-presets.py --fix             dry run
@@ -51,11 +52,19 @@ def shadow_text(block, pad, unit):
     return "\n".join([lines[0]] + [pad + l for l in lines[1:]])
 
 
+def with_client_presets(block, text):
+    """The framework block plus this client's own shadow roles (Spec 32 FR-32-18): presets the extractor marked `_source: declared`."""
+    own = {p["slug"] for p in block.get("presets", [])}
+    held = json.loads(text).get("settings", {}).get("shadow", {}).get("presets", [])
+    return {**block, "presets": block.get("presets", []) + [p for p in held if "declared" == p.get("_source") and p.get("slug") not in own]}
+
+
 def synced(text, block, colour, hover):
     """The snapshot text with the framework shadow block, shadow colour and hover map."""
     text = text.replace("\r\n", "\n")
     base, unit = indent_unit(text)
     pad = base + unit
+    block = with_client_presets(block, text)
     want = '"shadow": ' + shadow_text(block, pad, unit)
     m = re.search(r"\n%s\"shadow\": \{" % re.escape(pad), text)
     if m:
@@ -152,6 +161,9 @@ def self_test():
             and out2["settings"]["custom"]["shadowColour"] == "var(--x)"
             and out2["settings"]["custom"]["shadowHover"] == hover,
         )
+    roles = json.dumps({"settings": {"shadow": {"presets": [{"slug": "old"}, {"slug": "card", "_source": "declared"}]}, "custom": {}}}, indent="  ")
+    kept = [p["slug"] for p in json.loads(synced(roles, block, "var(--x)", hover))["settings"]["shadow"]["presets"]]
+    check("a declared client role stays and a stale preset goes", ["a", "card"] == kept)
     # A snapshot whose "custom" object has OTHER keys after shadowColour (the real shape:
     # buttonPresets, etc.) still gets shadowHover inserted without disturbing them.
     with_siblings = json.dumps(

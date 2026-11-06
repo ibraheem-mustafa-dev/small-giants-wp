@@ -102,10 +102,8 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 			return '';
 		}
 
-		$focus_within = ':focus-within' === $focus;
-		if ( $focus_within ) {
-			$focus = ':has(:focus-visible)';
-		}
+		// A `:focus-within` target can take focus itself (a button or link), which `:has()` never matches, so it gets both.
+		$focuses = ':focus-within' === $focus ? array( ':focus-visible', ':has(:focus-visible)' ) : array( $focus );
 
 		$parts = array_map( 'trim', explode( ',', $selector ) );
 
@@ -122,10 +120,16 @@ if ( ! function_exists( 'sgs_hover_state_rules' ) ) {
 		$focus_selector = implode(
 			',',
 			array_map(
-				static function ( $part ) use ( $focus, $suffix, $focus_within ) {
-					$rule = $part . $focus . $suffix;
-					// The target can take focus itself (a button or link), which `:has()` never matches.
-					return $focus_within ? $part . ':focus-visible' . $suffix . ',' . $rule : $rule;
+				static function ( $part ) use ( $focuses, $suffix ) {
+					return implode(
+						',',
+						array_map(
+							static function ( $state ) use ( $part, $suffix ) {
+								return $part . $state . $suffix;
+							},
+							$focuses
+						)
+					);
 				},
 				$parts
 			)

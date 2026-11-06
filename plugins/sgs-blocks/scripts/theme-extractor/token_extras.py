@@ -108,7 +108,7 @@ def apply(snap: dict, tokens: dict | None, draft_dir, census: dict, trace: list)
     done = {"shadow": [], "selection": False, "palette": []}
     presets = (settings.setdefault("shadow", {}).setdefault("presets", []))
     for row in shadow_presets(tokens):
-        entry = {"slug": row["slug"], "name": row["name"], "shadow": row["shadow"]}
+        entry = {"slug": row["slug"], "name": row["name"], "shadow": row["shadow"], "_source": "declared"}
         at = next((i for i, p in enumerate(presets) if p.get("slug") == row["slug"]), None)
         presets.append(entry) if at is None else presets.__setitem__(at, entry)
         done["shadow"].append(row["slug"])

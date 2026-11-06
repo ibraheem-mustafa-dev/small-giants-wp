@@ -416,22 +416,26 @@
         {
           "slug": "button",
           "name": "Button",
-          "shadow": "0 8px 18px -8px rgba(0,0,0,.45)"
+          "shadow": "0 8px 18px -8px rgba(0,0,0,.45)",
+          "_source": "declared"
         },
         {
           "slug": "card",
           "name": "Card",
-          "shadow": "0 20px 34px -20px rgba(44,62,80,.55)"
+          "shadow": "0 20px 34px -20px rgba(44,62,80,.55)",
+          "_source": "declared"
         },
         {
           "slug": "panel",
           "name": "Panel",
-          "shadow": "0 30px 80px -30px rgba(20,25,35,.28)"
+          "shadow": "0 30px 80px -30px rgba(20,25,35,.28)",
+          "_source": "declared"
         },
         {
           "slug": "header",
           "name": "Header",
-          "shadow": "0 10px 30px -18px rgba(20,40,60,.35)"
+          "shadow": "0 10px 30px -18px rgba(20,40,60,.35)",
+          "_source": "declared"
         }
       ]
     },

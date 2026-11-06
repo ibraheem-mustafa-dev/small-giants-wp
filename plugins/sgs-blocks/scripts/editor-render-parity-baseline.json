@@ -341,6 +341,13 @@
     },
     {
       "check": "editor-canvas-desync",
+      "block": "sgs/button",
+      "attr": "visualOnly",
+      "disposition": "by-design",
+      "reason": "It changes the printed element from a link to a span on the front end; the button looks the same on the canvas, so it has no canvas meaning."
+    },
+    {
+      "check": "editor-canvas-desync",
       "block": "sgs/post-grid",
       "attr": "cardLink",
       "disposition": "by-design",
