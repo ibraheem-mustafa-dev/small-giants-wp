@@ -148,7 +148,7 @@ export function partForSlot( block, slotFinder, targets, home = null ) {
 // One effect as a validated layer of its block: placed and checked by lib/motion-effects.mjs::writeEffect, its
 // intensity preset named before token snapping (a preset stamps literal values), then durations, curves and travel
 // snapped to the client's tokens. Returns { target, list, layer, dropped } or { refused }.
-function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
+export function finishedEffect( e, { block, target, mdb, schema, offers, ctx, id } ) {
 	const panel = e.panel || 'effects';
 	const w = writeEffect( { block, target, effect: e.effect, panel, trigger: e.trigger, values: e.values, devices: e.devices, id }, { mdb, schema, offers } );
 	if ( w.refused ) {

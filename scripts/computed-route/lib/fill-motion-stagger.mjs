@@ -11,7 +11,7 @@ import { compact } from './motion-record-text.mjs';
 import { elementMotion } from './fill-motion-element.mjs';
 
 // The schema's ranges for the helper's three timings (motion.schema.json::$defs.Stagger).
-const LIMITS = { offset: 10000, step: 2000, cap: 20000 };
+export const LIMITS = { offset: 10000, step: 2000, cap: 20000 };
 const constant = ( f ) => f && 0 === f.step && null === f.cap && null === f.index;
 
 // The text of a name or a plain member read (`i`, `rv.i`), or null.
