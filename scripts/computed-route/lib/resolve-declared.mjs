@@ -100,6 +100,7 @@ const INTRINSIC = [ 'fit-content', 'min-content', 'max-content' ];
 const EVERY_KEYWORD = [ 'auto', 'none', ...INTRINSIC ];
 const SIZE_KEYWORDS = { exact: [ 'auto', ...INTRINSIC ], min: [ 'auto', ...INTRINSIC ], max: [ 'none', ...INTRINSIC ] };
 const SIZE_PROP = /^(min-|max-)?(width|height|block-size|inline-size)$/;
+export const isSizeProperty = ( prop ) => SIZE_PROP.test( String( prop ?? '' ) );
 
 // A size keyword as a setting's value: { value } where the setting's emitter prints a bare keyword, { error } where the
 // property does not take the keyword (`none` on a min-height) or this setting cannot print it, and null where `prop` is not a

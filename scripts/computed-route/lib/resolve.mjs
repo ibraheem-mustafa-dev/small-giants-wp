@@ -11,7 +11,7 @@ import { candidates, siblings, isPseudoProperty, listedProperties } from './db.m
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, isSizeProperty } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
@@ -67,9 +67,11 @@ const TIME_PROPS = [ 'transition-duration', 'transition-delay', 'animation-durat
 let schemaIndex = null;
 // block.json attributes for a block slug, read from the plugin's block sources (not its scripts, R-47-1).
 // A per-breakpoint object declares no enum in block.json (WordPress would reject the object value): the seeder stores the
-// choices of ONE tier in the DB row's enum_values, and each tier's value is checked against them.
+// choices of ONE tier in the DB row's enum_values, and each tier's value is checked against them. A size setting's stored
+// choices are the presets its control offers beside a free length or keyword (`contentWidth`'s `wide`, `minHeight`'s `50vh`):
+// its emitter prints any of them, so they never close the setting.
 export function tierEnumDef( def, row ) {
-	return def && 'object' === def.type && ! Array.isArray( def.enum ) && 'tier_object' === row?.tier_shape && row.enum_values ? { ...def, enum: JSON.parse( row.enum_values ) } : def;
+	return def && 'object' === def.type && ! Array.isArray( def.enum ) && 'tier_object' === row?.tier_shape && row.enum_values && ! isSizeProperty( row.css_property ) ? { ...def, enum: JSON.parse( row.enum_values ) } : def;
 }
 
 export function blockSchema( slug ) {

@@ -19,6 +19,9 @@ test( 'negative controls: a string setting, a declared enum, a box and a row wit
 	assert.equal( tierEnumDef( def, { tier_shape: 'box_only', enum_values: '["a"]' } ).enum, undefined );
 	assert.equal( tierEnumDef( def, { tier_shape: 'tier_object', enum_values: null } ).enum, undefined );
 	assert.equal( tierEnumDef( undefined, row ), undefined );
+	for ( const prop of [ 'min-height', 'max-width', 'width' ] ) {
+		assert.equal( tierEnumDef( def, { ...row, css_property: prop } ).enum, undefined, `${ prop } presets never close the setting` );
+	}
 } );
 
 test( 'MUST FAIL: probe values for a tier object are per-tier objects, a string setting keeps bare strings', () => {
