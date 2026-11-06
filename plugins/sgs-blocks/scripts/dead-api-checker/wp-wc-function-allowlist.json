@@ -321,6 +321,7 @@
     "wc_get_stock_html",
     "wc_get_template",
     "wc_get_template_part",
+    "wc_locate_template",
     "wc_get_theme_support",
     "wc_get_weight",
     "wc_get_wildcard_postcodes",
