@@ -134,7 +134,9 @@ final class Gift_Card_Wpdb_Store implements Gift_Card_Store {
 		if ( false === $wpdb->insert( self::cards_table(), $row ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- own table.
 			throw new \RuntimeException( 'Gift card insert failed: ' . $wpdb->last_error );
 		}
-		return (int) $wpdb->insert_id;
+		$id = (int) $wpdb->insert_id;
+		\do_action( 'sgs_gift_card_issued', $id );
+		return $id;
 	}
 
 	/**

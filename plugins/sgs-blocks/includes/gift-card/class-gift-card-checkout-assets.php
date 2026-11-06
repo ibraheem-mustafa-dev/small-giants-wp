@@ -8,9 +8,10 @@
  * `sgs_gift_card` Store API namespace. It is a classic script with the
  * `wc-blocks-checkout` dependency because that is how WooCommerce exposes
  * `wc.blocksCheckout` to extensions. It only loads on a page that holds the Cart
- * or Checkout block and only when the shop sells gift cards: at least one published
- * product of the `sgs_gift_card` type. The check is cached in a transient that a
- * product save, status change or deletion clears.
+ * or Checkout block and only when customers can hold a gift card: at least one published
+ * product of the `sgs_gift_card` type, or at least one redeemable card row in the cards table
+ * (cards issued by hand or from an order need no product). The check is cached in a transient
+ * that a product save, status change, deletion, product-type change or card issue clears.
  *
  * @package SGS\Blocks\Gift_Card
  */
@@ -38,10 +39,12 @@ final class Gift_Card_Checkout_Assets {
 		\add_action( 'woocommerce_delete_product', array( __CLASS__, 'forget_sells_gift_cards' ) );
 		\add_action( 'woocommerce_trash_product', array( __CLASS__, 'forget_sells_gift_cards' ) );
 		\add_action( 'transition_post_status', array( __CLASS__, 'forget_on_status_change' ), 10, 3 );
+		\add_action( 'set_object_terms', array( __CLASS__, 'forget_on_type_change' ), 10, 6 );
+		\add_action( 'sgs_gift_card_issued', array( __CLASS__, 'forget_sells_gift_cards' ) );
 	}
 
 	/**
-	 * Whether at least one published gift-card product exists (cached).
+	 * Whether a gift-card product is published or a redeemable card exists (cached).
 	 *
 	 * @return bool
 	 */
@@ -68,9 +71,26 @@ final class Gift_Card_Checkout_Assets {
 				),
 			)
 		);
-		$sells = ! empty( $ids );
+		$sells = ! empty( $ids ) || self::has_redeemable_card();
 		\set_transient( self::TRANSIENT, $sells ? '1' : '0', \DAY_IN_SECONDS );
 		return $sells;
+	}
+
+	/**
+	 * Whether the cards table holds a card that can still be spent: active, with a balance, not past its expiry.
+	 *
+	 * @return bool
+	 */
+	private static function has_redeemable_card(): bool {
+		global $wpdb;
+		if ( ! $wpdb instanceof \wpdb ) {
+			return false;
+		}
+		$table = Gift_Card_Wpdb_Store::cards_table();
+		$found = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- one existence check, result cached in a transient.
+			$wpdb->prepare( "SELECT id FROM {$table} WHERE status = %s AND balance_pence > 0 AND (expires_at IS NULL OR expires_at > %s) LIMIT 1", Gift_Card_Ledger::STATUS_ACTIVE, \gmdate( 'Y-m-d H:i:s' ) ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name from $wpdb->prefix.
+		);
+		return null !== $found && '' !== (string) $found;
 	}
 
 	/**
@@ -92,6 +112,21 @@ final class Gift_Card_Checkout_Assets {
 	 */
 	public static function forget_on_status_change( $new_status, $old_status, $post ): void {
 		if ( $new_status !== $old_status && $post instanceof \WP_Post && 'product' === $post->post_type ) {
+			self::forget_sells_gift_cards();
+		}
+	}
+
+	/**
+	 * Clear the cached answer when a product's type changes.
+	 *
+	 * @param int    $object_id Object id.
+	 * @param mixed  $terms     Terms.
+	 * @param mixed  $tt_ids    Term taxonomy ids.
+	 * @param string $taxonomy  Taxonomy.
+	 * @return void
+	 */
+	public static function forget_on_type_change( $object_id = 0, $terms = null, $tt_ids = null, $taxonomy = '' ): void {
+		if ( 'product_type' === $taxonomy ) {
 			self::forget_sells_gift_cards();
 		}
 	}
