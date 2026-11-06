@@ -97,6 +97,13 @@ test( 'MUST FAIL: a slot map measured without a block property is due on any sit
 	assert.equal( slotMapSkip( dir, 'sgs/x', 'site-a', 'k1', false, [ 'align-self', 'mask-image' ] ), null, 'a second new property is due again' );
 } );
 
+test( 'MUST FAIL: a tier setting is marked with values its emitter holds; a length setting keeps its length markers', () => {
+	const values = ( block, attr ) => markersFor( rowOf( block, attr ), blockSchema( block ), SNAPSHOT ).filter( ( m ) => ! m.probe ).map( ( m ) => m.attrs[ attr ]?.desktop );
+	assert.deepEqual( values( 'sgs/post-grid', 'readMorePin' ), [ 'pinned', 'inline' ] );
+	assert.ok( values( 'sgs/button', 'contentAlign' ).every( ( v ) => [ 'flex-start', 'center', 'flex-end' ].includes( v ) ), 'never a keyword the emitter drops' );
+	assert.ok( values( 'sgs/container', 'minHeight' ).every( ( v ) => /^\d+px$/.test( v ) ), 'a preset never replaces a length marker' );
+} );
+
 // The detector: a routed SGS setting whose css_property is CSS but which calibration neither reads nor reaches through a
 // read longhand is a setting calibration can never see, whatever block it sits on (lib/calibrate.mjs::calibrateBlock
 // drops a row with no longhands).

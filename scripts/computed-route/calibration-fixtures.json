@@ -352,6 +352,14 @@
       "url": "/shop/",
       "icon": "arrow-right"
     },
+    "familyPreconditions": {
+      "linkUnderline": { "linkUnderline": "always" }
+    },
+    "preconditions": {
+      "customWidth": {
+        "widthType": { "desktop": "custom", "tablet": "custom", "mobile": "custom" }
+      }
+    },
     "variants": [
       {},
       {
@@ -1508,10 +1516,18 @@
     "attributes": {
       "text": "40 designer brands"
     },
+    "familyPreconditions": {
+      "dot": { "dot": true },
+      "linkUnderline": { "text": "40 <a href=\"/shop/\">designer</a> brands", "linkUnderline": "always" }
+    },
     "preconditions": {
       "markerIcon": {
         "dot": true,
         "markerShape": "icon"
+      },
+      "lineRadius": {
+        "dot": true,
+        "markerShape": "line"
       }
     }
   },

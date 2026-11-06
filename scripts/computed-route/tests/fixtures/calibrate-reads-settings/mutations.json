@@ -10,6 +10,7 @@
 	{ "file": "lib/calibrate-props.mjs", "find": "return reached.size ? [ ...reached ] : pieces.filter( isCssProperty );", "replace": "return reached.size ? [ ...reached ] : pieces;", "why": "a name that is no CSS property is read" },
 	{ "file": "lib/calibrate-props.mjs", "find": ".filter( ( p ) => ! READ_PROPS.includes( p ) ).sort();", "replace": ".sort();", "why": "every block reads the whole list again as extras" },
 	{ "file": "calibrate.mjs", "find": "...( extraProps.length ? [ md5( JSON.stringify( extraProps ) ).slice( 0, 8 ) ] : [] )", "replace": "", "why": "a paint read without the property stays current" },
-	{ "file": "lib/calibrate-markers.mjs", "find": "const kw = KEYWORDS[ prop ] ?? tierChoices( row );", "replace": "const kw = KEYWORDS[ prop ];", "why": "a tier setting's stored choices are not marked" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "const stored = LENGTH.test( prop ) ? [] : [].concat(", "replace": "const stored = false ? [] : [].concat(", "why": "a length setting is marked with its presets" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "const kw = tierKeywords( prop, row );", "replace": "const kw = KEYWORDS[ prop ] ?? null;", "why": "a tier setting's stored choices are not marked" },
 	{ "file": "lib/calibrate-markers.mjs", "find": "\t'mask-image': [ 'star' ],\n", "replace": "", "why": "a mask setting gets no marker" }
 ]

@@ -66,7 +66,7 @@ export const KEYWORDS = {
 };
 
 // Length properties a numeric or string setting writes in px (a free-text value with no unit companion gets "37px").
-const LENGTH = /width|height|gap|size|radius|indent|margin|padding|spacing|offset|inset|^top$|^left$|^right$|^bottom$|basis/;
+const LENGTH = /width|height|thickness|gap|size|radius|indent|margin|padding|spacing|offset|inset|^top$|^left$|^right$|^bottom$|basis/;
 // Count-like per-device values (columns): numbers, never lengths.
 const COUNT = /^(column-count|grid-template-columns|grid-auto-columns|flex)$/;
 
@@ -178,13 +178,17 @@ const GRID = 'grid-template-columns';
 const pxText = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
 
 // The tier objects a non-length per-device setting (columns, alignment) is marked with, or null when the setting has no
-// such shape. A tier setting whose property has no keyword list is marked with the choices its row stores, the values it
-// holds (a `pinned` or `inline` mode). A count differs from the default at each tier. A keyword takes two markers: the attribute's empty default
+// such shape. A keyword setting whose row stores choices is marked with values it holds: the property's keywords it
+// accepts, then its other choices (a `pinned` or `inline` mode), since an emitter drops anything else. A length property's
+// stored choices are presets (lib/resolve.mjs::tierEnumDef), so it keeps its length markers. A count differs from the
+// default at each tier. A keyword takes two markers: the attribute's empty default
 // says nothing about what the element paints, and an element the stylesheet already centres does not move under
 // `center`, so one keyword would read a working setting as dead.
-const tierChoices = ( row ) => {
-	const stored = [].concat( JSON.parse( row.enum_values || '[]' ) ).filter( ( v ) => 'string' === typeof v && '' !== v );
-	return stored.length ? stored : null;
+const tierKeywords = ( prop, row ) => {
+	const listed = KEYWORDS[ prop ] ?? [];
+	const stored = LENGTH.test( prop ) ? [] : [].concat( JSON.parse( row.enum_values || '[]' ) ).filter( ( v ) => 'string' === typeof v && '' !== v );
+	const words = stored.length ? [ ...listed.filter( ( v ) => stored.includes( v ) ), ...stored.filter( ( v ) => ! listed.includes( v ) ) ] : listed;
+	return words.length ? words : null;
 };
 
 function nonLengthTiers( prop, def, row ) {
@@ -192,7 +196,7 @@ function nonLengthTiers( prop, def, row ) {
 		const d = def.default && 'object' === typeof def.default ? def.default : {};
 		return [ Object.fromEntries( TIERS.map( ( t, i ) => [ t, [ 5, 3, 2 ][ i ] === Number( d[ t ] ) ? [ 6, 4, 1 ][ i ] : [ 5, 3, 2 ][ i ] ] ) ) ];
 	}
-	const kw = KEYWORDS[ prop ] ?? tierChoices( row );
+	const kw = tierKeywords( prop, row );
 	return kw ? kw.slice( 0, 2 ).map( ( v ) => Object.fromEntries( TIERS.map( ( t ) => [ t, v ] ) ) ) : null;
 }
 
