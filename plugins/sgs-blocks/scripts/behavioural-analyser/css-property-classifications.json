@@ -24614,6 +24614,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
@@ -24622,6 +24623,7 @@
       "attr": "connectorHidden",
       "fields": {
         "css_property": "display",
+        "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
@@ -24630,6 +24632,7 @@
       "attr": "connectorOffset",
       "fields": {
         "css_property": "margin-top",
+        "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
@@ -24638,6 +24641,7 @@
       "attr": "connectorThickness",
       "fields": {
         "css_property": "height",
+        "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
@@ -24646,6 +24650,7 @@
       "attr": "connectorWidth",
       "fields": {
         "css_property": "width",
+        "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
