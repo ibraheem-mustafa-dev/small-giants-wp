@@ -387,6 +387,18 @@ function asset_version( string $relative_path, string $fallback ): string {
 }
 
 /**
+ * Whether this request is a shop archive surface, the one place the shop filter script is enqueued and the server
+ * prints the filter button, panel header and `is-enhanced` class. Known during template render, before
+ * `wp_enqueue_scripts` runs.
+ *
+ * @return bool
+ */
+function is_shop_filters_surface(): bool {
+	return function_exists( 'is_shop' ) &&
+		( is_shop() || is_post_type_archive( 'product' ) || is_tax( 'product_cat' ) || is_tax( 'product_tag' ) );
+}
+
+/**
  * Enqueue frontend stylesheets.
  */
 function enqueue_styles(): void {
@@ -557,10 +569,7 @@ function enqueue_styles(): void {
 
 	// Shop archive filter drawer — mobile off-canvas, focus-trap, a11y (FR-30-3, Spec 27 Part 3).
 	// Only on shop archive surfaces; guard with function_exists so non-WC installs are safe.
-	if (
-		function_exists( 'is_shop' ) &&
-		( is_shop() || is_post_type_archive( 'product' ) || is_tax( 'product_cat' ) || is_tax( 'product_tag' ) )
-	) {
+	if ( is_shop_filters_surface() ) {
 		wp_register_script(
 			'sgs-shop-filters-accordion',
 			get_theme_file_uri( 'assets/js/sgs-shop-filters-accordion.js' ),

@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
  * @return bool
  */
 function shop_filters_first_paint_active(): bool {
-	if ( ! wp_script_is( 'sgs-shop-filters', 'enqueued' ) ) {
+	if ( ! is_shop_filters_surface() ) {
 		return false;
 	}
 	$template = isset( $GLOBALS['_wp_current_template_content'] ) ? (string) $GLOBALS['_wp_current_template_content'] : '';
@@ -42,7 +42,7 @@ function print_shop_filters_enhanced_class(): void {
 	if ( ! shop_filters_first_paint_active() ) {
 		return;
 	}
-	echo "<script>document.body.classList.add('is-enhanced');</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static string.
+	wp_print_inline_script_tag( "document.body.classList.add('is-enhanced');" );
 }
 add_action( 'wp_body_open', __NAMESPACE__ . '\print_shop_filters_enhanced_class', 1 );
 
@@ -219,7 +219,7 @@ function add_shop_segmented_label_style(): void {
 	if ( ! wp_style_is( 'sgs-woocommerce', 'enqueued' ) ) {
 		return;
 	}
-	$label = addcslashes( wp_strip_all_tags( __( 'All', 'sgs-theme' ) ), "\"\\r\n" );
+	$label = addcslashes( str_replace( array( "\r", "\n" ), ' ', wp_strip_all_tags( __( 'All', 'sgs-theme' ) ) ), '"\\' );
 	wp_add_inline_style( 'sgs-woocommerce', ':root{--sgs-segmented-all-label:"' . $label . '";}' );
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\add_shop_segmented_label_style', 21 );
