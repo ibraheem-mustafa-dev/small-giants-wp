@@ -17,15 +17,9 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem, NumberControl } from './primitives';
+import { CSS_EASING_OPTIONS } from './motion/easing-master-list';
 
-const EASING_OPTIONS = [
-	{ value: 'ease-out', label: __( 'Ease out', 'sgs-blocks' ) },
-	{ value: 'ease', label: __( 'Ease', 'sgs-blocks' ) },
-	{ value: 'ease-in', label: __( 'Ease in', 'sgs-blocks' ) },
-	{ value: 'ease-in-out', label: __( 'Ease in and out', 'sgs-blocks' ) },
-	{ value: 'linear', label: __( 'Linear', 'sgs-blocks' ) },
-	{ value: 'spring', label: __( 'Spring (overshoots)', 'sgs-blocks' ) },
-];
+const EASING_OPTIONS = CSS_EASING_OPTIONS;
 const ORIGIN_OPTIONS = [
 	{ value: 'center', label: __( 'Centre', 'sgs-blocks' ) },
 	{ value: 'top', label: __( 'Top', 'sgs-blocks' ) },

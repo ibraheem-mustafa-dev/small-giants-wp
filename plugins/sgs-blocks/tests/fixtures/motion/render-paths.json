@@ -1966,6 +1966,14 @@
       "connectorStyle": "line"
      }
     },
+    "row-connector": {
+     "why": "layout row with connectorLine on: one continuous connector element prints before the steps and the per-step segments are hidden",
+     "attrs": {
+      "layout": "row",
+      "numberStyle": "circle",
+      "connectorLine": true
+     }
+    },
     "list-numbered": {
      "why": "layout list prints the same step markup under the layout-list modifier",
      "attrs": {

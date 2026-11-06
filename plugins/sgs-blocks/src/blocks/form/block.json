@@ -31,6 +31,14 @@
 		"interactivity": true,
 		"sgs": {
 			"colourExemptions": {
+				"field-background": {
+					"rule": "states",
+					"reason": "A form field has no hover ground; its focused ground is the separate Focused field background colour row (fieldFocusBackground), because the field element's focus state also carries border, ring and width that a colour tab could not hold."
+				},
+				"field-text": {
+					"rule": "states",
+					"reason": "The typed text keeps one colour in every state: focus changes the field's ground, border and ring only (fieldFocus* rows), and a field has no hover look for its text."
+				},
 				"field-focus-background": {
 					"rule": "states",
 					"reason": "The focused field ground is itself the focus state of the field control; a hover on an already-focused field has no separate look, and fieldBackground carries the resting and hover grounds."
