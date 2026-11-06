@@ -84,6 +84,14 @@
 	border-radius: 999px;
 }
 
+/* The 10px classic scrollbar takes layout width, so the gutter is reserved up
+   front on the scrollbar's edge: content keeps the same width and position
+   when a drawer section opens and the scroller first overflows. Overlay
+   scrollbars reserve nothing. */
+:where(.wp-block-sgs-nav-drawer) {
+	scrollbar-gutter: stable;
+}
+
 @supports selector(::-webkit-scrollbar) {
 	.wp-block-sgs-nav-drawer {
 		scrollbar-color: auto;

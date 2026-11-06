@@ -241,6 +241,16 @@ if ( ! function_exists( 'sgs_nav_shared_submenu_css' ) ) {
 
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-panel-wrap{position:absolute;top:' . $sgs_nm_panel_top . ';left:var(--sgs-mm-overflow-left, 50%);right:var(--sgs-mm-overflow-right, auto);transform:translateX(var(--sgs-mm-tx, -50%));width:var(--sgs-mm-panel-width, min(1120px, calc(100vw - 56px)));max-height:var(--sgs-mm-panel-max-h, calc(100dvh - var(--sgs-header-height, 80px) - 16px));overflow-y:auto;overscroll-behavior:contain;z-index:100;display:none;}';
 		$css .= $uid_sel . ' .' . $bem_root . '__mega-trigger[aria-expanded="true"] ~ .' . $bem_root . '__mega-panel-wrap{display:block;}';
+		/*
+		 * ENTRANCE SCROLLBAR — items that enter from below (a translate offset) count
+		 * toward the wrap's scrollable overflow, so the wrap would show a scrollbar
+		 * for the whole entrance and the panel would widen over it once it settled.
+		 * Clipping the panel's own box (`overflow:clip` on the wrap's child) keeps a
+		 * descendant's transform out of the wrap's scroll area; the wrap still
+		 * scrolls when the panel's settled height exceeds the max-height.
+		 */
+		$css .= ':where(' . $uid_sel . ' .' . $bem_root . '__mega-panel-wrap) > *{overflow:clip;}';
+
 		
 		/*
 		 * ── DROPDOWN SUBMENU ────────────────────────────────────────────────────────

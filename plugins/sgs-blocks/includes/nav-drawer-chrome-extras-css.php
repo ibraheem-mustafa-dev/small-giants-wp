@@ -40,8 +40,8 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_extras_css' ) ) {
 
 		if ( ! empty( $attributes['chromeSticky'] ) ) {
 			$body = $root_sel . ' > .sgs-nav-drawer__body';
-			$css .= $root_sel . '[open]{overflow:hidden;}'
-				. $body . '{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;}'
+			$css .= $root_sel . '[open]{overflow:hidden;scrollbar-gutter:auto;}'
+				. $body . '{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}'
 				. $body . ' > *{flex-shrink:0;}';
 		}
 
