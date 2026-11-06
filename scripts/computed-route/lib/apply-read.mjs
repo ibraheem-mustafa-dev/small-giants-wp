@@ -119,6 +119,7 @@ export function factsOf( { items, props, resolveSrc } ) {
 			childAnchors: [ ...el.children ].filter( ( c ) => 'A' === c.tagName ).length,
 			href: el.getAttribute( 'href' ),
 			fx: el.getAttribute( 'data-sgs-fx' ),
+			data: el.getAttributeNames().filter( ( n ) => n.startsWith( 'data-' ) ),
 			fade: ( el.parentElement && ( getComputedStyle( el.parentElement ).maskImage || getComputedStyle( el.parentElement ).webkitMaskImage ) ) || 'none',
 			text: ( el.textContent || '' ).trim().slice( 0, 80 ),
 			styles,

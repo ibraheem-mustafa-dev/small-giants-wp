@@ -207,7 +207,7 @@ async function main() {
 	const wanted = flag( '--families' )?.split( ',' ) ?? null;
 	const families = FAMILIES.filter( ( f ) => ! wanted || wanted.includes( f.name ) );
 	const draftOrigin = flag( '--draft', 'http://127.0.0.1:5181' );
-	const outDir = path.join( REPO, 'sites', client, 'build', 'qa', 'apply' );
+	const outDir = flag( '--out', path.join( REPO, 'sites', client, 'build', 'qa', 'apply' ) );
 	const tmp = path.join( os.tmpdir(), 'sgs-apply', client );
 	fs.mkdirSync( outDir, { recursive: true } );
 	fs.mkdirSync( tmp, { recursive: true } );

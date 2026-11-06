@@ -119,3 +119,16 @@ test( 'records: a pair finds its records by draft file and id; a state record gi
 	assert.equal( stateLook( hover ).looks[ 0 ].to, '#fff' );
 	assert.equal( stateLook( many ), null );
 } );
+
+test( 'records: a selector hook limits a record to the elements that carry it', async () => {
+	const { carriesHook } = await import( '../lib/apply-records.mjs' );
+	const peek = { element: { selector: '[data-peek]' } };
+	const mag = { element: { selector: "document pointermove → e.target.closest('[data-mag]')" } };
+	const inside = { element: { selector: "ref setPanelEl → querySelectorAll('[data-anim]')" } };
+	assert.equal( carriesHook( peek, { data: [ 'data-dc-tpl', 'data-peek' ] } ), true );
+	assert.equal( carriesHook( peek, { data: [ 'data-dc-tpl' ] } ), false, 'a card of the same template without the hook is out' );
+	assert.equal( carriesHook( mag, { data: [ 'data-mag' ] } ), true );
+	assert.equal( carriesHook( mag, { data: [] } ), false );
+	assert.equal( carriesHook( inside, { data: [] } ), true, 'a hook on something inside the element narrows nothing' );
+	assert.equal( carriesHook( peek, null ), true, 'an unread element passes' );
+} );

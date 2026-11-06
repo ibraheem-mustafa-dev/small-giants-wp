@@ -9,6 +9,7 @@ import { clientPalette, clientTokens, tokenTypes } from './motion-tokens.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { MOTION_LOOKS, motionClose, motionOf } from './apply-hover.mjs';
 import { draftId, recordsFor } from './apply-records.mjs';
+import { indentHover } from './apply-state-indent.mjs';
 
 const shared = new Map();
 export function motionTools( db, rawSnapshot ) {
@@ -93,8 +94,9 @@ export function invalidShake( { target, block, saved, recordsIndex, records, db,
 
 export const statemotion = {
 	name: 'statemotion',
-	props: [],
+	// padding-left: the resting start padding the hover Indent is measured from.
+	props: [ 'padding-left' ],
 	decide( ctx ) {
-		return [ ...hoverMotion( ctx ), ...invalidShake( ctx ) ];
+		return [ ...hoverMotion( ctx ), ...indentHover( { ...ctx, tools: motionTools( ctx.db, ctx.rawSnapshot ) } ), ...invalidShake( ctx ) ];
 	},
 };

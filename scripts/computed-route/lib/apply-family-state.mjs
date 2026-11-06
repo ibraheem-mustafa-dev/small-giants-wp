@@ -27,6 +27,10 @@ export const state = {
 				if ( ! differs( dHover[ prop ], lHover[ prop ] ) ) {
 					continue;
 				}
+				// An element with no border still reports a border colour: its text colour, which paints nothing.
+				if ( 'border-top-color' === prop && ! ( parseFloat( dHover[ 'border-top-width' ] ) > 0 ) ) {
+					continue;
+				}
 				const record = records.find( ( r ) => stateLook( r )?.looks.some( ( l ) => named( l, prop ) ) )?.id ?? null;
 				items.push( stateItem( { ctx, prop, value: dHover[ prop ], state: 'hover', slot: '', record } ) );
 			}

@@ -4,13 +4,15 @@
 // the item is a no-setting row naming the values. The first field is also read under keyboard focus.
 import { FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs';
 import { partItems } from './apply-probe-items.mjs';
+import { fieldWidths } from './apply-form-width.mjs';
 
 const FOCUS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow' ];
 const col = ( fields, key, prop ) => fields.map( ( f ) => f[ key ]?.[ prop ] );
 
 export const form = {
 	name: 'form',
-	props: [],
+	// grid-column: the span each field reads (the draft's cells are grid items whose placement the field width settings decide).
+	props: [ 'grid-column' ],
 	decide( ctx ) {
 		const { draft, live, block } = ctx;
 		const d = draft[ 1440 ]?.probes;
@@ -29,6 +31,6 @@ export const form = {
 		for ( const prop of FOCUS.filter( () => d.focus && l.focus ) ) {
 			items.push( ...partItems( { ctx, element: 'field-input', prop, state: 'focus', drafts: [ d.focus[ prop ] ], lives: [ l.focus[ prop ] ], check: { probe: [ 'focus' ] } } ) );
 		}
-		return items;
+		return [ ...items, ...fieldWidths( ctx ) ];
 	},
 };

@@ -21,6 +21,7 @@ import { behaviourWrites } from './apply-motion-behaviours.mjs';
 import { draftEntrance, sameEntrance } from './apply-motion-entrance.mjs';
 import { loopOp, ringScale } from './apply-motion-loops.mjs';
 import { splitParts } from './apply-motion-parts.mjs';
+import { changeAnimation, heroSvgParts, svgRecordsOf } from './apply-motion-rules.mjs';
 import { innerIdsOf, isOpenRecord, recordsIn } from './apply-drawer-core.mjs';
 
 const shared = new Map();
@@ -69,7 +70,8 @@ function marqueeFade( { doc, draft, recs, mdb, items, whys, ids } ) {
 export const motion = {
 	name: 'motion',
 	props: [ 'opacity' ],
-	decide( { target, block, saved, draft, animate, recordsIndex, records, db, rawSnapshot } ) {
+	decide( input ) {
+		const { target, block, saved, draft, recordsIndex, records, db, rawSnapshot } = input;
 		const { mdb, schema, ctx, openWords: words } = toolsFor( db, rawSnapshot );
 		const offers = { names: mdb.statesOf( block ), opens: mdb.opensOf( block ), openWords: words };
 		const names = new Set( mdb.targetsOf( block ).map( ( t ) => t.target ) );
@@ -77,7 +79,12 @@ export const motion = {
 		const doc = structuredClone( saved.sgsMotion ?? { v: 1, elements: {} } );
 		doc.elements ??= {};
 		const before = JSON.stringify( doc );
-		const items = [];
+		// The hero's inline SVG part animation is the hero's own bgSvgParts setting (lib/apply-motion-rules.mjs), so the calls its SVG
+		// parts make (descendants of the hero's own template element) are not read as a media entrance or loop.
+		const rules = [ ...heroSvgParts( input ), ...changeAnimation( input ) ];
+		const svgTpls = new Set( svgRecordsOf( target, records, input.animate ).map( ( r ) => String( r.element.nearest_tpl_id ) ) );
+		const animate = rules.some( ( i ) => 'bgSvgParts' === i.prop ) ? Object.fromEntries( Object.entries( input.animate ).map( ( [ w, list ] ) => [ w, ( list || [] ).filter( ( c ) => c.key !== key || c.own || ! svgTpls.has( String( c.tpl ) ) ) ] ) ) : input.animate;
+		const items = [ ...rules ];
 		const whys = [];
 		const ids = [];
 		const settings = [];
@@ -125,7 +132,7 @@ export const motion = {
 					ids.push( recs.find( ( r ) => 'infinite' === r.iterations )?.id );
 				}
 			}
-			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db } );
+			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db, facts: Object.values( draft ).find( Boolean ) } );
 			items.push( ...b.items );
 			whys.push( ...b.whys );
 			ids.push( ...b.ids );

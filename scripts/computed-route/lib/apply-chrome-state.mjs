@@ -167,6 +167,11 @@ function processSteps( ctx ) {
 			{ attr: 'connectorWidth', value: `${ Math.round( line.box.w ) }px` },
 			{ attr: 'connectorOffset', value: `${ Math.round( ( line.box.y + h / 2 - draft[ top ].box.y ) * 10 ) / 10 }px` },
 		];
+		// The tiers where the draft's line is not drawn (no element, or display none) while the steps are: connectorHidden holds true
+		// there and nowhere else.
+		const lines = Object.values( aux )[ 0 ];
+		const gone = Object.fromEntries( TIER_WIDTHS.filter( ( w ) => shown( draft[ w ] ) && ! shown( lines?.[ w ] ) ).map( ( w ) => [ TIER[ w ], true ] ) );
+		Object.keys( gone ).length && writes.push( { attr: 'connectorHidden', value: gone } );
 		if ( saved.sgsCustomCss ) {
 			const rest = saved.sgsCustomCss.replace( LINE_RULE, '' ).trim();
 			rest === saved.sgsCustomCss || writes.push( rest ? { attr: 'sgsCustomCss', value: rest } : { attr: 'sgsCustomCss', unset: true } );

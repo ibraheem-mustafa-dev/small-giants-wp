@@ -2,6 +2,7 @@
 // recogniseBehaviour: magnet, sheen, ripple, tilt and its reset, parallax, the nav label magnet, the exit of an open entrance)
 // against what the block's sgsMotion saves. An effect is finished as a build finishes it (lib/fill-motion.mjs::finishedEffect:
 // placed, preset-named, token-snapped) and overlays the saved layer of its kind; a setting is compared with the saved attribute.
+import { carriesHook } from './apply-records.mjs';
 import { finishedEffect } from './fill-motion.mjs';
 import { recogniseBehaviour } from './motion-behaviours.mjs';
 import { declaredAttr } from './fill-behaviour.mjs';
@@ -51,11 +52,11 @@ function addSettings( { out, r, mine, saved, block, db, row } ) {
 
 // { whys, items, settings, ids, fx }: the document is changed in place; `settings` are block attributes to write beside it and
 // `fx` the effect names written (the live marker data-sgs-fx names each).
-export function behaviourWrites( { recs, allRecords, block, part, doc, saved, mdb, schema, ctx, db } ) {
+export function behaviourWrites( { recs, allRecords, block, part, doc, saved, mdb, schema, ctx, db, facts = null } ) {
 	offered ??= loadEffectOffers();
 	const out = { whys: [], items: [], settings: [], ids: [], fx: [] };
 	const done = new Set();
-	for ( const r of recs ) {
+	for ( const r of recs.filter( ( x ) => carriesHook( x, facts ) ) ) {
 		const b = done.has( r.id ) ? null : recogniseBehaviour( r, { records: allRecords } );
 		if ( ! b ) {
 			continue;

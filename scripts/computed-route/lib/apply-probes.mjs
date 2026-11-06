@@ -18,9 +18,29 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector ] ) {
 		return [];
 	}
 	const read = ( el, props ) => Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( el ).getPropertyValue( p ).trim() ] ) );
+	// The field's grid cell (its nearest ancestor that is a grid item) and the grid that places it: the cell's width against the grid's
+	// content width and track count say whether the field sits in a column or spans the row. `form` is the form's own grid.
+	const layoutOf = ( field ) => {
+		let cell = field;
+		while ( cell.parentElement && root.contains( cell.parentElement ) && 'grid' !== getComputedStyle( cell.parentElement ).display ) {
+			cell = cell.parentElement;
+		}
+		const grid = cell.parentElement;
+		if ( ! grid || 'grid' !== getComputedStyle( grid ).display ) {
+			return null;
+		}
+		const g = getComputedStyle( grid );
+		return {
+			ref: ( /cr-ref-[\w-]+/.exec( cell.className ) || [ null ] )[ 0 ],
+			cellW: cell.getBoundingClientRect().width,
+			gridW: grid.clientWidth - parseFloat( g.paddingLeft ) - parseFloat( g.paddingRight ),
+			cols: g.gridTemplateColumns.split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) ).length,
+			form: grid.matches( '.sgs-form__inner, .sgs-form-step' ),
+		};
+	};
 	return [ ...root.querySelectorAll( selector ) ].map( ( field ) => {
 		const label = ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' );
-		return { field: read( field, restProps ), label: label ? read( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase() };
+		return { field: read( field, restProps ), label: label ? read( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ) };
 	} );
 }
 
