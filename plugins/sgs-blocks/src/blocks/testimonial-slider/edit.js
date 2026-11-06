@@ -16,8 +16,6 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	__experimentalToggleGroupControl as ToggleGroupControl,
-	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	RangeControl,
 	ToggleControl,
 	TextControl,
@@ -31,6 +29,7 @@ import { resolveResponsiveTier } from '../../utils/responsive';
 import { containerWrapperPreview, backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, BandWrap } from '../../utils';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 // Options mirror the 7 sgs/testimonial variants (block.json supports.sgs.variants),
 // plus a leading "no default" option so each card can pick its own variant.
