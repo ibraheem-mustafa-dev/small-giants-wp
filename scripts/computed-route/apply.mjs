@@ -17,7 +17,7 @@ import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch } from './lib/apply-ledger.mjs';
 import { foldOps, matches, patchesOf, restoreOf } from './lib/apply-ops.mjs';
-import { extrasOf, motionClose, motionOf } from './lib/apply-hover.mjs';
+import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
 import { recordIndex } from './lib/apply-records.mjs';
 import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
@@ -151,15 +151,22 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 	return { rows, ops };
 }
 
+// A child's facts under its card's hover (`hoverHost` on a check): the card read's entry for the child, shaped as facts.
+const hostedFacts = ( host, ref ) => {
+	const child = host?.group?.children?.find( ( k ) => k.key === ref );
+	return child ? { styles: child.rest, hover: child.hover, fx: null } : undefined;
+};
+
 // After a write: each op's checks read on the live page. An op that moved nothing goes back and is reported no-effect.
-function judge( ops, reads ) {
+export function judge( ops, reads ) {
 	return ops.map( ( op ) => {
 		const results = ( op.checks || [] ).map( ( c ) => {
-			const facts = reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ];
+			const facts = c.hoverHost ? hostedFacts( reads[ op.surface ]?.[ c.width ]?.facts?.[ c.hoverHost ], op.ref ) : reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ];
 			const got = c.probe ? c.probe.reduce( ( o, k ) => o?.[ k ], facts?.probes )?.[ c.prop ] : ( 'hover' === c.state ? facts?.hover : facts?.styles )?.[ c.prop ];
 			if ( c.tracks ) {
 				const count = String( facts?.styles?.[ 'grid-template-columns' ] ?? '' ).split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) ).length;
-				return { ...c, got: count, ok: count === c.tracks };
+				// A container's grid is on its inner element: no tracks here means this read cannot see it.
+				return { ...c, got: count || null, ok: count === c.tracks };
 			}
 			if ( c.items ) {
 				const got = facts?.items ? `${ facts.items[ c.items ] }px` : null;
@@ -172,10 +179,10 @@ function judge( ops, reads ) {
 				const pose = motionOf( facts?.hover );
 				// A magnet moves the element towards the pointer, so a magnetic element's position proves nothing: its scale does.
 				const moved = /magnet/.test( facts?.fx ?? '' ) && pose ? { ...pose, x: c.want.x, y: c.want.y } : pose;
-				return { ...c, got: pose, ok: motionClose( moved, c.want ) };
+				return { ...c, got: pose, ok: motionNear( moved, c.want ) };
 			}
 			if ( c.all ) {
-				const every = ( facts?.probes?.fields || [] ).map( ( f ) => f[ c.all ]?.[ c.prop ] ).filter( ( v ) => undefined !== v );
+				const every = ( facts?.probes?.fields || [] ).filter( ( f ) => ! f.honeypot ).map( ( f ) => f[ c.all ]?.[ c.prop ] ).filter( ( v ) => undefined !== v );
 				return { ...c, got: every.join( ' | ' ), ok: every.length > 0 && every.every( ( v ) => matches( v, c.want ) ) };
 			}
 			return { ...c, got, ok: matches( got, c.want ) };
@@ -266,7 +273,7 @@ async function main() {
 	const allOps = [];
 	try {
 		await pool( surfaces, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
-			const extras = extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex } );
+			const extras = extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } );
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
 			const closed = await closedReads( { browser, surface, props, wanted: families.some( ( f ) => f.closedClock?.( { saved: blocks[ surface.postId ]?.blocks ?? {} } ) ) } );
@@ -279,8 +286,8 @@ async function main() {
 			added.forEach( ( t ) => console.log( `${ surface.name }: position ${ t.tpl } -> ${ t.ref } (overlap ${ t.overlap }, inside ${ t.nearest_tpl })` ) );
 			if ( added.length ) {
 				const second = { ...surface, pairs: added };
-				const d2 = await draftReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex } ), cache: tmp, fresh: has( '--fresh' ) } );
-				const l2 = await liveReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex } ) } );
+				const d2 = await draftReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ), cache: tmp, fresh: has( '--fresh' ) } );
+				const l2 = await liveReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ) } );
 				const again = decideSurface( { surface: second, drafts: d2, lives: l2, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
 				rows.push( ...again.rows );
 				ops.push( ...again.ops );
@@ -302,7 +309,7 @@ async function main() {
 			const touched = surfaces.filter( ( s ) => allOps.some( ( o ) => o.surface === s.name ) );
 			const reads = {};
 			await pool( touched, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
-				reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex } ) } );
+				reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ) } );
 			} );
 			const judged = judge( allOps, reads );
 			const rowOf = ( op ) => allRows.find( ( r ) => r.ref === op.ref && r.family === op.family && r.prop === op.prop && 'written' === r.status );

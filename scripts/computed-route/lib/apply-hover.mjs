@@ -6,6 +6,7 @@ import { HOVER_PROPS, hoverPointOf, hoverStyles } from '../../parity/lib/collect
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { probeRead } from './apply-probes.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
+import { groupHosts, groupRead } from './apply-group-read.mjs';
 
 export const HOVER_READ_PROPS = [ ...HOVER_PROPS, 'border-top-width', 'text-decoration-thickness', 'gap' ];
 // Hover looks the motion layer holds; the state family leaves them to it.
@@ -13,7 +14,7 @@ export const MOTION_LOOKS = [ 'transform', 'scale', 'translate', 'rotate' ];
 export { FIELD_FOCUS_PROPS, FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs';
 
 // Which of a surface's targets need a hover read (a record gives them a hover look) or a form probe (an sgs/form block).
-export function extrasOf( { surface, saved, recordsIndex } ) {
+export function extrasOf( { surface, saved, recordsIndex, db = null } ) {
 	const hover = [];
 	const probes = [];
 	const blocks = {};
@@ -28,7 +29,7 @@ export function extrasOf( { surface, saved, recordsIndex } ) {
 			tpls[ target.ref ] = target.tpl;
 		}
 	}
-	return { hover, probes, blocks, tpls };
+	return { hover, probes, blocks, tpls, groups: groupHosts( { surface, saved, recordsIndex, db } ) };
 }
 
 async function hoverRead( page, { keys, finderOf, resolveSrc, wait = 700 } ) {
@@ -96,16 +97,20 @@ export async function settled( page, finder, resolveSrc ) {
 export async function stateReads( page, { extras, finderOf, resolveSrc, side } ) {
 	const hover = extras?.hover?.length ? await hoverRead( page, { keys: extras.hover, finderOf, resolveSrc } ) : {};
 	const probes = extras?.probes?.length ? await probeRead( page, { keys: extras.probes, finderOf, resolveSrc, tpls: extras.tpls ?? {}, blocks: extras.blocks ?? {}, side } ) : {};
-	return { hover, probes };
+	const groups = extras?.groups?.length ? await groupRead( page, { keys: extras.groups, finderOf, resolveSrc, side, settled } ) : {};
+	return { hover, probes, groups };
 }
 
 // Folds a state read into a read's facts.
-export function attachStateReads( read, { hover, probes } ) {
+export function attachStateReads( read, { hover, probes, groups = {} } ) {
 	for ( const [ key, styles ] of Object.entries( hover ) ) {
 		read.facts[ key ] && ( read.facts[ key ].hover = styles );
 	}
 	for ( const [ key, facts ] of Object.entries( probes ) ) {
 		read.facts[ key ] && ( read.facts[ key ].probes = facts );
+	}
+	for ( const [ key, group ] of Object.entries( groups ) ) {
+		read.facts[ key ] && ( read.facts[ key ].group = group );
 	}
 	return read;
 }
@@ -124,5 +129,8 @@ export function motionOf( styles ) {
 	return { scale: Math.hypot( a, b ) * sc, x: e + ( tx || 0 ), y: f + ( ty || 0 ), rotate: ( Math.atan2( b, a ) * 180 ) / Math.PI + rot };
 }
 
-// Whether two poses agree to a hundredth of a scale, six pixels and a degree: a magnet pulls up to five.
-export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 6 && Math.abs( a.y - b.y ) <= 6 && Math.abs( a.rotate - b.rotate ) <= 1;
+// Whether two poses agree to a hundredth of a scale, two pixels and a degree.
+export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 2 && Math.abs( a.y - b.y ) <= 2 && Math.abs( a.rotate - b.rotate ) <= 1;
+
+// The same with six pixels, for a re-read: a magnet pulls an element up to five pixels towards the pointer.
+export const motionNear = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 6 && Math.abs( a.y - b.y ) <= 6 && Math.abs( a.rotate - b.rotate ) <= 1;

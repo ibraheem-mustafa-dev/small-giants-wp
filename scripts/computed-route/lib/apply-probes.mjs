@@ -48,7 +48,8 @@ async function focusRead( page, { finder, resolveSrc } ) {
 	return page.evaluate( ( [ f, src, props, selector ] ) => {
 		// eslint-disable-next-line no-new-func
 		const root = new Function( `return (${ src });` )()( f );
-		const field = root?.querySelector( selector );
+		// A visitor never reaches the honeypot, so the focus look is read on the first real field.
+		const field = [ ...( root?.querySelectorAll( selector ) ?? [] ) ].find( ( el ) => ! el.closest( '.sgs-form__honeypot' ) );
 		if ( ! field ) {
 			return null;
 		}

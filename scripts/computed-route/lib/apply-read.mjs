@@ -165,9 +165,9 @@ export async function readSurface( { browser, surface, side, width, props, extra
 			const ready = 'live' === side || ( await page.evaluate( () => document.querySelectorAll( '[data-dc-tpl]' ).length > 40 ) );
 			if ( ready ) {
 				const read = await page.evaluate( factsOf, { items, props, resolveSrc: resolveFinder.toString() } );
-				if ( 1440 === width && ( extras?.hover?.length || extras?.probes?.length ) ) {
+				if ( 1440 === width && ( extras?.hover?.length || extras?.probes?.length || extras?.groups?.length ) ) {
 					const finderOf = ( key ) => items.find( ( i ) => i.key === key ).finder;
-					attachStateReads( read, await stateReads( page, { extras: { ...extras, hover: ( extras.hover || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ), probes: ( extras.probes || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ) }, finderOf, resolveSrc: resolveFinder.toString(), side } ) );
+					attachStateReads( read, await stateReads( page, { extras: { ...extras, hover: ( extras.hover || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ), probes: ( extras.probes || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ), groups: ( extras.groups || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ) }, finderOf, resolveSrc: resolveFinder.toString(), side } ) );
 				}
 				return read;
 			}

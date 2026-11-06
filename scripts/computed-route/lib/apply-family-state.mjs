@@ -5,6 +5,7 @@
 // `snapshot: press look` and the token values in `tokens`, for the caller to merge.
 import { MOTION_LOOKS } from './apply-hover.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
+import { cardCarriesColour } from './apply-card-group.mjs';
 import { differs, stateItem } from './apply-state-resolve.mjs';
 import { timingItems } from './apply-state-timing.mjs';
 import { pressVariant } from './fill-state-tokens.mjs';
@@ -25,6 +26,10 @@ export const state = {
 		if ( dHover && lHover && ! dHover.unreached && ! lHover.unreached ) {
 			for ( const prop of Object.keys( dHover ).filter( ( p ) => ! MOTION_LOOKS.includes( p ) && 'icon' !== p ) ) {
 				if ( ! differs( dHover[ prop ], lHover[ prop ] ) ) {
+					continue;
+				}
+				// A card's hover colour reaches no child that keeps its own colour: the children's group hover (lib/apply-card-group.mjs) holds it.
+				if ( 'color' === prop && cardCarriesColour( draft[ 1440 ] ) ) {
 					continue;
 				}
 				// An element with no border still reports a border colour: its text colour, which paints nothing.

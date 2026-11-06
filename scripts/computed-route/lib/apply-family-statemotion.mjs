@@ -2,6 +2,7 @@
 // the hover layer (scale, translate, rotate; a lift on a card) and a state entrance (the invalid shake of a form). Both come from
 // the handoff's records through lib/fill-motion-element.mjs::elementMotion, are merged into the saved document, and must pass
 // lib/motion-validate.mjs::validateMotionWrite. A hover whose pose the live block already shows is `equal`.
+import { declaredAttr } from './fill-behaviour.mjs';
 import { elementMotion } from './fill-motion-element.mjs';
 import { motionDb } from './motion-db.mjs';
 import { loadMotionSchema } from './motion-schema.mjs';
@@ -10,6 +11,7 @@ import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { MOTION_LOOKS, motionClose, motionOf } from './apply-hover.mjs';
 import { draftId, recordsFor } from './apply-records.mjs';
 import { indentHover } from './apply-state-indent.mjs';
+import { cardGroup } from './apply-card-group.mjs';
 
 const shared = new Map();
 export function motionTools( db, rawSnapshot ) {
@@ -24,7 +26,7 @@ const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 const holdsMotion = ( r ) => ( r.properties || [] ).some( ( p ) => MOTION_LOOKS.includes( p.property ) && null !== p.to && undefined !== p.to );
 
 // The write for one part of the document: the merged document is validated whole; `merge` is what the op adds.
-function writeOf( { saved, merge, schema, why, record, checks = [] } ) {
+export function writeOf( { saved, merge, schema, why, record, checks = [] } ) {
 	const doc = structuredClone( saved.sgsMotion ?? { v: 1, elements: {} } );
 	doc.elements ??= {};
 	doc.elements.root = { ...( doc.elements.root || {} ), ...merge };
@@ -61,6 +63,11 @@ export function hoverMotion( { target, block, saved, draft, live, recordsIndex, 
 	}
 	const rec = records.find( holdsMotion );
 	const op = writeOf( { saved, merge: { hover: m.element.hover }, schema, why: `hover pose ${ JSON.stringify( want ) } from ${ rec.id }`, record: rec.id, checks: [ { width: 1440, state: 'hover', prop: 'transform', motion: true, want } ] } );
+	// A built-in hover movement (a button style's scale) paints under the motion layer, so a pose without it turns the block's own off.
+	const scaled = motionOf( live[ 1440 ]?.hover )?.scale > want.scale + 0.011;
+	if ( scaled && 'writes' in op && declaredAttr( block, 'builtInHoverLift', db ) && false !== saved.builtInHoverLift ) {
+		op.writes = [ ...op.writes, { attr: 'builtInHoverLift', value: false } ];
+	}
 	return [ ...items, { prop: 'hover motion', state: 'hover', ...op } ];
 }
 
@@ -97,6 +104,7 @@ export const statemotion = {
 	// padding-left: the resting start padding the hover Indent is measured from.
 	props: [ 'padding-left' ],
 	decide( ctx ) {
-		return [ ...hoverMotion( ctx ), ...indentHover( { ...ctx, tools: motionTools( ctx.db, ctx.rawSnapshot ) } ), ...invalidShake( ctx ) ];
+		const tools = motionTools( ctx.db, ctx.rawSnapshot );
+		return [ ...hoverMotion( ctx ), ...indentHover( { ...ctx, tools } ), ...invalidShake( ctx ), ...cardGroup( { ...ctx, tools, writeOf } ) ];
 	},
 };
