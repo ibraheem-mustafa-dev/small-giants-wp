@@ -38,6 +38,18 @@ Row columns: date; surface and widths; what was wrong compared with the draft; t
 
 Each site matches its draft at 375, 768 and 1440 with no high or medium difference left in a fresh vision review (`.claude/reports/2026-11-02-clone-vision-review.md` is the pattern), its site-check passes, and Bean has seen it and approved it for client presentations.
 
+## Polish stage (after every clone, run once by a review agent)
+
+The checks tooling cannot do reliably: large, risky or hard to recognise (Bean 2026-11-06). A Sonnet review agent runs them read-only on the client's mirror after the applier, writes `findings.json` (page, element, width, draft, live), and each finding is checked on the live DOM before it is fixed by the applier or a universal fix, never by hand. Wait for an entrance to end before any read: an element still moving reads wrong.
+
+1. Page states: force hover and keyboard focus on every interactive element of each page and compare with the draft. Includes the states the applier cannot read: FAQ open icon, active nav underline, nav item hover tint, backdrop fade, menu opening on focus.
+2. Drawer: open each accordion at 375 and 768, hover every row and compare per state.
+3. Touch: tap ten controls per page group at 375 and 768 with `hasTouch`; a tap shows the hover look (Bean's T1), and a second tap elsewhere clears it.
+4. Choice groups: any button row keeping one look after a click is a dead choice control; it must be a real field.
+5. Card links: click the card body and the cue on every card; one link, keyboard reachable, no nested anchors, and the card's name read aloud.
+6. Composed interactions: hover and focus block controls in place, looking for clipped, covered or stacked results a single-feature gate cannot see.
+7. First seconds: frames at 0.5s, 2s and 4s of each hero against the draft, because a still of the end state hides a missing sequence.
+
 ## Indus stream (state 2026-11-06)
 
 How it runs (Bean): rounds of 10 to 20 items in two phases. Phase A investigates: fresh paired captures (`scripts/computed-route/tools/vision-capture.mjs`), reviewers per page group, read-only investigators who prove each cause from the saved block settings and the live computed styles, then a review page that shows every item beside its own draft-vs-live crop (`E:/sgs-tmp/r3-pairs/pairs.mjs` + `compose.py` pair a live `cr-ref` block with its draft element through `sites/indus-foods/build/qa/parity/<surface>.fill.mjs`). Bean approves; Phase B registers the items in `sites/indus-foods/build/qa/fix-catalogue.md` and dispatches fixers grouped by post, writing only through `scripts/local-wp/patch-block-attrs.py`. Then deploy, push the mirror, site-check, recapture and QC. Bean's rulings for gaps: no Custom CSS; before calling anything a framework gap, read the whole block family's source (parent blocks, child blocks, the form CPT) and test the existing settings; Bean's own source assets are in `sites/indus-foods/assets/` (the draft's `handoff/assets/` copies can be static). From 2026-11-06 each round also follows "Root-cause rounds" in "Rules every stream keeps": classify each finding, count every instance, close it only by a universal fix, use the applier rather than a hand settings sweep, and send large, risky or hard-to-recognise fixes to the polish stage.
