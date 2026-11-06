@@ -23,8 +23,13 @@ if ( ! function_exists( 'sgs_account_register_markup' ) ) {
 		if ( '' === $hint || false === strpos( $html, 'id="reg_password"' ) ) {
 			return $html;
 		}
-		$line = '<span class="sgs-account__password-helper sgs-account__register-hint">' . wp_kses_post( $hint ) . '</span>';
-		$out  = preg_replace( '#(<input\b[^>]*id="reg_password"[^>]*>)#', '$1' . str_replace( '$', '\$', $line ), $html, 1 );
+		$line = '<span class="sgs-account__password-helper sgs-account__register-hint" id="sgs-account-register-hint">' . wp_kses_post( $hint ) . '</span>';
+		$out  = preg_replace_callback(
+			'#(<input\b[^>]*id="reg_password"[^>]*>)#',
+			static fn( array $m ): string => sgs_account_add_describedby( $m[1], 'sgs-account-register-hint' ) . $line,
+			$html,
+			1
+		);
 		return is_string( $out ) ? $out : $html;
 	}
 }

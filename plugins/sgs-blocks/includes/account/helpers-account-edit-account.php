@@ -29,7 +29,7 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 			$user   = wp_get_current_user();
 			$hidden = '<input type="hidden" name="account_display_name" value="' . esc_attr( (string) $user->display_name ) . '" />'
 				. '<input type="hidden" name="sgs_display_from_names" value="1" />';
-			$html   = (string) preg_replace( '#<p\b(?:(?!</p>).)*?id="account_display_name"(?:(?!</p>).)*</p>#s', $hidden, $html, 1 );
+			$html   = (string) preg_replace_callback( '#<p\b(?:(?!</p>).)*?id="account_display_name"(?:(?!</p>).)*</p>#s', static fn(): string => $hidden, $html, 1 );
 		}
 
 		if ( ! empty( $attributes['accountShowMobile'] ) ) {
@@ -40,16 +40,21 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 				. '<label for="account_mobile">' . esc_html( $label ) . '</label>'
 				. '<input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="account_mobile" id="account_mobile" autocomplete="tel" value="' . esc_attr( $phone ) . '" />'
 				. '<input type="hidden" name="sgs_account_mobile" value="1" /></p>';
-			$html  = (string) preg_replace( '#(<p\b(?:(?!</p>).)*?id="account_email"(?:(?!</p>).)*</p>)#s', '$1' . str_replace( '$', '\$', $field ), $html, 1, $count );
+			$html  = (string) preg_replace_callback( '#(<p\b(?:(?!</p>).)*?id="account_email"(?:(?!</p>).)*</p>)#s', static fn( array $m ): string => $m[1] . $field, $html, 1, $count );
 			if ( 0 === $count ) {
-				$html = (string) preg_replace( '#(<fieldset\b)#', str_replace( '$', '\$', $field ) . '$1', $html, 1 );
+				$html = (string) preg_replace_callback( '#(<fieldset\b)#', static fn( array $m ): string => $field . $m[1], $html, 1 );
 			}
 		}
 
 		$helper = trim( (string) ( $attributes['accountPasswordHelper'] ?? '' ) );
 		if ( '' !== $helper ) {
-			$line = '<p class="sgs-account__password-helper">' . wp_kses_post( $helper ) . '</p>';
-			$html = (string) preg_replace( '#(<fieldset\b[^>]*>\s*<legend\b[^>]*>.*?</legend>)#s', '$1' . str_replace( '$', '\$', $line ), $html, 1 );
+			$line = '<p class="sgs-account__password-helper" id="sgs-account-password-helper">' . wp_kses_post( $helper ) . '</p>';
+			$html = (string) preg_replace_callback(
+				'#(<fieldset\b[^>]*>)(\s*<legend\b[^>]*>.*?</legend>)#s',
+				static fn( array $m ): string => sgs_account_add_describedby( $m[1], 'sgs-account-password-helper' ) . $m[2] . $line,
+				$html,
+				1
+			);
 		}
 		return $html;
 	}

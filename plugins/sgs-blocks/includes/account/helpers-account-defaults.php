@@ -141,3 +141,24 @@ if ( ! function_exists( 'sgs_account_step_order' ) ) {
 		return array( 'placed', 'processing', 'dispatched', 'delivered' );
 	}
 }
+
+if ( ! function_exists( 'sgs_account_add_describedby' ) ) {
+	/**
+	 * Point an opening tag (an `<input ...>` or `<fieldset ...>`) at a helper line through `aria-describedby`,
+	 * keeping any id list the tag already carries.
+	 *
+	 * @param string $tag The opening tag.
+	 * @param string $id  Id of the helper line.
+	 * @return string
+	 */
+	function sgs_account_add_describedby( string $tag, string $id ): string {
+		if ( preg_match( '/\saria-describedby="([^"]*)"/', $tag, $found ) ) {
+			if ( in_array( $id, preg_split( '/\s+/', trim( $found[1] ) ), true ) ) {
+				return $tag;
+			}
+			$joined = trim( $found[1] . ' ' . $id );
+			return (string) preg_replace_callback( '/(\saria-describedby=")[^"]*(")/', static fn( array $m ): string => $m[1] . $joined . $m[2], $tag, 1 );
+		}
+		return (string) preg_replace_callback( '#\s*/?>$#', static fn( array $m ): string => ' aria-describedby="' . $id . '"' . $m[0], $tag, 1 );
+	}
+}
