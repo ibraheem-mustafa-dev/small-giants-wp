@@ -2951,8 +2951,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 				// A motion layer on the `svg-bg` part (the `draw` effect) reaches this element through the part's own
 				// selector, so the div carries no effect attributes of its own.
+				// A block that stores `bgSvgParts` animates named parts of the SVG: the cleaned document rides on the
+				// layer as `data-sgs-svg-parts`, read by src/shared/svg-parts/svg-parts.js. Nothing is printed without parts.
+				$svg_parts_attr = '';
+				if ( ! empty( $attributes['bgSvgParts'] ) ) {
+					require_once __DIR__ . '/helpers-svg-parts.php';
+					$svg_parts_json = sgs_svg_parts_data( $attributes['bgSvgParts'], (string) ( $attributes['bgSvgPartsTrigger'] ?? 'load' ) );
+					$svg_parts_attr = '' !== $svg_parts_json ? ' data-sgs-svg-parts="' . esc_attr( $svg_parts_json ) . '"' : '';
+				}
 				$svg_html = sprintf(
-					'<div class="sgs-container__svg-bg" aria-hidden="true">%s</div>',
+					'<div class="sgs-container__svg-bg"%s aria-hidden="true">%s</div>',
+					$svg_parts_attr,
 					wp_kses( $bg_svg_content, $allowed_svg_tags )
 				);
 			}

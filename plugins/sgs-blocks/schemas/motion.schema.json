@@ -2872,6 +2872,16 @@
 						"perDevice": true
 					}
 				},
+				"restIndent": {
+					"$ref": "#/$defs/distance",
+					"description": "The resting inline-start padding, a styling value written to --sgs-pad-start-rest, which the padding-inline-start channel adds the hover indent to. Unset rests at 0 (the channel owns the element's inline-start padding while an indent is set).",
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-pad-start-rest",
+						"state": "rest",
+						"perDevice": true
+					}
+				},
 				"restWidth": {
 					"$ref": "#/$defs/distance",
 					"description": "The resting width, a styling value written to --sgs-w-rest, which the width channel interpolates from to the hover width. Unset keeps the element's own width (100% of its box).",
@@ -3119,6 +3129,9 @@
 					"$ref": "#/$defs/distance"
 				},
 				"width": {
+					"$ref": "#/$defs/distance"
+				},
+				"restIndent": {
 					"$ref": "#/$defs/distance"
 				},
 				"restWidth": {

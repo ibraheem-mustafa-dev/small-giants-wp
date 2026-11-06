@@ -37,6 +37,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-pause.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-easing.php';
 
 // CSS-keyword sanitiser — for free-text attrs concatenated into raw CSS
 // declarations (textTransform / fontWeight / fontStyle / border-style) —
@@ -271,6 +272,13 @@ $slider_extra_attrs = array(
 	'aria-roledescription' => 'carousel',
 	'aria-label'           => esc_attr__( 'Customer Testimonials', 'sgs-blocks' ),
 );
+// The change animation: view.js reads these from the root when a slide change should fade the new cards in.
+if ( 'fade-up' === ( $attributes['changeTransition'] ?? 'slide' ) ) {
+	$slider_extra_attrs['data-change']          = 'fade-up';
+	$slider_extra_attrs['data-change-distance'] = (string) (float) ( $attributes['changeDistance'] ?? 26 );
+	$slider_extra_attrs['data-change-duration'] = (string) absint( $attributes['changeDuration'] ?? 520 );
+	$slider_extra_attrs['data-change-easing']   = sgs_motion_easing_css( (string) ( $attributes['changeEasing'] ?? 'drafts' ), '', 'ease' );
+}
 // view.js sizes its loop padding to the largest visible count of any device.
 if ( $slides_tablet > 0 ) {
 	$slider_extra_attrs['data-slides-tablet'] = (string) $slides_tablet;

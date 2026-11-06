@@ -142,6 +142,7 @@ require_once $sgs_blocks_dir . '/includes/class-turnstile.php';
 // Real SGS code: sgs/hero lifts section-anchored layers out of its content with sgs_lift_section_anchored_layers(),
 // which the plugin bootstrap loads from this file (sgs-blocks.php), not the render.php itself.
 require_once $sgs_blocks_dir . '/includes/section-anchored-layers.php';
+require_once $sgs_blocks_dir . '/includes/helpers-svg-parts.php';
 
 /**
  * Parse --flag value / --flag=value style CLI args.

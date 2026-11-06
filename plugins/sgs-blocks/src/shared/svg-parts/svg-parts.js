@@ -5,16 +5,22 @@
  * includes/helpers-svg-parts.php) holds an inline `<svg>`. The document lists parts; each part names an element of the
  * SVG by id (or by a CSS selector starting with `.`, `[` or `:`) and says how it behaves:
  *
- * - an entrance: the part starts from an opacity, scale, offset, rotation and/or an undrawn stroke and settles into its
- *   own resting look (`fromOpacity`, `fromScale`, `fromX`, `fromY`, `fromRotate`, `draw`, `duration`, `delay`,
- *   `easing`, `origin`); `eachChild` animates every child of the named element, `stagger` staggers the matches;
+ * - an entrance: the part starts from an opacity, scale, offset, rotation, colour, clip wipe and/or an undrawn stroke and
+ *   settles into its own resting look (`fromOpacity`, `fromScale`, `fromX`, `fromY`, `fromRotate`, `fromFill`, `fromClip`,
+ *   `draw`, `duration`, `delay`, `easing`, `easingCustom`, `origin`); `eachChild` animates every child of the named
+ *   element, `stagger` staggers the matches. A staged entrance adds `settleAt` (offset where the resting look is reached),
+ *   `holdUntil` (offset where it leaves that look) and the end look `toScale` / `toFill`, which stays after the entrance
+ *   and is applied at once under reduced motion; `copyShapeFrom` copies the path data of another element into a matching
+ *   element that has none;
  * - a continuous loop: `loopRotate` turns the part by that many degrees every `loopDuration` ms;
- * - a hover: `hoverReplay` plays the entrance again, `hoverRate` runs the loop at that speed for `hoverRateDuration` ms.
+ * - a hover: `hoverReplay` plays the entrance again, `hoverRate` runs the loop at that speed for `hoverRateDuration` ms,
+ *   and `hoverScale` / `hoverX` / `hoverY` / `hoverRotate` play one bob (out and back over `hoverDuration`, each match
+ *   `hoverStagger` later than the last, with `hoverEasing` / `hoverEasingCustom`).
  *
  * The document's `trigger` is when the entrance plays: `load`, `visible` (the first time the element is on screen) or
  * `every-visible` (each time it comes on screen, as a drawer logo does when the drawer opens). `hoverCooldown` is the
- * least time between two hover replays. Under `prefers-reduced-motion: reduce` nothing runs and the SVG keeps its
- * resting look.
+ * least time between two hover replays. Under `prefers-reduced-motion: reduce` nothing animates: the SVG shows its resting
+ * look, or each part's end look where it has one.
  *
  * The scoped ids the server gives an inlined SVG (`<instance>-<id>`) are matched by their suffix, so the ids written in
  * the document are the ids of the SVG file itself.
@@ -23,17 +29,16 @@
  */
 
 import { isTouchInput, prefersReducedMotion } from '../effects/motion-utils';
+import {
+	applyEndLook,
+	easingFor,
+	entranceFrames,
+	hasEndLook,
+	hoverFrames,
+} from './frames';
 
 const SELECTOR = '[data-sgs-svg-parts]';
 const BOOTED_ATTR = 'data-sgs-svg-parts-booted';
-const EASINGS = {
-	linear: 'linear',
-	ease: 'ease',
-	'ease-in': 'ease-in',
-	'ease-out': 'ease-out',
-	'ease-in-out': 'ease-in-out',
-	spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-};
 const ORIGINS = {
 	center: 'center',
 	top: 'center top',
@@ -92,36 +97,23 @@ function resolveTargets( svg, part, target ) {
 }
 
 /**
- * The entrance keyframes of a part, or null when the part has no entrance.
+ * Copies the path data of `source` into every element that has none (a glow or highlight layer of a drawn line).
  *
- * @param {Object} part One part of the document.
- * @return {Object[]|null} The WAAPI keyframes.
+ * @param {Element}   svg    The inline SVG.
+ * @param {Element[]} els    The part's elements.
+ * @param {string}    source Id of the element to copy from.
  */
-function entranceFrames( part ) {
-	const from = {};
-	if ( Number.isFinite( part.fromOpacity ) ) {
-		from.opacity = part.fromOpacity;
+function copyShape( svg, els, source ) {
+	const from = resolveTargets( svg, {}, source )[ 0 ];
+	const d = from && from.getAttribute( 'd' );
+	if ( ! d ) {
+		return;
 	}
-	// The individual `translate`, `rotate` and `scale` properties compose with the group's own `transform`
-	// attribute; a `transform` keyframe would replace it.
-	if ( part.fromX || part.fromY ) {
-		from.translate = `${ part.fromX || 0 }px ${ part.fromY || 0 }px`;
-	}
-	if ( part.fromRotate ) {
-		from.rotate = `${ part.fromRotate }deg`;
-	}
-	if ( Number.isFinite( part.fromScale ) && 1 !== part.fromScale ) {
-		from.scale = String( part.fromScale );
-	}
-	if ( part.draw ) {
-		return [
-			{ ...from, strokeDasharray: 1, strokeDashoffset: 1 },
-			{ strokeDasharray: 1, strokeDashoffset: 0 },
-		];
-	}
-	// A single keyframe is the END state of a WAAPI animation; the empty second keyframe makes `from` the start and the
-	// element's own look the end.
-	return Object.keys( from ).length ? [ from, {} ] : null;
+	els.forEach( ( el ) => {
+		if ( ! el.getAttribute( 'd' ) ) {
+			el.setAttribute( 'd', d );
+		}
+	} );
 }
 
 /**
@@ -155,6 +147,9 @@ function boot( root ) {
 				el.setAttribute( 'pathLength', '1' );
 			}
 		} );
+		if ( part.copyShapeFrom ) {
+			copyShape( svg, els, part.copyShapeFrom );
+		}
 	};
 	resolved.forEach( prepare );
 
@@ -177,8 +172,11 @@ function boot( root ) {
 						duration: Math.max( 1, part.duration || 600 ),
 						delay:
 							( part.delay || 0 ) + index * ( part.stagger || 0 ),
-						easing: EASINGS[ part.easing ] || EASINGS[ 'ease-out' ],
-						fill: 'backwards',
+						easing: easingFor( el, part.easing, part.easingCustom ),
+						fill:
+							part.draw || hasEndLook( part )
+								? 'both'
+								: 'backwards',
 					} )
 				)
 			);
@@ -206,6 +204,26 @@ function boot( root ) {
 			} );
 		} );
 	} );
+
+	const playHover = () => {
+		resolved.forEach( ( { part, els } ) => {
+			const frames = hoverFrames( part );
+			if ( ! frames ) {
+				return;
+			}
+			els.forEach( ( el, index ) =>
+				el.animate( frames, {
+					duration: Math.max( 1, part.hoverDuration || 600 ),
+					delay: index * ( part.hoverStagger || 0 ),
+					easing: easingFor(
+						el,
+						part.hoverEasing,
+						part.hoverEasingCustom
+					),
+				} )
+			);
+		} );
+	};
 
 	const trigger = cfg.trigger || 'visible';
 	if ( 'load' === trigger || ! ( 'IntersectionObserver' in window ) ) {
@@ -249,6 +267,7 @@ function boot( root ) {
 		}
 		lastHover = now;
 		playEntrance( true );
+		playHover();
 		loops.forEach( ( { part, animation } ) => {
 			if ( ! ( part.hoverRate > 1 ) ) {
 				return;
@@ -267,23 +286,44 @@ function boot( root ) {
 }
 
 /**
- * Boots every element carrying `data-sgs-svg-parts` that is not booted yet. Does nothing under reduced motion.
+ * Reduced motion: shows each part's end look and copies shared path data, with no animation.
+ *
+ * @param {Element} root The element carrying `data-sgs-svg-parts`.
+ */
+function settle( root ) {
+	const cfg = readConfig( root );
+	const svg = root.querySelector( 'svg' );
+	if ( ! cfg || ! svg ) {
+		return;
+	}
+	cfg.parts.forEach( ( part ) => {
+		const els = resolveTargets( svg, part, part.target );
+		if ( part.copyShapeFrom ) {
+			copyShape( svg, els, part.copyShapeFrom );
+		}
+		applyEndLook( els, part );
+	} );
+}
+
+/**
+ * Boots every element carrying `data-sgs-svg-parts` that is not booted yet. Under reduced motion it only shows each part's end look.
  *
  * @param {Document|Element} scope Where to look; the document by default.
  */
 export function bootSvgParts( scope = document ) {
-	if (
+	const reduced =
 		window.matchMedia &&
-		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches
-	) {
-		return;
-	}
+		window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 	scope.querySelectorAll( SELECTOR ).forEach( ( root ) => {
 		// Each block's view script bundles its own copy of this module, so the flag lives on the element.
 		if ( root.hasAttribute( BOOTED_ATTR ) ) {
 			return;
 		}
 		root.setAttribute( BOOTED_ATTR, '' );
+		if ( reduced ) {
+			settle( root );
+			return;
+		}
 		boot( root );
 	} );
 }

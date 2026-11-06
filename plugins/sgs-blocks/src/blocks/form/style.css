@@ -88,6 +88,12 @@
 	grid-column: 1 / -1;
 }
 
+/* Parent grid decides: a field inside a nested container (a grid of its own inside the form) is placed by that
+   grid, not by the form's six tracks, so it takes neither the full-row span nor a half or third span. */
+.sgs-form-field--auto {
+	grid-column: auto;
+}
+
 /* Any other block placed in the form (a heading, text, a container of fields,
    a button) spans the whole row too: the six tracks are for half and third
    width fields only, so without this each such block shrinks to one track.

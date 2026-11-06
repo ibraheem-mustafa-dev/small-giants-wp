@@ -147,6 +147,42 @@ function block_link_first_heading_text( string $html ): string {
 }
 
 /**
+ * The accessible name an unlabelled overlay takes when the block has no heading.
+ *
+ * A tel: or mailto: link has no host, so the number or address itself is the name. A back-to-top link says so. Any other
+ * link keeps its host; a link with no host (a fragment, a relative path) takes the first words of the card, then the href.
+ *
+ * @param string $block_link   Block-link URL.
+ * @param string $html         The block's rendered root.
+ * @param string $source_attrs Escaped extra attributes the link's source puts on the overlay.
+ * @return string A non-empty name.
+ */
+function block_link_fallback_label( string $block_link, string $html, string $source_attrs ): string {
+	if ( 1 === preg_match( '/^(?:tel|mailto):(.*?)(?:\?.*)?$/i', trim( $block_link ), $contact ) ) {
+		$value = trim( rawurldecode( $contact[1] ) );
+		if ( '' !== $value ) {
+			return $value;
+		}
+	}
+
+	if ( false !== strpos( $source_attrs, 'data-sgs-link-source="top"' ) ) {
+		return __( 'Back to top', 'sgs-blocks' );
+	}
+
+	$host = wp_parse_url( $block_link, PHP_URL_HOST );
+	if ( $host ) {
+		return (string) $host;
+	}
+
+	$text = trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( wp_strip_all_tags( (string) preg_replace( '#<(script|style).*?</>#is', '', $html ) ), ENT_QUOTES ) ) );
+	if ( '' !== $text ) {
+		return mb_strlen( $text ) > 80 ? mb_substr( $text, 0, 80 ) : $text;
+	}
+
+	return $block_link;
+}
+
+/**
  * Whether this anchor is safe to rewrite at all.
  *
  * The anchor is found with `/<a\b([^>]*)>/`, which stops at the FIRST `>`. A
@@ -328,8 +364,7 @@ function insert_block_link_overlay(
 			$link_label = block_link_first_heading_text( $sgs_root );
 		}
 		if ( '' === $link_label ) {
-			$link_host  = wp_parse_url( $block_link, PHP_URL_HOST );
-			$link_label = $link_host ? $link_host : $block_link;
+			$link_label = block_link_fallback_label( $block_link, $sgs_root, $source_attrs );
 		}
 
 		$overlay_html = sprintf(

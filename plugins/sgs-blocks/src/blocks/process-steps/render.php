@@ -435,6 +435,23 @@ if ( $connector_line ) {
 	}
 }
 
+// Connector hidden per device (connectorHidden): the continuous line when it is on, else the per-step segments.
+$sgs_connector_hidden = $attributes['connectorHidden'] ?? null;
+if ( is_array( $sgs_connector_hidden ) && array() !== $sgs_connector_hidden && 'list' !== $layout ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$connector_line
+			? $root_sel . ' .sgs-process-steps__connector'
+			: $root_sel . ' .sgs-process-steps__step:not(:last-child)::after',
+		array(
+			array(
+				'value'     => $sgs_connector_hidden,
+				'css'       => 'display',
+				'transform' => static fn( $raw ): string => is_bool( $raw ) || is_numeric( $raw ) ? ( $raw ? 'none' : 'block' ) : '',
+			),
+		)
+	);
+}
+
 // Space between the steps (stepGap); unset keeps style.css's gap.
 if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
 	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';

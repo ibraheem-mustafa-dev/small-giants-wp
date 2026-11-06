@@ -280,6 +280,70 @@
 					"hoverRateDuration": {
 						"type": "number",
 						"role": "behaviour"
+					},
+					"fromFill": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"fromClip": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"toScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"toFill": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"settleAt": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"holdUntil": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"copyShapeFrom": {
+						"type": "string",
+						"role": "technical"
+					},
+					"easingCustom": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"hoverScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverX": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverY": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverDuration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverStagger": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverEasing": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"hoverEasingCustom": {
+						"type": "string",
+						"role": "behaviour"
 					}
 				}
 			},

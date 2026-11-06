@@ -479,7 +479,7 @@
   },
   {
     "id": "D-32",
-    "scope": "About, Brands and Apply pages, all widths",
+    "scope": "About, Brands, Apply, Contact and Food Service pages, all widths",
     "node": "breadcrumbs middle crumb",
     "state": "*",
     "property": "content",

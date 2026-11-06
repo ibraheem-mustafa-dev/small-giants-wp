@@ -242,7 +242,8 @@
 						"css:background-color": "connectorColour",
 						"css:height": "connectorThickness",
 						"css:margin-top": "connectorOffset",
-						"css:width": "connectorWidth"
+						"css:width": "connectorWidth",
+						"css:display": "connectorHidden"
 					},
 					"absentIn": [
 						"row-numbered",
@@ -395,6 +396,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Width of the continuous connector line (a CSS length), drawn from the left edge. Empty runs it edge to edge."
+		},
+		"connectorHidden": {
+			"type": "object",
+			"default": {},
+			"description": "Hides the connector between the steps (the continuous line, or the per-step segments), per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty keeps the stylesheet's behaviour (the continuous line is hidden on mobile)."
 		},
 		"numberHoverTrigger": {
 			"type": "string",

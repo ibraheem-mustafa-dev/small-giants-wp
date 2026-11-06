@@ -125,6 +125,11 @@ sliders.forEach( ( slider ) => {
 	const prefersReducedMotion = globalThis.matchMedia(
 		'(prefers-reduced-motion: reduce)'
 	).matches;
+	// The fade-up change animation: the track jumps and the new cards fade in while moving in from the side.
+	const fadeUp = slider.dataset.change === 'fade-up';
+	const changeDistance = Number.parseFloat( slider.dataset.changeDistance || '26' ) || 0;
+	const changeDuration = Number.parseInt( slider.dataset.changeDuration || '520', 10 ) || 0;
+	const changeEasing = slider.dataset.changeEasing || 'ease';
 
 	const total = originalSlides.length;
 	// Loop padding covers the largest visible count of any device, so it holds at every width.
@@ -286,7 +291,35 @@ sliders.forEach( ( slider ) => {
 			visualIndex = currentIndex;
 		}
 
+		if ( fadeUp ) {
+			renderFadeUp();
+			return;
+		}
 		render( true );
+	}
+
+	/**
+	 * Fade-up change: snap the track to the new position with no slide, then fade the cards now in view in from the
+	 * side. Under reduced motion the cards simply swap.
+	 */
+	function renderFadeUp() {
+		render( false );
+		if ( prefersReducedMotion || changeDuration <= 0 ) {
+			return;
+		}
+		const trackBox = track.getBoundingClientRect();
+		list.querySelectorAll( '.sgs-testimonial-slider__slide' ).forEach( ( card ) => {
+			const box = card.getBoundingClientRect();
+			if ( box.right - trackBox.left > 1 && trackBox.right - box.left > 1 ) {
+				card.animate(
+					[
+						{ opacity: 0, translate: `${ changeDistance }px 0` },
+						{ opacity: 1, translate: '0 0' },
+					],
+					{ duration: changeDuration, easing: changeEasing }
+				);
+			}
+		} );
 	}
 
 	/**

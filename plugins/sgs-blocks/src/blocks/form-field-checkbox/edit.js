@@ -19,6 +19,7 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'Full width', 'sgs-blocks' ), value: 'full' },
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
+	{ label: __( 'Parent grid decides', 'sgs-blocks' ), value: 'auto' },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {

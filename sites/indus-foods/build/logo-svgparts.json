@@ -1,0 +1,70 @@
+{
+ "block": "sgs/responsive-logo (header logoId 81; footer square logoId 83 uses logo-square-anim.svg, same ids; drawer: sgs/nav-drawer chromeLogoInlineSvg + chromeLogoSvgParts)",
+ "attributes": {
+  "inlineSvg": true,
+  "svgPartsTrigger": "visible",
+  "svgPartsHoverCooldown": 1400,
+  "svgParts": [
+   {
+    "target": "sunrays_spin",
+    "loopRotate": 360,
+    "loopDuration": 60000,
+    "hoverRate": 14,
+    "hoverRateDuration": 900
+   },
+   {
+    "target": "sunrays_expand",
+    "fromScale": 0,
+    "fromOpacity": 0,
+    "duration": 1200,
+    "delay": 150,
+    "easing": "spring",
+    "origin": "center",
+    "hoverScale": 1.12,
+    "hoverDuration": 900,
+    "hoverEasing": "spring"
+   },
+   {
+    "target": "[id$=\"Mountain Block\"]",
+    "fromY": 120,
+    "fromOpacity": 0,
+    "duration": 1000,
+    "delay": 0,
+    "easing": "drafts",
+    "hoverY": -24,
+    "hoverDuration": 700,
+    "hoverEasing": "drafts"
+   },
+   {
+    "target": "snow",
+    "fromOpacity": 0,
+    "duration": 700,
+    "delay": 650,
+    "easing": "drafts"
+   },
+   {
+    "target": "darkpath",
+    "duration": 900,
+    "delay": 500,
+    "easing": "drafts",
+    "fromClip": "up"
+   },
+   {
+    "target": "logo_text",
+    "eachChild": true,
+    "fromOpacity": 0,
+    "fromY": 60,
+    "duration": 650,
+    "delay": 420,
+    "stagger": 45,
+    "easing": "drafts",
+    "hoverY": -40,
+    "hoverDuration": 520,
+    "hoverStagger": 28,
+    "hoverEasing": "drafts"
+   }
+  ]
+ },
+ "source": "indus-logo.js::IndusLogo.play / IndusLogo.load; animations.json L-01..L-10",
+ "not_expressible_today": []
+}

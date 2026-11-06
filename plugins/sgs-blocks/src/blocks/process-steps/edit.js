@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { resolveTier } from '../../utils/responsive';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -147,6 +148,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		connectorThickness,
 		connectorOffset,
 		connectorWidth,
+		connectorHidden,
 		numberHoverTrigger,
 		numberStyle,
 		numberColour,
@@ -753,7 +755,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				>
 					<ToolsPanel
 						label={ __( 'Layout and spacing', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line', connectorLine: false, connectorColour: '', connectorThickness: '', connectorOffset: '', connectorWidth: '' } ) }
+						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line', connectorLine: false, connectorColour: '', connectorThickness: '', connectorOffset: '', connectorWidth: '', connectorHidden: {} } ) }
 					>
 						<ToolsPanelItem
 							label={ __( 'Layout', 'sgs-blocks' ) }
@@ -868,6 +870,28 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									onChange={ ( val ) => setAttributes( { connectorLine: !! val } ) }
 									__nextHasNoMarginBottom
 								/>
+							</ToolsPanelItem>
+						) }
+						{ 'list' !== layout && (
+							<ToolsPanelItem
+								label={ __( 'Hide connector', 'sgs-blocks' ) }
+								hasValue={ () => !! connectorHidden && Object.keys( connectorHidden ).length > 0 }
+								onDeselect={ () => setAttributes( { connectorHidden: {} } ) }
+							>
+								<ResponsiveOverride
+									label={ __( 'Hide connector', 'sgs-blocks' ) }
+									value={ connectorHidden }
+									onChange={ ( obj ) => setAttributes( { connectorHidden: obj } ) }
+								>
+									{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+										<ToggleControl
+											label={ __( 'Hide the connector on this device', 'sgs-blocks' ) }
+											checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
+											onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+											__nextHasNoMarginBottom
+										/>
+									) }
+								</ResponsiveOverride>
 							</ToolsPanelItem>
 						) }
 						{ 'list' !== layout && connectorLine && (
@@ -1061,7 +1085,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				{ connectorLine && 'list' !== layout && (
+				{ connectorLine && 'list' !== layout && true !== resolveTier( connectorHidden, previewTier, false ).value && (
 					<span className="sgs-process-steps__connector" style={ connectorPreviewStyle } aria-hidden="true" />
 				) }
 				{ steps.map( ( step, index ) => (

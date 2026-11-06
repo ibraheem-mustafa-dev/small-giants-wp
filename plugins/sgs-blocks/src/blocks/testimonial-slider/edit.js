@@ -81,6 +81,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		borderColourHoverGradient,
 		transitionDuration,
 		transitionEasing,
+		changeTransition,
+		changeDistance,
+		changeDuration,
+		changeEasing,
 		dragToScroll,
 	} = attributes;
 
@@ -202,6 +206,10 @@ export default function Edit( { attributes, setAttributes } ) {
 								cardStyle: '',
 								transitionDuration: '300',
 								transitionEasing: 'ease-in-out',
+								changeTransition: 'slide',
+								changeDistance: 26,
+								changeDuration: 520,
+								changeEasing: 'drafts',
 								showArrows: true,
 								arrowIconPrev: 'chevron-left',
 								arrowIconNext: 'chevron-right',
@@ -269,6 +277,85 @@ export default function Edit( { attributes, setAttributes } ) {
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Change animation', 'sgs-blocks' ) }
+							hasValue={ () =>
+								changeTransition !== 'slide' ||
+								changeDistance !== 26 ||
+								changeDuration !== 520 ||
+								changeEasing !== 'drafts'
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									changeTransition: 'slide',
+									changeDistance: 26,
+									changeDuration: 520,
+									changeEasing: 'drafts',
+								} )
+							}
+						>
+							<SelectControl
+								label={ __( 'Change animation', 'sgs-blocks' ) }
+								help={ __(
+									'Slide moves the track across. Fade up jumps the track and fades the new cards in while they move in from the side.',
+									'sgs-blocks'
+								) }
+								value={ changeTransition }
+								options={ [
+									{ label: __( 'Slide', 'sgs-blocks' ), value: 'slide' },
+									{ label: __( 'Fade up', 'sgs-blocks' ), value: 'fade-up' },
+								] }
+								onChange={ ( val ) =>
+									setAttributes( { changeTransition: val } )
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							{ changeTransition === 'fade-up' && (
+								<>
+									<RangeControl
+										label={ __( 'Change distance (px)', 'sgs-blocks' ) }
+										value={ changeDistance }
+										onChange={ ( val ) =>
+											setAttributes( { changeDistance: val ?? 26 } )
+										}
+										min={ -200 }
+										max={ 200 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<RangeControl
+										label={ __( 'Change duration (ms)', 'sgs-blocks' ) }
+										value={ changeDuration }
+										onChange={ ( val ) =>
+											setAttributes( { changeDuration: val ?? 520 } )
+										}
+										min={ 0 }
+										max={ 2000 }
+										step={ 20 }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+									<SelectControl
+										label={ __( 'Change easing', 'sgs-blocks' ) }
+										value={ changeEasing }
+										options={ [
+											{ label: __( 'Smooth settle', 'sgs-blocks' ), value: 'drafts' },
+											{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
+											{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
+											{ label: __( 'Quart out', 'sgs-blocks' ), value: 'quart-out' },
+											{ label: __( 'Standard', 'sgs-blocks' ), value: 'standard' },
+											{ label: __( 'Linear', 'sgs-blocks' ), value: 'linear' },
+										] }
+										onChange={ ( val ) =>
+											setAttributes( { changeEasing: val } )
+										}
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								</>
+							) }
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Transition easing', 'sgs-blocks' ) }

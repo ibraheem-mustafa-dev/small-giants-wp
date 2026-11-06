@@ -1,0 +1,86 @@
+{
+ "block": "sgs/hero (About hero: the inline SVG background layer, bgSvgContent = about-hero-desktop.svg; the tablet and mobile files carry the same ids)",
+ "attributes": {
+  "bgSvgPartsTrigger": "load",
+  "bgSvgParts": [
+   {
+    "target": "sunrays_spin",
+    "loopRotate": 360,
+    "loopDuration": 40000
+   },
+   {
+    "target": "Mountain Block",
+    "fromY": 140,
+    "fromOpacity": 0,
+    "duration": 1100,
+    "delay": 0,
+    "easing": "drafts"
+   },
+   {
+    "target": "snow",
+    "fromOpacity": 0,
+    "duration": 700,
+    "delay": 700,
+    "easing": "drafts"
+   },
+   {
+    "target": "sunrays_expand",
+    "fromScale": 0,
+    "fromOpacity": 0,
+    "settleAt": 0.35,
+    "holdUntil": 0.55,
+    "toScale": 4.2,
+    "duration": 4200,
+    "delay": 200,
+    "easing": "drafts",
+    "origin": "center"
+   },
+   {
+    "target": "path5",
+    "delay": 1100,
+    "draw": true,
+    "duration": 1600,
+    "easing": "custom",
+    "easingCustom": "cubic-bezier(0.65, 0, 0.35, 1)"
+   },
+   {
+    "target": "goldpath_glow",
+    "delay": 1220,
+    "copyShapeFrom": "path5",
+    "draw": true,
+    "duration": 1600,
+    "easing": "custom",
+    "easingCustom": "cubic-bezier(0.65, 0, 0.35, 1)"
+   },
+   {
+    "target": "goldpath_highlight",
+    "delay": 1340,
+    "copyShapeFrom": "path5",
+    "draw": true,
+    "duration": 1600,
+    "easing": "custom",
+    "easingCustom": "cubic-bezier(0.65, 0, 0.35, 1)"
+   },
+   {
+    "target": "darkpath",
+    "fromFill": "#2c3e50",
+    "toFill": "#ffffff",
+    "duration": 900,
+    "delay": 2400,
+    "easing": "drafts"
+   },
+   {
+    "target": "background",
+    "fromFill": "#2b3f59",
+    "holdUntil": 0.5,
+    "toFill": "#E7D768",
+    "duration": 4400,
+    "delay": 0,
+    "easing": "custom",
+    "easingCustom": "cubic-bezier(0.65, 0, 0.35, 1)"
+   }
+  ]
+ },
+ "source": "Indus Foods Website v2.dc.html::setHeroSvgEl; animations.json A-24..A-30",
+ "not_expressible_today": []
+}

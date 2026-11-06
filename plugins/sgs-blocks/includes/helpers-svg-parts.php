@@ -7,13 +7,19 @@
  * sgs_svg_parts_data() returns the cleaned JSON, or '' when no part holds anything to animate.
  *
  * Each part: `target` (an id of the SVG, or a CSS selector starting with `.`, `[` or `:`), `eachChild`, the entrance
- * (`fromOpacity`, `fromScale`, `fromX`, `fromY`, `fromRotate`, `draw`, `duration`, `delay`, `stagger`, `easing`,
- * `origin`), the loop (`loopRotate`, `loopDuration`) and the hover (`hoverReplay`, `hoverRate`, `hoverRateDuration`).
+ * (`fromOpacity`, `fromScale`, `fromX`, `fromY`, `fromRotate`, `fromFill`, `fromClip`, `draw`, `duration`, `delay`,
+ * `stagger`, `easing`, `easingCustom`, `origin`), a staged entrance (`settleAt`, `holdUntil`, `toScale`, `toFill`,
+ * `copyShapeFrom`), the loop (`loopRotate`, `loopDuration`) and the hover (`hoverReplay`, `hoverRate`,
+ * `hoverRateDuration`, and the bob `hoverScale`, `hoverX`, `hoverY`, `hoverRotate`, `hoverDuration`, `hoverStagger`,
+ * `hoverEasing`, `hoverEasingCustom`). An easing is a name from `sgs_motion_easing_values()`; `custom` reads the
+ * matching `*Custom` curve, which is kept only as four numbers rebuilt into a `cubic-bezier()`.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/helpers-motion-easing.php';
 
 if ( ! function_exists( 'sgs_svg_parts_data' ) ) {
 	/**
@@ -31,8 +37,22 @@ if ( ! function_exists( 'sgs_svg_parts_data' ) ) {
 		$number  = static function ( $value, float $min, float $max ) {
 			return is_numeric( $value ) ? max( $min, min( $max, (float) $value ) ) : null;
 		};
-		$easings = array( 'linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out', 'spring' );
+		$easings = sgs_motion_easing_values();
 		$origins = array( 'center', 'top', 'bottom', 'left', 'right' );
+		$clips   = array( 'up', 'down', 'left', 'right' );
+		$curve   = static function ( $value ) {
+			if ( ! is_string( $value ) || 1 !== preg_match( '/^cubic-bezier\(\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*,\s*(-?\d*\.?\d+)\s*\)$/', trim( $value ), $m ) ) {
+				return null;
+			}
+			$n = array_map( 'floatval', array_slice( $m, 1 ) );
+			return ( $n[0] >= 0 && $n[0] <= 1 && $n[2] >= 0 && $n[2] <= 1 )
+				? 'cubic-bezier(' . implode( ', ', $n ) . ')'
+				: null;
+		};
+		$colour  = static function ( $value ) {
+			$resolved = is_string( $value ) ? sgs_colour_value( $value ) : '';
+			return 1 === preg_match( '/^(#[0-9a-fA-F]{3,8}|[a-zA-Z]+|var\(--[a-zA-Z0-9_-]+\))$/', $resolved ) ? $resolved : null;
+		};
 		$clean   = array();
 		foreach ( $parts as $part ) {
 			if ( ! is_array( $part ) ) {
@@ -56,6 +76,15 @@ if ( ! function_exists( 'sgs_svg_parts_data' ) ) {
 				'loopDuration'      => array( 0, 3600000 ),
 				'hoverRate'         => array( 0, 100 ),
 				'hoverRateDuration' => array( 0, 60000 ),
+				'settleAt'          => array( 0, 1 ),
+				'holdUntil'         => array( 0, 1 ),
+				'toScale'           => array( 0, 20 ),
+				'hoverScale'        => array( 0, 20 ),
+				'hoverX'            => array( -5000, 5000 ),
+				'hoverY'            => array( -5000, 5000 ),
+				'hoverRotate'       => array( -3600, 3600 ),
+				'hoverDuration'     => array( 0, 60000 ),
+				'hoverStagger'      => array( 0, 5000 ),
 			) as $key => $range ) {
 				if ( isset( $part[ $key ] ) && '' !== $part[ $key ] ) {
 					$value = $number( $part[ $key ], (float) $range[0], (float) $range[1] );
@@ -69,14 +98,35 @@ if ( ! function_exists( 'sgs_svg_parts_data' ) ) {
 					$item[ $flag ] = true;
 				}
 			}
-			if ( isset( $part['easing'] ) && in_array( $part['easing'], $easings, true ) ) {
-				$item['easing'] = $part['easing'];
+			foreach ( array( 'easing' => 'easingCustom', 'hoverEasing' => 'hoverEasingCustom' ) as $key => $custom_key ) {
+				if ( isset( $part[ $key ] ) && in_array( $part[ $key ], $easings, true ) ) {
+					$item[ $key ] = $part[ $key ];
+					$bezier       = 'custom' === $part[ $key ] ? $curve( $part[ $custom_key ] ?? '' ) : null;
+					if ( null !== $bezier ) {
+						$item[ $custom_key ] = $bezier;
+					}
+				}
+			}
+			foreach ( array( 'fromFill', 'toFill' ) as $key ) {
+				$value = isset( $part[ $key ] ) ? $colour( $part[ $key ] ) : null;
+				if ( null !== $value ) {
+					$item[ $key ] = $value;
+				}
+			}
+			if ( isset( $part['fromClip'] ) && in_array( $part['fromClip'], $clips, true ) ) {
+				$item['fromClip'] = $part['fromClip'];
+			}
+			$shape = trim( substr( wp_strip_all_tags( (string) ( $part['copyShapeFrom'] ?? '' ) ), 0, 200 ) );
+			if ( '' !== $shape ) {
+				$item['copyShapeFrom'] = $shape;
 			}
 			if ( isset( $part['origin'] ) && in_array( $part['origin'], $origins, true ) ) {
 				$item['origin'] = $part['origin'];
 			}
 			$animates = isset( $item['fromOpacity'] ) || isset( $item['fromScale'] ) || isset( $item['fromX'] ) || isset( $item['fromY'] )
-				|| isset( $item['fromRotate'] ) || ! empty( $item['draw'] ) || ! empty( $item['loopRotate'] );
+				|| isset( $item['fromRotate'] ) || isset( $item['fromFill'] ) || isset( $item['fromClip'] ) || isset( $item['toScale'] ) || isset( $item['toFill'] )
+				|| ! empty( $item['draw'] ) || ! empty( $item['loopRotate'] )
+				|| isset( $item['hoverScale'] ) || isset( $item['hoverX'] ) || isset( $item['hoverY'] ) || isset( $item['hoverRotate'] );
 			if ( $animates ) {
 				$clean[] = $item;
 			}

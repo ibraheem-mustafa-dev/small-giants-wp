@@ -351,6 +351,68 @@
 			"default": "",
 			"description": "CSS gradient string painting the hover-state slider border with a masked ::before ring instead of a flat colour. Non-empty wins over borderColourHover on hover."
 		},
+		"changeTransition": {
+			"type": "string",
+			"enum": [ "slide", "fade-up" ],
+			"default": "slide",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses how the visible cards arrive when the slide changes: the track slides across (slide), or the track jumps and the new cards fade in while moving in from the side (fade-up).",
+					"trigger": "a slide change from an arrow, a dot, a key, a drag, or autoplay",
+					"parameters": {
+						"value": {
+							"unit": "slide | fade-up"
+						}
+					}
+				}
+			}
+		},
+		"changeDistance": {
+			"type": "number",
+			"default": 26,
+			"sgs": {
+				"meaning": {
+					"what": "Sets how far the new cards travel sideways while they fade in; a negative number comes in from the left.",
+					"trigger": "a slide change, when the change animation is fade-up",
+					"parameters": {
+						"value": {
+							"unit": "px"
+						}
+					}
+				}
+			}
+		},
+		"changeDuration": {
+			"type": "number",
+			"default": 520,
+			"sgs": {
+				"meaning": {
+					"what": "Sets how long the new cards take to fade in.",
+					"trigger": "a slide change, when the change animation is fade-up",
+					"parameters": {
+						"value": {
+							"unit": "ms"
+						}
+					}
+				}
+			}
+		},
+		"changeEasing": {
+			"type": "string",
+			"enum": [ "drafts", "ease", "ease-in-out", "quart-out", "standard", "linear" ],
+			"default": "drafts",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the easing curve of the new cards' fade in.",
+					"trigger": "a slide change, when the change animation is fade-up",
+					"parameters": {
+						"value": {
+							"unit": "drafts | ease | ease-in-out | quart-out | standard | linear"
+						}
+					}
+				}
+			}
+		},
 		"transitionDuration": {
 			"type": "string",
 			"default": "300",

@@ -13,7 +13,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl, AlignItemsTierControl } from '../../components';
+import { DesignTokenPicker, ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl, AlignItemsTierControl, SvgPartsControls } from '../../components';
 
 const CONTENT_GAP_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -1825,6 +1825,22 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				</PanelBody>
 
 				<BackgroundPanel attributes={ attributes } setAttributes={ setAttributes } name={ name } />
+
+				{ !! attributes.bgSvgContent && (
+					<PanelBody title={ __( 'Background SVG animation', 'sgs-blocks' ) } initialOpen={ false }>
+						<SvgPartsControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							names={ {
+								parts: 'bgSvgParts',
+								trigger: 'bgSvgPartsTrigger',
+							} }
+							label={ __( 'Background SVG parts', 'sgs-blocks' ) }
+							defaultTrigger="load"
+							hover={ false }
+						/>
+					</PanelBody>
+				) }
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
 					CSS string built by ShadowControl), resolved by sgs_shadow_value()
