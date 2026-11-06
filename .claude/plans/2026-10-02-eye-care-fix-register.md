@@ -318,6 +318,8 @@ Flows pass after the deploy.
 
 **Editor:** 16 targets 0 invalid in a full run (`E:/sgs-tmp/r10/editor-full.log`); archive-product's warnings appeared only in runs made while the walks loaded the site, with one SGS block fewer each time (an editor preview fetch failing under load), never in a quiet run.
 
+**Next deploy to eye-care-test (open):** eye-care-test runs `53d789aa5`; main now carries Indus's framework-wide touch change (`de16441ea`..`743df200c`): hover is no longer suppressed on touch screens (Customiser, SGS Interaction, "Hover effects on touch screens" defaults to "Show on tap"; "Desktop only" restores the old behaviour), `:focus-within` paints are now keyboard focus only, and magnet defaults are gentler. After the next deploy, tap through the header, shop cards, bag and size guide at 375 and compare with the draft; if tapped hovers stick where the draft shows none, set "Desktop only" on eye-care-test.
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
