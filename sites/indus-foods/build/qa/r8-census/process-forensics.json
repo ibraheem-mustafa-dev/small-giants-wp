@@ -1,0 +1,3955 @@
+{
+ "method": "Every row of council/merged.json (117) read against the pipeline code, delivery-map.json, fix-catalogue.md, divergences.json, the walker and GAP-CHECKLIST.md; the proof field says what was confirmed in code and what rests on the council row.",
+ "rows": [
+  {
+   "id": "HP1",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "e1",
+   "first_failure": "Motion delivery: the record is marked done in delivery-map.json (proved on planted drafts, built-tree evidence, 'some node') but the Indus content does not play it: the hero media part carries no sgsMotion and only the partners half of A-16 was written.",
+   "cite": "scripts/computed-route/lib/delivery-map.mjs::animationEvidence (own.nodes.some); lib/motion-behaviours.mjs::recogniseBehaviour (U13/U13b, 6f3d09beb, 4e36ceca4)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: A-16 has two targets and the done mark is satisfied by one node; A-21/22/23 are done; the hero media part carries no sgsMotion",
+   "note": null
+  },
+  {
+   "id": "HP2",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: no reference to an LCP rule anywhere under scripts/computed-route (grep lcp: 0); the stored values were right and the framework overrode them",
+   "note": null
+  },
+  {
+   "id": "HP10",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF14",
+   "proof": "code-confirmed: fix-catalogue C11 and C13 replaced the draft steps with process-steps and hand Custom CSS (connector, badges, hover); A-06 is marked done",
+   "note": null
+  },
+  {
+   "id": "HP12",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "a1",
+   "first_failure": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so.",
+   "cite": "scripts/computed-route/lib/read-animations.mjs::readAnimations (joins listed ids, never evaluates selection_rule); lib/fill-motion.mjs::motionWrites (unplaced records become runtime entrances, sampled per target); lib/fill-entrance.mjs probe",
+   "detection_miss": [
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF8",
+   "proof": "code-confirmed for the reader and the done marks (A-07/08/09 done in delivery-map; intake A-07 has a null tpl); which target dropped each element is inferred from the council row",
+   "note": null
+  },
+  {
+   "id": "HP13",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF14",
+   "proof": "code-confirmed: fix-catalogue C11 and C13 replaced the draft steps with process-steps and hand Custom CSS (connector, badges, hover); A-06 is marked done",
+   "note": null
+  },
+  {
+   "id": "HP14",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "a1",
+   "first_failure": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so.",
+   "cite": "scripts/computed-route/lib/read-animations.mjs::readAnimations (joins listed ids, never evaluates selection_rule); lib/fill-motion.mjs::motionWrites (unplaced records become runtime entrances, sampled per target); lib/fill-entrance.mjs probe",
+   "detection_miss": [
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF8",
+   "proof": "code-confirmed for the reader and the done marks (A-07/08/09 done in delivery-map; intake A-07 has a null tpl); which target dropped each element is inferred from the council row",
+   "note": null
+  },
+  {
+   "id": "OS1",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "e1",
+   "first_failure": "Motion delivery: the record is marked done in delivery-map.json (proved on planted drafts, built-tree evidence, 'some node') but the Indus content does not play it: the hero media part carries no sgsMotion and only the partners half of A-16 was written.",
+   "cite": "scripts/computed-route/lib/delivery-map.mjs::animationEvidence (own.nodes.some); lib/motion-behaviours.mjs::recogniseBehaviour (U13/U13b, 6f3d09beb, 4e36ceca4)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: A-16 has two targets and the done mark is satisfied by one node; A-21/22/23 are done; the hero media part carries no sgsMotion",
+   "note": null
+  },
+  {
+   "id": "AB1",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "a1",
+   "first_failure": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so.",
+   "cite": "scripts/computed-route/lib/read-animations.mjs::readAnimations (joins listed ids, never evaluates selection_rule); lib/fill-motion.mjs::motionWrites (unplaced records become runtime entrances, sampled per target); lib/fill-entrance.mjs probe",
+   "detection_miss": [
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF8",
+   "proof": "code-confirmed for the reader and the done marks (A-07/08/09 done in delivery-map; intake A-07 has a null tpl); which target dropped each element is inferred from the council row",
+   "note": null
+  },
+  {
+   "id": "BL1",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "a1",
+   "first_failure": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so.",
+   "cite": "scripts/computed-route/lib/read-animations.mjs::readAnimations (joins listed ids, never evaluates selection_rule); lib/fill-motion.mjs::motionWrites (unplaced records become runtime entrances, sampled per target); lib/fill-entrance.mjs probe",
+   "detection_miss": [
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF8",
+   "proof": "code-confirmed for the reader and the done marks (A-07/08/09 done in delivery-map; intake A-07 has a null tpl); which target dropped each element is inferred from the council row",
+   "note": null
+  },
+  {
+   "id": "BS1",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "e1",
+   "first_failure": "Motion delivery: the record is marked done in delivery-map.json (proved on planted drafts, built-tree evidence, 'some node') but the Indus content does not play it: the hero media part carries no sgsMotion and only the partners half of A-16 was written.",
+   "cite": "scripts/computed-route/lib/delivery-map.mjs::animationEvidence (own.nodes.some); lib/motion-behaviours.mjs::recogniseBehaviour (U13/U13b, 6f3d09beb, 4e36ceca4)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: A-16 has two targets and the done mark is satisfied by one node; A-21/22/23 are done; the hero media part carries no sgsMotion",
+   "note": null
+  },
+  {
+   "id": "ND2",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "code-confirmed: L-01..L-10 and A-24..A-30 are open U13c (plan 2026-10-21 deferred the logo to custom CSS as a registered one-off); ring scale has no setting",
+   "note": "plan deferral U13c was never finished"
+  },
+  {
+   "id": "REPEAT-CE-CM-CA-SE-BR",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "a1",
+   "first_failure": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so.",
+   "cite": "scripts/computed-route/lib/read-animations.mjs::readAnimations (joins listed ids, never evaluates selection_rule); lib/fill-motion.mjs::motionWrites (unplaced records become runtime entrances, sampled per target); lib/fill-entrance.mjs probe",
+   "detection_miss": [
+    {
+     "code": "D3",
+     "check": "parity walker, entrances"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF8",
+   "proof": "code-confirmed for the reader and the done marks (A-07/08/09 done in delivery-map; intake A-07 has a null tpl); which target dropped each element is inferred from the council row",
+   "note": null
+  },
+  {
+   "id": "TABLE-records",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "detection-tool",
+   "first_failure": "The detection tool itself failed: delivery-map.mjs crashes and its done marks are not read from the live page.",
+   "cite": "scripts/computed-route/lib/delivery-map.mjs::clientTrees, ::animationEvidence",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "council summary row: records to delivered, partial, missing",
+   "note": null
+  },
+  {
+   "id": "DELIVERY-MAP",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "detection-tool",
+   "first_failure": "The detection tool itself failed: delivery-map.mjs crashes and its done marks are not read from the live page.",
+   "cite": "scripts/computed-route/lib/delivery-map.mjs::clientTrees, ::animationEvidence",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: lib/delivery-map.mjs::clientTrees visits every .json under build/trees",
+   "note": null
+  },
+  {
+   "id": "H3",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "code-confirmed: L-01..L-10 and A-24..A-30 are open U13c (plan 2026-10-21 deferred the logo to custom CSS as a registered one-off); ring scale has no setting",
+   "note": "plan deferral U13c was never finished"
+  },
+  {
+   "id": "ND4",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "code-confirmed: L-01..L-10 and A-24..A-30 are open U13c (plan 2026-10-21 deferred the logo to custom CSS as a registered one-off); ring scale has no setting",
+   "note": "plan deferral U13c was never finished"
+  },
+  {
+   "id": "F6",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "code-confirmed: L-01..L-10 and A-24..A-30 are open U13c (plan 2026-10-21 deferred the logo to custom CSS as a registered one-off); ring scale has no setting",
+   "note": "plan deferral U13c was never finished"
+  },
+  {
+   "id": "H7",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f3",
+   "first_failure": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance).",
+   "cite": "includes/motion/class-sgs-motion-emitter.php::entrance; src/shared/effects/*",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "code-confirmed: L-01..L-10 and A-24..A-30 are open U13c (plan 2026-10-21 deferred the logo to custom CSS as a registered one-off); ring scale has no setting",
+   "note": "plan deferral U13c was never finished"
+  },
+  {
+   "id": "H8",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF13",
+   "proof": "code-confirmed: R5-04 set itemMagnetEnabled false, R5-17 and D-27 set 14/10px proximity; J-10 and J-11 are marked done",
+   "note": null
+  },
+  {
+   "id": "H9",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "H12A",
+   "class": "F-bug",
+   "second_class": "S",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "ND1A",
+   "class": "A",
+   "second_class": "F-missing",
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "ND1B",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "ND1C",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "ND8",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "ND10",
+   "class": "F-bug",
+   "second_class": "S",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "ND11A",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "a2",
+   "first_failure": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts.",
+   "cite": "lib/intake-inventory.mjs (one-state inventory); skeleton/drawer-site-menu.inventory.json; lib/fill-motion-account.mjs::silentRows (no home gives no row)",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed: the drawer inventory holds none of tpl 139/151/160/171/173; the records are open U14",
+   "note": null
+  },
+  {
+   "id": "ND11B",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "ND20",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "ND21",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "H1",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f7",
+   "first_failure": "Framework: the brand registry draws LinkedIn and Facebook from the lucide outline glyph with fill on, thicker than the draft's custom SVGs; the skeleton chose iconSource brand over the draft's own SVG.",
+   "cite": "includes/data/brand-registry.json; icon/style.css",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence",
+   "note": null
+  },
+  {
+   "id": "H2",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "ND3",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "F3",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "H4",
+   "class": "F-missing",
+   "second_class": "F-bug",
+   "first_failure_stage": "f1",
+   "first_failure": "Framework: four hover emitters treat touch differently (static :hover fires on tap, motion and PHP instance hovers are touch-guarded, unguarded :focus-within paints); the draft has no touch gate.",
+   "cite": "includes/helpers-hover-state.php::SGS_HOVER_NOT_TOUCH; assets/js/touch-input.js",
+   "detection_miss": [
+    {
+     "code": "D2",
+     "check": "parity walker, touch"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D13",
+     "check": "framework gates"
+    }
+   ],
+   "process_fix": "PF4",
+   "proof": "code-confirmed for the walker scope",
+   "note": null
+  },
+  {
+   "id": "H4b",
+   "class": "S",
+   "second_class": "F-bug",
+   "first_failure_stage": "f1",
+   "first_failure": "Framework: four hover emitters treat touch differently (static :hover fires on tap, motion and PHP instance hovers are touch-guarded, unguarded :focus-within paints); the draft has no touch gate.",
+   "cite": "includes/helpers-hover-state.php::SGS_HOVER_NOT_TOUCH; assets/js/touch-input.js",
+   "detection_miss": [
+    {
+     "code": "D2",
+     "check": "parity walker, touch"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D13",
+     "check": "framework gates"
+    }
+   ],
+   "process_fix": "PF4",
+   "proof": "code-confirmed for the walker scope",
+   "note": null
+  },
+  {
+   "id": "ND6",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f1",
+   "first_failure": "Framework: four hover emitters treat touch differently (static :hover fires on tap, motion and PHP instance hovers are touch-guarded, unguarded :focus-within paints); the draft has no touch gate.",
+   "cite": "includes/helpers-hover-state.php::SGS_HOVER_NOT_TOUCH; assets/js/touch-input.js",
+   "detection_miss": [
+    {
+     "code": "D2",
+     "check": "parity walker, touch"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D13",
+     "check": "framework gates"
+    }
+   ],
+   "process_fix": "PF4",
+   "proof": "code-confirmed for the walker scope",
+   "note": null
+  },
+  {
+   "id": "H5",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "ND5",
+   "class": "S",
+   "second_class": "F-bug",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "ND7",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "ND12",
+   "class": "S",
+   "second_class": "N",
+   "first_failure_stage": "a2",
+   "first_failure": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts.",
+   "cite": "lib/intake-inventory.mjs (one-state inventory); skeleton/drawer-site-menu.inventory.json; lib/fill-motion-account.mjs::silentRows (no home gives no row)",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed: the drawer inventory holds none of tpl 139/151/160/171/173; the records are open U14",
+   "note": null
+  },
+  {
+   "id": "ND13",
+   "class": "S",
+   "second_class": "C",
+   "first_failure_stage": "a2",
+   "first_failure": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts.",
+   "cite": "lib/intake-inventory.mjs (one-state inventory); skeleton/drawer-site-menu.inventory.json; lib/fill-motion-account.mjs::silentRows (no home gives no row)",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed: the drawer inventory holds none of tpl 139/151/160/171/173; the records are open U14",
+   "note": null
+  },
+  {
+   "id": "ND16",
+   "class": "H",
+   "second_class": "F-missing",
+   "first_failure_stage": "a2",
+   "first_failure": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts.",
+   "cite": "lib/intake-inventory.mjs (one-state inventory); skeleton/drawer-site-menu.inventory.json; lib/fill-motion-account.mjs::silentRows (no home gives no row)",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed: the drawer inventory holds none of tpl 139/151/160/171/173; the records are open U14",
+   "note": null
+  },
+  {
+   "id": "ND19",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "a2",
+   "first_failure": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts.",
+   "cite": "lib/intake-inventory.mjs (one-state inventory); skeleton/drawer-site-menu.inventory.json; lib/fill-motion-account.mjs::silentRows (no home gives no row)",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed: the drawer inventory holds none of tpl 139/151/160/171/173; the records are open U14",
+   "note": null
+  },
+  {
+   "id": "F4",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "F5",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF13",
+   "proof": "code-confirmed: R5-04 set itemMagnetEnabled false, R5-17 and D-27 set 14/10px proximity; J-10 and J-11 are marked done",
+   "note": null
+  },
+  {
+   "id": "F7",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "F8",
+   "class": "A",
+   "second_class": "S",
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "F9",
+   "class": "F-bug",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "HP7",
+   "class": "F-bug",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "SE1",
+   "class": "F-bug",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "HP8",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "HP9",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "OS3",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "SE3",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "BR1",
+   "class": "F-missing",
+   "second_class": "H",
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "HP3",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "HP4",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "HP5",
+   "class": "F-bug",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "HP6",
+   "class": "S",
+   "second_class": "F-bug",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "HP11",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF14",
+   "proof": "code-confirmed: fix-catalogue C11 and C13 replaced the draft steps with process-steps and hand Custom CSS (connector, badges, hover); A-06 is marked done",
+   "note": null
+  },
+  {
+   "id": "HP13",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "g",
+   "first_failure": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling.",
+   "cite": "fix-catalogue.md C11/C13 (process-steps with Custom CSS connector, badges and hover); R5-04 (itemMagnetEnabled false); R5-17 and D-27 (magnet 14/10px proximity)",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF14",
+   "proof": "code-confirmed: fix-catalogue C11 and C13 replaced the draft steps with process-steps and hand Custom CSS (connector, badges, hover); A-06 is marked done",
+   "note": null
+  },
+  {
+   "id": "AB5",
+   "class": "H",
+   "second_class": "F-missing",
+   "first_failure_stage": "b1",
+   "first_failure": "Classification: a card whose last text is a short call to action becomes a plain container with a real sgs/button ('A card that ends in a short call to action is a plain card: the action is the button that holds the link'), so the draft's one whole-card anchor and its inert CTA span are lost.",
+   "cite": "scripts/computed-route/lib/skeleton-rules.mjs::cardAction and the wholeCardLink rule",
+   "detection_miss": [
+    {
+     "code": "D9",
+     "check": "parity walker, link coverage"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF6c",
+   "proof": "code-confirmed: skeleton-rules.mjs cardAction/wholeCardLink",
+   "note": null
+  },
+  {
+   "id": "CA1",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "b1",
+   "first_failure": "Classification: a card whose last text is a short call to action becomes a plain container with a real sgs/button ('A card that ends in a short call to action is a plain card: the action is the button that holds the link'), so the draft's one whole-card anchor and its inert CTA span are lost.",
+   "cite": "scripts/computed-route/lib/skeleton-rules.mjs::cardAction and the wholeCardLink rule",
+   "detection_miss": [
+    {
+     "code": "D9",
+     "check": "parity walker, link coverage"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF6c",
+   "proof": "code-confirmed: skeleton-rules.mjs cardAction/wholeCardLink",
+   "note": null
+  },
+  {
+   "id": "BL4",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f2",
+   "first_failure": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet).",
+   "cite": "per the council row; plugins/sgs-blocks/src/blocks/<block>",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "records TR-052..054, 065..068, 091, 101 are open U14; framework gap per the council row",
+   "note": null
+  },
+  {
+   "id": "SE2",
+   "class": "H",
+   "second_class": "F-missing",
+   "first_failure_stage": "b1",
+   "first_failure": "Classification: a card whose last text is a short call to action becomes a plain container with a real sgs/button ('A card that ends in a short call to action is a plain card: the action is the button that holds the link'), so the draft's one whole-card anchor and its inert CTA span are lost.",
+   "cite": "scripts/computed-route/lib/skeleton-rules.mjs::cardAction and the wholeCardLink rule",
+   "detection_miss": [
+    {
+     "code": "D9",
+     "check": "parity walker, link coverage"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF6c",
+   "proof": "code-confirmed: skeleton-rules.mjs cardAction/wholeCardLink",
+   "note": null
+  },
+  {
+   "id": "BS2",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f1",
+   "first_failure": "Framework: four hover emitters treat touch differently (static :hover fires on tap, motion and PHP instance hovers are touch-guarded, unguarded :focus-within paints); the draft has no touch gate.",
+   "cite": "includes/helpers-hover-state.php::SGS_HOVER_NOT_TOUCH; assets/js/touch-input.js",
+   "detection_miss": [
+    {
+     "code": "D2",
+     "check": "parity walker, touch"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D13",
+     "check": "framework gates"
+    }
+   ],
+   "process_fix": "PF4",
+   "proof": "code-confirmed for the walker scope",
+   "note": null
+  },
+  {
+   "id": "CA2",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "CA3",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: collect.mjs deletes top; 16 sgsCustomCss sticky rules counted on the mirror over 12 pages",
+   "note": null
+  },
+  {
+   "id": "CA4",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: collect.mjs deletes top; 16 sgsCustomCss sticky rules counted on the mirror over 12 pages",
+   "note": null
+  },
+  {
+   "id": "CT2",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: collect.mjs deletes top; 16 sgsCustomCss sticky rules counted on the mirror over 12 pages",
+   "note": null
+  },
+  {
+   "id": "DE1",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: collect.mjs deletes top; 16 sgsCustomCss sticky rules counted on the mirror over 12 pages",
+   "note": null
+  },
+  {
+   "id": "TC2",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: collect.mjs deletes top; 16 sgsCustomCss sticky rules counted on the mirror over 12 pages",
+   "note": null
+  },
+  {
+   "id": "H6",
+   "class": "F-bug",
+   "second_class": "H",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "AB2",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "AB3",
+   "class": "F-bug",
+   "second_class": "S",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "AB4",
+   "class": "F-missing",
+   "second_class": "N",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "AB6",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "AB7",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "HP15",
+   "class": "N",
+   "second_class": "A",
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "BL2",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "BL3",
+   "class": "F-bug",
+   "second_class": null,
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "CE1",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: overflow is not in DEFAULT_PROPS; R3-02/S1 and R5-08 patched two instances by hand",
+   "note": null
+  },
+  {
+   "id": "CM1",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: overflow is not in DEFAULT_PROPS; R3-02/S1 and R5-08 patched two instances by hand",
+   "note": null
+  },
+  {
+   "id": "OS2",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: overflow is not in DEFAULT_PROPS; R3-02/S1 and R5-08 patched two instances by hand",
+   "note": null
+  },
+  {
+   "id": "CM2",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: overflow is not in DEFAULT_PROPS; R3-02/S1 and R5-08 patched two instances by hand",
+   "note": null
+  },
+  {
+   "id": "H10",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D4",
+     "check": "parity walker, read list"
+    },
+    {
+     "code": "D8",
+     "check": "fix catalogue (seen, patched per instance)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF5",
+   "proof": "code-confirmed: overflow is not in DEFAULT_PROPS; R3-02/S1 and R5-08 patched two instances by hand",
+   "note": null
+  },
+  {
+   "id": "H11",
+   "class": "N",
+   "second_class": "S",
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "ND14",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "b4",
+   "first_failure": "Classification and page map: the drawer reuses the mega posts 155 to 161 for its accordion content, so the draft's two different templates (desktop panel tpl 87, drawer tpl 160) become one post; a value set for one context lands in the other.",
+   "cite": "sites/indus-foods/build/page-map.json (sgs_drawer 203 with sgs_mega_menu 155..161); lib/intake-pagemap-mega-slots.mjs",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed for the shared posts (page-map); ND15 is also the radius-overflow cause (see CE1)",
+   "note": null
+  },
+  {
+   "id": "ND15",
+   "class": "H",
+   "second_class": "S",
+   "first_failure_stage": "b4",
+   "first_failure": "Classification and page map: the drawer reuses the mega posts 155 to 161 for its accordion content, so the draft's two different templates (desktop panel tpl 87, drawer tpl 160) become one post; a value set for one context lands in the other.",
+   "cite": "sites/indus-foods/build/page-map.json (sgs_drawer 203 with sgs_mega_menu 155..161); lib/intake-pagemap-mega-slots.mjs",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed for the shared posts (page-map); ND15 is also the radius-overflow cause (see CE1)",
+   "note": null
+  },
+  {
+   "id": "ND18",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "b4",
+   "first_failure": "Classification and page map: the drawer reuses the mega posts 155 to 161 for its accordion content, so the draft's two different templates (desktop panel tpl 87, drawer tpl 160) become one post; a value set for one context lands in the other.",
+   "cite": "sites/indus-foods/build/page-map.json (sgs_drawer 203 with sgs_mega_menu 155..161); lib/intake-pagemap-mega-slots.mjs",
+   "detection_miss": [
+    {
+     "code": "D12",
+     "check": "intake inventory, one state"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF7",
+   "proof": "code-confirmed for the shared posts (page-map); ND15 is also the radius-overflow cause (see CE1)",
+   "note": null
+  },
+  {
+   "id": "AP1A",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f5",
+   "first_failure": "Framework: form field focus halo, selected tile tick and text colour, floated label size are not settings. The fields are absorbed into sgs/form, so no walker pair reads them.",
+   "cite": "plugins/sgs-blocks/src/blocks/form/style.css; form-field-tiles",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "code-confirmed: fields absorbed into sgs/form (proposal reason \"drawn by sgs/form\")",
+   "note": null
+  },
+  {
+   "id": "AP1B",
+   "class": "S",
+   "second_class": "F-bug",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "AP2",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f5",
+   "first_failure": "Framework: form field focus halo, selected tile tick and text colour, floated label size are not settings. The fields are absorbed into sgs/form, so no walker pair reads them.",
+   "cite": "plugins/sgs-blocks/src/blocks/form/style.css; form-field-tiles",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "code-confirmed: fields absorbed into sgs/form (proposal reason \"drawn by sgs/form\")",
+   "note": null
+  },
+  {
+   "id": "AP3",
+   "class": "S",
+   "second_class": "H",
+   "first_failure_stage": "e2",
+   "first_failure": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers.",
+   "cite": "sites/indus-foods/build/qa/delivery-map.json (150 animation keys open U14); lib/fill-motion.mjs::motionWrites",
+   "detection_miss": [
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    },
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF1",
+   "proof": "code-confirmed: keys open (A-12, A-13, A-14, A-37, A-39, TR-023, TR-027, TR-028, TR-029; A-33 and A-35 open U9)",
+   "note": null
+  },
+  {
+   "id": "CT1",
+   "class": "S",
+   "second_class": "C",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "CN1",
+   "class": "S",
+   "second_class": "F-bug",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "CN2",
+   "class": "S",
+   "second_class": "F-missing",
+   "first_failure_stage": "d1",
+   "first_failure": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting.",
+   "cite": "scripts/computed-route/site-run.mjs::ALL_STAGES; scripts/computed-route/solve.mjs (ran on the header only)",
+   "detection_miss": [
+    {
+     "code": "D1",
+     "check": "site-run (stage list)"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D6",
+     "check": "delivery-map.mjs"
+    }
+   ],
+   "process_fix": "PF3",
+   "proof": "code-confirmed for ALL_STAGES; the individual missing write is the council finding",
+   "note": null
+  },
+  {
+   "id": "CN3",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f5",
+   "first_failure": "Framework: form field focus halo, selected tile tick and text colour, floated label size are not settings. The fields are absorbed into sgs/form, so no walker pair reads them.",
+   "cite": "plugins/sgs-blocks/src/blocks/form/style.css; form-field-tiles",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "code-confirmed: fields absorbed into sgs/form (proposal reason \"drawn by sgs/form\")",
+   "note": null
+  },
+  {
+   "id": "CN4",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f5",
+   "first_failure": "Framework: form field focus halo, selected tile tick and text colour, floated label size are not settings. The fields are absorbed into sgs/form, so no walker pair reads them.",
+   "cite": "plugins/sgs-blocks/src/blocks/form/style.css; form-field-tiles",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "code-confirmed: fields absorbed into sgs/form (proposal reason \"drawn by sgs/form\")",
+   "note": null
+  },
+  {
+   "id": "CN5",
+   "class": "C",
+   "second_class": "H",
+   "first_failure_stage": "b3",
+   "first_failure": "Classification: three state-bound buttons (sc-for over prefs, onClick, bg/fg/ring bound to the selection) are proposed as three sgs/button at 0.75, low false. A selection control has no rule, so the selected look was painted on Email as static markup and no selection exists.",
+   "cite": "scripts/computed-route/lib/skeleton-rules.mjs (pillButton rule, no state-bound-group rule); skeleton/form-enquiry.proposal.json Root>EnquiryForm@468#0/39#0..2",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF6b",
+   "proof": "code-confirmed: form-enquiry.proposal.json rows 39#0..2 are sgs/button at 0.75",
+   "note": null
+  },
+  {
+   "id": "R8-06",
+   "class": "N",
+   "second_class": null,
+   "first_failure_stage": "n",
+   "first_failure": "Not a failure: not reproduced, or the draft does the same (council measurement).",
+   "cite": "council merged.json",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "council measurement",
+   "note": null
+  },
+  {
+   "id": "R8-07",
+   "class": "F-bug",
+   "second_class": "F-missing",
+   "first_failure_stage": "f4",
+   "first_failure": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip).",
+   "cite": "per the council row; container/style.css, nav-menu-submenu-css.php, fx-marquee.css, timeline/style.scss",
+   "detection_miss": [
+    {
+     "code": "D13",
+     "check": "framework gates"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF10",
+   "proof": "council evidence with cited code; none is a pipeline fault",
+   "note": null
+  },
+  {
+   "id": "TC1A",
+   "class": "C",
+   "second_class": "F-bug",
+   "first_failure_stage": "b2",
+   "first_failure": "Classification: an element with block children is classed as a wrapper-shell container without reading its own bare text node. Proposal row Root/645#0 holds words 'Trade accounts' yet proposes sgs/container at confidence 0.75, low false, so it was never reviewed and the name was dropped; the intake decision on Root/650#0 was keyed to instance #0 of a repeat.",
+   "cite": "scripts/computed-route/lib/skeleton-classify.mjs::makeClassifier (the bk.length branch adds wrapper-shell with no own-words check)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF6a",
+   "proof": "code-confirmed: proposal row Root/645#0 words \"Trade accounts\", block sgs/container, low false",
+   "note": null
+  },
+  {
+   "id": "TC1B",
+   "class": "C",
+   "second_class": "F-bug",
+   "first_failure_stage": "b2",
+   "first_failure": "Classification: an element with block children is classed as a wrapper-shell container without reading its own bare text node. Proposal row Root/645#0 holds words 'Trade accounts' yet proposes sgs/container at confidence 0.75, low false, so it was never reviewed and the name was dropped; the intake decision on Root/650#0 was keyed to instance #0 of a repeat.",
+   "cite": "scripts/computed-route/lib/skeleton-classify.mjs::makeClassifier (the bk.length branch adds wrapper-shell with no own-words check)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF6a",
+   "proof": "code-confirmed: proposal row Root/645#0 words \"Trade accounts\", block sgs/container, low false",
+   "note": null
+  },
+  {
+   "id": "TC1C",
+   "class": "C",
+   "second_class": "F-bug",
+   "first_failure_stage": "b2",
+   "first_failure": "Classification: an element with block children is classed as a wrapper-shell container without reading its own bare text node. Proposal row Root/645#0 holds words 'Trade accounts' yet proposes sgs/container at confidence 0.75, low false, so it was never reviewed and the name was dropped; the intake decision on Root/650#0 was keyed to instance #0 of a repeat.",
+   "cite": "scripts/computed-route/lib/skeleton-classify.mjs::makeClassifier (the bk.length branch adds wrapper-shell with no own-words check)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF6a",
+   "proof": "code-confirmed: proposal row Root/645#0 words \"Trade accounts\", block sgs/container, low false",
+   "note": null
+  },
+  {
+   "id": "F1",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "F2",
+   "class": "F-missing",
+   "second_class": "S",
+   "first_failure_stage": "f6",
+   "first_failure": "Framework: business-info closed-state pulse selector and word order are fixed in code.",
+   "cite": "plugins/sgs-blocks/src/blocks/business-info/style.css; open-status-logic.js::buildLine",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence",
+   "note": null
+  },
+  {
+   "id": "R8-03",
+   "class": "F-missing",
+   "second_class": null,
+   "first_failure_stage": "f6",
+   "first_failure": "Framework: business-info closed-state pulse selector and word order are fixed in code.",
+   "cite": "plugins/sgs-blocks/src/blocks/business-info/style.css; open-status-logic.js::buildLine",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence",
+   "note": null
+  },
+  {
+   "id": "F-tz",
+   "class": "S",
+   "second_class": null,
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D10",
+     "check": "Fill never-silent check"
+    }
+   ],
+   "process_fix": "PF11",
+   "proof": "council evidence; no Fill report for pages survives (qa/fill holds only header), so the exact dropped row is not provable",
+   "note": null
+  },
+  {
+   "id": "MP",
+   "class": "A",
+   "second_class": null,
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "ND17",
+   "class": "A",
+   "second_class": null,
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "AB8",
+   "class": "A",
+   "second_class": null,
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "DE2",
+   "class": "A",
+   "second_class": "F-missing",
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "FQ1",
+   "class": "A",
+   "second_class": "F-missing",
+   "first_failure_stage": "i",
+   "first_failure": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask).",
+   "cite": "divergences.json D-32..D-38",
+   "detection_miss": [
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "none",
+   "proof": "D-32..D-38 and the Bean list",
+   "note": null
+  },
+  {
+   "id": "CN6",
+   "class": "A",
+   "second_class": "F-missing",
+   "first_failure_stage": "b3",
+   "first_failure": "Classification: three state-bound buttons (sc-for over prefs, onClick, bg/fg/ring bound to the selection) are proposed as three sgs/button at 0.75, low false. A selection control has no rule, so the selected look was painted on Email as static markup and no selection exists.",
+   "cite": "scripts/computed-route/lib/skeleton-rules.mjs (pillButton rule, no state-bound-group rule); skeleton/form-enquiry.proposal.json Root>EnquiryForm@468#0/39#0..2",
+   "detection_miss": [
+    {
+     "code": "D11",
+     "check": "pairing of inner parts"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    },
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    }
+   ],
+   "process_fix": "PF6b",
+   "proof": "code-confirmed: form-enquiry.proposal.json rows 39#0..2 are sgs/button at 0.75",
+   "note": null
+  },
+  {
+   "id": "TOKEN-AUDIT",
+   "class": "H",
+   "second_class": "F-missing",
+   "first_failure_stage": "d2",
+   "first_failure": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row.",
+   "cite": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS and collectPair (top deleted unless absolute/fixed); lib/fill-width-ladder.mjs rung 4 (writes the position at 1024 and nothing else)",
+   "detection_miss": [
+    {
+     "code": "D5",
+     "check": "walker row flood and gate chain"
+    },
+    {
+     "code": "D7",
+     "check": "vision audits of rounds 1 to 7"
+    }
+   ],
+   "process_fix": "PF12",
+   "proof": "council evidence: ::selection reader exists but is not carried; shadow roles FR-32-18 not built",
+   "note": null
+  }
+ ],
+ "stages": {
+  "e1": {
+   "rows": [
+    "HP1",
+    "OS1",
+    "BS1"
+   ],
+   "count": 3,
+   "text": "Motion delivery: the record is marked done in delivery-map.json (proved on planted drafts, built-tree evidence, 'some node') but the Indus content does not play it: the hero media part carries no sgsMotion and only the partners half of A-16 was written."
+  },
+  "f3": {
+   "rows": [
+    "HP2",
+    "ND2",
+    "H3",
+    "ND4",
+    "F6",
+    "H7"
+   ],
+   "count": 6,
+   "text": "Framework: the motion system has no capability for the draft behaviour (ring scale loop, per-part logo animation, scroll-away top row, LCP-rule override of a stored entrance, section default entrance)."
+  },
+  "g": {
+   "rows": [
+    "HP10",
+    "HP13",
+    "H8",
+    "F5",
+    "HP11",
+    "HP13"
+   ],
+   "count": 6,
+   "text": "Hand finishing in rounds 1 to 7: a draft behaviour was replaced by a hand build or a value turned off by ruling."
+  },
+  "a1": {
+   "rows": [
+    "HP12",
+    "HP14",
+    "AB1",
+    "BL1",
+    "REPEAT-CE-CM-CA-SE-BR"
+   ],
+   "count": 5,
+   "text": "Draft reading: reveal entrances are selector-defined, not element-defined. A-07 and A-09 select by rule ('every h2 and p after h2 in non-hero sections'; 'children of grid or flex-wrap divs with 2+ visible children, i % 8'); animations.json lists only the tpl ids traced at 1400px ('the set differs by breakpoint and route'); intake re-derives them with template_tpl_id null ('resolved at runtime'). Placement then rests on the per-target sampling probe, which sees only skeleton targets, so repeated items inside composed blocks (timeline entries, post-grid cards, careers rows) get nothing and no row says so."
+  },
+  "detection-tool": {
+   "rows": [
+    "TABLE-records",
+    "DELIVERY-MAP"
+   ],
+   "count": 2,
+   "text": "detection tool"
+  },
+  "e2": {
+   "rows": [
+    "H9",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND11B",
+    "ND20",
+    "AP3"
+   ],
+   "count": 7,
+   "text": "Motion or hover delivery: the draft record exists (TR-0xx, A-1x, A-3x) and the framework setting exists, the delivery-map key is still open as U14 ('needs confirmation, not code'), and no confirmation was ever run, so the value was never written or was written from another record's numbers."
+  },
+  "f4": {
+   "rows": [
+    "H12A",
+    "ND10",
+    "F9",
+    "HP7",
+    "SE1",
+    "HP5",
+    "H6",
+    "AB2",
+    "AB3",
+    "AB4",
+    "AB7",
+    "BL3",
+    "R8-07"
+   ],
+   "count": 13,
+   "text": "Framework bug: a feature interaction no isolated gate renders (glare span over content, entrance travel against an overflow wrap, drawer scrollbar width, mask over shadows, focus-within z-index, gradient pinned to the viewport, timeline gutter and clip)."
+  },
+  "i": {
+   "rows": [
+    "ND1A",
+    "F8",
+    "MP",
+    "ND17",
+    "AB8",
+    "DE2",
+    "FQ1"
+   ],
+   "count": 7,
+   "text": "Not a process failure: Bean asks for a change from the draft (D-32 to D-38 or a pending ask)."
+  },
+  "a2": {
+   "rows": [
+    "ND11A",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19"
+   ],
+   "count": 5,
+   "text": "Draft reading: the drawer's accordion bodies exist only while open, so intake inventories none of them (no element for tpl 139/151/160/171/173) and the drawer-specific records A-39 and TR-035 have no home; the drawer then renders the desktop mega posts."
+  },
+  "d2": {
+   "rows": [
+    "ND21",
+    "H5",
+    "CA3",
+    "CA4",
+    "CT2",
+    "DE1",
+    "TC2",
+    "BL2",
+    "CE1",
+    "CM1",
+    "OS2",
+    "CM2",
+    "H10",
+    "CT1",
+    "F1",
+    "F-tz",
+    "TOKEN-AUDIT"
+   ],
+   "count": 17,
+   "text": "Value fill: a rest-state value was never read, was read and dropped, or was written in the wrong shape. Sticky top and radius-clip overflow are not in the read list; the rest are single values (a token approximation, a default left, a runtime badge colour) with no row."
+  },
+  "f7": {
+   "rows": [
+    "H1"
+   ],
+   "count": 1,
+   "text": "Framework: the brand registry draws LinkedIn and Facebook from the lucide outline glyph with fill on, thicker than the draft's custom SVGs; the skeleton chose iconSource brand over the draft's own SVG."
+  },
+  "d1": {
+   "rows": [
+    "H2",
+    "ND3",
+    "F3",
+    "ND5",
+    "ND7",
+    "F7",
+    "HP6",
+    "AP1B",
+    "CN1",
+    "CN2"
+   ],
+   "count": 10,
+   "text": "Value fill: hover, focus and active values are Solve's, and the site run has no Solve stage for pages, footer, drawer or megas. Capability and draft value both existed; no tool wrote the setting."
+  },
+  "f1": {
+   "rows": [
+    "H4",
+    "H4b",
+    "ND6",
+    "BS2"
+   ],
+   "count": 4,
+   "text": "Framework: four hover emitters treat touch differently (static :hover fires on tap, motion and PHP instance hovers are touch-guarded, unguarded :focus-within paints); the draft has no touch gate."
+  },
+  "f2": {
+   "rows": [
+    "F4",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "BL4"
+   ],
+   "count": 7,
+   "text": "Framework: the hover model cannot express the draft (child following an unlinked card, link gap and underline stretch, per-part hover, whole-card link on a post-grid, hover shift away from a bullet)."
+  },
+  "n": {
+   "rows": [
+    "HP3",
+    "HP4",
+    "CA2",
+    "AB6",
+    "HP15",
+    "H11",
+    "R8-06"
+   ],
+   "count": 7,
+   "text": "Not a failure: not reproduced, or the draft does the same (council measurement)."
+  },
+  "b1": {
+   "rows": [
+    "AB5",
+    "CA1",
+    "SE2"
+   ],
+   "count": 3,
+   "text": "Classification: a card whose last text is a short call to action becomes a plain container with a real sgs/button ('A card that ends in a short call to action is a plain card: the action is the button that holds the link'), so the draft's one whole-card anchor and its inert CTA span are lost."
+  },
+  "b4": {
+   "rows": [
+    "ND14",
+    "ND15",
+    "ND18"
+   ],
+   "count": 3,
+   "text": "Classification and page map: the drawer reuses the mega posts 155 to 161 for its accordion content, so the draft's two different templates (desktop panel tpl 87, drawer tpl 160) become one post; a value set for one context lands in the other."
+  },
+  "f5": {
+   "rows": [
+    "AP1A",
+    "AP2",
+    "CN3",
+    "CN4"
+   ],
+   "count": 4,
+   "text": "Framework: form field focus halo, selected tile tick and text colour, floated label size are not settings. The fields are absorbed into sgs/form, so no walker pair reads them."
+  },
+  "b3": {
+   "rows": [
+    "CN5",
+    "CN6"
+   ],
+   "count": 2,
+   "text": "Classification: three state-bound buttons (sc-for over prefs, onClick, bg/fg/ring bound to the selection) are proposed as three sgs/button at 0.75, low false. A selection control has no rule, so the selected look was painted on Email as static markup and no selection exists."
+  },
+  "b2": {
+   "rows": [
+    "TC1A",
+    "TC1B",
+    "TC1C"
+   ],
+   "count": 3,
+   "text": "Classification: an element with block children is classed as a wrapper-shell container without reading its own bare text node. Proposal row Root/645#0 holds words 'Trade accounts' yet proposes sgs/container at confidence 0.75, low false, so it was never reviewed and the name was dropped; the intake decision on Root/650#0 was keyed to instance #0 of a repeat."
+  },
+  "f6": {
+   "rows": [
+    "F2",
+    "R8-03"
+   ],
+   "count": 2,
+   "text": "Framework: business-info closed-state pulse selector and word order are fixed in code."
+  }
+ },
+ "detection_misses": {
+  "D1": {
+   "check": "site-run (stage list)",
+   "why_blind": "scripts/computed-route/site-run.mjs::ALL_STAGES is inventory, propose, fill, build, walk: no Solve. Fill states 'hover, focus and active colour states are Solve's' (fill-report.md), and Solve ran only on the header slice (commits 53dc54360, 27dba4540, 37df639b0). Pages, footer, drawer and megas got Fill plus hand rounds, so no tool ever wrote a hover or focus value there.",
+   "rows": [
+    "H9",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND11B",
+    "ND20",
+    "H2",
+    "ND3",
+    "F3",
+    "ND5",
+    "ND7",
+    "F4",
+    "F7",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "HP6",
+    "BL4",
+    "AP1B",
+    "AP3",
+    "CN1",
+    "CN2"
+   ],
+   "count": 24
+  },
+  "D10": {
+   "check": "Fill never-silent check",
+   "why_blind": "lib/fill-motion-account.mjs::accountedIds accounts per record id, so a record with several targets (A-16 has 2, A-12 3, A-14 2, A-39 5, A-09 42) is accounted once any layer is written; silentRows returns [] when homeOf(record) is null, so a record whose draft element is not a skeleton target is dropped with no UNMAPPED row.",
+   "rows": [
+    "HP1",
+    "OS1",
+    "BS1",
+    "H9",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND11A",
+    "ND11B",
+    "ND20",
+    "ND21",
+    "H5",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19",
+    "BL2",
+    "AP3",
+    "CT1",
+    "F1",
+    "F-tz"
+   ],
+   "count": 21
+  },
+  "D11": {
+   "check": "pairing of inner parts",
+   "why_blind": "Fields absorbed into sgs/form (proposal rows say 'drawn by sgs/form: rule formLink') and inner parts of composed blocks (burger bars, caret ring, logo SVG parts, number badges) have no pair of their own; lib/ref-trace.mjs::dropUnmatched (GAP-CHECKLIST 21) drops rows on unmatched blocks, and an inner part is read only through its pair's paintElement.",
+   "rows": [
+    "HP10",
+    "HP13",
+    "ND2",
+    "H3",
+    "ND4",
+    "F6",
+    "H7",
+    "HP11",
+    "HP13",
+    "AP1A",
+    "AP2",
+    "CN3",
+    "CN4",
+    "CN5",
+    "CN6"
+   ],
+   "count": 15
+  },
+  "D12": {
+   "check": "intake inventory, one state",
+   "why_blind": "The drawer inventory (skeleton/drawer-site-menu.inventory.json) holds no element for the accordion bodies tpl 139, 151, 160, 171, 173 (A-39 and TR-035 targets) or the rows tpl 124: they exist only while an accordion is open, and the page map renders the four mega posts (155 to 161) inside the drawer, so one post carries both the desktop panel and the drawer content.",
+   "rows": [
+    "ND11A",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19",
+    "ND14",
+    "ND15",
+    "ND18"
+   ],
+   "count": 8
+  },
+  "D13": {
+   "check": "framework gates",
+   "why_blind": "Block gates assert one feature on a fixture (a glare layer renders, a focus lift exists, a scrollbar is styled). Nothing renders two features together and looks (glare span over card text, focus-within z-index over a fixed button, entrance travel against an overflow-y:auto wrap, a mask clipping a shadow).",
+   "rows": [
+    "H12A",
+    "ND10",
+    "H4",
+    "H4b",
+    "ND6",
+    "F9",
+    "HP7",
+    "SE1",
+    "HP5",
+    "BS2",
+    "H6",
+    "AB2",
+    "AB3",
+    "AB4",
+    "AB7",
+    "BL3",
+    "R8-07"
+   ],
+   "count": 17
+  },
+  "D2": {
+   "check": "parity walker, touch",
+   "why_blind": "scripts/parity/lib/state-passes.mjs::hoverPass skips phones ('A phone has no hover (Bean 2026-09-28)'); draft-live-walk.mjs::walkSide only uses the iPhone 13 context below 500px, so 768 is a mouse context and no width ever taps a hover-styled element and reads the result.",
+   "rows": [
+    "H4",
+    "H4b",
+    "ND6",
+    "BS2"
+   ],
+   "count": 4
+  },
+  "D3": {
+   "check": "parity walker, entrances",
+   "why_blind": "Solve walks with --lean (solve.mjs::WALK_FLAGS) which drops load entrances and motion timelines; the full walk samples only blocks in the first screen (GAP-CHECKLIST 15); the Indus draft entrances are 'proved on the copy alone, not compared' (section 11 Exceptions); and Fill-generated configs carry no scrollIn pair flag (0 in sites/indus-foods/build/qa/parity/home.fill-base.mjs; no writer in lib/pairs.mjs), so a below-the-fold scroll entrance is never read against the draft.",
+   "rows": [
+    "HP1",
+    "HP2",
+    "HP12",
+    "HP14",
+    "OS1",
+    "AB1",
+    "BL1",
+    "BS1",
+    "REPEAT-CE-CM-CA-SE-BR"
+   ],
+   "count": 9
+  },
+  "D4": {
+   "check": "parity walker, read list",
+   "why_blind": "scripts/parity/lib/collect.mjs::DEFAULT_PROPS has no overflow, and collectPair deletes top and left unless position is absolute or fixed ('in flow, the flow-position rows cover where it sits'), so a clip by radius and a sticky offset can never raise a row; only fill-declared.mjs::unreadDeclared can see a declared one.",
+   "rows": [
+    "H1",
+    "CA3",
+    "CA4",
+    "CT2",
+    "DE1",
+    "TC2",
+    "CE1",
+    "CM1",
+    "OS2",
+    "CM2",
+    "H10"
+   ],
+   "count": 11
+  },
+  "D5": {
+   "check": "walker row flood and gate chain",
+   "why_blind": "The last Indus site run (qa/site-run/2026-10-28T06-08-38/status.json) left 11,993 open walker rows on home, 2,668 on about and 1,000 to 3,400 on most pages, with 54 to 439 UNMAPPED Fill rows per surface; qa/gaps.json does not exist, so gate-chain.mjs and framework-backlog.mjs never ran for Indus and nothing ranked or burned the rows down. A real difference was one row in about 2,000.",
+   "rows": [
+    "HP10",
+    "HP12",
+    "HP13",
+    "HP14",
+    "AB1",
+    "BL1",
+    "ND2",
+    "REPEAT-CE-CM-CA-SE-BR",
+    "H3",
+    "ND4",
+    "F6",
+    "H7",
+    "H12A",
+    "ND10",
+    "ND21",
+    "H1",
+    "H2",
+    "ND3",
+    "F3",
+    "H5",
+    "ND5",
+    "ND7",
+    "F4",
+    "F7",
+    "F9",
+    "HP7",
+    "SE1",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "HP5",
+    "HP6",
+    "HP11",
+    "HP13",
+    "AB5",
+    "CA1",
+    "BL4",
+    "SE2",
+    "CA3",
+    "CA4",
+    "CT2",
+    "DE1",
+    "TC2",
+    "H6",
+    "AB2",
+    "AB3",
+    "AB4",
+    "AB7",
+    "BL2",
+    "BL3",
+    "ND14",
+    "ND15",
+    "ND18",
+    "AP1A",
+    "AP1B",
+    "AP2",
+    "CT1",
+    "CN1",
+    "CN2",
+    "CN3",
+    "CN4",
+    "CN5",
+    "R8-07",
+    "TC1A",
+    "TC1B",
+    "TC1C",
+    "F1",
+    "F2",
+    "R8-03",
+    "F-tz",
+    "CN6",
+    "TOKEN-AUDIT"
+   ],
+   "count": 74
+  },
+  "D6": {
+   "check": "delivery-map.mjs",
+   "why_blind": "lib/delivery-map.mjs::clientTrees reads every *.json under build/trees and throws on the four *.shell.json objects; animationEvidence marks a key done when ANY ONE bound node carries the layer (own.nodes.some), reads the built tree not the live page, and the map is keyed to the handoff id space while Fill reads intake's re-derived ids (handoff A-16 is intake A-27 plus A-28; intake A-07 is setupReveal marked dead-code). 25 animation keys are done (A-07, A-08, A-09, A-16, A-21, A-22 among them) and 150 are still open as U14 ('most U14 keys need confirmation, not code'), including all 125 TR hover records and every drawer record; the confirmation never happened.",
+   "rows": [
+    "HP1",
+    "HP2",
+    "HP10",
+    "HP12",
+    "HP13",
+    "HP14",
+    "OS1",
+    "AB1",
+    "BL1",
+    "BS1",
+    "ND2",
+    "REPEAT-CE-CM-CA-SE-BR",
+    "TABLE-records",
+    "DELIVERY-MAP",
+    "H3",
+    "ND4",
+    "F6",
+    "H7",
+    "H8",
+    "H9",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND11A",
+    "ND11B",
+    "ND20",
+    "H2",
+    "ND3",
+    "F3",
+    "ND5",
+    "ND7",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19",
+    "F4",
+    "F5",
+    "F7",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "HP6",
+    "HP11",
+    "HP13",
+    "BL4",
+    "AP1B",
+    "AP3",
+    "CN1",
+    "CN2"
+   ],
+   "count": 51
+  },
+  "D7": {
+   "check": "vision audits of rounds 1 to 7",
+   "why_blind": "Rounds 1 to 7 reviewed stills (cropped draft/live pair PNGs at 375/768/1440, e.g. E:/sgs-tmp/r2-pairs, r3-pairs, r5-pairs): fix-catalogue.md has about 5 motion or hover rows in 7 rounds (R3-16, R5-04, R5-17, G1, G2). A still shows neither a float, an entrance, a hover, a tap nor a scrollbar that exists for 700ms.",
+   "rows": [
+    "HP1",
+    "HP2",
+    "HP10",
+    "HP12",
+    "HP13",
+    "HP14",
+    "OS1",
+    "AB1",
+    "BL1",
+    "BS1",
+    "ND2",
+    "REPEAT-CE-CM-CA-SE-BR",
+    "H3",
+    "ND4",
+    "F6",
+    "H7",
+    "H8",
+    "H9",
+    "H12A",
+    "ND1A",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND10",
+    "ND11A",
+    "ND11B",
+    "ND20",
+    "ND21",
+    "H1",
+    "H2",
+    "ND3",
+    "F3",
+    "H4",
+    "H4b",
+    "ND6",
+    "H5",
+    "ND5",
+    "ND7",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19",
+    "F4",
+    "F5",
+    "F7",
+    "F8",
+    "F9",
+    "HP7",
+    "SE1",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "HP3",
+    "HP4",
+    "HP5",
+    "HP6",
+    "HP11",
+    "HP13",
+    "AB5",
+    "CA1",
+    "BL4",
+    "SE2",
+    "BS2",
+    "CA2",
+    "CA3",
+    "CA4",
+    "CT2",
+    "DE1",
+    "TC2",
+    "H6",
+    "AB2",
+    "AB3",
+    "AB4",
+    "AB6",
+    "AB7",
+    "HP15",
+    "BL2",
+    "BL3",
+    "CE1",
+    "CM1",
+    "OS2",
+    "CM2",
+    "H10",
+    "H11",
+    "ND14",
+    "ND15",
+    "ND18",
+    "AP1A",
+    "AP1B",
+    "AP2",
+    "AP3",
+    "CT1",
+    "CN1",
+    "CN2",
+    "CN3",
+    "CN4",
+    "CN5",
+    "R8-06",
+    "R8-07",
+    "TC1A",
+    "TC1B",
+    "TC1C",
+    "F1",
+    "F2",
+    "R8-03",
+    "F-tz",
+    "MP",
+    "ND17",
+    "AB8",
+    "DE2",
+    "FQ1",
+    "CN6",
+    "TOKEN-AUDIT"
+   ],
+   "count": 115
+  },
+  "D8": {
+   "check": "fix catalogue (seen, patched per instance)",
+   "why_blind": "The cause was seen and fixed on one instance, then never generalised: radius-without-overflow was R3-02/S1 (food-service, brands, sanam, delivery photos, hand overflow hidden) and R5-08 (careers ring), yet CE1, CM1, OS2, CM2, H10 and ND15 are the same cause on other pages; R3-16 fixed one footer list's hover colour; R5-04 and R5-17 turned the draft magnet values off or down by ruling.",
+   "rows": [
+    "H8",
+    "F5",
+    "CE1",
+    "CM1",
+    "OS2",
+    "CM2",
+    "H10"
+   ],
+   "count": 7
+  },
+  "D9": {
+   "check": "parity walker, link coverage",
+   "why_blind": "GAP-CHECKLIST 24 requires only that the same words sit inside a link on both sides; a card whose words sit in a real button on live and in one whole-card anchor on the draft passes.",
+   "rows": [
+    "AB5",
+    "CA1",
+    "SE2"
+   ],
+   "count": 3
+  }
+ },
+ "process_fixes_ranked": [
+  {
+   "id": "PF11",
+   "name": "Run gate-chain and framework-backlog before the first review; rank walker open rows",
+   "change": "site-run ends with gate-chain.mjs --client, writes qa/gaps.json and the ranked top 50 rows.",
+   "effort": "S",
+   "risk": "low",
+   "verdict": "tool-now",
+   "why": "Existing tools never ran for Indus; this turns UNMAPPED and F-class rows into a framework worklist before Bean looks.",
+   "rows": [
+    "ND2",
+    "H3",
+    "ND4",
+    "F6",
+    "H7",
+    "ND21",
+    "H1",
+    "H5",
+    "F4",
+    "HP8",
+    "HP9",
+    "OS3",
+    "SE3",
+    "BR1",
+    "BL4",
+    "BL2",
+    "CT1",
+    "F1",
+    "F2",
+    "R8-03",
+    "F-tz"
+   ],
+   "rows_prevented": 21
+  },
+  {
+   "id": "PF10",
+   "name": "Composed-interaction gate for framework changes",
+   "change": "A pointer fixture page per block (hover, focus, open) with element screenshots and a computed check on the combined result.",
+   "effort": "L",
+   "risk": "low",
+   "verdict": "polish-review",
+   "why": "Framework-side; the review agent hovers and focuses each block's controls in a real clone.",
+   "rows": [
+    "H12A",
+    "ND10",
+    "F9",
+    "HP7",
+    "SE1",
+    "HP5",
+    "H6",
+    "AB2",
+    "AB3",
+    "AB4",
+    "AB7",
+    "BL3",
+    "AP1A",
+    "AP2",
+    "CN3",
+    "CN4",
+    "R8-07"
+   ],
+   "rows_prevented": 17
+  },
+  {
+   "id": "PF1",
+   "name": "Live delivery check per record x target x state (replaces the delivery-map done marks)",
+   "change": "lib/delivery-map.mjs: skip *.shell.json; every bound node must carry the layer (every, not some); evidence read from the live mirror (getAnimations, computed from-opacity after the entrance, hover end state under a real pointer) per record per target; keyed to Fill's id space; flip all 150 open U14 keys through it. It also reads back every written entrance so a framework override (HP2 LCP rule) shows.",
+   "effort": "M",
+   "risk": "low: read-only; only the done marks change meaning",
+   "verdict": "tool-now",
+   "why": "Most rows prevented; read-only; it is also the worklist an automatic applier needs (record, target, setting).",
+   "rows": [
+    "HP1",
+    "HP2",
+    "OS1",
+    "BS1",
+    "TABLE-records",
+    "DELIVERY-MAP",
+    "H9",
+    "ND1B",
+    "ND1C",
+    "ND8",
+    "ND11B",
+    "ND20",
+    "AP3"
+   ],
+   "rows_prevented": 13
+  },
+  {
+   "id": "PF3",
+   "name": "Solve (state values) for chrome and pages in the site run",
+   "change": "Add solve to site-run.mjs::ALL_STAGES, or a states-only pass writing hover, focus and active settings from forced-pseudo reads.",
+   "effort": "L (each page walk was 380s at the last run; up to three Solve rounds per surface)",
+   "risk": "medium: Solve wrote 2 wrong values on the header before 37df639b0; long runs",
+   "verdict": "polish-review",
+   "why": "Large and risky across 40 surfaces. Tool-now only for the chrome (header, footer, drawer, 4 megas), where Solve already runs on the header. Pages: the review agent forces hover and focus on every interactive element of each page and files the differing rows.",
+   "rows": [
+    "H2",
+    "ND3",
+    "F3",
+    "ND5",
+    "ND7",
+    "F7",
+    "HP6",
+    "AP1B",
+    "CN1",
+    "CN2"
+   ],
+   "rows_prevented": 10
+  },
+  {
+   "id": "PF5",
+   "name": "Read overflow and sticky top; write overflow hidden where a radius container has a child at its edge; keep the draft top beside a sticky position",
+   "change": "collect.mjs::DEFAULT_PROPS gains overflow, collectPair keeps top for sticky; Fill writes the container pin settings (pinEdge, pinBelowHeader, pinGap) from sticky plus top; framework default for radius containers is Bean's decision.",
+   "effort": "S to M",
+   "risk": "low: two reads and one rule",
+   "verdict": "tool-now",
+   "why": "11 rows, 20+ instances on Indus plus 16 sticky rules; deterministic from the draft computed styles.",
+   "rows": [
+    "CA3",
+    "CA4",
+    "CT2",
+    "DE1",
+    "TC2",
+    "CE1",
+    "CM1",
+    "OS2",
+    "CM2",
+    "H10"
+   ],
+   "rows_prevented": 10
+  },
+  {
+   "id": "PF7",
+   "name": "Inventory the drawer per opened state; per-context hover for shared posts",
+   "change": "Intake inventory opens each accordion; the page map gives the drawer its own post or a per-context hover value.",
+   "effort": "L",
+   "risk": "medium",
+   "verdict": "polish-review",
+   "why": "Drawer-specific and large; the review agent opens every drawer accordion and hovers each row against the draft drawer at 375 and 768.",
+   "rows": [
+    "ND11A",
+    "ND12",
+    "ND13",
+    "ND16",
+    "ND19",
+    "ND14",
+    "ND15",
+    "ND18"
+   ],
+   "rows_prevented": 8
+  },
+  {
+   "id": "PF8",
+   "name": "Apply selection_rule records as section defaults",
+   "change": "Evaluate the A-07 and A-09 rules on the served draft per route and breakpoint, write each matched element (or one section-level reveal default) with the record's numbers; a non-lean walk compares scroll entrances by section type.",
+   "effort": "M",
+   "risk": "medium: over-applying entrances",
+   "verdict": "tool-now",
+   "why": "Entrances are the largest family on Bean's list; the rule is mechanical and its numbers come from animations.json.",
+   "rows": [
+    "HP12",
+    "HP14",
+    "AB1",
+    "BL1",
+    "REPEAT-CE-CM-CA-SE-BR"
+   ],
+   "rows_prevented": 5
+  },
+  {
+   "id": "PF4",
+   "name": "Touch contexts in the walker (768 and 1024 touch, real taps)",
+   "change": "draft-live-walk.mjs: hasTouch context at 768/1024, a tap pass reading the tapped element and its group against the draft.",
+   "effort": "M",
+   "risk": "low: additive pass",
+   "verdict": "polish-review",
+   "why": "The framework fix (Bean ruling T1: a tap shows the hover look) already protects future clones; the reviewer taps ten controls at 768 and 375 on a touch context and compares with the draft.",
+   "rows": [
+    "H4",
+    "H4b",
+    "ND6",
+    "BS2"
+   ],
+   "rows_prevented": 4
+  },
+  {
+   "id": "PF14",
+   "name": "Detector for hand patches: Custom CSS carrying :hover, ::before or position:sticky is listed as a framework gap",
+   "change": "Scan sgsCustomCss in the built trees; each hit is a worklist row.",
+   "effort": "S",
+   "risk": "low",
+   "verdict": "tool-now",
+   "why": "Measured on the mirror: 16 sticky rules, about 15 pseudo-element rules and 4 hover rules in Custom CSS; each is a patch standing in for a capability.",
+   "rows": [
+    "HP10",
+    "HP13",
+    "HP11",
+    "HP13"
+   ],
+   "rows_prevented": 4
+  },
+  {
+   "id": "PF6a",
+   "name": "Skeleton: an element with block children and its own text node is mixed content",
+   "change": "skeleton-classify.mjs::makeClassifier bk.length branch: own words present means flag low or wrap the text in sgs/text.",
+   "effort": "S",
+   "risk": "low",
+   "verdict": "tool-now",
+   "why": "3 rows, small, deterministic.",
+   "rows": [
+    "TC1A",
+    "TC1B",
+    "TC1C"
+   ],
+   "rows_prevented": 3
+  },
+  {
+   "id": "PF6c",
+   "name": "Skeleton: a whole-card link keeps the link on the card and the CTA inert",
+   "change": "skeleton-rules.mjs::cardAction rule plus a framework inert CTA variant.",
+   "effort": "M",
+   "risk": "medium: card links vs buttons everywhere",
+   "verdict": "polish-review",
+   "why": "Needs a framework variant and judgement per card; the review agent clicks the card body and the CTA on each card.",
+   "rows": [
+    "AB5",
+    "CA1",
+    "SE2"
+   ],
+   "rows_prevented": 3
+  },
+  {
+   "id": "PF6b",
+   "name": "Skeleton: a button group whose look is bound to a selection is a choice control",
+   "change": "skeleton-rules.mjs: sc-for buttons with state-bound background and onClick become form-field-tiles.",
+   "effort": "M",
+   "risk": "medium: false positives on tab bars and filters",
+   "verdict": "polish-review",
+   "why": "Hard for tooling to recognise a selection control reliably; the review agent checks every button row that keeps one look after a click.",
+   "rows": [
+    "CN5",
+    "CN6"
+   ],
+   "rows_prevented": 2
+  },
+  {
+   "id": "PF13",
+   "name": "A hand override of a draft value is recorded as a divergence with its reason",
+   "change": "R5-04 and R5-17 style overrides written to divergences.json and surfaced by the review agent.",
+   "effort": "S",
+   "risk": "low",
+   "verdict": "later",
+   "why": "2 rows and Bean has already reversed them.",
+   "rows": [
+    "H8",
+    "F5"
+   ],
+   "rows_prevented": 2
+  },
+  {
+   "id": "PF12",
+   "name": "Carry ::selection and shadow roles from the handoff",
+   "change": "Extractor carries ::selection; FR-32-18 shadow roles.",
+   "effort": "S",
+   "risk": "low",
+   "verdict": "tool-now",
+   "why": "Low effort, low risk, one or two rows.",
+   "rows": [
+    "TOKEN-AUDIT"
+   ],
+   "rows_prevented": 1
+  },
+  {
+   "id": "PF2",
+   "name": "Fill never-silent per (record, target); an off-surface record emits an UNMAPPED row",
+   "change": "lib/fill-motion-account.mjs::accountedIds keyed by record+target; silentRows emits a row when homeOf is null.",
+   "effort": "S",
+   "risk": "low: adds rows, writes nothing",
+   "verdict": "tool-now",
+   "why": "Under one hour, no risk; makes the drawer and multi-target gaps visible. Its rows are counted under PF1 and PF7.",
+   "rows": [],
+   "rows_prevented": 0
+  }
+ ],
+ "measurements": {
+  "site_run_2026-10-28_open_rows": "sites/indus-foods/build/qa/site-run/2026-10-28T06-08-38/status.json (home 11993, about 2668, careers 3362, food-service 2966)",
+  "delivery_map_keys": "466 keys: 150 animation keys open U14, 17 open U13c, 12 open U9, 5 open U13a, 1 open U13, 25 done; handoff animations.json has 217 records, 7 not keyed (dead-code)",
+  "solve_in_site_run": "scripts/computed-route/site-run.mjs line 44: ALL_STAGES = inventory, propose, fill, build, walk",
+  "custom_css_patches_on_mirror": "wsl wp post get <id> --field=post_content over the 40 page-map ids: sgsCustomCss with position:sticky 16 (12 pages), with ::before/::after about 15 (posts 90, 92, 95, 205), with :hover 4 (posts 90, 163)",
+  "gaps_json": "sites/indus-foods/build/qa has no gaps.json and no solve journal"
+ },
+ "unmeasured": [
+  "Page fill reports (UNMAPPED lists) for the 2026-10-28 run were not kept (qa/fill holds only the header), so the exact dropped Fill row for the single-value rows (H5, ND21, F1, F-tz, BL2, CT1) and for the individual a1 rows is inferred from the council row, not proved.",
+  "Page build trees are not in the worktree (build/trees holds only template and header), so per-element sgsMotion presence rests on the council rows and the mirror post counts.",
+  "Whether fill-declared.mjs::unreadDeclared surfaced the sticky top for the 12 pages, and which stage dropped it afterwards, was not provable without the fill reports."
+ ]
+}

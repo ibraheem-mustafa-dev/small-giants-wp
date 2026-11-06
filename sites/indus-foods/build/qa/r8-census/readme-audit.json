@@ -1,0 +1,1210 @@
+{
+ "readme_audit": {
+  "points": 117,
+  "by_status": {
+   "accepted": 5,
+   "match": 57,
+   "differs": 27,
+   "unmeasured": 21,
+   "missing": 4,
+   "not-applicable": 3
+  },
+  "by_fix_class": {
+   "none": 76,
+   "applier": 26,
+   "framework": 7,
+   "content": 5,
+   "bean-decision": 2,
+   "site-option": 1
+  },
+  "points_list": [
+   {
+    "readme_line": 15,
+    "claim": "Mobile <768, tablet 768-1023, desktop >=1024",
+    "live_measured": "layout and nav switch at 768 and 1024 (hamburger absent at 1024, present at 768); draft thresholds 784/1008/1040 snapped to 768/1024 (D-1,D-2,D-3,D-17,D-20,D-22,D-23)",
+    "status": "accepted",
+    "mechanism_should": "block responsive breakpoints (fixed 768/1024 tiers)",
+    "mechanism_exists": "yes: fixed tiers; skeleton width ladder",
+    "tooling_carried": "yes: fill-width-ladder.mjs snaps and logs divergences",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 17,
+    "claim": "Header CTA pill appears at >=1260",
+    "live_measured": "1200: absent; 1260 and 1440: present (254.8 x 54.3)",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu / button visibility breakpoint (css-media record)",
+    "mechanism_exists": "yes (live matches)",
+    "tooling_carried": "partial: css-media records exist (3) but the 1260 cut-off is from CSS the build set by hand",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 17,
+    "claim": "Nav item padding 10px below 1200, 15px above",
+    "live_measured": "1024-1199: Home 10px, About/Sectors/Brands/Trade/Contact 15px (draft 1100: all 10px); >=1200: all 15px",
+    "status": "differs",
+    "mechanism_should": "nav-bar-menu itemPadding responsive override at 1200 (css-media record)",
+    "mechanism_exists": "partial: item padding exists; the sub-1200 override is only on the first item",
+    "tooling_carried": "partial: css-media records name the 1200 query; no reader maps it to the nav setting",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 19,
+    "claim": "Page gutter 20/32/40px",
+    "live_measured": "hero and sections: 20px at 375, 32px at 768, 40px at 1100 (160px at 1440 is centred max-width)",
+    "status": "match",
+    "mechanism_should": "snapshot custom.gutter (tokens/spacing.css --gutter-*)",
+    "mechanism_exists": "yes: custom.gutter mobile/tablet/desktop",
+    "tooling_carried": "yes: tokens.mjs::readTokens feeds the snapshot",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 19,
+    "claim": "Section padding 64/88/108px",
+    "live_measured": "home sections 64/88/108 at 375/768/1440 (hero 44/64/80 top, which equals the draft hero)",
+    "status": "match",
+    "mechanism_should": "snapshot custom.section.padding",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: readTokens",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 19,
+    "claim": "Tight section padding 40/52/64px",
+    "live_measured": "live 28/38/48 at 375/768/1440, identical to the draft (draft measured the same values); README numbers do not match the draft code",
+    "status": "match",
+    "mechanism_should": "snapshot custom.section (tight tier)",
+    "mechanism_exists": "yes (live equals draft)",
+    "tooling_carried": "partial: README prose is not parsed; values came from the draft measurement",
+    "fix_class": "none",
+    "draft_note": "README drift: tight = 28/38/48 in the draft, not 40/52/64"
+   },
+   {
+    "readme_line": 19,
+    "claim": "Header height 72/72/84px",
+    "live_measured": "main row 75/75/87 including the 3px gold border = 72/72/84 + 3",
+    "status": "match",
+    "mechanism_should": "site-header row height setting",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 19,
+    "claim": "Max content widths: header and top bar 1320px; sections 1040-1120px",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "container max-width settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "no: README prose not parsed",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Top bar 46px high, bg #0A7EA8",
+    "live_measured": "row height 46 at 375/768/1440 (colour probe returned the white pill, so bg itself not read)",
+    "status": "match",
+    "mechanism_should": "header row 1 container + palette brand-blue",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: surfaces.json header record + palette",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Top-bar pills: padding 6px 14px, 15px/700, radius 999, text #0A7EA8",
+    "live_measured": "phone pill: 6px 14px, 15px/700, 999px, bg white, text rgb(10,126,168)",
+    "status": "match",
+    "mechanism_should": "multi-button settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Pill hover: scale 1.05, lift 2px, bg #D8CA50, text #2C3E50",
+    "live_measured": "hover: bg rgb(216,202,80), text rgb(44,62,80), transform matrix(1.05,0,0,1.05,0,-2.1)",
+    "status": "match",
+    "mechanism_should": "snapshot custom.buttonPresets.primary hover-* tokens",
+    "mechanism_exists": "yes (buttonPresets hover-transform/-background/-text)",
+    "tooling_carried": "partial: TR records carry the values; preset written from the draft by the pipeline",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Top-bar order: Register (mobile only), phone (label \"Call\" on mobile), email hidden on mobile",
+    "live_measured": "375: Register + Call, email hidden (same as draft); 768/1440: phone, email (Register at 768 as draft)",
+    "status": "match",
+    "mechanism_should": "multi-button responsive visibility",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: surfaces.json",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Social icons 34px circles: LinkedIn #0A66C2, Facebook #1877F2, Google #EA4335, Instagram",
+    "live_measured": "34px; LinkedIn rgb(10,102,194), Facebook rgb(24,119,242) match; Google icon bg white (draft shape also reads white, README says #EA4335); Instagram rgb(228,64,95) live vs transparent shape in the draft",
+    "status": "differs",
+    "mechanism_should": "social-icons childIconBrand* settings; social colours are --social-* in tokens/colors.css",
+    "mechanism_exists": "yes (childIconBrand); not in snapshot palette (social colours are block-owned)",
+    "tooling_carried": "partial: tokens/colors.css --social-* read, no consumer maps them to the icon block",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Social icons hidden on mobile",
+    "live_measured": "375: not visible in top bar on draft and live",
+    "status": "match",
+    "mechanism_should": "social-icons responsive visibility",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Social hover: scale 1.15, rotate -8deg, lift 3px (spring easing)",
+    "live_measured": "live hover: no transform on the anchor or its shape; draft hover: matrix(1.139,-0.160,0.160,1.139,0,-3.45)",
+    "status": "differs",
+    "mechanism_should": "social-icons hover transform setting (scale/rotate/lift)",
+    "mechanism_exists": "partial: sgs-db shows childIconShadowLiftOnHover and Brand/Colour hovers only; no scale or rotate attribute found (query %over%/%otate%/%cale%)",
+    "tooling_carried": "no: TR record present, nothing maps it to a social-icons attribute",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 22,
+    "claim": "Social links real URLs (Open items: currently \"#/\")",
+    "live_measured": "3 of 4 icons href \"/\" (home); Google href is a share.google link",
+    "status": "differs",
+    "mechanism_should": "content: client URLs per site option / block link",
+    "mechanism_exists": "yes",
+    "tooling_carried": "no",
+    "fix_class": "content"
+   },
+   {
+    "readme_line": 23,
+    "claim": "Scroll progress bar: fixed, 3px, gradient #D8CA50 to #2EADE2, scaleX by scroll",
+    "live_measured": "sgs-floating-ui__reading-progress fixed, 3px, linear-gradient(90deg,#D8CA50,#2EADE2), transform scaleX(0.088) at 400px scroll",
+    "status": "match",
+    "mechanism_should": "sgs/floating-ui reading-progress + gradient-progress token",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial: J-02 record + gradient-progress token; wiring set in the build",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Sticky header, white, 3px bottom border #D8CA50",
+    "live_measured": "sticky, row bg white, border-bottom 3px rgb(216,202,80)",
+    "status": "match",
+    "mechanism_should": "site-header settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: surfaces.json header",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Header shadow 0 10px 30px -18px rgba(20,40,60,.35) after 8px scroll",
+    "live_measured": "after 400px scroll: rgba(20,40,60,.35) 0 10 30 -18 on header; resting none (8px threshold itself not sampled)",
+    "status": "match",
+    "mechanism_should": "site-header scroll-shadow setting (J-01) + --shadow-header token",
+    "mechanism_exists": "yes (setting); token --shadow-header not in the snapshot",
+    "tooling_carried": "partial: J-01 record read; shadow tokens never reach the snapshot",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Logo height clamp(40px,3.8vw,52px), aspect 3741/848",
+    "live_measured": "live 54/56/63 at 375/768/1440 and 63 at 1100; draft 54/56/54(1100)/63.4(1440); aspect 4.41 matches. README formula contradicts the draft code",
+    "status": "differs",
+    "mechanism_should": "responsive-logo height setting per breakpoint",
+    "mechanism_exists": "yes (responsive-logo)",
+    "tooling_carried": "partial",
+    "fix_class": "applier",
+    "draft_note": "README drift: draft logo is 54/56/63, not clamp(40,3.8vw,52); live differs from the draft only at 1024-1199 (63 vs 54)"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Nav items 17px/600, 42px tall, radius 11",
+    "live_measured": "17px/600, 42px, 11px",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu item settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Active nav item has a 2px gold underline",
+    "live_measured": "aria-current link ::after is 2px high but background transparent on Home (home page) and About (about page); no border or shadow underline",
+    "status": "differs",
+    "mechanism_should": "nav-bar-menu active indicator colour (state record)",
+    "mechanism_exists": "partial: ::after exists at 2px; colour unset",
+    "tooling_carried": "partial: surfaces.json states carry the active look; not applied",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 24,
+    "claim": "CTA: bg #0A7EA8, white, radius 999, padding 12px 22px, 17px/600",
+    "live_measured": ">=1260: rgb(10,126,168), white, 999px, 12px 22px, 17px/600; at 768: 10px 18px",
+    "status": "match",
+    "mechanism_should": "header button preset",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 24,
+    "claim": "Tablet: CTA + hamburger (46px, radius 12); mobile hamburger only",
+    "live_measured": "hamburger 48px, radius 50% at 375 and 768 (draft code is also 48px/50%); README numbers contradict the draft",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu burger settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none",
+    "draft_note": "README drift: hamburger is 48px round in the draft, not 46px/12"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Mega menu opens on hover",
+    "live_measured": "About hover opens panel",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu submenuOpenOn",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Mega menu opens on focus",
+    "live_measured": "Tab to About: no panel opened (0 visible); draft focus opens panel (animate calls fire)",
+    "status": "differs",
+    "mechanism_should": "nav-bar-menu submenuOpenOn includes focus",
+    "mechanism_exists": "yes: attribute submenuOpenOn exists",
+    "tooling_carried": "no: draft onFocus handler not mapped; value not read from README or animations.json",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Closes 170ms after leave",
+    "live_measured": "visible at 87ms, gone by 182ms after pointer leave",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu submenuIntentDelay=170",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Closes on Esc",
+    "live_measured": "hover-open then Esc: closed within 600ms (pointer still on item)",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu built-in",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a built-in",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Closes on backdrop click",
+    "live_measured": "not provable: pointer leaving closes the panel before the click lands, and focus cannot open it",
+    "status": "unmeasured",
+    "mechanism_should": "nav-bar-menu scrim click",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Panel margin-top 12px, radius 12, white, shadow 0 30px 80px -30px rgba(20,25,35,.28)",
+    "live_measured": "top 145 = header 133 + 12; radius 12px; white; shadow equal (live adds a 1px border, accepted D-38)",
+    "status": "accepted",
+    "mechanism_should": "mega panel settings + --shadow-panel",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Backdrop rgba(20,25,35,.28), blur 2px",
+    "live_measured": "scrim ::before rgb(20,25,35) at opacity .28; backdrop-filter blur(2px)",
+    "status": "match",
+    "mechanism_should": "nav-bar-menu scrimColour/scrimOpacity/scrimBlur",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Backdrop 0.3s fade",
+    "live_measured": "scrim transition opacity 0.2s",
+    "status": "differs",
+    "mechanism_should": "nav-bar-menu scrimFadeDuration (300)",
+    "mechanism_exists": "yes: attribute scrimFadeDuration exists, unset",
+    "tooling_carried": "no: no reader maps the 0.3s to it",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Panel entrance 340ms cubic-bezier(.16,.84,.32,1) (A-13: opacity 0 to 1, translateY(-8px) scale .99)",
+    "live_measured": "panel opacity 1 at first sample, no WAAPI call; the wrapper slides horizontally between panels (translateX -560 to 0 in ~400ms)",
+    "status": "missing",
+    "mechanism_should": "nav-bar-menu panel entrance motion setting",
+    "mechanism_exists": "no attribute found (sgs-db: no panelEnter/stagger on nav-bar-menu); a __panel-motion class exists without settings",
+    "tooling_carried": "partial: A-13 read by read-animations.mjs; no target setting",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 25,
+    "claim": "Children stagger up 14px, 460ms, 26ms apart, max 320ms (A-12)",
+    "live_measured": "panel links at opacity 1, transform none, delays 0s; no animate calls",
+    "status": "missing",
+    "mechanism_should": "nav-bar-menu panel child stagger setting",
+    "mechanism_exists": "no",
+    "tooling_carried": "partial: A-12 read, no target",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 26,
+    "claim": "About panel: list of six links + 300px dark-blue feature card",
+    "live_measured": "six links match; card width not measured on desktop (297px measured in the drawer)",
+    "status": "unmeasured",
+    "mechanism_should": "mega-panel list + aside",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 27,
+    "claim": "Sectors panel gradient 120deg #E7D768 0%, #2EADE2 55%, #0A7EA8 100%",
+    "live_measured": "live: linear-gradient(120deg, #EBDD78 0, #E7D768 24%, #D8CA50 46%, #2EADE2 ...); the README itself lists \"Confirm the Sectors panel gradient\" as open",
+    "status": "differs",
+    "mechanism_should": "mega-panel background gradient setting + gradient-brand token",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial: gradient-brand token in snapshot; the panel uses a different stop list",
+    "fix_class": "bean-decision"
+   },
+   {
+    "readme_line": 27,
+    "claim": "Sectors cards: radius 18, padding 18, border 2px rgba(255,255,255,.75), min-height 270, image 110px, hover lift 6px",
+    "live_measured": "draft panel cards: 245x302, radius 18, padding 18, border 2px rgb(231,215,104) (not white .75); live cards not located by the probe",
+    "status": "unmeasured",
+    "mechanism_should": "mega-group card settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "applier",
+    "draft_note": "README drift: draft card border is #E7D768, not rgba(255,255,255,.75)"
+   },
+   {
+    "readme_line": 28,
+    "claim": "Brands panel: 4-col 64px tiles + 300px blue side block",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "mega-panel brand grid",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 29,
+    "claim": "Trade panel: five links + \"Trade with Indus Foods\" feature",
+    "live_measured": "links present in menu-map; not measured on screen",
+    "status": "unmeasured",
+    "mechanism_should": "mega-panel",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 30,
+    "claim": "About/Trade feature cards dark blue #0A7EA8, white text",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "mega aside colours",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Drawer: fixed right, bg #0A7EA8",
+    "live_measured": "drawer is position:fixed full width at 375; bg on a nested panel not located by the probe",
+    "status": "unmeasured",
+    "mechanism_should": "nav-drawer panel colour",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Drawer accordion items 20px/700",
+    "live_measured": "live items 24px/700 (draft item font not recoverable by the probe; draft drawer measured only for pill, circles and scroll lock)",
+    "status": "differs",
+    "mechanism_should": "nav-drawer item font size",
+    "mechanism_exists": "yes (chromeSlot*/item type settings)",
+    "tooling_carried": "no: README value not parsed",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Drawer dividers gold #D8CA50, 1px",
+    "live_measured": "live 1px rgba(255,255,255,.16)",
+    "status": "differs",
+    "mechanism_should": "nav-drawer item divider colour",
+    "mechanism_exists": "no attribute found (sgs-db: nothing matching ivider on nav-drawer)",
+    "tooling_carried": "no",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Gold pill \"Become A Trade Customer\"",
+    "live_measured": "live bg rgb(231,215,104) = draft rgb(231,215,104), radius 999",
+    "status": "match",
+    "mechanism_should": "nav-drawer CTA button",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Gold circular email and call buttons",
+    "live_measured": "44px circles in both draft and live, bg transparent in both (gold ring not read)",
+    "status": "match",
+    "mechanism_should": "nav-drawer chrome slot buttons",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 31,
+    "claim": "Items stagger in from the right (420ms, 55ms apart)",
+    "live_measured": "first item fades in over ~500ms, the others are at opacity 1 immediately; no translateX; no WAAPI calls",
+    "status": "missing",
+    "mechanism_should": "nav-drawer item stagger motion setting",
+    "mechanism_exists": "no attribute found (sgs-db: nothing matching tagger on nav-drawer)",
+    "tooling_carried": "partial: drawer records (31 in group drawer) read, no target setting",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 68,
+    "claim": "Body scroll locked while drawer open",
+    "live_measured": "375: body position:fixed, scrollTo(0,300) stays at 0 (draft uses overflow:hidden)",
+    "status": "match",
+    "mechanism_should": "nav-drawer scroll lock",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a built-in",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 68,
+    "claim": "Esc closes menus (drawer)",
+    "live_measured": "Esc: body returns to static",
+    "status": "match",
+    "mechanism_should": "nav-drawer built-in",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a built-in",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 32,
+    "claim": "Footer bg #2C3E50, max-width 1240px",
+    "live_measured": "rgb(44,62,80); inner max-width 1240px",
+    "status": "match",
+    "mechanism_should": "footer container settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 32,
+    "claim": "Footer 5px top rule gradient #D8CA50, #E7D768 30%, #2EADE2 70%, #0A7EA8",
+    "live_measured": "::before 5px, linear-gradient(90deg,#D8CA50 0,#E7D768 30%,#2EADE2 70%,#0A7EA8)",
+    "status": "match",
+    "mechanism_should": "footer top-rule setting",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Contact band: 3 cards radius 22, bg rgba(255,255,255,.05)",
+    "live_measured": "22px, rgba(255,255,255,.05), 295px high at 1440",
+    "status": "match",
+    "mechanism_should": "container card settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Contact cards hover: lift 4px and gold border",
+    "live_measured": "real mouse on card: border colour unchanged (rgba(255,255,255,.12)), no transform, --sgs-mh-ty 0px",
+    "status": "differs",
+    "mechanism_should": "container hover lift + border colour hover settings (sgs-mh-ty)",
+    "mechanism_exists": "yes: --sgs-mh-ty and hover border exist; unset on these cards",
+    "tooling_carried": "partial: TR records carry them; pairing missed these cards",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Email clamp(15px,1.25vw,17px), nowrap, one line",
+    "live_measured": "17px at 1440, 15px at 375, white-space nowrap, fits",
+    "status": "match",
+    "mechanism_should": "business-info link font size clamp",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Opening hours rows (Mon-Thu 9:30am-5pm; Fri 9:30am-12pm and 2:30-5pm; Sat 10am-3pm; Sun closed)",
+    "live_measured": "rows match",
+    "status": "match",
+    "mechanism_should": "business-info hours",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: content",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Hours computed in Europe/London time",
+    "live_measured": "data-config timezone is the fixed offset \"+00:00\": wrong for the BST half of the year",
+    "status": "differs",
+    "mechanism_should": "business-info timezone setting (IANA name)",
+    "mechanism_exists": "yes (timezone config accepts a value)",
+    "tooling_carried": "no: README states Europe/London; value written as +00:00",
+    "fix_class": "site-option"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Today's row in gold",
+    "live_measured": "Friday row text rgb(216,202,80)/700 (today was Friday)",
+    "status": "match",
+    "mechanism_should": "business-info today highlight",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 33,
+    "claim": "Badge \"Open now\" with pulsing green dot and \"Closes at X today\"; \"Closed\" with amber dot and \"Opens ...\"",
+    "live_measured": "closed state: dot rgb(239,68,68) red (README: amber); open state and 1.6s pulse (A-02) not reachable at the measured time",
+    "status": "differs",
+    "mechanism_should": "business-info open/closed dot colours + pulse (A-02)",
+    "mechanism_exists": "yes: sgs-business-info-wrap--pulse",
+    "tooling_carried": "partial: A-02 read; closed colour not set",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 34,
+    "claim": "Footer logo square 240px (200px mobile), no white background",
+    "live_measured": "240x156 at 1440, 200x130 at 375, transparent",
+    "status": "match",
+    "mechanism_should": "footer logo settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 34,
+    "claim": "Social icons 44px in footer",
+    "live_measured": "44px; same colour set as the top bar (Google white, Instagram rgb(228,64,95))",
+    "status": "differs",
+    "mechanism_should": "social-icons settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "applier",
+    "draft_note": "same cause as top-bar social colours"
+   },
+   {
+    "readme_line": 34,
+    "claim": "Quick links two-column list (Certifications, Trade, Brands, Delivery & Logistics, Terms & Conditions, Blog) plus gold pill \"Apply For A Trade Account\"",
+    "live_measured": "two columns (131.6px each at 1440), six links in order, gold pill rgb(216,202,80), 53px high",
+    "status": "match",
+    "mechanism_should": "footer link list columns",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: footerQuick via content",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 34,
+    "claim": "Visit us: map 210px tall, grayscale .35, address, \"Get Directions\" pill",
+    "live_measured": "iframe 210px, filter grayscale(0.35) contrast(1.05), blue pill 999px",
+    "status": "match",
+    "mechanism_should": "embed block",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 35,
+    "claim": "Bottom bar copyright and Back to top (smooth scroll)",
+    "live_measured": "copyright text present (third Unsplash item accepted D-31); Back to top scrolls 4264 to 0 smoothly (overlay link)",
+    "status": "accepted",
+    "mechanism_should": "text + back-to-top link",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 36,
+    "claim": "Not rendered: footerGroups and accreds",
+    "live_measured": "live footer has no About/Sectors/Trade/Company groups or accreditation row",
+    "status": "not-applicable",
+    "mechanism_should": "n/a",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 37,
+    "claim": "WhatsApp fixed bottom-right 22px",
+    "live_measured": "bottom 24px, right 24px",
+    "status": "differs",
+    "mechanism_should": "whatsapp-button offset settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 37,
+    "claim": "Green pill, icon 22px + \"Chat with our team\", icon-only on mobile",
+    "live_measured": "rgb(37,211,102), svg 22px, label hidden at 375 (54x52 circle), 187x52 pill at >=768",
+    "status": "match",
+    "mechanism_should": "whatsapp-button",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 37,
+    "claim": "Link https://wa.me/441217714330, new tab",
+    "live_measured": "href wa.me/441217714330?text=Hi... (adds a prefilled message), target _blank",
+    "status": "match",
+    "mechanism_should": "whatsapp-button link",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Hero gradient 135deg #EBDD78, #E3D35F, #D8CA50",
+    "live_measured": "linear-gradient(135deg,#EBDD78,#E3D35F 50%,#D8CA50)",
+    "status": "match",
+    "mechanism_should": "hero background gradient-hero token",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "H1 Montserrat 800, clamp(36px,5vw,62px), line-height 1.08, #2C3E50",
+    "live_measured": "36/38.4/51.2/60/62px at 375/768/1024/1200/1440, 800, lh 1.08, rgb(44,62,80)",
+    "status": "match",
+    "mechanism_should": "snapshot h1 + fontSizes hero",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Sub clamp(18px,1.7vw,22px)/600",
+    "live_measured": "22px/600 at 1440 (other widths not sampled)",
+    "status": "match",
+    "mechanism_should": "hero sub font size",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Buttons: black pill (text #D8CA50) and blue pill (white 2px border)",
+    "live_measured": "black pill rgb(0,0,0) text rgb(216,202,80); blue pill rgb(10,126,168) white 2px border",
+    "status": "match",
+    "mechanism_should": "button presets",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Trust chips 13px/700 uppercase, bg rgba(255,255,255,.6)",
+    "live_measured": "13px/700 uppercase on the label; chip bg not read",
+    "status": "match",
+    "mechanism_should": "badge/label settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Photo 3:2, radius 22, 5px white border",
+    "live_measured": "3/2, 22px, 5px rgb(255,255,255)",
+    "status": "match",
+    "mechanism_should": "hero media settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Photo floats up 12px over 4.2s alternate (A-16)",
+    "live_measured": "4200ms ease-in-out alternate infinite on the media container (amplitude not read)",
+    "status": "match",
+    "mechanism_should": "hero float motion setting",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: read-animations.mjs A-16",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 43,
+    "claim": "Photo parallax -0.06 x scrollY (J-03)",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "hero parallax motion setting",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 44,
+    "claim": "Our Brands: bg #0A7EA8; H2 gold with 2px gold underline",
+    "live_measured": "section bg rgb(10,126,168); h2 rgb(216,202,80), border-bottom 2px solid gold",
+    "status": "match",
+    "mechanism_should": "section + heading settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 44,
+    "claim": "Marquee of white 16px-radius tiles, 38s linear loop (45px/s), slows to 0.15x on hover",
+    "live_measured": "tiles white, 16px; 806px set in 18222ms = 44.2px/s, linear, infinite; hover playbackRate 0.15",
+    "status": "match",
+    "mechanism_should": "sgs/brand-strip speed + hover slow",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: A-15 / J-14",
+    "fix_class": "none",
+    "draft_note": "README drift: the draft speed is 45px/s (A-15), 38s is a derived figure"
+   },
+   {
+    "readme_line": 44,
+    "claim": "Marquee edge fade mask",
+    "live_measured": "no mask-image on the strip or its parent",
+    "status": "differs",
+    "mechanism_should": "brand-strip edge fade setting",
+    "mechanism_exists": "no attribute found (sgs-db: nothing matching ask/ade/peed on brand-strip)",
+    "tooling_carried": "no",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 45,
+    "claim": "Sector cards: radius 22, shadow 0 20px 34px -20px rgba(44,62,80,.55)",
+    "live_measured": "22px; rgba(44,62,80,.55) 0 20px 34px -20px",
+    "status": "match",
+    "mechanism_should": "card radius + --shadow-card token",
+    "mechanism_exists": "yes (values set on the blocks); --shadow-card not in the snapshot",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 45,
+    "claim": "Pointer tilt up to 16deg plus radial highlight",
+    "live_measured": "hover with real mouse: matrix3d rotation ~5deg at the 80%/20% point (proportional); radial highlight not read",
+    "status": "match",
+    "mechanism_should": "sgs-m tilt (J-09, A-20 spring reset)",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: motion-tilt.mjs",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 46,
+    "claim": "Why Choose: 8 translucent white cards; hover bg #2C3E50, gold text, icon rotates -10deg",
+    "live_measured": "rest rgba(255,255,255,.28); hover bg rgb(44,62,80), text rgb(216,202,80), shadow 0 16 36 rgba(0,0,0,.25); icon rotation not measured",
+    "status": "match",
+    "mechanism_should": "info-box hover settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 47,
+    "claim": "Heritage timeline: circles 56px, 3px gold border, line draws on reveal",
+    "live_measured": "not measured here",
+    "status": "unmeasured",
+    "mechanism_should": "timeline block + reveal line draw (A-05/A-06)",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 48,
+    "claim": "Testimonials: #0A7EA8 bg, gold card radius 16, 42px prev/next, dot pager, auto-advance 6.5s with slide-in",
+    "live_measured": "buttons 42x42 round; dots; data autoplay speed 6500; slide advanced 0 to 1 within the window; card bg/radius and the 520ms slide-in not read",
+    "status": "match",
+    "mechanism_should": "testimonial-slider autoplay speed 6500",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 49,
+    "claim": "Steps: dashed gold connector, CTA \"Start your application\"",
+    "live_measured": "not measured here",
+    "status": "unmeasured",
+    "mechanism_should": "process-steps",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 53,
+    "claim": "Inner-page typed blocks list (stats, hscroll, cards...)",
+    "live_measured": "structure only",
+    "status": "not-applicable",
+    "mechanism_should": "n/a",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 53,
+    "claim": "hscroll pinned horizontal timeline with counter \"01 / 05\", desktop only",
+    "live_measured": "counter \"01 / 05\" present at 1440 on About; tablet divergence accepted D-29",
+    "status": "accepted",
+    "mechanism_should": "timeline hscroll",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 54,
+    "claim": "About: 8 linked cards 4 cols desktop, 2 tablet, 1 mobile",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "card grid columns",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 56,
+    "claim": "Blog: active chip bg #0A7EA8 white text",
+    "live_measured": "\"All\" chip rgb(10,126,168) / white, aria-pressed true",
+    "status": "match",
+    "mechanism_should": "filter chips",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 56,
+    "claim": "Blog: estimated read time (words/200, min 2 min)",
+    "live_measured": "\"min read\" appears 0 times in the /blog/ HTML (single posts not checked)",
+    "status": "missing",
+    "mechanism_should": "post-grid read-time meta",
+    "mechanism_exists": "not queried",
+    "tooling_carried": "no",
+    "fix_class": "framework"
+   },
+   {
+    "readme_line": 57,
+    "claim": "FAQ: toggle icon rotates 45deg and turns #0A7EA8 when open",
+    "live_measured": "open item: icon-open transform none, colour rgb(30,42,60); header text turns rgb(10,126,168)",
+    "status": "differs",
+    "mechanism_should": "accordion icon rotate + colour settings",
+    "mechanism_exists": "yes (icon-open--rotates class exists)",
+    "tooling_carried": "partial: TR record",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 58,
+    "claim": "Contact details (address, phone, email)",
+    "live_measured": "phone/email match in footer and topbar; address not re-read",
+    "status": "unmeasured",
+    "mechanism_should": "content",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 61,
+    "claim": "Entrance: main fades in 380ms",
+    "live_measured": "sgs_motion_settings page_transitions fade 380ms ease-out is set (site-options.json); its source record cited as A-12 (the stagger record) but the route fade is A-10",
+    "status": "match",
+    "mechanism_should": "site option sgs_motion_settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial: record id cited wrongly in site-options.json",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 61,
+    "claim": "Hero children stagger (translateY 28px + blur 8px, 900ms, 80ms + 110ms x index, easing .16,.84,.32,1)",
+    "live_measured": "entrance already played at measurement; not captured",
+    "status": "unmeasured",
+    "mechanism_should": "sgs-m entrance on hero children (A-21)",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: A-21 via read-animations.mjs / fill-motion.mjs",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 61,
+    "claim": "Hero image clip-path reveal 1100ms, inner scale 1.18 to 1 (A-22/A-23)",
+    "live_measured": "not captured",
+    "status": "unmeasured",
+    "mechanism_should": "hero media reveal motion",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 62,
+    "claim": "Scroll reveal: headings 22px+blur 850ms; grid children 40px scale .96 800ms stagger 80ms mod 8; images clip 10% 1000ms; lines draw 1400/1800ms (A-05..A-09)",
+    "live_measured": "34 distinct sgs-m-* classes on home; keyframes/timing not captured",
+    "status": "unmeasured",
+    "mechanism_should": "sgs-m scroll reveal presets",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: A-05..A-09 read",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 63,
+    "claim": "Magnetic buttons: 5px/4px pull, shine 750ms, ripple 650ms (J-10, A-18, A-19)",
+    "live_measured": "CTA hover shows the preset scale/lift only; magnet, shine and ripple not seen",
+    "status": "unmeasured",
+    "mechanism_should": "button motion settings (magnet/shine/ripple)",
+    "mechanism_exists": "partial",
+    "tooling_carried": "partial: 3 records",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 64,
+    "claim": "About hero SVG: mountains 1.1s, snow 0.7s, sun, path draw, road fill, background by 4.4s",
+    "live_measured": "covered by the motion census lanes; not measured here",
+    "status": "unmeasured",
+    "mechanism_should": "about-hero svg animation",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 65,
+    "claim": "Logo animation (indus-logo.js): rays 60s, entrance, hover bob",
+    "live_measured": "not measured here",
+    "status": "unmeasured",
+    "mechanism_should": "responsive-logo animated svg",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial: L-01..L-10",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 66,
+    "claim": "Reduced motion: all JS motion skipped",
+    "live_measured": "reducedMotion emulation: 0 infinite animations running; progress bar scale 0 at top",
+    "status": "match",
+    "mechanism_should": "framework reduced-motion handling",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 67,
+    "claim": "Easings: .16,.84,.32,1 (entrances), .2,.8,.2,1 (buttons and cards), .34,1.56,.64,1 (spring), .65,0,.35,1 (About)",
+    "live_measured": "all four exist in snapshot custom.easing; many live hover transitions still use the framework default: why-cards .25s cubic-bezier(.25,.1,.25,1), mega groups ease .2s",
+    "status": "differs",
+    "mechanism_should": "snapshot custom.easing + custom.transition default",
+    "mechanism_exists": "yes (tokens); defaults not overridden",
+    "tooling_carried": "yes: --ease-* read by readTokens; hover defaults not remapped",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 75,
+    "claim": "Colours: brand blue/gold/ink/slate/greys/surfaces/gradients",
+    "live_measured": "15 palette entries and 3 gradients in the snapshot match the README",
+    "status": "match",
+    "mechanism_should": "theme-snapshot palette",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: readTokens (colors.css)",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 75,
+    "claim": "Alt colours #0A6E93 (text on gold), #5E6873, #DCEBF1",
+    "live_measured": "not in the snapshot palette; live eyebrows use rgb(10,110,147) = #0A6E93 as a literal",
+    "status": "differs",
+    "mechanism_should": "palette entries or block-owned hex",
+    "mechanism_exists": "no palette slot",
+    "tooling_carried": "no: only in README prose and the draft CSS",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 80,
+    "claim": "Social colours LinkedIn/Facebook/Google, WhatsApp green",
+    "live_measured": "not in snapshot; social-icons and whatsapp-button carry their own colours",
+    "status": "differs",
+    "mechanism_should": "tokens/colors.css --social-*, --whatsapp-green",
+    "mechanism_exists": "yes (block-owned)",
+    "tooling_carried": "partial",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 81,
+    "claim": "Selection bg #D8CA50 text #1E2A3C; links #0A7EA8 hover #075E80",
+    "live_measured": "not measured",
+    "status": "unmeasured",
+    "mechanism_should": "snapshot styles link + selection",
+    "mechanism_exists": "partial",
+    "tooling_carried": "yes: --selection-* in colors.css",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 83,
+    "claim": "Fonts: Montserrat headings, Source Sans 3 body 19px/1.55, Geist Mono 12px 0.14em uppercase labels",
+    "live_measured": "body 19px/29.45 (1.55); mono labels 12px, 1.68px (0.14em), uppercase; fonts in snapshot",
+    "status": "match",
+    "mechanism_should": "snapshot fontFamilies",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: typography.css",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 84,
+    "claim": "H2 clamp(28px,3.4vw,40px)/1.15, -0.01em; card titles 22px/700; eyebrow Montserrat 13px/700 0.14em #0A7EA8",
+    "live_measured": "h2 36px/41.4 -0.36px and 40px/46 -0.4px (1.15, -0.01em); h3 22/700; eyebrows 13/700 at 0.08em rgb(10,110,147) (same as the draft proof eyebrow); a second draft eyebrow is 0.14em #0A7EA8",
+    "status": "match",
+    "mechanism_should": "snapshot h2/h3 + eyebrow label settings",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none",
+    "draft_note": "README drift: two eyebrow styles exist in the draft; snapshot h2 line-height is 1.08 while the page headings use 1.15"
+   },
+   {
+    "readme_line": 85,
+    "claim": "Radius 3/9-12/16-22/999",
+    "live_measured": "snapshot borderRadius small 3, medium 12, large 22, pill 999; live tiles 16, cards 22, panels 12",
+    "status": "match",
+    "mechanism_should": "snapshot custom.borderRadius",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes: --radius-* via readTokens",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 86,
+    "claim": "Shadows: button 0 8px 18px -8px rgba(0,0,0,.45); card; panel",
+    "live_measured": "card and panel and header values measured equal on live; top-bar buttons carry rgba(0,0,0,.15) 0 2px 6px; none of --shadow-button/-card/-panel/-header exist in theme-snapshot.json (0 hits)",
+    "status": "differs",
+    "mechanism_should": "snapshot settings.shadow presets from tokens/spacing.css --shadow-*",
+    "mechanism_exists": "yes: settings.shadow.presets (holds 12 framework defaults, none of the draft four)",
+    "tooling_carried": "no: tokens.mjs::tokenType classifies them as shadow but nothing writes them to the snapshot",
+    "fix_class": "applier"
+   },
+   {
+    "readme_line": 87,
+    "claim": "Spacing gaps 8/10/14/18/22/28/40/64px",
+    "live_measured": "snapshot spacingSizes 8,10,14,18,22,28,40,64",
+    "status": "match",
+    "mechanism_should": "snapshot settings.spacing",
+    "mechanism_exists": "yes",
+    "tooling_carried": "yes",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 90,
+    "claim": "Animated logo SVGs inlined",
+    "live_measured": "not measured here",
+    "status": "unmeasured",
+    "mechanism_should": "responsive-logo",
+    "mechanism_exists": "yes",
+    "tooling_carried": "partial",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 93,
+    "claim": "Photos Unsplash placeholders with credit chip",
+    "live_measured": "credit chips not rendered (D-25)",
+    "status": "accepted",
+    "mechanism_should": "n/a",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 95,
+    "claim": "Food scatter / parallax layer currently disabled (density Off)",
+    "live_measured": "no scatter layer on live; the five food-scatter records are unconsumed by design",
+    "status": "match",
+    "mechanism_should": "n/a",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 98,
+    "claim": "Open item: confirm the Sectors panel gradient",
+    "live_measured": "live uses a four-stop variant (see line 27)",
+    "status": "differs",
+    "mechanism_should": "Bean decision",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a",
+    "fix_class": "bean-decision"
+   },
+   {
+    "readme_line": 100,
+    "claim": "Open item: forms need a backend",
+    "live_measured": "SGS forms deliver through Sgs_Mailer",
+    "status": "not-applicable",
+    "mechanism_should": "sgs-forms",
+    "mechanism_exists": "yes",
+    "tooling_carried": "n/a",
+    "fix_class": "none"
+   },
+   {
+    "readme_line": 110,
+    "claim": "animations.json has 183 records",
+    "live_measured": "217 records (counts: 49 animate calls, 125 transitions, 24 js writers, 15 pseudo, 3 reduced-motion, others)",
+    "status": "differs",
+    "mechanism_should": "README generated from animations.json counts",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "no: README counts hand-written",
+    "fix_class": "content",
+    "draft_note": "README drift"
+   },
+   {
+    "readme_line": 111,
+    "claim": "surfaces.json has 60 records",
+    "live_measured": "61 records",
+    "status": "differs",
+    "mechanism_should": "README generated from surfaces.json counts",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "no",
+    "fix_class": "content",
+    "draft_note": "README drift"
+   },
+   {
+    "readme_line": 103,
+    "claim": "Revision: see MANIFEST.md",
+    "live_measured": "the folder holds MANIFEST.json, no MANIFEST.md",
+    "status": "differs",
+    "mechanism_should": "README pointer",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "no",
+    "fix_class": "content",
+    "draft_note": "README drift"
+   },
+   {
+    "readme_line": 105,
+    "claim": "Files list",
+    "live_measured": "omits tokens/ (3 css files the pipeline reads) and READING-DC-FILES.md",
+    "status": "differs",
+    "mechanism_should": "README files list",
+    "mechanism_exists": "n/a",
+    "tooling_carried": "partial: read-readme.mjs does not check the file list",
+    "fix_class": "content",
+    "draft_note": "README drift"
+   }
+  ],
+  "tooling_findings": {
+   "readme_reader": "scripts/computed-route/lib/read-readme.mjs::readReadme splits sections and keeps judgement calls, open items and business details only; no README number, colour, timing or interaction is turned into a setting (\"The README does not address elements\").",
+   "tokens": "scripts/computed-route/lib/tokens.mjs::readTokens reads tokens/*.css; snapshot receives palette, gradients, fonts, spacing, gutter, section, radius and easing; --shadow-button/-card/-panel/-header are classified as shadows (tokenType) but absent from theme-snapshot.json.",
+   "animations": "animations.json records are consumed by lib/read-animations.mjs and fill-motion*.mjs; mega entrance (A-13), mega stagger (A-12), drawer stagger and social hover have no target setting.",
+   "site_options": "sites/indus-foods/build/site-options.json cites A-12 for page transitions (record is the mega stagger; route fade is A-10)."
+  }
+ }
+}

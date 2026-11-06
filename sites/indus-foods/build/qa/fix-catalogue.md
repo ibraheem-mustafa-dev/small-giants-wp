@@ -459,3 +459,45 @@ Bean's rulings (2026-11-06): a tap shows the hover look site-wide (T1); the draf
 | P6 | snapshot carries no `::selection`, no per-client shadow roles (FR-32-18), spring default easing bounces accordions | token audit, DE2, FQ1 |
 | P7 | a draft state group became static buttons | CN5, CN6 |
 | S | the 37 existing settings on Indus, applied through `patch-block-attrs.py` after the framework lands | see the register |
+
+## Round 8 instance census (2026-11-06, after framework waves 1 and 2)
+
+Six read-only lanes measured every instance on the mirror against the served draft: motion and hover from all 217 animations.json records; structure (corners, pins, links, widths, borders and shadows); state colours, forms and content; process forensics on all 117 rows; the handoff README point by point; and Claude Design's globals-and-home skeleton. Raw data, scripts' outputs and the brief are in `r8-census/` beside this file. Statuses:
+- `matches`: matches the draft now;
+- `applier`: a setting exists, and the pairing plus the draft or handoff data could set it automatically;
+- `tool-blind`: a setting exists, but no pairing or record tells a tool where;
+- `framework-open`: no mechanism yet.
+
+| Area | Instances | Matches | Applier | Tool-blind | Framework-open |
+|---|---|---|---|---|---|
+| Motion and hover (217 records, touch rows excluded) | 1,420 measured (121 unmeasured) | 247 | 529 | 295 | 348 |
+| Touch at 375 (overlaps the hover rows) | 514 | 74 | 136 | 70 | 71 (162 unmeasured) |
+| Structure | 376 | 53 | 266 | 54 | 3 |
+| State colours, forms, content | 327 (991 text items: 923 match) | 5 | 204 | 41 | 63 |
+| Handoff README points | 117 | 57 | 26 differ or missing, applier | | 7 |
+
+What the numbers mean:
+- **One framework bug holds 257 of the 348 open motion instances.** `class-sgs-motion-renderer.php::open_frame` treats an inner page's single top-level `<main>` as its first section, so the LCP rule forces every entrance on the page to start visible. Home and Blog are unaffected.
+- **About 1,000 instances need only the applier,** which reads each draft value through the `cr-ref` pairing and writes it. Examples:
+  - corners: 106 (overflow on rounded boxes);
+  - widths: 108;
+  - entrances: 155;
+  - hero copy fade: 71 (`allowLcpFade`);
+  - magnet values: 99;
+  - button states: 46;
+  - pins: 18, via the container's native pin;
+  - form rest looks and tiles: 52.
+- **About 390 are tool-blind,** mostly pairing gaps:
+  - the hero media slot;
+  - the logo record targets its wrapper, not the logo block;
+  - mega and drawer inner parts and footer chrome are unpaired;
+  - inner parts and form fields are absorbed into their parent block.
+
+  The skeleton's `t` ids use the same numbering as the pairs and can fill most of these.
+- **Process forensics** (`r8-census/process-forensics.json`):
+  - the site run has no Solve stage, so hover and focus values are never filled on pages;
+  - the walker's 1,000 to 12,000 unranked rows per page drowned real gaps;
+  - `delivery-map.mjs` crashes, and its done marks never read the live page;
+  - rounds 1 to 7 audited still images only.
+- **Logo:** the `svgParts` value drafted from `indus-logo.js` is `r8-census/logo-svgparts.json`. `src/shared/svg-parts/svg-parts.js::entranceFrames` must animate the individual `translate` and `scale` properties rather than `transform`: a CSS `transform` keyframe replaces an SVG group's own `transform` attribute.
+- **Re-verify against wave 2:** lane C counted some form rows framework-open (the focus halo, tile ticks) that wave 2 now has settings for. Re-measure those with the settings set before building anything.

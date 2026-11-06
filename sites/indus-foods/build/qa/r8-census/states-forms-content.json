@@ -1,0 +1,832 @@
+{
+ "STATE-BUTTON": {
+  "cause": "Button hover, press and focus colours differ from the draft: the live sgs-button paints framework default hover/press looks the draft does not (hover lighten or invert), or lacks the draft inverted hover (careers Register interest). Measured by real mouse, mouse-down and focus on every paired a/button on 1440.",
+  "instances_at_review": 46,
+  "elements_measured": 105,
+  "by_status": {
+   "tool-applicable": 46
+  },
+  "status_note": "28 differ only in the press (:active) look, 18 in hover/focus/rest. Settings exist: sgs/button colourTextHover, colourBackgroundHover, borderColourHover (css_state hover in the framework DB); the press look has no block setting and goes through the theme snapshot (fill-state.mjs header: a press look on a button goes to the snapshot).",
+  "pages": {
+   "home": 9,
+   "about": 3,
+   "our-story": 1,
+   "certifications": 2,
+   "community": 2,
+   "careers": 7,
+   "blog": 1,
+   "food-service": 1,
+   "retail": 2,
+   "manufacturing": 1,
+   "wholesale": 1,
+   "brands": 1,
+   "sanam": 1,
+   "shan": 2,
+   "green-leaf": 2,
+   "lemon-tree": 1,
+   "apply": 1,
+   "delivery": 2,
+   "faqs": 2,
+   "sustainability": 2,
+   "header": 2
+  },
+  "coverage": {
+   "by_pairing": 46,
+   "by_animations_json_record": "every paired draft element has a TR record (46 of 46); 16 carry a record whose trigger matches the differing state",
+   "by_token_or_surfaces": "press look: snapshot (theme-snapshot.json) is the sanctioned carrier",
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs (state pass, holdDefaults) + lib/fill-state-read.mjs::readStates + lib/fill-state-tokens.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Fill already writes a draft state look into the setting that holds that state and writes the draft rest value where the block would change a property the draft does not (holdDefaults); the press look is routed to the snapshot. Indus still shows 46 differing buttons, so the pass either skipped these or its writes were overwritten; the applier is the existing pass run to completion, not new code.",
+   "function_cited": "scripts/computed-route/lib/fill-state.mjs::holdDefaults"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": "Root/209#0",
+    "draft": "{\"active\":[\"color=rgb(231, 215, 104)\"]}",
+    "live": "{\"active\":[\"color=rgb(227, 211, 97)\"]}"
+   },
+   {
+    "page": "home",
+    "selector": "Root/237#0",
+    "draft": "{\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\",\"innerColor=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\",\"innerColor=rgb(255",
+    "live": "{\"hover\":[\"color=rgb(216, 202, 80)\",\"background-color=rgb(44, 62, 80)\",\"innerColor=rgb(216, 202, 80)\"],\"active\":[\"color=rgb(238, 233, 181)\",\"background-color=rgb(44, 62, 80)\",\"innerColor=rgb(238, 233,"
+   },
+   {
+    "page": "home",
+    "selector": "Root/237#1",
+    "draft": "{\"active\":[\"color=rgb(216, 202, 80)\",\"innerColor=rgb(216, 202, 80)\"]}",
+    "live": "{\"active\":[\"color=rgb(238, 233, 181)\",\"innerColor=rgb(238, 233, 181)\"]}"
+   },
+   {
+    "page": "home",
+    "selector": "Root/237#2",
+    "draft": "{\"active\":[\"color=rgb(216, 202, 80)\",\"innerColor=rgb(216, 202, 80)\"]}",
+    "live": "{\"active\":[\"color=rgb(238, 233, 181)\",\"innerColor=rgb(238, 233, 181)\"]}"
+   },
+   {
+    "page": "home",
+    "selector": "Root/237#3",
+    "draft": "{\"active\":[\"color=rgb(216, 202, 80)\",\"innerColor=rgb(216, 202, 80)\"]}",
+    "live": "{\"active\":[\"color=rgb(232, 224, 151)\",\"innerColor=rgb(232, 224, 151)\"]}"
+   }
+  ]
+ },
+ "STATE-FORM-FIELD-REST-AND-FOCUS": {
+  "cause": "Form text and select controls: rest ink/label colours and backgrounds differ from the draft on all four forms (field text, label colour, field background hex vs slug), and the focus look differs (draft: white bg, blue border, 4px halo box-shadow; live: UA/site ring, bg unchanged). AP2, CN3, CN4, CT1.",
+  "instances_at_review": 35,
+  "elements_measured": 35,
+  "by_status": {
+   "tool-applicable": 35,
+   "framework-open": 24
+  },
+  "status_note": "35 = 24 text/select fields (apply 5, contact 5, catalogue 7, careers 7; step 1 only) + 11 labels (apply 2, catalogue 3, contact 5, careers 1), every one differing at rest. The 24 fields also differ in focus (outline/box-shadow halo: no form setting holds a 4px halo; the motion Focus state sets border and background only), so those 24 count in both statuses. Rest colours are settable (sgs/form fieldTextColour, labelColour, fieldBackground take a hex).",
+  "pages": {
+   "apply": 7,
+   "contact": 10,
+   "catalogue": 10,
+   "careers": 8
+  },
+  "coverage": {
+   "by_pairing": 35,
+   "by_animations_json_record": "TR-110/PS-010/PS-011 (Apply input, select), TR-121/PS-014 (Contact): focus look recorded; labels have no record",
+   "by_token_or_surfaces": "rest colours are plain draft computed values (no token)",
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs + pairs.mjs form surfaces"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The halo has no setting, so a clone can never carry it; the rest colours are carried only when Fill pairs each field to its draft input, which the form surfaces do for step 1.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/form/style.css (focus rules) ; includes/motion/class-sgs-motion-focus-state.php"
+  },
+  "unmeasured": "Apply steps 2 to 5: the draft run stopped after step 2 on my generic fill (validation), live reached step 6; those fields are not compared.",
+  "examples": [
+   {
+    "page": "apply",
+    "selector": "Trading name input",
+    "draft": "focus bg #fff border #0A7EA8 box-shadow 0 0 0 4px rgba(46,173,226,.18)",
+    "live": "focus bg unchanged border #101010 outline auto"
+   },
+   {
+    "page": "contact",
+    "selector": "Your name input",
+    "draft": "rest bg rgb(247,249,250) label #6B7784",
+    "live": "rest bg rgb(242,245,247) label rgb(7,94,128)"
+   },
+   {
+    "page": "catalogue",
+    "selector": "Name label",
+    "draft": "13.5px 700 #1E2A3C",
+    "live": "12px 600 #4A5563"
+   }
+  ]
+ },
+ "FORM-TILE-VALUES": {
+  "cause": "Option tiles/pills: rest background (apply chips) and hover look (contact topics: draft lifts with shadow and border stays transparent, live gets a blue border) differ. AP1B, CN1.",
+  "instances_at_review": 17,
+  "elements_measured": 22,
+  "by_status": {
+   "tool-applicable": 17
+  },
+  "status_note": "apply 11 chips (6 business types + 5 hygiene ratings) differ at rest/hover bg; contact 6 topic tiles differ on hover (border and lift). Settings exist: sgs/form tileBorderColourHover, tileSelectedBackgroundColour, tile motion hover (translateY plus shadow).",
+  "pages": {
+   "apply": 11,
+   "contact": 6
+  },
+  "coverage": {
+   "by_pairing": 17,
+   "by_animations_json_record": "TR-111 (Apply chips), TR-120 (Contact topics)",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "The tile settings exist and TR records name the draft values, but form-field-tiles hover default is dead below a specificity rule (AP1B), so an unset form shows the generic border.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/form-field-tiles/render.php::sgs_ft_tile_rest_sel"
+  },
+  "examples": [
+   {
+    "page": "careers",
+    "selector": "Root/562#0",
+    "draft": "{\"rest\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\",\"innerColor=rgb(30, 42, 60)\"],\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\",\"innerColor=rgb(30, 42, 60)\"",
+    "live": "{\"rest\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\",\"innerColor=rgb(74, 85, 99)\"],\"hover\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\",\"innerColor=rgb(74, 85, 99)\""
+   },
+   {
+    "page": "careers",
+    "selector": "Root/562#1",
+    "draft": "{\"rest\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\",\"innerColor=rgb(30, 42, 60)\"],\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\",\"innerColor=rgb(30, 42, 60)\"",
+    "live": "{\"rest\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\",\"innerColor=rgb(74, 85, 99)\"],\"hover\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\",\"innerColor=rgb(74, 85, 99)\""
+   },
+   {
+    "page": "careers",
+    "selector": "Root/566#0",
+    "draft": "{\"rest\":[\"color=rgb(30, 42, 60)\",\"border-top-color=rgb(10, 126, 168)\",\"border-bottom-color=rgb(10, 126, 168)\"],\"hover\":[\"color=rgb(30, 42, 60)\",\"border-top-color=rgb(10, 126, 168)\",\"border-bottom-colo",
+    "live": "{\"rest\":[\"color=rgb(74, 85, 99)\",\"border-top-color=rgb(16, 16, 16)\",\"border-bottom-color=rgb(16, 16, 16)\"],\"hover\":[\"color=rgb(74, 85, 99)\",\"border-top-color=rgb(16, 16, 16)\",\"border-bottom-color=rgb("
+   },
+   {
+    "page": "careers",
+    "selector": "Root/569#0",
+    "draft": "{\"rest\":[\"color=rgb(74, 85, 99)\"],\"hover\":[\"color=rgb(74, 85, 99)\"],\"active\":[\"color=rgb(74, 85, 99)\"]}",
+    "live": "{\"rest\":[\"color=rgb(30, 42, 60)\"],\"hover\":[\"color=rgb(30, 42, 60)\"],\"active\":[\"color=rgb(30, 42, 60)\"]}"
+   },
+   {
+    "page": "careers",
+    "selector": "Root/560#0",
+    "draft": "{\"rest\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\"],\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(251, 252, 253)\"],\"active\":[\"color=rgb(30, 42, 60)\",\"border-top-color=rgba",
+    "live": "{\"rest\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\"],\"hover\":[\"color=rgb(74, 85, 99)\",\"background-color=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(74, 85, 99)\",\"border-top-color=rgba"
+   }
+  ]
+ },
+ "FORM-TILE-SELECTED-BADGE": {
+  "cause": "The selected tile: draft shows a left white tick (apply) or a dark tick in a gold 24px circle (contact) with white text; live shows the stylesheet checkmark badge top-right or none. AP1A, CN2.",
+  "instances_at_review": 17,
+  "elements_measured": 17,
+  "by_status": {
+   "framework-open": 17
+  },
+  "status_note": "No setting for an inline left tick, or for badge colour, size, position or tick colour (council AP1A/CN2, form/style.css::.sgs-form-field--tiles-style-checkmark). Measured tick presence differs on every contact tile (6); apply chips (11) carry the tick in the draft and none live.",
+  "pages": {
+   "apply": 11,
+   "contact": 6
+  },
+  "coverage": {
+   "by_pairing": 17,
+   "by_animations_json_record": "TR-111, TR-120",
+   "by_token_or_surfaces": 0,
+   "existing_function": "none"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "No block setting can produce the badge, so every clone with option pills loses it.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/form-field-tiles/render.php"
+  },
+  "examples": [
+   {
+    "page": "contact",
+    "selector": "topic tile selected",
+    "draft": "bg #0A7EA8, text #fff, 24px gold circle badge, tick",
+    "live": "accent-light bg, slate 3px border, checkmark badge top right"
+   }
+  ]
+ },
+ "FORM-LABEL-FLOAT": {
+  "cause": "Contact floating labels do not shrink on focus: one labelFontSize control governs rest and floated size. CN4.",
+  "instances_at_review": 5,
+  "elements_measured": 5,
+  "by_status": {
+   "framework-open": 5
+  },
+  "pages": {
+   "contact": 5
+  },
+  "coverage": {
+   "by_pairing": 5,
+   "by_animations_json_record": "TR-122, TR-123 (float transition)",
+   "by_token_or_surfaces": 0,
+   "existing_function": "none"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "No floated-size setting; the floated size is a zero-specificity default that the single label size outranks.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/form/style.css (.sgs-form-field--label-inside)"
+  },
+  "examples": [
+   {
+    "page": "contact",
+    "selector": "Your name label",
+    "draft": "focus 13px #0A7EA8",
+    "live": "focus 17px"
+   }
+  ]
+ },
+ "FORM-INVALID-SHAKE": {
+  "cause": "Continue with required fields empty: draft shakes the form body (A-33 Apply, A-35 Contact); live binds nothing. AP3.",
+  "instances_at_review": 2,
+  "elements_measured": 2,
+  "by_status": {
+   "tool-applicable": 2
+  },
+  "status_note": "Re-checked now: wp post get 163 (Apply form) has 0 sgsMotion; form 149 (Contact) has 1 (the submit button only). The preset state-shake and the invalid-state hook exist (council AP3).",
+  "pages": {
+   "apply": 1,
+   "contact": 1
+  },
+  "coverage": {
+   "by_pairing": 2,
+   "by_animations_json_record": "A-33 and A-35 (2 of 2)",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/motion-behaviours.mjs / read-animations.mjs (A records)"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "A records name the shake, but no reader maps an animate() call on a form body to a states.invalid motion binding.",
+   "function_cited": "scripts/computed-route/read-animations.mjs"
+  },
+  "examples": [
+   {
+    "page": "apply",
+    "selector": "sgs_form 163",
+    "draft": "translateX 0,-8,8,0 over 320ms on invalid Continue",
+    "live": "no sgsMotion"
+   }
+  ]
+ },
+ "FORM-CATALOGUE-LAYOUT-AND-CONSENT": {
+  "cause": "Catalogue form: all fields stack in one 684px column (draft: 2-column grid, 348px); label typography 13.5/700/#1E2A3C vs 12/600/#4A5563; consent sentence differs. Careers form shares the label typography gap. CT1.",
+  "instances_at_review": 13,
+  "elements_measured": 14,
+  "by_status": {
+   "framework-open": 7,
+   "tool-applicable": 5,
+   "tool-blind": 1
+  },
+  "status_note": "Measured on the mirror now: catalogue 5 text fields at 684 vs 348 wide, 2 selects at 684 vs 348 (7, framework-open: nested-container width), 5 labels with the typography gap (tool-applicable: labelFontSize/Weight/Colour), consent 1 (draft \"I agree to Indus Foods contacting me about this enquiry.\" missing, live \"I agree to the Terms & Conditions\": the clone wrote the sentence into label, the block prints consentText: tool-blind). Careers labels (12px vs draft) are in STATE-FORM-FIELD.",
+  "pages": {
+   "catalogue": 13
+  },
+  "coverage": {
+   "by_pairing": 13,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/pairs.mjs (form-catalogue surface)"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The width model (half/third assume the form grid, not a nested container) cannot place two columns; the consent text lands in the wrong attribute.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/form/style.css::.sgs-form-field--full ; form-field-consent/render.php"
+  },
+  "examples": [
+   {
+    "page": "catalogue",
+    "selector": "form fields",
+    "draft": "width 348, 2 columns",
+    "live": "width 684, 1 column"
+   }
+  ]
+ },
+ "CONTACT-REPLYBY": {
+  "cause": "Reply by Email/Phone/WhatsApp: the clone built three static buttons (selection never changes, nothing posted) where the draft has a single-choice pill group. CN5 (CN6 colour ruling stacks).",
+  "instances_at_review": 3,
+  "elements_measured": 3,
+  "by_status": {
+   "tool-blind": 3
+  },
+  "status_note": "Measured: the form census finds Email/Phone/WhatsApp as draft choice controls with no live counterpart in the form (unmatched draft controls 3). The pipeline did not classify a toggle-button group as a choice field.",
+  "pages": {
+   "contact": 3
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": "TR-124 names the toggle",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/skeleton-classify.mjs::classify"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "classify has no rule turning a state-toggle button group into sgs/form-field-tiles.",
+   "function_cited": "scripts/computed-route/lib/skeleton-classify.mjs::classify"
+  },
+  "examples": [
+   {
+    "page": "contact",
+    "selector": "cr-ref-form-enquiry-22..24",
+    "draft": "single-choice pills, active #2C3E50",
+    "live": "three static sgs/button"
+   }
+  ]
+ },
+ "WA-STACKING-AND-REVIEW-SUBMIT": {
+  "cause": "R8-07 floating WhatsApp is covered by the sticky Continue at 375 and by the focused form (z-index traps); R8-06 review Submit is not a divergence.",
+  "instances_at_review": 1,
+  "elements_measured": 0,
+  "by_status": {
+   "framework-open": 1
+  },
+  "status_note": "NOT re-measured by lane C: the hit-test needs a 375 touch run with focus; the council measurement stands (container/style.css focus-within z-index 2). R8-06 stays N (draft wraps the same).",
+  "pages": {
+   "every page with focusable main content and the floating button": 1
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "none"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The stacking rule is framework CSS, applying to every clone.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/container/style.css"
+  },
+  "examples": []
+ },
+ "TERMS-OWN-TEXT-DROPPED": {
+  "cause": "Terms summary rows and section headings lost the section names: the draft row is a number span plus the name as the element's own bare text node; the skeleton makes the parent a container and emits only the span. TC1A, TC1B, TC1C.",
+  "instances_at_review": 14,
+  "elements_measured": 42,
+  "by_status": {
+   "tool-blind": 14
+  },
+  "status_note": "Content census, terms page: 15 of 42 draft text leaves missing on live (Orders, Pricing, Delivery, Shortages damage and returns, Payment, Contact in the summary; \"01\" and the 7 section headings), plus one draft layout note (\"Layout draft: these summaries ...\") that is the draft's annotation. Live HTML read directly: summary holds only 01..07; sections 02..07 hold numbers and bodies. Careers \"Register interest\" and \"Apply for this role\" ARE present live (curl, 4 and 3 occurrences), so the council's careers suspicion is not reproduced.",
+  "pages": {
+   "terms": 14
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/skeleton-classify.mjs::classify (wrapperShells branch)"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "classify never reads an element's own text next to block children, so any mixed-content row drops its text on every clone.",
+   "function_cited": "scripts/computed-route/lib/skeleton-classify.mjs::classify"
+  },
+  "examples": [
+   {
+    "page": "terms",
+    "selector": ".cr-ref-terms-13..26",
+    "draft": "01 Trade accounts / 02 Orders ...",
+    "live": "01 02 03 04 05 06 07 only"
+   }
+  ]
+ },
+ "OPEN-STATUS-PILL": {
+  "cause": "Footer open-status pill: closed dot is the stylesheet red not the draft orange (F1); no pulse when closed (F2); line reads \"Opens at 9:30am tomorrow\" not \"Opens tomorrow at 9:30am\" (R8-03); the clock is an hour out in British Summer Time (F-tz).",
+  "instances_at_review": 4,
+  "elements_measured": 3,
+  "by_status": {
+   "tool-applicable": 2,
+   "framework-open": 2
+  },
+  "status_note": "Measured with a stubbed clock on both sides (Sun 12:00Z and Wed 19:30Z closed; Wed 11:00Z open): closed dot draft rgb(232,161,58) vs live rgb(239,68,68); draft pulse runs 1600ms in both states, live only when open (live running=[] closed); live text \"Opens at 9:30am tomorrow\" vs draft \"Opens tomorrow at 9:30am\". F-tz: Wed 8 July 08:45Z (09:45 London): draft \"Open now\", live \"Closed / Opens at 9:30am today\". Open-state dot and text match. F1 tool-applicable (openStatusClosedDot setting; A-02 record hoursNow colours), F-tz tool-applicable (site timezone option set by provisioning), F2 and R8-03 framework-open (pulse CSS and word order are not settings).",
+  "pages": {
+   "footer (chrome, counted once)": 4
+  },
+  "coverage": {
+   "by_pairing": 4,
+   "by_animations_json_record": "A-02 (colours, pulse, sub-line grammar)",
+   "by_token_or_surfaces": "timezone: draft londonNow() Europe/London",
+   "existing_function": "scripts/computed-route/read-animations.mjs"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The closed colour defaults to a framework red, the pulse and word order are hard-wired, and provisioning leaves the WP timezone at UTC.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/business-info/open-status-logic.js::buildLine ; render.php"
+  },
+  "examples": [
+   {
+    "page": "footer",
+    "selector": ".sgs-open-status__dot closed",
+    "draft": "rgb(232,161,58), pulse 1600ms",
+    "live": "rgb(239,68,68), no animation"
+   }
+  ]
+ },
+ "RULED-BUT-NOT-APPLIED": {
+  "cause": "Bean's round-8 rulings D-32 to D-37 are recorded in divergences.json but the live site does not show the ruled value yet.",
+  "instances_at_review": 8,
+  "elements_measured": 8,
+  "by_status": {
+   "accepted": 8
+  },
+  "status_note": "Re-measured now: MP D-32 breadcrumbs: About, Brands, Apply still show a middle crumb (\"Home / About / About Us\", \"Home / Brands / All Brands\", \"Home / Trade / Apply for Trade Account\"; curl of the live HTML) (3); Contact (\"Contact /\") and Food Service (\"Sectors /\") repeat the same pattern, outside the ruling (2 further, tool-applicable via middleCrumbLabel); ND17 D-33 drawer heading \"Our Brands\": no sgs-hide-tablet or sgs-hide-mobile class on cr-ref-mega-brands-2 (1); AB8 D-34: live 768 date reads solid rgb(7,94,128), stroke 0, not the ruled gold rgb(216,202,80) (1); DE2/FQ1 D-35: live ::details-content transition 0.3s spring unchanged (2); CN6 D-36 blocked behind CONTACT-REPLYBY (1). F8 D-37 and H11 D-38 not re-measured by lane C (hover/border: lanes A and B).",
+  "pages": {
+   "about": 2,
+   "brands": 1,
+   "apply": 1,
+   "delivery": 1,
+   "faqs": 1,
+   "drawer (chrome)": 1,
+   "contact": 1
+  },
+  "coverage": {
+   "by_pairing": 8,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "none (rulings are hand decisions)"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "A ruling is recorded as data in divergences.json but nothing applies it; the next clone repeats the unruled draft value.",
+   "function_cited": "sites/indus-foods/build/qa/divergences.json (no applier)"
+  },
+  "examples": [
+   {
+    "page": "about",
+    "selector": "sgs/breadcrumbs middle crumb",
+    "draft": "Home / About / About Us",
+    "live": "unchanged (ruling D-32: no middle crumb)"
+   }
+  ]
+ },
+ "STATE-SOCIAL-ICON": {
+  "cause": "Social icons: hover turns the glyph blue on live where the draft keeps it white (H2/F3, drawer ND3), and the glyph geometry differs (H1: all four path strings differ in length between draft and live).",
+  "instances_at_review": 11,
+  "elements_measured": 12,
+  "by_status": {
+   "tool-applicable": 11,
+   "tool-blind": 8
+  },
+  "status_note": "Header 4, footer 3 (instagram footer matches), drawer 4 (375 and 768 identical) differ in hover/press colour (live hover colour rgb(7,94,128) where the draft stays white; drawer phone and mail icons: draft hover bg gold rgb(231,215,104), live transparent: ND5). Settings exist (sgs/icon iconColourHover, backgroundColourHover; sgs/social-icons). Separately the SVG path data differs for all 4 networks in both icon sets (probe: linkedin 193 vs 176 chars, facebook 156 vs 139, google 723 vs 652, instagram 296 vs 279): 8 icons, nothing tells a tool to copy the draft path. Rest background on the anchor reads transparent live vs brand colour in the draft: the circle is drawn on another element live, so this is a measurement mismatch, not counted.",
+  "pages": {
+   "header": 4,
+   "footer": 3,
+   "drawer (chrome)": 4
+  },
+  "coverage": {
+   "by_pairing": 11,
+   "by_animations_json_record": "TR records on the social links (hover colour transitions)",
+   "by_token_or_surfaces": "brand colours per network are block-owned",
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Hover colours are writable state looks; the draft glyph path is not carried.",
+   "function_cited": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "examples": [
+   {
+    "page": "header",
+    "selector": "Root/23#0",
+    "draft": "{\"rest\":[\"background-color=rgb(10, 102, 194)\"],\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 102, 194)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 102, 194)\"],\"foc",
+    "live": "{\"rest\":[\"background-color=rgba(0, 0, 0, 0)\"],\"hover\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"bac"
+   },
+   {
+    "page": "header",
+    "selector": "Root/26#0",
+    "draft": "{\"rest\":[\"background-color=rgb(24, 119, 242)\"],\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(24, 119, 242)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(24, 119, 242)\"],\"foc",
+    "live": "{\"rest\":[\"background-color=rgba(0, 0, 0, 0)\"],\"hover\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"bac"
+   },
+   {
+    "page": "header",
+    "selector": "Root/29#0",
+    "draft": "{\"rest\":[\"background-color=rgb(255, 255, 255)\"],\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(255, 255, 255)\"],\"",
+    "live": "{\"rest\":[\"background-color=rgba(0, 0, 0, 0)\"],\"hover\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"color=rgb(7, 94, 128)\",\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"bac"
+   }
+  ]
+ },
+ "STATE-NAV-AND-DRAWER-ROWS": {
+  "cause": "Header nav items lack the draft hover tint rgba(10,126,168,.12) (4 of 5 items) and show a blue focus colour; drawer rows 03/04/06 show the number in white where the draft shows gold; drawer phone/mail hover bg missing.",
+  "instances_at_review": 10,
+  "elements_measured": 15,
+  "by_status": {
+   "tool-applicable": 10
+  },
+  "status_note": "header 5 nav buttons (about, sectors, brands, trade hover bg; contact hover colour) + drawer 3 rows (innerColor gold vs white at rest, 375 and 768 identical) + drawer phone and mail (hover bg). sgs/nav-bar-menu and sgs/mega-panel carry hover settings (drawerLinkHoverBg, featuredBgHover, iconColourHover); rows 03/04/06 numbers in the drawer have no pair-level setting found, counted tool-applicable on the strength of mega-panel settings only.",
+  "pages": {
+   "header": 5,
+   "drawer (chrome)": 5
+  },
+  "coverage": {
+   "by_pairing": 10,
+   "by_animations_json_record": "TR records on nav buttons",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Same state pass as buttons.",
+   "function_cited": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "examples": [
+   {
+    "page": "header",
+    "selector": "Root/47#1",
+    "draft": "{\"hover\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"active\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"focus\":[\"color=rgb(30, 42, 60)\",\"innerColor=rgb(30, 42, 60)\"]}",
+    "live": "{\"hover\":[\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"color=rgb(10, 126, 168)\",\"innerColor=rgb(10, 126, 168)\"]}"
+   },
+   {
+    "page": "header",
+    "selector": "Root/47#2",
+    "draft": "{\"hover\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"active\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"focus\":[\"color=rgb(30, 42, 60)\",\"innerColor=rgb(30, 42, 60)\"]}",
+    "live": "{\"hover\":[\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"color=rgb(10, 126, 168)\",\"innerColor=rgb(10, 126, 168)\"]}"
+   },
+   {
+    "page": "header",
+    "selector": "Root/47#3",
+    "draft": "{\"hover\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"active\":[\"background-color=rgba(10, 126, 168, 0.12)\"],\"focus\":[\"color=rgb(30, 42, 60)\",\"innerColor=rgb(30, 42, 60)\"]}",
+    "live": "{\"hover\":[\"background-color=rgba(0, 0, 0, 0)\"],\"active\":[\"background-color=rgba(0, 0, 0, 0)\"],\"focus\":[\"color=rgb(10, 126, 168)\",\"innerColor=rgb(10, 126, 168)\"]}"
+   }
+  ]
+ },
+ "STATE-LINKS-OTHER": {
+  "cause": "Other links: footer link rows (draft hover colour, row separator) and blog filter pills/cards differ in state colours; contact inline links.",
+  "instances_at_review": 18,
+  "elements_measured": 20,
+  "by_status": {
+   "tool-applicable": 18
+  },
+  "pages": {
+   "catalogue": 2,
+   "footer": 6
+  },
+  "pages_other": {
+   "blog": 6,
+   "contact": 2,
+   "footer": 2
+  },
+  "coverage": {
+   "by_pairing": 18,
+   "by_animations_json_record": "TR records (16 of 18 paired)",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Same state pass.",
+   "function_cited": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "examples": [
+   {
+    "page": "blog",
+    "selector": "Root/606#0",
+    "draft": "{\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"]}",
+    "live": "{\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"]}"
+   },
+   {
+    "page": "blog",
+    "selector": "Root/606#1",
+    "draft": "{\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"]}",
+    "live": "{\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"]}"
+   },
+   {
+    "page": "blog",
+    "selector": "Root/606#2",
+    "draft": "{\"hover\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"],\"active\":[\"color=rgb(30, 42, 60)\",\"background-color=rgb(255, 255, 255)\"]}",
+    "live": "{\"hover\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"],\"active\":[\"color=rgb(255, 255, 255)\",\"background-color=rgb(10, 126, 168)\"]}"
+   }
+  ]
+ },
+ "FOCUS-RING": {
+  "cause": "Where both sides show a focus ring its colour differs: the draft paints the browser default ring rgb(16,16,16), live paints the site focus system (gold or blue per block). Ring presence flips either way between runs (programmatic focus-visible), so presence is not counted.",
+  "instances_at_review": 6,
+  "elements_measured": 139,
+  "by_status": {
+   "accepted": 6
+  },
+  "status_note": "Measurement-unstable for presence; colour differences are by design of the theme focus system (assets/css/focus.css, FP: the draft styles no focus ring). Not a Bean finding. Counted as accepted pending Bean confirmation.",
+  "pages": {},
+  "coverage": {
+   "by_pairing": 6,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": "sites/indus-foods/theme-snapshot.json custom.focus.ring",
+   "existing_function": "scripts/computed-route/lib/fill-state-tokens.mjs (focus look to snapshot)"
+  },
+  "future_clone": {
+   "verdict": "protected",
+   "why": "The snapshot token and focus system apply to every clone.",
+   "function_cited": "scripts/computed-route/lib/fill-state-tokens.mjs"
+  },
+  "examples": []
+ },
+ "BLOG-FILTER-AND-CARD-TOP": {
+  "cause": "BL2: a blog category with fewer than 4 posts stretches its cards (live 609 or 1240 wide, draft 294); BL3: the draft card top line is a gold category pill plus date, live shows the category as plain text.",
+  "instances_at_review": 10,
+  "elements_measured": 11,
+  "by_status": {
+   "tool-applicable": 4,
+   "framework-open": 6
+  },
+  "status_note": "Measured on 1440 with real filter clicks on both sides: Company news 2 cards 609/609 vs 294, Products 1 card 1240 vs 294, Seasonal 2 cards 609, Industry 1 card 1240 (4 filter states, BL2: council class S setting). Card top line: draft category sits in a gold pill (parent bg rgb(216,202,80)) at x32, live category plain at x23 on all 6 cards (BL3, council F-bug).",
+  "pages": {
+   "blog": 10
+  },
+  "coverage": {
+   "by_pairing": 10,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/pairs.mjs"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "Both come from the post-grid block behaviour (column count on a filtered subset, meta layout), not from draft data.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/post-grid"
+  },
+  "examples": [
+   {
+    "page": "blog",
+    "selector": "filter Products",
+    "draft": "card width 294",
+    "live": "card width 1240"
+   }
+  ]
+ },
+ "BRAND-STRIP-LINKS-HP3": {
+  "cause": "Our Brands logos link to the brand pages (HP3).",
+  "instances_at_review": 5,
+  "elements_measured": 5,
+  "by_status": {
+   "fixed-verified": 5
+  },
+  "status_note": "Live home HTML: brand strip anchors /brands/, /brands/green-leaf/, /brands/lemon-tree/, /brands/sanam/, /brands/shan/ (curl).",
+  "pages": {
+   "home": 5
+  },
+  "coverage": {
+   "by_pairing": 5,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/draft-link.mjs::resolveDraftLink"
+  },
+  "future_clone": {
+   "verdict": "protected",
+   "why": "The link resolver writes every draft anchor target.",
+   "function_cited": "scripts/computed-route/lib/draft-link.mjs::resolveDraftLink"
+  },
+  "examples": []
+ },
+ "TEXT-AND-TYPOGRAPHY-PARITY": {
+  "cause": "Content census: every visible text leaf in each page root matched by text between draft and live, comparing font size, weight, family, transform, colour, style, line height and letter spacing, plus link targets.",
+  "instances_at_review": 991,
+  "elements_measured": 991,
+  "by_status": {
+   "fixed-verified": 923,
+   "tool-applicable": 53,
+   "tool-blind": 15
+  },
+  "status_note": "14 of 23 page surfaces have zero missing text and zero typography differences (about, our-story, certifications, community, blog, retail, manufacturing, brands, sanam, shan, green-leaf, lemon-tree, delivery, sustainability). Remaining differences sit in forms (apply colours 8, catalogue label typography 7+, contact tile descriptions colour 6) and terms (TERMS-OWN-TEXT-DROPPED); line-height deltas where one side computes \"normal\" are not counted. Header and footer scopes were too wide for the draft selector and were measured by the state census instead.",
+  "pages": {
+   "home": 67,
+   "about": 82,
+   "our-story": 50,
+   "certifications": 44,
+   "community": 28,
+   "careers": 78,
+   "blog": 46,
+   "retail": 49,
+   "manufacturing": 62,
+   "wholesale": 46,
+   "brands": 42,
+   "sanam": 38,
+   "shan": 31,
+   "green-leaf": 31,
+   "lemon-tree": 31,
+   "apply": 42,
+   "catalogue": 54,
+   "delivery": 39,
+   "faqs": 26,
+   "terms": 27,
+   "contact": 47,
+   "sustainability": 31
+  },
+  "coverage": {
+   "by_pairing": "text match, no pairing needed",
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": "tokens carry the matching type",
+   "existing_function": "scripts/computed-route/content-coverage.mjs"
+  },
+  "future_clone": {
+   "verdict": "protected",
+   "why": "Text and typography reach live correctly for the pages without form or mixed-content causes (14 of 23 pages are fully clean); the exceptions are the form and mixed-content causes above.",
+   "function_cited": "scripts/computed-route/content-coverage.mjs"
+  },
+  "examples": []
+ },
+ "CARD-LINK-STRUCTURE-HANDED-TO-LANE-B": {
+  "cause": "Whole-card links: the draft card is one anchor; on live the card is not a link or only an overlay anchor/button inside it. The content census finds 42 draft anchor groups (about 8, blog 6, brands 5, manufacturing 4, contact 4, retail 3, wholesale 3, careers 2, certifications 1, community 1, catalogue 1, brand pages 1 each) with a different live structure. Overlay-anchor state reads (11 on brands/contact, 12 in the mega panels) are measurement artefacts of that structure.",
+  "instances_at_review": 42,
+  "elements_measured": 42,
+  "by_status": {
+   "tool-blind": 42
+  },
+  "status_note": "Reported for lane B (links); counted here only so the total is not lost. Not re-verified card by card.",
+  "pages": {
+   "about": 8,
+   "blog": 6,
+   "brands": 5,
+   "manufacturing": 4,
+   "contact": 4,
+   "retail": 3,
+   "wholesale": 3,
+   "careers": 2,
+   "certifications": 1,
+   "community": 1,
+   "catalogue": 1,
+   "sanam": 1,
+   "shan": 1,
+   "green-leaf": 1,
+   "lemon-tree": 1
+  },
+  "coverage": {
+   "by_pairing": "card block paired, anchor not",
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/draft-link.mjs"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "See lane B.",
+   "function_cited": "scripts/computed-route/lib/skeleton-classify.mjs::classify"
+  },
+  "examples": []
+ },
+ "BURGER-BARS-H5": {
+  "cause": "Burger bars at 375: draft three bars 2.5px high (widths 18, 13, 8); live 2px high plus an extra 18x18 wrapper span.",
+  "instances_at_review": 1,
+  "elements_measured": 1,
+  "by_status": {
+   "tool-applicable": 1
+  },
+  "status_note": "Measured rest only. Bean said live is thicker; measured live is thinner (2px vs 2.5px), so the thickness complaint is not reproduced at rest; the hover inversion was not re-measured. sgs/nav-bar-menu burgerBar*BorderRadius and burger colour settings exist; a bar thickness setting was not found in the DB (attr search on burger/Bar thick returned radius only), so thickness may be framework-open.",
+  "pages": {
+   "header (chrome)": 1
+  },
+  "coverage": {
+   "by_pairing": 1,
+   "by_animations_json_record": "TR hover records on the burger",
+   "by_token_or_surfaces": 0,
+   "existing_function": "scripts/computed-route/lib/fill-state.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Colour states are writable; bar thickness has no setting found.",
+   "function_cited": "plugins/sgs-blocks/src/blocks/nav-bar-menu"
+  },
+  "examples": []
+ },
+ "TOKEN-AUDIT": {
+  "cause": "Handoff tokens and global rules (::selection, shadow tokens, default entrance) not applied site-wide.",
+  "instances_at_review": 1,
+  "elements_measured": 0,
+  "by_status": {
+   "framework-open": 1
+  },
+  "status_note": "NOT re-measured by lane C. Council: colour, spacing, radius, type tokens applied; ::selection (reader exists), shadow tokens (Spec 32 FR-32-18 unbuilt) and entrance defaults (no schema key) not.",
+  "pages": {
+   "every page": 1
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": "handoff/tokens/*.css",
+   "existing_function": "scripts/computed-route/lib/snapshot-tokens.mjs"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Colour and type tokens ship in the snapshot; shadows and entrance defaults have no consumer.",
+   "function_cited": "scripts/computed-route/lib/snapshot-tokens.mjs"
+  },
+  "examples": []
+ },
+ "NOT-MEASURED-BY-C": {
+  "cause": "Rows lane C could not verify in the time or by a method it trusted.",
+  "instances_at_review": 0,
+  "elements_measured": 0,
+  "by_status": {},
+  "status_note": "HP15 (stacked hero alignment: draft hero image not found by a generic selector at 375/768, no verdict), AB6 (tablet hero background zoom: draft about hero is an svg at 768, live none by selector, no verdict), F9 (WhatsApp icon centring at 375: probe ran at 1440 only), ND21 (drawer X thickness), ND14 and ND18 (drawer mega border and brand tile height: border/size, lane B), H11 and F8 (lanes A/B), R8-06 (council N kept), CA2 (shine hover: lane A), apply steps 2 to 5 on the draft, mega-brands and mega-sectors link cards (pairing found 1 and 0 of 15 interactive; overlay structure), any width other than 1440 for state colours (drawer at 375 and 768 only).",
+  "pages": {},
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 0,
+   "by_token_or_surfaces": 0,
+   "existing_function": ""
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "n/a",
+   "function_cited": ""
+  },
+  "examples": []
+ }
+}

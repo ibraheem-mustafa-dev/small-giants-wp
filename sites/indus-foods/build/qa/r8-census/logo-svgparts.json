@@ -1,0 +1,65 @@
+{
+ "block": "sgs/responsive-logo (header logoId 81; footer square logoId 83 uses logo-square-anim.svg, same ids; drawer: sgs/nav-drawer chromeLogoInlineSvg + chromeLogoSvgParts)",
+ "attributes": {
+  "inlineSvg": true,
+  "svgPartsTrigger": "visible",
+  "svgPartsHoverCooldown": 1400,
+  "svgParts": [
+   {
+    "target": "sunrays_spin",
+    "loopRotate": 360,
+    "loopDuration": 60000,
+    "hoverRate": 14,
+    "hoverRateDuration": 900
+   },
+   {
+    "target": "sunrays_expand",
+    "fromScale": 0,
+    "fromOpacity": 0,
+    "duration": 1200,
+    "delay": 150,
+    "easing": "spring",
+    "origin": "center"
+   },
+   {
+    "target": "[id$=\"Mountain Block\"]",
+    "fromY": 120,
+    "fromOpacity": 0,
+    "duration": 1000,
+    "delay": 0,
+    "easing": "ease-out"
+   },
+   {
+    "target": "snow",
+    "fromOpacity": 0,
+    "duration": 700,
+    "delay": 650,
+    "easing": "ease-out"
+   },
+   {
+    "target": "darkpath",
+    "fromOpacity": 0,
+    "duration": 900,
+    "delay": 500,
+    "easing": "ease-out"
+   },
+   {
+    "target": "logo_text",
+    "eachChild": true,
+    "fromOpacity": 0,
+    "fromY": 60,
+    "duration": 650,
+    "delay": 420,
+    "stagger": 45,
+    "easing": "ease-out"
+   }
+  ]
+ },
+ "source": "indus-logo.js::IndusLogo.play / IndusLogo.load; animations.json L-01..L-10",
+ "not_expressible_today": [
+  "road wipe is clip-path inset(100% 0 0 0) to inset(0): svg-parts.js::entranceFrames has no clip-path; the opacity fade is a stand-in",
+  "draft easing cubic-bezier(.16,.84,.32,1) is not in svg-parts.js EASINGS (linear, ease, ease-in, ease-out, ease-in-out, spring); falls back to ease-out",
+  "hover is three bobs (sun scale 1.12, mountain -24px, letters -40px, stagger 28ms), not an entrance replay; hoverReplay would replay the entrance (mountain dropping 120px), so leave it off; only hoverRate 14 for 900ms (L-10) is exact",
+  "BUG: svg-parts.js::entranceFrames writes CSS transform; the draft writes the individual translate/scale properties. 'Mountain Block' and 'snow' carry an SVG transform attribute (matrix 4.088,0,0,-4.119) and the CSS transform replaces it. Measured on logo-horizontal-anim.svg (census/K/svgtest.mjs): the translate property shifts the group down 25px and keeps its 427x163 box; a transform keyframe near the end renders it as a 105x39 box"
+ ]
+}

@@ -1,0 +1,3822 @@
+{
+ "lane": "B structure",
+ "not_measured": [
+  "link hit-test and sticky pin test ran at 1440 for pages (header, footer and the drawer also at 375, the drawer at 768); card links at 375 and 768 on the pages were not hit-tested (a card link is not width-specific in the markup, but a stacked layout could change coverage)",
+  "header and footer pins at 768 and 1920",
+  "widths between the four read widths (1024 to 1280, where auto-fit and fixed grid tiers can differ)",
+  "hover, press and open states other than the drawer open and the four megas open (a hover-only radius or shadow is not in the census)",
+  "the wrapper-level rounded corners of the mega panel at 1920",
+  "drawer width 375 against 365: the scrollbar gutter reserved by wave 1 commit b33706cd7 makes drawer content 10px narrower than the draft (a deliberate trade, counted as a layout difference, not a cause to fix)"
+ ],
+ "measured": "mirror http://localhost:8083/ at wave 2 (e47763318) vs draft http://127.0.0.1:5181/; widths 375/768/1440/1920 pages, header and footer from home, drawer 375/768, megas 1440; link hit-test and pin test at 1440 (header/footer/drawer also 375, drawer 768)",
+ "unmeasured": [],
+ "rounded_corners": {
+  "cause": "A container with a radius clips its children in the draft (overflow hidden/clip); the live equivalent keeps overflow visible (the sgs/container default), so a square child or a latent hover/zoom layer can paint past the rounded corners. No hand step reads the draft overflow, and the parity walker has no overflow row.",
+  "instances_at_review": 109,
+  "examined": {
+   "draft_clip_containers_with_radius": 225,
+   "draft_media_with_own_radius_outside_a_clipping_parent": 0,
+   "matching_now": 118,
+   "no_live_equivalent_found": 1
+  },
+  "measured_now": {
+   "differing": 106,
+   "differing_with_a_child_painting_past_the_corner_at_rest": 32,
+   "differing_latent_clip_dropped_only": 74
+  },
+  "corners": {
+   "draft_rounded_examined": 896,
+   "live_clipped": 488,
+   "live_square": 0,
+   "live_exposed": 110,
+   "live_clip_dropped": 298,
+   "live_round_by_child": 0
+  },
+  "by_status": {
+   "tool-applicable": 106,
+   "fixed-verified": 3
+  },
+  "pages": {
+   "home": 8,
+   "about": 8,
+   "our-story": 2,
+   "certifications": 4,
+   "community": 5,
+   "careers": 4,
+   "food-service": 9,
+   "retail": 8,
+   "manufacturing": 12,
+   "wholesale": 7,
+   "brands": 10,
+   "shan": 4,
+   "green-leaf": 4,
+   "lemon-tree": 4,
+   "catalogue": 11,
+   "sustainability": 1,
+   "footer": 1,
+   "mega-sectors": 4
+  },
+  "coverage": {
+   "by_pairing": 106,
+   "by_animations_json": 0,
+   "by_token_or_surfaces": 93,
+   "token_note": "radius equals a handoff token (--radius-tile 12, --radius-card 22, --radius-panel 12, --radius-pill 999) for by_token_or_surfaces instances; overflow has no token or surfaces.json record, only the draft computed value through the pair",
+   "pipeline_function_already_mapping": "scripts/computed-route/lib/db.mjs (overflow-x/overflow-y reach the container `overflow` setting through the shorthand family) and lib/fill-resolve-state.mjs::BOX_PAINT (lists overflow) can write it from a pair; nothing triggers it for a resting overflow difference"
+  },
+  "fixed_verified": [
+   "mega-about|clip-container|65#0",
+   "mega-brands|clip-container|65#0",
+   "mega-trade|clip-container|65#0"
+  ],
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The resolver can map a draft overflow to sgs/container overflow, but Fill writes only what a walker row asks for and scripts/parity/lib/compare.mjs compares no overflow property (scripts/parity/lib/collect.mjs::collectPair reads overflow only as a passThrough paints flag). On Indus every clip that exists was hand-set in rounds (fix-catalogue R2-02, R3-02, R5-08).",
+   "function_cited": "scripts/parity/lib/collect.mjs::collectPair; scripts/computed-route/lib/db.mjs; scripts/computed-route/lib/fill-resolve-state.mjs::BOX_PAINT"
+  },
+  "examples": [
+   {
+    "page": "retail",
+    "selector": ".cr-ref-retail-72 (draft tpl 371#0)",
+    "draft": "radius 14/14/14/14 overflow hidden/hidden",
+    "live": "radius 14/14/14/14 overflow visible/visible, corners exposed,exposed,exposed,exposed"
+   },
+   {
+    "page": "manufacturing",
+    "selector": ".cr-ref-manufacturing-98 (draft tpl 371#0)",
+    "draft": "radius 14/14/14/14 overflow hidden/hidden",
+    "live": "radius 14/14/14/14 overflow visible/visible, corners exposed,exposed,exposed,exposed"
+   },
+   {
+    "page": "wholesale",
+    "selector": ".cr-ref-wholesale-62 (draft tpl 371#0)",
+    "draft": "radius 14/14/14/14 overflow hidden/hidden",
+    "live": "radius 14/14/14/14 overflow visible/visible, corners exposed,exposed,exposed,exposed"
+   },
+   {
+    "page": "brands",
+    "selector": ".cr-ref-brands-18 (draft tpl 502#0)",
+    "draft": "radius 12/12/12/12 overflow hidden/hidden",
+    "live": "radius 12/12/12/12 overflow visible/visible, corners exposed,exposed,exposed,exposed"
+   },
+   {
+    "page": "mega-sectors",
+    "selector": ".cr-ref-mega-sectors-2 (draft tpl 88#0)",
+    "draft": "radius 12/12/12/12 overflow hidden/hidden",
+    "live": "radius 12/12/12/12 overflow visible/visible, corners exposed,exposed,exposed,exposed"
+   }
+  ],
+  "detail": [
+   {
+    "id": "home|clip-container|231#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "home|clip-container|233#0",
+    "widths": [
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "70/70/70/70 hidden/hidden",
+    "live": "67/67/67/67 hidden/hidden [clipped,clipped,clipped,clipped]"
+   },
+   {
+    "id": "home|clip-container|231#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "home|clip-container|233#1",
+    "widths": [
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "70/70/70/70 hidden/hidden",
+    "live": "67/67/67/67 hidden/hidden [clipped,clipped,clipped,clipped]"
+   },
+   {
+    "id": "home|clip-container|231#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "home|clip-container|233#2",
+    "widths": [
+     768,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "70/70/70/70 hidden/hidden",
+    "live": "67/67/67/67 hidden/hidden [clipped,clipped,clipped,clipped]"
+   },
+   {
+    "id": "home|clip-container|231#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "home|clip-container|233#3",
+    "widths": [
+     375,
+     768,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "75/75/75/75 hidden/hidden",
+    "live": "72/72/72/72 hidden/hidden [clipped,clipped,clipped,clipped]"
+   },
+   {
+    "id": "about|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#5",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#6",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "about|clip-container|481#7",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "our-story|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "our-story|clip-container|395#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "certifications|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "certifications|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "certifications|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "certifications|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "community|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "community|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "community|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "community|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "community|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "careers|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "careers|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "careers|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "careers|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|481#5",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|367#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|367#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "food-service|clip-container|367#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|395#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|367#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|371#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "retail|clip-container|367#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|371#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "retail|clip-container|367#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "retail|clip-container|371#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "manufacturing|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|481#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|367#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|371#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "manufacturing|clip-container|367#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|371#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "manufacturing|clip-container|367#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "manufacturing|clip-container|371#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "wholesale|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "wholesale|clip-container|367#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "wholesale|clip-container|371#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "wholesale|clip-container|367#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "wholesale|clip-container|371#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "wholesale|clip-container|367#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "wholesale|clip-container|371#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "14/14/14/14 hidden/hidden",
+    "live": "14/14/14/14 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#5",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#6",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#7",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#8",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "brands|clip-container|502#9",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "shan|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "shan|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "shan|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "shan|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "green-leaf|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "green-leaf|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "green-leaf|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "green-leaf|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "lemon-tree|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "lemon-tree|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "lemon-tree|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "lemon-tree|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#5",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#6",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#7",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#8",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|481#9",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "catalogue|clip-container|572#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "sustainability|clip-container|395#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [clip-dropped,clip-dropped,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "footer|clip-container|711#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "status": "tool-applicable",
+    "draft": "22/22/22/22 hidden/hidden",
+    "live": "22/22/22/22 visible/visible [exposed,exposed,clip-dropped,clip-dropped]"
+   },
+   {
+    "id": "mega-sectors|clip-container|88#0",
+    "widths": [
+     1440
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "mega-sectors|clip-container|88#1",
+    "widths": [
+     1440
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "mega-sectors|clip-container|88#2",
+    "widths": [
+     1440
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   },
+   {
+    "id": "mega-sectors|clip-container|88#3",
+    "widths": [
+     1440
+    ],
+    "status": "tool-applicable",
+    "draft": "12/12/12/12 hidden/hidden",
+    "live": "12/12/12/12 visible/visible [exposed,exposed,exposed,exposed]"
+   }
+  ]
+ },
+ "pinned_sticky": {
+  "cause": "The draft pins a column with position: sticky and a top (120px, 110px on Apply, 84px for the timeline track, 0 for the header); the clone wrote position: sticky from the width ladder without the top (so it never pins), or no sticky at all.",
+  "instances_at_review": 18,
+  "examined": {
+   "draft_sticky_elements": 19,
+   "pins_when_scrolled_on_the_draft": 19,
+   "matching_now": 1
+  },
+  "measured_now": {
+   "differing": 18,
+   "live_sticky_with_top_auto_never_pins": 15,
+   "live_not_sticky": 2
+  },
+  "by_status": {
+   "tool-applicable": 18
+  },
+  "pages": {
+   "about": 1,
+   "our-story": 1,
+   "certifications": 1,
+   "careers": 2,
+   "food-service": 1,
+   "retail": 1,
+   "manufacturing": 1,
+   "wholesale": 1,
+   "catalogue": 1,
+   "delivery": 2,
+   "faqs": 3,
+   "terms": 1,
+   "sustainability": 1,
+   "header": 1
+  },
+  "coverage": {
+   "by_pairing": 17,
+   "by_animations_json": 1,
+   "animations_note": "header: surfaces.json S-03 and animations.json J-01 (header scroll shadow) name the sticky header; the timeline pin is J-04 to J-08; the column pins have no record, their top is only in the draft computed value",
+   "by_token_or_surfaces": 1,
+   "pipeline_function_already_mapping": "scripts/computed-route/lib/motion-behaviour-settings.mjs::stickyTiers (header only); scripts/computed-route/lib/fill-width-ladder.mjs rung 4 (writes the sticky Custom CSS without the top); scripts/computed-route/lib/fill-declared.mjs::unreadDeclared (reads a sticky top only when declared, then it is not written)"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The header pin is carried (motion-behaviour-settings.mjs::stickyTiers). Column pins go through fill-width-ladder.mjs rung 4 as scoped Custom CSS with no top, and no code in scripts/computed-route/lib writes the container pinEdge / pinGap / pinBelowHeader settings (grep: 0 hits); the walker compares no position row, so a pin that never pins is invisible.",
+   "function_cited": "scripts/computed-route/lib/fill-width-ladder.mjs (rung 4); scripts/computed-route/lib/motion-behaviour-settings.mjs::stickyTiers"
+  },
+  "examples": [
+   {
+    "page": "about",
+    "selector": "draft tpl 438#0 -> live sgs-container sgs-cst-7c581f29 sgs-container-7c581f29 cr-ref",
+    "draft": "sticky top 84px, pins when scrolled: true",
+    "live": "js-pinned (sgs/timeline pinned panel, not CSS sticky) top 133px, pins when scrolled: true"
+   },
+   {
+    "page": "our-story",
+    "selector": "draft tpl 438#0 -> live sgs-container sgs-cst-ed1d94c1 sgs-container-ed1d94c1 cr-ref",
+    "draft": "sticky top 84px, pins when scrolled: true",
+    "live": "js-pinned (sgs/timeline pinned panel, not CSS sticky) top 133px, pins when scrolled: true"
+   },
+   {
+    "page": "certifications",
+    "selector": "draft tpl 399#0 -> live sgs-c-wgate54 sgs-container sgs-cst-ceabbc60 sgs-container-c",
+    "draft": "sticky top 120px, pins when scrolled: true",
+    "live": "sticky top auto, pins when scrolled: false"
+   },
+   {
+    "page": "careers",
+    "selector": "draft tpl 399#0 -> live sgs-c-wgate77 sgs-container sgs-cst-2577b003 sgs-container-2",
+    "draft": "sticky top 120px, pins when scrolled: true",
+    "live": "sticky top auto, pins when scrolled: false"
+   },
+   {
+    "page": "careers",
+    "selector": "draft tpl 572#0 -> live sgs-c-wgate119 sgs-container sgs-band-gutter sgs-cst-e9f79b4",
+    "draft": "sticky top 120px, pins when scrolled: true",
+    "live": "sticky top auto, pins when scrolled: false"
+   }
+  ],
+  "detail": [
+   {
+    "surface": "about",
+    "width": 1440,
+    "tpl": "438#0",
+    "draft": {
+     "top": "84px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "js-pinned (sgs/timeline pinned panel, not CSS sticky)",
+     "top": "133px",
+     "pinned": true
+    },
+    "block": "sgs/timeline",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "our-story",
+    "width": 1440,
+    "tpl": "438#0",
+    "draft": {
+     "top": "84px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "js-pinned (sgs/timeline pinned panel, not CSS sticky)",
+     "top": "133px",
+     "pinned": true
+    },
+    "block": "sgs/timeline",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "certifications",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "careers",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "careers",
+    "width": 1440,
+    "tpl": "572#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "food-service",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "retail",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "manufacturing",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "wholesale",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "apply",
+    "width": 1440,
+    "tpl": "86#0",
+    "draft": {
+     "top": "110px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "110px",
+     "pinned": true
+    },
+    "block": "sgs/container",
+    "differs": false
+   },
+   {
+    "surface": "catalogue",
+    "width": 1440,
+    "tpl": "572#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "delivery",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "delivery",
+    "width": 1440,
+    "tpl": "589#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "faqs",
+    "width": 1440,
+    "tpl": "589#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "faqs",
+    "width": 1440,
+    "tpl": "589#1",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "faqs",
+    "width": 1440,
+    "tpl": "589#2",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "terms",
+    "width": 1440,
+    "tpl": "643#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "sustainability",
+    "width": 1440,
+    "tpl": "399#0",
+    "draft": {
+     "top": "120px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "auto",
+     "pinned": false
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "header",
+    "width": 1440,
+    "tpl": "39#0",
+    "draft": {
+     "top": "0px",
+     "pinned": true
+    },
+    "live": {
+     "pos": "sticky",
+     "top": "0px",
+     "pinned": true
+    },
+    "block": "sgs/container",
+    "differs": true,
+    "status": "tool-applicable"
+   }
+  ]
+ },
+ "links": {
+  "cause": "The draft makes a whole card or row one link (an <a>, or a div with onClick) and the CTA inside is a visual cue; the live card is a plain container with a real sgs/button inside (the clone treats a card ending in a short call to action as a plain card), or the post-grid has no whole-card link, or the row has no link at all.",
+  "instances_at_review": 50,
+  "examined": {
+   "draft_clickable_regions_measured": 50,
+   "matching_now": 0,
+   "draft_anchors_not_clickable_skipped": 47
+  },
+  "measured_now": {
+   "differing": 50,
+   "whole_card_link_dropped": 34,
+   "cta_real_button_where_draft_has_a_cue": 46,
+   "no_live_equivalent": 0,
+   "both_whole_and_cta": 30
+  },
+  "by_status": {
+   "tool-applicable": 28,
+   "tool-blind": 22
+  },
+  "pages": {
+   "about": 8,
+   "careers": 4,
+   "blog": 6,
+   "food-service": 3,
+   "retail": 3,
+   "manufacturing": 3,
+   "wholesale": 3,
+   "contact": 3,
+   "footer": 2,
+   "mega-about": 6,
+   "mega-sectors": 4,
+   "mega-trade": 5
+  },
+  "coverage": {
+   "by_pairing": 44,
+   "by_animations_json": 4,
+   "animations_note": "careers rows: the onClick target is in animations.json J-21 (toForm) and the row hover in TR-070/071; every other card has the target in the draft href",
+   "by_token_or_surfaces": 0,
+   "pipeline_function_already_mapping": "scripts/computed-route/lib/skeleton-rules.mjs (the wholeCardLink verdict: a card ending in a short call to action returns attributes {} and keeps the button; a non-<a> row returns null)"
+  },
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The wave 2 settings exist (container sgsBlockLink and hoverAsCard, post-grid cardLink, button visualOnly) but no pipeline code writes cardLink, visualOnly or hoverAsCard (grep in scripts/computed-route: only sgsBlockLink via skeleton-rules.mjs), and the skeleton rule keeps the real button and drops the card link.",
+   "function_cited": "scripts/computed-route/lib/skeleton-rules.mjs (wholeCardLink verdict, cardAction); scripts/computed-route/lib/skeleton-classify.mjs"
+  },
+  "examples": [
+   {
+    "page": "about",
+    "selector": "draft tpl 481#0 -> live sgs-container sgs-cst-df73b4fb sgs-container--stac",
+    "draft": "a href #/our-story, 100% of the card clickable, 0 nested buttons/links",
+    "live": "0% clickable ({}), 1 nested buttons/links"
+   },
+   {
+    "page": "careers",
+    "selector": "draft tpl 410#0 -> live sgs-container sgs-band-gutter sgs-cst-b9d215a6 sgs",
+    "draft": "div onClick, 100% of the card clickable, 1 nested buttons/links",
+    "live": "8% clickable ({\"a\":2}), 1 nested buttons/links"
+   },
+   {
+    "page": "blog",
+    "selector": "draft tpl 606#0 -> live sgs-post-grid__card sgs-post-grid__card--flat",
+    "draft": "a href #/post-post-1, 100% of the card clickable, 0 nested buttons/links",
+    "live": "52% clickable ({\"a\":13}), 3 nested buttons/links"
+   },
+   {
+    "page": "food-service",
+    "selector": "draft tpl 367#0 -> live sgs-container sgs-band-gutter sgs-on-light sgs-cst",
+    "draft": "a href #/manufacturing, 100% of the card clickable, 0 nested buttons/links",
+    "live": "8% clickable ({\"a\":2}), 1 nested buttons/links"
+   },
+   {
+    "page": "retail",
+    "selector": "draft tpl 367#0 -> live sgs-container sgs-band-gutter sgs-on-light sgs-cst",
+    "draft": "a href #/food-service, 100% of the card clickable, 0 nested buttons/links",
+    "live": "8% clickable ({\"a\":2}), 1 nested buttons/links"
+   }
+  ],
+  "detail": [
+   {
+    "surface": "about",
+    "tpl": "481#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#3",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#4",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#5",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#6",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "about",
+    "tpl": "481#7",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "careers",
+    "tpl": "410#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": false,
+    "draftTag": "div",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 1,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "careers",
+    "tpl": "410#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": false,
+    "draftTag": "div",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 1,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "careers",
+    "tpl": "410#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": false,
+    "draftTag": "div",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 1,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "careers",
+    "tpl": "410#3",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": false,
+    "draftTag": "div",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 1,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#3",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#4",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "blog",
+    "tpl": "606#5",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.52,
+    "dNested": 0,
+    "lNested": 3,
+    "ctaPaired": 0,
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "food-service",
+    "tpl": "367#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "food-service",
+    "tpl": "367#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "food-service",
+    "tpl": "367#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "retail",
+    "tpl": "367#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "retail",
+    "tpl": "367#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "retail",
+    "tpl": "367#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "manufacturing",
+    "tpl": "367#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "manufacturing",
+    "tpl": "367#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "manufacturing",
+    "tpl": "367#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "wholesale",
+    "tpl": "367#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "wholesale",
+    "tpl": "367#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "wholesale",
+    "tpl": "367#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0.08,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "contact",
+    "tpl": "531#0",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "contact",
+    "tpl": "531#1",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 2,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "contact",
+    "tpl": "531#2",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 2,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "footer",
+    "tpl": "658#0",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 2,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "footer",
+    "tpl": "664#0",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 2,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#0",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#1",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#2",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#3",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#4",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-about",
+    "tpl": "70#5",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-sectors",
+    "tpl": "87#0",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "mega-sectors",
+    "tpl": "87#1",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "mega-sectors",
+    "tpl": "87#2",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "mega-sectors",
+    "tpl": "87#3",
+    "differs": true,
+    "notWhole": true,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 0,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 1,
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "surface": "mega-trade",
+    "tpl": "70#0",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-trade",
+    "tpl": "70#1",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-trade",
+    "tpl": "70#2",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-trade",
+    "tpl": "70#3",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "surface": "mega-trade",
+    "tpl": "70#4",
+    "differs": true,
+    "notWhole": false,
+    "ctaReal": true,
+    "draftTag": "a",
+    "draftCov": 1,
+    "liveCov": 1,
+    "dNested": 0,
+    "lNested": 1,
+    "ctaPaired": 0,
+    "block": "sgs/container",
+    "status": "tool-blind"
+   }
+  ]
+ },
+ "layout_widths": {
+  "cause": "Paired layout containers (max-width bands, grids) whose resolved width, left edge, max-width or column count differ from the draft: a side gutter that measures 27px at 375 where the draft is 20px (and 46px against 32px at 768), grids declared auto-fit in the draft but written as fixed 4/2/1 tiers live, text blocks narrower than the draft, and structural differences (timeline track, 2-column rows).",
+  "instances_at_review": 126,
+  "examined": {
+   "paired_layout_containers_measured": 722,
+   "instance_widths_differing": 327,
+   "cascades_of_a_differing_ancestor_not_counted": 34,
+   "scrolling_tracks_excluded_as_a_measurement_artefact": [
+    "home||222#0",
+    "about||444#0",
+    "our-story||444#0"
+   ]
+  },
+  "measured_now": {
+   "origin_instances_differing": 126,
+   "per_width": {
+    "375": 80,
+    "768": 99,
+    "1440": 71,
+    "1920": 77
+   },
+   "by_kind_instance_widths": {
+    "side gutter or width": 103,
+    "max-width": 40,
+    "other": 11,
+    "grid fill mode (declared auto-fit vs fixed tiers)": 52,
+    "column count": 121
+   },
+   "grid_fill_or_columns_instances": 48
+  },
+  "by_status": {
+   "tool-applicable": 108,
+   "framework-open": 3,
+   "tool-blind": 15
+  },
+  "pages": {
+   "home": 9,
+   "about": 6,
+   "our-story": 2,
+   "certifications": 11,
+   "community": 4,
+   "careers": 10,
+   "blog": 5,
+   "food-service": 9,
+   "retail": 4,
+   "manufacturing": 5,
+   "wholesale": 6,
+   "brands": 7,
+   "sanam": 3,
+   "shan": 4,
+   "green-leaf": 4,
+   "lemon-tree": 3,
+   "apply": 2,
+   "catalogue": 5,
+   "delivery": 5,
+   "faqs": 2,
+   "terms": 1,
+   "contact": 2,
+   "sustainability": 6,
+   "header": 1,
+   "footer": 4,
+   "drawer-site-menu": 4,
+   "mega-brands": 1,
+   "mega-sectors": 1
+  },
+  "coverage": {
+   "by_pairing": 111,
+   "by_animations_json": 0,
+   "by_token_or_surfaces": 0,
+   "token_note": "the gutter tokens (20/32/40) reached the snapshot and match the draft band padding; the live inset differs for another reason not isolated here",
+   "pipeline_function_already_mapping": "scripts/computed-route/lib/fill-width-ladder.mjs and lib/fill-dimensions.mjs write widths and max-widths from the draft computed values at 375/768/1440/1920"
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "The width ladder reads the draft computed values at four widths for every pair, so bands and max-widths mostly land (examined vs differing above); what it does not read is the draft declared auto-fit/auto-fill (the live grids carry fixed repeat(4/2/1) tiers) nor widths between the four read widths, so a future clone repeats the grid fill-mode difference.",
+   "function_cited": "scripts/computed-route/lib/fill-width-ladder.mjs; scripts/computed-route/lib/fill-dimensions.mjs"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": "draft tpl 253#0 -> live .cr-ref-home-71",
+    "draft": "w 335 left 20 max-width 420px",
+    "live": "w 322 left 27 max-width 420px; width 335->322; left 20->27 (widths 375,768,1440,1920)"
+   },
+   {
+    "page": "about",
+    "selector": "draft tpl 322#0 -> live sgs-hero__content",
+    "draft": "w 335 left 20 max-width 1240px",
+    "live": "w 335 left 20 max-width 1400px; max-width 1240px->1400px (widths 375,768,1440,1920)"
+   },
+   {
+    "page": "our-story",
+    "selector": "draft tpl 388#0 -> live .cr-ref-our-story-52",
+    "draft": "w 335 left 20 max-width none",
+    "live": "w 322 left 27 max-width none; width 335->322; left 20->27 (widths 375,1920)"
+   },
+   {
+    "page": "certifications",
+    "selector": "draft tpl 479#0 -> live .cr-ref-certifications-14",
+    "draft": "w 335 left 20 max-width none",
+    "live": "w 335 left 20 max-width none; fill-mode auto-fit->null (widths 375,768,1440,1920)"
+   },
+   {
+    "page": "community",
+    "selector": "draft tpl 479#0 -> live .cr-ref-community-14",
+    "draft": "w 335 left 20 max-width none",
+    "live": "w 335 left 20 max-width none; fill-mode auto-fit->null (widths 375,768,1440,1920)"
+   }
+  ],
+  "grid_fill_detail": [
+   {
+    "id": "about||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(100%, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(4, minmax(0px, 1fr))",
+     "repeat(2, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "certifications||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(250px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(4, minmax(0px, 1fr))",
+     "repeat(2, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "certifications||398#0",
+    "widths": [
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:minmax(0px, 0.85fr) minmax(0px, 1.15fr)"
+    ],
+    "live_declared": [
+     "minmax(0px, 1fr) minmax(0px, 1.35fr)"
+    ]
+   },
+   {
+    "id": "certifications||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "certifications||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "certifications||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "certifications||410#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "community||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(250px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(4, minmax(0px, 1fr))",
+     "repeat(2, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "careers||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(240px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(4, minmax(0px, 1fr))",
+     "repeat(2, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "careers||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "careers||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "careers||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "careers||410#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "careers||541#0",
+    "widths": [
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:minmax(0px, 1.5fr) minmax(0px, 0.8fr)"
+    ],
+    "live_declared": [
+     "minmax(0px, 1.87fr) minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "blog||604#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fill->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fill, minmax(290px, 1fr))"
+    ]
+   },
+   {
+    "id": "food-service||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(5, minmax(0px, 1fr))",
+     "repeat(3, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "food-service||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "food-service||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "food-service||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "retail||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "retail||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "retail||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "manufacturing||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(5, minmax(0px, 1fr))",
+     "repeat(3, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "manufacturing||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "manufacturing||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "manufacturing||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "wholesale||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "wholesale||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "wholesale||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "width 335->322",
+     "left 20->27",
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "brands||499#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fill->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fill, minmax(140px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(6, minmax(0px, 1fr))",
+     "repeat(3, minmax(0px, 1fr))",
+     "repeat(2, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "sanam||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(5, minmax(0px, 1fr))",
+     "repeat(3, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "shan||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "402.656px 402.672px 402.656px 0px 0px",
+     "224px 224px 224px",
+     "335px"
+    ]
+   },
+   {
+    "id": "green-leaf||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "402.656px 402.672px 402.656px 0px 0px",
+     "224px 224px 224px",
+     "335px"
+    ]
+   },
+   {
+    "id": "lemon-tree||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(220px, 1fr))"
+    ],
+    "live_declared": [
+     "402.656px 402.672px 402.656px 0px 0px",
+     "224px 224px 224px",
+     "335px"
+    ]
+   },
+   {
+    "id": "apply||16#0",
+    "widths": [
+     375
+    ],
+    "diffs": [
+     "columns 5->1"
+    ],
+    "draft_declared": [
+     "inline:repeat(5, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "catalogue||479#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "fill-mode auto-fit->null"
+    ],
+    "draft_declared": [
+     "inline:repeat(auto-fit, minmax(210px, 1fr))"
+    ],
+    "live_declared": [
+     "repeat(5, minmax(0px, 1fr))",
+     "repeat(3, minmax(0px, 1fr))",
+     "repeat(1, minmax(0px, 1fr))"
+    ]
+   },
+   {
+    "id": "catalogue||541#0",
+    "widths": [
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:minmax(0px, 1.5fr) minmax(0px, 0.8fr)"
+    ],
+    "live_declared": [
+     "minmax(0px, 1.87fr) minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "delivery||410#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "delivery||410#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   },
+   {
+    "id": "delivery||410#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "columns 2->1"
+    ],
+    "draft_declared": [
+     "inline:40px minmax(0px, 1fr)"
+    ]
+   }
+  ],
+  "not_measured": "widths between 375/768/1440/1920 (auto-fit versus fixed tiers can differ at 1024 to 1280); a grid with fewer items than tracks was not isolated"
+ },
+ "borders_shadows": {
+  "cause": "Draft panels/cards (at least 100x40) that paint a border or box-shadow compared with their live equivalent: missing or different border or shadow, or a shadow cut by a clipping ancestor.",
+  "instances_at_review": 73,
+  "examined": {
+   "draft_panels_with_border_or_shadow": 548,
+   "matching_now": 509,
+   "matching_now_in_blocks_wave1_fixed": 50
+  },
+  "measured_now": {
+   "differing": 23,
+   "differ_kinds": {
+    "shadow clipped by ancestor": 6,
+    "border-t missing": 2,
+    "border-r missing": 2,
+    "border-b missing": 2,
+    "border-l missing": 2,
+    "shadow missing": 5,
+    "border-t colour rgba(30, 42, 60, 0.2)": 3,
+    "border-r colour rgba(30, 42, 60, 0.2)": 3,
+    "border-b colour rgba(30, 42, 60, 0.2)": 3,
+    "border-l colour rgba(30, 42, 60, 0.2)": 3,
+    "border-t colour rgba(30, 42, 60, 0.11)": 6,
+    "border-r colour rgba(30, 42, 60, 0.11)": 6,
+    "border-b colour rgba(30, 42, 60, 0.11)": 6,
+    "border-l colour rgba(30, 42, 60, 0.11)": 6,
+    "border-t colour rgb(238, 242, 245)": 1,
+    "shadow differs": 4
+   }
+  },
+  "by_status": {
+   "tool-blind": 17,
+   "tool-applicable": 6,
+   "fixed-verified": 50
+  },
+  "pages": {
+   "home": 3,
+   "careers": 7,
+   "blog": 6,
+   "apply": 1,
+   "contact": 1,
+   "footer": 1,
+   "mega-about": 1,
+   "mega-brands": 1,
+   "mega-sectors": 1,
+   "mega-trade": 1
+  },
+  "coverage": {
+   "by_pairing": 6,
+   "by_animations_json": 0,
+   "by_token_or_surfaces": 0,
+   "token_note": "draft shadows equal handoff tokens --shadow-button/card/panel/header; surfaces.json S-03 names the header shadow",
+   "pipeline_function_already_mapping": "scripts/computed-route/lib/fill-resolve-state.mjs::BOX_PAINT (box-shadow, border-*), written from the pair by Fill; parity walker compares border and shadow rows (scripts/parity/lib/compare.mjs::borderColourIrrelevant)"
+  },
+  "fixed_verified_note": "fixed-verified = draft shadow present, live now equal and unclipped, in the blocks the wave 1 commits fixed (sgs/brand-strip: ef7ba399f mask-clip no-clip; sgs/timeline: 6b3e32def root clips only the inline axis). Review-time state of those elements comes from Bean list HP5/AB3 and the commit messages, not a re-measurement of the old build.",
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Fill writes border and shadow from the pair and the walker compares border colour and shadow rows, so 509 of 548 draft panels match; the residue is elements no pair names (hero image frame, post-grid cards, form field borders) and shadows cut by an ancestor clip, which the walker never checks.",
+   "function_cited": "scripts/computed-route/lib/fill-resolve-state.mjs::BOX_PAINT; scripts/parity/lib/compare.mjs"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": "draft tpl 216#0 -> live sgs-hero__split-media",
+    "draft": "{\"border\":\"5px rgb(255, 255, 255)\",\"shadow\":\"rgba(44, 62, 80, 0.7) 0px 34px 60px -30px\"}",
+    "live": "shadow clipped by ancestor section.sgs-c-711fb8f5"
+   },
+   {
+    "page": "home",
+    "selector": "draft tpl 274#0 -> live sgs-testimonial",
+    "draft": "{\"border\":null,\"shadow\":\"rgba(0, 0, 0, 0.55) 0px 26px 44px -26px\"}",
+    "live": "shadow clipped by ancestor div.sgs-testimonial-slider__track"
+   },
+   {
+    "page": "home",
+    "selector": "draft tpl 313#0 -> live .cr-ref-home-96",
+    "draft": "{\"border\":\"2px rgb(0, 0, 0)\",\"shadow\":\"rgba(0, 0, 0, 0.55) 0px 8px 18px -8px\"}",
+    "live": "border-t missing; border-r missing; border-b missing; border-l missing; shadow missing"
+   },
+   {
+    "page": "careers",
+    "selector": "draft tpl 418#0 -> live .cr-ref-careers-87",
+    "draft": "{\"border\":null,\"shadow\":\"rgba(10, 60, 80, 0.6) 0px 8px 16px -10px\"}",
+    "live": "shadow missing"
+   },
+   {
+    "page": "careers",
+    "selector": "draft tpl 418#1 -> live .cr-ref-careers-95",
+    "draft": "{\"border\":null,\"shadow\":\"rgba(10, 60, 80, 0.6) 0px 8px 16px -10px\"}",
+    "live": "shadow missing"
+   }
+  ],
+  "detail": [
+   {
+    "id": "home||216#0",
+    "widths": [
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow clipped by ancestor section.sgs-c-711fb8f5"
+    ],
+    "block": "sgs/hero",
+    "status": "tool-blind"
+   },
+   {
+    "id": "home||274#0",
+    "widths": [
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow clipped by ancestor div.sgs-testimonial-slider__track"
+    ],
+    "block": "sgs/testimonial",
+    "status": "tool-blind"
+   },
+   {
+    "id": "home||313#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t missing",
+     "border-r missing",
+     "border-b missing",
+     "border-l missing",
+     "shadow missing"
+    ],
+    "block": "sgs/container",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "careers||418#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow missing"
+    ],
+    "block": "sgs/button",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "careers||418#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow missing"
+    ],
+    "block": "sgs/button",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "careers||418#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow missing"
+    ],
+    "block": "sgs/button",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "careers||418#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow missing"
+    ],
+    "block": "sgs/button",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "careers||560#0",
+    "widths": [
+     375
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-r colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-b colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-l colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)"
+    ],
+    "block": "sgs/form",
+    "status": "tool-blind"
+   },
+   {
+    "id": "careers||560#1",
+    "widths": [
+     375
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-r colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-b colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-l colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)"
+    ],
+    "block": "sgs/form",
+    "status": "tool-blind"
+   },
+   {
+    "id": "careers||560#2",
+    "widths": [
+     375
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-r colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-b colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)",
+     "border-l colour rgba(30, 42, 60, 0.2)->rgba(10, 126, 168, 0.4)"
+    ],
+    "block": "sgs/form",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#0",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#2",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#3",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#4",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "blog||606#5",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-r colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-b colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)",
+     "border-l colour rgba(30, 42, 60, 0.11)->rgb(220, 227, 233)"
+    ],
+    "block": "sgs/post-grid",
+    "status": "tool-blind"
+   },
+   {
+    "id": "apply||49#4",
+    "widths": [
+     375,
+     768
+    ],
+    "diffs": [
+     "border-t missing",
+     "border-r missing",
+     "border-b missing",
+     "border-l missing"
+    ],
+    "block": "sgs/button",
+    "status": "tool-blind"
+   },
+   {
+    "id": "contact||40#1",
+    "widths": [
+     375,
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "border-t colour rgb(238, 242, 245)->rgb(242, 245, 247)"
+    ],
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "id": "footer||728#0",
+    "widths": [
+     768,
+     1440,
+     1920
+    ],
+    "diffs": [
+     "shadow differs"
+    ],
+    "block": "sgs/whatsapp-cta",
+    "status": "tool-applicable"
+   },
+   {
+    "id": "mega-about||65#0",
+    "widths": [
+     1440
+    ],
+    "diffs": [
+     "shadow differs",
+     "shadow clipped by ancestor div.sgs-nav-bar-menu__mega-panel-wrap"
+    ],
+    "block": "sgs/mega-panel",
+    "status": "tool-blind"
+   },
+   {
+    "id": "mega-brands||65#0",
+    "widths": [
+     1440
+    ],
+    "diffs": [
+     "shadow differs",
+     "shadow clipped by ancestor div.sgs-nav-bar-menu__mega-panel-wrap"
+    ],
+    "block": "sgs/mega-panel",
+    "status": "tool-blind"
+   },
+   {
+    "id": "mega-sectors||65#0",
+    "widths": [
+     1440
+    ],
+    "diffs": [
+     "shadow clipped by ancestor div.sgs-nav-bar-menu__mega-panel-wrap"
+    ],
+    "block": "sgs/container",
+    "status": "tool-blind"
+   },
+   {
+    "id": "mega-trade||65#0",
+    "widths": [
+     1440
+    ],
+    "diffs": [
+     "shadow differs",
+     "shadow clipped by ancestor div.sgs-nav-bar-menu__mega-panel-wrap"
+    ],
+    "block": "sgs/mega-panel",
+    "status": "tool-blind"
+   }
+  ]
+ }
+}

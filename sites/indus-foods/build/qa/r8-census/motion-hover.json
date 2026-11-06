@@ -1,0 +1,1233 @@
+{
+ "entrances-scroll-reveals": {
+  "cause": "Entrances and scroll reveals: hero copy A-21, headings A-07, images A-08, item stagger A-09, testimonial slide A-01, route fade A-10",
+  "instances_at_review": 468,
+  "by_status": {
+   "fixed-verified": 27,
+   "tool-applicable": 155,
+   "tool-blind": 25,
+   "framework-open": 259,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 0,
+   "no-effect-in-draft": 2
+  },
+  "pages": {
+   "about": 30,
+   "apply": 3,
+   "blog": 21,
+   "brands": 26,
+   "careers": 25,
+   "catalogue": 16,
+   "certifications": 19,
+   "community": 19,
+   "contact": 6,
+   "delivery": 20,
+   "faqs": 16,
+   "food-service": 29,
+   "green-leaf": 19,
+   "home": 32,
+   "lemon-tree": 19,
+   "manufacturing": 28,
+   "our-story": 28,
+   "retail": 26,
+   "sanam": 21,
+   "shan": 19,
+   "site": 2,
+   "sustainability": 17,
+   "terms": 5,
+   "wholesale": 22
+  },
+  "records": {
+   "A-01": 2,
+   "A-07": 106,
+   "A-08": 10,
+   "A-09": 269,
+   "A-10": 1,
+   "A-21": 79,
+   "J-15": 1
+  },
+  "coverage": {
+   "by_pairing": 466,
+   "by_animations_json_record": 468,
+   "by_token_or_surfaces_json": 27,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "The pipeline reads records to elements (read-animations.mjs::readAnimations) and writes entrances through fill-motion.mjs::motionWrites, with the theme snapshot entrance tokens (distance 28px, duration 900ms, easing) already equal to the draft, so translate, blur, duration and stagger carry. Two things drop on the next clone: (1) the renderer removes the fade on every block of a page whose content is one top-level MAIN (class-sgs-motion-renderer.php::open_frame, the LCP rule) and the clone route builds pages that way, so every inner-page fade is lost; (2) allowLcpFade is not known to scripts/computed-route (grep finds no mention), so the hero fade is never written. Judged from code and the Indus outcome; the route was not run (fence).",
+   "function_cited": "scripts/computed-route/lib/fill-motion.mjs::motionWrites; lib/read-animations.mjs::readAnimations; plugins/sgs-blocks/includes/motion/class-sgs-motion-renderer.php::open_frame"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-2",
+    "draft": "A-21 Root/206#0 dur 900 delay 80",
+    "live": "tool-applicable: allowLcpFade + opacity 0 on the hero text (record A-21 properties; elements paired directly): opacity from 1.0 want 0.0"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-79",
+    "draft": "A-01 Root/274#0 dur 520 delay None",
+    "live": "framework-open: per-card opacity+translateX(26px) 520ms on each slide change (state tIdx): sgs/testimonial-slider declares no state-triggered part entrance (motion_targets: arrow, content-band, dot, root, slider only); live slides the track in 800ms"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-79",
+    "draft": "A-09 Root/270#0 dur 800 delay 0",
+    "live": "tool-applicable: scale from None want 0.96"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-88",
+    "draft": "A-09 Root/300#0 dur 800 delay 0",
+    "live": "tool-blind: draft target unpaired inside Root/298#0; no live part at its position (best overlap 0.32)"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-12",
+    "draft": "A-09 Root/360#0 dur 800 delay 0",
+    "live": "framework-open: LCP rule (class-sgs-motion-renderer.php::open_frame) marks every block of a page whose content is one top-level MAIN container as the first section, so the fade is removed page-wide; allowLcpFade is a stopgap"
+   }
+  ]
+ },
+ "hero-media-reveals-and-loops": {
+  "cause": "Hero media reveals and ambient loops: hero frame A-22, zoom A-23, parallax J-03, float A-16, rings A-40, marquee A-15/J-14, pulse A-02, about hero SVG A-24..A-30",
+  "instances_at_review": 129,
+  "by_status": {
+   "fixed-verified": 3,
+   "tool-applicable": 71,
+   "tool-blind": 48,
+   "framework-open": 7,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 0,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "about": 9,
+   "apply": 1,
+   "blog": 3,
+   "brands": 3,
+   "careers": 5,
+   "catalogue": 2,
+   "certifications": 6,
+   "community": 6,
+   "contact": 1,
+   "delivery": 6,
+   "drawer-site-menu": 3,
+   "faqs": 3,
+   "food-service": 9,
+   "footer": 1,
+   "green-leaf": 6,
+   "home": 7,
+   "lemon-tree": 6,
+   "manufacturing": 9,
+   "our-story": 6,
+   "retail": 9,
+   "sanam": 6,
+   "shan": 6,
+   "sustainability": 6,
+   "terms": 1,
+   "wholesale": 9
+  },
+  "records": {
+   "A-02": 1,
+   "A-15": 1,
+   "A-16": 2,
+   "A-22": 15,
+   "A-23": 15,
+   "A-24": 1,
+   "A-25": 1,
+   "A-26": 1,
+   "A-27": 1,
+   "A-28": 1,
+   "A-29": 1,
+   "A-30": 1,
+   "A-40": 72,
+   "J-03": 15,
+   "J-14": 1
+  },
+  "coverage": {
+   "by_pairing": 113,
+   "by_animations_json_record": 129,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "The hero image slot is not a paired element (pairs.mjs pairs blocks by matched words, hero media part has none), A-22/A-23/J-03 produced 0 of 15 hero pages on Indus although delivery-map marks them done on planted fixtures (delivery-map.mjs::animationEvidence reads trees and commits, not the live page). The float, marquee and ring loops are written for paired blocks; ring scale and the SVG parts have no writer target.",
+   "function_cited": "scripts/computed-route/lib/pairs.mjs::wordsByBlock; lib/motion-loops.mjs::loopEffect; lib/delivery-map.mjs::animationEvidence"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-1",
+    "draft": "A-16 Root/215#0 dur 4200 delay 0",
+    "live": "tool-blind: draft target unpaired inside Root/203#0; no live part at its position (best overlap 0.19)"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-1",
+    "draft": "A-22 Root/216#0 dur 1100 delay 200",
+    "live": "tool-blind: draft target unpaired inside Root/203#0; no live part at its position (best overlap 0.19)"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-1",
+    "draft": "A-23 Root/217#0 dur 1600 delay 200",
+    "live": "tool-blind: draft target unpaired inside Root/203#0; no live part at its position (best overlap 0.16)"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-108",
+    "draft": "A-40 Root/516#0 dur 10983.463770601165 delay -1274.2659848277958",
+    "live": "tool-applicable: ambient-float present, no scale (ambient-float scaleFrom/scaleTo, wave 2) from record A-40 properties"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-1",
+    "draft": "A-24 Root/321#0 dur 40000 delay None",
+    "live": "framework-open: inline SVG part animation: sgs/hero svg-bg has no per-id animation setting (svgParts exists only on sgs/responsive-logo and the nav-drawer chrome logo)"
+   }
+  ]
+ },
+ "hover-states-buttons-links-icons-cards": {
+  "cause": "Hover states (TR/PS) on buttons, links, icons, cards where only the element itself changes",
+  "instances_at_review": 276,
+  "by_status": {
+   "fixed-verified": 75,
+   "tool-applicable": 33,
+   "tool-blind": 70,
+   "framework-open": 40,
+   "pipeline-only": 0,
+   "accepted": 1,
+   "unmeasured": 27,
+   "no-effect-in-draft": 30
+  },
+  "pages": {
+   "about": 11,
+   "apply": 2,
+   "blog": 14,
+   "brands": 13,
+   "careers": 9,
+   "catalogue": 12,
+   "certifications": 7,
+   "community": 7,
+   "contact": 6,
+   "delivery": 3,
+   "drawer-site-menu": 47,
+   "faqs": 3,
+   "food-service": 9,
+   "footer": 11,
+   "form-enquiry": 7,
+   "form-trade-application": 13,
+   "green-leaf": 9,
+   "header": 5,
+   "home": 20,
+   "lemon-tree": 9,
+   "manufacturing": 8,
+   "mega-about": 6,
+   "mega-sectors": 4,
+   "mega-trade": 5,
+   "our-story": 3,
+   "retail": 3,
+   "sanam": 13,
+   "shan": 9,
+   "sustainability": 3,
+   "terms": 2,
+   "wholesale": 3
+  },
+  "records": {
+   "PS-003": 22,
+   "PS-004": 22,
+   "PS-006": 1,
+   "TR-004": 1,
+   "TR-005": 1,
+   "TR-006": 1,
+   "TR-007": 1,
+   "TR-012": 1,
+   "TR-017": 11,
+   "TR-018": 4,
+   "TR-023": 1,
+   "TR-025": 6,
+   "TR-026": 6,
+   "TR-031": 2,
+   "TR-033": 11,
+   "TR-034": 11,
+   "TR-036": 4,
+   "TR-038": 1,
+   "TR-039": 1,
+   "TR-040": 1,
+   "TR-041": 1,
+   "TR-042": 1,
+   "TR-044": 1,
+   "TR-046": 1,
+   "TR-047": 9,
+   "TR-050": 4,
+   "TR-059": 1,
+   "TR-060": 3,
+   "TR-061": 1,
+   "TR-063": 1,
+   "TR-072": 3,
+   "TR-077": 41,
+   "TR-078": 14,
+   "TR-079": 14,
+   "TR-080": 10,
+   "TR-082": 17,
+   "TR-083": 3,
+   "TR-090": 5,
+   "TR-091": 6,
+   "TR-094": 1,
+   "TR-095": 1,
+   "TR-097": 1,
+   "TR-098": 1,
+   "TR-099": 1,
+   "TR-100": 1,
+   "TR-102": 1,
+   "TR-103": 1,
+   "TR-104": 1,
+   "TR-106": 1,
+   "TR-107": 1,
+   "TR-111": 11,
+   "TR-116": 1,
+   "TR-118": 1,
+   "TR-120": 6,
+   "TR-125": 1
+  },
+  "coverage": {
+   "by_pairing": 122,
+   "by_animations_json_record": 276,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Hover values are written for paired blocks only (fill-state-motion.mjs::stateHover, motion-behaviours.mjs::recogniseBehaviour); child elements named by a record but never paired (arrows, tiles, social glyphs) get nothing, and properties with no hover setting (button underline background-size, width, clip-path) cannot be written at all.",
+   "function_cited": "scripts/computed-route/lib/fill-state-motion.mjs::stateHover; lib/motion-behaviours.mjs::recogniseBehaviour"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-6",
+    "draft": "TR-046 Root/210#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('translate', 'none', '-0.1px'), ('box-shadow', 'rgba(0, 0, 0, 0.45) 0px 8', 'rgba(0, 0, 0, 0.25) 0px 6'), ('width', '213.234px', '217.25px')]",
+    "live": "tool-applicable: hover setting exists for W on wp-block-sgs-button; differing own:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-90",
+    "draft": "TR-061 Root/306#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('translate', 'none', '0px'), ('box-shadow', 'rgba(10, 126, 168, 0.65) ', 'rgba(0, 0, 0, 0.25) 0px 6'), ('width', '234.406px', '238.953px')]",
+    "live": "tool-applicable: hover setting exists for W on wp-block-sgs-button; differing own:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-92",
+    "draft": "TR-063 Root/314#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('translate', 'none', '0.1px'), ('box-shadow', 'rgba(0, 0, 0, 0.45) 0px 8', 'rgba(0, 0, 0, 0.25) 0px 6'), ('width', '213.234px', '217.25px')]",
+    "live": "tool-blind: draft element unpaired; live equivalent found by position inside the paired ancestor; differing own:W"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-115",
+    "draft": "TR-082 Root/525#0 [('transform', 'none', 'matrix(1, 0, 0, 1, 0, -2)'), ('translate', 'none', '0px'), ('box-shadow', 'rgba(0, 0, 0, 0.45) 0px 1', 'rgba(0, 0, 0, 0.5) 0px 16'), ('background-color', 'rgb(216, 202, 80)', 'rgb(230, 218, 112)')]",
+    "live": "tool-applicable: hover setting exists for M on wp-block-sgs-button; differing own:M"
+   },
+   {
+    "page": "blog",
+    "selector": ".cr-ref-blog-9",
+    "draft": "TR-090 Root/603#1 [('border-top-color', 'rgba(30, 42, 60, 0.16)', 'rgb(10, 126, 168)')]",
+    "live": "tool-blind: draft element unpaired; live equivalent found by position inside the paired ancestor; differing own:BC"
+   }
+  ]
+ },
+ "card-level-unified-hover": {
+  "cause": "Card-level unified hover: a hover on the card drives its children (draft hover moves descendants)",
+  "instances_at_review": 206,
+  "by_status": {
+   "fixed-verified": 28,
+   "tool-applicable": 61,
+   "tool-blind": 57,
+   "framework-open": 42,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 18,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "about": 3,
+   "blog": 1,
+   "brands": 2,
+   "careers": 17,
+   "catalogue": 2,
+   "certifications": 5,
+   "community": 1,
+   "delivery": 8,
+   "drawer-site-menu": 29,
+   "faqs": 10,
+   "food-service": 9,
+   "footer": 7,
+   "green-leaf": 6,
+   "header": 2,
+   "home": 36,
+   "lemon-tree": 6,
+   "manufacturing": 9,
+   "mega-about": 1,
+   "mega-brands": 11,
+   "mega-trade": 1,
+   "our-story": 2,
+   "retail": 10,
+   "sanam": 8,
+   "shan": 6,
+   "sustainability": 5,
+   "wholesale": 9
+  },
+  "records": {
+   "PS-001": 2,
+   "PS-002": 1,
+   "PS-005": 17,
+   "PS-008": 2,
+   "PS-009": 2,
+   "TR-002": 1,
+   "TR-003": 1,
+   "TR-019": 10,
+   "TR-021": 1,
+   "TR-022": 1,
+   "TR-030": 2,
+   "TR-032": 11,
+   "TR-035": 4,
+   "TR-037": 9,
+   "TR-043": 1,
+   "TR-045": 1,
+   "TR-047": 11,
+   "TR-048": 4,
+   "TR-051": 4,
+   "TR-052": 4,
+   "TR-053": 4,
+   "TR-054": 1,
+   "TR-055": 4,
+   "TR-056": 1,
+   "TR-057": 1,
+   "TR-062": 1,
+   "TR-064": 18,
+   "TR-066": 12,
+   "TR-067": 3,
+   "TR-069": 28,
+   "TR-070": 4,
+   "TR-071": 4,
+   "TR-073": 3,
+   "TR-077": 14,
+   "TR-088": 12,
+   "TR-101": 6,
+   "TR-105": 1
+  },
+  "coverage": {
+   "by_pairing": 143,
+   "by_animations_json_record": 206,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "A card hover that moves descendants needs a hover group (hoverAsCard, wave 2) plus per-child hover layers; the pipeline writes the card block own hover but has no step that maps a record naming a child tpl to the card hover group, so child effects stay unpaired.",
+   "function_cited": "scripts/computed-route/lib/fill-state-motion.mjs::stateHover (own element only); plugins/sgs-blocks/includes/motion/class-sgs-motion-renderer.php (hover groups)"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-5",
+    "draft": "TR-045 Root/209#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('translate', 'none', '-0.1px'), ('box-shadow', 'rgba(0, 0, 0, 0.55) 0px 8', 'rgba(0, 0, 0, 0.25) 0px 6'), ('color', 'rgb(216, 202, 80)', 'rgb(231, 215, 104)')]",
+    "live": "tool-applicable: hover setting exists for W on wp-block-sgs-button; differing own:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-13",
+    "draft": "TR-047 Root/224#9 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('box-shadow', 'rgba(0, 0, 0, 0.35) 0px 6', 'rgba(0, 0, 0, 0.25) 0px 1'), ('color', 'rgb(10, 126, 168)', 'rgb(7, 94, 128)'), ('border-top-color', 'rgb(10, 126, 168)', 'rgb(7, 94, 128)')]",
+    "live": "tool-blind: draft element unpaired; live equivalent found by position inside the paired ancestor; differing own:M,own:SH,own:C,own:BC,desc:C,desc:BC"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-18",
+    "draft": "TR-048 Root/231#0 [('transform', 'none', 'matrix(1.04, 0, 0, 1.04, '), ('rotate', 'none', '0 0 0 0deg'), ('box-shadow', 'rgba(44, 62, 80, 0.55) 0p', 'rgba(44, 62, 80, 0.6) 0px'), ('--gx', '', '50.0%')]",
+    "live": "tool-applicable: hover setting exists for BI on wp-block-sgs-container; differing desc:BI"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-23",
+    "draft": "TR-051 Root/237#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('translate', 'none', '-0.3px 0.5px'), ('box-shadow', 'rgba(0, 0, 0, 0.5) 0px 10', 'rgba(0, 0, 0, 0.25) 0px 6'), ('background-color', 'rgb(10, 126, 168)', 'rgb(44, 62, 80)')]",
+    "live": "tool-applicable: hover setting exists for W on wp-block-sgs-button; differing own:W,desc:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-46",
+    "draft": "TR-052 Root/243#0 [('transform', 'none', 'matrix(1.05, 0, 0, 1.05, '), ('box-shadow', 'none', 'rgba(0, 0, 0, 0.25) 0px 1'), ('background-color', 'rgba(255, 255, 255, 0.28)', 'rgb(44, 62, 80)'), ('color', 'rgb(44, 62, 80)', 'rgb(216, 202, 80)')]",
+    "live": "tool-applicable: hover setting exists for M on wp-block-sgs-container; differing desc:M"
+   }
+  ]
+ },
+ "drawer-and-mega-open-close-stagger": {
+  "cause": "Drawer and mega-menu open/close/stagger: A-12, A-13, A-14, A-36..A-39, J-13",
+  "instances_at_review": 67,
+  "by_status": {
+   "fixed-verified": 1,
+   "tool-applicable": 35,
+   "tool-blind": 30,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 1,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "drawer-site-menu": 38,
+   "mega-about": 7,
+   "mega-brands": 11,
+   "mega-sectors": 5,
+   "mega-trade": 6
+  },
+  "records": {
+   "A-12": 25,
+   "A-13": 4,
+   "A-14": 7,
+   "A-36": 1,
+   "A-37": 1,
+   "A-38": 1,
+   "A-39": 27,
+   "J-13": 1
+  },
+  "coverage": {
+   "by_pairing": 61,
+   "by_animations_json_record": 67,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "surfaces.json carries the drawer and mega open states and the mega/drawer fill surfaces open them, but the open-time stagger (A-12, A-14, A-39) is read from records with a template list chosen at runtime; the drawer and mega entrance values (from-ty 60 vs 14, 650 vs 460 ms) were not taken from the records.",
+   "function_cited": "scripts/computed-route/lib/fill-motion.mjs::motionWrites; lib/motion-states.mjs"
+  },
+  "examples": [
+   {
+    "page": "mega-about",
+    "selector": ".cr-ref-mega-about-2",
+    "draft": "A-12 Root/70#0 dur 460 delay 0",
+    "live": "tool-applicable: ty from 60.0 want 14.0; duration 650.0 want 460; delay 420.0 want 0"
+   },
+   {
+    "page": "mega-about",
+    "selector": "Root/65#0",
+    "draft": "A-13 Root/65#0 dur 340 delay None",
+    "live": "tool-blind: draft target has no paired ancestor on this surface"
+   },
+   {
+    "page": "mega-brands",
+    "selector": ".cr-ref-mega-brands-3",
+    "draft": "A-12 Root/100#0 dur 460 delay 0",
+    "live": "tool-blind: draft target unpaired inside Root/98#0; no live part at its position (best overlap 0.07)"
+   },
+   {
+    "page": "drawer-site-menu",
+    "selector": ".cr-ref-drawer-site-menu-0",
+    "draft": "A-36 Root/108#0 dur 560 delay None",
+    "live": "tool-applicable: trigger open; duration None want 560"
+   },
+   {
+    "page": "drawer-site-menu",
+    "selector": ".cr-ref-drawer-site-menu-19",
+    "draft": "A-37 Root/196#0 dur 620 delay 240",
+    "live": "tool-applicable: live equivalent carries no entrance"
+   }
+  ]
+ },
+ "logo": {
+  "cause": "Logo: sun spin, entrance parts, hover replays (L-01..L-10) on header, footer, drawer",
+  "instances_at_review": 30,
+  "by_status": {
+   "fixed-verified": 0,
+   "tool-applicable": 0,
+   "tool-blind": 22,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 8,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "drawer-site-menu": 10,
+   "footer": 10,
+   "header": 10
+  },
+  "records": {
+   "L-01": 3,
+   "L-02": 3,
+   "L-03": 3,
+   "L-04": 3,
+   "L-05": 3,
+   "L-06": 3,
+   "L-07": 3,
+   "L-08": 3,
+   "L-09": 3,
+   "L-10": 3
+  },
+  "coverage": {
+   "by_pairing": 18,
+   "by_animations_json_record": 30,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "not-protected",
+   "why": "L-01..L-10 name the logo wrapper through nearest_tpl_id (40, 108, 632) while the pair is the child responsive-logo block (43 -> cr-ref-header-13) or nothing (drawer); the svgParts setting is new in wave 2 and no pipeline function writes it (grep svgParts in scripts/computed-route: none).",
+   "function_cited": "scripts/computed-route/lib/read-animations.mjs::readAnimations (self/descendant only)"
+  },
+  "examples": [
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "L-01 Root/43#0 dur 60000 delay None",
+    "live": "tool-blind: record names the logo wrapper tpl (nearest_tpl_id 40/108/632) but the logo block is a paired descendant (header 43 -> cr-ref-header-13) or unpaired (drawer 114); svgParts setting exists (wave 2) on sgs/responsive-logo"
+   },
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "L-02 Root/43#0 dur 1200 delay 150",
+    "live": "tool-blind: record names the logo wrapper tpl (nearest_tpl_id 40/108/632) but the logo block is a paired descendant (header 43 -> cr-ref-header-13) or unpaired (drawer 114); svgParts setting exists (wave 2) on sgs/responsive-logo"
+   },
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "L-03 Root/43#0 dur 1000 delay None",
+    "live": "tool-blind: record names the logo wrapper tpl (nearest_tpl_id 40/108/632) but the logo block is a paired descendant (header 43 -> cr-ref-header-13) or unpaired (drawer 114); svgParts setting exists (wave 2) on sgs/responsive-logo"
+   },
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "L-04 Root/43#0 dur 700 delay 650",
+    "live": "tool-blind: record names the logo wrapper tpl (nearest_tpl_id 40/108/632) but the logo block is a paired descendant (header 43 -> cr-ref-header-13) or unpaired (drawer 114); svgParts setting exists (wave 2) on sgs/responsive-logo"
+   },
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "L-05 Root/43#0 dur 900 delay 500",
+    "live": "tool-blind: record names the logo wrapper tpl (nearest_tpl_id 40/108/632) but the logo block is a paired descendant (header 43 -> cr-ref-header-13) or unpaired (drawer 114); svgParts setting exists (wave 2) on sgs/responsive-logo"
+   }
+  ]
+ },
+ "scroll-linked": {
+  "cause": "Scroll-linked: header shadow J-01, progress bar J-02, pinned timeline J-04..J-08, line draws A-06, scroll-to J-16/J-17/J-20/J-21",
+  "instances_at_review": 18,
+  "by_status": {
+   "fixed-verified": 3,
+   "tool-applicable": 7,
+   "tool-blind": 2,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 6,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "about": 5,
+   "apply": 1,
+   "careers": 1,
+   "drawer-site-menu": 1,
+   "footer": 1,
+   "header": 2,
+   "home": 2,
+   "our-story": 5
+  },
+  "records": {
+   "A-06": 2,
+   "J-01": 1,
+   "J-02": 1,
+   "J-04": 2,
+   "J-05": 2,
+   "J-06": 2,
+   "J-07": 2,
+   "J-08": 2,
+   "J-16": 1,
+   "J-17": 1,
+   "J-20": 1,
+   "J-21": 1
+  },
+  "coverage": {
+   "by_pairing": 2,
+   "by_animations_json_record": 18,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Header shadow and progress bar are recognised as settings and effects (motion-behaviours.mjs kind settings/effect) and match on Indus; the pinned timeline runs from the block own settings and matches on count, card focus and pin length but not track travel; line draws have no pairing for the connector element.",
+   "function_cited": "scripts/computed-route/lib/motion-behaviours.mjs::recogniseBehaviour"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-73",
+    "draft": "A-06 Root/257#0 dur 1400 delay 200",
+    "live": "tool-blind: draft target unpaired inside Root/255#0; no live part at its position (best overlap 0.01)"
+   },
+   {
+    "page": "header",
+    "selector": null,
+    "draft": "J-01  ",
+    "live": "tool-applicable: shadow value matches (rgba(20,40,60,.35) 0 10px 30px -18px) at scrollY 400/mid/end; live transition 0.2s vs draft 0.3s (record J-01 duration 300ms)"
+   },
+   {
+    "page": "about",
+    "selector": null,
+    "draft": "J-04  ",
+    "live": "tool-applicable: pinned track travel draft -109..-3468 px vs live -162..-3338 px (same pin length 3510 vs 3513; Pinned content width/gutter settings exist)"
+   },
+   {
+    "page": "about",
+    "selector": null,
+    "draft": "J-05  ",
+    "live": "tool-applicable: progress bar scaleX draft 0.031..1.000 vs live 0.047..0.963"
+   },
+   {
+    "page": "about",
+    "selector": null,
+    "draft": "J-06  ",
+    "live": "tool-applicable: card focus differs"
+   }
+  ]
+ },
+ "magnet-tilt-cursor": {
+  "cause": "Magnet, tilt and cursor effects: J-10 magnet, J-11 nav label magnet, J-09/A-20 tilt, A-18 sheen, A-19 ripple, J-12 submit lift, J-22/J-23 peek",
+  "instances_at_review": 242,
+  "by_status": {
+   "fixed-verified": 102,
+   "tool-applicable": 99,
+   "tool-blind": 13,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 28,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "about": 9,
+   "blog": 3,
+   "brands": 3,
+   "careers": 14,
+   "catalogue": 5,
+   "certifications": 3,
+   "community": 3,
+   "contact": 3,
+   "delivery": 3,
+   "drawer-site-menu": 3,
+   "faqs": 3,
+   "food-service": 15,
+   "footer": 6,
+   "form-careers": 5,
+   "form-catalogue": 5,
+   "green-leaf": 15,
+   "header": 9,
+   "home": 35,
+   "lemon-tree": 15,
+   "manufacturing": 15,
+   "our-story": 3,
+   "retail": 15,
+   "sanam": 19,
+   "shan": 15,
+   "sustainability": 3,
+   "wholesale": 15
+  },
+  "records": {
+   "A-18": 56,
+   "A-19": 56,
+   "A-20": 16,
+   "J-09": 16,
+   "J-10": 56,
+   "J-11": 6,
+   "J-12": 8,
+   "J-22": 14,
+   "J-23": 14
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 242,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Tilt becomes follow-pointer values (fill-behaviour.mjs) and the recogniser maps magnet; wave 2 made the magnet defaults the draft values, so a fresh block matches, but content written earlier keeps explicit old values and the nav label magnet is written only when the block declares it.",
+   "function_cited": "scripts/computed-route/lib/fill-behaviour.mjs; lib/motion-tilt.mjs"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": "Root/209#0",
+    "draft": "J-10 Root/209#0 ",
+    "live": "tool-applicable: magnet pull draft (3.5,2.7)px vs live (14.0,6.6)px at the same pointer point; live attrs max-pull-y=10px strength=14 model=distance"
+   },
+   {
+    "page": "home",
+    "selector": "Root/231#0",
+    "draft": "J-09 Root/231#0 ",
+    "live": "tool-applicable: tilt at the same point: draft 0.0 deg, live 10.6 deg (live data-sgs-fx='follow-pointer glare', tilt-max var 8deg)"
+   },
+   {
+    "page": "home",
+    "selector": "Root/231#0",
+    "draft": "A-20 Root/231#0 ",
+    "live": "tool-applicable: spring reset 600ms after leave: not separately measured; tilt at the same point: draft 0.0 deg, live 10.6 deg (live data-sgs-fx='follow-pointer glare', tilt-max var 8deg)"
+   },
+   {
+    "page": "home",
+    "selector": "Root/313#0",
+    "draft": "A-18 Root/313#0 ",
+    "live": "tool-applicable: live equivalent has no sheen effect (fx='')"
+   },
+   {
+    "page": "home",
+    "selector": "Root/313#0",
+    "draft": "A-19 Root/313#0 ",
+    "live": "tool-applicable: live equivalent has no ripple effect (fx='')"
+   }
+  ]
+ },
+ "touch-behaviour": {
+  "cause": "Touch behaviour: tap must show the same hover state as the draft (375 wide, hasTouch)",
+  "instances_at_review": 514,
+  "by_status": {
+   "fixed-verified": 74,
+   "tool-applicable": 136,
+   "tool-blind": 70,
+   "framework-open": 71,
+   "pipeline-only": 0,
+   "accepted": 1,
+   "unmeasured": 162,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "about": 12,
+   "apply": 1,
+   "blog": 12,
+   "brands": 14,
+   "careers": 31,
+   "catalogue": 21,
+   "certifications": 10,
+   "community": 6,
+   "contact": 5,
+   "delivery": 13,
+   "drawer-site-menu": 92,
+   "faqs": 21,
+   "food-service": 17,
+   "footer": 19,
+   "form-careers": 7,
+   "form-catalogue": 8,
+   "form-enquiry": 19,
+   "form-trade-application": 25,
+   "green-leaf": 14,
+   "header": 6,
+   "home": 64,
+   "lemon-tree": 14,
+   "manufacturing": 16,
+   "our-story": 3,
+   "retail": 12,
+   "sanam": 20,
+   "shan": 14,
+   "sustainability": 6,
+   "terms": 1,
+   "wholesale": 11
+  },
+  "records": {
+   "PS-004": 15,
+   "PS-005": 17,
+   "PS-006": 1,
+   "PS-008": 2,
+   "PS-009": 2,
+   "PS-010": 2,
+   "PS-014": 1,
+   "TR-001": 1,
+   "TR-002": 1,
+   "TR-008": 1,
+   "TR-014": 1,
+   "TR-015": 1,
+   "TR-016": 1,
+   "TR-020": 1,
+   "TR-021": 2,
+   "TR-022": 2,
+   "TR-023": 2,
+   "TR-024": 6,
+   "TR-025": 6,
+   "TR-026": 6,
+   "TR-028": 3,
+   "TR-029": 3,
+   "TR-030": 2,
+   "TR-031": 2,
+   "TR-032": 11,
+   "TR-033": 11,
+   "TR-034": 11,
+   "TR-035": 4,
+   "TR-036": 4,
+   "TR-037": 9,
+   "TR-038": 1,
+   "TR-039": 1,
+   "TR-040": 1,
+   "TR-041": 1,
+   "TR-042": 1,
+   "TR-043": 1,
+   "TR-044": 1,
+   "TR-045": 1,
+   "TR-046": 1,
+   "TR-047": 20,
+   "TR-048": 4,
+   "TR-049": 4,
+   "TR-050": 4,
+   "TR-051": 4,
+   "TR-052": 4,
+   "TR-053": 4,
+   "TR-054": 1,
+   "TR-055": 4,
+   "TR-056": 1,
+   "TR-057": 1,
+   "TR-058": 4,
+   "TR-059": 1,
+   "TR-060": 3,
+   "TR-061": 1,
+   "TR-062": 1,
+   "TR-063": 1,
+   "TR-064": 18,
+   "TR-066": 12,
+   "TR-067": 3,
+   "TR-069": 28,
+   "TR-070": 4,
+   "TR-071": 4,
+   "TR-072": 3,
+   "TR-073": 3,
+   "TR-077": 55,
+   "TR-078": 14,
+   "TR-079": 14,
+   "TR-080": 10,
+   "TR-082": 17,
+   "TR-083": 3,
+   "TR-084": 14,
+   "TR-085": 8,
+   "TR-086": 4,
+   "TR-087": 4,
+   "TR-088": 12,
+   "TR-089": 12,
+   "TR-090": 4,
+   "TR-091": 6,
+   "TR-094": 1,
+   "TR-095": 1,
+   "TR-096": 1,
+   "TR-097": 1,
+   "TR-098": 1,
+   "TR-099": 1,
+   "TR-100": 1,
+   "TR-101": 6,
+   "TR-102": 1,
+   "TR-103": 1,
+   "TR-104": 1,
+   "TR-105": 1,
+   "TR-106": 1,
+   "TR-107": 1,
+   "TR-108": 1,
+   "TR-109": 5,
+   "TR-110": 3,
+   "TR-111": 11,
+   "TR-116": 1,
+   "TR-117": 1,
+   "TR-119": 1,
+   "TR-120": 6,
+   "TR-121": 4,
+   "TR-122": 4,
+   "TR-123": 1,
+   "TR-124": 2,
+   "TR-125": 1
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 514,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Wave 2 removed the hover/pointer media guards from every hover emitter so a tap shows the hover state wherever a hover exists; the default site setting is \"Show on tap\". The 375 rows repeat the 1440 hover gaps (same causes); 21 are touch-only (PS-005 secondary button colour does not paint on tap while it does under the mouse); the drawer cannot be tap-measured because a tap activates the control.",
+   "function_cited": "plugins/sgs-blocks/includes (sgs_hover_state_rules, wave 2 commit 700160a26)"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-5",
+    "draft": "TR-045 Root/209#0 ",
+    "live": "tool-applicable: hover setting exists for BC,C,W on wp-block-sgs-button; differing own:C,own:W,desc:C,desc:BC"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-6",
+    "draft": "TR-046 Root/210#0 ",
+    "live": "tool-applicable: hover setting exists for W on wp-block-sgs-button; differing own:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-13",
+    "draft": "TR-047 Root/224#0 ",
+    "live": "tool-blind: draft element unpaired; live equivalent found by position inside the paired ancestor; differing own:M,own:SH"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-23",
+    "draft": "TR-051 Root/237#0 ",
+    "live": "tool-applicable: hover setting exists for C,W on wp-block-sgs-button; differing own:C,own:W,desc:C,desc:W"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-46",
+    "draft": "TR-052 Root/243#0 ",
+    "live": "tool-applicable: hover setting exists for M on wp-block-sgs-container; differing desc:M"
+   }
+  ]
+ },
+ "reduced-motion": {
+  "cause": "Reduced motion: RM-01..RM-03 global override",
+  "instances_at_review": 3,
+  "by_status": {
+   "fixed-verified": 3,
+   "tool-applicable": 0,
+   "tool-blind": 0,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 0,
+   "no-effect-in-draft": 0
+  },
+  "pages": {
+   "site": 3
+  },
+  "records": {
+   "RM-01": 1,
+   "RM-02": 1,
+   "RM-03": 1
+  },
+  "coverage": {
+   "by_pairing": 0,
+   "by_animations_json_record": 3,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "protected",
+   "why": "A global prefers-reduced-motion override ships in the framework (12 reduce rules on live) and was measured to match the draft.",
+   "function_cited": "plugins/sgs-blocks/assets/css/motion.css"
+  },
+  "examples": []
+ },
+ "form-and-state-transitions": {
+  "cause": "Form field focus and state transitions (TR focus/state records), form step motion A-31..A-35, A-41",
+  "instances_at_review": 137,
+  "by_status": {
+   "fixed-verified": 5,
+   "tool-applicable": 68,
+   "tool-blind": 28,
+   "framework-open": 0,
+   "pipeline-only": 0,
+   "accepted": 0,
+   "unmeasured": 33,
+   "no-effect-in-draft": 3
+  },
+  "pages": {
+   "about": 10,
+   "apply": 3,
+   "careers": 8,
+   "catalogue": 8,
+   "contact": 2,
+   "delivery": 3,
+   "drawer-site-menu": 19,
+   "faqs": 9,
+   "footer": 1,
+   "form-careers": 7,
+   "form-catalogue": 8,
+   "form-enquiry": 13,
+   "form-trade-application": 11,
+   "header": 17,
+   "home": 8,
+   "our-story": 10
+  },
+  "records": {
+   "A-31": 1,
+   "A-32": 1,
+   "A-33": 1,
+   "A-34": 1,
+   "A-35": 1,
+   "A-41": 1,
+   "PS-010": 2,
+   "PS-014": 1,
+   "TR-008": 1,
+   "TR-009": 6,
+   "TR-010": 6,
+   "TR-011": 4,
+   "TR-020": 1,
+   "TR-024": 6,
+   "TR-027": 4,
+   "TR-028": 4,
+   "TR-029": 4,
+   "TR-049": 4,
+   "TR-058": 4,
+   "TR-074": 10,
+   "TR-075": 10,
+   "TR-084": 14,
+   "TR-085": 8,
+   "TR-086": 4,
+   "TR-087": 4,
+   "TR-089": 12,
+   "TR-096": 1,
+   "TR-108": 1,
+   "TR-109": 5,
+   "TR-110": 3,
+   "TR-121": 4,
+   "TR-122": 4,
+   "TR-123": 1,
+   "TR-124": 3
+  },
+  "coverage": {
+   "by_pairing": 41,
+   "by_animations_json_record": 137,
+   "by_token_or_surfaces_json": 0,
+   "note": "every counted instance was enumerated from an animations.json record (hover) or from the draft run of the runtime-chosen selector rule (entrances); by_pairing counts instances whose draft element has its own cr-ref pair; entrance defaults are covered by theme-snapshot.json entrance tokens (distance 28px, duration 900ms) and the --wp--custom--distance--lg/xl tokens (22px, 40px)"
+  },
+  "run_failures": [],
+  "future_clone": {
+   "verdict": "partial",
+   "why": "Field focus values are written by the form fill (fill-form.mjs) and wave 2 added field focus background/border settings; Indus does not set them. Step, success and shake motion are state records whose writer is fill-state-motion.mjs; not exercised here.",
+   "function_cited": "scripts/computed-route/lib/fill-form.mjs; lib/fill-state-motion.mjs"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-79",
+    "draft": "TR-058 Root/286#0 ",
+    "live": "tool-applicable: declaration differs: width 300.0ms missing"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-33",
+    "draft": "TR-074 Root/446#0 ",
+    "live": "tool-applicable: declaration differs: opacity 400.0ms missing; scale 500.0ms missing"
+   },
+   {
+    "page": "about",
+    "selector": ".cr-ref-about-33",
+    "draft": "TR-075 Root/448#0 ",
+    "live": "tool-applicable: declaration differs: color 500.0ms missing; -webkit-text-stroke-color 500.0ms missing"
+   },
+   {
+    "page": "careers",
+    "selector": ".cr-ref-careers-117",
+    "draft": "TR-084 Root/560#0 ",
+    "live": "tool-applicable: declaration differs: border-color 200.0ms missing; box-shadow 200.0ms missing; background 200.0ms missing"
+   },
+   {
+    "page": "careers",
+    "selector": ".cr-ref-careers-117",
+    "draft": "TR-085 Root/562#0 ",
+    "live": "tool-applicable: declaration differs: border-color 200.0ms missing; box-shadow 200.0ms missing"
+   }
+  ]
+ },
+ "_width_notes": {
+  "entrance draft call counts by width (pages only, all pages summed)": {
+   "A-01": {
+    "1440": 2,
+    "375": 3
+   },
+   "A-06": {
+    "1440": 2
+   },
+   "A-07": {
+    "1440": 106,
+    "375": 106
+   },
+   "A-08": {
+    "1440": 10,
+    "375": 4
+   },
+   "A-09": {
+    "1440": 269,
+    "375": 269
+   },
+   "A-15": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-16": {
+    "1440": 2,
+    "375": 2
+   },
+   "A-21": {
+    "1440": 79,
+    "375": 79
+   },
+   "A-22": {
+    "1440": 15,
+    "375": 15
+   },
+   "A-23": {
+    "1440": 15,
+    "375": 15
+   },
+   "A-24": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-25": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-26": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-27": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-28": {
+    "1440": 3,
+    "375": 3
+   },
+   "A-29": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-30": {
+    "1440": 1,
+    "375": 1
+   },
+   "A-40": {
+    "1440": 69,
+    "375": 69
+   }
+  }
+ },
+ "_unmeasured_and_limits": [
+  "drawer touch hover: tap activates the control; counted as unmeasured per instance",
+  "A-31..A-35 form step/success/shake, A-38 drawer close, A-41 card pulse, J-16/J-17/J-20/J-21 scroll-to, J-07 year colour, J-22/J-23 peek: state-triggered, not exercised",
+  "hover instances hidden in collapsed or hover-opened UI, or covered at all hit points, counted unmeasured with the reason per row (rows.json)",
+  "timeline at 768 to 1023 not measured (D-29 accepted); entrance counts are from the draft run at 1440 (pages) and 375, hover at 1440 (mega 1440, drawer 768), tap at 375",
+  "16 records have no DOM instance on any measured surface: TR-013, TR-065, TR-068, TR-076, TR-081, PS-007, TR-092, TR-093, PS-011, TR-112, TR-113, TR-114, PS-012, TR-115, PS-013, PS-015",
+  "the clone route and delivery-map were not run (read-only fence); future_clone verdicts are from code reading plus the Indus outcome",
+  "blog single-post template and the template-single/single surfaces were not in scope"
+ ],
+ "_files": {
+  "rows": "E:/sgs-tmp/indus-r8/census/A/out/rows.json (every instance with status and reason)",
+  "record_table": "E:/sgs-tmp/indus-r8/census/A/out/records-table.json (all 217 records)",
+  "scripts": "E:/sgs-tmp/indus-r8/census/A/measure.mjs, probes.mjs, timeline.mjs, final.py, tail.py, run_all.py",
+  "raw": "E:/sgs-tmp/indus-r8/census/A/out/*.json"
+ }
+}

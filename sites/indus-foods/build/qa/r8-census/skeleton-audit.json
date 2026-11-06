@@ -1,0 +1,380 @@
+{
+ "K_skeleton_audit": {
+  "cause": "Claude Design skeleton (sgs-skeleton/0.1) compared with live blocks on the mirror (posts 201, 203, 205, 155, 157, 159, 161, 90) and the parity pairs",
+  "instances_at_review": null,
+  "totals": {
+   "nodes": 113,
+   "match": 91,
+   "differ": 20,
+   "missing": 2
+  },
+  "by_surface": {
+   "header": {
+    "nodes": 11,
+    "match": 7,
+    "differ": 4,
+    "missing": 0,
+    "differ_detail": [
+     "container 11 (live multi-button)",
+     "button 14 (live: two buttons, number and Call, shown or hidden per device; no per-device label setting)",
+     "responsive-logo 42 (same block, inlineSvg/svgParts unset: static img)",
+     "nav-bar-menu 45 (submenuAlign page-centred unset, default start; position not measured)"
+    ]
+   },
+   "mega-about": {
+    "nodes": 3,
+    "match": 2,
+    "differ": 1,
+    "missing": 0,
+    "differ_detail": [
+     "mega-group: manual containers with sgsBlockLink, not linkSource menu"
+    ]
+   },
+   "mega-sectors": {
+    "nodes": 2,
+    "match": 0,
+    "differ": 0,
+    "missing": 2,
+    "differ_detail": [
+     "mega-panel and card-grid absent: root is a sgs/container grid of 4 container cards; no sgsBlockLink on cards"
+    ]
+   },
+   "mega-brands": {
+    "nodes": 4,
+    "match": 3,
+    "differ": 1,
+    "missing": 0,
+    "differ_detail": [
+     "card-grid variant image: live sgs/gallery"
+    ]
+   },
+   "mega-trade": {
+    "nodes": 3,
+    "match": 2,
+    "differ": 1,
+    "missing": 0,
+    "differ_detail": [
+     "mega-group: manual containers"
+    ]
+   },
+   "drawer": {
+    "nodes": 9,
+    "match": 7,
+    "differ": 2,
+    "missing": 0,
+    "differ_detail": [
+     "nav-drawer bgSvg: live two sgs/decorative-image + gradient",
+     "mega-group manual containers"
+    ]
+   },
+   "footer": {
+    "nodes": 37,
+    "match": 32,
+    "differ": 5,
+    "missing": 0,
+    "differ_detail": [
+     "hours business-info: live open-status + hoursLayout condensed, skeleton rows",
+     "label 703 and 710: live sgs/heading",
+     "icon-list 704: 2 columns by sgsCustomCss fql32 (no columns attribute)",
+     "map: live mapFilter string, skeleton mapFilterPreset greyscale"
+    ]
+   },
+   "whatsapp": {
+    "nodes": 1,
+    "match": 1,
+    "differ": 0,
+    "missing": 0
+   },
+   "home": {
+    "nodes": 43,
+    "match": 37,
+    "differ": 6,
+    "missing": 0,
+    "differ_detail": [
+     "hero media 217: live splitMedia attributes, not an inner sgs/media",
+     "card-grid 229: live container grid + 4 container cards",
+     "feature-grid 241 and info-box 243: live container grid + container cards",
+     "timeline 255: live process-steps",
+     "media 289 circle: container with 1/1 ratio + media"
+    ]
+   }
+  },
+  "skeleton_attrs_not_real_block_attributes": {
+   "nodes_affected": 30,
+   "of": 113,
+   "script": "census/K/attrexist.py",
+   "examples": [
+    "site-header.stickyRow",
+    "button.variant",
+    "nav-drawer.bgSvg/bgSvgPosition",
+    "nav-drawer-menu.panelLayout",
+    "container.link",
+    "icon-list.columns",
+    "whatsapp-cta.labelShowOn (real: showOn, floatingHideLabelBelow)",
+    "brand-strip.marquee/pauseOnHover (real: sgsMotion marquee effect, hoverRate)",
+    "timeline.connector and process-steps.connector (per-device hide does not exist)",
+    "media.shape"
+   ]
+  },
+  "behaviour_gaps": [
+   {
+    "gap": "Logo animation (README Logo bullet, L-01..L-10)",
+    "measured": "draft indus-logo has an inline svg and 1 running animation at 3 widths; live responsive-logo is an img with 0 animations",
+    "setting": "responsive-logo inlineSvg + svgParts (logo-svgparts.json); nav-drawer chromeLogoInlineSvg + chromeLogoSvgParts",
+    "status": "tool-applicable in part; one framework bug and three parts not expressible"
+   },
+   {
+    "gap": "G-12 connectors per device",
+    "measured": "3 process-steps carry sgsCustomCss with the note 'no settings for these'",
+    "setting": "process-steps connectorLine (wave 2) draws one real line; per-device hide or orientation has no attribute (connectorStyle and orientation are single strings)",
+    "status": "framework-open"
+   },
+   {
+    "gap": "G-02 top row scrolls away, middle sticks",
+    "measured": "after 500px scroll at 1440/768/375 the live header sticks at top 0 with the top row gone, same as the draft",
+    "setting": "live uses site-header-row rowHideOnScroll (desktop on); wave 2 rowScrollAway is the named setting",
+    "status": "fixed-verified by behaviour"
+   },
+   {
+    "gap": "G-09 whole-card contact links",
+    "measured": "overlay anchors .sgs-block-link-overlay cover the 356x293 card for tel and mailto",
+    "setting": "container sgsBlockLinkSource phone/email, already applied",
+    "status": "fixed-verified; a11y defect: tel and mailto overlay anchors have empty text and no aria-label, the back-to-top overlay has aria-label '#top'"
+   },
+   {
+    "gap": "G-07 drawer reuses mega content, 2-column sector cards, pinned CTA",
+    "measured": "about and trade megas set drawerCardLayout stacked-overlay; sectors mega is not a mega-panel so no panel drawer settings apply and the card arrow is placed by sgsCustomCss wgate7/14/21/28",
+    "setting": "wrap sectors in sgs/mega-panel + card-grid with drawerCard* settings",
+    "status": "tool-blind (no pairing names mega-panel 65 for sectors)"
+   },
+   {
+    "gap": "G-03 phone label per device",
+    "measured": "live has two buttons, 0121 771 4330 and Call, with sgsHideOn*",
+    "setting": "none: button label is one string; labelCollapse only hides the label",
+    "status": "framework-open (the duplicate is the working patch)"
+   },
+   {
+    "gap": "G-01 scroll progress bar",
+    "measured": "both sides draw a 3px bar scaled by scroll; gradient differs (draft gold to blue-light, live D8CA50 to 2EAD..)",
+    "setting": "sgs-floating-ui__reading-progress",
+    "status": "fixed-verified (colour stops differ)"
+   }
+  ],
+  "pairing_join": {
+   "script": "census/K/join.py",
+   "finding": "skeleton t ids share the Root/<id> numbering of the tpl pairs in parity/<page>.fill.mjs and fill-base.mjs",
+   "by_surface": {
+    "header": {
+     "pairs": 12,
+     "cr_live_pairs": 17,
+     "pair_tpl_ids": 11,
+     "skeleton_block_nodes": 11,
+     "with_pair": 7,
+     "without_pair": [
+      [
+       "sgs/site-header-row",
+       "10"
+      ],
+      [
+       "sgs/social-icons",
+       "22"
+      ],
+      [
+       "sgs/site-header-row",
+       "41"
+      ],
+      [
+       "sgs/responsive-logo",
+       "42"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 2
+    },
+    "mega-about": {
+     "pairs": 40,
+     "cr_live_pairs": 40,
+     "pair_tpl_ids": 15,
+     "skeleton_block_nodes": 3,
+     "with_pair": 2,
+     "without_pair": [
+      [
+       "sgs/mega-panel",
+       "65"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 7
+    },
+    "mega-sectors": {
+     "pairs": 29,
+     "cr_live_pairs": 29,
+     "pair_tpl_ids": 8,
+     "skeleton_block_nodes": 2,
+     "with_pair": 1,
+     "without_pair": [
+      [
+       "sgs/mega-panel",
+       "65"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 2
+    },
+    "mega-brands": {
+     "pairs": 8,
+     "cr_live_pairs": 8,
+     "pair_tpl_ids": 8,
+     "skeleton_block_nodes": 4,
+     "with_pair": 3,
+     "without_pair": [
+      [
+       "sgs/mega-panel",
+       "65"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 2
+    },
+    "mega-trade": {
+     "pairs": 35,
+     "cr_live_pairs": 35,
+     "pair_tpl_ids": 15,
+     "skeleton_block_nodes": 3,
+     "with_pair": 2,
+     "without_pair": [
+      [
+       "sgs/mega-panel",
+       "65"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 7
+    },
+    "drawer": {
+     "pairs": 13,
+     "cr_live_pairs": 21,
+     "pair_tpl_ids": 13,
+     "skeleton_block_nodes": 9,
+     "with_pair": 5,
+     "without_pair": [
+      [
+       "sgs/mega-panel",
+       "134"
+      ],
+      [
+       "sgs/mega-aside",
+       "139"
+      ],
+      [
+       "sgs/mega-group",
+       "149"
+      ],
+      [
+       "sgs/social-icons",
+       "180"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 5
+    },
+    "footer": {
+     "pairs": 42,
+     "cr_live_pairs": 47,
+     "pair_tpl_ids": 42,
+     "skeleton_block_nodes": 37,
+     "with_pair": 32,
+     "without_pair": [
+      [
+       "sgs/responsive-logo",
+       "683"
+      ],
+      [
+       "sgs/social-icons",
+       "686"
+      ],
+      [
+       "sgs/icon-list",
+       "704"
+      ],
+      [
+       "sgs/site-footer-row",
+       "719"
+      ],
+      [
+       "sgs/text",
+       "725"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 4
+    },
+    "whatsapp": {
+     "pairs": 42,
+     "cr_live_pairs": 47,
+     "pair_tpl_ids": 42,
+     "skeleton_block_nodes": 1,
+     "with_pair": 1,
+     "without_pair": [],
+     "pair_ids_not_in_skeleton_t": 41
+    },
+    "home": {
+     "pairs": 97,
+     "cr_live_pairs": 97,
+     "pair_tpl_ids": 62,
+     "skeleton_block_nodes": 43,
+     "with_pair": 39,
+     "without_pair": [
+      [
+       "sgs/media",
+       "217"
+      ],
+      [
+       "sgs/testimonial",
+       "274"
+      ],
+      [
+       "sgs/multi-button",
+       "312"
+      ],
+      [
+       "sgs/button",
+       "314"
+      ]
+     ],
+     "pair_ids_not_in_skeleton_t": 13
+    }
+   }
+  },
+  "future_clone": {
+   "verdict": "partial",
+   "why": "The skeleton gives block choice plus a draft-element id per node, but carries no values, uses attribute names that are not block attributes for 30 of 113 nodes, and covers 9 surfaces; as an applier map it needs an attribute-validity gate, instance indexes (#n), value sources and a motion-record link",
+   "function_cited": "scripts/computed-route/pairs.mjs (generated pairs), skeleton-classify.mjs"
+  },
+  "examples": [
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-74 (heritage)",
+    "draft": "skeleton: sgs/timeline orientation horizontal, connector shown only on desktop",
+    "live": "sgs/process-steps, 4/2/1 grid and connector in sgsCustomCss hmhr74"
+   },
+   {
+    "page": "mega-sectors",
+    "selector": ".cr-ref-mega-sectors-0",
+    "draft": "skeleton: sgs/mega-panel > sgs/card-grid x4",
+    "live": "sgs/container grid with 4 container cards, no mega-panel"
+   },
+   {
+    "page": "header",
+    "selector": ".cr-ref-header-13",
+    "draft": "indus-logo inline svg, spin loop running",
+    "live": "responsive-logo img logoId 81, 0 animations"
+   },
+   {
+    "page": "footer",
+    "selector": ".cr-ref-footer-32",
+    "draft": "skeleton: sgs/icon-list columns 2",
+    "live": "icon-list with sgsCustomCss fql32 (no columns attribute)"
+   },
+   {
+    "page": "home",
+    "selector": ".cr-ref-home-13",
+    "draft": "skeleton: brand-strip pauseOnHover",
+    "live": "marquee effect hoverRate 0.15, which matches the README (slows to 0.15x)"
+   }
+  ]
+ }
+}
