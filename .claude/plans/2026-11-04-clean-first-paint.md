@@ -1,6 +1,6 @@
 # Clean first paint: no page jumps or unstyled parts while a page loads
 
-Plan date 2026-11-04. Found by the Eye Care stream, round 7. Bean: "things tend to look quite broken as the page loads for the first half a second". Bean chose (2026-11-04) to fix every proven cause once in the framework, then add a gate so it cannot come back.
+Plan date 2026-11-04. Status: all seven fixes (C, F-lite, D, G, A, B, E) are built and live on eye-care-test and sandybrown. Found by the Eye Care stream, round 7. Bean: "things tend to look quite broken as the page loads for the first half a second". Bean chose (2026-11-04) to fix every proven cause once in the framework, then add a gate so it cannot come back.
 
 An adversarial council reviewed this plan on 2026-11-04 (veteran builder, delivery lead, front-end performance engineer). Its critiques were fact-checked against the code and the live site. Accepted ones are folded in below. Rejected ones are listed at the end with the reason.
 
@@ -51,6 +51,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - `wc-blocks-style` was enqueued by WooCommerce from a priority-10 `wp_head` callback (styles print at 8), so `functions.php::enqueue_woocommerce_blocks_style_early` enqueues it on `wp_enqueue_scripts`; `Sgs_Toast::request()` enqueues `sgs-toast` while the template renders. The allowlist holds only two third-party payment-plugin sheets on the product page.
 
 **A. Stable scope classes (P1).** Built: `sgs_scope_class_for_root` takes the callable that builds the rules and hashes them; the two anchor-name callers (fx-path, fx-shape) pass `per_instance` so repeats of one seed get a counted suffix. The collector already dedupes identical CSS, and its epoch-based pruning runs together with a full LiteSpeed purge, so no cached page names a deleted file. Design: The minted suffix becomes the hash of the CSS rules it scopes, `md5( prefix | rule text )`, built with a placeholder and then substituted. There are no counters, so render order, double renders, editor and REST renders all give the same class for the same rules. Identical blocks share one class and one rule, which also shrinks the collected file.
+- A scope class is never reused: two blocks with the same first-injector rules share one hashed class, so code that reuses whatever `sgs-*-8hex` class is already on the root would cross a second injector's rules over (council fix `bad9c40fb` to `4c5f06ed2`). The fx path and shape routes are the per-instance exception: they pass `per_instance` and take a counted suffix.
 - Superseded collected files stay on disk for the page-cache lifetime, so cached HTML never points at a missing file. A deploy that changes rules changes the name once, as expected.
 - Before shipping, grep the snapshots, fixtures and motion-QA pages for any selector naming the old `sgs-child-sizing-<hex>` pattern.
 - Afterwards, re-measure the page-weight plan's "possible second collected file on /shop/" (`plans/2026-11-03-page-weight-budget.md`, cause 4).
@@ -64,7 +65,7 @@ It runs after the upload as a post-deploy verify stage (`build-deploy.py --first
 - CSS keeps `height: auto`.
 - These are HTML attributes, so Spec 32 is unaffected.
 
-**E. Font swap (P7, last). Built.** `plugins/sgs-blocks/scripts/compute-font-fallback-metrics.py` reads unitsPerEm, hhea ascender, descender, lineGap and a frequency-weighted average advance from every woff2 under `theme/sgs-theme/assets/fonts/` (and from Arial / Times New Roman as the local stand-ins) into `assets/fonts/fallback-metrics.json`; `inc/font-fallback.php` prints a `<Family> Fallback` `@font-face` (`src: local()`, `size-adjust`, ascent, descent and line-gap overrides) per theme.json family and inserts the name right after the web font in the stack. Preloads come from the active global styles: the h1's font file and the body font file (one file when they match), replacing the hard-coded Inter preload. A box sized in `ch` (the hero h1 has `max-width: 15ch`) follows the font's zero glyph, so its box width cannot be matched by `size-adjust` without distorting text widths; text widths and line breaks match within 1%.
+**E. Font swap (P7, last). Built.** `plugins/sgs-blocks/scripts/compute-font-fallback-metrics.py` reads unitsPerEm, hhea ascender, descender, lineGap and a frequency-weighted average advance from every woff2 under `theme/sgs-theme/assets/fonts/` (and from Arial / Times New Roman as the local stand-ins) into `assets/fonts/fallback-metrics.json`; `inc/font-fallback.php` prints a `<Family> Fallback` `@font-face` (`src: local()`, `size-adjust`, ascent, descent and line-gap overrides) per theme.json family and inserts the name right after the web font in the stack. Preloads come from the active global styles: the h1's font file and the body font file (one file when they match), replacing the hard-coded Inter preload. A box sized in `ch` (the hero h1 has `max-width: 15ch`) follows the font's zero glyph, so its box width cannot be matched by `size-adjust` without distorting text widths; text widths and line breaks match within 1%. Residual: the hero h1 box is 8.6% narrower before the web font arrives; nothing shifts because line breaks and height match.
 
 **Rule for future blocks.** One line in `.claude/rules/` (block authoring):
 - a block's server HTML plus CSS is its final first-paint layout and look, and JS only adds behaviour
@@ -80,10 +81,10 @@ Effort, low estimates: C 30 min; F-lite 45 min; D shop 45 min; FAQ 45 min; G 45 
 
 ## Done
 
-- The F-lite CLS check passes at 375, 768 and 1440 on the fixture pages.
-- The late-CSS check passes.
-- The JS-off look check shows no difference outside deliberate motion.
-- Bean has looked at the pages on his phone and desktop (FP-13).
+- The F-lite CLS check passes at 375, 768 and 1440 on the fixture pages. MET: eye-care-test CLS 0 to 0.014 on all five fixture pages (was up to 0.785); canary home 0.023, 0.018, 0.012 (was 0.755 at 375). One 0.154 reading on the Eye Care home at 1440 occurred once in four runs and did not reproduce: intermittent, watch.
+- The late-CSS check passes. MET on every page, and the collected stylesheet name is stable.
+- The JS-off look check shows no difference outside deliberate motion. MET on the canary (0 difference). On Eye Care it differs only because the trust bar's no-JS fallback shows all four items stacked, the deliberate "degrade to more content" rule.
+- Bean has looked at the pages on his phone and desktop (FP-13). OPEN: owed by Bean.
 
 P6 is not part of Done; it is parked until Bean names the route.
 

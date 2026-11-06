@@ -277,6 +277,25 @@ Dropped: the phone menu's rating badge in its top row (decided, D7); the header 
 
 Flows pass after the deploy.
 
+## Finishing stream, round 9 (2026-11-05/06, approved by Bean)
+
+**How the review ran.** Two design reviewers compared sign-in, account, checkout and order confirmation with the draft at 375, 768 and 1440 (raw findings `E:/sgs-tmp/r9/findings.md`); Bean approved 24 items, none dropped. Round 9 list and results: https://claude.ai/artifact/QL9PESW6Ph4RR1N9wXk5Ep. Bean's calls: Stripe in test mode, the Subscriptions tab hidden, and the show-password eye and checkout floating labels kept as accepted differences. Backups: `sites/eye-care-ward-end/build/backups/2026-11-05-r9/` (local only).
+
+**Site edits on eye-care-test.** Page 9 = `sgs/container` + `sgs/account` with the draft's settings and Custom CSS; per-site template parts 1609 (checkout content) and 1611 (order confirmation, heading bound to `sgs/order`); templates 1610 (checkout) and 1612 (order confirmation); header post 199 (signed-in dot); WooCommerce registration, password field, checkout sign-up and login reminder on; shipping instances 4 and 5 "Post it to me" with descriptions, 6 with a description; Stripe plugin 11.1.1 active in test mode.
+
+| Surface | Closed | Live value, 375/768/1440 | Commits |
+|---|---|---|---|
+| Sign-in, password reset | draft headings and intro, two-panel card with "New here?" register, first name and password hint, black uppercase buttons, "Keep me signed in" and the forgotten-password link on one row | every measured item matches the draft | `7cffe2f19`, `bd7b54b55` |
+| Account | "Hello, name" header with "Signed in as", 220px menu with a 2px bar (a tab strip on phones), Dashboard, Downloads and Payment methods and Subscriptions hidden, empty-orders card, address cards, two-column details form with Mobile, signed-in dot on the header person icon | matches the draft | `7cffe2f19`, `cb0d26b72` |
+| Checkout (rows 147 to 152, 154, 155) | 1200px layout, numbered steps, draft fields, summary card, delivery cards with descriptions, "Pay now" with the total, secure-payment note, entrance, one summary on phones, sticky summary below the header, no gift card box, options shown once, Stripe test payments | matches the draft | `f1fa34ea8` to `6888da495`, `6e169faba`, `9adc51398`, `d8f1730e7` |
+| Confirmation (rows 156, 157) | tick, "Thank you", the draft's message, "Back to the shop"; single-column grid when the shipping box is empty | matches the draft | `6888da495`, `6e169faba` |
+
+**Near-matches (recorded, not defects):** the local pickup description shows only when that option is selected (WooCommerce's own checkout behaviour); the orders status pill cannot be seen until an account has an order; the thank-you heading shows the order number only to a viewer WooCommerce lets see the order (guest within 10 minutes or verified, or the owning customer), otherwise "Thank you." Bean's own to-do: in the Stripe dashboard (Test mode, Settings, Payment methods) turn off Amazon Pay and Link so the express row matches the draft.
+
+**Extra regressions found and fixed:** `356e79232` (a motion part whose element is the block root resolves as the root: `sgs/media` bare `img` lost parallax since `959f5ccb6`, round 7); `abe9231d9` (buybox gallery sticky top printed from 768 pushed the gallery under the info column at tablet; now from 1024 only); `4ed2477e5` and `36f3b0a36` (the canary hero collapsed while its image loaded: media width default).
+
+**Post-round council (2026-11-06):** three reviewers; every confirmed finding is fixed and deployed to sandybrown and eye-care-test (`[DONE]`, `E:/sgs-tmp/r9/deploy-council.log`). Checkout and account `54540b02a` to `e070d5487`: pickup details hooked, gift cards counted, try/finally, `preg_replace_callback`, `aria-describedby`, orders hooks, first-endpoint cache and fallback. First paint `bad9c40fb` to `4c5f06ed2`: a scope class never reuses a minted class, shop filters gate through `is_shop_filters_surface()`, per-source responsive-logo sizes, division-by-zero guards in image dimensions, font preload for faces without metrics, media height-only tiers keep width auto, accordion open via the tag processor.
+
 ## Four build rules for every item
 
 1. **Step 0: rebuild every page from its layout file first.** The live header is older than `header.tree.json`: the file has asked for an 18px wordmark that shrinks to 15px since 30 September, and the live one is 16px with no shrink. Every tree is rebuilt through `wp-build-page.js` before any item is judged, so no fix chases a stale page.
@@ -590,22 +609,22 @@ Flows pass after the deploy.
 
 | Ref | What is wrong | Fix | Type | Status | Sweep | Lane |
 |---|---|---|---|---| --- | --- |
-| 147 | Title 63px vs 48px | page-title size token at 48px | client token + tree | proven | still open | Fix: client size token |
-| 148 | Sections do not fade up | checkout entrance from tokens | framework new | proven | still open | Fix: framework new |
-| 149 | "Place Order" vs "PAY NOW" with the price on the right | Label "Pay now" and the price-on-button style. The checkout is the shared theme part, so Eye Care's wording needs a per-site copy of that part: WordPress saves a Site Editor edit of a part per site. Build it from a new checkout layout file if the page builder can build parts; check that first. | tree + framework repair | to prove (per-site part) | still open | Fix: per-site part |
-| 150 | Secure-payment note missing | Same per-site checkout part as 149, holding Eye Care's note | tree | to prove (per-site part) | partly measured | Fix: per-site part |
-| 151 | Delivery option wording | shipping method titles and descriptions | content | proven | not walker-measurable | Fix: content |
-| 152 | Coupon, order note and terms | All three stay on. Confirm each can be switched off without code: order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part. | none | to prove (switches) | not walker-measurable | Fix: switches |
+| 147 | Title 63px vs 48px | page-title size token at 48px | client token + tree | closed, round 9 | closed (round 9) | Fix: client size token |
+| 148 | Sections do not fade up | checkout entrance from tokens | framework new | closed, round 9 | closed (round 9) | Fix: framework new |
+| 149 | "Place Order" vs "PAY NOW" with the price on the right | Label "Pay now" and the price-on-button style. The checkout is the shared theme part, so Eye Care's wording needs a per-site copy of that part: WordPress saves a Site Editor edit of a part per site. Build it from a new checkout layout file if the page builder can build parts; check that first. | tree + framework repair | closed, round 9 | closed (round 9) | Fix: per-site part |
+| 150 | Secure-payment note missing | Same per-site checkout part as 149, holding Eye Care's note | tree | closed, round 9 | closed (round 9) | Fix: per-site part |
+| 151 | Delivery option wording | shipping method titles and descriptions | content | closed, round 9 | closed (round 9) | Fix: content |
+| 152 | Coupon, order note and terms | All three stay on. Confirm each can be switched off without code: order notes is a checkout block setting, coupons a WooCommerce setting, terms an inner block in the shared part. | none | closed, round 9 | closed (round 9) | Fix: switches |
 | 153 | Extra fields (country, flat, phone, billing, guest line) | Keep them (your reading) | none | closed | closed earlier | closed |
-| 154 | Checkout looks like default WooCommerce | Bespoke redesign to the draft, Eye Care only. The shared checkout stylesheet reads tokens (heading size, case and tracking; field look; summary card), so every client benefits. The Eye Care look goes in Eye Care's own token file, the only client styling channel that deploys: numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards. A prescription step and an express-pay row need the planned plugin work. | framework repair + client | proven | still open | Fix: redesign |
-| 155 | Order summary twice on a phone | One summary, below the form (draft): hide WooCommerce's collapsed top summary on phones | framework repair | to prove (selector) | partly measured | Fix: framework repair |
+| 154 | Checkout looks like default WooCommerce | Bespoke redesign to the draft, Eye Care only. The shared checkout stylesheet reads tokens (heading size, case and tracking; field look; summary card), so every client benefits. The Eye Care look goes in Eye Care's own token file, the only client styling channel that deploys: numbered small uppercase step headings, white fields, a flat summary card, a 1200px column, delivery cards. A prescription step and an express-pay row need the planned plugin work. | framework repair + client | closed, round 9 | closed (round 9) | Fix: redesign |
+| 155 | Order summary twice on a phone | One summary, below the form (draft): hide WooCommerce's collapsed top summary on phones | framework repair | closed, round 9 | closed (round 9) | Fix: framework repair |
 
 ## Confirmation
 
 | Ref | What is wrong | Fix | Type | Status | Sweep | Lane |
 |---|---|---|---|---| --- | --- |
-| 156 | Draft: tick, "Thank you", short message, "Back to the shop", centred; live: full order table | Build it in the shared confirmation part (tick icon, heading, button), with the wording per client. The order table is left out, as the draft; the email carries the details. | framework repair + content | proven | still open | Fix: shared part and content |
-| 157 | Billing box alone in the right half | The grid collapses to one column when the shipping box is empty | framework repair | proven | partly measured | Fix: framework repair |
+| 156 | Draft: tick, "Thank you", short message, "Back to the shop", centred; live: full order table | Build it in the shared confirmation part (tick icon, heading, button), with the wording per client. The order table is left out, as the draft; the email carries the details. | framework repair + content | closed, round 9 | closed (round 9) | Fix: shared part and content |
+| 157 | Billing box alone in the right half | The grid collapses to one column when the shipping box is empty | framework repair | closed, round 9 | closed (round 9) | Fix: framework repair |
 
 ## Content not tied to one screen
 
