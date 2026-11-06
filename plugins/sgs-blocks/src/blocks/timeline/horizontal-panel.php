@@ -109,6 +109,31 @@ if ( $hp_has_row ) {
 	}
 }
 
+// Content column: the root's side padding becomes max(gutter, (100% - max width) / 2 + gutter) per device, so the counter
+// row and the card strip share one centred column. Each tier reads the nearest set value at or above it.
+$hp_max_tiers    = sgs_responsive_normalise_object( $attributes['panelContentMaxWidth'] ?? null, false );
+$hp_gutter_tiers = sgs_responsive_normalise_object( $attributes['panelContentGutter'] ?? null, false );
+$hp_pad_value    = array();
+$hp_last_max     = null;
+$hp_last_gutter  = null;
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $hp_tier ) {
+	$hp_last_max    = is_numeric( $hp_max_tiers[ $hp_tier ] ?? null ) && (float) $hp_max_tiers[ $hp_tier ] > 0 ? (float) $hp_max_tiers[ $hp_tier ] : $hp_last_max;
+	$hp_last_gutter = is_numeric( $hp_gutter_tiers[ $hp_tier ] ?? null ) ? max( 0.0, (float) $hp_gutter_tiers[ $hp_tier ] ) : $hp_last_gutter;
+	if ( null === $hp_last_max && null === $hp_last_gutter ) {
+		continue;
+	}
+	$hp_gut = null === $hp_last_gutter ? 40.0 : $hp_last_gutter;
+	$hp_pad_value[ $hp_tier ] = null === $hp_last_max
+		? $hp_gut . 'px'
+		: 'max(' . $hp_gut . 'px, calc((100% - ' . $hp_last_max . 'px) / 2 + ' . $hp_gut . 'px))';
+}
+if ( $hp_pad_value ) {
+	// The pin runs from 768px up; below that the timeline keeps its own padding.
+	$scoped_css[] = SGS_Breakpoints::media( 'tablet-up' ) . '{'
+		. sgs_emit_responsive_css( $root_sel, array( array( 'value' => $hp_pad_value, 'css' => 'padding-inline' ) ) )
+		. '}';
+}
+
 // Counter and hint text: colour and typography (each helper call names its prefix as a literal).
 $hp_counter_decls = sgs_text_decls( $attributes, array( 'base' => 'counterColour' ) );
 if ( $hp_counter_decls['normal'] ) {

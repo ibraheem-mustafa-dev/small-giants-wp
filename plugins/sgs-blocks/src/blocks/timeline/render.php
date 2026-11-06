@@ -734,6 +734,20 @@ foreach (
 	$scoped_css[] = sgs_emit_responsive_css( $root_sel . ' ' . $part_target[0], $part_specs );
 }
 
+// Swipeable-card width: a per-device percentage the carousel layout reads (style.scss, `--sgs-timeline-card-width`).
+if ( 'carousel' === $mobile_layout && ! empty( $attributes['cardWidth'] ) && is_array( $attributes['cardWidth'] ) ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'        => $attributes['cardWidth'],
+				'css'          => '--sgs-timeline-card-width',
+				'unit_default' => '%',
+			),
+		)
+	);
+}
+
 require __DIR__ . '/horizontal-panel.php';
 $wrapper_args = array_merge( $wrapper_args, $hp_wrapper_args );
 

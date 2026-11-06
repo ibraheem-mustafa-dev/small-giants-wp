@@ -776,6 +776,12 @@
 	.sgs-timeline--horizontal[data-sgs-fx~='horizontal-panel'] {
 		overflow: hidden;
 
+		// Clip only the sideways axis so the cards' shadows can fall below the root.
+		@supports (overflow: clip) {
+			overflow-x: clip;
+			overflow-y: visible;
+		}
+
 		.sgs-timeline__list {
 			width: max-content;
 			overflow-x: visible;
@@ -1678,7 +1684,7 @@
 			// 85% deliberately leaves a peek of the next card, which is the
 			// discoverability cue for the scroller — dot indicators are a weaker
 			// cue by comparison and are deliberately not added.
-			flex: 0 0 min(85%, 320px);
+			flex: 0 0 var(--sgs-timeline-card-width, min(85%, 320px));
 			scroll-snap-align: start;
 			margin-bottom: 0;
 			padding: var(--wp--preset--spacing--20, 1rem) 0 0;

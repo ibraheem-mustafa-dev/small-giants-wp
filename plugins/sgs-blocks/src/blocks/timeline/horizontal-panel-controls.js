@@ -92,16 +92,18 @@ function WholeNumberControl( { label, help, value, min, max, onChange } ) {
 }
 
 /**
- * A per-device scroll distance in vh.
+ * A per-device number (a scroll distance in vh, a width in px or a percentage), stored as a tier object.
  *
  * @param {Object}   props          Props.
  * @param {string}   props.label    Control label.
  * @param {string}   props.help     Help text.
  * @param {Object}   props.value    Tier object.
+ * @param {number}   props.min      Lower bound (default 0).
+ * @param {number}   props.max      Upper bound (default 400).
  * @param {Function} props.onChange Receives the tier object.
  * @return {JSX.Element} The control.
  */
-function ScrollLengthControl( { label, help, value, onChange } ) {
+function ScrollLengthControl( { label, help, value, min = 0, max = 400, onChange } ) {
 	return (
 		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
 			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
@@ -109,20 +111,42 @@ function ScrollLengthControl( { label, help, value, onChange } ) {
 					label={ label }
 					help={ help }
 					hideLabelFromVision
-					min={ 0 }
-					max={ 400 }
+					min={ min }
+					max={ max }
 					step={ 1 }
 					spinControls="custom"
 					value={ ownValue }
 					placeholder={ inherited && undefined !== effectiveValue ? String( effectiveValue ) : '' }
 					onChange={ ( val ) => {
 						const parsed = parseFloat( val );
-						setOwnValue( Number.isNaN( parsed ) ? '' : Math.min( 400, Math.max( 0, parsed ) ) );
+						setOwnValue( Number.isNaN( parsed ) ? '' : Math.min( max, Math.max( min, parsed ) ) );
 					} }
 					__next40pxDefaultSize
 				/>
 			) }
 		</ResponsiveOverride>
+	);
+}
+
+/**
+ * The width of each swipeable card as a percentage of the row, per device. Shown in the layout panel while the mobile
+ * layout is "Swipeable cards".
+ *
+ * @param {Object}   props               Props.
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Attribute writer.
+ * @return {JSX.Element} The control.
+ */
+export function CardWidthControl( { attributes, setAttributes } ) {
+	return (
+		<ScrollLengthControl
+			label={ __( 'Swipeable card width (%)', 'sgs-blocks' ) }
+			help={ __( 'How much of the row each card fills at 767px and below; the rest shows the next card. Empty keeps 85% up to 320px.', 'sgs-blocks' ) }
+			value={ attributes.cardWidth }
+			min={ 30 }
+			max={ 100 }
+			onChange={ ( obj ) => setAttributes( { cardWidth: obj } ) }
+		/>
 	);
 }
 
@@ -188,6 +212,8 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 		panelPinLength,
 		panelPinTail,
 		panelTravelEnd,
+		panelContentMaxWidth,
+		panelContentGutter,
 	} = attributes;
 	return (
 		<>
@@ -354,6 +380,21 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 					onChange={ ( next ) => setAttributes( { panelBarHeight: next } ) }
 				/>
 			) }
+			<ScrollLengthControl
+				label={ __( 'Content max width (px)', 'sgs-blocks' ) }
+				help={ __( 'Caps the counter row and the cards to one centred column this wide. Empty uses the full width.', 'sgs-blocks' ) }
+				value={ panelContentMaxWidth }
+				min={ 320 }
+				max={ 3000 }
+				onChange={ ( obj ) => setAttributes( { panelContentMaxWidth: obj } ) }
+			/>
+			<ScrollLengthControl
+				label={ __( 'Content side space (px)', 'sgs-blocks' ) }
+				help={ __( 'Space at each side of the content column. Empty keeps the timeline padding (40px once a max width is set).', 'sgs-blocks' ) }
+				value={ panelContentGutter }
+				max={ 600 }
+				onChange={ ( obj ) => setAttributes( { panelContentGutter: obj } ) }
+			/>
 			<WholeNumberControl
 				label={ __( 'Space between counter, bar and hint (px)', 'sgs-blocks' ) }
 				value={ panelRowGap }

@@ -41,7 +41,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
-import HorizontalPanelControls, { pinnedColourRows } from './horizontal-panel-controls';
+import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 
 // Per-device spacing boxes of the entry parts: [ attribute, label ].
 const ENTRY_PART_BOXES = [
@@ -1395,6 +1395,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
+					{ 'carousel' === mobileLayout && (
+						<CardWidthControl
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+						/>
+					) }
 				</PanelBody>
 
 				{ /* ── Connector ── */ }

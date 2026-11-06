@@ -284,7 +284,8 @@
 						"css:text-decoration-color-link": "descriptionLinkUnderlineColour",
 						"css:text-decoration-offset-link": "descriptionLinkUnderlineOffset",
 						"css:min-height": "milestoneMinHeight",
-						"css:margin-bottom": "entryGap"
+						"css:margin-bottom": "entryGap",
+						"css:flex-basis": "cardWidth"
 					},
 					"states": {
 						"hover": {
@@ -324,6 +325,20 @@
 						"css:margin-bottom": "panelRowSpacing"
 					},
 					"_note": "Holds the counter, the progress bar and the hint above the pinned cards; printed only when panelProgressBar is on or panelHint is set."
+				},
+				"panelContent": {
+					"selector": ".wp-block-sgs-timeline",
+					"motion": false,
+					"label": "Pinned content width",
+					"order": 6,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:max-width": "panelContentMaxWidth",
+						"css:padding": "panelContentGutter"
+					},
+					"_note": "Pinned-horizontal only. The root's left and right padding becomes max(gutter, (100% - max width) / 2 + gutter): the counter row and the card strip share one centred column no wider than the max width, with the gutter at each side (horizontal-panel.php). Both are per-device px; unset leaves the root's own padding."
 				},
 				"counter": {
 					"selector": ".sgs-timeline__counter",
@@ -1261,6 +1276,54 @@
 			"type": "string",
 			"default": "",
 			"description": "Progress bar fill gradient (CSS gradient string). Non-empty wins over panelBarFillColour."
+		},
+		"panelContentMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: widest the counter row and card strip may be, in px per device tier {desktop,tablet,mobile}; centred. Empty applies no cap.",
+			"sgs": {
+				"meaning": {
+					"what": "Caps the width of the pinned horizontal timeline's content and centres it.",
+					"trigger": "viewport wider than the cap plus both gutters",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of px"
+						}
+					}
+				}
+			}
+		},
+		"panelContentGutter": {
+			"type": "object",
+			"default": {},
+			"description": "Pinned-horizontal only: space at each side of the content column, in px per device tier {desktop,tablet,mobile}. Used with the max width; alone it replaces the root's side padding. Empty keeps the root padding (40px when a max width is set).",
+			"sgs": {
+				"meaning": {
+					"what": "Sets the side space of the pinned horizontal timeline's content column.",
+					"trigger": "always, while the timeline is pinned",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of px"
+						}
+					}
+				}
+			}
+		},
+		"cardWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Swipeable-cards layout (767px and below): width of each card as a percentage of the row, per device tier {desktop,tablet,mobile}. Empty keeps 85% up to 320px.",
+			"sgs": {
+				"meaning": {
+					"what": "Sets how wide each swipeable timeline card is, so the next card peeks in from the side.",
+					"trigger": "viewport 767px and below with the swipeable cards layout",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} of percent of the row"
+						}
+					}
+				}
+			}
 		},
 		"panelRowGap": {
 			"type": "number",

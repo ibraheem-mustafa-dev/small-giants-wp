@@ -60,7 +60,7 @@
 			// -- Reading progress ---------------------------------------------
 			if ( rpBar && totalHeight > 0 ) {
 				const percent = Math.min( 100, Math.max( 0, ( scrollY / totalHeight ) * 100 ) );
-				rpBar.style.setProperty( '--rp-progress', percent.toFixed( 1 ) + '%' );
+				rpBar.style.setProperty( '--rp-progress', ( percent / 100 ).toFixed( 3 ) );
 				rpBar.setAttribute( 'aria-valuenow', Math.round( percent ).toString() );
 			}
 		} );

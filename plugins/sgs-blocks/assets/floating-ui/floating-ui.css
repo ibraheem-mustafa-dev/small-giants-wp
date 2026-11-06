@@ -12,15 +12,16 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	width: var(--rp-progress, 0%);
+	width: 100%;
 	height: var(--rp-height, 4px);
 	background-color: var(--rp-colour, #0f7e80);
 	background-image: var(--rp-gradient, none);
-	/* The gradient spans the viewport, so the growing bar reveals it rather than squashing it. */
-	background-size: 100vw 100%;
+	/* A full-width bar scaled from the left: the whole gradient always fits the visible part. */
+	transform: scaleX(var(--rp-progress, 0));
+	transform-origin: 0 50%;
 	background-repeat: no-repeat;
 	z-index: 9999;
-	transition: width 0.1s linear;
+	transition: transform 0.1s linear;
 	pointer-events: none;
 }
 
