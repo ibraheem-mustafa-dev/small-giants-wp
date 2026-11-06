@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss } from '../lib/cache.mjs';
+import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss, instancesDue } from '../lib/cache.mjs';
 import { calibrationFor } from '../solve.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
@@ -157,4 +157,22 @@ test( 'slotMapWriteDecision refuses a lossy write, accepts a named loss and a fi
 test( 'parseAllowLoss splits block:name on the first colon after the block slug', () => {
 	assert.deepEqual( parseAllowLoss( 'sgs/a:x,sgs/b:discovered:layout,sgs/a:y' ), { 'sgs/a': [ 'x', 'y' ], 'sgs/b': [ 'discovered:layout' ] } );
 	assert.deepEqual( parseAllowLoss( null ), {} );
+} );
+
+// A run whose slot map is current but whose default paint is due builds only what the paint is read from: each variant's
+// default instance and each paint state. Setting markers and their bases are never built (they measured nothing the paint
+// file holds; nav-bar-menu spent about 100 minutes on them on 2026-11-01). MUST FAIL: a filter that keeps every instance,
+// or one that drops a paint state, fails here.
+test( 'instancesDue: a paint-only run builds the default and paint-state instances alone', () => {
+	const planned = [
+		{ key: 'default-v0', isDefault: true },
+		{ key: 'default-v1', isDefault: true },
+		{ key: 'paint-empty', paintState: { name: 'empty' } },
+		{ key: 'base-x-v0', isBase: true },
+		{ key: 'padding-37', row: { attr_name: 'padding' } },
+		{ key: 'content-title' },
+	];
+	assert.deepEqual( instancesDue( planned, { slotMap: false, paint: true } ).map( ( i ) => i.key ), [ 'default-v0', 'default-v1', 'paint-empty' ] );
+	assert.deepEqual( instancesDue( planned, { slotMap: true, paint: true } ), planned );
+	assert.deepEqual( instancesDue( planned, { slotMap: true, paint: false } ), planned );
 } );
