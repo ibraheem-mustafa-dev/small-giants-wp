@@ -3,6 +3,15 @@
 	"entries": [
 		{
 			"slug": "sgs/post-grid",
+			"attr": "order",
+			"fields": {
+				"role": "enum-mode",
+				"css_property": null
+			},
+			"_reason": "2026-11-06: the post sort direction (asc or desc), passed to WP_Query as 'order'. The css-property tracer reads that array key as the CSS order property, so calibration gave it no marker and dropped its enum reading."
+		},
+		{
+			"slug": "sgs/post-grid",
 			"attr": "metaLayout",
 			"fields": {
 				"role": "enum-mode"
