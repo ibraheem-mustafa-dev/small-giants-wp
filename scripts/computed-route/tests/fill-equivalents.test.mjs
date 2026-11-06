@@ -160,7 +160,7 @@ test( 'MUST FAIL (end to end): children all asking align-self centre write the c
 	const agreed = fillWith( [ 'center', 'center', 'center' ] );
 	const writes = agreed.writes.filter( ( w ) => 'align-self' === w.prop );
 	assert.deepEqual( writes.map( ( w ) => [ w.block, w.attr, w.how ] ), [ [ 'sgs/container', 'alignItems', 'equivalent:parent' ] ] );
-	assert.equal( agreed.tree[ 0 ].attributes.alignItems, 'center' );
+	assert.deepEqual( agreed.tree[ 0 ].attributes.alignItems, { desktop: 'center' } );
 	assert.equal( agreed.unmapped.filter( ( u ) => 'align-self' === u.property ).length, 0 );
 	// The confirm record reads the child that asked align-self, not the container's inner element (which has no target).
 	const rec = confirmRecords( { writes: writes, nodes: agreed.nodes, reads: agreed.reads } ).filter( ( r ) => 'align-self' === r.property );

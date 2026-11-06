@@ -61,7 +61,7 @@ test( 'the setting states come from the DB, not a list in code', () => {
 	assert.ok( held.has( 'hover' ) && held.has( 'current' ), 'hover and current are tagged today' );
 	assert.equal( stateGap( 'current', held ), null );
 	assert.match( stateGap( 'current', new Set( [ 'hover' ] ) ), /^no-state-setting/, 'negative control: without the DB row it is a gap' );
-	assert.match( stateGap( 'active', held ), /^press/ );
+	assert.match( stateGap( 'active', new Set( [ 'hover' ] ) ), /^press/ );
 } );
 
 test( 'stateDrafts gathers each state and property across the read widths', () => {

@@ -4370,7 +4370,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "No setting paints accent-color, appearance, caret-color, cursor, outline, outline-color, outline-offset, outline-style, outline-width, pointer-events, resize or user-select, so a draft value for them is an unmapped row, not a write (focus outlines go to the theme focus ring, lib/fill-state-tokens.mjs). Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"note": "No setting paints appearance, caret-color, cursor, outline, outline-color, outline-offset, outline-style, outline-width, pointer-events, resize or user-select, so a draft value for them is an unmapped row, not a write (focus outlines go to the theme focus ring, lib/fill-state-tokens.mjs). Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:box-alignment": {
 			"recognise": "scripts/computed-route/lib/fill-declared.mjs#extraProps",
@@ -4517,7 +4517,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "The only setting is sgs/hero splitMediaShape for clip-path, a fixed set of named shapes (none, rounded, circle, square), so a draft clip-path of any other value is a shape row. No setting paints clip, mask, mask-image, mask-size, mask-position, mask-repeat, mask-mode, mask-clip, mask-composite, mask-origin, mask-type or clip-rule. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"note": "The only setting is sgs/hero splitMediaShape for clip-path, a fixed set of named shapes (none, rounded, circle, square), so a draft clip-path of any other value is a shape row. No setting paints clip, mask, mask-size, mask-position, mask-repeat, mask-mode, mask-clip, mask-composite, mask-origin, mask-type or clip-rule. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:mathml": {
 			"excluded": {
@@ -4685,7 +4685,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "The only resting transform setting is sgs/decorative-image rotation (degrees); the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints rotate, scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"note": "The resting rotation settings are sgs/decorative-image rotation (degrees) and sgs/icon iconRotate; the hover scales go through the states path (lib/fill-state.mjs), so any other resting transform is a shape row. No setting paints scale, perspective, perspective-origin, transform-origin, transform-style, transform-box or backface-visibility. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:transitions": {
 			"recognise": "construct:transition",

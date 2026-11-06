@@ -88,13 +88,13 @@ for ( const [ id, prop, value, baseline, other ] of GROUPS ) {
 // The groups kept as gaps: each property the coverage note names has no setting stored under that exact property (the
 // resolver matches a setting by its exact property), found by DB query.
 const GAPS = {
-	'basic-user-interface': [ 'accent-color', 'appearance', 'caret-color', 'cursor', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'pointer-events', 'resize', 'user-select' ],
+	'basic-user-interface': [ 'appearance', 'caret-color', 'cursor', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'pointer-events', 'resize', 'user-select' ],
 	'logical-properties-and-values': [ 'margin-block-start', 'margin-block-end', 'padding-block-start', 'padding-block-end', 'padding-inline-end', 'block-size', 'inline-size', 'inset-block' ],
-	masking: [ 'clip', 'mask', 'mask-image', 'mask-size', 'mask-position', 'mask-repeat', 'mask-mode', 'mask-clip', 'mask-composite', 'mask-origin', 'mask-type', 'clip-rule' ],
+	masking: [ 'clip', 'mask', 'mask-size', 'mask-position', 'mask-repeat', 'mask-mode', 'mask-clip', 'mask-composite', 'mask-origin', 'mask-type', 'clip-rule' ],
 	overflow: [ 'overflow-y', 'overflow-block', 'overflow-inline', 'text-overflow', 'scroll-behavior', 'scrollbar-gutter' ],
 	'overscroll-behavior': [ 'overscroll-behavior', 'overscroll-behavior-x', 'overscroll-behavior-y' ],
 	'scroll-snap': [ 'scroll-margin', 'scroll-padding', 'scroll-snap-align', 'scroll-snap-type' ],
-	transforms: [ 'rotate', 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
+	transforms: [ 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
 };
 
 test( 'the groups kept as gaps stay gaps, name only properties no setting is stored under, and their notes name them', () => {

@@ -8,7 +8,10 @@ import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, RUN_HEAP_BYTES, ne
 
 test( 'MUST FAIL (the build child ran on the default heap and was killed at 300s): the spawn passes --max-old-space-size=8192 before the script', () => {
 	assert.equal( NODE_HEAP_FLAG, '--max-old-space-size=8192' );
+	const secrets = process.env.SGS_SECRETS_ROOT;
+	delete process.env.SGS_SECRETS_ROOT;
 	const args = buildSpawnArgs( '/repo/scripts/wp-build-page.js', { envFile: 'e.env', envKey: 'K' }, '/t/tree.json', [ '--dry-run' ] );
+	undefined !== secrets && ( process.env.SGS_SECRETS_ROOT = secrets );
 	assert.deepEqual( args.slice( 0, 2 ), [ NODE_HEAP_FLAG, '/repo/scripts/wp-build-page.js' ] );
 	assert.deepEqual( args.slice( 2 ), [ '--env-file', 'e.env', '--env-key', 'K', '--tree', '/t/tree.json', '--editor-timeout', String( EDITOR_TIMEOUT_MS ), '--dry-run' ] );
 } );

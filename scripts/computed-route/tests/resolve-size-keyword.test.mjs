@@ -62,7 +62,7 @@ test( 'MUST FAIL: logical size properties follow their physical form', () => {
 // The variant list: every size-family setting in the framework DB, with the outcome the emitter rule predicts from the
 // schema alone (a tier object or a string with no unit partner and no enum prints a keyword; any other shape refuses it).
 test( 'MUST FAIL: every size-family setting in the DB writes or refuses its keyword as its shape says', () => {
-	const rows = db.prepare( `SELECT block_slug, attr_name, attr_type, css_property, enum_values FROM block_attributes WHERE css_property IN (${ SIZE_PROPS.map( () => '?' ).join( ',' ) })` ).all( ...SIZE_PROPS );
+	const rows = db.prepare( `SELECT block_slug, attr_name, attr_type, css_property, enum_values FROM block_attributes WHERE css_state IS NULL AND css_property IN (${ SIZE_PROPS.map( () => '?' ).join( ',' ) })` ).all( ...SIZE_PROPS );
 	const unit = db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' );
 	let written = 0;
 	let refused = 0;

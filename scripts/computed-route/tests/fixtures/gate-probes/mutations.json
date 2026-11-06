@@ -103,7 +103,7 @@
  },
  {
   "file": "lib/gate-probes.mjs",
-  "find": "const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ) : [] ) ];",
+  "find": "const out = [ ...( Array.isArray( listed ) ? listed.filter( ( v ) => '' !== v ).map( ( v ) => ( perTier ? { desktop: v } : v ) ) : [] ) ];",
   "replace": "const out = [];",
   "why": "an enum setting is probed without its enum values"
  },
