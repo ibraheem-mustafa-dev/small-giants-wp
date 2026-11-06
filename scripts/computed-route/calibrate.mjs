@@ -100,10 +100,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const slotMapOnly = argv.includes( '--slot-map-only' );
 	const allowLoss = parseAllowLoss( flag( '--allow-loss' ) );
 	const db = openDb();
-	const paintKeyFor = ( b ) => paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ], unreadProps( attrsFor( db, b ) ) );
+	const extraPropsOf = ( b ) => unreadProps( attrsFor( db, b ) );
+	const paintKeyFor = ( b ) => paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ], extraPropsOf( b ) );
 	const due = {};
 	for ( const b of asked ) {
-		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
+		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate, extraPropsOf( b ) );
 		const paintWhy = paintSkip( CACHE, b, site, paintKeyFor( b ), recalibrate );
 		due[ b ] = dueOutputs( slotWhy, paintWhy, slotMapOnly );
 		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );

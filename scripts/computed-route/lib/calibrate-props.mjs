@@ -67,12 +67,13 @@ const ALIASES = {
 // The longhand properties a setting's css_property covers, as calibration reads them. A property calibration reads is its
 // own longhand; any other is reached through the longhands the CSS families give it (lib/css-families.mjs::longhandsOf:
 // `overflow` through overflow-x and overflow-y, `padding-block` through padding-top and padding-bottom), so a
-// shorthand or logical spelling needs no entry here. A CSS property with no read longhand is its own longhand: the
-// block routing it reads it as well (unreadProps). A modifier row (`grid-template-columns:count`, a track count) is
+// shorthand or logical spelling needs no entry here. A setting none of whose properties has a read longhand is read
+// under its own CSS properties: the block routing it reads them as well (unreadProps). A modifier row (`grid-template-columns:count`, a track count) is
 // read under the property it modifies (lib/db.mjs::modifierOf).
 export function longhands( cssProperty ) {
 	const read = ( list ) => list.filter( ( p ) => READ_PROPS.includes( p ) );
-	return [ ...new Set( cssProperty.split( ',' ).map( ( s ) => s.trim() ).map( ( p ) => modifierOf( p ) || p ).flatMap( ( p ) => {
+	const pieces = cssProperty.split( ',' ).map( ( s ) => s.trim() ).map( ( p ) => modifierOf( p ) || p );
+	const reached = new Set( pieces.flatMap( ( p ) => {
 		if ( ALIASES[ p ] ) {
 			return read( ALIASES[ p ] );
 		}
@@ -89,9 +90,9 @@ export function longhands( cssProperty ) {
 		if ( 'text-decoration' === p ) {
 			return read( [ 'text-decoration-line' ] );
 		}
-		const reached = read( READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p ) );
-		return reached.length || ! isCssProperty( p ) ? reached : [ p ];
-	} ) ) ];
+		return read( READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p ) );
+	} ) );
+	return reached.size ? [ ...reached ] : pieces.filter( isCssProperty );
 }
 
 // The properties a block's routed rows paint beyond READ_PROPS, read for that block alone: its pages carry them, its

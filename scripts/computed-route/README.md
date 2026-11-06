@@ -222,7 +222,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/tree.mjs` | Trees: read, write, refs, setting writes, live-site safety. |
 | `lib/cache.mjs` | The calibration cache's two outputs: the library-wide slot map and each site's own default paint; reading, writing, the split of one into the other and the per-output skip rules (a file read under another `READ_KEY` is due on every site). |
 | `lib/calibrate.mjs` | Calibration library: calibration trees, slot detection, default paint; re-exports the calibration modules below. |
-| `lib/calibrate-props.mjs` | What calibration reads: the read and pseudo-layer properties, `READ_KEY` (the key of those lists, carried by every cache file) and how a css_property maps onto them. |
+| `lib/calibrate-props.mjs` | What calibration reads: the read and pseudo-layer properties, `READ_KEY` (the key of those lists, carried by every cache file), how a css_property maps onto them, and `unreadProps` (a block's own routed properties beyond the lists). |
 | `lib/calibrate-markers.mjs` | Marker values per setting shape (Spec 48 §3.2 marker table). |
 | `lib/calibrate-instances.mjs` | Which instances a block's calibration page holds: markers, their preconditions (variant, gating toggle, border partners, overlay image, layout mode) and state targets. |
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
@@ -1024,6 +1024,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `longhands(cssProperty)` → the read properties a setting covers; a property that is not read is reached through the longhands `lib/css-families.mjs::longhandsOf` gives it (`overflow` through `overflow-x` and `overflow-y`); a gradient text or border, a shadow colour and `flex`/`inset` map onto the properties the browser computes them under; a modifier row (`grid-template-columns:count`) is read under the property it modifies (`lib/db.mjs::modifierOf`).
 - `MARKER_REST_GRADIENT`: the resting gradient a hover border-gradient marker needs before it paints (`helpers-tokens.php::sgs_border_gradient_css` returns nothing for an empty resting paint).
 - `OWN_INHERITED`: the inherited properties whose own paint calibration records under an `_own:<prop>` key, so Fill compares the draft with the block's own value (`lib/fill-resolve-state.mjs::baselineFn`) and never with the parent's.
+- `unreadProps(rows)` → the properties a block's routed rows paint beyond `READ_PROPS`, sorted: read for that block alone, recorded as the slot map's `extraProps` and named in its paint key.
 
 ### `lib/calibrate-markers.mjs`
 - `markersFor(row, schema, snapshot, current, ctx)` → `[{ label, attrs, expect, form?, base?, box? }]` (§3.2 table): colours by property or DB `role`, gradients, media objects (`ctx.image`), keywords for free-text settings (`KEYWORDS`), enums, booleans, boxes and corners (per device, `flat_sibling`), per-device lengths and non-length values (counts, keywords), two font weights in the setting's type, opacity, the transform family, letter-spacing, lengths, counts. A unit companion is written in its own shape. A per-device grid count (a `grid-template-columns` or `grid-template-columns:count` setting) carries `form: 'count'` and `tracks` (the count per width). A setting with a plain marker also gets its `formMarkers`.

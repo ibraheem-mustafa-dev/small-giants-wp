@@ -137,7 +137,8 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	if ( incremental?.unplanned.length ) {
 		fullWhy = `${ incremental.unplanned.join( ', ' ) } no longer planned`;
 	}
-	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps: unreadProps( rows ) };
+	const extraProps = unreadProps( rows );
+	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps };
 	let run;
 	try {
 		run = await measureWithFallback( {
@@ -161,7 +162,7 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	const { reading } = run;
 	const { kept, rejected, pages, elements, paintStates, statesMissing, settings, deadNames, oneWidth, discovered, content } = reading;
 	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
-	const measuredFile = { block, site, slotKey, paintKey, readKey: READ_KEY, fixtureKey, fingerprints: prints, ...versions, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: reading.untested, rejected };
+	const measuredFile = { block, site, slotKey, paintKey, readKey: READ_KEY, ...( extraProps.length ? { extraProps } : {} ), fixtureKey, fingerprints: prints, ...versions, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: reading.untested, rejected };
 	const isIncremental = 'incremental' === run.mode;
 	const mark = { chain: ( prev?.incremental?.chain || 0 ) + 1, lastFull: prev?.incremental?.lastFull ?? prev?.slotKey ?? null, lastFullAt: prev?.incremental?.lastFullAt ?? prev?.measured ?? null };
 	const file = isIncremental ? { ...mergeSlotMap( prev, measuredFile, [ ...incremental.measure, ...incremental.canary ], declared ), incremental: mark } : measuredFile;

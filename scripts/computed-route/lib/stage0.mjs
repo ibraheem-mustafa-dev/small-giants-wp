@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
-import { readSlotMap, refusedFile } from './cache.mjs';
+import { readSlotMap, refusedFile, missingExtraProps } from './cache.mjs';
 import { READ_KEY } from './calibrate-props.mjs';
 import { loadAjv, schemaProblems } from './handoff.mjs';
 import { fixtureRoles, refsProblem, resolveFixture } from './calibration-refs.mjs';
@@ -50,7 +50,7 @@ export function blockSetFor( kinds, rows ) {
 //   no-fixture: calibration-fixtures.json has no entry, so calibrate.mjs cannot measure it.   no-build: no build to hash.
 //   needs-refs: the fixture names a site reference the target does not supply or the site does not hold (refsWhy says
 //   which, lib/calibration-refs.mjs::refsProblem), so calibrate.mjs would not build it.
-export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '' } ) {
+export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '', extraProps = [] } ) {
 	const out = { block };
 	if ( ! hashes || ! hashes.deployed ) {
 		return { ...out, state: 'no-build', why: hashes?.error || 'no build to hash' };
@@ -69,6 +69,10 @@ export function blockState( { cacheDir, block, hashes, fixtures, refsWhy = '' } 
 	}
 	if ( ! have ) {
 		return { ...out, state: 'missing', why: 'no slot map' };
+	}
+	const unread = missingExtraProps( have, extraProps );
+	if ( unread.length ) {
+		return { ...out, state: 'stale', why: `slot map read without ${ unread.join( ', ' ) }, which this block routes` };
 	}
 	if ( have.readKey !== READ_KEY ) {
 		const refused = fs.existsSync( refusedFile( cacheDir, block ) ) ? `; a refused candidate waits in ${ path.basename( refusedFile( cacheDir, block ) ) } (calibrate.mjs --allow-loss)` : '';
@@ -141,7 +145,7 @@ export const installedPlaywright = () => createRequire( import.meta.url )( 'play
 // Runs stage 0. Effects come in through `deps`:
 //   checkHandoff(folder, log) -> exit code; compositionRows() -> block_composition rows; fixtures; refs (the target's
 //   calibration-targets.json refs, lib/calibration-refs.mjs::refsFor); refsExist(roles) -> { role: true | reason } (a read
-//   on the site); hashesOf(block) -> { deployed, local } | { error }; runCalibrate(args) -> exit code; now() -> ISO time;
+//   on the site); hashesOf(block) -> { deployed, local } | { error }; extraPropsOf(block) -> the block's own read list; runCalibrate(args) -> exit code; now() -> ISO time;
 //   playwright; writeBaseline(file, text).
 // `o` is { repo, client, site, cacheDir, plan, recalibrate, allowLoss }. Returns { code, lines, baseline }; `plan` reads and prints only.
 export async function runStage0( o, deps ) {
@@ -166,7 +170,7 @@ export async function runStage0( o, deps ) {
 	const roles = [ ...new Set( blocks.filter( ( b ) => deps.fixtures[ b ] && ! resolveFixture( deps.fixtures[ b ], refs ).missing.length ).flatMap( ( b ) => fixtureRoles( deps.fixtures[ b ] ) ) ) ];
 	const exists = roles.length && deps.refsExist ? deps.refsExist( roles ) : {};
 	const refsWhy = ( b ) => ( deps.fixtures[ b ] ? refsProblem( deps.fixtures[ b ], refs, exists, o.site ) : '' );
-	const states = () => blocks.map( ( block ) => blockState( { cacheDir: o.cacheDir, block, hashes: deps.hashesOf( block ), fixtures: deps.fixtures, refsWhy: refsWhy( block ) } ) );
+	const states = () => blocks.map( ( block ) => blockState( { cacheDir: o.cacheDir, block, hashes: deps.hashesOf( block ), fixtures: deps.fixtures, refsWhy: refsWhy( block ), extraProps: deps.extraPropsOf?.( block ) ?? [] } ) );
 	const show = ( list ) => list.forEach( ( s ) => log( `  ${ s.block }: ${ s.state }${ s.why ? ` (${ s.why })` : '' }` ) );
 	let list = states();
 	show( list );

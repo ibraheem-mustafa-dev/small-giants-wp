@@ -18,7 +18,8 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { main as handoffCheck } from './handoff-check.mjs';
-import { openDb } from './lib/db.mjs';
+import { openDb, attrsFor } from './lib/db.mjs';
+import { unreadProps } from './lib/calibrate-props.mjs';
 import { localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { runStage0, installedPlaywright } from './lib/stage0.mjs';
 import { refsFor, checkRefsExist, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -89,6 +90,7 @@ async function run( argv ) {
 		refs: refsFor( targets, o.site ),
 		refsExist: ( roles ) => checkRefsExist( refsFor( targets, o.site ), roles, wpEvalRunner( targets[ o.site ], o.site, REPO ) ),
 		hashesOf: ( block ) => hashesFor( o.site, targets[ o.site ], block ),
+		extraPropsOf: ( block ) => unreadProps( attrsFor( db, block ) ),
 		runCalibrate: ( args ) => spawnSync( process.execPath, [ path.join( HERE, 'calibrate.mjs' ), ...args ], { stdio: 'inherit', cwd: REPO } ).status ?? 1,
 		now: () => new Date().toISOString(),
 		playwright: installedPlaywright(),

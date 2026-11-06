@@ -5,7 +5,12 @@
 // read longhands (overflow), and planned no marker for a free-text text-shadow.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { READ_PROPS, longhands, unreadProps } from '../lib/calibrate-props.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { READ_PROPS, READ_KEY, longhands, unreadProps } from '../lib/calibrate-props.mjs';
+import { slotMapSkip, writeSlotMap } from '../lib/cache.mjs';
+import { blockState } from '../lib/stage0.mjs';
 import { paintKeyOf } from '../calibrate.mjs';
 import { markersFor, slotFor } from '../lib/calibrate.mjs';
 import { preconditionsFor } from '../lib/calibrate-instances.mjs';
@@ -68,8 +73,28 @@ test( 'MUST FAIL: a routed CSS property the global list lacks is read for its ow
 		assert.ok( markersFor( rowOf( block, attr ), blockSchema( block ), SNAPSHOT ).length, `${ block }.${ attr } gets a marker` );
 	}
 	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/text' ) ), [], 'negative control: a block routing only read properties reads no more' );
+	assert.deepEqual( longhands( 'left,rule' ), [ 'left' ], 'a setting already reached through one property adds none of its others' );
+	const own = db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%'" ).all().map( ( b ) => b.slug ).filter( ( b ) => unreadProps( attrsFor( db, b ) ).length );
+	assert.deepEqual( own, [ 'sgs/button', 'sgs/label', 'sgs/post-grid' ], 'only the blocks with a setting no read property reaches change' );
 	assert.equal( paintKeyOf( 'a', 'b', {}, [] ), paintKeyOf( 'a', 'b', {} ), 'an untouched block keeps its paint key' );
 	assert.notEqual( paintKeyOf( 'a', 'b', {}, [ 'align-self' ] ), paintKeyOf( 'a', 'b', {} ), 'a paint read without the property is stale, never taken as its absence' );
+} );
+
+test( 'MUST FAIL: a slot map measured without a block property is due on any site, and stage 0 calls it stale; one that has it, or a block with none, stays as it was', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'extra-props-' ) );
+	const write = ( map ) => writeSlotMap( dir, 'sgs/x', { block: 'sgs/x', site: 'site-a', slotKey: 'k1', readKey: READ_KEY, settings: {}, ...map } );
+	const state = ( extraProps ) => blockState( { cacheDir: dir, block: 'sgs/x', hashes: { deployed: 'k1', local: 'k1' }, fixtures: { 'sgs/x': {} }, extraProps } );
+	write( {} );
+	assert.equal( slotMapSkip( dir, 'sgs/x', 'site-a', 'k1', false, [ 'align-self' ] ), null, 'the same site measures it' );
+	assert.equal( slotMapSkip( dir, 'sgs/x', 'site-b', 'k1', false, [ 'align-self' ] ), null, 'and so does any other site' );
+	assert.equal( state( [ 'align-self' ] ).state, 'stale' );
+	assert.match( state( [ 'align-self' ] ).why, /align-self/ );
+	assert.match( slotMapSkip( dir, 'sgs/x', 'site-a', 'k1' ), /current/, 'negative control: a block with no extra property keeps its current map' );
+	assert.notEqual( state( [] ).state, 'stale' );
+	write( { extraProps: [ 'align-self' ] } );
+	assert.match( slotMapSkip( dir, 'sgs/x', 'site-a', 'k1', false, [ 'align-self' ] ), /current/, 'a map holding the reading is current' );
+	assert.notEqual( state( [ 'align-self' ] ).state, 'stale' );
+	assert.equal( slotMapSkip( dir, 'sgs/x', 'site-a', 'k1', false, [ 'align-self', 'mask-image' ] ), null, 'a second new property is due again' );
 } );
 
 // The detector: a routed SGS setting whose css_property is CSS but which calibration neither reads nor reaches through a

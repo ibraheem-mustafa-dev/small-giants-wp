@@ -114,12 +114,15 @@ export function loadCalibration( dir, block, site ) {
 	return { ...slotMap, elements: paint.elements || {}, ...( paint.paintStates ? { paintStates: paint.paintStates } : {} ), paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
 }
 
+// The properties of the block's own read list a slot map was measured without.
+export const missingExtraProps = ( have, extraProps ) => extraProps.filter( ( p ) => ! have?.extraProps?.includes( p ) );
+
 // Why a run on `site` must leave the block's slot map alone, or null when it may write it: a slot map whose key is current
-// is kept, and another site's slot map is kept unless the run asks (--recalibrate). One read under another read list is
-// due on any site.
-export function slotMapSkip( dir, block, site, slotKey, recalibrate = false ) {
+// is kept, and another site's slot map is kept unless the run asks (--recalibrate). One read under another read list, or
+// without a property of the block's own `extraProps` (lib/calibrate-props.mjs::unreadProps), is due on any site.
+export function slotMapSkip( dir, block, site, slotKey, recalibrate = false, extraProps = [] ) {
 	const have = readSlotMap( dir, block );
-	if ( recalibrate || ! have || have.readKey !== READ_KEY ) {
+	if ( recalibrate || ! have || have.readKey !== READ_KEY || missingExtraProps( have, extraProps ).length ) {
 		return null;
 	}
 	if ( have.site && have.site !== site ) {
