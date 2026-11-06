@@ -222,6 +222,8 @@
 	padding: 0;
 	border: none;
 	border-radius: 50%;
+	/* The disc is the ::after layer; the element itself paints nothing, or the browser's button grey shows (around the glyph style's bare ×, too). */
+	background: transparent;
 	color: var(--wp--preset--color--text, #1e1e1e);
 	cursor: pointer;
 	transition: color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1));
