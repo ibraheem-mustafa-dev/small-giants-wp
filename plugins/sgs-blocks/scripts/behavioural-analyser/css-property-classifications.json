@@ -10399,6 +10399,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldFocusBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "field-input",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldFontFamily",
       "fields": {
         "css_property": "font-family"
@@ -18079,6 +18088,15 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "itemTextShiftHover",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "item-text",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "itemTextStrokeColour",
       "fields": {
         "css_property": "-webkit-text-stroke-color",
@@ -19874,6 +19892,16 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardHoverRotate",
+      "fields": {
+        "css_property": "rotate",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardSpacing",
       "fields": {
         "css_property": "margin-block",
@@ -19897,6 +19925,15 @@
         "css_property": "width",
         "css_layer": "CONTENT",
         "css_element": "drawerCardThumb"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerHoverDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkText"
       }
     },
     {
@@ -20873,35 +20910,6 @@
       "attr": "chromeButtonColourBackgroundHover",
       "fields": {
         "css_property": "background-color",
-        "role": "color",
-        "css_element": "chromeButton",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourBorder",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "chromeButton"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourBorderHover",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "chromeButton",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/nav-drawer",
-      "attr": "chromeButtonColourTextHover",
-      "fields": {
-        "css_property": "color",
         "role": "color",
         "css_element": "chromeButton",
         "css_state": "hover"
@@ -24598,6 +24606,15 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "connector"
       }
     },
     {
@@ -36265,6 +36282,16 @@
       }
     },
     {
+      "slug": "sgs/button",
+      "attr": "iconGapHover",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
       "slug": "sgs/buybox",
       "attr": "addToCartBackgroundColour",
       "fields": {
@@ -38292,6 +38319,44 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldFocusBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "field-input",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFocusBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "field-input",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFocusRingColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "field-input",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldFocusRingWidth",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "field-input",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -38406,6 +38471,15 @@
         "css_property": "color",
         "role": "color",
         "css_element": "field-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFloatedFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "field-label",
+        "css_state": "focus"
       }
     },
     {
@@ -39014,6 +39088,44 @@
     },
     {
       "slug": "sgs/form-field-tiles",
+      "attr": "tileCheckBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile-check"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileCheckColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "tile-check"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileCheckInset",
+      "fields": {
+        "css_property": "top",
+        "css_layer": "CONTENT",
+        "css_element": "tile-check"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileCheckSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "CONTENT",
+        "css_element": "tile-check"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
       "attr": "tileDescriptionColour",
       "fields": {
         "css_property": "color",
@@ -39184,6 +39296,16 @@
       "attr": "tileSelectedBorderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "tile-selected"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileSelectedLabelColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
         "css_layer": "CONTENT",
         "css_element": "tile-selected"
       }
@@ -41866,6 +41988,16 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardHoverLift",
+      "fields": {
+        "css_property": "transform",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardLinkBg",
       "fields": {
         "css_property": "background-color",
@@ -41882,6 +42014,16 @@
         "role": "color",
         "css_layer": "CONTENT",
         "css_element": "drawerCardLink"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerCardLinkShiftHover",
+      "fields": {
+        "css_property": "transform",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCardLink",
+        "css_state": "hover"
       }
     },
     {
@@ -41981,6 +42123,15 @@
         "css_property": "font-size",
         "css_layer": "CONTENT",
         "css_element": "drawerCardTitle"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerHoverEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkText"
       }
     },
     {
@@ -42153,12 +42304,33 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerLinkTextShiftHover",
+      "fields": {
+        "css_property": "transform",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinkText",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerLinkTrailingColour",
       "fields": {
         "css_property": "stroke",
         "role": "color",
         "css_layer": "CONTENT",
         "css_element": "drawerLinks"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerLinkTrailingColourHover",
+      "fields": {
+        "css_property": "stroke",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerLinks",
+        "css_state": "hover"
       }
     },
     {
@@ -43425,6 +43597,25 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "chromeButtonColourText",
       "fields": {
         "css_property": "color",
@@ -43438,6 +43629,16 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "chromeButton"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "chromeButtonColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "chromeButton",
+        "css_state": "hover"
       }
     },
     {
@@ -43845,6 +44046,40 @@
         "role": "color",
         "css_element": "caret-box-open",
         "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "caret-box"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "caret-box",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
+      "attr": "caretBoxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "caret-box",
+        "css_state": "hover"
       }
     },
     {
@@ -45570,6 +45805,30 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorOffset",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorThickness",
+      "fields": {
+        "css_property": "height",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "connector"
       }
     },
     {

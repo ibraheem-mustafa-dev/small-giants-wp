@@ -198,7 +198,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 8,
+        "paintDeclarations": 11,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -520,7 +520,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 66,
+        "paintDeclarations": 69,
         "replacedCoreSupports": [
           "anchor",
           "color",
@@ -1426,7 +1426,7 @@
       "surfaces": {
         "styling": true,
         "colour": true,
-        "link": false,
+        "link": true,
         "media": true,
         "animation": true
       },
@@ -1475,7 +1475,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 9,
+        "paintDeclarations": 10,
         "replacedCoreSupports": []
       }
     },
