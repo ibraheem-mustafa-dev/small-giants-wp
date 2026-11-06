@@ -3,6 +3,20 @@
 import { resolveProperty } from './fill-prop.mjs';
 import { matches } from './apply-ops.mjs';
 
+// A draft colour written as the nearest palette slot paints another colour. A colour with no exact palette entry stays literal.
+export function exactColours( writes, value, rawSnapshot ) {
+	const rgb = /^rgb\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)$/.exec( String( value ) );
+	if ( ! rgb ) {
+		return writes;
+	}
+	const hex = `#${ rgb.slice( 1 ).map( ( n ) => Number( n ).toString( 16 ).padStart( 2, '0' ) ).join( '' ) }`.toUpperCase();
+	const palette = rawSnapshot?.settings?.color?.palette ?? [];
+	return writes.map( ( w ) => {
+		const slot = palette.find( ( p ) => p.slug === w.value );
+		return slot && String( slot.color ).toUpperCase() !== hex ? { ...w, value: hex } : w;
+	} );
+}
+
 export function stateItem( { ctx, prop, value, rest, state, slot, width = 1440, record = null, label, probe = null, extra = null } ) {
 	const { block, saved, calFor, db, snapshot } = ctx;
 	const node = { attributes: structuredClone( saved ) };
@@ -14,7 +28,7 @@ export function stateItem( { ctx, prop, value, rest, state, slot, width = 1440, 
 	if ( 'written' !== res.status ) {
 		return { ...base, status: 'no-setting', why: `${ res.gap }${ res.detail ? `: ${ res.detail }` : '' }` };
 	}
-	return { ...base, status: 'op', why: `${ label ?? prop } ${ state ?? 'rest' } ${ value }`, writes: res.writes, checks: [ { width, prop, want: value, ...( state && ! probe ? { state } : {} ), ...( probe ? { probe } : {} ), ...( extra || {} ) } ] };
+	return { ...base, status: 'op', why: `${ label ?? prop } ${ state ?? 'rest' } ${ value }`, writes: exactColours( res.writes, value, ctx.rawSnapshot ), checks: [ { width, prop, want: value, ...( state && ! probe ? { state } : {} ), ...( probe ? { probe } : {} ), ...( extra || {} ) } ] };
 }
 
 // A draft value against what is live: same after the applier's normalisation.

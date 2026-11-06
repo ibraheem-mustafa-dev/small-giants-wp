@@ -31,12 +31,15 @@ test( 'width: equal max-width writes nothing', () => {
 	assert.deepEqual( width.decide( { target, draft: same, live: same, saved: {}, block: 'sgs/container', db } ), [] );
 } );
 
-test( 'width: an auto-fill post grid keeps its empty columns; auto-fit on a container sets the column minimum', () => {
+test( 'width: an auto-fill post grid keeps its empty columns; auto-fit on a container writes the draft track list', () => {
 	const fillDraft = at( f( { declared: 'repeat(auto-fill, minmax(290px, 1fr))' } ) );
 	assert.deepEqual( width.decide( { target, draft: fillDraft, live: at( f() ), saved: {}, block: 'sgs/post-grid', db } )[ 0 ].writes, [ { attr: 'keepEmptyColumns', value: true } ] );
 	assert.equal( width.decide( { target, draft: fillDraft, live: at( f() ), saved: { keepEmptyColumns: true }, block: 'sgs/post-grid', db } )[ 0 ].status, 'equal' );
 	const fit = at( f( { declared: 'repeat(auto-fit, minmax(240px, 1fr))' } ) );
-	assert.deepEqual( width.decide( { target, draft: fit, live: at( f() ), saved: {}, block: 'sgs/container', db } )[ 0 ].writes[ 0 ].value, { desktop: '240px' } );
+	const [ { writes } ] = width.decide( { target, draft: fit, live: at( f() ), saved: { minColumnWidth: { desktop: '240px' } }, block: 'sgs/container', db } );
+	assert.equal( writes[ 0 ].attr, 'gridTemplateColumns' );
+	assert.equal( writes[ 0 ].value.desktop, 'repeat(auto-fit, minmax(240px, 1fr))' );
+	assert.deepEqual( writes[ 1 ], { attr: 'minColumnWidth', unset: true }, 'the setting that did nothing goes' );
 } );
 
 test( 'width: a stated track list with more columns than live goes to the track setting', () => {

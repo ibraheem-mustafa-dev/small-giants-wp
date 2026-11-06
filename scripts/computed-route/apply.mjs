@@ -280,7 +280,7 @@ async function main() {
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
 			const closed = await closedReads( { browser, surface, props, wanted: families.some( ( f ) => f.closedClock?.( { saved: blocks[ surface.postId ]?.blocks ?? {} } ) ) } );
-			const { rows, ops } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
+			const { rows, ops: decided } = decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
 			const saved = blocks[ surface.postId ]?.blocks ?? {};
 			// Position matching (lib/apply-position.mjs): draft elements no pair reaches, matched to live blocks by where they sit,
 			// then read and decided like any pair. --no-position leaves it out.
@@ -295,6 +295,16 @@ async function main() {
 				rows.push( ...again.rows );
 				ops.push( ...again.ops );
 			}
+			// A read that cannot see a saved value (a grid on an inner element) proposes what is already saved: that is no change.
+			const ops = decided.filter( ( op ) => {
+				const changes = patchesOf( foldOps( [ op ], blocks ) ).size > 0;
+				const row = rows.find( ( r ) => r.ref === ( op.ref ?? r.ref ) && r.family === op.family && r.prop === op.prop && 'written' === r.status );
+				if ( ! changes && row ) {
+					row.status = 'equal';
+					row.why = 'already saved';
+				}
+				return changes;
+			} );
 			allRows.push( ...rows );
 			allOps.push( ...ops );
 			fs.writeFileSync( path.join( outDir, `${ surface.name }.plan.json` ), JSON.stringify( { rows, ops }, null, 1 ) );

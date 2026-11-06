@@ -141,3 +141,11 @@ test( 'ops: taking a failed op back keeps another op that merged into the same a
 	assert.deepEqual( restoreOf( bad, blocks, [ good ] ).set.sgsMotion, { v: 1, good: 1 } );
 	assert.deepEqual( restoreOf( bad, blocks, [] ).set.sgsMotion, { v: 1 }, 'alone, it goes back to what was saved' );
 } );
+
+test( 'colours: a draft colour the nearest palette slot would change stays literal', async () => {
+	const { exactColours } = await import( '../lib/apply-state-resolve.mjs' );
+	const raw = { settings: { color: { palette: [ { slug: 'surface-cool', color: '#F2F5F7' }, { slug: 'ink', color: '#1E2A3C' } ] } } };
+	assert.deepEqual( exactColours( [ { attr: 'a', value: 'surface-cool' } ], 'rgb(247, 249, 250)', raw ), [ { attr: 'a', value: '#F7F9FA' } ] );
+	assert.deepEqual( exactColours( [ { attr: 'a', value: 'ink' } ], 'rgb(30, 42, 60)', raw ), [ { attr: 'a', value: 'ink' } ], 'an exact slot stays a slot' );
+	assert.deepEqual( exactColours( [ { attr: 'a', value: '4px' } ], '4px', raw ), [ { attr: 'a', value: '4px' } ] );
+} );
