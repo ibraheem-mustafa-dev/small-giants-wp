@@ -22,6 +22,7 @@ sys.path.insert(0, str(PKG))
 REPO = PKG.parents[3]
 
 import declared_tokens  # noqa: E402
+import confirmed_palette  # noqa: E402
 import verify_against_draft  # noqa: E402
 
 REDESIGN, WHOLESALE, OPTICIAN = "mamas-munches-redesign", "indus-foods", "eye-care-ward-end"
@@ -110,22 +111,26 @@ def test_the_gate_reports_a_snapshot_without_the_declared_tokens_and_passes_it_o
 
 def test_the_gate_exits_non_zero_on_an_open_mismatch_and_zero_when_accepted(tmp_path):
     snap_path = tmp_path / "snap.json"
-    snap_path.write_text(json.dumps(_applied(WHOLESALE)), encoding="utf-8")
+    snap = _applied(WHOLESALE)
+    snap["settings"]["custom"]["section"]["padding"]["mobile"] = "1px"
+    snap_path.write_text(json.dumps(snap), encoding="utf-8")
     none = tmp_path / "none.json"
     none.write_text(json.dumps({"accepted": []}), encoding="utf-8")
     args = ["--client", WHOLESALE, "--snapshot", str(snap_path)]
     assert verify_against_draft.main(args + ["--accepted", str(none)]) == 1
     accepted = tmp_path / "accepted.json"
-    accepted.write_text(json.dumps({"accepted": [{"path": f"settings.custom.section.padding.{t}", "reason": "route"}
-                                                 for t in declared_tokens.TIERS]}), encoding="utf-8")
+    accepted.write_text(json.dumps({"accepted": [{"path": "settings.custom.section.padding.mobile", "reason": "route"}]}), encoding="utf-8")
     assert verify_against_draft.main(args + ["--accepted", str(accepted)]) == 0
 
 
 def test_a_palette_colour_that_differs_from_its_confirmed_mark_is_a_mismatch():
     baseline = json.loads((REPO / "theme" / "sgs-theme" / "theme.json").read_text(encoding="utf-8"))
     snap = _applied(OPTICIAN)
+    intake_path = REPO / "sites" / OPTICIAN / "build" / "intake" / "intake.json"
+    marked = confirmed_palette.effective_marks(_intake(OPTICIAN), confirmed_palette.framework_slugs(baseline), confirmed_palette.read_key(intake_path))
+    verdict = lambda: next(r["verdict"] for r in verify_against_draft.compare(snap, _handoff(OPTICIAN), marked, {}, baseline) if r["path"] == "palette.primary")
+    assert verdict() == "match"
     for entry in snap["settings"]["color"]["palette"]:
-        if entry["slug"] == "primary":
+        if entry["slug"] == "ink":  # the draft's own shade holds primary's colour (FR-32-28)
             entry["color"] = "#1F7A7A"
-    rows = verify_against_draft.compare(snap, _handoff(OPTICIAN), _intake(OPTICIAN), {}, baseline)
-    assert any(r["path"] == "palette.primary" and r["verdict"] == "mismatch" for r in rows)
+    assert verdict() == "mismatch"
