@@ -147,3 +147,7 @@ Settled in the round 10 wrap-up walk (2026-11-06). Do not report:
 - Shop card position: heading-to-first-card gap equals the draft at 1440/768/375; the page sits 2px lower from above the heading (invisible).
 - Product page height above the tabs: the draft's star line, colourway note and three sizes (content, per S7 and the product-data rule), not spacing.
 - Unselected product tab labels #5E584F (Bean, contrast 6.6:1; draft #8B8478 is 3.5:1), restated 2026-11-06.
+- Bag drawer ground: cream behind the items and a white subtotal strip, as the draft. The panel element's own computed background reads white because its ground is painted on `::after`; that reading is not a finding (pixel samples equal the draft).
+- Size guide pop-up (round 10, closed): transparent close, sticky title bar with divider, 24px body, 32px from the screen edges from 768px, height 88% of the padded screen. Report only if live differs from these.
+- Thank-you page entrances (round 10): tick pop 600ms, heading, note and button rise 600/700/800ms.
+- Checkout walker rows for express payment, delivery cards and section headings come from stale finders (round 9's paired review is the comparison); not findings until the checkout config is re-paired.
