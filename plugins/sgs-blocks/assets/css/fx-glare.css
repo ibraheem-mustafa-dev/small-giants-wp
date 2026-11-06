@@ -17,6 +17,9 @@
 		var(--sgs-glare-colour, #fff),
 		transparent var(--sgs-glare-size, 55%)
 	);
+	/* Under the host's content: a container lifts its direct children to z-index 1 (zero specificity), so the layer
+	   sits at 0, above the host's own background and below every child. */
+	z-index: 0;
 	opacity: 0;
 	transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease-out, ease-out);
 }

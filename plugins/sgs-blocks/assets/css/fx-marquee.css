@@ -69,6 +69,10 @@
 		#000 calc(100% - var(--sgs-marquee-fade-size, 5%)),
 		transparent 100%
 	);
+	/* The mask paints beyond the lane's box (the gradient repeats across the cross axis, so the fade along the lane is
+	   identical there), which keeps a tile's box-shadow and hover growth visible; the root's overflow still bounds it. */
+	-webkit-mask-clip: no-clip;
+	mask-clip: no-clip;
 }
 
 /* The pause button floats over the bottom end of the root, above the lane, so on a tall strip of logos it sits in the
