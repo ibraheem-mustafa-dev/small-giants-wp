@@ -52,4 +52,4 @@ Measured on local-sandybrown (local-indus was in use by the Indus stream), with 
 - [x] Prove on a mirror, before and after minutes.
 - [x] Spec 48, `scripts/computed-route/README.md`, `.claude/dev-setup.md`; /qc-council.
 - [x] `sgs/form` fixture renders its step counter, saved notice, optional tag, status row, nav icon, sticky actions and upload icon. The review step stays dead: JavaScript builds it.
-- [ ] /handoff.
+- [x] /handoff.
