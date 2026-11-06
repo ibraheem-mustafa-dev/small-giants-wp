@@ -418,15 +418,17 @@ if ( $connector_line ) {
 	if ( '' !== $connector_colour ) {
 		$connector_decls[] = 'background-color:' . sgs_colour_value( $connector_colour );
 	}
-	foreach ( array(
-		'height'     => 'connectorThickness',
-		'margin-top' => 'connectorOffset',
-		'width'      => 'connectorWidth',
-	) as $connector_prop => $connector_attr ) {
-		$connector_len = sgs_css_length_value( (string) ( $attributes[ $connector_attr ] ?? '' ) );
-		if ( '' !== $connector_len ) {
-			$connector_decls[] = $connector_prop . ':' . $connector_len;
-		}
+	$connector_thickness = sgs_css_length_value( (string) ( $attributes['connectorThickness'] ?? '' ) );
+	if ( '' !== $connector_thickness ) {
+		$connector_decls[] = 'height:' . $connector_thickness;
+	}
+	$connector_offset = sgs_css_length_value( (string) ( $attributes['connectorOffset'] ?? '' ) );
+	if ( '' !== $connector_offset ) {
+		$connector_decls[] = 'margin-top:' . $connector_offset;
+	}
+	$connector_width = sgs_css_length_value( (string) ( $attributes['connectorWidth'] ?? '' ) );
+	if ( '' !== $connector_width ) {
+		$connector_decls[] = 'width:' . $connector_width;
 	}
 	if ( $connector_decls ) {
 		$scoped_css[] = $root_sel . ' .sgs-process-steps__connector{' . implode( ';', $connector_decls ) . ';}';

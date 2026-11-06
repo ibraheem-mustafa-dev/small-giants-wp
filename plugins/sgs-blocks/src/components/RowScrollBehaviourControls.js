@@ -63,17 +63,21 @@ function mintAnchor( clientId ) {
 	);
 }
 
+/**
+ * `scrollAway` is the header row's `rowScrollAway` value, passed by the header row only (the setting is header-only);
+ * a footer row omits it and the control is not shown.
+ */
 export default function RowScrollBehaviourControls( {
 	attributes,
 	setAttributes,
 	clientId,
 	previewShrunk = false,
 	setPreviewShrunk,
+	scrollAway,
 } ) {
 	const {
 		rowTransparent,
 		rowHideOnScroll,
-		rowScrollAway,
 		rowShrink,
 		rowShrinkHideTarget,
 		rowShrinkPadding,
@@ -231,7 +235,7 @@ export default function RowScrollBehaviourControls( {
 					setAttributes( {
 						rowTransparent: {},
 						rowHideOnScroll: {},
-						...( rowScrollAway ? { rowScrollAway: {} } : {} ),
+						...( scrollAway ? { rowScrollAway: {} } : {} ),
 						rowShrink: {},
 						rowShrinkHideTarget: '',
 						rowShrinkPadding: {},
@@ -296,10 +300,10 @@ export default function RowScrollBehaviourControls( {
 					/>
 				</ToolsPanelItem>
 
-				{ undefined !== rowScrollAway && (
+				{ undefined !== scrollAway && (
 					<ToolsPanelItem
 						label={ __( 'Scroll this row away with the page', 'sgs-blocks' ) }
-						hasValue={ () => Object.keys( rowScrollAway ).length > 0 }
+						hasValue={ () => Object.keys( scrollAway ).length > 0 }
 						onDeselect={ () => setAttributes( { rowScrollAway: {} } ) }
 						isShownByDefault
 					>
@@ -309,7 +313,7 @@ export default function RowScrollBehaviourControls( {
 								'This row scrolls out of view with the page, as ordinary content does, and the rows after it pin at the top of the screen. Put it first in the header; it needs a sticky header.',
 								'sgs-blocks'
 							) }
-							value={ rowScrollAway }
+							value={ scrollAway }
 							onChange={ ( value ) =>
 								setAttributes( { rowScrollAway: value } )
 							}

@@ -128,6 +128,11 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
+   "selector": "[data-sgs-cursor-field=\"image-reveal\"][data-sgs-cursor-field-touch=\"circle\"]:not([data-sgs-reveal-tap]):hover::before",
+   "reason": "fixed paint, no setting: on a touch device the emulated hover must not open the reveal circle until a tap sets data-sgs-reveal-tap"
+  },
+  {
+   "file": "plugins/sgs-blocks/assets/css/fx-cursor-field.css",
    "selector": "[data-sgs-cursor-field]:hover > .sgs-motion-layer[data-sgs-layer=\"cursor-field-ring\"]",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -1070,6 +1075,16 @@
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ".sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-check-corner .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
+   "reason": "fixed paint, no setting: the selected tile's badge shows with the tile's checked input; the badge placement is the tiles check-position setting, the checked state is only the trigger"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form-field--tiles-check-inline-start .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
+   "reason": "fixed paint, no setting: the selected tile's badge shows with the tile's checked input; the badge placement is the tiles check-position setting, the checked state is only the trigger"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
@@ -2663,6 +2678,16 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items:has( [aria-checked=\"true\"] )::before",
+   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute button.wc-block-product-filter-chips__item[aria-checked=\"true\"]",
+   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".sgs-shop-filters button.wc-block-components-product-filter-chips__item:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2703,23 +2728,8 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ":is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:not(:focus-visible)",
-   "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".sgs-shop-filters__group[open] > .sgs-shop-filters__group-summary::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute .wc-block-product-filter-chips__items:has( [aria-checked=\"true\"] )::before",
-   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
-  },
-  {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ".sgs-shop-filters .wc-block-product-filters__overlay-content > .sgs-shop-filters__group-heading.sgs-filter-segmented + .wp-block-woocommerce-product-filter-attribute button.wc-block-product-filter-chips__item[aria-checked=\"true\"]",
-   "reason": "the same fixed paint as the built segmented row, drawn from the server markup before the script builds it (a pressed segment, or the All segment while no option is chosen)"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
@@ -2793,6 +2803,11 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ":is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:not(:focus-visible)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ":root:has( dialog.sgs-shop-filters:modal )",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2808,12 +2823,12 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ":where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:hover",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover",
+   "selector": ":where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked=\"true\"]:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

@@ -34,6 +34,8 @@ import {
 	usePreviewTier,
 	boxPreview,
 	patchTier,
+	cssLengthValue,
+	flattenPresetSetting,
 } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
@@ -310,7 +312,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	// and the wrapper fill at the previewed device tier, mirroring render.php's
 	// scoped output so the canvas matches the frontend.
 	const previewTier = usePreviewTier();
-	const [ palette ] = useSettings( 'color.palette' );
+	const [ palette, spacingSizes ] = useSettings( 'color.palette', 'spacing.spacingSizes' );
+	const spacingSlugs = flattenPresetSetting( spacingSizes ).map( ( size ) => size.slug );
+
+	// The continuous connector line, mirroring render.php: colour, thickness (height), offset from the top
+	// (margin-top) and width. An empty value keeps the stylesheet default.
+	const connectorPreviewStyle = {
+		backgroundColor: colourVar( connectorColour ) || undefined,
+		height: cssLengthValue( connectorThickness, spacingSlugs ) || undefined,
+		marginTop: cssLengthValue( connectorOffset, spacingSlugs ) || undefined,
+		width: cssLengthValue( connectorWidth, spacingSlugs ) || undefined,
+	};
 	const wrapperPreviewStyle = {
 		...boxPreview( attributes, previewTier, palette ),
 		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
@@ -484,18 +496,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
-					<SelectControl
+					<ToggleGroupControl
 						label={ __( 'Number hover trigger', 'sgs-blocks' ) }
 						value={ numberHoverTrigger || 'step' }
-						options={ [
-							{ label: __( 'Whole step', 'sgs-blocks' ), value: 'step' },
-							{ label: __( 'Number only', 'sgs-blocks' ), value: 'number' },
-						] }
 						onChange={ ( val ) => setAttributes( { numberHoverTrigger: val } ) }
 						help={ __( 'What the pointer must be over to repaint the number’s hover colours.', 'sgs-blocks' ) }
+						isBlock
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
-					/>
+					>
+						<ToggleGroupControlOption value="step" label={ __( 'Whole step', 'sgs-blocks' ) } />
+						<ToggleGroupControlOption value="number" label={ __( 'Number only', 'sgs-blocks' ) } />
+					</ToggleGroupControl>
 					{ ( () => {
 						const numberBackgroundRow = fillRow( {
 							key: 'numberBackground',
@@ -1050,7 +1062,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 			<div { ...blockProps }>
 				{ connectorLine && 'list' !== layout && (
-					<span className="sgs-process-steps__connector" aria-hidden="true" />
+					<span className="sgs-process-steps__connector" style={ connectorPreviewStyle } aria-hidden="true" />
 				) }
 				{ steps.map( ( step, index ) => (
 					<div

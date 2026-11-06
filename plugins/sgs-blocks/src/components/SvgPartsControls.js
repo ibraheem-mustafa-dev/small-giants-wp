@@ -15,9 +15,8 @@ import {
 	SelectControl,
 	TextControl,
 	ToggleControl,
-	__experimentalNumberControl as NumberControl, // eslint-disable-line @wordpress/no-unsafe-wp-apis
 } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem } from './primitives';
+import { ToolsPanel, ToolsPanelItem, NumberControl } from './primitives';
 
 const EASING_OPTIONS = [
 	{ value: 'ease-out', label: __( 'Ease out', 'sgs-blocks' ) },

@@ -110,6 +110,8 @@ def norm_selector(selector: str) -> str:
     s = re.sub(r"\s+\)", ")", s)
     s = re.sub(r"\s*([>+~])\s*", r"\1", s)
     s = s.replace(":first-child", ":nth-child(1)")
+    # `:has(:focus-visible)` is the keyboard-focus-within state: one register with `:focus-within`.
+    s = s.replace(":has(:focus-visible)", ":focus-within")
     return re.sub(r"(?<=-)[0-9a-f]{8}\b", "<uid>", s)
 
 

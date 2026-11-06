@@ -200,6 +200,7 @@ def self_test() -> int:
         ("a register entry for another file does not clear it", kinds(run(fixed_css, tagged, [{"file": "other.css", "selector": ".sgs-fx__btn:hover", "reason": "r"}])) == ["unmapped"]),
         ("a register entry for another selector does not clear it", kinds(run(fixed_css, tagged, [{"file": f, "selector": ".sgs-fx__other:hover", "reason": "r"}])) == ["unmapped"]),
         ("positive: a form-field state maps to its states row", kinds(run(".sgs-fx__in:invalid{color:red}", tagged, [])) == ["states-row"]),
+        ("a :has(:focus-visible) selector normalises to the :focus-within register entry written for it", se.norm_selector(".a:has(:focus-visible) .b") == se.norm_selector(".a:focus-within .b") and se.norm_selector(".a:has(input:checked)") == ".a:has(input:checked)"),
         ("a rule with no state token is not a site", run(".sgs-fx__btn{color:red}", tagged, []) == []),
         ("MUST FAIL: the shared band class names no block, so the rule takes every block's tagged states", se.block_for("plugins/sgs-blocks/includes/x.php", ".sgs-rl.is-row-shrunk>.sgs-container__inner", frozenset({"sgs/container"})) is None),
         ("a state in a comma list is judged per selector", kinds(run(".a:hover,.b{color:red}", tagged, [])) == ["unmapped"]),

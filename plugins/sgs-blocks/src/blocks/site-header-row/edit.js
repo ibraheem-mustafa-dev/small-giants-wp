@@ -1172,6 +1172,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					clientId={ clientId }
 					previewShrunk={ previewShrunk }
 					setPreviewShrunk={ setPreviewShrunk }
+					scrollAway={ attributes.rowScrollAway }
 				/>
 			</InspectorControls>
 

@@ -111,6 +111,7 @@
 		"sgs/nav-bar-menu",
 		"sgs/nav-drawer-menu",
 		"sgs/post-grid",
+		"sgs/process-steps",
 		"sgs/timeline"
 	]
 }

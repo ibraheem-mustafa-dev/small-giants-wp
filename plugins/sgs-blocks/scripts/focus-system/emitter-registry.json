@@ -40,6 +40,12 @@
 			"reason": "The form Focus state paints only border-color and background-color on .sgs-form-field__input with this suffix; it writes no outline or box-shadow, so the focus system stays the indicator."
 		},
 		{
+			"path": "plugins/sgs-blocks/includes/forms/field-focus-css.php",
+			"contains": ":focus{",
+			"category": "shared-state",
+			"reason": "field_focus_css: the form field Focus look paints only background-color, border-color and border-width on .sgs-form-field__input:focus; it writes no outline or box-shadow. The ring goes through the override contract on :focus-visible (--sgs-focus-under, --sgs-focus-halo, --sgs-focus-ring), so the focus system stays the indicator."
+		},
+		{
 			"path": "plugins/sgs-blocks/src/blocks/extensions/motion/canvas/emit-focus.js",
 			"contains": "FOCUS_SUFFIX =",
 			"category": "shared-state",

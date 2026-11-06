@@ -30,6 +30,20 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"colourExemptions": {
+				"field-focus-background": {
+					"rule": "states",
+					"reason": "The focused field ground is itself the focus state of the field control; a hover on an already-focused field has no separate look, and fieldBackground carries the resting and hover grounds."
+				},
+				"field-focus-border": {
+					"rule": "states",
+					"reason": "The focused field border colour is itself the focus state of the field control; a hover on an already-focused field has no separate look, and fieldBorderColour carries the resting border."
+				},
+				"field-focus-ring": {
+					"rule": "states",
+					"reason": "The focus ring colour is the focus state by definition (it paints on :focus-visible through the focus system's contract properties); a ring has no hover state."
+				}
+			},
 			"motionItems": "formField",
 			"motion": {
 				"states": [

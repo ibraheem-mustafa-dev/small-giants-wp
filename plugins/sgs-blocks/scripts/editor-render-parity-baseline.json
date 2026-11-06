@@ -331,6 +331,27 @@
       "attr": "queryCategory",
       "disposition": "accepted-debt",
       "reason": "Query mode: the canvas draws the grid's manual items, not the queried posts (render.php's WP_Query branch); previewing real posts needs a posts fetch in the canvas, not a one-line fix."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/button",
+      "attr": "iconGapHover",
+      "disposition": "by-design",
+      "reason": "The gap moves only while the pointer is over the button; the editor canvas shows the resting state, so a hover-only gap has no canvas meaning."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/post-grid",
+      "attr": "cardLink",
+      "disposition": "by-design",
+      "reason": "Whole-card link behaviour: it changes which element carries the link on the front end, not how the card looks, so the canvas has nothing to show."
+    },
+    {
+      "check": "editor-canvas-desync",
+      "block": "sgs/process-steps",
+      "attr": "numberHoverTrigger",
+      "disposition": "by-design",
+      "reason": "Chooses what the pointer must be over to repaint the number hover colours; a hover trigger has no resting canvas appearance."
     }
   ]
 }

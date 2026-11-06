@@ -4,5 +4,14 @@
     "why": "Shrink-only ratchet for classify-end-shape.js --check. Rows listed here are known currentComplete=false rows the gate newly sees now that it reads component/partial files. --check fails on any row NOT listed (a new defect) and on any listed row that no longer fails (a stale entry: delete it). Never add an entry to make a new defect pass.",
     "keyFormat": "sgs/<slug>.<attr> written as <slug>.<attr>"
   },
-  "rows": []
+  "rows": [
+    {
+      "id": "form.fieldFocusBackground",
+      "reason": "A focus-state row has no hover (colourExemptions states) but it can take a gradient ground; that sibling attribute and its emission belong in includes/forms/field-focus-css.php, which another Round 8 worker is rewriting. Add fieldFocusBackgroundGradient there and delete this entry."
+    },
+    {
+      "id": "form.fieldFocusBorderColour",
+      "reason": "The focused control is an input, a replaced element with no pseudo-elements, so a gradient border cannot be drawn on it (a border-image would drop the corner radius); a focus-state row has no hover (colourExemptions states). Terminal for the same reason as the outline rows."
+    }
+  ]
 }

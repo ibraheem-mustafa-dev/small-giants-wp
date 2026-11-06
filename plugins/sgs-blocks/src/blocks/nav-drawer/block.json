@@ -558,7 +558,81 @@
 			"type": "array",
 			"default": [],
 			"items": {
-				"type": "object"
+				"type": "object",
+				"properties": {
+					"target": {
+						"type": "string",
+						"role": "technical"
+					},
+					"eachChild": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"draw": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"fromOpacity": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromX": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromY": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"fromScale": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"duration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"delay": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"stagger": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"easing": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"origin": {
+						"type": "string",
+						"role": "behaviour"
+					},
+					"loopRotate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"loopDuration": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverReplay": {
+						"type": "boolean",
+						"role": "behaviour"
+					},
+					"hoverRate": {
+						"type": "number",
+						"role": "behaviour"
+					},
+					"hoverRateDuration": {
+						"type": "number",
+						"role": "behaviour"
+					}
+				}
 			},
 			"description": "Named parts of the inline drawer logo to animate: per part an element id (or CSS selector), an entrance, a continuous rotation and a hover replay. Used only while chromeLogoInlineSvg is on. Read by src/shared/svg-parts/svg-parts.js."
 		},

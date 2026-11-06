@@ -56,6 +56,7 @@ export default function FieldFocusPanel( { attributes, setAttributes } ) {
 						min={ 0 }
 						max={ 12 }
 						help={ __( 'Used once a Focus ring colour is set in Colours. Empty is 2px.', 'sgs-blocks' ) }
+						__next40pxDefaultSize
 						onChange={ ( value ) => setAttributes( { fieldFocusRingWidth: Number( value ) || 0 } ) }
 					/>
 				</ToolsPanelItem>
@@ -89,6 +90,7 @@ export default function FieldFocusPanel( { attributes, setAttributes } ) {
 					<ResponsiveLengthControl
 						label={ __( 'Floated label size', 'sgs-blocks' ) }
 						value={ attributes.labelFloatedFontSize }
+						scale="font-size"
 						onChange={ ( next ) => setAttributes( { labelFloatedFontSize: next } ) }
 					/>
 				</ToolsPanelItem>
