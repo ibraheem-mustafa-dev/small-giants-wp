@@ -15,7 +15,7 @@ declare(strict_types=1);
 // phpcs:disable
 
 if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
-	/** Tags in document order (closers too when asked); get_tag(), is_tag_closer(), has_self_closing_flag(), has_class(), set_attribute(), add_class() and get_updated_html(). */
+	/** Tags in document order (closers too when asked); get_tag(), is_tag_closer(), has_self_closing_flag(), has_class(), get_attribute(), set_attribute(), add_class() and get_updated_html(). */
 	class WP_HTML_Tag_Processor {
 		private string $html;
 		private int $start = -1;
@@ -42,6 +42,18 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 		}
 		public function has_self_closing_flag(): bool {
 			return str_ends_with( substr( $this->html, $this->start, $this->len ), '/>' );
+		}
+		/** An attribute of the current open tag: its value, true for a bare attribute, null when absent (quoted values are consumed whole). */
+		public function get_attribute( $name ) {
+			$open = substr( $this->html, $this->start, $this->len );
+			$head = 1 === preg_match( '/^<[a-zA-Z][a-zA-Z0-9-]*/', $open, $t ) ? strlen( $t[0] ) : 0;
+			preg_match_all( "/\\s+([^\\s\"'>\\/=]+)(?:\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s\"'=<>`]+)))?/", substr( $open, $head ), $all, PREG_SET_ORDER );
+			foreach ( $all as $a ) {
+				if ( strtolower( $a[1] ) === strtolower( (string) $name ) ) {
+					return isset( $a[4] ) ? $a[4] : ( isset( $a[3] ) ? $a[3] : ( isset( $a[2] ) ? $a[2] : true ) );
+				}
+			}
+			return null;
 		}
 		public function has_class( $class_name ): bool {
 			$open = substr( $this->html, $this->start, $this->len );
