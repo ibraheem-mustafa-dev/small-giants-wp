@@ -38,6 +38,7 @@ import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longha
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { withTestOrder } from './lib/calibrate-order.mjs';
+import { stageClock } from './lib/calibrate-timing.mjs';
 import { setWishlist } from './lib/calibrate-wishlist.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
@@ -112,6 +113,7 @@ export function paintKeyOf( slotKey, snapshotKey, fixture ) {
 
 async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image, allowLoss = {} } ) {
 	const short = block.replace( /^sgs\//, '' );
+	const clock = stageClock();
 	const fixture = fixtures[ block ];
 	if ( ! fixture ) {
 		return { block, error: 'no fixture in calibration-fixtures.json (not guessed)' };
@@ -165,7 +167,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		let staleTree = false;
 		for ( let attempt = 0; attempt < 3 && ! timedOut; attempt++ ) {
 			writeTree( treeFile, buildTree( block, fixture, list ) );
-			const dry = await build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] );
+			const dry = await clock.time( 'dryRun', () => build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] ) );
 			if ( dry.timedOut ) {
 				timedOut = true;
 				break;
@@ -191,8 +193,9 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		}
 		let built = null;
 		if ( ! timedOut ) {
-			built = await build( target, treeFile, [ '--post-id', String( target.postId ) ] );
+			built = await clock.time( 'build', () => build( target, treeFile, [ '--post-id', String( target.postId ) ] ) );
 			timedOut = built.timedOut;
+			Object.entries( built.json?.stages || {} ).forEach( ( [ k, v ] ) => clock.add( `build.${ k.replace( /Ms$/, '' ) }`, v ) );
 		}
 		if ( timedOut ) {
 			if ( halve() ) {
@@ -210,7 +213,8 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
 		const settleGone = fixture.settleGone || null;
 		const owner = { block, site };
-		const passes = [ await readAll( shared.page, pageUrl, list, { settleGone, owner } ) ];
+		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner } ) ) ];
+		clock.addReads( passes[ 0 ].timing );
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
 			try {
@@ -232,7 +236,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		}
 		// A second pass only when this chunk holds a content instance: the content read records node existence, text and
 		// link attributes, which no computed-style read carries.
-		const contentReads = list.some( ( i ) => i.content ) ? await readContentAll( shared.page, pageUrl, list, needles ) : {};
+		const contentReads = list.some( ( i ) => i.content ) ? await clock.time( 'contentRead', () => readContentAll( shared.page, pageUrl, list, needles ) ) : {};
 		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
 		const chunkDefault = {};
 		const chunkBase = {};
@@ -326,12 +330,12 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	if ( decision.lost.length ) {
 		fs.writeFileSync( refusedFile( CACHE, block ), JSON.stringify( { ...slotMap, refusedBecause: { lost: decision.lost } }, null, 1 ) );
 		const names = decision.lost.map( ( l ) => l.setting ).join( ', ' );
-		return { block, error: `refused: the new slot map drops ${ names } that the existing one reaches; candidate kept in cache/${ block.replace( /^sgs\//, '' ) }.refused.json; pass --allow-loss ${ block }:<setting> to accept a named loss` };
+		return { block, error: `refused: the new slot map drops ${ names } that the existing one reaches; candidate kept in cache/${ block.replace( /^sgs\//, '' ) }.refused.json; pass --allow-loss ${ block }:<setting> to accept a named loss`, instances: instances.length, chunks: done, timing: clock.summary() };
 	}
 	if ( due.paint && statesMissing.length ) {
 		return { block, error: `paint state(s) ${ statesMissing.join( ', ' ) } not measured (rejected or unread); the default paint was not written, so the next run measures it again` };
 	}
-	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
+	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length, instances: instances.length, chunks: done, timing: clock.summary() };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) && needsBiggerHeap( v8.getHeapStatistics().heap_size_limit ) ) {

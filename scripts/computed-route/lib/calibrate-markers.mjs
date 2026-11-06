@@ -175,15 +175,17 @@ export const MARKER_REPEAT_TRACKS = 3;
 const GRID = 'grid-template-columns';
 const pxText = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
 
-// One value per device tier for a non-length per-device setting (columns, alignment), each differing from the
-// default at that tier, or null when the setting has no such shape.
+// The tier objects a non-length per-device setting (columns, alignment) is marked with, or null when the setting has no
+// such shape. A count differs from the default at each tier. A keyword takes two markers: the attribute's empty default
+// says nothing about what the element paints, and an element the stylesheet already centres does not move under
+// `center`, so one keyword would read a working setting as dead.
 function nonLengthTiers( prop, def ) {
 	if ( COUNT.test( prop ) ) {
 		const d = def.default && 'object' === typeof def.default ? def.default : {};
-		return Object.fromEntries( TIERS.map( ( t, i ) => [ t, [ 5, 3, 2 ][ i ] === Number( d[ t ] ) ? [ 6, 4, 1 ][ i ] : [ 5, 3, 2 ][ i ] ] ) );
+		return [ Object.fromEntries( TIERS.map( ( t, i ) => [ t, [ 5, 3, 2 ][ i ] === Number( d[ t ] ) ? [ 6, 4, 1 ][ i ] : [ 5, 3, 2 ][ i ] ] ) ) ];
 	}
 	const kw = KEYWORDS[ prop ];
-	return kw ? Object.fromEntries( TIERS.map( ( t ) => [ t, kw[ 0 ] ] ) ) : null;
+	return kw ? kw.slice( 0, 2 ).map( ( v ) => Object.fromEntries( TIERS.map( ( t ) => [ t, v ] ) ) ) : null;
 }
 
 // The marker for a transition duration or easing setting, or null when the row is not one. The duration is written in
@@ -359,12 +361,12 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		if ( box ) {
 			return [ { label: 'box-tiers', attrs: set( { desktop: boxOf( 'desktop' ), tablet: boxOf( 'tablet' ), mobile: boxOf( 'mobile' ) } ), expect: null, box: true } ];
 		}
-		const tiers = nonLengthTiers( prop, def );
-		if ( tiers ) {
+		const tierMarkers = nonLengthTiers( prop, def );
+		if ( tierMarkers ) {
 			// A per-device column count on a grid carries the `count` form: accepted where every width whose track list
 			// it changed computes that many tracks (lib/calibrate.mjs::formAccepted).
-			const count = GRID === prop ? { form: 'count', tracks: Object.fromEntries( WIDTHS.map( ( w ) => [ w, Number( tiers[ WIDTH_TIER[ w ] ] ) ] ) ) } : {};
-			return [ { label: 'tiers-value', attrs: set( tiers ), expect: null, ...count } ];
+			const countOf = ( tiers ) => ( GRID === prop ? { form: 'count', tracks: Object.fromEntries( WIDTHS.map( ( w ) => [ w, Number( tiers[ WIDTH_TIER[ w ] ] ) ] ) ) } : {} );
+			return tierMarkers.map( ( tiers, i ) => ( { label: i ? `tiers-value-${ i + 1 }` : 'tiers-value', attrs: set( tiers ), expect: null, ...countOf( tiers ) } ) );
 		}
 		// A per-device opacity (a scrim's tint strength) and a backdrop blur radius, which helpers-scrim.php paints as
 		// blur(<length>): one value per tier, so a dead tier shows.

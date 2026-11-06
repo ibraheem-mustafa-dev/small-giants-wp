@@ -193,11 +193,12 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	const missedAtAWidth = [];
 	const hoverHit = new Set();
 	const hoverWhy = {};
+	const timing = {};
 	const ctx = page.context();
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, settle, settleGone, owner } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner } );
 		} finally {
 			await p.close();
 		}
@@ -208,7 +209,7 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	scrollMissed.sort( ( a, b ) => a - b );
 	hoverMissed.sort( ( a, b ) => a - b );
 	hoverMissed.forEach( ( n ) => hoverWhy[ n ]?.sort( ( a, b ) => parseInt( a, 10 ) - parseInt( b, 10 ) ) );
-	return Object.assign( out, { scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ) } );
+	return Object.assign( out, { timing, scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ) } );
 }
 
 // The untested-state reason for a state instance read at no width, from readAll's hoverWhy lines. Each width names
@@ -367,7 +368,8 @@ export function missingDependencyReason( block, site, noticeText ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, settle = null, settleGone = null, owner } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner } ) {
+	const t0 = Date.now();
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
@@ -399,7 +401,9 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	if ( null !== noticeText ) {
 		throw new Error( missingDependencyReason( owner.block, owner.site, noticeText ) );
 	}
+	const t1 = Date.now();
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
+	const t2 = Date.now();
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
 		if ( ! [ 'hover', 'focus', 'class', 'probe', 'open' ].includes( inst.trigger ) ) {
@@ -419,6 +423,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 			hoverMissed.includes( n ) || hoverMissed.push( n );
 		}
 	}
+	const t3 = Date.now();
 	if ( instances.some( ( i ) => 'scroll' === i.trigger ) ) {
 		const readScrolled = async ( wait ) => {
 			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
@@ -445,4 +450,5 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		} );
 		await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 	}
+	timing[ w ] = { loadMs: t1 - t0, readMs: t2 - t1, stateMs: t3 - t2, scrollMs: Date.now() - t3 };
 }

@@ -163,3 +163,27 @@ test( 'MUST FAIL TO RECORD: a column count records count where the track count m
 	assert.ok( short.settings.columns );
 	assert.deepEqual( short.settings.columns.forms, [] );
 } );
+
+// sgs/button's alignment shape: a per-device keyword whose attribute default is empty while the stylesheet centres it.
+const ALIGN = { attr_name: 'textAlign', css_property: 'text-align', tier_shape: 'tier_object' };
+const ALIGN_SCHEMA = { textAlign: { type: 'object', default: {} } };
+
+test( 'a per-device keyword is marked with two different values, so an element already showing one still moves', () => {
+	const ms = mk( ALIGN, ALIGN_SCHEMA );
+	assert.deepEqual( ms.map( ( m ) => m.label ), [ 'tiers-value', 'tiers-value-2' ] );
+	const values = ms.map( ( m ) => m.attrs.textAlign.desktop );
+	assert.notEqual( values[ 0 ], values[ 1 ] );
+	ms.forEach( ( m ) => assert.deepEqual( new Set( Object.values( m.attrs.textAlign ) ).size, 1, 'each marker holds one value at every tier' ) );
+} );
+
+test( 'a setting on an element the stylesheet already centres reads alive through its second marker', () => {
+	const r = row( ALIGN );
+	const same = ( v ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, { '': { 'text-align': v } } ] ) );
+	const acc = { settings: {}, dead: [], oneWidth: [] };
+	for ( const m of mk( ALIGN, ALIGN_SCHEMA ) ) {
+		foldReading( acc, { row: r, marker: m, variant: 0, key: m.label }, slotFor( r, m, same( 'center' ), same( m.attrs.textAlign.desktop ) ) );
+	}
+	assert.equal( acc.settings.textAlign?.property, 'text-align' );
+	assert.deepEqual( acc.settings.textAlign.slots, [ '' ] );
+	assert.deepEqual( [ ...new Set( acc.dead ) ].filter( ( n ) => ! acc.settings[ n ] ), [] );
+} );

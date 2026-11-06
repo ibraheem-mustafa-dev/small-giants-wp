@@ -271,6 +271,7 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 }
 
 async function main() {
+	const startedAt = Date.now();
 	const args = parseArgs( process.argv );
 	if ( ! args.envFile || ! args.envKey || ! args.tree ) fail( 1, '--env-file, --env-key and --tree are required' );
 	if ( [ args.postId, args.create, args.templatePart, args.template ].filter( Boolean ).length !== 1 ) {
@@ -567,12 +568,16 @@ async function main() {
 		};
 
 		const builtNames = tree.map( ( b ) => b.name );
+		const stageStart = { save: Date.now() };
 		const saved = await save();
+		const stages = { editorOpenMs: stageStart.save - startedAt, saveMs: Date.now() - stageStart.save };
 		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
 		const lost = await verifySavedPost( page, saved.id, builtNames );
 		if ( lost ) fail( 5, lost );
 		let expected = built.serialised;
+		stageStart.reload = Date.now();
 		let check = await reload( saved.id );
+		stages.reloadMs = Date.now() - stageStart.reload;
 		const foreign = topLevelMismatch( builtNames, check.names );
 		if ( foreign ) fail( 6, `the reloaded editor does not show the build: ${ foreign }` );
 		// A block's editor may tidy its own attributes when it first mounts (drop an
@@ -581,6 +586,7 @@ async function main() {
 		let normalised = false;
 		if ( ! check.invalid.length && check.serialised.trim() !== expected.trim() ) {
 			const first = check.serialised;
+			stageStart.settle = Date.now();
 			const resaved = await save();
 			if ( resaved.error ) fail( 5, `save error on the settling save: ${ resaved.error }` );
 			const lostAgain = await verifySavedPost( page, saved.id, builtNames );
@@ -588,9 +594,10 @@ async function main() {
 			normalised = true;
 			expected = first;
 			check = await reload( saved.id );
+			stages.settleMs = Date.now() - stageStart.settle;
 		}
 		const changed = check.serialised.trim() !== expected.trim();
-		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed };
+		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed, stages };
 		if ( changed || normalised ) {
 			const out = path.join( require( 'os' ).tmpdir(), `wp-build-page-${ saved.id }-diff.json` );
 			fs.writeFileSync( out, JSON.stringify( { built: built.serialised, firstLoad: expected, lastLoad: check.serialised } ) );
