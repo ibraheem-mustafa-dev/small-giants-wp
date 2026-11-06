@@ -101,6 +101,33 @@ function font_fallback_split_stack( string $stack ): array {
 }
 
 /**
+ * Whether a base and a web-font metrics entry carry every number the fallback rule divides by or prints.
+ * A missing or zero value skips that family's fallback rather than dividing by zero.
+ *
+ * @param array<string,mixed> $base Base (system) font metrics.
+ * @param array<string,mixed> $web  Web font metrics.
+ * @return bool
+ */
+function font_fallback_metrics_usable( array $base, array $web ): bool {
+	foreach ( array( 'avgWidth' ) as $key ) {
+		if ( ! isset( $base[ $key ] ) || ! is_numeric( $base[ $key ] ) || (float) $base[ $key ] <= 0 ) {
+			return false;
+		}
+	}
+	foreach ( array( 'avgWidth', 'unitsPerEm' ) as $key ) {
+		if ( ! isset( $web[ $key ] ) || ! is_numeric( $web[ $key ] ) || (float) $web[ $key ] <= 0 ) {
+			return false;
+		}
+	}
+	foreach ( array( 'ascender', 'descender', 'lineGap' ) as $key ) {
+		if ( ! isset( $web[ $key ] ) || ! is_numeric( $web[ $key ] ) ) {
+			return false;
+		}
+	}
+	return isset( $base['local'] ) && is_string( $base['local'] ) && '' !== $base['local'];
+}
+
+/**
  * Fallback rule data for one family entry.
  *
  * @param array<string,mixed> $family Font family entry.
@@ -117,7 +144,7 @@ function font_fallback_for_family( array $family ): ?array {
 	// A stack without a generic keyword is treated as sans.
 	$base = $data['bases'][ '' === $generic ? 'sans-serif' : $generic ] ?? null;
 	$web  = $data['fonts'][ $found['path'] ] ?? null;
-	if ( ! is_array( $base ) || ! is_array( $web ) || empty( $web['avgWidth'] ) || empty( $base['avgWidth'] ) ) {
+	if ( ! is_array( $base ) || ! is_array( $web ) || ! font_fallback_metrics_usable( $base, $web ) ) {
 		return null;
 	}
 	$scale  = (float) $web['avgWidth'] / (float) $base['avgWidth'];
@@ -232,6 +259,34 @@ function font_fallback_slug( $value ): string {
 }
 
 /**
+ * The woff2 file to preload for a family: the first face with computed metrics (a theme file), else the first woff2
+ * face the family lists (a theme file or a URL such as one in uploads). Metrics are needed only for the fallback rule.
+ *
+ * @param array<string,mixed> $family Font family entry.
+ * @return string URL, or '' when the family lists no woff2 file.
+ */
+function font_fallback_preload_url( array $family ): string {
+	$found = font_fallback_first_face( $family );
+	if ( null !== $found ) {
+		return get_theme_file_uri( 'assets/fonts/' . $found['path'] );
+	}
+	foreach ( (array) ( $family['fontFace'] ?? array() ) as $face ) {
+		foreach ( (array) ( is_array( $face ) ? ( $face['src'] ?? array() ) : array() ) as $src ) {
+			if ( ! is_string( $src ) || 1 !== preg_match( '#\.woff2(?:\?.*)?$#i', $src ) ) {
+				continue;
+			}
+			if ( 0 === strpos( $src, 'file:./' ) ) {
+				return get_theme_file_uri( substr( $src, 7 ) );
+			}
+			if ( 1 === preg_match( '#^(?:https?:)?//#i', $src ) ) {
+				return $src;
+			}
+		}
+	}
+	return '';
+}
+
+/**
  * Preload the heading and body font files the page paints with.
  */
 function preload_first_paint_fonts(): void {
@@ -248,14 +303,15 @@ function preload_first_paint_fonts(): void {
 	}
 	$done = array();
 	foreach ( $slugs as $slug ) {
-		$found = '' !== $slug && isset( $by_slug[ $slug ] ) ? font_fallback_first_face( $by_slug[ $slug ] ) : null;
-		if ( null === $found || isset( $done[ $found['path'] ] ) ) {
+		$url = '' !== $slug && isset( $by_slug[ $slug ] ) ? font_fallback_preload_url( $by_slug[ $slug ] ) : '';
+		if ( '' === $url || isset( $done[ $url ] ) ) {
 			continue;
 		}
-		$done[ $found['path'] ] = true;
+		$done[ $url ] = true;
 		printf(
-			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-			esc_url( get_theme_file_uri( 'assets/fonts/' . $found['path'] ) )
+			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "
+",
+			esc_url( $url )
 		);
 	}
 }
