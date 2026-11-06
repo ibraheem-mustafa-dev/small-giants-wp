@@ -50,16 +50,27 @@ final class Account_Extras {
 		return $classes;
 	}
 
+	/**
+	 * Output-buffer level the menu buffer opened at; null while none is open.
+	 *
+	 * @var int|null
+	 */
+	private static $menu_buffer_level = null;
+
 	/** Open an output buffer around the menu when the Orders count is on. */
 	public static function start_menu_buffer(): void {
 		if ( is_array( Account_Endpoints::$active ) && ! empty( Account_Endpoints::$active['menuOrdersCount'] ) ) {
 			ob_start();
+			self::$menu_buffer_level = ob_get_level();
 		}
 	}
 
 	/** Close the buffer and add the count span after the Orders label (WooCommerce escapes menu labels, so the span is added to the finished markup). */
 	public static function end_menu_buffer(): void {
-		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['menuOrdersCount'] ) || ob_get_level() < 1 ) {
+		$level                   = self::$menu_buffer_level;
+		self::$menu_buffer_level = null;
+		// Close only the buffer this class opened: if another buffer is open above it, leave both alone.
+		if ( null === $level || ob_get_level() !== $level ) {
 			return;
 		}
 		$html  = (string) ob_get_clean();

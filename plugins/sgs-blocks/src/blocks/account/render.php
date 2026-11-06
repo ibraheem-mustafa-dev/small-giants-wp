@@ -89,17 +89,26 @@ if ( $show_menu_icons ) {
 }
 
 // -- Render WooCommerce's own output, flag set for its full duration ----
-\SGS\Blocks\Account_Endpoints::$active = $attributes;
-\SGS\Blocks\Account_Strings::begin( $attributes );
-ob_start();
-if ( $show_card ) {
-	echo sgs_account_signed_out_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper.
-} elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
-	\WC_Shortcode_My_Account::output( array() );
+// try/finally: a throw inside WooCommerce's output must not leave the gettext filter on, the flag set or this buffer open.
+$sgs_buffer_level = ob_get_level();
+$wc_output        = '';
+try {
+	\SGS\Blocks\Account_Endpoints::$active = $attributes;
+	\SGS\Blocks\Account_Strings::begin( $attributes );
+	ob_start();
+	if ( $show_card ) {
+		echo sgs_account_signed_out_html( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper.
+	} elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
+		\WC_Shortcode_My_Account::output( array() );
+	}
+	$wc_output = \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) );
+} finally {
+	while ( ob_get_level() > $sgs_buffer_level ) {
+		ob_end_clean();
+	}
+	\SGS\Blocks\Account_Strings::end();
+	\SGS\Blocks\Account_Endpoints::$active = null;
 }
-$wc_output = \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) );
-\SGS\Blocks\Account_Strings::end();
-\SGS\Blocks\Account_Endpoints::$active = null;
 
 // Sign in / Create account tabs: only the two-column log-in form, never the card or an endpoint.
 $use_tabs = 'tabs' === $auth_layout && ! $show_card && sgs_account_registration_enabled() && ! is_user_logged_in();
