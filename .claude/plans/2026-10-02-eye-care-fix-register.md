@@ -2,6 +2,8 @@
 
 **Written for:** Bean. Every fix the Eye Care test site still needs to match its draft, one line each, merged with your review of the first version.
 
+**Before reporting any difference:** read `sites/eye-care-ward-end/build/qa/decided.md`, the one list of what Bean has decided, accepted or dropped. A difference on that list is not a finding. Each round adds its new decisions there in the same commit as this register.
+
 **How this version was made (2026-10-03).** Your points file went through four steps:
 1. Six investigators traced each cause in the code, the layout files, the draft source and the live site (shop, bag and drawer items were tested in a browser).
 2. A research pass covered the questions you asked about standard practice.
