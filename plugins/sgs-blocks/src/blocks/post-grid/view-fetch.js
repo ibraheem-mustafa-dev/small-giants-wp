@@ -137,6 +137,7 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		dateFormat:            queryData.dateFormat,
 		showAuthor:            queryData.showAuthor,
 		showCategory:          queryData.showCategory,
+		metaLayout:            queryData.metaLayout,
 		showReadMore:          queryData.showReadMore,
 		readMoreText:          queryData.readMoreText,
 		readMoreIcon:          queryData.readMoreIcon,
@@ -146,6 +147,9 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		metaColour:            queryData.metaColour,
 		categoryBadgeColour:   queryData.categoryBadgeColour,
 		categoryBadgeBgColour: queryData.categoryBadgeBgColour,
+		categoryBadgeBgColourGradient:      queryData.categoryBadgeBgColourGradient,
+		categoryBadgeBgColourHover:         queryData.categoryBadgeBgColourHover,
+		categoryBadgeBgColourHoverGradient: queryData.categoryBadgeBgColourHoverGradient,
 		readMoreColour:        queryData.readMoreColour,
 		// 37-media-no-handroll: round-tripped so AJAX-paginated cards' featured
 		// images carry the same media-atom marker class as the initial

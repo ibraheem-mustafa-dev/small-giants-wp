@@ -240,6 +240,10 @@ if ( ! empty( $attributes['showSignedInDot'] ) ) {
 if ( $show_bg ) {
 	$classes[] = 'sgs-icon--has-bg';
 }
+// A hover background with no resting one paints on hover over a transparent shape.
+if ( ! $show_bg && '' !== (string) ( $attributes['backgroundColourHover'] ?? '' ) ) {
+	$classes[] = 'sgs-icon--has-bg-hover';
+}
 if ( $show_bg || $has_border || $group_border ) {
 	$classes[] = 'sgs-icon--boxed';
 }

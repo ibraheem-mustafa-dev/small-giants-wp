@@ -542,7 +542,8 @@ select.sgs-form-field__input {
 .sgs-form-tile {
 	display: flex;
 	padding: 1rem;
-	border: 2px solid var(--wp--preset--color--border, #ccc);
+	border-width: 2px;
+	border-style: solid;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	cursor: pointer;
 	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
@@ -553,6 +554,7 @@ select.sgs-form-field__input {
 /* Default text-align (0 specificity via :where()) — textAlign attribute now drives this; must always lose to the attribute-driven scoped rule. */
 :where(.sgs-form-tile) {
 	text-align: center;
+	border-color: var(--wp--preset--color--border, #ccc);
 }
 
 /* Hover border-colour is client-controllable (tileBorderColour/Hover) via

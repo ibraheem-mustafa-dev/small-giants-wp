@@ -235,6 +235,7 @@ export default function Edit( { attributes: ownAttributes, setAttributes, contex
 		`sgs-icon--shape-${ shape }`,
 		attributes.showSignedInDot && 'sgs-icon--has-dot',
 		showBg && 'sgs-icon--has-bg',
+		! showBg && attributes.backgroundColourHover && 'sgs-icon--has-bg-hover',
 		( showBg || hasBorder || groupBorder ) && 'sgs-icon--boxed',
 		groupBorder && ! outline.outline && 'sgs-icon--group-border',
 		outline.outline && 'sgs-icon--outline',
