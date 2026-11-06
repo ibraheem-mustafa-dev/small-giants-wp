@@ -2227,7 +2227,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 - Colour maths: `hexToLab(hex)`, `ciede2000(labA, labB)`, `hexDistance(a, b)` (Infinity across different alphas), `dedupeColours(tokens)`.
 - Usage: `summariseUsage(usage, hexes)`, `brandFamilies(colours, groupOf)`; `lib/intake-palette-usage.mjs::usageRoles(groups, uses)` → `{ roles: Map group → [{ role, why, weak? }], blocked: { role: hex } }`, `contrast(a, b)` (WCAG ratio), `chroma(hex)`, `SATURATED_C` (20).
 - `lib/intake-palette-grounds.mjs`: `readGrounds([rootSelector])` (in-page) → `{ page, grounds, texts, footers }`; `groundUsage(probed, surface)` → the page and footer usage rows.
-- Name rules, run in order through `NAME_RULES`: `ruleLinkHover`, `ruleLink`, `ruleHeading`, `ruleReserved`, `ruleOnGround`, `ruleSection`, `ruleFooter`, `ruleBorder` (a saturated colour is never the divider), `ruleStatus`, `ruleTextMuted`, `ruleTextInverse`, `ruleText`, `ruleSurface`, `ruleBrand`.
+- Name rules, run in order through `NAME_RULES`: `ruleLinkHover`, `ruleLink`, `ruleHeadingInverse`, `ruleHeading`, `ruleReserved`, `ruleOnGround`, `ruleSection`, `ruleFooter`, `ruleBorder` (a saturated colour is never the divider), `ruleStatus`, `ruleTextMuted`, `ruleTextInverse`, `ruleText`, `ruleSurface`, `ruleBrand`.
 
 ### `lib/intake-census.mjs`
 - `rowId(row)` → `<kind>@<draftId>[/<discriminator>]`, one identity for static and runtime sightings; `assignIds(rows)` sets `row.id`, numbering repeats `~2`, `~3`.
