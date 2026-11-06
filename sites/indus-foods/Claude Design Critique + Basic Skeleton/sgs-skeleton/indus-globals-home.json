@@ -1,0 +1,1765 @@
+{
+  "schema": "sgs-skeleton/0.1",
+  "client": "indus-foods",
+  "draft": "Indus Foods Website v2.dc.html",
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "tplNote": "t = data-dc-tpl pre-order index of the draft element this node replaces (verified against surfaces.json anchors 9, 38, 39, 63, 106, 108, 202, 653, 728). Elements repeated by sc-for share one tpl.",
+  "keys": {
+    "b": "SGS block slug (null = no block, see gap)",
+    "a": "key attributes; an object keyed desktop/tablet/mobile is per-device",
+    "t": "draft tpl id",
+    "slot": "a part the parent block draws itself (no inner block)",
+    "l": "layout at desktop(d) / tablet(t) / mobile(m): col | row | row-sb | gN | cols:<tracks>",
+    "v": "widths the node shows at (d t m); absent = all",
+    "x": "item count; 'item' is the repeated subtree",
+    "gap": "id in gaps[]",
+    "k": "wireframe glyph only",
+    "fw": "a framework feature that is not a block"
+  },
+  "widths": {
+    "d": 1440,
+    "t": 768,
+    "m": 375
+  },
+  "surfaces": [
+    {
+      "id": "header",
+      "records": [
+        "S-01",
+        "S-02",
+        "S-03"
+      ],
+      "name": "Site header",
+      "target": "template part: header",
+      "widths": "dtm",
+      "tree": [
+        {
+          "fw": "scroll progress bar",
+          "t": "38",
+          "k": "bar"
+        },
+        {
+          "b": "sgs/site-header",
+          "t": "9+39",
+          "a": {
+            "scrolledTrigger": "position",
+            "stickyRow": "middle"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/site-header-row",
+              "t": "10",
+              "a": {
+                "rowSlot": "top",
+                "layout": "flex"
+              },
+              "l": "row-sb",
+              "c": [
+                {
+                  "b": "sgs/container",
+                  "t": "11",
+                  "a": {
+                    "layout": "flex"
+                  },
+                  "l": "row",
+                  "c": [
+                    {
+                      "b": "sgs/button",
+                      "t": "13",
+                      "v": "m",
+                      "a": {
+                        "variant": "secondary",
+                        "url": "/apply"
+                      },
+                      "k": "btn"
+                    },
+                    {
+                      "b": "sgs/button",
+                      "t": "14",
+                      "a": {
+                        "variant": "secondary",
+                        "url": "tel:",
+                        "icon": "phone",
+                        "label": {
+                          "desktop": "number",
+                          "tablet": "number",
+                          "mobile": "Call"
+                        }
+                      },
+                      "k": "btn"
+                    },
+                    {
+                      "b": "sgs/button",
+                      "t": "20",
+                      "v": "dt",
+                      "a": {
+                        "variant": "secondary",
+                        "url": "mailto:",
+                        "icon": "mail"
+                      },
+                      "k": "btn"
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/social-icons",
+                  "t": "22",
+                  "v": "dt",
+                  "a": {
+                    "childIconShowBackground": true
+                  },
+                  "k": "icons",
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "b": "sgs/site-header-row",
+              "t": "41",
+              "a": {
+                "rowSlot": "middle",
+                "layout": "flex"
+              },
+              "l": "row-sb",
+              "c": [
+                {
+                  "b": "sgs/responsive-logo",
+                  "t": "42",
+                  "a": {
+                    "logoSwitchMode": "mobile"
+                  },
+                  "k": "logo"
+                },
+                {
+                  "b": "sgs/nav-bar-menu",
+                  "t": "45",
+                  "a": {
+                    "submenuOpenOn": "hover",
+                    "submenuCloseGrace": 170,
+                    "submenuAlign": "page-centred",
+                    "submenuCaret": true,
+                    "showBurger": true,
+                    "burgerBarCount": 3
+                  },
+                  "grow": true,
+                  "l": {
+                    "d": "row",
+                    "t": "row-end",
+                    "m": "row-end"
+                  },
+                  "c": [
+                    {
+                      "slot": "menu items",
+                      "t": "46",
+                      "v": "d",
+                      "l": "row",
+                      "x": 7,
+                      "item": {
+                        "slot": "item",
+                        "t": "47",
+                        "k": "link"
+                      }
+                    },
+                    {
+                      "slot": "burger",
+                      "t": "59",
+                      "v": "tm",
+                      "k": "burger"
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/button",
+                  "t": "54/58",
+                  "v": "dt",
+                  "a": {
+                    "variant": "primary",
+                    "url": "/apply",
+                    "hidden": "1024–1259"
+                  },
+                  "k": "btn"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mega-about",
+      "records": [
+        "S-04"
+      ],
+      "name": "About mega menu",
+      "target": "sgs_mega_menu post: about",
+      "widths": "d",
+      "boardWidth": {
+        "d": 620
+      },
+      "tree": [
+        {
+          "b": "sgs/mega-panel",
+          "t": "65",
+          "a": {
+            "variant": "general",
+            "style": "columns"
+          },
+          "l": "cols:1fr 300px",
+          "c": [
+            {
+              "b": "sgs/mega-group",
+              "t": "68",
+              "a": {
+                "linkSource": "menu"
+              },
+              "l": "col",
+              "x": 6,
+              "item": {
+                "slot": "link: num, label, desc",
+                "t": "70",
+                "k": "link2"
+              }
+            },
+            {
+              "b": "sgs/mega-aside",
+              "t": "76",
+              "l": "col",
+              "c": [
+                {
+                  "slot": "media",
+                  "t": "78",
+                  "k": "img",
+                  "ratio": "2/1"
+                },
+                {
+                  "slot": "tag",
+                  "t": "80",
+                  "k": "chip"
+                },
+                {
+                  "slot": "heading",
+                  "t": "81",
+                  "k": "h"
+                },
+                {
+                  "slot": "text",
+                  "t": "82",
+                  "k": "p"
+                },
+                {
+                  "slot": "cta",
+                  "t": "83",
+                  "k": "link"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mega-sectors",
+      "records": [
+        "S-05"
+      ],
+      "name": "Sectors mega menu",
+      "target": "sgs_mega_menu post: sectors",
+      "widths": "d",
+      "boardWidth": {
+        "d": 1080
+      },
+      "tree": [
+        {
+          "b": "sgs/mega-panel",
+          "t": "65",
+          "a": {
+            "variant": "general",
+            "style": "cards"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/card-grid",
+              "t": "85",
+              "a": {
+                "variant": "card",
+                "columns": {
+                  "desktop": 4
+                },
+                "headingLevel": "p",
+                "source": "manual"
+              },
+              "l": "g4",
+              "x": 4,
+              "item": {
+                "slot": "card",
+                "t": "87",
+                "l": "col",
+                "c": [
+                  {
+                    "slot": "image",
+                    "t": "89",
+                    "k": "img",
+                    "ratio": "2/1"
+                  },
+                  {
+                    "slot": "title",
+                    "t": "91",
+                    "k": "h"
+                  },
+                  {
+                    "slot": "desc",
+                    "t": "92",
+                    "k": "p"
+                  },
+                  {
+                    "slot": "cta",
+                    "t": "93",
+                    "k": "link"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mega-brands",
+      "records": [
+        "S-06"
+      ],
+      "name": "Brands mega menu",
+      "target": "sgs_mega_menu post: brands",
+      "widths": "d",
+      "boardWidth": {
+        "d": 1080
+      },
+      "tree": [
+        {
+          "b": "sgs/mega-panel",
+          "t": "65",
+          "a": {
+            "variant": "general",
+            "style": "logos"
+          },
+          "l": "cols:1fr 300px",
+          "c": [
+            {
+              "b": "sgs/label",
+              "t": "97",
+              "k": "chip",
+              "gc": "1",
+              "gr": "1"
+            },
+            {
+              "b": "sgs/card-grid",
+              "t": "98",
+              "a": {
+                "variant": "image",
+                "columns": {
+                  "desktop": 4
+                },
+                "source": "manual"
+              },
+              "l": "g4",
+              "gc": "1",
+              "gr": "2",
+              "x": 10,
+              "item": {
+                "slot": "logo tile",
+                "t": "100",
+                "k": "logo"
+              }
+            },
+            {
+              "b": "sgs/mega-aside",
+              "t": "102",
+              "l": "col",
+              "gc": "2",
+              "gr": "1 / 3",
+              "c": [
+                {
+                  "slot": "tag",
+                  "t": "103",
+                  "k": "chip"
+                },
+                {
+                  "slot": "text",
+                  "t": "104",
+                  "k": "p"
+                },
+                {
+                  "slot": "cta",
+                  "t": "105",
+                  "k": "link"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mega-trade",
+      "records": [
+        "S-07"
+      ],
+      "name": "Trade mega menu",
+      "target": "sgs_mega_menu post: trade",
+      "widths": "d",
+      "boardWidth": {
+        "d": 620
+      },
+      "tree": [
+        {
+          "b": "sgs/mega-panel",
+          "t": "65",
+          "a": {
+            "variant": "general",
+            "style": "columns"
+          },
+          "l": "cols:1fr 300px",
+          "c": [
+            {
+              "b": "sgs/mega-group",
+              "t": "68",
+              "a": {
+                "linkSource": "menu"
+              },
+              "l": "col",
+              "x": 5,
+              "item": {
+                "slot": "link: num, label, desc",
+                "t": "70",
+                "k": "link2"
+              }
+            },
+            {
+              "b": "sgs/mega-aside",
+              "t": "76",
+              "l": "col",
+              "c": [
+                {
+                  "slot": "media",
+                  "t": "78",
+                  "k": "img",
+                  "ratio": "2/1"
+                },
+                {
+                  "slot": "tag",
+                  "t": "80",
+                  "k": "chip"
+                },
+                {
+                  "slot": "heading",
+                  "t": "81",
+                  "k": "h"
+                },
+                {
+                  "slot": "text",
+                  "t": "82",
+                  "k": "p"
+                },
+                {
+                  "slot": "cta",
+                  "t": "83",
+                  "k": "link"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drawer",
+      "records": [
+        "S-08",
+        "S-09",
+        "S-10",
+        "S-11",
+        "S-12",
+        "S-13"
+      ],
+      "name": "Mobile / tablet drawer",
+      "target": "template part: drawer",
+      "widths": "tm",
+      "boardWidth": {
+        "t": 440,
+        "m": 375
+      },
+      "tree": [
+        {
+          "b": "sgs/nav-drawer",
+          "t": "108",
+          "a": {
+            "submenuModel": "accordion",
+            "chromeLogoShow": true,
+            "chromeSlotType": "icons",
+            "closeStyle": "round",
+            "bgSvgPosition": "background",
+            "bgSvg": "rings + glow (#109–111)"
+          },
+          "l": "col",
+          "c": [
+            {
+              "slot": "chrome: logo, call, email, close",
+              "t": "112",
+              "l": "row-sb",
+              "c": [
+                {
+                  "slot": "logo",
+                  "t": "113",
+                  "k": "logo"
+                },
+                {
+                  "slot": "icons + close",
+                  "t": "115/118",
+                  "k": "icons",
+                  "n": 3
+                }
+              ]
+            },
+            {
+              "b": "sgs/nav-drawer-menu",
+              "t": "122",
+              "a": {
+                "megaDrawerMode": "panel",
+                "panelLayout": "drawer"
+              },
+              "l": "col",
+              "c": [
+                {
+                  "slot": "row 01 Home",
+                  "t": "125",
+                  "k": "row"
+                },
+                {
+                  "slot": "row 02 About (expanded)",
+                  "t": "125",
+                  "k": "row"
+                },
+                {
+                  "b": "sgs/mega-panel",
+                  "t": "134",
+                  "a": {
+                    "source": "sgs_mega_menu: about",
+                    "drawerCardLayout": "stacked-overlay"
+                  },
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/mega-aside",
+                      "t": "139",
+                      "l": "col",
+                      "c": [
+                        {
+                          "slot": "media + tag",
+                          "t": "140",
+                          "k": "img",
+                          "ratio": "5/2"
+                        },
+                        {
+                          "slot": "title, desc, arrow",
+                          "t": "143",
+                          "k": "p"
+                        }
+                      ]
+                    },
+                    {
+                      "b": "sgs/mega-group",
+                      "t": "149",
+                      "l": "col",
+                      "x": 6,
+                      "item": {
+                        "slot": "link: num, label, desc",
+                        "t": "151",
+                        "k": "link2"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "slot": "rows 03–06",
+                  "t": "125",
+                  "x": 4,
+                  "item": {
+                    "slot": "row",
+                    "t": "125",
+                    "k": "row"
+                  }
+                }
+              ]
+            },
+            {
+              "b": "sgs/container",
+              "t": "178",
+              "a": {
+                "layout": "flex"
+              },
+              "l": "row-sb",
+              "c": [
+                {
+                  "b": "sgs/label",
+                  "t": "179",
+                  "k": "chip"
+                },
+                {
+                  "b": "sgs/social-icons",
+                  "t": "180",
+                  "k": "icons",
+                  "n": 4
+                }
+              ]
+            },
+            {
+              "b": "sgs/button",
+              "t": "197",
+              "a": {
+                "variant": "primary",
+                "url": "/apply",
+                "pinned": "bottom"
+              },
+              "k": "btn",
+              "wide": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "footer",
+      "records": [
+        "S-14"
+      ],
+      "name": "Footer",
+      "target": "template part: footer",
+      "widths": "dtm",
+      "tree": [
+        {
+          "b": "sgs/site-footer",
+          "t": "653",
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/site-footer-row",
+              "t": "657",
+              "a": {
+                "rowSlot": "top",
+                "layout": "grid",
+                "columns": {
+                  "desktop": 3,
+                  "tablet": 2,
+                  "mobile": 1
+                }
+              },
+              "l": {
+                "d": "cols:1fr 1fr 1.15fr",
+                "t": "g2",
+                "m": "g1"
+              },
+              "c": [
+                {
+                  "b": "sgs/container",
+                  "t": "658",
+                  "a": {
+                    "layout": "flex",
+                    "link": "tel:"
+                  },
+                  "l": "row-top",
+                  "c": [
+                    {
+                      "b": "sgs/icon",
+                      "t": "659",
+                      "a": {
+                        "icon": "phone"
+                      },
+                      "k": "dot"
+                    },
+                    {
+                      "b": "sgs/container",
+                      "t": "660",
+                      "l": "col",
+                      "grow": true,
+                      "c": [
+                        {
+                          "b": "sgs/label",
+                          "t": "661",
+                          "k": "chip"
+                        },
+                        {
+                          "b": "sgs/business-info",
+                          "t": "662",
+                          "a": {
+                            "displayType": "phone",
+                            "showIcon": false
+                          },
+                          "k": "h"
+                        },
+                        {
+                          "b": "sgs/text",
+                          "t": "663",
+                          "k": "p1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/container",
+                  "t": "664",
+                  "a": {
+                    "layout": "flex",
+                    "link": "mailto:"
+                  },
+                  "l": "row-top",
+                  "c": [
+                    {
+                      "b": "sgs/icon",
+                      "t": "665",
+                      "a": {
+                        "icon": "mail"
+                      },
+                      "k": "dot"
+                    },
+                    {
+                      "b": "sgs/container",
+                      "t": "666",
+                      "l": "col",
+                      "grow": true,
+                      "c": [
+                        {
+                          "b": "sgs/label",
+                          "t": "667",
+                          "k": "chip"
+                        },
+                        {
+                          "b": "sgs/business-info",
+                          "t": "668",
+                          "a": {
+                            "displayType": "email",
+                            "showIcon": false
+                          },
+                          "k": "h"
+                        },
+                        {
+                          "b": "sgs/text",
+                          "t": "669",
+                          "k": "p1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/container",
+                  "t": "670",
+                  "spanAt": "t",
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/label",
+                      "t": "672",
+                      "k": "chip"
+                    },
+                    {
+                      "b": "sgs/business-info",
+                      "t": "671–680",
+                      "a": {
+                        "displayType": "hours",
+                        "hoursLayout": "rows",
+                        "openStatusShowLine": true
+                      },
+                      "l": "col",
+                      "c": [
+                        {
+                          "slot": "open-now badge",
+                          "t": "673",
+                          "k": "chip"
+                        },
+                        {
+                          "slot": "day rows",
+                          "t": "677",
+                          "x": 4,
+                          "item": {
+                            "slot": "day · time",
+                            "t": "677",
+                            "k": "line"
+                          }
+                        },
+                        {
+                          "slot": "next change",
+                          "t": "680",
+                          "k": "p1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "b": "sgs/site-footer-row",
+              "t": "681",
+              "a": {
+                "rowSlot": "columns",
+                "layout": "grid",
+                "columns": {
+                  "desktop": 3,
+                  "tablet": 2,
+                  "mobile": 1
+                }
+              },
+              "l": {
+                "d": "cols:1.15fr 1fr 1fr",
+                "t": "g2",
+                "m": "g1"
+              },
+              "c": [
+                {
+                  "b": "sgs/container",
+                  "t": "682",
+                  "spanAt": "t",
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/responsive-logo",
+                      "t": "683",
+                      "a": {
+                        "variant": "square"
+                      },
+                      "k": "logo",
+                      "tall": true
+                    },
+                    {
+                      "b": "sgs/text",
+                      "t": "685",
+                      "k": "p"
+                    },
+                    {
+                      "b": "sgs/social-icons",
+                      "t": "686",
+                      "k": "icons",
+                      "n": 4
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/container",
+                  "t": "702",
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/label",
+                      "t": "703",
+                      "k": "chip"
+                    },
+                    {
+                      "b": "sgs/icon-list",
+                      "t": "704",
+                      "a": {
+                        "columns": 2,
+                        "icon": "dot"
+                      },
+                      "l": "g2",
+                      "x": 6,
+                      "item": {
+                        "slot": "linked item",
+                        "t": "706",
+                        "k": "line"
+                      }
+                    },
+                    {
+                      "b": "sgs/button",
+                      "t": "708",
+                      "a": {
+                        "variant": "secondary",
+                        "url": "/apply"
+                      },
+                      "k": "btn"
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/container",
+                  "t": "709",
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/label",
+                      "t": "710",
+                      "k": "chip"
+                    },
+                    {
+                      "b": "sgs/business-info",
+                      "t": "712",
+                      "a": {
+                        "displayType": "map",
+                        "mapSource": "business",
+                        "mapFilterPreset": "greyscale"
+                      },
+                      "k": "img",
+                      "ratio": "2/1"
+                    },
+                    {
+                      "b": "sgs/container",
+                      "t": "713",
+                      "a": {
+                        "layout": "flex"
+                      },
+                      "l": "row-sb",
+                      "c": [
+                        {
+                          "b": "sgs/business-info",
+                          "t": "714",
+                          "a": {
+                            "displayType": "address"
+                          },
+                          "k": "p"
+                        },
+                        {
+                          "b": "sgs/button",
+                          "t": "717",
+                          "a": {
+                            "variant": "primary",
+                            "url": "maps directions"
+                          },
+                          "k": "btn"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "b": "sgs/site-footer-row",
+              "t": "719",
+              "a": {
+                "rowSlot": "bottom",
+                "layout": "flex"
+              },
+              "l": {
+                "d": "row-sb",
+                "t": "row-sb",
+                "m": "col"
+              },
+              "c": [
+                {
+                  "b": "sgs/container",
+                  "t": "720",
+                  "a": {
+                    "layout": "flex"
+                  },
+                  "l": "row",
+                  "c": [
+                    {
+                      "b": "sgs/business-info",
+                      "t": "721",
+                      "a": {
+                        "displayType": "copyright"
+                      },
+                      "k": "line"
+                    },
+                    {
+                      "b": "sgs/text",
+                      "t": "723",
+                      "a": {
+                        "link": true
+                      },
+                      "k": "line"
+                    },
+                    {
+                      "b": "sgs/text",
+                      "t": "725",
+                      "k": "line"
+                    }
+                  ]
+                },
+                {
+                  "fw": "back to top",
+                  "t": "726",
+                  "k": "btn"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "records": [
+        "S-15"
+      ],
+      "name": "WhatsApp button",
+      "target": "site-wide (footer template part)",
+      "widths": "dtm",
+      "boardWidth": {
+        "d": 420,
+        "t": 420,
+        "m": 375
+      },
+      "tree": [
+        {
+          "b": "sgs/whatsapp-cta",
+          "t": "728",
+          "a": {
+            "variant": "floating",
+            "labelShowOn": "≥768"
+          },
+          "l": "row-end",
+          "c": [
+            {
+              "slot": "icon",
+              "t": "729",
+              "k": "dot"
+            },
+            {
+              "slot": "label",
+              "t": "731",
+              "v": "dt",
+              "k": "line"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "home",
+      "records": [
+        "S-16"
+      ],
+      "name": "Home",
+      "target": "page: home",
+      "widths": "dtm",
+      "tree": [
+        {
+          "b": "sgs/hero",
+          "t": "203",
+          "a": {
+            "variant": "split",
+            "columns": {
+              "desktop": 2,
+              "tablet": 1,
+              "mobile": 1
+            },
+            "splitMediaType": "image"
+          },
+          "l": {
+            "d": "cols:1fr 1.1fr",
+            "t": "g1",
+            "m": "g1"
+          },
+          "c": [
+            {
+              "slot": "content side (default label removed)",
+              "t": "205",
+              "l": "col",
+              "c": [
+                {
+                  "b": "sgs/heading",
+                  "t": "206",
+                  "a": {
+                    "level": "h1"
+                  },
+                  "k": "h1"
+                },
+                {
+                  "b": "sgs/text",
+                  "t": "207",
+                  "k": "p1"
+                },
+                {
+                  "b": "sgs/multi-button",
+                  "t": "208",
+                  "l": "row",
+                  "c": [
+                    {
+                      "b": "sgs/button",
+                      "t": "209",
+                      "a": {
+                        "variant": "primary",
+                        "url": "/apply"
+                      },
+                      "k": "btn"
+                    },
+                    {
+                      "b": "sgs/button",
+                      "t": "210",
+                      "a": {
+                        "variant": "secondary",
+                        "url": "/catalogue"
+                      },
+                      "k": "btn"
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/container",
+                  "t": "211",
+                  "a": {
+                    "layout": "flex"
+                  },
+                  "l": "row",
+                  "x": 3,
+                  "item": {
+                    "b": "sgs/label",
+                    "t": "213",
+                    "a": {
+                      "dot": true
+                    },
+                    "k": "chip"
+                  }
+                }
+              ]
+            },
+            {
+              "b": "sgs/media",
+              "t": "217",
+              "a": {
+                "mediaType": "image"
+              },
+              "k": "img",
+              "ratio": "3/2"
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "218",
+          "a": {
+            "tagName": "section"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/brand-strip",
+              "t": "219–225",
+              "a": {
+                "source": "manual",
+                "logoLayout": "tiles",
+                "marquee": true,
+                "pauseOnHover": true
+              },
+              "l": "col",
+              "c": [
+                {
+                  "slot": "title (h2)",
+                  "t": "220",
+                  "k": "h",
+                  "center": true
+                },
+                {
+                  "slot": "logo track",
+                  "t": "223",
+                  "l": "row-clip",
+                  "x": 8,
+                  "item": {
+                    "slot": "tile",
+                    "t": "224",
+                    "k": "logo",
+                    "sq": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "226",
+          "a": {
+            "tagName": "section"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/heading",
+              "t": "228",
+              "a": {
+                "level": "h2"
+              },
+              "k": "h",
+              "center": true
+            },
+            {
+              "b": "sgs/card-grid",
+              "t": "229",
+              "a": {
+                "variant": "card",
+                "source": "manual",
+                "headingLevel": "h3",
+                "columns": {
+                  "desktop": 4,
+                  "tablet": 2,
+                  "mobile": 1
+                }
+              },
+              "l": {
+                "d": "g4",
+                "t": "g2",
+                "m": "g1"
+              },
+              "x": 4,
+              "item": {
+                "slot": "card",
+                "t": "231",
+                "l": "col-c",
+                "c": [
+                  {
+                    "slot": "image (circle)",
+                    "t": "234",
+                    "k": "circle"
+                  },
+                  {
+                    "slot": "title h3",
+                    "t": "235",
+                    "k": "h"
+                  },
+                  {
+                    "slot": "desc",
+                    "t": "236",
+                    "k": "p"
+                  },
+                  {
+                    "slot": "button",
+                    "t": "237",
+                    "k": "btn"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "238",
+          "a": {
+            "tagName": "section"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/heading",
+              "t": "240",
+              "a": {
+                "level": "h2"
+              },
+              "k": "h",
+              "center": true
+            },
+            {
+              "b": "sgs/feature-grid",
+              "t": "241",
+              "a": {
+                "columns": {
+                  "desktop": 4,
+                  "tablet": 2,
+                  "mobile": 1
+                }
+              },
+              "l": {
+                "d": "g4",
+                "t": "g2",
+                "m": "g1"
+              },
+              "x": 4,
+              "item": {
+                "b": "sgs/info-box",
+                "t": "243",
+                "a": {
+                  "iconPosition": "top"
+                },
+                "l": "col-c",
+                "c": [
+                  {
+                    "slot": "icon",
+                    "t": "244",
+                    "k": "dot"
+                  },
+                  {
+                    "slot": "title h3",
+                    "t": "245",
+                    "k": "h"
+                  },
+                  {
+                    "slot": "text",
+                    "t": "246",
+                    "k": "p"
+                  },
+                  {
+                    "slot": "badge",
+                    "t": "247",
+                    "k": "chip"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "248",
+          "a": {
+            "tagName": "section",
+            "layout": "grid",
+            "columns": {
+              "desktop": 2,
+              "tablet": 1,
+              "mobile": 1
+            }
+          },
+          "l": {
+            "d": "cols:.8fr 1.7fr",
+            "t": "g1",
+            "m": "g1"
+          },
+          "c": [
+            {
+              "b": "sgs/container",
+              "t": "250",
+              "l": "col",
+              "c": [
+                {
+                  "b": "sgs/label",
+                  "t": "251",
+                  "k": "chip"
+                },
+                {
+                  "b": "sgs/heading",
+                  "t": "252",
+                  "a": {
+                    "level": "h2"
+                  },
+                  "k": "h"
+                },
+                {
+                  "b": "sgs/text",
+                  "t": "253",
+                  "k": "p"
+                },
+                {
+                  "b": "sgs/button",
+                  "t": "254",
+                  "a": {
+                    "variant": "link"
+                  },
+                  "k": "link"
+                }
+              ]
+            },
+            {
+              "b": "sgs/timeline",
+              "t": "255",
+              "a": {
+                "orientation": {
+                  "desktop": "horizontal",
+                  "tablet": "horizontal",
+                  "mobile": "vertical"
+                },
+                "connectorStyle": "line",
+                "connector": {
+                  "desktop": "show",
+                  "tablet": "hide",
+                  "mobile": "hide"
+                },
+                "headingLevel": "p"
+              },
+              "l": {
+                "d": "g4",
+                "t": "g2",
+                "m": "g1"
+              },
+              "x": 4,
+              "item": {
+                "slot": "milestone: year, title, desc",
+                "t": "260",
+                "l": {
+                  "d": "col",
+                  "t": "col",
+                  "m": "row"
+                },
+                "c": [
+                  {
+                    "slot": "year",
+                    "t": "261",
+                    "k": "circle-sm"
+                  },
+                  {
+                    "slot": "text",
+                    "t": "262",
+                    "k": "p"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "265",
+          "a": {
+            "tagName": "section"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/heading",
+              "t": "268",
+              "a": {
+                "level": "h2"
+              },
+              "k": "h",
+              "center": true
+            },
+            {
+              "b": "sgs/container",
+              "t": "269",
+              "a": {
+                "layout": "grid",
+                "columns": {
+                  "desktop": 2,
+                  "tablet": 1,
+                  "mobile": 1
+                }
+              },
+              "l": {
+                "d": "cols:1.5fr 1fr",
+                "t": "g1",
+                "m": "g1"
+              },
+              "c": [
+                {
+                  "b": "sgs/testimonial-slider",
+                  "t": "270",
+                  "a": {
+                    "autoplay": true,
+                    "autoplaySpeed": 6500,
+                    "showArrows": true,
+                    "showDots": true
+                  },
+                  "l": "col",
+                  "c": [
+                    {
+                      "slot": "‹ arrow · card · arrow ›",
+                      "t": "271",
+                      "l": {
+                        "d": "row",
+                        "t": "row",
+                        "m": "col"
+                      },
+                      "c": [
+                        {
+                          "slot": "prev",
+                          "t": "272",
+                          "k": "dot"
+                        },
+                        {
+                          "b": "sgs/testimonial",
+                          "t": "274",
+                          "a": {
+                            "of": "1 of 4"
+                          },
+                          "l": "col-c",
+                          "grow": true,
+                          "c": [
+                            {
+                              "slot": "quote",
+                              "t": "276",
+                              "k": "p"
+                            },
+                            {
+                              "slot": "avatar, name, company",
+                              "t": "277",
+                              "k": "p1"
+                            }
+                          ]
+                        },
+                        {
+                          "slot": "next",
+                          "t": "283",
+                          "k": "dot"
+                        }
+                      ]
+                    },
+                    {
+                      "slot": "dots",
+                      "t": "285",
+                      "k": "dots"
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/media",
+                  "t": "289",
+                  "a": {
+                    "mediaType": "image",
+                    "shape": "circle"
+                  },
+                  "k": "circle-lg"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "290",
+          "a": {
+            "tagName": "section"
+          },
+          "l": "col",
+          "c": [
+            {
+              "b": "sgs/label",
+              "t": "293",
+              "k": "chip",
+              "center": true
+            },
+            {
+              "b": "sgs/heading",
+              "t": "294",
+              "a": {
+                "level": "h2"
+              },
+              "k": "h",
+              "center": true
+            },
+            {
+              "b": "sgs/process-steps",
+              "t": "295",
+              "a": {
+                "layout": {
+                  "desktop": "row",
+                  "tablet": "row",
+                  "mobile": "list"
+                },
+                "numberStyle": "circle",
+                "connectorStyle": "dashed",
+                "connector": {
+                  "desktop": "show",
+                  "tablet": "show",
+                  "mobile": "hide"
+                },
+                "headingLevel": "h3"
+              },
+              "l": {
+                "d": "g3",
+                "t": "g3",
+                "m": "g1"
+              },
+              "x": 3,
+              "item": {
+                "slot": "step: number, title, desc",
+                "t": "300",
+                "l": {
+                  "d": "col-c",
+                  "t": "col-c",
+                  "m": "row"
+                },
+                "c": [
+                  {
+                    "slot": "number",
+                    "t": "301",
+                    "k": "circle-sm"
+                  },
+                  {
+                    "slot": "text",
+                    "t": "302",
+                    "k": "p"
+                  }
+                ]
+              }
+            },
+            {
+              "b": "sgs/button",
+              "t": "306",
+              "a": {
+                "variant": "primary",
+                "url": "/apply"
+              },
+              "k": "btn",
+              "center": true
+            }
+          ]
+        },
+        {
+          "b": "sgs/container",
+          "t": "307",
+          "a": {
+            "tagName": "section",
+            "layout": "grid",
+            "columns": {
+              "desktop": 2,
+              "tablet": 1,
+              "mobile": 1
+            }
+          },
+          "l": {
+            "d": "cols:1.3fr 1fr",
+            "t": "g1",
+            "m": "g1"
+          },
+          "c": [
+            {
+              "b": "sgs/container",
+              "t": "309",
+              "l": "col",
+              "c": [
+                {
+                  "b": "sgs/heading",
+                  "t": "310",
+                  "a": {
+                    "level": "h2"
+                  },
+                  "k": "h"
+                },
+                {
+                  "b": "sgs/text",
+                  "t": "311",
+                  "k": "p"
+                }
+              ]
+            },
+            {
+              "b": "sgs/multi-button",
+              "t": "312",
+              "l": "row",
+              "c": [
+                {
+                  "b": "sgs/button",
+                  "t": "313",
+                  "a": {
+                    "variant": "primary"
+                  },
+                  "k": "btn"
+                },
+                {
+                  "b": "sgs/button",
+                  "t": "314",
+                  "a": {
+                    "variant": "secondary"
+                  },
+                  "k": "btn"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G-01",
+      "t": "38",
+      "surface": "header",
+      "what": "Scroll progress bar (gold to blue, scaleX by scroll).",
+      "suggest": "No block. Closest: a site-wide motion option (sgs_motion_settings) or a progress option on sgs/site-header.",
+      "status": "resolved",
+      "decision": "Framework feature outside blocks. Shown as a framework node, no block."
+    },
+    {
+      "id": "G-02",
+      "t": "9 / 39",
+      "surface": "header",
+      "what": "Top bar scrolls away; only the main row is sticky.",
+      "suggest": "Check whether sgs/site-header can make the middle row sticky without the top row. If not, the top bar must be its own template part above the header.",
+      "status": "resolved",
+      "decision": "Exists in sgs/site-header: top row scrolls, middle row sticks."
+    },
+    {
+      "id": "G-03",
+      "t": "14–18",
+      "surface": "header",
+      "what": "Phone pill shows the number at ≥768 and the word 'Call' below.",
+      "suggest": "sgs/business-info phone with a per-device label; check it supports a short mobile label.",
+      "status": "resolved",
+      "decision": "sgs/button with tel:/mailto: and a per-device label (number at ≥768, \"Call\" below)."
+    },
+    {
+      "id": "G-04",
+      "t": "97",
+      "surface": "mega-brands",
+      "what": "'Our Brands' eyebrow above the logo grid.",
+      "suggest": "mega-panel accepts only card-grid, mega-group and mega-aside. Use a card-grid heading if it has one; otherwise drop it.",
+      "status": "resolved",
+      "decision": "sgs/label (eyebrow) and sgs/card-grid both placed directly in the mega-panel, aside beside them."
+    },
+    {
+      "id": "G-05",
+      "t": "106",
+      "surface": "header / drawer",
+      "what": "Blurred backdrop behind open mega menus and the tablet drawer.",
+      "suggest": "Assumed to be drawn by nav-bar-menu and nav-drawer; confirm both have it.",
+      "status": "open",
+      "decision": "Not confirmed whether nav-bar-menu and nav-drawer draw the backdrop."
+    },
+    {
+      "id": "G-06",
+      "t": "109–111",
+      "surface": "drawer",
+      "what": "Decorative drifting rings and top-right glow in the drawer.",
+      "suggest": "Not a block. nav-drawer background SVG (bgSvgPosition) or sgs/decorative-image if the drawer accepts it.",
+      "status": "resolved",
+      "decision": "nav-drawer background SVG."
+    },
+    {
+      "id": "G-07",
+      "t": "132–177, 196",
+      "surface": "drawer",
+      "what": "Drawer sections reuse the mega menu content but with a different layout (feature card first, 2-column sector cards, 9 logos), and the CTA is pinned at the bottom.",
+      "suggest": "megaDrawerMode 'panel' + mega-panel drawerCardLayout. Confirm nav-drawer has a pinned footer area for the button.",
+      "status": "resolved",
+      "decision": "The theme gives mega content one layout in the bar and another in the drawer."
+    },
+    {
+      "id": "G-08",
+      "t": "211",
+      "surface": "home",
+      "what": "Trust chips inside the hero copy column.",
+      "suggest": "hero allows only sgs/media as an inner block. Either the hero has a badges attribute, or the trust-bar moves to its own row under the hero.",
+      "status": "resolved",
+      "decision": "Hero content side takes any blocks: default label removed, heading h1, text, multi-button, and a flex container of 3 sgs/label chips. trust-bar not used."
+    },
+    {
+      "id": "G-09",
+      "t": "658, 664",
+      "surface": "footer",
+      "what": "Call and email cards: label, value, sub-text, whole card is a link.",
+      "suggest": "info-box gives the card but the number and email would be typed, not read from Site Info. Alternative: container + business-info.",
+      "status": "resolved",
+      "decision": "Container with child blocks: icon, label, business-info (phone / email from Site Info), text."
+    },
+    {
+      "id": "G-10",
+      "t": "726",
+      "surface": "footer",
+      "what": "Back to top button with a rotated arrow in a ring.",
+      "suggest": "sgs/button to #top. No dedicated block.",
+      "status": "resolved",
+      "decision": "Framework UI feature. Shown as a framework node."
+    },
+    {
+      "id": "G-11",
+      "t": "704",
+      "surface": "footer",
+      "what": "Quick links in two columns with gold dot markers.",
+      "suggest": "sgs/icon-list with 2 columns and linked items; core/navigation is the alternative if it should follow a WP menu.",
+      "status": "resolved",
+      "decision": "sgs/icon-list, 2 columns."
+    },
+    {
+      "id": "G-12",
+      "t": "256, 296",
+      "surface": "home",
+      "what": "Timeline line shows only ≥1024; steps connector only ≥768; both switch to a vertical list on mobile.",
+      "suggest": "Check that timeline and process-steps can hide the connector and change orientation per device.",
+      "status": "resolved",
+      "decision": "timeline and process-steps hide the connector and switch orientation per device."
+    }
+  ]
+}
