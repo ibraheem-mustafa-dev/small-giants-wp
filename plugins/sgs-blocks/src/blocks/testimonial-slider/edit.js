@@ -16,6 +16,8 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	__experimentalToggleGroupControl as ToggleGroupControl,
+	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	RangeControl,
 	ToggleControl,
 	TextControl,
@@ -295,23 +297,29 @@ export default function Edit( { attributes, setAttributes } ) {
 								} )
 							}
 						>
-							<SelectControl
+							<ToggleGroupControl
 								label={ __( 'Change animation', 'sgs-blocks' ) }
 								help={ __(
 									'Slide moves the track across. Fade up jumps the track and fades the new cards in while they move in from the side.',
 									'sgs-blocks'
 								) }
 								value={ changeTransition }
-								options={ [
-									{ label: __( 'Slide', 'sgs-blocks' ), value: 'slide' },
-									{ label: __( 'Fade up', 'sgs-blocks' ), value: 'fade-up' },
-								] }
 								onChange={ ( val ) =>
 									setAttributes( { changeTransition: val } )
 								}
+								isBlock
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
-							/>
+							>
+								<ToggleGroupControlOption
+									value="slide"
+									label={ __( 'Slide', 'sgs-blocks' ) }
+								/>
+								<ToggleGroupControlOption
+									value="fade-up"
+									label={ __( 'Fade up', 'sgs-blocks' ) }
+								/>
+							</ToggleGroupControl>
 							{ changeTransition === 'fade-up' && (
 								<>
 									<RangeControl
@@ -342,6 +350,7 @@ export default function Edit( { attributes, setAttributes } ) {
 										value={ changeEasing }
 										options={ [
 											{ label: __( 'Smooth settle', 'sgs-blocks' ), value: 'drafts' },
+											{ label: __( 'Emphasised', 'sgs-blocks' ), value: 'emphasised' },
 											{ label: __( 'Ease', 'sgs-blocks' ), value: 'ease' },
 											{ label: __( 'Ease in-out', 'sgs-blocks' ), value: 'ease-in-out' },
 											{ label: __( 'Quart out', 'sgs-blocks' ), value: 'quart-out' },

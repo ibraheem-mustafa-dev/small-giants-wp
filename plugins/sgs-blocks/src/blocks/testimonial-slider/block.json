@@ -399,7 +399,7 @@
 		},
 		"changeEasing": {
 			"type": "string",
-			"enum": [ "drafts", "ease", "ease-in-out", "quart-out", "standard", "linear" ],
+			"enum": [ "drafts", "emphasised", "ease", "ease-in-out", "quart-out", "standard", "linear" ],
 			"default": "drafts",
 			"sgs": {
 				"meaning": {

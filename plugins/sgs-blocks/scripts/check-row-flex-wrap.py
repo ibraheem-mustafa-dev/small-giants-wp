@@ -53,6 +53,7 @@ EXCLUDE_NAMES = {
     ("choice-flow", "stepper"): "a fixed step indicator whose count is the flow's step count, laid on one line by design (the same reason as form's progress-steps)",
     ("cart", "item-add-options"): "one link, centred with inline-flex: a single control, not a row of items",
     ("wishlist-panel", "choose-options"): "one link, centred with inline-flex: a single control, not a row of items",
+    ("hero", "root"): "bgSvgParts is animation data for the background SVG, so the block has no repeated items; its content row is `inner`",
     ("tabs", "nav"): "the tab list: its direction and wrapping follow the orientation and mobileLayout settings (a column, a wrapping row or a scrolling lane), so a wrap toggle would contradict them",
 }
 # Any rule whose selector names a lane that must stay on one line.

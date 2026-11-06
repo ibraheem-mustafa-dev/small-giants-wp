@@ -233,6 +233,7 @@
 				},
 				"connector": {
 					"label": "Connector line",
+					"layer": "OUTER",
 					"order": 6,
 					"clusters": [
 						"fill",
