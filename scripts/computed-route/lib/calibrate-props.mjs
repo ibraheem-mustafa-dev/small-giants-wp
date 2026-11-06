@@ -92,7 +92,7 @@ export function longhands( cssProperty ) {
 		}
 		return read( READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p ) );
 	} ) );
-	return reached.size ? [ ...reached ] : pieces.filter( isCssProperty );
+	return reached.size ? [ ...reached ] : [ ...new Set( pieces.filter( isCssProperty ).flatMap( longhandsOf ) ) ];
 }
 
 // The properties a block's routed rows paint beyond READ_PROPS, read for that block alone: its pages carry them, its

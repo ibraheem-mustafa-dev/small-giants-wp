@@ -7,6 +7,7 @@ import { CORNERS, isSizeBox } from './resolve.mjs';
 import { modifierOf } from './db.mjs';
 import { LENGTH_PROPS, FLUID_TOL } from './fill-values.mjs';
 import { longhands } from './calibrate-props.mjs';
+import { isSizeProperty } from './resolve-declared.mjs';
 
 // The duration marker is a whole number of milliseconds, never a CSS time: helpers-tokens.php::sgs_transition_vars
 // refuses anything that is not a non-negative integer. 437 reads unmistakably as 0.437s in a computed style.
@@ -179,14 +180,14 @@ const pxText = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
 
 // The tier objects a non-length per-device setting (columns, alignment) is marked with, or null when the setting has no
 // such shape. A keyword setting whose row stores choices is marked with values it holds: the property's keywords it
-// accepts, then its other choices (a `pinned` or `inline` mode), since an emitter drops anything else. A length property's
+// accepts, then its other choices (a `pinned` or `inline` mode), since an emitter drops anything else. A size property's
 // stored choices are presets (lib/resolve.mjs::tierEnumDef), so it keeps its length markers. A count differs from the
 // default at each tier. A keyword takes two markers: the attribute's empty default
 // says nothing about what the element paints, and an element the stylesheet already centres does not move under
 // `center`, so one keyword would read a working setting as dead.
 const tierKeywords = ( prop, row ) => {
 	const listed = KEYWORDS[ prop ] ?? [];
-	const stored = LENGTH.test( prop ) ? [] : [].concat( JSON.parse( row.enum_values || '[]' ) ).filter( ( v ) => 'string' === typeof v && '' !== v );
+	const stored = isSizeProperty( prop ) ? [] : [].concat( JSON.parse( row.enum_values || '[]' ) ).filter( ( v ) => 'string' === typeof v && '' !== v );
 	const words = stored.length ? [ ...listed.filter( ( v ) => stored.includes( v ) ), ...stored.filter( ( v ) => ! listed.includes( v ) ) ] : listed;
 	return words.length ? words : null;
 };

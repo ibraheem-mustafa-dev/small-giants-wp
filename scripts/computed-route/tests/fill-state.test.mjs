@@ -62,6 +62,8 @@ test( 'the setting states come from the DB, not a list in code', () => {
 	assert.equal( stateGap( 'current', held ), null );
 	assert.match( stateGap( 'current', new Set( [ 'hover' ] ) ), /^no-state-setting/, 'negative control: without the DB row it is a gap' );
 	assert.match( stateGap( 'active', new Set( [ 'hover' ] ) ), /^press/ );
+	assert.equal( stateGap( 'active', settingStates( db, 'sgs/form' ) ), null, 'a block holding an active setting takes it' );
+	assert.match( stateGap( 'active', settingStates( db, 'sgs/button' ) ), /^press/, 'sgs/button has no such setting: its press look is the preset token' );
 } );
 
 test( 'stateDrafts gathers each state and property across the read widths', () => {

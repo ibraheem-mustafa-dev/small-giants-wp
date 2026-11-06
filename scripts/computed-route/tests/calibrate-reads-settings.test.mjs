@@ -10,6 +10,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { READ_PROPS, READ_KEY, longhands, unreadProps } from '../lib/calibrate-props.mjs';
 import { slotMapSkip, writeSlotMap } from '../lib/cache.mjs';
+import { fullBecause } from '../lib/calibrate-incremental.mjs';
 import { blockState } from '../lib/stage0.mjs';
 import { paintKeyOf } from '../calibrate.mjs';
 import { markersFor, slotFor } from '../lib/calibrate.mjs';
@@ -74,8 +75,11 @@ test( 'MUST FAIL: a routed CSS property the global list lacks is read for its ow
 	}
 	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/text' ) ), [], 'negative control: a block routing only read properties reads no more' );
 	assert.deepEqual( longhands( 'left,rule' ), [ 'left' ], 'a setting already reached through one property adds none of its others' );
-	const own = db.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%'" ).all().map( ( b ) => b.slug ).filter( ( b ) => unreadProps( attrsFor( db, b ) ).length );
-	assert.deepEqual( own, [ 'sgs/button', 'sgs/label', 'sgs/post-grid' ], 'only the blocks with a setting no read property reaches change' );
+	for ( const block of [ 'sgs/collapsible-text', 'sgs/timeline' ] ) {
+		assert.deepEqual( unreadProps( attrsFor( db, block ) ), [], `${ block } is reached through its read properties, so its map stays as it is` );
+	}
+	assert.deepEqual( longhands( 'place-self' ).sort(), [ 'align-self', 'justify-self' ], 'an unread shorthand is read as its longhands' );
+	assert.equal( fullBecause( { prev: { fingerprints: {}, extraProps: [ 'align-self' ], readKey: 'k' }, extraProps: [ 'align-self', 'mask-image' ], readKey: 'k' } )?.includes( 'own read list' ), true, 'a changed list measures the block in full and says why' );
 	assert.equal( paintKeyOf( 'a', 'b', {}, [] ), paintKeyOf( 'a', 'b', {} ), 'an untouched block keeps its paint key' );
 	assert.notEqual( paintKeyOf( 'a', 'b', {}, [ 'align-self' ] ), paintKeyOf( 'a', 'b', {} ), 'a paint read without the property is stale, never taken as its absence' );
 } );
@@ -101,6 +105,7 @@ test( 'MUST FAIL: a tier setting is marked with values its emitter holds; a leng
 	const values = ( block, attr ) => markersFor( rowOf( block, attr ), blockSchema( block ), SNAPSHOT ).filter( ( m ) => ! m.probe ).map( ( m ) => m.attrs[ attr ]?.desktop );
 	assert.deepEqual( values( 'sgs/post-grid', 'readMorePin' ), [ 'pinned', 'inline' ] );
 	assert.ok( values( 'sgs/button', 'contentAlign' ).every( ( v ) => [ 'flex-start', 'center', 'flex-end' ].includes( v ) ), 'never a keyword the emitter drops' );
+	assert.deepEqual( values( 'sgs/text', 'maxWidthAlign' ), [ 'left', 'centre' ], 'an alignment on margin-inline is marked with its choices, never a length' );
 	assert.ok( values( 'sgs/container', 'minHeight' ).every( ( v ) => /^\d+px$/.test( v ) ), 'a preset never replaces a length marker' );
 } );
 

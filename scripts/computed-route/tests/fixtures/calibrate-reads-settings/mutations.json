@@ -6,11 +6,11 @@
 	{ "file": "lib/calibrate-markers.mjs", "find": "\t'overflow': [ 'hidden', 'clip' ],\n", "replace": "", "why": "a free-text overflow gets no marker" },
 	{ "file": "lib/calibrate-markers.mjs", "find": ", 'text-shadow-color': TEXT_SHADOW_SHAPE };", "replace": " };", "why": "a text shadow colour has no shape partner" },
 	{ "file": "lib/calibrate-markers.mjs", "find": "export const TEXT_SHADOW_SHAPE = '2px 3px 4px';", "replace": "export const TEXT_SHADOW_SHAPE = '2px 3px 4px 5px';", "why": "a text shadow marker carries a spread" },
-	{ "file": "lib/calibrate-props.mjs", "find": "return reached.size ? [ ...reached ] : pieces.filter( isCssProperty );", "replace": "return [ ...reached ];", "why": "a routed property the list lacks is dropped" },
-	{ "file": "lib/calibrate-props.mjs", "find": "return reached.size ? [ ...reached ] : pieces.filter( isCssProperty );", "replace": "return reached.size ? [ ...reached ] : pieces;", "why": "a name that is no CSS property is read" },
+	{ "file": "lib/calibrate-props.mjs", "find": "return reached.size ? [ ...reached ] : [ ...new Set( pieces.filter( isCssProperty ).flatMap( longhandsOf ) ) ];", "replace": "return [ ...reached ];", "why": "a routed property the list lacks is dropped" },
+	{ "file": "lib/calibrate-props.mjs", "find": "pieces.filter( isCssProperty ).flatMap( longhandsOf )", "replace": "pieces.flatMap( longhandsOf )", "why": "a name that is no CSS property is read" },
 	{ "file": "lib/calibrate-props.mjs", "find": ".filter( ( p ) => ! READ_PROPS.includes( p ) ).sort();", "replace": ".sort();", "why": "every block reads the whole list again as extras" },
 	{ "file": "calibrate.mjs", "find": "...( extraProps.length ? [ md5( JSON.stringify( extraProps ) ).slice( 0, 8 ) ] : [] )", "replace": "", "why": "a paint read without the property stays current" },
-	{ "file": "lib/calibrate-markers.mjs", "find": "const stored = LENGTH.test( prop ) ? [] : [].concat(", "replace": "const stored = false ? [] : [].concat(", "why": "a length setting is marked with its presets" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "const stored = isSizeProperty( prop ) ? [] : [].concat(", "replace": "const stored = false ? [] : [].concat(", "why": "a size setting is marked with its presets" },
 	{ "file": "lib/calibrate-markers.mjs", "find": "const kw = tierKeywords( prop, row );", "replace": "const kw = KEYWORDS[ prop ] ?? null;", "why": "a tier setting's stored choices are not marked" },
 	{ "file": "lib/calibrate-markers.mjs", "find": "\t'mask-image': [ 'star' ],\n", "replace": "", "why": "a mask setting gets no marker" }
 ]

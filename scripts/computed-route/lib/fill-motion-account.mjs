@@ -50,7 +50,7 @@ export function accountedAt( { usedAt, written, out } ) {
 // Where a record sits on the surface: `homeOf( record )` is { n (the skeleton node), slot } or null for a record whose element
 // is not a target. nodes: skeletonNodes(); keyOf( finder ): the inventory key of a target's element; idx:
 // lib/fill-behaviour.mjs::behaviourIndex.
-export function makeHomeOf( { records, nodes, keyOf, idx } ) {
+export function makeHomeOf( { records, nodes, keyOf, idx, template = null } ) {
 	const homes = new Map();
 	for ( const n of nodes ) {
 		for ( const t of n.targets ) {
@@ -77,14 +77,26 @@ export function makeHomeOf( { records, nodes, keyOf, idx } ) {
 		const f = scriptFile( r );
 		f && ! fileHome.has( f ) && homeOf( r ) && fileHome.set( f, homeOf( r ) );
 	}
-	return Object.assign( ( r ) => homeOf( r ) ?? ( scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null ), { direct: homeOf } );
+	// The nearest target above the record's element in the draft's template: an element this surface dropped or absorbed.
+	const within = ( r ) => {
+		for ( const tpl of r.element?.dc ? tplIds( r ) : [] ) {
+			const above = template?.elements?.[ templateKey( { dc: r.element.dc, tpl } ) ]?.parentChain ?? [];
+			const key = above.find( ( k ) => homes.has( k ) );
+			if ( key ) {
+				return homes.get( key );
+			}
+		}
+		return null;
+	};
+	return Object.assign( ( r ) => homeOf( r ) ?? ( scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null ), { direct: homeOf, within } );
 }
 
 // The UNMAPPED rows for the records nothing accounted for, per (record, target): a record expected at several targets
 // (`expected`: id -> { <target key>: where }) gets a row for each target no layer, row or note at that target holds, even when
 // another target of it was written; a record with no target of its own that no accounted id covers gets one row at its home
-// (see makeHomeOf). A record that names a template element or a script file no target of this surface holds belongs to
-// another surface and raises nothing here; a record that names neither and has no home gets a row naming it with no node.
+// (see makeHomeOf), or at the nearest target above its element when this surface dropped that element. A record whose
+// template element or script file sits under no target of this surface belongs to another surface and raises nothing
+// here; a record that names neither and has no home gets a row naming it with no node.
 // refOf( node ): the node's ref.
 export function silentRows( { records, accounted, accountedAt: done = new Set(), expected = new Map(), refOf, homeOf } ) {
 	const gap = ( r, text ) => `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) ${ text }`;
@@ -99,7 +111,7 @@ export function silentRows( { records, accounted, accountedAt: done = new Set(),
 		if ( accounted.has( r.id ) ) {
 			return [];
 		}
-		const home = homeOf( r );
+		const home = homeOf( r ) ?? homeOf.within?.( r ) ?? null;
 		if ( ! home && ( tplIds( r ).length || scriptFile( r ) ) ) {
 			return [];
 		}

@@ -106,7 +106,7 @@ export function canaryFor( candidates, owned, slotKey ) {
 // Why this block must be measured in full, or null when an incremental run may start. i: { prev (the slot map), prevPaint
 // (this site's default paint), fixtureKey, snapshotKey, readKey, site, recalibrate, versions: { playwrightVersion,
 // browserVersion } }. The map carries one version stamp, so rows read under another browser cannot be merged with new ones.
-export function fullBecause( { prev, prevPaint, fixtureKey, snapshotKey, readKey, site, recalibrate = false, versions = {} } ) {
+export function fullBecause( { prev, prevPaint, fixtureKey, snapshotKey, readKey, site, recalibrate = false, versions = {}, extraProps = [] } ) {
 	if ( recalibrate ) {
 		return '--recalibrate';
 	}
@@ -115,6 +115,9 @@ export function fullBecause( { prev, prevPaint, fixtureKey, snapshotKey, readKey
 	}
 	if ( ! prev.fingerprints ) {
 		return 'the slot map holds no fingerprints (the first run after this feature)';
+	}
+	if ( ( prev.extraProps ?? [] ).join() !== extraProps.join() ) {
+		return `the block's own read list changed (${ extraProps.join( ', ' ) || 'none' })`;
 	}
 	if ( prev.readKey !== readKey ) {
 		return 'the read list changed';

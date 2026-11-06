@@ -112,6 +112,7 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	}
 	const schema = blockSchema( block ) || {};
 	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
+	const extraProps = unreadProps( rows );
 	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
 	const variant = variantInfo( db, block );
 	const ctx = instanceCtx( variant, image, fixture );
@@ -132,12 +133,11 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	const declared = declaredAttrs( db, block );
 	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
 	const versions = { playwrightVersion: createRequire( import.meta.url )( 'playwright/package.json' ).version, browserVersion: shared.context.browser()?.version() ?? null };
-	let fullWhy = due.slotMap ? fullBecause( { prev, prevPaint, fixtureKey, snapshotKey, readKey: READ_KEY, site, recalibrate, versions } ) : 'only the default paint is due';
+	let fullWhy = due.slotMap ? fullBecause( { prev, prevPaint, fixtureKey, snapshotKey, readKey: READ_KEY, site, recalibrate, versions, extraProps } ) : 'only the default paint is due';
 	const incremental = fullWhy ? null : planIncremental( prev, planned, prints, slotKey, declared );
 	if ( incremental?.unplanned.length ) {
 		fullWhy = `${ incremental.unplanned.join( ', ' ) } no longer planned`;
 	}
-	const extraProps = unreadProps( rows );
 	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps };
 	let run;
 	try {

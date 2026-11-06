@@ -96,7 +96,7 @@ test( 'a list whose scope (the element the script holds by a ref) is no target o
 	} };
 	const { flat, out } = run( [ node( 0, 'sgs/nav-drawer', '39' ) ], [ rec( 'A-14', [ '70', '87' ], 'Math.min(i * 26, 320)' ) ], tpl );
 	assert.equal( flat[ 0 ].attributes.sgsMotion, undefined );
-	assert.deepEqual( rows( out ).filter( ( r ) => r.startsWith( 'A-14' ) ), [] );
+	assert.equal( rows( out ).filter( ( r ) => r.startsWith( 'A-14' ) ).length, 1, 'the list sits inside this surface, so a run that cannot place it names it' );
 } );
 
 test( 'MUST FAIL: the accordion sub-items\' capped delay is a stagger whose maximum includes its start offset', () => {

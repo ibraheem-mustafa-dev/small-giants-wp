@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-motion-account.mjs", "find": "const home = homeOf( r ) ?? homeOf.within?.( r ) ?? null;", "replace": "const home = homeOf( r );", "why": "a record this surface dropped goes silent" },
+	{ "file": "lib/fill-motion-account.mjs", "find": "const key = above.find( ( k ) => homes.has( k ) );", "replace": "const key = above[ 0 ];", "why": "a record on another surface is claimed by the first ancestor" },
+	{ "file": "lib/fill-motion-account.mjs", "find": "if ( ! home && ( tplIds( r ).length || scriptFile( r ) ) ) {", "replace": "if ( false ) {", "why": "another surface's record raises a row here" }
+]

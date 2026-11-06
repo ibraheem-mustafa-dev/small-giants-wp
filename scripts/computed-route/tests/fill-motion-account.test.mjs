@@ -1,7 +1,7 @@
 // PF2: motion accounting is per (record, target); a record with no home is an UNMAPPED row, never dropped.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { accountedIds, accountedAt, silentRows, targetKey } from '../lib/fill-motion-account.mjs';
+import { accountedIds, accountedAt, silentRows, targetKey, makeHomeOf, styleSourceIds } from '../lib/fill-motion-account.mjs';
 
 const rec = ( id ) => ( { id, mechanism: 'css-transition', trigger: { type: 'hover' }, source: {}, element: {} } );
 const where = ( slot ) => ( { node: 'ref-1', block: 'sgs/card', slot } );
@@ -19,6 +19,27 @@ test( 'a two-target record written at one target is open at the other', () => {
 	assert.equal( rows[ 0 ].slot, 'media' );
 	assert.equal( rows[ 0 ].value, 'A-1' );
 	assert.match( rows[ 0 ].reason, /belongs to this surface.*, but no effect, setting or handover holds it/ );
+} );
+
+test( 'MUST FAIL: a record under a target of this surface is a row at that target, whatever dropped its element; one under no target belongs to another surface', () => {
+	const node = { name: 'sgs/card', targets: [ { finder: 'Root/1', slot: '' } ] };
+	const template = { elements: { 'Root/9': { parentChain: [ 'Root/5', 'Root/1', 'Root/0' ] }, 'Root/20': { parentChain: [ 'Root/2', 'Root/0' ] } } };
+	const at = ( tpl ) => ( { ...rec( `T-${ tpl }` ), element: { dc: 'Root', template_tpl_id: tpl } } );
+	const records = [ at( 9 ), at( 20 ) ];
+	const homeOf = makeHomeOf( { records, nodes: [ node ], keyOf: ( f ) => f, idx: { hostedFor: () => [] }, template } );
+	const rows = silentRows( { records, accounted: new Set(), refOf, homeOf } );
+	assert.deepEqual( rows.map( ( r ) => [ r.value, r.block ] ), [ [ 'T-9', 'sgs/card' ] ] );
+	assert.match( rows[ 0 ].reason, /no effect, setting or handover holds it/ );
+} );
+
+test( 'negative control: nothing written, or an id outside the inventory, holds no style record', () => {
+	const site = { file: 'a.js', fn: 'f', line: 10 };
+	const records = [
+		{ id: 'S-1', mechanism: 'js-style-write', trigger: { type: 'press' }, element: { created: true }, source: site },
+		{ id: 'A-1', mechanism: 'waapi', trigger: { type: 'press' }, element: { created: true }, source: { ...site, line: 12 } },
+	];
+	assert.deepEqual( styleSourceIds( { written: new Map(), records } ), [] );
+	assert.deepEqual( styleSourceIds( { written: new Map( [ [ 'GONE', {} ] ] ), records } ), [], 'an id outside the inventory holds nothing' );
 } );
 
 test( 'negative control: written at both targets, or noted at the second, leaves no row', () => {

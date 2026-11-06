@@ -414,7 +414,7 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 		b.notes.forEach( ( text ) => out.notes.push( { node: 'site', block: '', slot: '', text: `${ r.id }: ${ text }` } ) );
 	}
 	// A record on this surface that nothing above wrote, reported or noted is named, never left silent.
-	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx } );
+	const homeOf = makeHomeOf( { records, nodes, keyOf: ( finder ) => elementKey( finder, rootComponent ), idx, template } );
 	out.unmapped.push( ...silentRows( { records, accounted: new Set( [ ...accountedIds( { used, written, out } ), ...styleSourceIds( { written, records } ) ] ), accountedAt: accountedAt( { usedAt, written, out } ), expected, refOf: ( n ) => refOf( flat[ n.index ] ), homeOf } ) );
 	out.handover.push( ...readingProgressHandover( { found: idx.found, homeOf } ) );
 	deferred.forEach( ( write ) => write() );
