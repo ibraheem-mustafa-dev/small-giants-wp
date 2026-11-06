@@ -540,9 +540,11 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
 	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
 
+	let heightTiers = {};
 	if ( 'height' === mode ) {
 		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
-		pushTierLengths( decls, '--sgs-media-height', resolveHeight( attributes[ heightKey ] ) );
+		heightTiers = resolveHeight( attributes[ heightKey ] );
+		pushTierLengths( decls, '--sgs-media-height', heightTiers );
 	}
 
 	if ( 'ratio' === mode ) {
@@ -554,7 +556,14 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	const widthKey = mediaStoredAttrName( blockSlug, prefix, 'Width' );
-	pushTierLengths( decls, '--sgs-media-width', resolveWidth( attributes[ widthKey ] ) );
+	const widthTiers = resolveWidth( attributes[ widthKey ] );
+	pushTierLengths( decls, '--sgs-media-width', widthTiers );
+	// A tier with a height and no width keeps the file's ratio width, not the width attribute.
+	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
+		if ( cssLengthValue( heightTiers[ pair[ 0 ] ] ) && ! cssLengthValue( widthTiers[ pair[ 0 ] ] ) ) {
+			decls.push( `--sgs-media-width${ pair[ 1 ] }:auto` );
+		}
+	} );
 
 	const minHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MinHeight' );
 	const minHeightRaw = attributes[ minHeightKey ];

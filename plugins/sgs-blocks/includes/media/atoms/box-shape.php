@@ -342,7 +342,8 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 	 * @return string[] `--custom-property:value;` declarations, never bare rules.
 	 */
 	function sgs_media_atom_box_shape_css( array $attributes, $prefix, $block_slug ) {
-		$decls = array();
+		$decls        = array();
+		$height_tiers = array();
 
 		$sizing_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MediaSizing' );
 		$fit_key    = sgs_media_element_stored_attr( $block_slug, $prefix, 'ObjectFit' );
@@ -351,6 +352,7 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		if ( 'height' === $mode ) {
 			$height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'Height' );
 			$resolved   = sgs_media_atom_box_shape_resolve_tier_object( $attributes[ $height_key ] ?? null );
+			$height_tiers = $resolved;
 			array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-height', $resolved ) );
 		}
 
@@ -365,6 +367,12 @@ if ( ! function_exists( 'sgs_media_atom_box_shape_css' ) ) {
 		$width_key      = sgs_media_element_stored_attr( $block_slug, $prefix, 'Width' );
 		$resolved_width = sgs_media_atom_box_shape_resolve_tier_object( $attributes[ $width_key ] ?? null );
 		array_push( $decls, ...sgs_media_atom_box_shape_tier_length_decls( '--sgs-media-width', $resolved_width ) );
+		// A tier with a height and no width keeps the file's ratio width, not the width attribute.
+		foreach ( array( 'desktop' => '', 'tablet' => '-tablet', 'mobile' => '-mobile' ) as $tier => $tier_suffix ) {
+			if ( '' !== sgs_css_length_value( $height_tiers[ $tier ] ?? '' ) && '' === sgs_css_length_value( $resolved_width[ $tier ] ?? '' ) ) {
+				$decls[] = '--sgs-media-width' . $tier_suffix . ':auto';
+			}
+		}
 
 		$min_height_key = sgs_media_element_stored_attr( $block_slug, $prefix, 'MinHeight' );
 		$min_height_raw = $attributes[ $min_height_key ] ?? null;

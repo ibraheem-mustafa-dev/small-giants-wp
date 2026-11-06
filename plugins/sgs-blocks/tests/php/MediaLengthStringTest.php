@@ -98,6 +98,8 @@ final class MediaLengthStringTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-media-height:320px', $css );
 		$this->assertStringContainsString( '--sgs-media-height-mobile:50vh', $css );
 		$this->assertStringContainsString( '--sgs-media-width:100%', $css );
+		$this->assertStringContainsString( '--sgs-media-width-mobile:auto', $css, 'a tier with a height and no width keeps the ratio width' );
+		$this->assertStringNotContainsString( '--sgs-media-width:auto', $css, 'the desktop tier has a width, so it is not auto' );
 		$this->assertStringContainsString( '--sgs-media-max-width:640px', $css );
 		$this->assertStringContainsString( '--sgs-media-max-width-mobile:none', $css );
 		$this->assertStringContainsString( '--sgs-media-max-height-tablet:calc(100%-2rem)', $css );
