@@ -382,8 +382,8 @@ if ( '' !== $quote_colour_effective ) {
 // independently of the root $hover_decls bucket: this attribute is sufficient
 // on its own and must not depend on an unrelated hover attr being set too.
 //
-// `:focus-within` (not `:focus-visible`) is the correct twin for this shape —
-// the element that takes focus is a descendant of the card, not the card.
+// The twin is `:has(:focus-visible)` (sgs_hover_state_rules() maps `:focus-within` to it) — the
+// element that takes focus is a descendant of the card, not the card, and a tap must not paint it.
 $quote_colour_hover = (string) ( $attributes['quoteColourHover'] ?? '' );
 if ( '' !== $quote_colour_hover ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, 'color:' . sgs_colour_value( $quote_colour_hover ), ':focus-within', ' .sgs-testimonial__quote' );

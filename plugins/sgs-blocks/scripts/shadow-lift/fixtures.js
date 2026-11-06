@@ -148,7 +148,7 @@ module.exports = {
 
 	/** A lift-shaped rule already in the correct guarded form — must NOT be flagged (negative control for findUnguardedLiftRules). */
 	guardedLiftRuleAlreadyCorrect:
-		'@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .a:hover{box-shadow:0px 5px 10px 0px red}}',
+		':where(:root:not(.sgs-touch-input)) .a:hover{box-shadow:0px 5px 10px 0px red}',
 
 	/** The same rule shipped WITHOUT the guard — must be flagged. */
 	unguardedLiftRule: '.a:hover{box-shadow:0px 5px 10px 0px red}',

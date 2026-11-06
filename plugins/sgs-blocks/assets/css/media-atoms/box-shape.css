@@ -80,7 +80,7 @@
 /* Hover colour pair (2026-09-07) — colour-only, no hover variant for
  * width/style/radius, matching sgs/button's/sgs/container's own
  * states.hover.attrMap convention. Same fallback-chain shape as
- * `overlay.css`'s `:hover`/`:focus-within` rule: an unset hover custom
+ * `overlay.css`'s `:hover`/`:has(:focus-visible)` rule: an unset hover custom
  * property leaves the resting value in place. `:focus-visible` (not
  * `:focus-within`) because this rule targets the media element itself,
  * which can itself be the focusable node (e.g. when wrapped by the `link`

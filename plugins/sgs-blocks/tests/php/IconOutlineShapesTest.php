@@ -326,7 +326,7 @@ final class IconOutlineShapesTest extends TestCase {
 				)
 			);
 			$this->assertMatchesRegularExpression(
-				'#@media ?\(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#',
+				'#:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__outline-path\{stroke:var\(--sgs-icon-border-colour-hover,var\(--sgs-si-border-colour-hover,\#25D366\)\)#',
 				$css,
 				$shape . ': hover stroke is the brand colour, behind the touch guard'
 			);

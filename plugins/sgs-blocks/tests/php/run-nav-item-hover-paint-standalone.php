@@ -98,7 +98,7 @@ ok( false !== strpos( $rest, '.uid .sgs-nav-bar-menu__link,.uid .sgs-nav-bar-men
 
 $hover = run_item_state( $item_section, array( 'itemOpacityHover' => 0.5 ) );
 ok( false !== strpos( $hover, 'opacity:0.5' ), 'item: hover opacity 0.5 is emitted' );
-ok( false !== strpos( $hover, SGS_HOVER_MEDIA ) && false !== strpos( $hover, SGS_HOVER_NOT_TOUCH ), 'item: the hover opacity rule is touch-guarded (both layers), never a bare :hover' );
+ok( false !== strpos( $hover, SGS_HOVER_NOT_TOUCH ), 'item: the hover opacity rule is touch-guarded, never a bare :hover' );
 ok( false !== strpos( $hover, ':focus-visible{opacity:0.5}' ), 'item: the paired :focus-visible rule is unguarded' );
 
 $clamped = run_item_state( $item_section, array( 'itemOpacity' => 4, 'itemOpacityHover' => -2 ) );
@@ -110,7 +110,7 @@ ok( '' === $hostile_opacity, 'item: a non-numeric (hostile) opacity value emits 
 
 $shift = run_item_state( $item_section, array( 'itemPaddingShiftHover' => '8px' ) );
 ok( false !== strpos( $shift, 'padding-inline-start:calc(var(--sgs-nav-link-pad-start, 12px) + 8px)' ), 'item: padding shift adds onto the resting inline-start padding (itemPadding, default 12px)' );
-ok( false !== strpos( $shift, SGS_HOVER_MEDIA ), 'item: the padding-shift rule is touch-guarded' );
+ok( false !== strpos( $shift, SGS_HOVER_NOT_TOUCH ), 'item: the padding-shift rule is touch-guarded' );
 
 ok( '' === run_item_state( $item_section, array( 'itemPaddingShiftHover' => 'red;}body{x' ) ), 'item: a hostile padding-shift value emits nothing' );
 ok( '' === run_item_state( $item_section, array( 'itemPaddingShiftHover' => '8px 4px' ) ), 'item: a two-value (shorthand) padding-shift is refused by the single-length validator' );
@@ -167,7 +167,7 @@ ok( false !== strpos( $sub_rest, '.uid .sgs-nav-bar-menu__sublink{opacity:0.6;}'
 
 $sub_hover = run_sublink_shift( $sublink_section, array( 'submenuOpacityHover' => 1 ) );
 ok( false !== strpos( $sub_hover, 'opacity:1' ), 'sublink: hover opacity 1 (fantasy reference: brightens from 0.6 to 1, the OPPOSITE direction from the item pair) is emitted' );
-ok( false !== strpos( $sub_hover, SGS_HOVER_MEDIA ) && false !== strpos( $sub_hover, SGS_HOVER_NOT_TOUCH ), 'sublink: the hover opacity rule is touch-guarded (both layers)' );
+ok( false !== strpos( $sub_hover, SGS_HOVER_NOT_TOUCH ), 'sublink: the hover opacity rule is touch-guarded' );
 ok( false !== strpos( $sub_hover, ':focus-visible{opacity:1}' ), 'sublink: the paired :focus-visible rule is unguarded' );
 
 $sub_clamped = run_sublink_shift( $sublink_section, array( 'submenuOpacity' => 4, 'submenuOpacityHover' => -2 ) );
@@ -189,7 +189,7 @@ ok( '' === run_sublink_shift( $sublink_section, array() ), 'sublink: no attribut
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '' ) ), 'sublink: empty attribute -> nothing emitted' );
 $sub_shift = run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => '6px' ) );
 ok( false !== strpos( $sub_shift, 'padding-inline-start:calc(var(--sgs-nav-sublink-pad-start, 16px) + 6px)' ), 'sublink: padding shift adds onto the sublink inline-start padding (submenuLinkPadding via --sgs-nav-sublink-pad-start, else the 16px literal) (wholesale-food client dropdown 6 to 12/... reference shape)' );
-ok( false !== strpos( $sub_shift, SGS_HOVER_MEDIA ), 'sublink: the padding-shift rule is touch-guarded' );
+ok( false !== strpos( $sub_shift, SGS_HOVER_NOT_TOUCH ), 'sublink: the padding-shift rule is touch-guarded' );
 ok( '' === run_sublink_shift( $sublink_section, array( 'itemPaddingShiftHover' => 'url(javascript:alert(1))' ) ), 'sublink: a hostile padding-shift value emits nothing' );
 
 $bypass_sublink = str_replace(
@@ -245,7 +245,7 @@ $mega_shift = run_mega_shift( $mega_shift_section, array( 'itemPaddingShiftHover
 ok( false !== strpos( $mega_shift, 'calc(12px + 8px)' ), 'mega-panel: columns style shifts from its own 12px resting literal' );
 ok( false !== strpos( $mega_shift, 'calc(0px + 8px)' ), 'mega-panel: cards style shifts from its own 0px resting literal' );
 ok( false !== strpos( $mega_shift, 'calc(14px + 8px)' ), 'mega-panel: minimal style shifts from its own 14px resting literal (halcyon reference: 14 to 22)' );
-ok( substr_count( $mega_shift, SGS_HOVER_MEDIA ) >= 3, 'mega-panel: all three per-style rules are touch-guarded' );
+ok( substr_count( $mega_shift, SGS_HOVER_NOT_TOUCH ) >= 3, 'mega-panel: all three per-style rules are touch-guarded' );
 ok( '' === run_mega_shift( $mega_shift_section, array( 'itemPaddingShiftHover' => 'x;}body{background:red;}' ) ), 'mega-panel: a hostile padding-shift value emits nothing on any style' );
 
 $bypass_mega_shift = str_replace(
@@ -290,7 +290,7 @@ ok( false === strpos( $empty_lift, 'transform:' ) && false !== strpos( $empty_li
 
 $custom_lift = run_lift( $lift_section, array( 'panelCardLift' => '6px' ) );
 ok( false !== strpos( $custom_lift, 'calc(-1 * 6px)' ), 'panelCardLift: a custom value (wholesale-food client reference: 6px) is emitted' );
-ok( false !== strpos( $custom_lift, SGS_HOVER_MEDIA ), 'panelCardLift: the lift rule is touch-guarded' );
+ok( false !== strpos( $custom_lift, SGS_HOVER_NOT_TOUCH ), 'panelCardLift: the lift rule is touch-guarded' );
 
 $hostile_lift = run_lift( $lift_section, array( 'panelCardLift' => 'red;}body{x' ) );
 ok( false === strpos( $hostile_lift, 'transform:' ) && false === strpos( $hostile_lift, 'red;}body{x' ), 'panelCardLift: a hostile value is rejected (no transform, no injection)' );

@@ -36,7 +36,7 @@ final class TypographyTextStrokeTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\{[^}]*-webkit-text-stroke-width:2px;[^}]*\}/', $css, 'base width' );
 		$this->assertMatchesRegularExpression( '/\{[^}]*-webkit-text-stroke-color:#0A7EA8;[^}]*\}/', $css, 'base colour' );
 		$this->assertMatchesRegularExpression( '/@media\(max-width:\s*767px\)\s*\{[^{}]*\{[^}]*-webkit-text-stroke-width:1\.5px/', $css, 'mobile width' );
-		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]*:hover\{[^}]*-webkit-text-stroke-color:#D8CA50/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/:where\(:root:not\(\.sgs-touch-input\)\)[^{]*:hover\{[^}]*-webkit-text-stroke-color:#D8CA50/', $css, 'hover sits behind the touch guard' );
 	}
 
 	public function test_a_colour_slug_resolves_through_the_colour_helper(): void {

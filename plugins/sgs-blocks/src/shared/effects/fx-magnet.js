@@ -16,15 +16,27 @@
  * @package
  */
 
-import { registerMagnet, DEFAULT_RADIUS, DEFAULT_RETURN_MS } from '@sgs/magnet';
+import {
+	registerMagnet,
+	DEFAULT_RADIUS,
+	DEFAULT_RETURN_MS,
+	DEFAULT_FOLLOW_MS,
+} from '@sgs/magnet';
 import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="magnet"]';
 
-/** Fallbacks when an instance declares no value of its own. */
-const DEFAULT_STRENGTH = 24;
+/**
+ * Fallbacks when an instance declares no value of its own: the pull of a button that leans toward the pointer only while
+ * the pointer is over it. The pull model is normalised, so the strengths are the TOTAL travel across the element
+ * (10px on x, 8px on y): the element moves at most half of each (5px and 4px) either way, reaching it at its edge.
+ * Return and follow share one easing.
+ */
+const DEFAULT_STRENGTH = 10;
+const DEFAULT_STRENGTH_Y = 8;
 const DEFAULT_FACTOR = 0.35;
+const DEFAULT_EASING = 'cubic-bezier(0.16, 0.84, 0.32, 1)';
 
 /** A CSS easing keyword, cubic-bezier() or linear(); anything else is dropped. */
 const EASING =
@@ -77,8 +89,9 @@ export function resolveMovingPart( el ) {
  * Every value is BOUNDED rather than trusted: a huge radius would make a button
  * react from across the page, and a huge pull would tear it out of its layout.
  * An absent attribute falls back to the default, never to zero. `engage`
- * defaults to proximity (a catch area of 120px around the box), so a magnet
- * reacts before the pointer is on it unless it is set to `over`.
+ * defaults to `over` (the pull runs only while the pointer is over the element)
+ * with the normalised pull model; `proximity` (a catch area around the box,
+ * 120px by default) and the `distance` model are chosen explicitly.
  *
  * @param {HTMLElement} el The marked element.
  * @return {Object} Options for `createMagnet`.
@@ -88,6 +101,10 @@ export function readOptions( el ) {
 	const easing = (
 		el.getAttribute( 'data-sgs-fx-magnet-return-easing' ) || ''
 	).trim();
+	const followEasing = (
+		el.getAttribute( 'data-sgs-fx-magnet-follow-easing' ) || ''
+	).trim();
+	const hasStrength = null !== el.getAttribute( 'data-sgs-fx-magnet-strength' );
 	const maxPullX = readNumber(
 		el,
 		'data-sgs-fx-magnet-strength',
@@ -97,13 +114,13 @@ export function readOptions( el ) {
 	);
 	return {
 		engage:
-			'over' === el.getAttribute( 'data-sgs-fx-magnet-engage' )
-				? 'over'
-				: 'proximity',
+			'proximity' === el.getAttribute( 'data-sgs-fx-magnet-engage' )
+				? 'proximity'
+				: 'over',
 		pullModel:
-			'normalised' === el.getAttribute( 'data-sgs-fx-magnet-pull-model' )
-				? 'normalised'
-				: 'distance',
+			'distance' === el.getAttribute( 'data-sgs-fx-magnet-pull-model' )
+				? 'distance'
+				: 'normalised',
 		axis: [ 'x', 'y', 'both' ].includes( axis ) ? axis : 'both',
 		radius: readNumber(
 			el,
@@ -113,11 +130,11 @@ export function readOptions( el ) {
 			400
 		),
 		maxPullX,
-		// A single-limit instance (the legacy attribute) pulls the same on both axes.
+		// An instance that stores only the x limit pulls the same on both axes; one that stores neither uses the defaults.
 		maxPullY: readNumber(
 			el,
 			'data-sgs-fx-magnet-max-pull-y',
-			maxPullX,
+			hasStrength ? maxPullX : DEFAULT_STRENGTH_Y,
 			0,
 			200
 		),
@@ -135,7 +152,15 @@ export function readOptions( el ) {
 			0,
 			5000
 		),
-		returnEasing: EASING.test( easing ) ? easing : undefined,
+		followDuration: readNumber(
+			el,
+			'data-sgs-fx-magnet-follow-duration',
+			DEFAULT_FOLLOW_MS,
+			0,
+			5000
+		),
+		returnEasing: EASING.test( easing ) ? easing : DEFAULT_EASING,
+		followEasing: EASING.test( followEasing ) ? followEasing : undefined,
 		target: resolveMovingPart( el ),
 	};
 }

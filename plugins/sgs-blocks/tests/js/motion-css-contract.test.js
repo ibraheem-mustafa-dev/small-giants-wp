@@ -6,8 +6,8 @@
  *   - each composed channel is declared with the schema's exact formula, persistently under its data-sgs-mc token
  *     and in its entrance keyframes; every owner appears in that formula;
  *   - no transition names `all`;
- *   - every :hover rule sits inside the pointer guard and only sets an engagement flag, so nothing outside the
- *     hover media query moves an element on hover; the root and group sources read :hover and :focus-within (the
+ *   - every :hover rule carries the touch-class guard and only sets an engagement flag, so nothing outside the
+ *     engagement flag moves an element on hover; the root and group sources read :hover and :has(:focus-visible) (the
  *     focus arms skip an element stamped data-sgs-focus-rests, the block's sgsFocusRests setting);
  *   - the entrance's hidden start applies only under .sgs-motion-ready and before data-sgs-in, inside
  *     no-preference; every entrance keyframe declares its channel with the composite formula;
@@ -33,7 +33,6 @@ const SCHEMA = JSON.parse( fs.readFileSync( path.join( PLUGIN, 'schemas', 'motio
 const ALLOWLIST = JSON.parse(
 	fs.readFileSync( path.join( PLUGIN, 'scripts', 'data', 'motion-gate-allowlist.json' ), 'utf8' )
 );
-const HOVER_MEDIA = '(hover: hover) and (pointer: fine)';
 const TOUCH_GUARD = ':where(:root:not(.sgs-touch-input))';
 const REDUCE = '(prefers-reduced-motion: reduce)';
 const NO_PREFERENCE = '(prefers-reduced-motion: no-preference)';
@@ -160,7 +159,7 @@ function contractErrors( css ) {
 		}
 		const d = decls( rule );
 		if ( rule.selector.includes( ':hover' ) ) {
-			if ( ! inMedia( rule, HOVER_MEDIA ) || ! rule.selector.startsWith( TOUCH_GUARD ) ) {
+			if ( ! rule.selector.startsWith( TOUCH_GUARD ) ) {
 				errors.push( `unguarded :hover rule: ${ rule.selector }` );
 			}
 			if ( Object.keys( d ).some( ( prop ) => ! ENGAGEMENT_FLAG.test( prop ) ) ) {
@@ -177,7 +176,7 @@ function contractErrors( css ) {
 	}
 
 	const selectorSet = rules.map( ( r ) => r.selector );
-	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mitem]:hover', '[data-sgs-mitem]:focus-within:not([data-sgs-focus-rests])', '[data-sgs-mh="self"]:focus-visible:not([data-sgs-focus-rests])' ] ) {
+	for ( const needed of [ '[data-sgs-hover-group]:hover', '[data-sgs-hover-group]:has(:focus-visible):not([data-sgs-focus-rests])', '[data-sgs-mroot]:hover', '[data-sgs-mroot]:has(:focus-visible):not([data-sgs-focus-rests])', '[data-sgs-mitem]:hover', '[data-sgs-mitem]:has(:focus-visible):not([data-sgs-focus-rests])', '[data-sgs-mh="self"]:focus-visible:not([data-sgs-focus-rests])' ] ) {
 		if ( ! selectorSet.some( ( s ) => s.endsWith( needed ) ) ) {
 			errors.push( `source selector missing: ${ needed }` );
 		}
@@ -311,7 +310,7 @@ describe( 'negative controls: each planted fault is caught', () => {
 	const plants = {
 		'an owner without its @property': [ /@property --sgs-mh-s \{[^}]*\}/, '' ],
 		'a transition: all': [ /\[data-sgs-mh\] \{ --sgs-mh-on: 0; \}/, '[data-sgs-mh] { --sgs-mh-on: 0; transition: all 1s; }' ],
-		'an unguarded hover that moves': [ /@media \(hover: hover\)/, '[data-sgs-mh]:hover { translate: 0 -4px; }\n@media (hover: hover)' ],
+		'an unguarded hover that moves': [ /\[data-sgs-mh\] \{ --sgs-mh-on: 0; \}/, '[data-sgs-mh] { --sgs-mh-on: 0; }\n[data-sgs-mh]:hover { translate: 0 -4px; }' ],
 		'a hidden start without the ready class': [ /\.sgs-motion-ready \[data-sgs-me~="scroll"\]:not\(\[data-sgs-in\]\)\[data-sgs-me~="opacity"\]/, '[data-sgs-me~="scroll"][data-sgs-me~="opacity"]' ],
 		'a keyframe with a plain opacity': [ /(--sgs-me-op: var\(--sgs-me-from-op, 1\);\s*)opacity: [^;]*;/, '$1opacity: 0;' ],
 		'a missing item hover selector': [ /:where\(:root:not\(\.sgs-touch-input\)\) \[data-sgs-mitem\]:hover \{[^}]*\}/, '' ],

@@ -330,10 +330,10 @@
         " || .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__meta": [
             "color:var(--wp--preset--color--text-muted,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__card.sgs-post-grid__card--minimal:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__card.sgs-post-grid__card--minimal:hover": [
             "border-top-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__card:not(.sgs-post-grid__card--minimal):hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-post-grid-UID.wp-block-sgs-post-grid .sgs-post-grid__card:not(.sgs-post-grid__card--minimal):hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

@@ -19,6 +19,7 @@ jest.mock(
 	() => ( {
 		DEFAULT_RADIUS: 120,
 		DEFAULT_RETURN_MS: 250,
+		DEFAULT_FOLLOW_MS: 250,
 		registerMagnet: ( el ) => {
 			mockRegistered.add( el );
 			return () => mockRegistered.delete( el );

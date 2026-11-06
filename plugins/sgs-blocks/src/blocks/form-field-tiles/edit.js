@@ -56,6 +56,12 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 ];
 
+const CHECK_POSITION_OPTIONS = [
+	{ label: __( 'Default (corner badge with the checkmark style)', 'sgs-blocks' ), value: '' },
+	{ label: __( 'Before the text', 'sgs-blocks' ), value: 'inline-start' },
+	{ label: __( 'Top-end corner badge', 'sgs-blocks' ), value: 'corner' },
+];
+
 const TILE_ALIGN_OPTIONS = [
 	{ label: __( 'Left / top', 'sgs-blocks' ), value: 'start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
@@ -116,7 +122,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'sgs-form-field--tiles',
 		`sgs-form-field--${ width }`,
 		`sgs-form-field--tiles-style-${ selectedStyle || 'checkmark' }`,
-	].join( ' ' );
+		attributes.selectedCheckPosition ? `sgs-form-field--tiles-check-${ attributes.selectedCheckPosition }` : '',
+	].filter( Boolean ).join( ' ' );
 
 	// CHECK A finding: textColour/textColourGradient are written by the
 	// "Text colour" row above and consumed by render.php on `$sgs_ft_sel`
@@ -183,6 +190,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			if ( offsetX || offsetY ) {
 				style.transform = `translate(${ offsetX || '0' }, ${ offsetY || '0' })`;
 			}
+			const selectedText = resolveColourToken( attributes.tileSelectedLabelColour, colourPalette );
+			if ( selectedText ) {
+				style.color = selectedText;
+			}
 			const selectedShadow = resolveShadowPreviewComposed( attributes.tileSelectedShadow, attributes.tileSelectedShadowColour );
 			if ( selectedShadow ) {
 				style.boxShadow = selectedShadow;
@@ -210,6 +221,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		.filter( ( index ) => index >= 0 )
 		.slice( 0, multiSelect ? undefined : 1 );
 	const chosenIndexes = defaultedIndexes.length ? defaultedIndexes : [ 0 ];
+	const tileCheckPreview = {};
+	const checkColour = resolveColourToken( attributes.tileCheckColour, colourPalette );
+	if ( checkColour ) {
+		tileCheckPreview.color = checkColour;
+	}
+	const checkFill = resolveColourToken( attributes.tileCheckBackgroundColour, colourPalette );
+	if ( checkFill ) {
+		tileCheckPreview.backgroundColor = checkFill;
+	}
+	if ( attributes.tileCheckSize ) {
+		tileCheckPreview[ '--sgs-tile-check-size' ] = attributes.tileCheckSize;
+		tileCheckPreview.width = attributes.tileCheckSize;
+		tileCheckPreview.height = attributes.tileCheckSize;
+	}
+	if ( attributes.tileCheckInset && 'inline-start' !== attributes.selectedCheckPosition ) {
+		tileCheckPreview.top = attributes.tileCheckInset;
+		tileCheckPreview.insetInlineEnd = attributes.tileCheckInset;
+	}
 	const tileLabelPaint = textPaintPreview( tileLabelColour, '', colourPalette );
 	const tileDescriptionPaint = textPaintPreview( tileDescriptionColour, '', colourPalette );
 
@@ -293,6 +322,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						setAttributes,
 					} ),
 					textRow( {
+						key: 'tileSelectedLabel',
+						label: __( 'Chosen tile text colour', 'sgs-blocks' ),
+						attrs: { base: 'tileSelectedLabelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					fillRow( {
+						key: 'tileCheckBackground',
+						label: __( 'Tick circle colour', 'sgs-blocks' ),
+						attrs: { base: 'tileCheckBackgroundColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'tileCheck',
+						label: __( 'Tick colour', 'sgs-blocks' ),
+						attrs: { base: 'tileCheckColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'tileDescription',
 						label: __( 'Tile description colour', 'sgs-blocks' ),
 						attrs: { base: 'tileDescriptionColour' },
@@ -323,6 +373,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								tileSelectedShadowColour: '',
 								tileSelectedBorderWidth: '',
 								tileSelectedOffset: {},
+								selectedCheckPosition: '',
+								tileCheckSize: '',
+								tileCheckInset: '',
 							} )
 						}
 					>
@@ -449,6 +502,47 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tick position', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.selectedCheckPosition }
+							onDeselect={ () => setAttributes( { selectedCheckPosition: '' } ) }
+						>
+							<SelectControl
+								label={ __( 'Tick position', 'sgs-blocks' ) }
+								value={ attributes.selectedCheckPosition || '' }
+								options={ CHECK_POSITION_OPTIONS }
+								onChange={ ( val ) => setAttributes( { selectedCheckPosition: val } ) }
+								help={ __( 'Shows a tick on the chosen tile whatever the Selected tile style is. Before the text lays the tile out in a row.', 'sgs-blocks' ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tick size', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.tileCheckSize }
+							onDeselect={ () => setAttributes( { tileCheckSize: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Tick size', 'sgs-blocks' ) }
+								value={ attributes.tileCheckSize || '' }
+								max={ 64 }
+								onChange={ ( val ) => setAttributes( { tileCheckSize: val || '' } ) }
+								help={ __( 'Empty is 20px on the corner badge and 14px before the text.', 'sgs-blocks' ) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Corner tick distance from the edge', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.tileCheckInset }
+							onDeselect={ () => setAttributes( { tileCheckInset: '' } ) }
+						>
+							<SgsLengthControl
+								label={ __( 'Corner tick distance from the edge', 'sgs-blocks' ) }
+								value={ attributes.tileCheckInset || '' }
+								max={ 64 }
+								onChange={ ( val ) => setAttributes( { tileCheckInset: val || '' } ) }
+								help={ __( 'How far the corner badge sits from the top and end edges. Empty is 0.5rem.', 'sgs-blocks' ) }
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
@@ -775,7 +869,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										{ Array.from( tile.description ).slice( 0, DESCRIPTION_MAX_LENGTH ).join( '' ) }
 									</span>
 								) }
-								<span className="sgs-form-tile__check" aria-hidden="true"></span>
+								<span className="sgs-form-tile__check" style={ tileCheckPreview } aria-hidden="true"></span>
 							</label>
 						) ) }
 					</BandWrap>

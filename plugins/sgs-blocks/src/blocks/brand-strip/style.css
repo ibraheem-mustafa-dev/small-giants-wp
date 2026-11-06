@@ -330,7 +330,7 @@
 }
 
 .sgs-brand-strip--layout-row .sgs-brand-strip__item:hover,
-.sgs-brand-strip--layout-row .sgs-brand-strip__item:focus-within {
+.sgs-brand-strip--layout-row .sgs-brand-strip__item:has(:focus-visible) {
 	opacity: 1;
 }
 

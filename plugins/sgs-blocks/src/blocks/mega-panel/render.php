@@ -596,7 +596,7 @@ if ( is_numeric( $group_transition_raw ) ) {
 $css .= '@media (prefers-reduced-motion: reduce){'
 	. $style_crd . $rel_group . '{transition:none;}'
 	. $style_crd . $rel_group . '::after{transition:none;}'
-	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':focus-within{transform:none;}'
+	. $style_crd . $rel_group . ':hover,' . $style_crd . $rel_group . ':has(:focus-visible){transform:none;}'
 	. '}';
 
 // iconBackground/iconBackgroundGradient HOVER siblings. Fires off the SAME ancestor
@@ -649,17 +649,16 @@ if ( '' !== $icon_colour_hover_decl ) {
 }
 
 // Accent border gradient — masked ::before ring, scoped
-// to ONLY the hover/focus-within state (accent-border-color is exclusively a
-// hover/focus-within paint on this `cards`-style tile; the resting border has
+// to ONLY the hover/keyboard-focus state (accent-border-color is exclusively a
+// hover/keyboard-focus paint on this `cards`-style tile; the resting border has
 // its own pair above).
 if ( '' !== $accent_border_gradient ) {
 	// Touch-safe: sgs_border_gradient_css() has no hover-only mode (it bails
 	// when $normal_paint is empty), so a hover-scoped selector is baked in as
 	// its own "normal_paint" call — this must therefore carry its own guard
-	// rather than relying on the helper's $hover_paint branch. Layer 1 (media)
-	// wraps the whole rule via sgs_hover_media_wrap(); layer 2 (touch class) is
-	// prefixed onto the selector per that function's own documented pattern
-	// for opaque-rule callers. Focus-within stays outside both guards.
+	// rather than relying on the helper's $hover_paint branch. The touch class
+	// is prefixed onto the selector per sgs_hover_media_wrap()'s documented
+	// pattern for opaque-rule callers. Keyboard focus stays outside the guard.
 	$css .= sgs_hover_media_wrap(
 		sgs_border_gradient_css(
 			SGS_HOVER_NOT_TOUCH . ' ' . $style_crd . $rel_group . ':hover',
@@ -669,7 +668,7 @@ if ( '' !== $accent_border_gradient ) {
 		)
 	);
 	$css .= sgs_border_gradient_css(
-		$style_crd . $rel_group . ':focus-within',
+		$style_crd . $rel_group . ':has(:focus-visible)',
 		$accent_border_gradient,
 		null,
 		'1px'
@@ -1054,6 +1053,8 @@ if ( $sgs_mm_in_drawer ) {
 	$css .= sgs_mega_panel_drawer_card_tag_css( $attributes, $sgs_dv_aside );
 	// The card link's colours, in every layout.
 	$css .= sgs_mega_panel_drawer_card_link_css( $attributes, $sgs_dv_aside );
+	// The drawer's own hover: row text slide, trailing arrow colour, card lift, tilt and link nudge.
+	$css .= sgs_mega_panel_drawer_hover_css( $attributes, $sgs_dv_row, $sgs_dv_aside );
 	// The description's colour, in the layouts that show the description.
 	if ( empty( $attributes['drawerCardCompact'] ) || 'stacked-overlay' === ( $attributes['drawerCardLayout'] ?? '' ) ) {
 		$css .= sgs_mega_panel_drawer_card_desc_css( $attributes, $sgs_dv_aside );

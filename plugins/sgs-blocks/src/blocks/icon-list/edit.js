@@ -395,6 +395,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		menuRef,
 		renderLandmark,
 		siblingDimOpacity,
+		itemTextShiftHover,
 		labelRoll,
 		itemMotionDuration,
 		itemMotionEasing,
@@ -1466,6 +1467,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 
 				<ItemEffectsPanel
+					showTextShift
+					itemTextShiftHover={ itemTextShiftHover }
 					siblingDimOpacity={ siblingDimOpacity }
 					labelRoll={ labelRoll }
 					itemMotionDuration={ itemMotionDuration }

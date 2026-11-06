@@ -5,12 +5,14 @@
  * Guards `includes/helpers-hover-state.php`, which every SGS `:hover` rule now
  * routes through. The three properties that matter, and why each is here:
  *
- *  1. The HOVER half sits inside `@media (hover: hover) and (pointer: fine)`
- *     and behind `:where(:root:not(.sgs-touch-input))`. Lose either and a tap
- *     on a phone engages hover and it sticks -- the defect this exists to fix.
- *  2. The FOCUS half sits OUTSIDE both guards. Lose that and keyboard users
+ *  1. The HOVER half sits behind `:where(:root:not(.sgs-touch-input))` and
+ *     has NO hover-capability media query. Add a media query and a tap on a
+ *     phone no longer shows the hover look; lose the touch-class guard and the
+ *     site's "Desktop only" setting stops working.
+ *  2. The FOCUS half sits OUTSIDE the guard. Lose that and keyboard users
  *     lose the focus state on every touch device: an accessibility regression
- *     that no visual check would catch.
+ *     that no visual check would catch. A `:focus-within` request is emitted
+ *     as `:has(:focus-visible)` so a tap or click does not paint it.
  *  3. The touch guard is wrapped in `:where()`, contributing ZERO specificity,
  *     so a hover rule still out-ranks its own resting rule by `:hover` alone.
  *     A rule that silently loses is indistinguishable from one that is absent.
@@ -36,11 +38,11 @@ function check( $label, $cond, $got = '' ) {
 $r = sgs_hover_state_rules( '.uid', 'color:red', ':focus-visible' );
 echo "emitted: $r\n\n";
 
-check( 'hover half is inside the media query',
-	strpos( $r, '@media (hover: hover) and (pointer: fine){' ) === 0, $r );
+check( 'hover half has no hover-capability media query',
+	false === strpos( $r, '@media' ), $r );
 check( 'hover half carries the zero-specificity touch guard',
 	strpos( $r, ':where(:root:not(.sgs-touch-input)) .uid:hover{color:red}' ) !== false, $r );
-check( 'focus half is OUTSIDE the media query (keyboard must survive)',
+check( 'focus half is OUTSIDE the touch guard (keyboard must survive)',
 	preg_match( '/\}\.uid:focus-visible\{color:red\}$/', $r ) === 1, $r );
 check( 'both halves carry identical declarations',
 	substr_count( $r, 'color:red' ) === 2, $r );
@@ -50,12 +52,14 @@ $m = sgs_hover_state_rules( '.a,.b', 'color:red', ':focus-within' );
 check( 'multi-selector: EVERY part gets :hover (not just the last)',
 	strpos( $m, '.a:hover' ) !== false && strpos( $m, '.b:hover' ) !== false, $m );
 check( 'multi-selector: EVERY part gets the focus pseudo',
-	strpos( $m, '.a:focus-within' ) !== false && strpos( $m, '.b:focus-within' ) !== false, $m );
+	strpos( $m, '.a:has(:focus-visible)' ) !== false && strpos( $m, '.b:has(:focus-visible)' ) !== false, $m );
+check( 'a :focus-within request never prints :focus-within',
+	false === strpos( $m, ':focus-within' ), $m );
 
 // Pseudo-element suffix.
 $p = sgs_hover_state_rules( '.uid', 'background:blue', ':focus-within', '::after' );
 check( 'pseudo-element suffix lands on hover AND focus',
-	strpos( $p, '.uid:hover::after' ) !== false && strpos( $p, '.uid:focus-within::after' ) !== false, $p );
+	strpos( $p, '.uid:hover::after' ) !== false && strpos( $p, '.uid:has(:focus-visible)::after' ) !== false, $p );
 
 // Empty inputs emit nothing.
 check( 'empty decls emit nothing', '' === sgs_hover_state_rules( '.uid', '', ':focus-visible' ) );

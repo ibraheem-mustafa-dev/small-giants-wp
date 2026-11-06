@@ -116,8 +116,8 @@ ok( '' !== $rule_custom, 'lift emitted for a custom layered shape' );
 ok( str_contains( $rule_custom, '10px' ) || str_contains( $rule_custom, '5px' ), 'custom lift scales the layer (4px blur x1.25 = 5px, 8px y x1.25 = 10px)' );
 
 // --- touch-guarded, no transition -----------------------------------------------------
-ok( str_contains( $rule, 'hover: hover' ) && str_contains( $rule, 'pointer: fine' ), 'the lift rule is wrapped in the layer-1 hover-capability media query' );
-ok( str_contains( $rule, 'sgs-touch-input' ), 'the lift rule carries the layer-2 touch guard' );
+ok( ! str_contains( $rule, 'hover: hover' ), 'the lift rule has no hover-capability media query (a tap shows the hover look)' );
+ok( str_contains( $rule, 'sgs-touch-input' ), 'the lift rule carries the touch-class guard' );
 ok( str_contains( $rule, ':focus-visible' ), 'the lift rule carries an unguarded :focus-visible companion' );
 ok( ! str_contains( $rule, 'transition' ), 'MUST-PASS: no transition declaration is added (Council ruling)' );
 

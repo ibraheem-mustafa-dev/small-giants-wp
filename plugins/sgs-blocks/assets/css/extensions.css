@@ -375,9 +375,9 @@
  * its lower edge and flicker the hover state.
  *
  * `a.` raises specificity above the theme's `:root :where(a)` link rules
- * (underline, link colour, link focus colour). Hover gets both layers of the
- * touch-safe guard (`@media (hover: hover) and (pointer: fine)` plus `:where(:root:not(.sgs-touch-input))`); `:focus-visible` stays outside
- * them because it is keyboard-reachable.
+ * (underline, link colour, link focus colour). Hover gets the touch-safe guard
+ * (`:where(:root:not(.sgs-touch-input))`); `:focus-visible` stays outside
+ * it because it is keyboard-reachable.
  */
 a.sgs-field-fallback,
 a.sgs-field-fallback:visited {
@@ -415,13 +415,11 @@ a.sgs-field-fallback:focus {
 	text-decoration: none;
 }
 
-@media (hover: hover) and (pointer: fine) {
-	:where(:root:not(.sgs-touch-input)) a.sgs-field-fallback:hover {
-		background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
-		border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);
-		color: var(--sgs-ff-color);
-		text-decoration: none;
-	}
+:where(:root:not(.sgs-touch-input)) a.sgs-field-fallback:hover {
+	background-color: color-mix(in srgb, var(--sgs-ff-bg) 78%, white);
+	border-color: color-mix(in srgb, var(--sgs-ff-border) 78%, white);
+	color: var(--sgs-ff-color);
+	text-decoration: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

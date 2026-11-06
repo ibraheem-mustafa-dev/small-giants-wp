@@ -408,7 +408,7 @@ if ( $root_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $root_hover_decls ), ':focus-within' );
 	// Focus fallback selector matches the guarded-hover-rule shape so the
 	// `@supports not (background-clip:text)` fallback still targets both states.
-	$root_hover_sel                = "{$root_sel}:hover,{$root_sel}:focus-within";
+	$root_hover_sel                = "{$root_sel}:hover,{$root_sel}:has(:focus-visible)";
 	$root_text_hover_fallback_rule = sgs_text_colour_gradient_fallback_rule( $root_hover_sel, $root_text_hover_effective );
 	if ( '' !== $root_text_hover_fallback_rule ) {
 		$scoped_css[] = $root_text_hover_fallback_rule;
@@ -482,11 +482,11 @@ if ( $show_names && function_exists( 'sgs_typography_css_rule' ) ) {
 		$name_sel     = "{$root_sel} .sgs-brand-strip__name";
 		$scoped_css[] = "{$name_sel}{" . $name_text_decl . ';}';
 		// Ancestor-hover twin for nameColourHover — see the note at the root
-		// hover bucket above for why it cannot live there. `:focus-within`
+		// hover bucket above for why it cannot live there. `:has(:focus-visible)`
 		// matches the root bucket's own keyboard-equivalent state.
 		if ( '' !== ( $attributes['nameColourHover'] ?? '' ) ) {
 			$scoped_css[] = "{$root_sel}:hover .sgs-brand-strip__name,"
-				. "{$root_sel}:focus-within .sgs-brand-strip__name"
+				. "{$root_sel}:has(:focus-visible) .sgs-brand-strip__name"
 				. '{color:' . sgs_colour_value( $attributes['nameColourHover'] ) . ';}';
 		}
 		$name_text_fallback_rule = sgs_text_colour_gradient_fallback_rule( $name_sel, $name_text_effective );

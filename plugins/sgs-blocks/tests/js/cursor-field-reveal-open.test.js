@@ -44,6 +44,28 @@ test( 'a touch tap toggles and a tap outside closes', () => {
 	expect( el.hasAttribute( OPEN ) ).toBe( false );
 } );
 
+test( 'touch mode circle: a tap sets the tap flag (not the open flag), the next tap clears it, keyboard focus still opens the whole image', () => {
+	const TAP = 'data-sgs-reveal-tap';
+	el.setAttribute( 'data-sgs-cursor-field-touch', 'circle' );
+	pointer( el, 'pointerup', 'touch' );
+	expect( el.hasAttribute( TAP ) ).toBe( true );
+	expect( el.hasAttribute( OPEN ) ).toBe( false );
+	pointer( el, 'pointerup', 'touch' );
+	expect( el.hasAttribute( TAP ) ).toBe( false );
+	pointer( el, 'pointerup', 'touch' );
+	pointer( document.getElementById( 'out' ), 'pointerdown', 'touch' );
+	expect( el.hasAttribute( TAP ) ).toBe( false );
+	document.getElementById( 'out' ).dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Tab', bubbles: true } ) );
+	document.getElementById( 'b' ).focus();
+	expect( el.hasAttribute( OPEN ) ).toBe( true );
+} );
+
+test( 'NEGATIVE CONTROL: without the touch marker a tap never sets the tap flag', () => {
+	pointer( el, 'pointerup', 'touch' );
+	expect( el.hasAttribute( 'data-sgs-reveal-tap' ) ).toBe( false );
+	expect( el.hasAttribute( OPEN ) ).toBe( true );
+} );
+
 test( 'a mouse click on a link inside the card does not open it', () => {
 	const link = document.getElementById( 'a' );
 	pointer( link, 'pointerdown', 'mouse' );

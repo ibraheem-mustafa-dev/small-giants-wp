@@ -11,7 +11,7 @@
 import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import { BaseControl, Button, PanelBody, TextControl, ToggleControl } from '@wordpress/components';
-import { ResponsiveBoxControl, ResponsiveLengthControl } from '../../components';
+import { ResponsiveBoxControl, ResponsiveLengthControl, SvgPartsControls } from '../../components';
 import ChromeLogoBoxControls from './ChromeLogoBoxControls';
 import { TierShow } from './chrome-tier-controls';
 import ChromeSlotControls from './ChromeSlotControls';
@@ -112,6 +112,26 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 						onChange={ ( value ) => setAttributes( { chromeLogoLink: value } ) }
 						__nextHasNoMarginBottom
 					/>
+					<ToggleControl
+						label={ __( 'Print an SVG logo inline', 'sgs-blocks' ) }
+						help={ __( 'Prints the desktop SVG logo itself instead of an image, so its parts can animate. It replaces the per-device images.', 'sgs-blocks' ) }
+						checked={ !! attributes.chromeLogoInlineSvg }
+						onChange={ ( value ) => setAttributes( { chromeLogoInlineSvg: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					{ !! attributes.chromeLogoInlineSvg && (
+						<SvgPartsControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							names={ {
+								parts: 'chromeLogoSvgParts',
+								trigger: 'chromeLogoSvgPartsTrigger',
+								cooldown: 'chromeLogoSvgPartsHoverCooldown',
+							} }
+							label={ __( 'Drawer logo part animation', 'sgs-blocks' ) }
+							defaultTrigger="every-visible"
+						/>
+					) }
 					<ResponsiveLengthControl
 						label={ __( 'Logo width', 'sgs-blocks' ) }
 						value={ chromeLogoWidth }

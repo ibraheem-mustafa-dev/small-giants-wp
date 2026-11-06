@@ -7,11 +7,16 @@
  * grows the revealed circle to cover the element on that flag, and under reduced motion the same rule applies with no
  * transition, so the image appears without the animated growth.
  *
+ * An emitter that carries `data-sgs-cursor-field-touch="circle"` (the renderer prints it for the touch mode setting) answers
+ * a tap differently: the tap sets `data-sgs-reveal-tap` instead, which the stylesheet turns into the hover-sized circle at the
+ * card centre, and the next tap (or a tap outside) removes it. Keyboard focus still opens the whole image.
+ *
  * @package
  */
 import { focusRests } from './motion-utils.js';
 
 const OPEN_ATTR = 'data-sgs-reveal-open';
+const TAP_ATTR = 'data-sgs-reveal-tap';
 
 /**
  * Whether a pointer event came from a finger or a pen.
@@ -31,12 +36,12 @@ function isTapPointer( event ) {
  */
 export function initRevealOpen( el ) {
 	const doc = el.ownerDocument;
-	const setOpen = ( on ) => {
+	const setFlag = ( name, on ) => {
 		if ( on ) {
-			el.setAttribute( OPEN_ATTR, '' );
+			el.setAttribute( name, '' );
 			return;
 		}
-		el.removeAttribute( OPEN_ATTR );
+		el.removeAttribute( name );
 	};
 
 	// A tap sets the flag; the focus it causes must neither close it nor keep it open on the next tap, so focus and
@@ -45,7 +50,14 @@ export function initRevealOpen( el ) {
 	let focused = false;
 	let tapped = false;
 	let lastInputWasPointer = false;
-	const sync = () => setOpen( focused || tapped );
+	// Read at each tap, so a re-rendered emitter changes mode without a rebind.
+	const circleOnTap = () =>
+		'circle' === el.getAttribute( 'data-sgs-cursor-field-touch' );
+	const sync = () => {
+		const circle = circleOnTap();
+		setFlag( OPEN_ATTR, focused || ( tapped && ! circle ) );
+		setFlag( TAP_ATTR, tapped && circle );
+	};
 
 	const onFocusIn = () => {
 		if ( lastInputWasPointer || focusRests( el ) ) {
@@ -99,5 +111,6 @@ export function initRevealOpen( el ) {
 		el.removeEventListener( 'pointerup', onPointerUp );
 		doc.removeEventListener( 'pointerdown', onOutside, true );
 		el.removeAttribute( OPEN_ATTR );
+		el.removeAttribute( TAP_ATTR );
 	};
 }

@@ -575,6 +575,11 @@
       "type": "string",
       "default": "Read more"
     },
+    "cardLink": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whole card is the link: the title link stretches over the card (one tab stop, named by the post title) and the read more becomes a visual cue, not a second link. Off keeps the title, image and read more as separate links."
+    },
     "readMoreIcon": {
       "type": "string",
       "default": "",

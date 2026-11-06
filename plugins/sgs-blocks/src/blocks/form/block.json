@@ -59,6 +59,9 @@
 				"fieldBorderWidth": [
 					"fieldBorderWidth"
 				],
+				"fieldFocusBorderWidth": [
+					"fieldFocusBorderWidth"
+				],
 				"fieldBorderRadius": [
 					"fieldBorderRadius"
 				],
@@ -417,8 +420,22 @@
 							"attrMap": {
 								"css:-webkit-text-stroke-color": "fieldTextStrokeColourHover"
 							}
+						},
+						"focus": {
+							"attrMap": {
+								"css:background-color": "fieldFocusBackground",
+								"css:border-color": "fieldFocusBorderColour",
+								"css:border-width": "fieldFocusBorderWidth",
+								"css:box-shadow-color": "fieldFocusRingColour",
+								"css:box-shadow": "fieldFocusRingWidth"
+							},
+							"noBaseByDesign": [
+								"css:box-shadow-color",
+								"css:box-shadow"
+							]
 						}
-					}
+					},
+					"_note": "The focus state paints on the focused control (render.php via includes/forms/field-focus-css.php): background, border colour and width on :focus, and the ring through the focus system's --sgs-focus-halo / --sgs-focus-ring contract properties on :focus-visible. fieldFocusRingStyle (outset | inset) picks which side of the border the ring paints; the site focus outline is kept transparent so forced-colours mode still shows an indicator."
 				},
 				"field-placeholder": {
 					"motion": false,
@@ -451,7 +468,7 @@
 						"text"
 					],
 					"prefix": "label",
-					"_note": "Typography only (labelFontSize and the rest of the label* set, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags.",
+					"_note": "Typography only (labelFontSize and the rest of the label* set; labelFloatedFontSize is the size once a floating label has moved up on focus or fill, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__label). The class is rendered by the child field blocks: as a <label> by includes/forms/field-render-helpers.php::field_label and as a <legend> by form-field-checkbox, form-field-radio and form-field-tiles, so one class-only selector serves both tags.",
 					"attrMap": {
 						"css:color": "labelColour",
 						"css:-webkit-text-stroke-width": "labelTextStrokeWidth",
@@ -461,6 +478,11 @@
 						"hover": {
 							"attrMap": {
 								"css:-webkit-text-stroke-color": "labelTextStrokeColourHover"
+							}
+						},
+						"focus": {
+							"attrMap": {
+								"css:font-size": "labelFloatedFontSize"
 							}
 						}
 					}
@@ -1467,6 +1489,46 @@
 			"type": "string",
 			"default": "",
 			"description": "Ground of every text-like field control (input, select, textarea): a palette slug or colour. Empty = the stylesheet's surface colour."
+		},
+		"fieldFocusBackground": {
+			"type": "string",
+			"default": "",
+			"description": "Ground of a focused field control: a palette slug or colour. Empty = the control keeps its resting ground."
+		},
+		"fieldFocusBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of a focused field control. Empty = the site focus-ring colour, or the focus ring colour when a ring is set."
+		},
+		"fieldFocusBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width of a focused field control as a box {top,right,bottom,left}. Empty = the resting width."
+		},
+		"fieldFocusRingColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the ring around a focused field control. Setting it replaces the site focus outline and glow on field controls with this ring. Empty = the site focus ring, unchanged."
+		},
+		"fieldFocusRingWidth": {
+			"type": "number",
+			"default": 0,
+			"description": "Thickness of the focused-field ring in px. 0 = 2px once a ring colour is set."
+		},
+		"fieldFocusRingStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"outset",
+				"inset"
+			],
+			"default": "",
+			"description": "Whether the focused-field ring sits outside the border (outset) or inside it (inset). Empty = outset."
+		},
+		"labelFloatedFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Font size of a floating label once it has moved up (field focused or filled), per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the Label font size, or the stylesheet's 0.8125rem when that is unset."
 		},
 		"fieldTextColour": {
 			"type": "string",

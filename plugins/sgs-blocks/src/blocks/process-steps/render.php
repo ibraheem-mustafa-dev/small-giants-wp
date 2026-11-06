@@ -170,6 +170,11 @@ $wrapper_classes[] = 'sgs-process-steps--number-' . esc_attr( $number_style );
 if ( 'list' === $layout ) {
 	$wrapper_classes[] = 'sgs-process-steps--layout-list';
 }
+// One continuous connector line as a real element (the `connector` part); the list layout has no connector.
+$connector_line = ! empty( $attributes['connectorLine'] ) && 'list' !== $layout;
+if ( $connector_line ) {
+	$wrapper_classes[] = 'sgs-process-steps--connector-rail';
+}
 if ( '' !== $preset_text_slug ) {
 	$wrapper_classes[] = 'has-text-color';
 	$wrapper_classes[] = 'has-' . $preset_text_slug . '-color';
@@ -405,6 +410,29 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.s
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.sgs-process-steps .sgs-process-steps__title', '', false, false, sgs_object_attr_keys( $block ) );
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid . '.sgs-process-steps .sgs-process-steps__description', '', false, false, sgs_object_attr_keys( $block ) );
 
+// Continuous connector line: colour, thickness, offset from the top and inset from both sides. Unset values keep
+// style.css's `:where()` defaults.
+if ( $connector_line ) {
+	$connector_decls = array();
+	$connector_colour = (string) ( $attributes['connectorColour'] ?? '' );
+	if ( '' !== $connector_colour ) {
+		$connector_decls[] = 'background-color:' . sgs_colour_value( $connector_colour );
+	}
+	foreach ( array(
+		'height'     => 'connectorThickness',
+		'margin-top' => 'connectorOffset',
+		'width'      => 'connectorWidth',
+	) as $connector_prop => $connector_attr ) {
+		$connector_len = sgs_css_length_value( (string) ( $attributes[ $connector_attr ] ?? '' ) );
+		if ( '' !== $connector_len ) {
+			$connector_decls[] = $connector_prop . ':' . $connector_len;
+		}
+	}
+	if ( $connector_decls ) {
+		$scoped_css[] = $root_sel . ' .sgs-process-steps__connector{' . implode( ';', $connector_decls ) . ';}';
+	}
+}
+
 // Space between the steps (stepGap); unset keeps style.css's gap.
 if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
 	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';
@@ -487,11 +515,16 @@ if ( $num_decls ) {
 // block's own style.css already uses for its lift/scale/glow effects
 // (style.css:169) — so the badge colour changes in step with the effect the
 // operator has already chosen, not on a second, different target.
+//
+// `numberHoverTrigger` 'number' moves the trigger onto the badge itself: the badge's own hover repaints it and the
+// rest of the step does not. 'step' (default) keeps the whole-step trigger.
+$number_hover_own = 'number' === ( $attributes['numberHoverTrigger'] ?? 'step' );
 $number_background_hover = (string) ( $attributes['numberBackgroundHover'] ?? '' );
 if ( '' !== $number_background_hover && 'list' !== $layout ) {
-	$step_sel     = $root_sel . ' .sgs-process-steps__step';
-	$num_el       = ' .sgs-process-steps__number';
-	$scoped_css[] = sgs_hover_state_rules( $step_sel, 'background-color:' . sgs_colour_value( $number_background_hover ), ':focus-within', $num_el );
+	$number_background_hover_decl = 'background-color:' . sgs_colour_value( $number_background_hover );
+	$scoped_css[]                 = $number_hover_own
+		? sgs_hover_state_rules( $num_scope, $number_background_hover_decl )
+		: sgs_hover_state_rules( $root_sel . ' .sgs-process-steps__step', $number_background_hover_decl, ':focus-within', ' .sgs-process-steps__number' );
 }
 
 // Hover number colour — same ancestor-hover shape as numberBackgroundHover
@@ -512,14 +545,18 @@ $number_colour_hover_decl         = sgs_text_colour_decl( $number_colour_hover_e
 if ( '' !== $number_colour_hover_decl ) {
 	$step_sel     = $root_sel . ' .sgs-process-steps__step';
 	$num_el       = ' .sgs-process-steps__number';
-	$scoped_css[] = sgs_hover_state_rules( $step_sel, $number_colour_hover_decl, ':focus-within', $num_el );
+	$scoped_css[] = $number_hover_own
+		? sgs_hover_state_rules( $num_scope, $number_colour_hover_decl )
+		: sgs_hover_state_rules( $step_sel, $number_colour_hover_decl, ':focus-within', $num_el );
 
 	// Companion rule — matches sgs_hover_state_rules() above (a comma-joined
 	// selector list here is safe: unlike sgs_hover_state_rules(),
 	// sgs_text_colour_gradient_fallback_rule() takes $selector as an opaque
 	// string and never appends a pseudo-class to it).
 	$scoped_css[] = sgs_text_colour_gradient_fallback_rule(
-		$step_sel . ':hover' . $num_el . ',' . $step_sel . ':focus-within' . $num_el,
+		$number_hover_own
+			? $num_scope . ':hover,' . $num_scope . ':focus-visible'
+			: $step_sel . ':hover' . $num_el . ',' . $step_sel . ':has(:focus-visible)' . $num_el,
 		$number_colour_hover_effective
 	);
 }
@@ -569,11 +606,21 @@ if ( '' !== $description_colour_hover ) {
 // 5. Render.
 // ---------------------------------------------------------------------------
 
+// Item-array stagger (Spec 38A FR-38A-26): the steps come from the `steps` attribute, so the container's stored
+// `sgsMotion.stagger` settings become one scoped delay rule per step, found by its `data-sgs-loop-i` index. Null (no
+// stagger) leaves the steps untagged; the string is only non-empty where the collector never flushes (the editor preview).
+$sgs_ps_loop_style = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/process-steps', $uid, $attributes, count( $steps ), '.sgs-process-steps__step' );
+$sgs_ps_loop_i     = 0;
+
 ?>
+<?php echo (string) $sgs_ps_loop_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers and a sanitised class by Sgs_Motion_Loop_Delays. ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised; wp_strip_all_tags guards </style> ?></style>
 <?php endif; ?>
 <div <?php echo $wrapper_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php if ( $connector_line ) : ?>
+		<span class="sgs-process-steps__connector" aria-hidden="true"></span>
+	<?php endif; ?>
 	<?php
 	foreach ( $steps as $index => $step ) :
 		$step        = is_array( $step ) ? $step : array();
@@ -583,7 +630,7 @@ if ( '' !== $description_colour_hover ) {
 		$step_title  = isset( $step['title'] ) ? (string) $step['title'] : '';
 		$description = isset( $step['description'] ) ? (string) $step['description'] : '';
 		?>
-		<div class="sgs-process-steps__step">
+		<div class="sgs-process-steps__step"<?php echo null !== $sgs_ps_loop_style ? \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_attr( $sgs_ps_loop_i++ ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ` data-sgs-loop-i="<int>"`. ?>>
 			<?php if ( '' !== $icon_svg ) : ?>
 				<span class="sgs-process-steps__icon" aria-hidden="true"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sgs_get_lucide_icon() returns a bundled SVG. ?></span>
 			<?php endif; ?>

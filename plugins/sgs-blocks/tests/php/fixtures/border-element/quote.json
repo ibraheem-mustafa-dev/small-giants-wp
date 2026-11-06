@@ -60,10 +60,10 @@
             "border-width:2px 2px 2px 2px",
             "transition:box-shadow 300ms ease-in-out,background-color 300ms ease-in-out,color 300ms ease-in-out"
         ],
-        " || .sgs-quote-UID.wp-block-sgs-quote:focus-within": [
+        " || .sgs-quote-UID.wp-block-sgs-quote:has(:focus-visible)": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-quote-UID.wp-block-sgs-quote:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-quote-UID.wp-block-sgs-quote:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
         "@media(prefers-reduced-motion:reduce) || .sgs-quote-UID.wp-block-sgs-quote": [

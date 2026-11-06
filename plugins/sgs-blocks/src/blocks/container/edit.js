@@ -29,6 +29,7 @@ import {
 } from '../../components';
 import ScrollSidewaysPanel from './components/ScrollSidewaysPanel';
 import PinEdgeControl from './components/PinEdgeControl';
+import HoverAsCardPanel from './components/HoverAsCardPanel';
 import OverflowControl from './components/OverflowControl';
 import { resolveColourToken } from '../../components/DesignTokenPicker';
 import { pinEdgeTopPreview } from './pin-edge-preview';
@@ -1185,6 +1186,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						} }
 					/>
 				</PanelBody>
+
+				<HoverAsCardPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				{ /* Shadow — legacy string token attr (sm/md/lg/glow OR a raw box-shadow
           CSS string built by ShadowControl), resolved by sgs_shadow_value()

@@ -549,10 +549,8 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	}
 }
 
-@media (hover: hover) {
-	.sgs-account__auth-tab:hover {
-		transform: var(--wp--custom--button-presets--secondary--hover-transform, none);
-	}
+.sgs-account__auth-tab:hover {
+	transform: var(--wp--custom--button-presets--secondary--hover-transform, none);
 }
 
 .sgs-account__auth-tab[aria-selected="true"] {

@@ -7,6 +7,7 @@ import {
 import {
 	PanelBody,
 	SelectControl,
+	ToggleControl,
 	TextControl,
 	TextareaControl,
 	Button,
@@ -139,6 +140,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		headingLevel,
 		layout,
 		connectorStyle,
+		connectorLine,
+		connectorColour,
+		connectorThickness,
+		connectorOffset,
+		connectorWidth,
+		numberHoverTrigger,
 		numberStyle,
 		numberColour,
 		numberColourHover,
@@ -288,6 +295,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		`sgs-process-steps--connector-${ connectorStyle }`,
 		`sgs-process-steps--number-${ numberStyle }`,
 		'list' === layout ? 'sgs-process-steps--layout-list' : '',
+		connectorLine && 'list' !== layout ? 'sgs-process-steps--connector-rail' : '',
 	].filter( Boolean ).join( ' ' );
 
 	// Contrast check for border colour — warn if border fails WCAG 3:1 contrast
@@ -475,6 +483,18 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									setAttributes( { numberColourHoverGradient: val ?? '' } ),
 							},
 						] }
+					/>
+					<SelectControl
+						label={ __( 'Number hover trigger', 'sgs-blocks' ) }
+						value={ numberHoverTrigger || 'step' }
+						options={ [
+							{ label: __( 'Whole step', 'sgs-blocks' ), value: 'step' },
+							{ label: __( 'Number only', 'sgs-blocks' ), value: 'number' },
+						] }
+						onChange={ ( val ) => setAttributes( { numberHoverTrigger: val } ) }
+						help={ __( 'What the pointer must be over to repaint the number’s hover colours.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
 					/>
 					{ ( () => {
 						const numberBackgroundRow = fillRow( {
@@ -721,7 +741,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				>
 					<ToolsPanel
 						label={ __( 'Layout and spacing', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line' } ) }
+						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line', connectorLine: false, connectorColour: '', connectorThickness: '', connectorOffset: '', connectorWidth: '' } ) }
 					>
 						<ToolsPanelItem
 							label={ __( 'Layout', 'sgs-blocks' ) }
@@ -822,6 +842,82 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
+						) }
+						{ 'list' !== layout && (
+							<ToolsPanelItem
+								label={ __( 'Continuous connector line', 'sgs-blocks' ) }
+								hasValue={ () => !! connectorLine }
+								onDeselect={ () => setAttributes( { connectorLine: false } ) }
+							>
+								<ToggleControl
+									label={ __( 'Continuous connector line', 'sgs-blocks' ) }
+									help={ __( 'One line behind the badges as its own element, so an entrance can draw it in on scroll. Replaces the per-step line segments.', 'sgs-blocks' ) }
+									checked={ !! connectorLine }
+									onChange={ ( val ) => setAttributes( { connectorLine: !! val } ) }
+									__nextHasNoMarginBottom
+								/>
+							</ToolsPanelItem>
+						) }
+						{ 'list' !== layout && connectorLine && (
+							<>
+								<ToolsPanelItem
+									label={ __( 'Connector colour', 'sgs-blocks' ) }
+									hasValue={ () => !! connectorColour }
+									onDeselect={ () => setAttributes( { connectorColour: '' } ) }
+								>
+									<DesignTokenPicker
+										label={ __( 'Connector colour', 'sgs-blocks' ) }
+										states={ [
+											{
+												key: 'normal',
+												label: __( 'Normal', 'sgs-blocks' ),
+												value: connectorColour,
+												onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
+												linked: true,
+											},
+										] }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Connector thickness', 'sgs-blocks' ) }
+									hasValue={ () => !! connectorThickness }
+									onDeselect={ () => setAttributes( { connectorThickness: '' } ) }
+								>
+									<SgsLengthControl
+										label={ __( 'Connector thickness', 'sgs-blocks' ) }
+										help={ __( 'Empty keeps 2px.', 'sgs-blocks' ) }
+										value={ connectorThickness || '' }
+										onChange={ ( val ) => setAttributes( { connectorThickness: val || '' } ) }
+										presets={ false }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Connector offset from top', 'sgs-blocks' ) }
+									hasValue={ () => !! connectorOffset }
+									onDeselect={ () => setAttributes( { connectorOffset: '' } ) }
+								>
+									<SgsLengthControl
+										label={ __( 'Connector offset from top', 'sgs-blocks' ) }
+										help={ __( 'Distance from the top of the steps to the line. Empty centres it on the badges.', 'sgs-blocks' ) }
+										value={ connectorOffset || '' }
+										onChange={ ( val ) => setAttributes( { connectorOffset: val || '' } ) }
+										presets={ false }
+									/>
+								</ToolsPanelItem>
+								<ToolsPanelItem
+									label={ __( 'Connector width', 'sgs-blocks' ) }
+									hasValue={ () => !! connectorWidth }
+									onDeselect={ () => setAttributes( { connectorWidth: '' } ) }
+								>
+									<SgsLengthControl
+										label={ __( 'Connector width', 'sgs-blocks' ) }
+										help={ __( 'Empty runs the line edge to edge.', 'sgs-blocks' ) }
+										value={ connectorWidth || '' }
+										onChange={ ( val ) => setAttributes( { connectorWidth: val || '' } ) }
+										presets={ false }
+									/>
+								</ToolsPanelItem>
+							</>
 						) }
 					</ToolsPanel>
 				</PanelBody>
@@ -953,6 +1049,9 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
+				{ connectorLine && 'list' !== layout && (
+					<span className="sgs-process-steps__connector" aria-hidden="true" />
+				) }
 				{ steps.map( ( step, index ) => (
 					<div
 						key={ index }

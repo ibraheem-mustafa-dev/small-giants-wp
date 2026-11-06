@@ -221,7 +221,7 @@ final class BorderElementDeclsTest extends TestCase {
 		$this->assertSame(
 			array(
 				sgs_hover_media_wrap( sgs_border_gradient_css( SGS_HOVER_NOT_TOUCH . ' ' . self::SEL . ':hover', $grad, null, '1px' ) ),
-				sgs_border_gradient_css( self::SEL . ':focus-within', $grad, null, '1px' ),
+				sgs_border_gradient_css( self::SEL . ':has(:focus-visible)', $grad, null, '1px' ),
 			),
 			$out['rules']
 		);

@@ -90,7 +90,7 @@ if ( $card_grid_hover_text_is_gradient ) {
 	$card_grid_item_sel         = $root_sel . ' .sgs-card-grid__item';
 	$card_grid_hover_text_decl  = sgs_text_colour_decl( $card_grid_hover_text_effective );
 	$card_grid_hover_text_hover = $card_grid_item_sel . ':hover .sgs-card-grid__title,' . $card_grid_item_sel . ':hover .sgs-card-grid__subtitle';
-	$card_grid_hover_text_focus = $card_grid_item_sel . ':focus-within .sgs-card-grid__title,' . $card_grid_item_sel . ':focus-within .sgs-card-grid__subtitle';
+	$card_grid_hover_text_focus = $card_grid_item_sel . ':has(:focus-visible) .sgs-card-grid__title,' . $card_grid_item_sel . ':has(:focus-visible) .sgs-card-grid__subtitle';
 	if ( '' !== $card_grid_hover_text_decl ) {
 		$card_grid_native_css .= sgs_hover_guarded_rule( $card_grid_hover_text_hover, $card_grid_hover_text_decl );
 		$card_grid_native_css .= $card_grid_hover_text_focus . '{' . $card_grid_hover_text_decl . ';}';

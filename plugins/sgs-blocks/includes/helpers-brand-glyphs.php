@@ -146,17 +146,19 @@ if ( ! function_exists( 'sgs_brand_glyph_svg' ) ) {
 	 */
 	function sgs_brand_glyph_svg( array $brand, string $class_name = '', int $size = 24, bool $branded = false ): string {
 		$glyph = $branded && ! empty( $brand['glyphBrand'] ) ? $brand['glyphBrand'] : ( $brand['glyph'] ?? array() );
-		if ( isset( $glyph['lucide'] ) && is_string( $glyph['lucide'] ) ) {
+		$svg = isset( $glyph['svg'] ) && is_string( $glyph['svg'] ) ? $glyph['svg'] : '';
+		// A drawn mark wins over a Lucide name: an entry with both (LinkedIn, Facebook) draws its solid brand mark, and the
+		// name only links a Lucide pick of that icon to the brand (sgs_brand_by_lucide_name()).
+		if ( 0 !== strpos( $svg, '<svg ' ) ) {
+			if ( ! isset( $glyph['lucide'] ) || ! is_string( $glyph['lucide'] ) ) {
+				return '';
+			}
 			require_once __DIR__ . '/lucide-icons.php';
 			$svg = (string) sgs_get_lucide_icon( $glyph['lucide'] );
 			if ( '' === $svg || '' === $class_name ) {
 				return $svg;
 			}
 			return (string) preg_replace( '/<svg class="/', '<svg class="' . esc_attr( $class_name ) . ' ', $svg, 1 );
-		}
-		$svg = isset( $glyph['svg'] ) && is_string( $glyph['svg'] ) ? $glyph['svg'] : '';
-		if ( 0 !== strpos( $svg, '<svg ' ) ) {
-			return '';
 		}
 		$attrs = ( '' !== $class_name ? ' class="' . esc_attr( $class_name ) . '"' : '' )
 			. ' width="' . absint( $size ) . '" height="' . absint( $size ) . '" aria-hidden="true" focusable="false"';

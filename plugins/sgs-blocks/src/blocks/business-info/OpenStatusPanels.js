@@ -114,6 +114,26 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 					__next40pxDefaultSize
 				/>
 			) }
+			{ attributes.openStatusDotPulse && (
+				<SelectControl
+					label={ __( 'Pulse runs', 'sgs-blocks' ) }
+					help={ __( 'The ring takes the colour of the dot in the current state.', 'sgs-blocks' ) }
+					value={ attributes.openStatusDotPulseWhen || 'open' }
+					options={ [
+						{ label: __( 'While open only', 'sgs-blocks' ), value: 'open' },
+						{ label: __( 'While open and while closed', 'sgs-blocks' ), value: 'always' },
+					] }
+					onChange={ ( val ) => setAttributes( { openStatusDotPulseWhen: val } ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+			{ text(
+				__( 'Line word order', 'sgs-blocks' ),
+				'openStatusLinePattern',
+				'{lead} {time} {when}',
+				__( 'Placeholders: {lead} (the Closes or Opens wording), {time} and {when} (today, tomorrow or the weekday). "{lead} {when} at {time}" reads "Opens tomorrow at 9:30am".', 'sgs-blocks' )
+			) }
 			{ text( __( 'Open label', 'sgs-blocks' ), 'openStatusOpenLabel', __( 'Open now', 'sgs-blocks' ) ) }
 			{ text( __( 'Closed label', 'sgs-blocks' ), 'openStatusClosedLabel', __( 'Closed', 'sgs-blocks' ) ) }
 			{ text( __( 'Closes wording', 'sgs-blocks' ), 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ) }

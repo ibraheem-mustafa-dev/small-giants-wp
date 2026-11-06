@@ -244,6 +244,19 @@ function sgs_fx_cursor_field_reveal( \WP_HTML_Tag_Processor $p ): array {
 		$out['root'][] = '--sgs-cursor-field-radius-easing:' . $easing;
 	}
 
+	// Touch mode "circle": a tap shows the hover-sized circle (and wash) at the card centre rather than the whole image.
+	// The marker is printed for cursor-field-reveal.js and the stylesheet; the stored hover values ride on custom
+	// properties so the tap shows what the pointer hover would.
+	if ( 'circle' === $attr( 'data-sgs-fx-cursor-field-touch-mode' ) ) {
+		$p->set_attribute( 'data-sgs-cursor-field-touch', 'circle' );
+		if ( '' !== $hover ) {
+			$out['root'][] = '--sgs-cursor-field-tap-radius:' . $hover;
+		}
+		if ( null !== $end ) {
+			$out['root'][] = '--sgs-cursor-field-tap-wash:' . $end;
+		}
+	}
+
 	$edge = sgs_fx_cursor_field_length( $attr( 'data-sgs-fx-cursor-field-edge' ) );
 	if ( '' !== $edge && (float) $edge > 0 ) {
 		$out['root'][]  = '--sgs-cursor-field-edge:' . $edge;

@@ -137,8 +137,8 @@ if ( ! function_exists( 'sgs_header_ink_not_hover_rule' ) ) {
 	 * A rule that applies to each selector except while it is hovered or keyboard-focused.
 	 *
 	 * The hover exclusion sits behind the shared hover guard (`sgs_hover_media_wrap()` plus
-	 * `SGS_HOVER_NOT_TOUCH`); a device without a hovering pointer gets the focus-only
-	 * exclusion instead, so a tap's sticky :hover never disables the rule.
+	 * `SGS_HOVER_NOT_TOUCH`); while the site's "Desktop only" touch setting has `.sgs-touch-input` on the root,
+	 * the focus-only exclusion applies instead, so the rule never goes missing.
 	 *
 	 * @param string $selectors Comma-separated base selectors.
 	 * @param string $block     Declaration block including braces.
@@ -150,10 +150,10 @@ if ( ! function_exists( 'sgs_header_ink_not_hover_rule' ) ) {
 		$touch = array();
 		foreach ( $parts as $part ) {
 			$hover[] = SGS_HOVER_NOT_TOUCH . ' ' . $part . ':not(:hover):not(:focus-visible)';
-			$touch[] = $part . ':not(:focus-visible)';
+			$touch[] = ':where(:root.sgs-touch-input) ' . $part . ':not(:focus-visible)';
 		}
 		return sgs_hover_media_wrap( implode( ',', $hover ) . $block )
-			. '@media not all and (hover: hover) and (pointer: fine){' . implode( ',', $touch ) . $block . '}';
+			. implode( ',', $touch ) . $block;
 	}
 }
 

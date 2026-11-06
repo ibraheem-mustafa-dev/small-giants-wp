@@ -203,6 +203,25 @@
 			"type": "boolean",
 			"default": false
 		},
+		"svgParts": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			},
+			"description": "Named parts of the inline logo SVG to animate: per part an element id (or CSS selector), an entrance (opacity, scale, offset, rotation, stroke draw, duration, delay, easing), a continuous rotation and a hover replay. Used only while inlineSvg is on. Read by src/shared/svg-parts/svg-parts.js."
+		},
+		"svgPartsTrigger": {
+			"type": "string",
+			"enum": [ "load", "visible", "every-visible" ],
+			"default": "visible",
+			"description": "When the parts' entrance plays: on page load, the first time the logo is on screen, or each time it comes on screen."
+		},
+		"svgPartsHoverCooldown": {
+			"type": "number",
+			"default": 1400,
+			"description": "Least time between two hover replays of the parts, in ms."
+		},
 		"alt": {
 			"type": "string",
 			"default": "",
@@ -285,6 +304,7 @@
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {
 			"width": 240,

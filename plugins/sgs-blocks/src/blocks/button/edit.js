@@ -169,6 +169,8 @@ export default function Edit( {
 		contentAlign,
 		alignSelf,
 		iconGap,
+		iconGapHover,
+		visualOnly,
 		focusStyle,
 	} = attributes;
 	let iconPickerValue = null;
@@ -590,6 +592,18 @@ export default function Edit( {
 							) }
 						/>
 					) }
+					<ToggleControl
+						label={ __( 'Visual cue only (card is the link)', 'sgs-blocks' ) }
+						checked={ !! visualOnly }
+						onChange={ ( val ) =>
+							setAttributes( { visualOnly: val } )
+						}
+						__nextHasNoMarginBottom
+						help={ __(
+							'For a button inside a card whose whole surface is the link (the container block-link setting). It prints as plain text styled as a button: no link, not focusable, hidden from screen readers, no lift of its own, and it follows the hover of the card.',
+							'sgs-blocks'
+						) }
+					/>
 					<SgsFreeTextField type="rich" noLink
 						label={ __( 'Note', 'sgs-blocks' ) }
 						value={ attributes.note || '' }
@@ -795,6 +809,7 @@ export default function Edit( {
 									setAttributes( {
 										iconSize: {},
 										iconGap: {},
+										iconGapHover: {},
 										iconShapeSize: {},
 									} )
 								}
@@ -871,6 +886,40 @@ export default function Edit( {
 										value={ iconGap }
 										onChange={ ( obj ) =>
 											setAttributes( { iconGap: obj } )
+										}
+									>
+										{ ( {
+											ownValue,
+											effectiveValue,
+											inherited,
+											setOwnValue,
+										} ) => (
+											<SgsLengthControl
+												value={ ownValue }
+												placeholder={
+													inherited
+														? effectiveValue
+														: ''
+												}
+												onChange={ setOwnValue }
+											/>
+										) }
+									</ResponsiveOverride>
+								</ToolsPanelItem>
+								{ /* iconGapHover is a TIER OBJECT — block.json attributes.iconGapHover +
+								   helpers-button-icon-gap-hover.php (gap on hover). */ }
+								<ToolsPanelItem
+									label={ __( 'Icon gap on hover', 'sgs-blocks' ) }
+									hasValue={ () => !! iconGapHover?.desktop }
+									onDeselect={ () =>
+										setAttributes( { iconGapHover: {} } )
+									}
+								>
+									<ResponsiveOverride
+										label={ __( 'Icon gap on hover', 'sgs-blocks' ) }
+										value={ iconGapHover }
+										onChange={ ( obj ) =>
+											setAttributes( { iconGapHover: obj } )
 										}
 									>
 										{ ( {

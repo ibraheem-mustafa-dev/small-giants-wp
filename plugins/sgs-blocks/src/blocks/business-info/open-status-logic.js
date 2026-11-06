@@ -228,11 +228,14 @@ export function formatTime( minutes, words = { noon: 'noon', midnight: 'midnight
 	return m ? `${ hour }:${ String( m ).padStart( 2, '0' ) }${ suffix }` : `${ hour }${ suffix }`;
 }
 
+const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
+
 /**
  * The status line, e.g. "Closes at 5pm today" or "Opens at 9:30am tomorrow".
  *
  * `labels` carries the wording: closes, opens, reopens ("Closed until"), today, tomorrow,
- * noon, midnight and days (seven weekday names, Monday first).
+ * noon, midnight, days (seven weekday names, Monday first) and pattern, the word order of the
+ * closes and opens lines with {lead}, {time} and {when} placeholders (default "{lead} {time} {when}").
  *
  * @param {{kind:string,minutes:number,dayOffset:number,day:number}} change computeStatus().change.
  * @param {Object} labels Wording.
@@ -252,5 +255,10 @@ export function buildLine( change, labels ) {
 		return `${ labels.reopens } ${ time }`;
 	}
 	const lead = 'closes' === change.kind ? labels.closes : labels.opens;
-	return `${ lead } ${ time } ${ when }`;
+	const values = { lead, time, when };
+	const pattern = labels.pattern || DEFAULT_LINE_PATTERN;
+	return pattern
+		.replace( /\{(lead|time|when)\}/g, ( match, key ) => values[ key ] )
+		.replace( /\s+/g, ' ' )
+		.trim();
 }

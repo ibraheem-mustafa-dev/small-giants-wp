@@ -407,8 +407,8 @@ if ( $hover_border ) {
 // ancestor-hover shape — it lands AFTER the pseudo-class, giving
 // `{card}:hover {target}` — so this still goes through the ONE shared
 // touch-safe hover mechanism (helpers-hover-state.php) rather than
-// hand-rolling a `:hover` rule. `:focus-within` (not `:focus-visible`) is the
-// correct pseudo-class for this ancestor-hover shape, since the element that
+// hand-rolling a `:hover` rule. The keyboard-focus twin is `:has(:focus-visible)`
+// (sgs_hover_state_rules() maps `:focus-within` to it), since the element that
 // receives focus (the read-more link) is a descendant, not the card itself.
 //
 // Flat-or-gradient (D636 "text" builder) — sgs_resolve_text_colour_or_gradient()
@@ -438,7 +438,7 @@ if ( $hover_text_decl ) {
 		// sgs_hover_state_rules(), sgs_text_colour_gradient_fallback_rule() takes
 		// $selector as an opaque string and never appends a pseudo-class to it).
 		$responsive_css .= sgs_text_colour_gradient_fallback_rule(
-			$post_grid_card_sel . ':hover' . $post_grid_hover_text_target . ',' . $post_grid_card_sel . ':focus-within' . $post_grid_hover_text_target,
+			$post_grid_card_sel . ':hover' . $post_grid_hover_text_target . ',' . $post_grid_card_sel . ':has(:focus-visible)' . $post_grid_hover_text_target,
 			$hover_text_effective
 		);
 	}

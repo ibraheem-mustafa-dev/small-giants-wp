@@ -78,7 +78,7 @@ final class IconBrandGlyphTest extends TestCase {
 	/** The touch-guarded hover rule the mode prints: the guard, then a `:hover` selector, then the declarations. */
 	private function assert_hover_ring( string $css, string $colour ): void {
 		$this->assertMatchesRegularExpression(
-			'#@media ?\(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__shape\{[^}]*border-color:[^;}]*' . preg_quote( $colour, '#' ) . '[^}]*box-shadow:0 0 0 1px ' . preg_quote( $colour, '#' ) . '#',
+			'#:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__shape\{[^}]*border-color:[^;}]*' . preg_quote( $colour, '#' ) . '[^}]*box-shadow:0 0 0 1px ' . preg_quote( $colour, '#' ) . '#',
 			$css,
 			'the hover rule sits inside the touch guard and turns the border and draws the ring'
 		);
@@ -87,7 +87,7 @@ final class IconBrandGlyphTest extends TestCase {
 			$css,
 			'keyboard focus gets the same ring'
 		);
-		$this->assertSame( substr_count( $css, ':hover' ), preg_match_all( '#hover: hover\) and \(pointer: fine\)\{[^{]*:hover#', $css ), 'every :hover rule is behind the guard' );
+		$this->assertSame( substr_count( $css, ':hover' ), preg_match_all( '#sgs-touch-input\)\)[^{]*:hover#', $css ), 'every :hover rule is behind the guard' );
 	}
 
 	public function test_whatsapp_paints_only_the_glyph_in_its_green(): void {
@@ -211,7 +211,7 @@ final class IconBrandGlyphTest extends TestCase {
 		);
 		$chain = 'stroke:var\(--sgs-icon-colour-hover,var\(--sgs-si-colour-hover,var\(--sgs-icon-colour,var\(--sgs-si-colour,url\(\#sgs-icn-[0-9a-f]{8}-bg\)\)\)\)\)';
 		$this->assertMatchesRegularExpression(
-			'#@media ?\(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__svg svg\{' . $chain . '#',
+			'#:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover \.sgs-icon__svg svg\{' . $chain . '#',
 			$css,
 			'a hover colour beats the gradient, behind the touch guard'
 		);
@@ -389,6 +389,6 @@ final class IconBrandGlyphTest extends TestCase {
 	/** Negative control: the hover-ring probe fails on a rule without the guard, so its passes are not vacuous. */
 	public function test_negative_control_the_guard_probe_sees_an_unguarded_rule(): void {
 		$bad = '.x .sgs-icon__link:hover .sgs-icon__shape{border-color:#25D366;box-shadow:0 0 0 1px #25D366}';
-		$this->assertSame( 0, preg_match( '#@media ?\(hover: hover\) and \(pointer: fine\)\{:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover#', $bad ) );
+		$this->assertSame( 0, preg_match( '#:where\(:root:not\(\.sgs-touch-input\)\) [^{]*\.sgs-icon__link:hover#', $bad ) );
 	}
 }

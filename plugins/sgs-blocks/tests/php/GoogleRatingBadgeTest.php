@@ -440,7 +440,7 @@ final class GoogleRatingBadgeTest extends TestCase {
 	public function test_hover_colours_are_touch_guarded(): void {
 		$css = $this->render_full( self::MANUAL + array( 'backgroundColour' => '#ffffff', 'backgroundColourHover' => '#fafafa' ) )['css'];
 		$this->assertStringContainsString( '#fafafa', $css );
-		$this->assertStringContainsString( '@media (hover: hover)', $css );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input))', $css );
 		// Negative control: no hover colour, no hover rule for it.
 		$none = $this->render_full( self::MANUAL + array( 'backgroundColour' => '#ffffff' ) )['css'];
 		$this->assertStringNotContainsString( '#fafafa', $none );

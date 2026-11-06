@@ -157,8 +157,11 @@
 							"attrMap": {
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
+								"css:transform": "itemTextShiftHover",
 								"css:-webkit-text-stroke-color": "textElTextStrokeColourHover"
-							}
+							},
+							"noBaseByDesign": [ "css:transform" ],
+							"_noBaseByDesignNote": "css:transform (itemTextShiftHover) has no resting counterpart by design: the value is a hover-only horizontal shift (translateX) of the item text away from its marker, timed by itemMotionDuration/itemMotionEasing. At rest the text is not displaced."
 						}
 					}
 				},
@@ -439,6 +442,22 @@
 			"type": "string",
 			"default": "",
 			"description": "Diameter of the icon background circle. Empty resolves to 26px when `iconBackgroundColour` is set; has no effect otherwise."
+		},
+		"itemTextShiftHover": {
+			"type": "number",
+			"default": 0,
+			"description": "Distance in pixels (0 to 60) the item text slides toward the inline end on hover or keyboard focus, away from its bullet or icon, which stays put. Timed by itemMotionDuration and itemMotionEasing. 0 is off. Not applied under reduced motion.",
+			"sgs": {
+				"meaning": {
+					"what": "Slides each item's text away from its marker on hover.",
+					"trigger": "hovering or keyboard-focusing the item (not on touch-only devices)",
+					"parameters": {
+						"value": {
+							"unit": "px (0 to 60)"
+						}
+					}
+				}
+			}
 		},
 		"itemPaddingBlock": {
 			"type": "string",

@@ -48,7 +48,7 @@ export { replay, canReplay, REPLAY_REDUCED_NOTICE } from './replay';
  */
 export function useCanvasMotion( { clientId, name, attributes } ) {
 	const motion = attributes?.[ MOTION_ATTRIBUTE_NAME ];
-	const linked = Boolean( attributes?.sgsBlockLink || attributes?.sgsBlockLinkAuto );
+	const linked = Boolean( attributes?.sgsBlockLink || attributes?.sgsBlockLinkAuto || attributes?.hoverAsCard );
 	const preview = useSelect(
 		( select ) => Boolean( select( 'core/block-editor' )?.getSettings?.()?.__unstableIsPreviewMode ),
 		[]

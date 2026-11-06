@@ -390,7 +390,17 @@
 						"css:height": "caretBoxSize",
 						"css:border-width": "caretBoxBorderWidth",
 						"css:border-style": "caretBoxBorderStyle",
-						"css:border-color": "caretBoxBorderColour"
+						"css:border-color": "caretBoxBorderColour",
+						"css:box-shadow": "caretBoxShadow",
+						"css:box-shadow-color": "caretBoxShadowColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:box-shadow": "caretBoxShadowHover",
+								"css:box-shadow-color": "caretBoxShadowColourHover"
+							}
+						}
 					},
 					"_note": "The ringed circle round the accordion expander (.sgs-nav-drawer-menu__caret), and round each trailing icon (.sgs-nav-drawer-menu__trailing-icon) when caretBoxOnTrailingIcon is on (includes/nav-drawer-menu-caret-box-css.php). A declared part, so motion (Spec 38A) can target it; its hover glow and turn timing belong to motion, not here."
 				},
@@ -992,6 +1002,26 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour of the expander glyph while its row is open (for example a dark chevron on a gold circle). '' keeps the glyph's inherited colour. Works with or without the circle."
+		},
+		"caretBoxShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow SHAPE of the expander circle at rest (the shared ShadowControl; layers of 'X Y BLUR SPREAD' or a theme shadow name). Empty draws none. Composed with caretBoxShadowColour by sgs_shadow_decls() in includes/nav-drawer-menu-caret-box-css.php."
+		},
+		"caretBoxShadowColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the expander circle's resting shadow (palette slug or CSS colour, optional N% opacity)."
+		},
+		"caretBoxShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Shadow SHAPE of the expander circle while its row is hovered, tapped or keyboard-focused, e.g. a glow ring '0 0 0 6px'. Empty keeps the resting shape (or the automatic lift when a resting shape is set)."
+		},
+		"caretBoxShadowColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the expander circle's shadow while its row is hovered, tapped or keyboard-focused (palette slug or CSS colour, optional N% opacity), e.g. a gold glow ring. Empty keeps the resting colour."
 		},
 		"caretBoxOnTrailingIcon": {
 			"type": "boolean",

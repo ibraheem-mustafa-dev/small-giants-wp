@@ -1,9 +1,11 @@
 'use strict';
 
 /**
- * Build-time transform: wraps motion-only `:hover` rules in compiled block
- * CSS with BOTH touch-safety layers (see includes/helpers-hover-state.php
- * for the authoritative contract this mirrors on the static-CSS side).
+ * Build-time transform: guards motion-only `:hover` rules in compiled block
+ * CSS with the touch-class selector prefix (see includes/helpers-hover-state.php
+ * for the authoritative contract this mirrors on the static-CSS side). The
+ * prefix only matches when the site chose "Desktop only" for hover effects on
+ * touch screens; with the default "Show on tap" the rules apply on every device.
  *
  * Runs over `build/blocks/*​/style.css` as a postbuild step — see the
  * repo report for the exact package.json line to add (this script does
@@ -37,8 +39,7 @@ const postcss = require( 'postcss' );
 const { splitSelectorList } = require( './selector-split.js' );
 const { classifyDeclarations } = require( './classify.js' );
 
-/** Must stay byte-identical to includes/helpers-hover-state.php's constants. */
-const SGS_HOVER_MEDIA_PARAMS = '(hover: hover) and (pointer: fine)';
+/** Must stay byte-identical to includes/helpers-hover-state.php's constant. */
 const SGS_HOVER_NOT_TOUCH = ':where(:root:not(.sgs-touch-input))';
 
 /**
@@ -91,25 +92,23 @@ function ancestorAtRuleChain( node ) {
 
 /**
  * Nest `innerNode` inside a clone of each at-rule in `chain` (outermost
- * first), then inside the layer-1 hover media query as the true outermost
- * wrapper, and return the finished top-level node ready to insert.
+ * first) and return the finished top-level node ready to insert (the rule
+ * itself when it has no at-rule ancestors).
  *
  * @param {import('postcss').Rule} innerNode
  * @param {import('postcss').AtRule[]} chain Outermost-first ancestor shells.
- * @returns {import('postcss').AtRule} The `@media (hover...)` wrapper.
+ * @returns {import('postcss').Node} The outermost node.
  */
 function wrapForInsertion( innerNode, chain ) {
 	let content = innerNode;
 	// Nest existing ancestors innermost-first around content, so the final
-	// order (outside-in) is: hover-media -> chain[0] -> chain[1] -> ... -> rule.
+	// order (outside-in) is: chain[0] -> chain[1] -> ... -> rule.
 	for ( let i = chain.length - 1; i >= 0; i-- ) {
 		const shell = chain[ i ];
 		shell.append( content );
 		content = shell;
 	}
-	const hoverMedia = postcss.atRule( { name: 'media', params: SGS_HOVER_MEDIA_PARAMS } );
-	hoverMedia.append( content );
-	return hoverMedia;
+	return content;
 }
 
 /**
@@ -248,4 +247,4 @@ function topOf( node ) {
 	return cursor;
 }
 
-module.exports = { transformCss, SGS_HOVER_MEDIA_PARAMS, SGS_HOVER_NOT_TOUCH };
+module.exports = { transformCss, SGS_HOVER_NOT_TOUCH };

@@ -31,7 +31,7 @@ final class ButtonFontWeightHoverTest extends TestCase {
 
 		$this->assertStringContainsString( 'Get a quote', $out['html'], 'positive control: the block rendered' );
 		$this->assertMatchesRegularExpression( '/\{[^}]*font-weight:600;[^}]*\}/', $css, 'the resting weight' );
-		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]*\.sgs-button:hover[^{]*\{[^}]*font-weight:700/', $css, 'hover weight sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/:where\(:root:not\(\.sgs-touch-input\)\)[^{]*\.sgs-button:hover[^{]*\{[^}]*font-weight:700/', $css, 'hover weight sits behind the touch guard' );
 		$this->assertMatchesRegularExpression( '/\.sgs-button:focus-visible[^{]*\{[^}]*font-weight:700/', $css, 'focus carries it the way the other hover looks do' );
 	}
 

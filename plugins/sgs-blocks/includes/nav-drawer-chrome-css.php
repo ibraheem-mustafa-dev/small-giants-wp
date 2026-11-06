@@ -204,7 +204,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_css' ) ) {
 		if ( $has_logo ) {
 			$logo_sel = $row_sel . ' .sgs-nav-drawer__chrome-logo';
 			$css     .= sgs_emit_responsive_css(
-				$logo_sel . ' img',
+				$logo_sel . ' :is(img, svg)',
 				array(
 					array(
 						'value'        => $attributes['chromeLogoWidth'] ?? array(),

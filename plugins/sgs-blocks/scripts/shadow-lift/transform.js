@@ -30,23 +30,22 @@
  * NEVER touched by `hover-guard/run-transform.js` — that script's postbuild
  * wiring only ever scans `build/blocks/**`. So `ctx.wrapGuard` makes THIS
  * transform emit the guarded shape directly for theme files, importing
- * `SGS_HOVER_MEDIA_PARAMS`/`SGS_HOVER_NOT_TOUCH` from
- * `hover-guard/transform.js` (read-only `require`, not an edit to that file)
- * so the two stay byte-identical without copying the literal strings.
+ * `SGS_HOVER_NOT_TOUCH` from `hover-guard/transform.js` (read-only `require`,
+ * not an edit to that file) so the two stay byte-identical without copying the
+ * literal string.
  *
  * `--check` runs AFTER the hover guard's own check, so `existingHoverBases()`
  * (used both to decide what still needs lifting during `--build`/`--fix-theme`
  * and to decide what already has its lift during `--check`) recognises
  * EITHER the plain `SEL:hover{}` shape or the guarded
- * `@media (hover:hover) and (pointer:fine){:where(:root:not(.sgs-touch-input))
- * SEL:hover{}}` shape as "already covered" — postcss's `walkRules` descends
- * into every at-rule on its own, so no special nesting handling is needed;
- * this transform only has to strip the known guard prefix before comparing.
+ * `:where(:root:not(.sgs-touch-input)) SEL:hover{}` shape as "already covered"
+ * — postcss's `walkRules` descends into every at-rule on its own, so no
+ * special nesting handling is needed; this transform only has to strip the
+ * known guard prefix before comparing.
  * `findUnguardedLiftRules()` is the separate, stricter scan used by
  * `--check` for THEME files only: it fails on a lift-shaped
- * (single-declaration `box-shadow`) `:hover` rule that is NOT wrapped in the
- * guard media query with the guard prefix, since a theme file should never
- * carry one of those unwrapped.
+ * (single-declaration `box-shadow`) `:hover` rule that does not carry the
+ * guard prefix, since a theme file should never carry one of those unguarded.
  *
  * Skipped on purpose (every skip is counted and reported by reason, never
  * silent): `none`/global keywords, a value with no outer (non-inset) layer
@@ -66,7 +65,7 @@
  */
 
 const postcss = require( 'postcss' );
-const { SGS_HOVER_MEDIA_PARAMS, SGS_HOVER_NOT_TOUCH } = require( '../hover-guard/transform.js' );
+const { SGS_HOVER_NOT_TOUCH } = require( '../hover-guard/transform.js' );
 
 const TRANSIENT_STATE = /:(hover|focus|focus-within|focus-visible|active)\b/i;
 const PSEUDO_ELEMENT = /::|:(before|after|first-line|first-letter)\b/i;
@@ -364,7 +363,7 @@ function transformCss( css, filename, ctx ) {
 
 		if ( ! dryRun ) {
 			const text = wrapGuard
-				? `\n@media ${ SGS_HOVER_MEDIA_PARAMS }{${ liftableMembers.map( ( m ) => `${ SGS_HOVER_NOT_TOUCH } ${ m }:hover` ).join( ',\n' ) }{box-shadow:${ lift.output }}}\n`
+				? `\n${ liftableMembers.map( ( m ) => `${ SGS_HOVER_NOT_TOUCH } ${ m }:hover` ).join( ',\n' ) }{box-shadow:${ lift.output }}\n`
 				: `\n${ liftableMembers.map( ( m ) => `${ m }:hover` ).join( ',\n' ) }{box-shadow:${ lift.output }}\n`;
 			inserts.push( { at: endOfRule( css, rule.source.start.offset ), text } );
 		}
@@ -385,28 +384,11 @@ function transformCss( css, filename, ctx ) {
 }
 
 /**
- * Is `node` nested inside an `@media` at-rule whose params are exactly the
- * hover guard's own `SGS_HOVER_MEDIA_PARAMS` (whitespace-normalised)?
- *
- * @param {import('postcss').Node} node
- * @return {boolean}
- */
-function ruleIsInsideHoverGuardMedia( node ) {
-	const wanted = SGS_HOVER_MEDIA_PARAMS.replace( /\s+/g, ' ' ).trim();
-	for ( let p = node.parent; p; p = p.parent ) {
-		if ( 'atrule' === p.type && 'media' === p.name.toLowerCase() && p.params.replace( /\s+/g, ' ' ).trim() === wanted ) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
  * Strict scan for THEME files only (never touched by hover-guard's own
  * postbuild wiring): a rule whose ENTIRE declaration set is exactly one
  * `box-shadow` decl — the shape this transform's own lift rules take — and
- * whose `:hover` selector member is not BOTH prefixed with the hover guard's
- * touch-safety selector AND nested inside its media query. Used by
+ * whose `:hover` selector member is not prefixed with the hover guard's
+ * touch-safety selector. Used by
  * `run.js --check` to fail on a theme lift rule that shipped unguarded
  * (e.g. from before `ctx.wrapGuard` existed, or a hand-authored regression).
  *
@@ -431,7 +413,6 @@ function findUnguardedLiftRules( css, filename ) {
 		if ( 1 !== decls.length || ! /^box-shadow$/i.test( decls[ 0 ].prop ) ) {
 			return;
 		}
-		const insideGuardMedia = ruleIsInsideHoverGuardMedia( rule );
 		const members = rule.selectors && rule.selectors.length ? rule.selectors : [ sel ];
 		for ( const member of members ) {
 			const trimmed = member.trim();
@@ -439,7 +420,7 @@ function findUnguardedLiftRules( css, filename ) {
 				continue;
 			}
 			const alreadyPrefixed = trimmed.startsWith( SGS_HOVER_NOT_TOUCH );
-			if ( ! ( alreadyPrefixed && insideGuardMedia ) ) {
+			if ( ! alreadyPrefixed ) {
 				out.push( { line: lineOf( rule ), selector: trimmed } );
 			}
 		}
@@ -455,5 +436,4 @@ module.exports = {
 	existingHoverBases,
 	findUnguardedLiftRules,
 	SGS_HOVER_NOT_TOUCH,
-	SGS_HOVER_MEDIA_PARAMS,
 };

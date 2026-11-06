@@ -13,8 +13,11 @@
  * is sized by `submenuCaretSize`, the trailing icon's by `itemTrailingIconSize`
  * through `font-size`). The border runs through the shared border helper
  * (`sgs_border_element_decls()`, prefix `caretBox`), the fills through
- * `sgs_fill_decls()`. Hover glow and turn timing are motion (Spec 38A) and
- * are not set here. Nothing set: nothing emitted.
+ * `sgs_fill_decls()`. The circle's shadow (`caretBoxShadow*`, the shared
+ * ShadowControl family) is drawn at rest and swaps to the hover shape and colour
+ * while the row is hovered, tapped or keyboard-focused: a glow ring is a hover
+ * shape with a 0 0 0 spread. Turn timing is motion (Spec 38A) and is not set here.
+ * Nothing set: nothing emitted.
  *
  * @package SGS\Blocks
  */
@@ -25,6 +28,8 @@ require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-border-style.php';
+require_once __DIR__ . '/helpers-hover-state.php';
+require_once __DIR__ . '/helpers-motion-easing.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 	/**
@@ -68,16 +73,16 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 		$has_size  = '' !== (string) sgs_resolve_tier( $size, 'desktop', '' )['value']
 			|| '' !== (string) sgs_resolve_tier( $size, 'tablet', '' )['value']
 			|| '' !== (string) sgs_resolve_tier( $size, 'mobile', '' )['value'];
-		if ( ! $has_size && ! $fill['normal'] && ! $border['base'] ) {
-			return $glyph_css;
-		}
-
 		$boxes  = array( $caret );
 		$on_all = ! empty( $attributes['caretBoxOnTrailingIcon'] );
 		if ( $on_all ) {
 			$boxes[] = $trail;
 		}
-		$box_sel = implode( ',', $boxes );
+		$box_sel    = implode( ',', $boxes );
+		$shadow_css = sgs_nav_drawer_menu_caret_box_shadow_css( $attributes, $uid_sel, $on_all );
+		if ( ! $has_size && ! $fill['normal'] && ! $border['base'] ) {
+			return $glyph_css . $shadow_css;
+		}
 
 		$decls = array_merge(
 			array( 'display:inline-flex', 'align-items:center', 'justify-content:center', 'box-sizing:border-box', 'border-radius:50%', 'flex:none', 'width:40px', 'height:40px' ),
@@ -131,6 +136,73 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_css' ) ) {
 		if ( $open_decls ) {
 			$css .= $open . '{' . implode( ';', $open_decls ) . ';}';
 		}
-		return $css . $glyph_css;
+		return $css . $glyph_css . $shadow_css;
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_drawer_menu_caret_box_shadow_css' ) ) {
+	/**
+	 * The circle's shadow at rest and on the hovered, tapped or keyboard-focused row.
+	 *
+	 * The hover reaches the circle from its row: the accordion row or summary for the expander,
+	 * the row's link for a trailing icon. Mouse hover is skipped on touch devices; a tap
+	 * (`:active`) and keyboard focus (`:focus-visible`) always apply.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $uid_sel    The menu's scoped selector.
+	 * @param bool   $on_all     Whether the trailing icons wear the circle too.
+	 * @return string CSS text; '' when no shadow is set.
+	 */
+	function sgs_nav_drawer_menu_caret_box_shadow_css( array $attributes, string $uid_sel, bool $on_all ): string {
+		$shadow = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'         => 'caretBoxShadow',
+				'colour'       => 'caretBoxShadowColour',
+				'hover'        => 'caretBoxShadowHover',
+				'hover_colour' => 'caretBoxShadowColourHover',
+			),
+			'sgs/nav-drawer-menu'
+		);
+		if ( ! $shadow['normal'] && ! $shadow['hover'] ) {
+			return '';
+		}
+		$bem   = $uid_sel . ' .sgs-nav-drawer-menu__';
+		$boxes = $bem . 'caret' . ( $on_all ? ',' . $bem . 'trailing-icon' : '' );
+		$glow  = 'box-shadow var(--wp--custom--transition--medium, 300ms ease)';
+		// The caret also turns when its row opens; its transform timing is kept beside the shadow's.
+		$turn_ms     = $attributes['submenuCaretTurnDuration'] ?? null;
+		$turn_key    = (string) ( $attributes['submenuCaretTurnEasing'] ?? '' );
+		$turn        = is_numeric( $turn_ms ) || '' !== $turn_key
+			? 'transform ' . sgs_flat_duration_ms( $turn_ms, 300 ) . 'ms ' . sgs_motion_easing_css( $turn_key, (string) ( $attributes['submenuCaretTurnEasingCustom'] ?? '' ), 'ease' )
+			: 'transform var(--sgs-ndm-motion, 200ms ease)';
+		$normal      = $shadow['normal'] ? implode( ';', $shadow['normal'] ) . ';' : '';
+		$css         = $bem . 'caret{' . $normal . 'transition:' . $turn . ',' . $glow . ';}';
+		if ( $on_all ) {
+			$css .= $bem . 'trailing-icon{' . $normal . 'transition:' . $glow . ';}';
+		}
+		if ( $shadow['hover'] ) {
+			$body  = '{' . implode( ';', $shadow['hover'] ) . ';}';
+			$pairs = array(
+				array( $bem . 'accordion-row:has(> .sgs-nav-drawer-menu__link:%s) .sgs-nav-drawer-menu__caret' ),
+				array( $bem . 'accordion-summary:%s .sgs-nav-drawer-menu__caret' ),
+			);
+			if ( $on_all ) {
+				$pairs[] = array( $bem . 'link:%s .sgs-nav-drawer-menu__trailing-icon' );
+			}
+			$hover = array();
+			$other = array();
+			foreach ( $pairs as $pair ) {
+				$hover[] = SGS_HOVER_NOT_TOUCH . ' ' . sprintf( $pair[0], 'hover' );
+				$other[] = sprintf( $pair[0], 'active' );
+				if ( ! sgs_focus_rests_active() ) {
+					$other[] = sprintf( $pair[0], 'focus-visible' );
+				}
+			}
+			$css .= sgs_hover_media_wrap( implode( ',', $hover ) . $body );
+			$css .= implode( ',', $other ) . $body;
+		}
+		$css .= '@media (prefers-reduced-motion: reduce){' . $boxes . '{transition:none;}}';
+		return $css;
 	}
 }

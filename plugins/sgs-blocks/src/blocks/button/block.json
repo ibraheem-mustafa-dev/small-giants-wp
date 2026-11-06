@@ -108,6 +108,7 @@
 								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "boxShadowHover",
 								"css:font-weight": "fontWeightHover",
+								"css:gap": "iconGapHover",
 								"css:transform": "builtInHoverLift",
 								"css:text-decoration-color-link": "linkUnderlineColourHover",
 								"css:-webkit-text-stroke-color": "textStrokeColourHover"
@@ -449,6 +450,16 @@
 			"type": "object",
 			"default": {},
 			"description": "Per-device gap between the label and the icon (CSS length). Tier object {desktop,tablet,mobile}; empty adds no gap."
+		},
+		"iconGapHover": {
+			"type": "object",
+			"default": {},
+			"description": "Per-device label-to-icon gap while the button is hovered or focused (CSS length). Tier object {desktop,tablet,mobile}; empty keeps the resting gap. The button's own box widens with the gap, so a bottom-border underline stretches under the label and the icon; the gap eases over the style's hover duration."
+		},
+		"visualOnly": {
+			"type": "boolean",
+			"default": false,
+			"description": "Renders the button as a non-interactive <span> (no link, no button, not focusable, hidden from assistive technology) for a call-to-action inside a card that is itself the link (the container's block-link setting). It takes its hover look from the card and has no lift of its own."
 		},
 		"focusStyle": {
 			"type": "string",

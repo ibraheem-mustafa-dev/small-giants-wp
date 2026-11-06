@@ -37,9 +37,9 @@ if ( ! function_exists( 'sgs_separators_hover_selectors' ) ) {
 		$focus = ':hover' !== $state;
 		$parts = array();
 		if ( ! $heads ) {
-			$on      = $item . ':not(:first-child)' . ( $focus ? ':focus-within' : ':hover' );
+			$on      = $item . ':not(:first-child)' . ( $focus ? ':has(:focus-visible)' : ':hover' );
 			$parts[] = $on . $pseudo;
-			$parts[] = $item . ( $focus ? ':focus-within' : ':hover' ) . ' + ' . $item . $pseudo;
+			$parts[] = $item . ( $focus ? ':has(:focus-visible)' : ':hover' ) . ' + ' . $item . $pseudo;
 			return $parts;
 		}
 		foreach ( $heads as $head ) {

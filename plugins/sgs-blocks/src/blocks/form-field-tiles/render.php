@@ -330,6 +330,13 @@ if ( '' !== $sgs_ft_selected_border ) {
 }
 // The chosen tile's border width (empty keeps the stylesheet's 3px of the checkmark and border styles) and its offset: the
 // tile moves by the x and y lengths, which may be negative (up and to the left), as a draft's lifted chosen chip does.
+// The chosen tile's text colour: the tile's own colour (the icon follows it) and, past any label or description colour
+// the tile text controls set, the label and the description themselves.
+$sgs_ft_selected_text = sgs_colour_value( (string) ( $attributes['tileSelectedLabelColour'] ?? '' ) );
+if ( '' !== $sgs_ft_selected_text ) {
+	$sgs_ft_selected_decls[] = 'color:' . $sgs_ft_selected_text;
+	$sgs_ft_supports_css    .= '.' . $sgs_ft_uid . ' .sgs-form-tile--selected .sgs-form-tile__label,.' . $sgs_ft_uid . ' .sgs-form-tile--selected .sgs-form-tile__description,.' . $sgs_ft_uid . ' .sgs-form-tile:has(input:checked) .sgs-form-tile__label,.' . $sgs_ft_uid . ' .sgs-form-tile:has(input:checked) .sgs-form-tile__description{color:' . $sgs_ft_selected_text . ';}';
+}
 $sgs_ft_selected_width = sgs_css_single_length_value( (string) ( $attributes['tileSelectedBorderWidth'] ?? '' ) );
 if ( '' !== $sgs_ft_selected_width ) {
 	$sgs_ft_selected_decls[] = 'border-width:' . $sgs_ft_selected_width;
@@ -353,6 +360,34 @@ if ( array() !== $sgs_ft_selected_decls ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile--selected,.' . $sgs_ft_uid . ' .sgs-form-tile:has(input:checked){' . implode( ';', $sgs_ft_selected_decls ) . ';}';
 }
 
+// ── The chosen tile's tick: colour, circle fill, size and (corner badge) distance from the top and end edges. The
+// stylesheet draws the tick from the element's colour and size, so one rule on the check element is the whole look. ──
+$sgs_ft_check_position = in_array( $attributes['selectedCheckPosition'] ?? '', array( 'inline-start', 'corner' ), true ) ? $attributes['selectedCheckPosition'] : '';
+$sgs_ft_check_decls    = array();
+$sgs_ft_check_colour   = sgs_colour_value( (string) ( $attributes['tileCheckColour'] ?? '' ) );
+if ( '' !== $sgs_ft_check_colour ) {
+	$sgs_ft_check_decls[] = 'color:' . $sgs_ft_check_colour;
+}
+$sgs_ft_check_fill = sgs_colour_value( (string) ( $attributes['tileCheckBackgroundColour'] ?? '' ) );
+if ( '' !== $sgs_ft_check_fill ) {
+	$sgs_ft_check_decls[] = 'background-color:' . $sgs_ft_check_fill;
+}
+$sgs_ft_check_size = sgs_css_single_length_value( (string) ( $attributes['tileCheckSize'] ?? '' ) );
+if ( '' !== $sgs_ft_check_size ) {
+	$sgs_ft_check_decls[] = '--sgs-tile-check-size:' . $sgs_ft_check_size;
+	$sgs_ft_check_decls[] = 'width:' . $sgs_ft_check_size;
+	$sgs_ft_check_decls[] = 'height:' . $sgs_ft_check_size;
+}
+// The inline tick is part of the tile's row, so only the corner badge has an inset.
+$sgs_ft_check_inset = sgs_css_single_length_value( (string) ( $attributes['tileCheckInset'] ?? '' ) );
+if ( '' !== $sgs_ft_check_inset && 'inline-start' !== $sgs_ft_check_position ) {
+	$sgs_ft_check_decls[] = 'top:' . $sgs_ft_check_inset;
+	$sgs_ft_check_decls[] = 'inset-inline-end:' . $sgs_ft_check_inset;
+}
+if ( array() !== $sgs_ft_check_decls ) {
+	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile__check{' . implode( ';', $sgs_ft_check_decls ) . ';}';
+}
+
 if ( '' !== $sgs_ft_supports_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators intact — $sgs_ft_supports_css is entirely style-engine-
@@ -367,7 +402,7 @@ if ( ! $multi ) {
 	$sgs_ft_default_values = array_slice( $sgs_ft_default_values, 0, 1 );
 }
 
-$sgs_ft_extra_class = trim( 'sgs-form-field--tiles-style-' . esc_attr( $selected_style ) . ' ' . implode( ' ', $sgs_ft_supports_classes ) );
+$sgs_ft_extra_class = trim( 'sgs-form-field--tiles-style-' . esc_attr( $selected_style ) . ( '' !== $sgs_ft_check_position ? ' sgs-form-field--tiles-check-' . $sgs_ft_check_position : '' ) . ' ' . implode( ' ', $sgs_ft_supports_classes ) );
 
 // ── Outer form-field wrapper (field_open/field_close — preserved for forms system) ──
 echo field_open( $attributes, 'tiles', $sgs_ft_extra_class ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — field_open() returns safe markup.

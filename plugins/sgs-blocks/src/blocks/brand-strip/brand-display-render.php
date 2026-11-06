@@ -95,7 +95,7 @@ if ( ! function_exists( 'sgs_brand_strip_text_style_css' ) ) {
 		$hover_colour = $attributes['brandTextColourHover'] ?? '';
 		if ( '' !== $hover_colour && function_exists( 'sgs_colour_value' ) ) {
 			$rules[] = "{$root_sel}:hover .sgs-brand-strip__brand-text,"
-				. "{$root_sel}:focus-within .sgs-brand-strip__brand-text"
+				. "{$root_sel}:has(:focus-visible) .sgs-brand-strip__brand-text"
 				. '{color:' . sgs_colour_value( $hover_colour ) . ';}';
 		}
 

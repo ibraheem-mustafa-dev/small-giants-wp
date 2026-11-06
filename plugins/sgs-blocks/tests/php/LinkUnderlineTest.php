@@ -27,7 +27,7 @@ final class LinkUnderlineTest extends TestCase {
 		$css = $this->text( array( 'linkUnderline' => 'sweep' ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration:none;background-image:linear-gradient\(currentColor,currentColor\);[^}]*background-size:0 var\(--wp--custom--link-sweep--thickness, 1px\);/', $css );
-		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]* a:hover\{background-size:100% var\(--wp--custom--link-sweep--thickness, 1px\);?\}/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/:where\(:root:not\(\.sgs-touch-input\)\)[^{]* a:hover\{background-size:100% var\(--wp--custom--link-sweep--thickness, 1px\);?\}/', $css, 'hover sits behind the touch guard' );
 		$this->assertMatchesRegularExpression( '/ a:focus-visible\{background-size:100% /', $css, 'keyboard focus shows the line too' );
 		$this->assertStringContainsString( ' a:dir(rtl){background-position:100% 100%;}', $css );
 		$this->assertMatchesRegularExpression( '/@media ?\(prefers-reduced-motion: reduce\)\{[^{]* a\{transition:none;\}\}/', $css );
@@ -76,7 +76,7 @@ final class LinkUnderlineTest extends TestCase {
 		$css = $this->text( array( 'linkUnderline' => 'hover', 'linkUnderlineThickness' => '2px', 'linkUnderlineOffset' => '4px', 'linkUnderlineColour' => '#FFFAF0' ) )['css'];
 
 		$this->assertMatchesRegularExpression( '/ a\{text-decoration-line:none;text-decoration-thickness:2px;text-decoration-color:#FFFAF0;text-underline-offset:4px;\}/', $css, 'no line at rest, the longhands set' );
-		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]* a:hover\{text-decoration-line:underline;?\}/', $css, 'hover sits behind the touch guard' );
+		$this->assertMatchesRegularExpression( '/:where\(:root:not\(\.sgs-touch-input\)\)[^{]* a:hover\{text-decoration-line:underline;?\}/', $css, 'hover sits behind the touch guard' );
 		$this->assertMatchesRegularExpression( '/ a:focus-visible\{text-decoration-line:underline;?\}/', $css, 'keyboard focus shows the line too' );
 		$this->assertMatchesRegularExpression( '/@media ?\(forced-colors: active\)\{[^{]* a\{text-decoration-line:underline;\}\}/', $css, 'forced colours: the line shows at rest, as longhands' );
 	}

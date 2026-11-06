@@ -20,7 +20,11 @@
 
 import '../../shared/nav-interactivity/store';
 import initDrawerMotionState from './drawer-motion-state';
+import { bootSvgParts } from '../../shared/svg-parts/svg-parts';
 
 // The root carries `data-sgs-motion-state`: the store announces each open and close, and the drawer publishes it as the
 // `open` motion state (Spec 38A FR-38A-51). See drawer-motion-state.js.
 initDrawerMotionState();
+
+// A drawer logo printed inline can animate its named parts (src/shared/svg-parts/svg-parts.js).
+bootSvgParts();

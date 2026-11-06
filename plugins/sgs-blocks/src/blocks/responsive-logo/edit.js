@@ -23,6 +23,7 @@ import {
 	SgsBorderControl,
 	SgsColourPanel,
 	SsrPreviewGuard,
+	SvgPartsControls,
 } from '../../components';
 
 // Units offered on the max-width/max-height UnitControls (mirrors the shared
@@ -505,6 +506,18 @@ export default function Edit( { attributes, setAttributes } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+					{ !! inlineSvg && (
+						<SvgPartsControls
+							attributes={ attributes }
+							setAttributes={ setAttributes }
+							names={ {
+								parts: 'svgParts',
+								trigger: 'svgPartsTrigger',
+								cooldown: 'svgPartsHoverCooldown',
+							} }
+							label={ __( 'Logo part animation', 'sgs-blocks' ) }
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Link to homepage', 'sgs-blocks' ) }
 						help={ __(

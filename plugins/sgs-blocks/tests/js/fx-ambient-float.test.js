@@ -170,6 +170,31 @@ describe( 'ambient float animation', () => {
 		] );
 	} );
 
+	test( 'a scale range adds --sgs-float-s to the same animation; equal or absent values add nothing', () => {
+		props = {
+			'--sgs-float-travel': '10px',
+			'--sgs-float-scale-from': '1',
+			'--sgs-float-scale-to': '1.088',
+		};
+		const { el } = mount( {} );
+		boot();
+		expect( el.animate ).toHaveBeenCalledTimes( 1 );
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			{ '--sgs-float-y': '0px', '--sgs-float-s': '1' },
+			{ '--sgs-float-y': '10px', '--sgs-float-s': '1.088' },
+		] );
+	} );
+
+	test( 'NEGATIVE CONTROL: no scale values means no --sgs-float-s', () => {
+		props = { '--sgs-float-travel': '10px' };
+		const { el } = mount( {} );
+		boot();
+		expect( el.animate.mock.calls[ 0 ][ 0 ] ).toEqual( [
+			{ '--sgs-float-y': '0px' },
+			{ '--sgs-float-y': '10px' },
+		] );
+	} );
+
 	test( 'axis both with no travel-y uses the travel for y', () => {
 		props = { '--sgs-float-travel': '10px' };
 		const { el } = mount( {

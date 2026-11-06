@@ -41,14 +41,14 @@ $has = static function ( string $haystack, string $needle ): bool {
 
 // 1. sgs_hover_state_rules().
 Sgs_Focus_Rests::reset();
-$guard   = '@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .x:hover{color:red}}';
+$guard   = ':where(:root:not(.sgs-touch-input)) .x:hover{color:red}';
 $focus   = '.x:focus-visible{color:red}';
 $flag_off = sgs_hover_state_rules( '.x', 'color:red' );
 $check( $guard . $focus === $flag_off, '1. flag off: the hover rule then the focus rule, byte for byte: ' . $flag_off );
 Sgs_Focus_Rests::open_frame( array( 'blockName' => 'sgs/button', 'attrs' => array( 'sgsFocusRests' => true ) ) );
 $flag_on = sgs_hover_state_rules( '.x', 'color:red' );
 $check( $guard === $flag_on, '1. flag on: the guarded hover rule only: ' . $flag_on );
-$check( ! $has( sgs_hover_state_rules( '.x', 'color:red', ':focus-within', '::after' ), ':focus-within' ), '1. flag on: no :focus-within twin either' );
+$check( ! $has( sgs_hover_state_rules( '.x', 'color:red', ':focus-within', '::after' ), ':has(:focus-visible)' ), '1. flag on: no keyboard-focus twin either' );
 
 // 2. The stack.
 Sgs_Focus_Rests::open_frame( array( 'blockName' => 'sgs/icon', 'attrs' => array() ) );

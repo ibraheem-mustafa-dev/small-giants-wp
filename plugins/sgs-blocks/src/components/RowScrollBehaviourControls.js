@@ -73,6 +73,7 @@ export default function RowScrollBehaviourControls( {
 	const {
 		rowTransparent,
 		rowHideOnScroll,
+		rowScrollAway,
 		rowShrink,
 		rowShrinkHideTarget,
 		rowShrinkPadding,
@@ -230,6 +231,7 @@ export default function RowScrollBehaviourControls( {
 					setAttributes( {
 						rowTransparent: {},
 						rowHideOnScroll: {},
+						...( rowScrollAway ? { rowScrollAway: {} } : {} ),
 						rowShrink: {},
 						rowShrinkHideTarget: '',
 						rowShrinkPadding: {},
@@ -293,6 +295,28 @@ export default function RowScrollBehaviourControls( {
 						defaultValue="off"
 					/>
 				</ToolsPanelItem>
+
+				{ undefined !== rowScrollAway && (
+					<ToolsPanelItem
+						label={ __( 'Scroll this row away with the page', 'sgs-blocks' ) }
+						hasValue={ () => Object.keys( rowScrollAway ).length > 0 }
+						onDeselect={ () => setAttributes( { rowScrollAway: {} } ) }
+						isShownByDefault
+					>
+						<ResponsiveTriStateControl
+							label={ __( 'Scroll this row away with the page', 'sgs-blocks' ) }
+							help={ __(
+								'This row scrolls out of view with the page, as ordinary content does, and the rows after it pin at the top of the screen. Put it first in the header; it needs a sticky header.',
+								'sgs-blocks'
+							) }
+							value={ rowScrollAway }
+							onChange={ ( value ) =>
+								setAttributes( { rowScrollAway: value } )
+							}
+							defaultValue="off"
+						/>
+					</ToolsPanelItem>
+				) }
 
 				<ToolsPanelItem
 					label={ __(

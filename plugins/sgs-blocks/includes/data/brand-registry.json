@@ -1,5 +1,5 @@
 {
-	"$comment": "The one brand and contact registry (icon plan Phase A step 5). PHP reads it through includes/helpers-brand-glyphs.php::sgs_brand_registry(); the editor imports it through src/utils/brand-registry.js. Order is the order a social row lists its links. Per entry: slug, label (the brand's own name), siteInfoKey (the Site Info key whose value links to it), autoLabel (the link's accessible name when the client gives none), colour (the brand's official hex, '' for a contact entry with no brand colour), glyph ({svg} a fill-based mark painted with currentColor, or {lucide} a Lucide icon name). Optional: glyphBrand (a mark with its own fixed colours, drawn instead of glyph when brand colours apply) with ground (the background under it). Brand glyph paths: Simple Icons (https://simpleicons.org, CC0 1.0), fetched 2026-09-24; the four-colour Google mark is Google's own.",
+	"$comment": "The one brand and contact registry (icon plan Phase A step 5). PHP reads it through includes/helpers-brand-glyphs.php::sgs_brand_registry(); the editor imports it through src/utils/brand-registry.js. Order is the order a social row lists its links. Per entry: slug, label (the brand's own name), siteInfoKey (the Site Info key whose value links to it), autoLabel (the link's accessible name when the client gives none), colour (the brand's official hex, '' for a contact entry with no brand colour), glyph ({svg} a fill-based mark painted with currentColor, or {lucide} a Lucide icon name; an entry with both draws the svg and keeps the Lucide name to link a Lucide pick of that icon to the brand). Optional: glyphBrand (a mark with its own fixed colours, drawn instead of glyph when brand colours apply) with ground (the background under it). Brand glyph paths: Simple Icons (https://simpleicons.org, CC0 1.0), fetched 2026-09-24; the four-colour Google mark is Google's own.",
 	"brands": [
 		{
 			"slug": "phone",
@@ -43,7 +43,7 @@
 			"autoLabel": "Follow us on Facebook",
 			"colour": "#1877F2",
 			"aliases": [ "fb" ],
-			"glyph": { "lucide": "facebook" }
+			"glyph": { "lucide": "facebook", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M13.5 21v-7.5h2.5l.4-3h-2.9V8.6c0-.9.25-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.9v3h2.5V21h3.1z\"/></svg>" }
 		},
 		{
 			"slug": "instagram",
@@ -54,7 +54,7 @@
 			"aliases": [ "ig", "insta" ],
 			"logoGradient": "linear-gradient(45deg, #FEDA75 0%, #FA7E1E 25%, #D62976 50%, #962FBF 75%, #4F5BD5 100%)",
 			"groundGradient": "radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%)",
-			"glyph": { "lucide": "instagram" }
+			"glyph": { "lucide": "instagram", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm5.5-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z\"/></svg>" }
 		},
 		{
 			"slug": "x",
@@ -73,7 +73,7 @@
 			"siteInfoKey": "socials.linkedin",
 			"autoLabel": "Follow us on LinkedIn",
 			"colour": "#0A66C2",
-			"glyph": { "lucide": "linkedin" }
+			"glyph": { "lucide": "linkedin", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z\"/></svg>" }
 		},
 		{
 			"slug": "youtube",
@@ -82,7 +82,7 @@
 			"autoLabel": "Watch us on YouTube",
 			"colour": "#FF0000",
 			"aliases": [ "yt" ],
-			"glyph": { "lucide": "youtube" }
+			"glyph": { "lucide": "youtube", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z\"/></svg>" }
 		},
 		{
 			"slug": "tiktok",

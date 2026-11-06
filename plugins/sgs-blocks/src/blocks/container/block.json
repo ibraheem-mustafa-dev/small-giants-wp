@@ -696,6 +696,11 @@
 			"default": {},
 			"description": "Per tier CSS length: the width of each item in a sideways-scrolling row. Unset: 80%."
 		},
+		"hoverAsCard": {
+			"type": "boolean",
+			"default": false,
+			"description": "Hover as one card: the container becomes a hover group without a link (data-sgs-hover-group on its root), so children whose hover settings follow the container play from one hover or focus anywhere on it. Off emits nothing."
+		},
 		"pinEdge": {
 			"type": "object",
 			"default": {},

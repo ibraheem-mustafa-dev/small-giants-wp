@@ -173,8 +173,14 @@ $shr_transparent_on_tiers = sgs_resolve_on_tiers( isset( $attributes['rowTranspa
 $shr_hide_on_scroll_tiers = sgs_resolve_on_tiers( isset( $attributes['rowHideOnScroll'] ) ? $attributes['rowHideOnScroll'] : array(), 'on', 'off' );
 // Per-row shrink. Same tier resolver, own data-attr + state class.
 $shr_shrink_tiers = sgs_resolve_on_tiers( isset( $attributes['rowShrink'] ) ? $attributes['rowShrink'] : array(), 'on', 'off' );
-if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) || ! empty( $shr_shrink_tiers ) ) {
+// Scrolls away with the page: the row stays in the header's flow and the header's sticky offset accounts for it
+// (src/header-behaviours/view.js::syncScrollAway).
+$shr_scroll_away_tiers = sgs_resolve_on_tiers( isset( $attributes['rowScrollAway'] ) ? $attributes['rowScrollAway'] : array(), 'on', 'off' );
+if ( ! empty( $shr_transparent_on_tiers ) || ! empty( $shr_hide_on_scroll_tiers ) || ! empty( $shr_shrink_tiers ) || ! empty( $shr_scroll_away_tiers ) ) {
 	$classes[] = 'sgs-row-behaviour';
+	if ( ! empty( $shr_scroll_away_tiers ) ) {
+		$shr_extra_attrs['data-sgs-row-scroll-away'] = implode( ' ', $shr_scroll_away_tiers );
+	}
 	if ( ! empty( $shr_transparent_on_tiers ) ) {
 		$shr_extra_attrs['data-sgs-row-transparent'] = implode( ' ', $shr_transparent_on_tiers );
 	}

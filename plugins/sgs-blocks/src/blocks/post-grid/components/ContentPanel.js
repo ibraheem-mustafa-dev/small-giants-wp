@@ -32,6 +32,7 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 		readMoreText,
 		readMoreIcon,
 		readMorePin,
+		cardLink,
 	} = attributes;
 
 	return (
@@ -54,6 +55,7 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 							metaLayout: '',
 							showReadMore: true,
 							readMoreText: 'Read more',
+							cardLink: false,
 						} )
 					}
 				>
@@ -331,6 +333,18 @@ export default function ContentPanel( { attributes, setAttributes, set } ) {
 								</>
 							) }
 						</SgsBooleanField>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Whole card is the link', 'sgs-blocks' ) }
+						hasValue={ () => !! cardLink }
+						onDeselect={ () => setAttributes( { cardLink: false } ) }
+					>
+						<SgsBooleanField
+							label={ __( 'Whole card is the link', 'sgs-blocks' ) }
+							checked={ !! cardLink }
+							onChange={ set( 'cardLink' ) }
+							help={ __( 'The whole card opens the post, with one link named by the post title. The read more text stays as a visual cue, not a second link.', 'sgs-blocks' ) }
+						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
 	);

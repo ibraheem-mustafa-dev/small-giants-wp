@@ -40,6 +40,7 @@ import StepSettingsPanel from './StepSettingsPanel';
 import ButtonLabelControls from './ButtonLabelControls';
 import FieldMarksPanel from './FieldMarksPanel';
 import UploadZonePanel from './UploadZonePanel';
+import FieldFocusPanel from './FieldFocusPanel';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -794,6 +795,27 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						attributes,
 						setAttributes,
 					} ),
+					fillRow( {
+						key: 'field-focus-background',
+						label: __( 'Focused field background colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldFocusBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'field-focus-border',
+						label: __( 'Focused field border colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldFocusBorderColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'field-focus-ring',
+						label: __( 'Focus ring colour', 'sgs-blocks' ),
+						attrs: { base: 'fieldFocusRingColour' },
+						attributes,
+						setAttributes,
+					} ),
 					textRow( {
 						key: 'field-text',
 						label: __( 'Field text colour', 'sgs-blocks' ),
@@ -1209,6 +1231,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				</PanelBody>
 				<FieldMarksPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<UploadZonePanel attributes={ attributes } setAttributes={ setAttributes } />
+				<FieldFocusPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody title={ __( 'Typography', 'sgs-blocks' ) } initialOpen={ false }>
 					{ /* One Typography panel, one target per surface. 'All text' (prefix '')
 					   paints the form root and is inherited by anything the other targets

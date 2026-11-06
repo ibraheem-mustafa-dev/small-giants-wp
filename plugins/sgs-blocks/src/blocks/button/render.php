@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-site-info-label.p
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-circle.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-focus.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-press.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-icon-gap-hover.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-link-underline.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-button-inner-kses.php';
 
@@ -125,7 +126,13 @@ $rel           = isset( $attributes['rel'] ) ? esc_attr( $attributes['rel'] ) : 
 $download      = ! empty( $attributes['download'] );
 // The tag is auto-derived: a non-empty URL renders <a>, otherwise <button>,
 // preserving link-vs-button semantics without a setting.
-$tag_name   = $has_url ? 'a' : 'button';
+// `visualOnly` (a call-to-action inside a card that is itself the link, sgsBlockLink): the button is a plain <span>,
+// no link and no control, so the card's overlay link is the only interactive element.
+$visual_only = ! empty( $attributes['visualOnly'] );
+$tag_name    = $visual_only ? 'span' : ( $has_url ? 'a' : 'button' );
+if ( $visual_only ) {
+	$sgs_link_source_wrapper_extra = array();
+}
 $is_submit  = ! empty( $attributes['isSubmit'] );
 $aria_label = isset( $attributes['ariaLabel'] ) && $attributes['ariaLabel'] ? esc_attr( $attributes['ariaLabel'] ) : esc_attr( $label );
 // Spec 35 T3.4 / Part C — WCAG 2.1 AA 4.1.2 (Name, Role, Value). The inspector
@@ -481,6 +488,14 @@ if ( $hover_rules ) {
 	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", implode( ';', $hover_rules ) );
 }
 
+// Hover gap (helpers-button-icon-gap-hover.php): the label-to-icon gap changes on hover, per device. The root
+// transitions `gap` over the preset's hover duration only while it is set (style.css, --sgs-btn-gap-transition).
+$icon_gap_hover_css = sgs_button_icon_gap_hover_css( ".{$uid}.sgs-button", $attributes['iconGapHover'] ?? array() );
+if ( '' !== $icon_gap_hover_css ) {
+	$scoped_css_parts[] = ".{$uid}.sgs-button{--sgs-btn-gap-transition:var(--sgs-btn-transition-duration,0.18s);}";
+	$scoped_css_parts[] = $icon_gap_hover_css;
+}
+
 // Icon hover colour.
 if ( $icon_col_hov ) {
 	$scoped_css_parts[] = sgs_hover_state_rules( ".{$uid}.sgs-button", 'color:' . sgs_colour_value( $icon_col_hov ), ':focus-visible', ' .sgs-button__icon' );
@@ -704,8 +719,12 @@ if ( in_array( $inherit_style, array( 'primary', 'secondary', 'outline', 'link' 
 	$btn_classes[] = 'sgs-button--' . $inherit_style;
 }
 // builtInHoverLift off: the style's own hover movement is dropped (style.css, .sgs-button--hover-still).
-if ( false === ( $attributes['builtInHoverLift'] ?? true ) ) {
+if ( false === ( $attributes['builtInHoverLift'] ?? true ) || $visual_only ) {
 	$btn_classes[] = 'sgs-button--hover-still';
+}
+// Visual-only: the card's hover drives the look (style.css, .sgs-button--visual-only).
+if ( $visual_only ) {
+	$btn_classes[] = 'sgs-button--visual-only';
 }
 
 // WP-native colour support (skip-serialised): re-add the standard preset
@@ -1045,7 +1064,12 @@ if ( $scoped_css_parts ) {
 $allowed_inner = sgs_button_inner_allowed_html();
 
 // Build the element.
-if ( 'button' === $tag_name ) {
+if ( 'span' === $tag_name ) {
+	// The card's overlay link carries the accessible name, so the cue is hidden from assistive technology.
+	echo '<span aria-hidden="true" ' . $wrapper_attr . '>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is trusted WP output
+	echo wp_kses( $inner_html, $allowed_inner );
+	echo '</span>';
+} elseif ( 'button' === $tag_name ) {
 	$type_attr = $is_submit ? 'submit' : 'button';
 	$aria_str  = ( ( $has_explicit_aria || 'only' === $icon_position ) && '' !== trim( $aria_label ) ) ? ' aria-label="' . esc_attr( $aria_label ) . '"' : '';
 

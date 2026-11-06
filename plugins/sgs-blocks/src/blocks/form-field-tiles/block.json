@@ -53,6 +53,7 @@
 					"order": 2,
 					"selector": ".sgs-form-tile--selected, .sgs-form-tile:has(input:checked)",
 					"clusters": [
+						"text",
 						"fill",
 						"layout"
 					],
@@ -61,12 +62,34 @@
 						"css:background-color": "tileSelectedBackgroundColour",
 						"css:border-color": "tileSelectedBorderColour",
 						"css:border-width": "tileSelectedBorderWidth",
+						"css:color": "tileSelectedLabelColour",
 						"css:transform": "tileSelectedOffset",
 						"css:box-shadow": "tileSelectedShadow",
 						"css:box-shadow-color": "tileSelectedShadowColour"
 					},
 					"_note": "The chosen tile (render.php, scoped to the field's uid class, after the stylesheet's selectedStyle rules so it outranks them on the same specificity). Empty keeps the selectedStyle look.",
 					"motion": false
+				},
+				"tile-check": {
+					"label": "Chosen tile tick",
+					"layer": "CONTENT",
+					"order": 2,
+					"selector": ".sgs-form-tile__check",
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"position"
+					],
+					"attrMap": {
+						"css:color": "tileCheckColour",
+						"css:background-color": "tileCheckBackgroundColour",
+						"css:width": "tileCheckSize",
+						"css:height": "tileCheckSize",
+						"css:top": "tileCheckInset"
+					},
+					"motion": false,
+					"_note": "The tick of the chosen tile (render.php scoped rule on the check element; form/style.css draws the tick from the element's colour and size). selectedCheckPosition (no CSS member of its own) adds a sgs-form-field--tiles-check-{position} class to the field, which shows the tick on the chosen tile independent of selectedStyle; inline-start lays the tile out in a row with the tick first."
 				},
 				"tile-label": {
 					"selector": ".sgs-form-tile__label",
@@ -663,6 +686,41 @@
 		"tileSelectedShadowColour": {
 			"type": "string",
 			"default": ""
+		},
+		"tileSelectedLabelColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the chosen tile (its label, description and icon). Empty = the tile's own text colours."
+		},
+		"selectedCheckPosition": {
+			"type": "string",
+			"enum": [
+				"",
+				"inline-start",
+				"corner"
+			],
+			"default": "",
+			"description": "Where the chosen tile's tick sits: inline-start (before the text, the tile lays out in a row) or corner (top-end badge). Either shows the tick whatever the Selected tile style is. Empty = the corner badge of the checkmark style only."
+		},
+		"tileCheckColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tick mark. Empty = white on the corner badge, the tile's text colour inline."
+		},
+		"tileCheckBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Fill of the circle behind the tick. Empty = the accent-text colour on the corner badge, no circle inline."
+		},
+		"tileCheckSize": {
+			"type": "string",
+			"default": "",
+			"description": "Width and height of the tick circle (a length); the tick scales with it. Empty = 20px on the corner badge, 14px inline."
+		},
+		"tileCheckInset": {
+			"type": "string",
+			"default": "",
+			"description": "How far the corner badge sits from the tile's top and end edges (a length). Empty = 0.5rem."
 		},
 		"defaultValue": {
 			"type": "string",

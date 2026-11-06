@@ -31,6 +31,7 @@ if ( ! function_exists( 'sgs_business_info_open_status_labels' ) ) {
 			'closes'   => $pick( 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ),
 			'opens'    => $pick( 'openStatusOpensLabel', __( 'Opens at', 'sgs-blocks' ) ),
 			'reopens'  => $pick( 'openStatusReopensLabel', __( 'Closed until', 'sgs-blocks' ) ),
+			'pattern'  => $pick( 'openStatusLinePattern', '{lead} {time} {when}' ),
 			'today'    => __( 'today', 'sgs-blocks' ),
 			'tomorrow' => __( 'tomorrow', 'sgs-blocks' ),
 			'noon'     => __( 'noon', 'sgs-blocks' ),
@@ -79,7 +80,7 @@ if ( ! function_exists( 'sgs_business_info_open_status_html' ) ) {
 		// Fallback: no pill, the stored hours as text. An editor preview shows the open state instead.
 		$state     = $editor ? 'open' : '';
 		$pill_attr = $editor ? '' : ' hidden';
-		$line_text = $editor ? $labels['closes'] . ' 5pm ' . $labels['today'] : $fallback;
+		$line_text = $editor ? trim( (string) preg_replace( '/\s+/', ' ', strtr( $labels['pattern'], array( '{lead}' => $labels['closes'], '{time}' => '5pm', '{when}' => $labels['today'] ) ) ) ) : $fallback;
 		$show_text = $editor && ! $show_line ? '' : $line_text;
 
 		return sprintf(

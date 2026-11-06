@@ -59,10 +59,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-pc-1.wp-block-sgs-product-card:focus-within": [
+        " || .sgs-pc-1.wp-block-sgs-product-card:has(:focus-visible)": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-pc-1.wp-block-sgs-product-card:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-pc-1.wp-block-sgs-product-card:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

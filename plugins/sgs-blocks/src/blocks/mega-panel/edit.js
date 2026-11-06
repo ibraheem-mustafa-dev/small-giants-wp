@@ -56,6 +56,7 @@ import {
 } from '../../components';
 import drawerPreviewCss from './drawer-preview';
 import DrawerShellControls from './DrawerShellControls';
+import DrawerHoverControls from './DrawerHoverControls';
 import sectionColourRows from './section-colour-rows';
 import MediaElementPanel from '../../components/MediaElementPanel';
 import {
@@ -292,6 +293,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		drawerCardTagRadius,
 		drawerLinkTrailingIcon,
 		drawerLinkTrailingColour,
+		drawerLinkTrailingColourHover,
+		drawerLinkTextShiftHover,
+		drawerCardHoverLift,
+		drawerCardHoverRotate,
+		drawerCardLinkShiftHover,
+		drawerHoverDuration,
+		drawerHoverEasing,
+		drawerHoverEasingCustom,
 		drawerCardTagPadding,
 		drawerCardTitleSize,
 		drawerCardTitleLineHeight,
@@ -613,6 +622,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				drawerCardTagRadius,
 				drawerLinkTrailingIcon,
 				drawerLinkTrailingColour,
+				drawerLinkTrailingColourHover,
+				drawerLinkTextShiftHover,
+				drawerCardHoverLift,
+				drawerCardHoverRotate,
+				drawerCardLinkShiftHover,
+				drawerHoverDuration,
+				drawerHoverEasing,
+				drawerHoverEasingCustom,
 		  } )
 		: '';
 
@@ -1547,6 +1564,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ToolsPanelItem>
 					</ToolsPanel>
 					<DrawerShellControls
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
+					<DrawerHoverControls
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>

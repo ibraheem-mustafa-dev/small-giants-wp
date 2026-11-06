@@ -113,13 +113,13 @@
 		--sgs-me-s: var(--sgs-me-to-s, 1);
 		--sgs-me-sx: var(--sgs-me-to-sx, 1);
 		--sgs-me-sy: var(--sgs-me-to-sy, 1);
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 	to {
 		--sgs-me-s: var(--sgs-me-close-to-s, var(--sgs-me-from-s, 1));
 		--sgs-me-sx: var(--sgs-me-close-to-sx, var(--sgs-me-from-sx, 1));
 		--sgs-me-sy: var(--sgs-me-close-to-sy, var(--sgs-me-from-sy, 1));
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 }
 @keyframes sgs-me-close-opacity {
@@ -340,7 +340,7 @@
 		transform: perspective(var(--sgs-persp-self)) rotateX(calc(var(--sgs-rx-rest) + var(--sgs-me-rx) + var(--sgs-mh-rx) + var(--sgs-tilt-x))) rotateY(calc(var(--sgs-ry-rest) + var(--sgs-me-ry) + var(--sgs-mh-ry) + var(--sgs-tilt-y)));
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="scale"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
-		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
+		scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy));
 	}
 	:is([data-sgs-me~="open"], [data-sgs-me~="state"])[data-sgs-me~="opacity"]:is([data-sgs-motion-state], [data-sgs-motion-state] *) {
 		opacity: calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op));

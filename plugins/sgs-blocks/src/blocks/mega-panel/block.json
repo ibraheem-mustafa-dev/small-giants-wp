@@ -128,11 +128,37 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "drawerLinkHoverBg",
-								"css:background-image": "drawerLinkHoverBgGradient"
-							}
+								"css:background-image": "drawerLinkHoverBgGradient",
+								"css:stroke": "drawerLinkTrailingColourHover"
+							},
+							"_noBaseByDesignNote": "css:stroke (drawerLinkTrailingColourHover) pairs with the resting drawerLinkTrailingColour; the hover colour is painted as background-color on the arrow mask and shown at full opacity."
 						}
 					},
 					"_note": "Each direct-child sgs/container of `.sgs-mega-group`, in the drawer only."
+				},
+				"drawerLinkText": {
+					"selector": ".sgs-mega-group > .wp-block-sgs-container > .sgs-container__inner > .wp-block-sgs-container",
+					"motion": false,
+					"label": "Drawer link text group",
+					"layer": "CONTENT",
+					"order": 5.15,
+					"clusters": [
+						"motion"
+					],
+					"attrMap": {
+						"css:transition-duration": "drawerHoverDuration",
+						"css:transition-timing-function": "drawerHoverEasing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:transform": "drawerLinkTextShiftHover"
+							},
+							"noBaseByDesign": [ "css:transform" ],
+							"_noBaseByDesignNote": "css:transform (drawerLinkTextShiftHover) has no resting counterpart by design: a hover-only slide of the label and description toward the inline end while the row's number stays put. drawerHoverDuration and drawerHoverEasing time every drawer hover effect of this block."
+						}
+					},
+					"_note": "The heading and description group inside a drawer link row (the row's number is its sibling and does not move). In the drawer only."
 				},
 				"drawerLinkNumber": {
 					"motion": false,
@@ -200,6 +226,16 @@
 						"css:gap": "drawerCardGap",
 						"css:aspect-ratio": "drawerCardMediaRatio",
 						"css:margin-block": "drawerCardSpacing"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:transform": "drawerCardHoverLift",
+								"css:rotate": "drawerCardHoverRotate"
+							},
+							"noBaseByDesign": [ "css:transform", "css:rotate" ],
+							"_noBaseByDesignNote": "css:transform (drawerCardHoverLift) and css:rotate (drawerCardHoverRotate) have no resting counterpart by design: a hover-only lift (px, upward) and tilt (degrees) of the drawer aside card."
+						}
 					},
 					"_note": "The aside as a compact horizontal card in the drawer (drawerCardCompact). drawerCardSpacing is margin-bottom when drawerAsideOrder is 'first', margin-top otherwise."
 				},
@@ -275,6 +311,15 @@
 						"css:font-size": "drawerCardLinkSize",
 						"css:background-color": "drawerCardLinkBg",
 						"css:color": "drawerCardLinkColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:transform": "drawerCardLinkShiftHover"
+							},
+							"noBaseByDesign": [ "css:transform" ],
+							"_noBaseByDesignNote": "css:transform (drawerCardLinkShiftHover) has no resting counterpart by design: a hover-only nudge of the card link's arrow toward the inline end when the card is hovered."
+						}
 					},
 					"_note": "The aside's fifth slot (link button) in the drawer: size in the compact card; colours in every card layout."
 				},
@@ -752,6 +797,47 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour of the link rows' trailing arrow. '' uses the row's text colour at 60% opacity."
+		},
+		"drawerLinkTrailingColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the link rows' trailing arrow while the row is hovered or keyboard-focused in the drawer; the arrow also goes to full opacity. '' keeps the resting arrow. Only read when drawerLinkTrailingIcon is 'arrow'."
+		},
+		"drawerLinkTextShiftHover": {
+			"type": "number",
+			"default": 0,
+			"description": "In the drawer: pixels (0 to 60) the link row's label and description slide toward the inline end while the row is hovered or keyboard-focused. The row's number does not move. 0 is off."
+		},
+		"drawerCardHoverLift": {
+			"type": "number",
+			"default": 0,
+			"description": "In the drawer: pixels (0 to 40) the aside card rises while hovered or keyboard-focused. 0 is off."
+		},
+		"drawerCardHoverRotate": {
+			"type": "number",
+			"default": 0,
+			"description": "In the drawer: degrees (-15 to 15; negative is anticlockwise) the aside card tilts while hovered or keyboard-focused. 0 is off."
+		},
+		"drawerCardLinkShiftHover": {
+			"type": "number",
+			"default": 0,
+			"description": "In the drawer: pixels (0 to 40) the aside card link's arrow moves toward the inline end while the card is hovered or keyboard-focused. 0 is off."
+		},
+		"drawerHoverDuration": {
+			"type": "number",
+			"default": 300,
+			"description": "Milliseconds (0 to 3000) for every drawer hover effect of this block (row text slide, arrow colour, card lift and tilt, link nudge)."
+		},
+		"drawerHoverEasing": {
+			"type": "string",
+			"default": "ease",
+			"enum": [ "ease", "ease-out", "ease-in-out", "default", "emphasised", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
+			"description": "Easing curve of the drawer hover effects, from the shared motion easing list (includes/helpers-motion-easing.php)."
+		},
+		"drawerHoverEasingCustom": {
+			"type": "string",
+			"default": "",
+			"description": "A hand-typed cubic-bezier(x1, y1, x2, y2) curve, read only when drawerHoverEasing is 'custom'."
 		},
 		"drawerCardBg": {
 			"type": "string",

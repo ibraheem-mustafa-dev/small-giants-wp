@@ -133,17 +133,17 @@ export function gridItemStateCss( attributes, scope, palette, shadowHoverMap ) {
 				css += `${ cell }{border-color:transparent;position:relative;background-clip:padding-box;}`;
 				css += `${ cell }::before{content:"";position:absolute;inset:0;margin:-${ ringWidth };border-radius:inherit;padding:${ ringWidth };background:${ borderGradient };-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}`;
 				if ( borderGradientHover && borderGradientHover !== borderGradient ) {
-					css += `${ cell }:hover::before,${ cell }:focus-within::before{background:${ borderGradientHover };}`;
+					css += `${ cell }:hover::before,${ cell }:has(:focus-visible)::before{background:${ borderGradientHover };}`;
 				}
 			}
 			if ( bgHover ) {
-				css += `${ cell }:hover,${ cell }:focus-within{${ bgHover };}`;
+				css += `${ cell }:hover,${ cell }:has(:focus-visible){${ bgHover };}`;
 			}
 			if ( textGradient ) {
 				css += `${ cell }{${ textGradient };}`;
 			}
 			if ( textHover ) {
-				css += `${ cell }:hover,${ cell }:focus-within{${ textHover };}`;
+				css += `${ cell }:hover,${ cell }:has(:focus-visible){${ textHover };}`;
 			}
 			if ( lift ) {
 				css += `${ cell }:hover,${ cell }:focus-visible{${ lift };}`;

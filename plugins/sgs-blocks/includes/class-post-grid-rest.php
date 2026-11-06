@@ -182,6 +182,10 @@ class Post_Grid_REST {
 				'default'           => '',
 				'sanitize_callback' => 'sanitize_key',
 			],
+			'cardLink'             => [
+				'type'    => 'boolean',
+				'default' => false,
+			],
 			'aspectRatio'          => [
 				'type'              => 'string',
 				'default'           => '16/10',
@@ -399,6 +403,7 @@ class Post_Grid_REST {
 		$show_readmore = isset( $params['showReadMore'] ) ? (bool) $params['showReadMore'] : true;
 		$readmore_text = isset( $params['readMoreText'] ) ? sgs_rich_text_kses( (string) $params['readMoreText'], false ) : 'Read more';
 		$readmore_icon = isset( $params['readMoreIcon'] ) ? sanitize_key( (string) $params['readMoreIcon'] ) : '';
+		$card_link     = ! empty( $params['cardLink'] );
 		$excerpt_len   = isset( $params['excerptLength'] ) ? absint( $params['excerptLength'] ) : 20;
 		$image_size    = isset( $params['imageSize'] ) ? sanitize_key( $params['imageSize'] ) : 'medium_large';
 		$aspect_ratio  = isset( $params['aspectRatio'] ) ? sanitize_text_field( $params['aspectRatio'] ) : '16/10';
@@ -442,7 +447,7 @@ class Post_Grid_REST {
 		$title     = esc_html( get_the_title( $post_id ) );
 
 		// Build card HTML.
-		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . '">';
+		$card = '<article class="sgs-post-grid__card sgs-post-grid__card--' . esc_attr( $card_style ) . ( $card_link ? ' sgs-post-grid__card--linked sgs-focus-card sgs-focus--inset' : '' ) . '">';
 
 		// --- Image section -----------------------------------------------
 		if ( $show_image ) {
@@ -543,11 +548,20 @@ class Post_Grid_REST {
 
 		// Title with accessible link.
 		if ( $show_title ) {
+			// cardLink: this anchor is the card's one link; style.css stretches it over the card (focus ring on the card via focus.css).
 			$card .= sprintf(
-				'<h3 class="sgs-post-grid__title"><a href="%s"%s>%s</a></h3>',
+				'<h3 class="sgs-post-grid__title"><a href="%s"%s%s>%s</a></h3>',
 				$permalink,
+				$card_link ? ' class="sgs-focus-source"' : '',
 				$title_style,
 				$title
+			);
+		} elseif ( $card_link ) {
+			// No visible title: an empty stretched link named by the post title keeps the card one link.
+			$card .= sprintf(
+				'<a href="%s" class="sgs-post-grid__card-link sgs-focus-source" aria-label="%s"></a>',
+				$permalink,
+				esc_attr( get_the_title( $post_id ) )
 			);
 		}
 
@@ -572,8 +586,9 @@ class Post_Grid_REST {
 					$readmore_glyph = $readmore_svg;
 				}
 			}
+			// cardLink: the title link already covers the card, so the read more is a visual cue (a span), never a second link.
 			$card .= sprintf(
-				'<a href="%s" class="sgs-post-grid__readmore"%s>%s%s</a>',
+				$card_link ? '<span class="sgs-post-grid__readmore"%2$s>%3$s%4$s</span>' : '<a href="%1$s" class="sgs-post-grid__readmore"%2$s>%3$s%4$s</a>',
 				$permalink,
 				$readmore_style,
 				sgs_rich_text_kses( $readmore_text, false ),

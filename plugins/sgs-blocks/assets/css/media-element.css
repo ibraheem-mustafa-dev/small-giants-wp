@@ -399,7 +399,7 @@
 /* Hover colour pair (2026-09-07) — colour-only, no hover variant for
  * width/style/radius, matching sgs/button's/sgs/container's own
  * states.hover.attrMap convention. Same fallback-chain shape as
- * `overlay.css`'s `:hover`/`:focus-within` rule: an unset hover custom
+ * `overlay.css`'s `:hover`/`:has(:focus-visible)` rule: an unset hover custom
  * property leaves the resting value in place. `:focus-visible` (not
  * `:focus-within`) because this rule targets the media element itself,
  * which can itself be the focusable node (e.g. when wrapped by the `link`
@@ -818,7 +818,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 .sgs-media-box:hover::after,
-.sgs-media-box:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
+.sgs-media-box:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
 }
@@ -850,10 +850,9 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  *
  * Custom-property names match `shadow.js`/`shadow.php`'s `css()` output
  * exactly: `--sgs-media-box-shadow`, `--sgs-media-box-shadow-hover`.
- * `:focus-within` rides alongside `:hover` because the media element itself
- * has no meaningful focus state, but a caption/link wrapper around it does —
- * matching the old hand-rolled `$id_sel:hover,$id_sel:focus-within` rule
- * this atom replaces.
+ * `:has(:focus-visible)` rides alongside `:hover` because the media element itself
+ * has no meaningful focus state, but a caption/link wrapper around it does; a tap
+ * or click on that link does not paint it, keyboard focus does.
  */
 
 .sgs-media-el {
@@ -874,16 +873,11 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 	transition-timing-function: var(--wp--custom--easing--ease, ease);
 }
 
-/* Pointer hover is touch-guarded (the two layers of includes/helpers-hover-state.php), so a tap
- * on a touchscreen does not leave the shadow stuck in its hover state; keyboard focus stays
- * unguarded. */
-@media (hover: hover) and (pointer: fine) {
-	:where(:root:not(.sgs-touch-input)) .sgs-media-el:hover {
-		box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
-	}
-}
-
-.sgs-media-el:focus-within {
+/* Pointer hover carries the touch guard of includes/helpers-hover-state.php (active only when the
+ * site chose "Desktop only"); keyboard focus stays unguarded and is keyed on :has(:focus-visible),
+ * so a tap or click does not paint it. */
+:where(:root:not(.sgs-touch-input)) .sgs-media-el:hover,
+.sgs-media-el:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
 }
 

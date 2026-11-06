@@ -129,7 +129,7 @@
             "--sgs-card-grid-columns:3",
             "--sgs-card-grid-gap:30px"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-cg-UID.wp-block-sgs-card-grid .sgs-card-grid__item:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-cg-UID.wp-block-sgs-card-grid .sgs-card-grid__item:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },

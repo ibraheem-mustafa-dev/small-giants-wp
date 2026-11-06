@@ -27,9 +27,12 @@
  *
  * ── OUTPUT ────────────────────────────────────────────────────────────────
  * Writes custom properties only (FR-38A-47): `--sgs-mag-x` / `--sgs-mag-y` (the
- * magnet slot of the translate channel in motion.css), `--sgs-mag-dur` (0ms
- * while tracking, the return duration on release) and `--sgs-mag-ease`. CSS owns
- * every declaration. With no JS the properties stay at their 0px defaults.
+ * magnet slot of the translate channel in motion.css), `--sgs-mag-dur` (the follow
+ * duration while tracking, the return duration on release) and `--sgs-mag-ease`
+ * (the follow easing while tracking, the return easing on release). The transition
+ * on the two pull properties eases the element toward the pointer instead of
+ * snapping; a follow duration of 0 tracks the pointer exactly. CSS owns every
+ * declaration. With no JS the properties stay at their 0px defaults.
  *
  * Reduced motion is read live: a mid-session switch rests every magnet and
  * detaches the listener, and the switch back re-attaches it.
@@ -51,6 +54,7 @@ const PULL_FACTOR = 0.15;
 export const DEFAULT_RADIUS = 120;
 export const DEFAULT_RETURN_MS = 250;
 export const DEFAULT_RETURN_EASE = 'ease-out';
+export const DEFAULT_FOLLOW_MS = 250;
 
 const MQ = '(prefers-reduced-motion: reduce)';
 
@@ -132,6 +136,8 @@ function currentTranslate( el ) {
  * @param {number}      [opts.factor]         Fraction of the offset applied (distance model).
  * @param {number}      [opts.returnDuration] Return time in ms. Default 250.
  * @param {string}      [opts.returnEasing]   CSS easing for the return. Default ease-out.
+ * @param {number}      [opts.followDuration] Time in ms the element takes to ease toward the pointer while tracking (0 snaps). Default 250.
+ * @param {string}      [opts.followEasing]   CSS easing for that follow. Default the return easing.
  * @return {{apply: Function, reset: Function, invalidate: Function, destroy: Function}} The driver.
  */
 export function createMagnet( el, opts = {} ) {
@@ -148,6 +154,15 @@ export function createMagnet( el, opts = {} ) {
 		num( opts.returnDuration, DEFAULT_RETURN_MS )
 	);
 
+	const followMs = Math.max(
+		0,
+		num( opts.followDuration, DEFAULT_FOLLOW_MS )
+	);
+	const returnEase = opts.returnEasing ? String( opts.returnEasing ) : '';
+	const followEase = opts.followEasing
+		? String( opts.followEasing )
+		: returnEase;
+
 	let rest = null;
 	let curX = 0;
 	let curY = 0;
@@ -160,27 +175,26 @@ export function createMagnet( el, opts = {} ) {
 		mover.setAttribute( 'data-sgs-mag-part', '' );
 	}
 
-	const write = ( x, y, ms ) => {
+	const write = ( x, y, ms, ease ) => {
 		mover.style.setProperty( '--sgs-mag-x', x.toFixed( 2 ) + 'px' );
 		mover.style.setProperty( '--sgs-mag-y', y.toFixed( 2 ) + 'px' );
 		mover.style.setProperty( '--sgs-mag-dur', ms + 'ms' );
+		if ( ease ) {
+			mover.style.setProperty( '--sgs-mag-ease', ease );
+		}
 		curX = x;
 		curY = y;
 	};
 
-	if ( opts.returnEasing ) {
-		mover.style.setProperty( '--sgs-mag-ease', String( opts.returnEasing ) );
-	}
-
 	// Resting write up front, so the element sits at its natural spot until
 	// (and unless) the pointer engages it.
-	write( 0, 0, 0 );
+	write( 0, 0, 0, returnEase );
 
 	/** Back to rest over the return duration (once; repeated calls do nothing). */
 	const reset = () => {
 		if ( held || 0 !== curX || 0 !== curY ) {
 			held = false;
-			write( 0, 0, returnMs );
+			write( 0, 0, returnMs, returnEase );
 		}
 	};
 
@@ -235,7 +249,8 @@ export function createMagnet( el, opts = {} ) {
 		write(
 			'y' === axis ? 0 : pull( dx, rest.width / 2, maxX, strength ),
 			'x' === axis ? 0 : pull( dy, rest.height / 2, maxY, strength ),
-			0
+			followMs,
+			followEase
 		);
 	};
 

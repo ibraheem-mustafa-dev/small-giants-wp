@@ -231,7 +231,7 @@ function selfTest() {
 	const themeWrap = transformCss( fixtures.themeWrapGuard.css, 't.css', fixtures.themeWrapGuard.ctx );
 	ok( themeWrap.added === 1, 'wrapGuard: the resting rule still lifts' );
 	ok(
-		themeWrap.css.includes( '@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .a:hover{box-shadow:0px 5px 10px 0px color-mix(in srgb, var(--x) 8%, transparent)}}' ),
+		themeWrap.css.includes( ':where(:root:not(.sgs-touch-input)) .a:hover{box-shadow:0px 5px 10px 0px color-mix(in srgb, var(--x) 8%, transparent)}' ),
 		'wrapGuard: theme CSS gets the touch-safe guarded shape directly, byte-for-byte the hover guard\'s own form'
 	);
 	ok( ! themeWrap.css.includes( '\n.a:hover{box-shadow:' ), 'wrapGuard: no PLAIN (unguarded) sibling rule is also written' );

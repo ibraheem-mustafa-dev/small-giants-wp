@@ -385,7 +385,7 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		// the base rule itself). Width mirrors whatever border-width this
 		// call resolved above, falling to 2px (this helper's typical
 		// default) when unset. NOTE: sgs_border_gradient_css()'s own hover
-		// pairing is fixed to :hover/:focus-within (not this file's
+		// pairing is fixed to :hover/:has(:focus-visible) (not this file's
 		// :focus-visible convention) — a documented, deliberate reuse of the
 		// shared helper rather than a hand-rolled duplicate.
 		if ( function_exists( 'sgs_border_gradient_css' ) && '' !== $colour_border_gradient ) {
@@ -408,8 +408,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			// via $normal_paint against a selector scoped to the STATE
 			// pseudo-class instead of the element. Touch-safety needs the two
 			// states split, each carrying its own guard treatment: the
-			// `:hover` half through both layers (SGS_HOVER_NOT_TOUCH for
-			// layer 2, sgs_hover_media_wrap() for layer 1 — both from
+			// `:hover` half behind the touch-class guard (SGS_HOVER_NOT_TOUCH, wrapped
+			// by sgs_hover_media_wrap(), both from
 			// helpers-hover-state.php, never hand-rolled here), the
 			// `:focus-visible` half — keyboard-reachable, matching
 			// $hover_decls above's convention — left unguarded so a keyboard

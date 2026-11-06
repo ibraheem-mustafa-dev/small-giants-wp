@@ -549,6 +549,30 @@
 			"default": true,
 			"description": "The logo links to the home page."
 		},
+		"chromeLogoInlineSvg": {
+			"type": "boolean",
+			"default": false,
+			"description": "Prints an SVG logo (the desktop logo) inline instead of as an image, so its parts can animate. It replaces the per-device images."
+		},
+		"chromeLogoSvgParts": {
+			"type": "array",
+			"default": [],
+			"items": {
+				"type": "object"
+			},
+			"description": "Named parts of the inline drawer logo to animate: per part an element id (or CSS selector), an entrance, a continuous rotation and a hover replay. Used only while chromeLogoInlineSvg is on. Read by src/shared/svg-parts/svg-parts.js."
+		},
+		"chromeLogoSvgPartsTrigger": {
+			"type": "string",
+			"enum": [ "load", "visible", "every-visible" ],
+			"default": "every-visible",
+			"description": "When the logo parts' entrance plays: on page load, the first time the logo is on screen, or each time it comes on screen (each time the drawer opens)."
+		},
+		"chromeLogoSvgPartsHoverCooldown": {
+			"type": "number",
+			"default": 1400,
+			"description": "Least time between two hover replays of the logo parts, in ms."
+		},
 		"chromeLogoWidth": {
 			"type": "object",
 			"default": {},

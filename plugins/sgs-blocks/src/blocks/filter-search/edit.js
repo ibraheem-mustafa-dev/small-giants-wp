@@ -52,7 +52,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 				? `border-color:${ resolveColourToken( inputBorderColourHover, colourPalette ) } !important;`
 				: '';
 	const filterSearchHoverPreviewCss = inputBorderHoverDecl
-		? `.${ filterSearchPreviewScope } .sgs-filter-search__input:hover,.${ filterSearchPreviewScope } .sgs-filter-search__input:focus-within{${ inputBorderHoverDecl }}`
+		? `.${ filterSearchPreviewScope } .sgs-filter-search__input:hover,.${ filterSearchPreviewScope } .sgs-filter-search__input:has(:focus-visible){${ inputBorderHoverDecl }}`
 		: '';
 
 	const previewTier = usePreviewTier();

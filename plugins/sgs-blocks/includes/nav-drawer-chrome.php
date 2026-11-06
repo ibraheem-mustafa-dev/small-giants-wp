@@ -19,6 +19,9 @@ require_once __DIR__ . '/nav-drawer-chrome-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-extras-css.php';
 require_once __DIR__ . '/nav-drawer-chrome-icons.php';
 require_once __DIR__ . '/helpers-link-source.php';
+require_once __DIR__ . '/helpers-svg-inline-attachment.php';
+require_once __DIR__ . '/helpers-svg-instance-scope.php';
+require_once __DIR__ . '/helpers-svg-parts.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_urls' ) ) {
 	/**
@@ -92,7 +95,32 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 		}
 
 		$linked  = ! array_key_exists( 'chromeLogoLink', $attributes ) || ! empty( $attributes['chromeLogoLink'] );
-		$picture = sprintf(
+		$inline  = ! empty( $attributes['chromeLogoInlineSvg'] ) && $urls['id'] > 0
+			? sgs_svg_inline_root_attributes(
+				sgs_svg_scope_instance( sgs_svg_inline_attachment( $urls['id'] ), wp_unique_id( 'sgs-logo-svg-' ) ),
+				'' === $alt
+					? array(
+						'aria-hidden' => 'true',
+						'focusable'   => 'false',
+					)
+					: array(
+						'role'       => 'img',
+						'aria-label' => $alt,
+						'focusable'  => 'false',
+					)
+			)
+			: '';
+		$parts   = '' !== $inline
+			? sgs_svg_parts_data(
+				$attributes['chromeLogoSvgParts'] ?? array(),
+				(string) ( $attributes['chromeLogoSvgPartsTrigger'] ?? 'every-visible' ),
+				$attributes['chromeLogoSvgPartsHoverCooldown'] ?? 1400
+			)
+			: '';
+		$parts   = '' !== $parts ? ' data-sgs-svg-parts="' . esc_attr( $parts ) . '"' : '';
+		$picture = '' !== $inline
+			? $inline // Rebuilt through sgs_svg_sanitise_document(); added attributes escaped by sgs_svg_inline_root_attributes().
+			: sprintf(
 			'<picture class="sgs-nav-drawer__chrome-logo-picture">%1$s<img class="sgs-nav-drawer__chrome-logo-image" src="%2$s" alt="%3$s"%4$s loading="lazy" decoding="async"></picture>',
 			$sources, // Built from esc_url() values above.
 			esc_url( $src ),
@@ -101,7 +129,7 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 		);
 
 		if ( ! $linked ) {
-			return '<span class="sgs-nav-drawer__chrome-logo">' . $picture . '</span>';
+			return '<span class="sgs-nav-drawer__chrome-logo"' . $parts . '>' . $picture . '</span>';
 		}
 
 		// A linked logo needs a name: its alt text, else "<site name> home".
@@ -118,10 +146,11 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_logo_html' ) ) {
 			)
 			: '';
 		return sprintf(
-			'<a class="sgs-nav-drawer__chrome-logo" href="%1$s"%2$s>%3$s</a>',
+			'<a class="sgs-nav-drawer__chrome-logo" href="%1$s"%2$s%4$s>%3$s</a>',
 			esc_url( home_url( '/' ) ),
 			$label,
-			$picture
+			$picture,
+			$parts // Built from esc_attr() above.
 		);
 	}
 }

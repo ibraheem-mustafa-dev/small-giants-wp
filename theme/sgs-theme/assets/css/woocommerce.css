@@ -590,8 +590,8 @@ h2.wc-block-mini-cart__title {
 	   at extreme contrast ratios, so a fixed-alpha shadow backstops it. */
 	box-shadow: 0 1px 3px rgb(0 0 0 / .08), 0 0 0 1px var(--sgs-elevation-line);
 }
-@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) #sgs-shop-filters:hover,
-:where(:root:not(.sgs-touch-input)) .sgs-shop-filters:hover{box-shadow:0 1px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 0 0 1px var(--sgs-elevation-line)}}
+:where(:root:not(.sgs-touch-input)) #sgs-shop-filters:hover,
+:where(:root:not(.sgs-touch-input)) .sgs-shop-filters:hover{box-shadow:0 1px 4px color-mix(in srgb, var(--wp--custom--shadow-colour) 8%, transparent), 0 0 0 1px var(--sgs-elevation-line)}
 
 @media (forced-colors:active){#sgs-shop-filters:not(:focus-visible),.sgs-shop-filters:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
@@ -624,11 +624,9 @@ body.sgs-shop-filters-plain .sgs-shop-filters:not(:modal) {
 	box-shadow: none;
 }
 
-@media (hover: hover) and (pointer: fine){
-	body.sgs-shop-filters-plain #sgs-shop-filters:hover:not(:modal),
-	body.sgs-shop-filters-plain .sgs-shop-filters:hover:not(:modal){
-		box-shadow: none;
-	}
+body.sgs-shop-filters-plain #sgs-shop-filters:hover:not(:modal),
+body.sgs-shop-filters-plain .sgs-shop-filters:hover:not(:modal){
+	box-shadow: none;
 }
 
 /* Filters heading */
@@ -1000,7 +998,7 @@ dialog.sgs-shop-filters {
 	cursor: pointer;
 	transition: transform 0.2s ease, opacity 0.2s ease;
 }
-@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover{box-shadow:0 5px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent)}}
+:where(:root:not(.sgs-touch-input)) .sgs-shop-filters__sticky-trigger:hover{box-shadow:0 5px 20px color-mix(in srgb, var(--wp--custom--shadow-colour) 18%, transparent)}
 
 @media (forced-colors:active){.sgs-shop-filters__sticky-trigger:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
@@ -2364,7 +2362,7 @@ body.woocommerce-cart .with-empty-cart-icon,
 }
 @media (forced-colors:active){:is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"]:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
-@media (hover: hover) and (pointer: fine){:where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text)}}
+:where(:root:not(.sgs-touch-input)) :is( .sgs-shop-filters__group:has( .sgs-filter-swatches ), .sgs-filter-swatches + .wp-block-woocommerce-product-filter-attribute ) button.wc-block-product-filter-chips__item[aria-checked="true"]:hover{box-shadow:0 0 0 2px var(--wp--preset--color--surface, #fff), 0 0 0 3.5px var(--wp--preset--color--text)}
 
 
 @media ( prefers-reduced-motion: reduce ) {

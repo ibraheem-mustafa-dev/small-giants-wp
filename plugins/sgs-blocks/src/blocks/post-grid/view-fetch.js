@@ -141,6 +141,7 @@ export async function fetchPosts( queryData, page, filterCategory ) {
 		showReadMore:          queryData.showReadMore,
 		readMoreText:          queryData.readMoreText,
 		readMoreIcon:          queryData.readMoreIcon,
+		cardLink:              queryData.cardLink,
 		aspectRatio:           queryData.aspectRatio,
 		titleColour:           queryData.titleColour,
 		excerptColour:         queryData.excerptColour,

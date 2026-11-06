@@ -559,10 +559,10 @@ final class SGS_Blocks {
 			);
 		}
 
-		// Layer 2 of the touch-safe hover system (helpers-hover-state.php owns
-		// layer 1, the pure-CSS media query). Enqueued alongside the other
-		// always-on frontend behaviours because a hover rule can be emitted by
-		// any block; it is dependency-free and does nothing until a pointerdown.
+		// Touch-input tracking (the "Desktop only" half of the hover-on-touch setting, see
+		// helpers-hover-state.php) and the iOS :active listener. Enqueued alongside the other
+		// always-on frontend behaviours because a hover rule can be emitted by any block;
+		// it is dependency-free and does nothing until a pointerdown.
 		$touch_js = SGS_BLOCKS_PATH . 'assets/js/touch-input.js';
 		if ( file_exists( $touch_js ) ) {
 			wp_enqueue_script(

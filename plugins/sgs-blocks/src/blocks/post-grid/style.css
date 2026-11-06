@@ -465,6 +465,27 @@
 }
 
 /* ==========================================================================
+   Whole card is the link (cardLink)
+   The title link (or the empty card link when the title is hidden) stretches
+   over the card, the way a container's block-link overlay does: one tab stop,
+   named by the post title. The read more is a span and stays a visual cue; its
+   hover comes from the card hover. Keyboard focus rings the whole card through
+   focus.css (.sgs-focus-card around .sgs-focus-source).
+   ========================================================================== */
+
+.sgs-post-grid__card--linked .sgs-post-grid__title a::after,
+.sgs-post-grid__card-link {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	content: "";
+}
+
+.sgs-post-grid__card--linked {
+	cursor: pointer;
+}
+
+/* ==========================================================================
    Card image placeholder (shown when post has no featured image)
    ========================================================================== */
 

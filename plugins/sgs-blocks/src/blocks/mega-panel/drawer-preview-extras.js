@@ -72,7 +72,7 @@ export function drawerShellPreviewCss( scope, row, v ) {
 	}
 	const hover = fill( v.drawerLinkHoverBg, v.drawerLinkHoverBgGradient );
 	if ( hover ) {
-		css += `${ row }:hover,${ row }:focus-within{${ hover }}`;
+		css += `${ row }:hover,${ row }:has(:focus-visible){${ hover }}`;
 	}
 	return css;
 }
@@ -209,4 +209,55 @@ export function drawerTrailingPreviewCss( row, v ) {
 	const colour = v.drawerLinkTrailingColour ? colourVar( v.drawerLinkTrailingColour ) || v.drawerLinkTrailingColour : '';
 	const mask = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E\")";
 	return `${ row } > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;background-color:${ colour || 'currentColor' };${ colour ? '' : 'opacity:.6;' }-webkit-mask:${ mask } center/contain no-repeat;mask:${ mask } center/contain no-repeat;}`;
+}
+
+const EASING_CURVES = {
+	ease: 'ease',
+	'ease-out': 'ease-out',
+	'ease-in-out': 'ease-in-out',
+	linear: 'linear',
+	'quart-out': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+	standard: 'cubic-bezier(0.4, 0, 0.2, 1)',
+	drafts: 'cubic-bezier(0.16, 0.84, 0.32, 1)',
+};
+
+const clampNumber = ( value, min, max ) => ( Number.isFinite( Number( value ) ) && '' !== value && null !== value ? Math.max( min, Math.min( max, Number( value ) ) ) : 0 );
+
+/**
+ * The drawer's own hover (row text slide, trailing arrow colour, card lift, tilt and link nudge), twin of
+ * `sgs_mega_panel_drawer_hover_css()`. The theme-token easings fall back to `ease` on the canvas.
+ *
+ * @param {string} row   Link-row selector.
+ * @param {string} aside Aside card selector.
+ * @param {Object} v     Enumerated drawer attributes.
+ * @return {string} CSS, or ''.
+ */
+export function drawerHoverPreviewCss( row, aside, v ) {
+	const shift = clampNumber( v.drawerLinkTextShiftHover, 0, 60 );
+	const lift = clampNumber( v.drawerCardHoverLift, 0, 40 );
+	const rotate = clampNumber( v.drawerCardHoverRotate, -15, 15 );
+	const nudge = clampNumber( v.drawerCardLinkShiftHover, 0, 40 );
+	const arrowRaw = 'arrow' === v.drawerLinkTrailingIcon ? v.drawerLinkTrailingColourHover : '';
+	const arrow = arrowRaw ? colourVar( arrowRaw ) || arrowRaw : '';
+	if ( ! shift && ! lift && ! rotate && ! nudge && ! arrow ) {
+		return '';
+	}
+	const ms = clampNumber( v.drawerHoverDuration ?? 300, 0, 3000 );
+	const curve = 'custom' === v.drawerHoverEasing ? v.drawerHoverEasingCustom || 'ease' : EASING_CURVES[ v.drawerHoverEasing ] || 'ease';
+	const time = `${ ms }ms ${ curve }`;
+	const text = `${ row } > .sgs-container__inner > .wp-block-sgs-container,${ row } > .wp-block-sgs-container`;
+	let css = '';
+	if ( shift ) {
+		css += `${ text }{transition:transform ${ time };}${ row }:hover > .sgs-container__inner > .wp-block-sgs-container,${ row }:hover > .wp-block-sgs-container{transform:translateX(${ shift }px);}`;
+	}
+	if ( arrow ) {
+		css += `${ row } > .sgs-container__inner::after{transition:background-color ${ time },opacity ${ time };}${ row }:hover > .sgs-container__inner::after{background-color:${ arrow };opacity:1;}`;
+	}
+	if ( lift || rotate ) {
+		css += `${ aside }{transition:transform ${ time },rotate ${ time };}${ aside }:hover{${ lift ? `transform:translateY(-${ lift }px);` : '' }${ rotate ? `rotate:${ rotate }deg;` : '' }}`;
+	}
+	if ( nudge ) {
+		css += `${ cardSlotSel( aside, 5, ' .sgs-button__icon' ) }{transition:transform ${ time };}${ aside }:hover > :last-child .sgs-button__icon,${ aside }:hover > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon{transform:translateX(${ nudge }px);}`;
+	}
+	return css;
 }

@@ -59,10 +59,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:focus-within": [
+        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:has(:focus-visible)": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },
@@ -87,16 +87,16 @@
             "pointer-events:none",
             "position:absolute"
         ],
-        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:focus-within": [
+        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:has(:focus-visible)": [
             "border-color:transparent"
         ],
-        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:focus-within::before": [
+        " || .sgs-rl-UID.wp-block-sgs-responsive-logo:has(:focus-visible)::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover": [
             "border-color:transparent"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover::before": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-rl-UID.wp-block-sgs-responsive-logo:hover::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },

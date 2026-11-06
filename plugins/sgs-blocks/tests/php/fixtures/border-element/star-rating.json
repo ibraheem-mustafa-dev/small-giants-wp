@@ -59,10 +59,10 @@
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ],
-        " || .sgs-str-UID.wp-block-sgs-star-rating:focus-within": [
+        " || .sgs-str-UID.wp-block-sgs-star-rating:has(:focus-visible)": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },
@@ -87,16 +87,16 @@
             "pointer-events:none",
             "position:absolute"
         ],
-        " || .sgs-str-UID.wp-block-sgs-star-rating:focus-within": [
+        " || .sgs-str-UID.wp-block-sgs-star-rating:has(:focus-visible)": [
             "border-color:transparent"
         ],
-        " || .sgs-str-UID.wp-block-sgs-star-rating:focus-within::before": [
+        " || .sgs-str-UID.wp-block-sgs-star-rating:has(:focus-visible)::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover": [
             "border-color:transparent"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover::before": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-str-UID.wp-block-sgs-star-rating:hover::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },

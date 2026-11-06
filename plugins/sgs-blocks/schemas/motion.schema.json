@@ -812,7 +812,8 @@
 		},
 		"ambient-float": {
 			"channels": [
-				"translate"
+				"translate",
+				"scale"
 			]
 		},
 		"ken-burns": {
@@ -1107,7 +1108,7 @@
 		{
 			"channel": "scale",
 			"composition": "product",
-			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy))",
+			"formula": "scale: calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy))",
 			"owners": [
 				{
 					"owner": "entrance",
@@ -1154,6 +1155,16 @@
 					"properties": [
 						{
 							"name": "--sgs-kb-s",
+							"syntax": "<number>",
+							"initial": "1"
+						}
+					]
+				},
+				{
+					"owner": "ambient-float",
+					"properties": [
+						{
+							"name": "--sgs-float-s",
 							"syntax": "<number>",
 							"initial": "1"
 						}
@@ -6412,6 +6423,21 @@
 						"dataAttr": "data-sgs-fx-cursor-field-ring-lag",
 						"dataUnit": "ms"
 					}
+				},
+				"touchMode": {
+					"$ref": "#/$defs/choice",
+					"enum": [
+						"full-image",
+						"circle"
+					],
+					"description": "Image reveal on touch: a tap opens the whole image (full-image), or shows the hover-sized circle at the card centre and the next tap hides it (circle).",
+					"x-sgs-field": {
+						"fieldType": "choice",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-cursor-field-touch-mode"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -8197,6 +8223,29 @@
 						"dataAttr": "data-sgs-fx-magnet-return-easing"
 					}
 				},
+				"followDuration": {
+					"$ref": "#/$defs/duration",
+					"description": "How long the element takes to ease toward the pointer while it tracks (0 snaps to the pointer).",
+					"x-sgs-field": {
+						"fieldType": "duration",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": true,
+						"dataAttr": "data-sgs-fx-magnet-follow-duration",
+						"dataUnit": "ms"
+					}
+				},
+				"followEasing": {
+					"$ref": "#/$defs/easing",
+					"description": "The easing of that follow; blank uses the return easing.",
+					"x-sgs-field": {
+						"fieldType": "easing",
+						"cssProperty": null,
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-magnet-follow-easing"
+					}
+				},
 				"movingPart": {
 					"$ref": "#/$defs/partReference",
 					"x-sgs-field": {
@@ -8252,6 +8301,9 @@
 					}
 				},
 				"returnDuration": {
+					"$ref": "#/$defs/duration"
+				},
+				"followDuration": {
 					"$ref": "#/$defs/duration"
 				}
 			},
@@ -8758,6 +8810,32 @@
 						"state": "active",
 						"perDevice": false,
 						"dataAttr": "data-sgs-fx-ambient-float-direction"
+					}
+				},
+				"scaleFrom": {
+					"$ref": "#/$defs/scale",
+					"minimum": 0.5,
+					"maximum": 2,
+					"description": "Scale at the start of each cycle (1 is the natural size). Leave both scale values at 1 for a float that only moves.",
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-float-scale-from",
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-scale-from"
+					}
+				},
+				"scaleTo": {
+					"$ref": "#/$defs/scale",
+					"minimum": 0.5,
+					"maximum": 2,
+					"description": "Scale at the end of each cycle, reached over the same period and easing as the movement (1 is the natural size).",
+					"x-sgs-field": {
+						"fieldType": "scale",
+						"cssProperty": "--sgs-float-scale-to",
+						"state": "active",
+						"perDevice": false,
+						"dataAttr": "data-sgs-fx-ambient-float-scale-to"
 					}
 				},
 				"pauseControl": {

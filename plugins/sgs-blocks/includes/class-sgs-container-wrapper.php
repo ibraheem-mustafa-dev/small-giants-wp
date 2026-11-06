@@ -2361,7 +2361,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			if ( $hover_spill_scale && $uid ) {
 				$responsive_css .= '.' . $uid . ':has(.sgs-media-box){overflow-x:clip;overflow-y:visible;position:relative;z-index:2;}';
 				$responsive_css .= '.' . $uid . ' .sgs-media-el{transition-property:transform;transition-duration:0.35s; /* sgs-motion: exact */transition-timing-function:var(--wp--custom--easing--ease-in-out, ease-in-out);}';
-				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:focus-within .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
+				$responsive_css .= '@media (prefers-reduced-motion: no-preference){.' . $uid . ' .sgs-media-box:hover .sgs-media-el,.' . $uid . ' .sgs-media-box:has(:focus-visible) .sgs-media-el{transform:scale(var(--sgs-hover-scale, 1.05));}}';
 			}
 
 			// FR-32-1 / D345 — shape-divider height + colour, captured as declarations

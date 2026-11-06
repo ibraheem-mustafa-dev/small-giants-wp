@@ -169,15 +169,35 @@ describe( 'normalised pull', () => {
 		expect( pull( node ) ).toEqual( [ 0, 0 ] );
 	} );
 
-	test( 'tracking writes 0ms, the return writes the return duration and easing', () => {
+	test( 'tracking writes the follow duration and easing, the return writes the return duration and easing', () => {
 		const { magnet, flush } = setup();
 		const node = makeEl();
-		magnet.registerMagnet( node, { ...opts, returnDuration: 250, returnEasing: 'cubic-bezier(.16,.84,.32,1)' } );
+		magnet.registerMagnet( node, {
+			...opts,
+			returnDuration: 250,
+			returnEasing: 'cubic-bezier(.16,.84,.32,1)',
+			followDuration: 180,
+			followEasing: 'ease-out',
+		} );
 		move( 200, 125, flush );
-		expect( node.style.getPropertyValue( '--sgs-mag-dur' ) ).toBe( '0ms' );
+		expect( node.style.getPropertyValue( '--sgs-mag-dur' ) ).toBe( '180ms' );
+		expect( node.style.getPropertyValue( '--sgs-mag-ease' ) ).toBe( 'ease-out' );
 		move( 201, 125, flush );
 		expect( node.style.getPropertyValue( '--sgs-mag-dur' ) ).toBe( '250ms' );
 		expect( node.style.getPropertyValue( '--sgs-mag-ease' ) ).toBe( 'cubic-bezier(.16,.84,.32,1)' );
+	} );
+
+	test( 'the follow defaults to 250ms on the return easing; a follow of 0 snaps to the pointer', () => {
+		const { magnet, flush } = setup();
+		const node = makeEl();
+		magnet.registerMagnet( node, { ...opts, returnEasing: 'ease-in' } );
+		move( 200, 125, flush );
+		expect( node.style.getPropertyValue( '--sgs-mag-dur' ) ).toBe( '250ms' );
+		expect( node.style.getPropertyValue( '--sgs-mag-ease' ) ).toBe( 'ease-in' );
+		const snap = makeEl();
+		magnet.registerMagnet( snap, { ...opts, followDuration: 0 } );
+		move( 200, 125, flush );
+		expect( snap.style.getPropertyValue( '--sgs-mag-dur' ) ).toBe( '0ms' );
 	} );
 } );
 

@@ -254,6 +254,22 @@
 				}
 			}
 		},
+		"rowScrollAway": {
+			"type": "object",
+			"default": {},
+			"sgs": {
+				"meaning": {
+					"what": "Lets this header row leave the screen with the normal scroll of the page while the rows after it stay pinned, at each tier where it is on.",
+					"trigger": "the visitor scrolling down from the top of the page: the row moves up by the scrolled amount until it is gone, and the header's sticky offset is the negative of the height of the leading rows set to scroll away",
+					"parameters": {
+						"value": {
+							"unit": "tier object {desktop,tablet,mobile} (desktop: on or off; tablet and mobile: inherit, on or off)"
+						}
+					}
+				}
+			},
+			"description": "The row scrolls away with the page instead of staying pinned. It must lead the header (every row above it scrolls away too); the rows after it pin at the top of the screen. Only has an effect while the header is sticky."
+		},
 		"rowShrink": {
 			"type": "object",
 			"default": {}

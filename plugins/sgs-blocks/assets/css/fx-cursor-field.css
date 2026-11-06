@@ -585,6 +585,20 @@
 	--sgs-cursor-field-radius: 150vmax;
 }
 
+/* Touch mode "circle" (`data-sgs-cursor-field-touch`, printed by the renderer): a tap shows the hover-sized circle at the card centre instead of the whole image (cursor-field-reveal.js sets `data-sgs-reveal-tap`), and the next tap hides it. The renderer's `--sgs-cursor-field-tap-radius` and `--sgs-cursor-field-tap-wash` carry the stored hover radius and wash; the 90px and 0.3 fallbacks are the defaults above. On a device that cannot hover, the browser's sticky :hover would keep the circle after the second tap, so the hover look is cancelled until the tap flag is set. */
+[data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-touch="circle"][data-sgs-reveal-tap]::before {
+	--sgs-cursor-field-radius: var(--sgs-cursor-field-tap-radius, 90px);
+	--sgs-cursor-field-wash: var(--sgs-cursor-field-tap-wash, 0.3);
+	--sgs-reveal-x: 50%;
+	--sgs-reveal-y: 50%;
+}
+
+@media (hover: none) {
+	[data-sgs-cursor-field="image-reveal"][data-sgs-cursor-field-touch="circle"]:not([data-sgs-reveal-tap]):hover::before {
+		--sgs-cursor-field-radius: 0px;
+	}
+}
+
 /* The revealed circle follows the pointer with the ring's own lag and easing, so the ring and the image inside the circle stay
  * together. Without a ring there is no lag value, so the circle centres on the pointer exactly. The transition starts once the
  * first pointer position has been seeded (`data-sgs-ring-live`, set by cursor-field-ring.js), so the circle never slides in from the rest point. */

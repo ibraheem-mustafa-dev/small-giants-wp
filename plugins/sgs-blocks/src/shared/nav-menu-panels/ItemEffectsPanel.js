@@ -22,6 +22,8 @@ const LABEL_ROLL_OPTIONS = [
  *
  * @param {Object}   root0                        Props.
  * @param {boolean}  root0.showDim                Show the sibling-dim opacity control.
+ * @param {boolean}  root0.showTextShift          Show the text-shift-on-hover control (sgs/icon-list).
+ * @param {number}   root0.itemTextShiftHover     `itemTextShiftHover`.
  * @param {number}   root0.siblingDimOpacity      `siblingDimOpacity`.
  * @param {string}   root0.labelRoll              `labelRoll`.
  * @param {number}   root0.itemMotionDuration     `itemMotionDuration`.
@@ -31,6 +33,8 @@ const LABEL_ROLL_OPTIONS = [
  */
 export default function ItemEffectsPanel( {
 	showDim = true,
+	showTextShift = false,
+	itemTextShiftHover,
 	siblingDimOpacity,
 	labelRoll,
 	itemMotionDuration,
@@ -54,6 +58,24 @@ export default function ItemEffectsPanel( {
 					onChange={ ( val ) =>
 						setAttributes( { siblingDimOpacity: typeof val === 'number' ? val : undefined } )
 					}
+					allowReset
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			) }
+
+			{ showTextShift && (
+				<RangeControl
+					label={ __( 'Text slide on hover (px)', 'sgs-blocks' ) }
+					help={ __(
+						'On hover or focus the item text slides this far toward the end of the line, away from its bullet or icon, which stays put. 0 is off.',
+						'sgs-blocks'
+					) }
+					value={ typeof itemTextShiftHover === 'number' ? itemTextShiftHover : 0 }
+					min={ 0 }
+					max={ 60 }
+					step={ 1 }
+					onChange={ ( val ) => setAttributes( { itemTextShiftHover: typeof val === 'number' ? val : 0 } ) }
 					allowReset
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize

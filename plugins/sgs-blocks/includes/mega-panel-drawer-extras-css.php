@@ -25,6 +25,13 @@
  *   `drawerCardTagLetterSpacing`), wherever `drawerCardTagSize` applies
  *   (stacked and compact).
  *
+ * - The drawer's own hover (`drawerLinkTextShiftHover`, `drawerLinkTrailingColourHover`,
+ *   `drawerCardHoverLift`, `drawerCardHoverRotate`, `drawerCardLinkShiftHover`,
+ *   timed by `drawerHoverDuration` / `drawerHoverEasing`): in the drawer the
+ *   link row's text slides while its number stays, the trailing arrow
+ *   changes colour, and the aside card lifts and tilts, separately from the
+ *   desktop panel's hover.
+ *
  * Every unset attribute emits nothing. Rules are rooted on the panel's own
  * uid class, as the rest of the drawer copy's rules are.
  *
@@ -39,6 +46,7 @@ require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-css-safety.php';
+require_once __DIR__ . '/helpers-motion-easing.php';
 
 if ( ! function_exists( 'sgs_mega_panel_drawer_len' ) ) {
 	/**
@@ -360,5 +368,88 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_trailing_css' ) ) {
 		return $row_sel . ' > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;'
 			. 'background-color:' . ( '' !== $colour ? $colour : 'currentColor' ) . ';' . ( '' !== $colour ? '' : 'opacity:.6;' )
 			. '-webkit-mask:' . $mask . ' center/contain no-repeat;mask:' . $mask . ' center/contain no-repeat;}';
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_hover_css' ) ) {
+	/**
+	 * The drawer copy's own hover: the link row's text group slides toward the inline end
+	 * (the number, a sibling of the text group, stays put), the trailing arrow takes a hover
+	 * colour at full opacity, and the aside card lifts, tilts and nudges its link icon.
+	 * Mouse hover is skipped on touch devices; keyboard focus (focus-visible) inside the row or card applies
+	 * the same state. Reduced motion shows no movement.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $row_sel    The in-drawer link-row selector.
+	 * @param string $aside_sel  The in-drawer aside selector.
+	 * @return string CSS, or '' when no drawer hover is set.
+	 */
+	function sgs_mega_panel_drawer_hover_css( array $attributes, string $row_sel, string $aside_sel ): string {
+		$int = static function ( string $key, int $min, int $max ) use ( $attributes ): int {
+			return is_numeric( $attributes[ $key ] ?? null ) ? max( $min, min( $max, (int) $attributes[ $key ] ) ) : 0;
+		};
+
+		$shift   = $int( 'drawerLinkTextShiftHover', 0, 60 );
+		$lift    = $int( 'drawerCardHoverLift', 0, 40 );
+		$rotate  = is_numeric( $attributes['drawerCardHoverRotate'] ?? null ) ? max( -15.0, min( 15.0, round( (float) $attributes['drawerCardHoverRotate'], 2 ) ) ) : 0.0;
+		$nudge   = $int( 'drawerCardLinkShiftHover', 0, 40 );
+		$arrow   = 'arrow' === ( $attributes['drawerLinkTrailingIcon'] ?? '' ) ? sgs_colour_value( (string) ( $attributes['drawerLinkTrailingColourHover'] ?? '' ) ) : '';
+		$tilt    = $lift > 0 || 0.0 !== $rotate;
+		if ( 0 === $shift && '' === $arrow && ! $tilt && 0 === $nudge ) {
+			return '';
+		}
+
+		$time = sgs_flat_duration_ms( $attributes['drawerHoverDuration'] ?? null, 300 ) . 'ms ' . sgs_motion_easing_css(
+			(string) ( $attributes['drawerHoverEasing'] ?? '' ),
+			(string) ( $attributes['drawerHoverEasingCustom'] ?? '' ),
+			'ease'
+		);
+
+		$css   = '';
+		$calm  = array();
+		// One state rule: the owner hovered (mouse, not on touch devices) or holding keyboard focus (:has(:focus-visible)), then each target inside it.
+		$state = static function ( string $owner, array $targets, string $decls ) use ( &$css ): void {
+			$mouse = array();
+			$focus = array();
+			foreach ( $targets as $target ) {
+				$mouse[] = SGS_HOVER_NOT_TOUCH . ' ' . $owner . ':hover' . $target;
+				$focus[] = $owner . ':has(:focus-visible)' . $target;
+			}
+			$css .= sgs_hover_media_wrap( implode( ',', $mouse ) . '{' . $decls . '}' );
+			if ( ! sgs_focus_rests_active() ) {
+				$css .= implode( ',', $focus ) . '{' . $decls . '}';
+			}
+		};
+
+		if ( $shift > 0 ) {
+			$text  = $row_sel . ' > .sgs-container__inner > .wp-block-sgs-container,' . $row_sel . ' > .wp-block-sgs-container';
+			$css  .= $text . '{transition:transform ' . $time . ';}';
+			$state( $row_sel, array( ' > .sgs-container__inner > .wp-block-sgs-container', ' > .wp-block-sgs-container' ), 'transform:translateX(' . $shift . 'px)' );
+			$calm[] = $text;
+		}
+		if ( '' !== $arrow ) {
+			$css .= $row_sel . ' > .sgs-container__inner::after{transition:background-color ' . $time . ',opacity ' . $time . ';}';
+			$state( $row_sel, array( ' > .sgs-container__inner::after' ), 'background-color:' . $arrow . ';opacity:1' );
+			$calm[] = $row_sel . ' > .sgs-container__inner::after';
+		}
+		if ( $tilt ) {
+			$css  .= $aside_sel . '{transition:transform ' . $time . ',rotate ' . $time . ';}';
+			$state( $aside_sel, array( '' ), ( $lift > 0 ? 'transform:translateY(-' . $lift . 'px);' : '' ) . ( 0.0 !== $rotate ? 'rotate:' . $rotate . 'deg;' : '' ) );
+			$calm[] = $aside_sel;
+		}
+		if ( $nudge > 0 ) {
+			$css  .= sgs_mega_panel_drawer_card_slot_sel( $aside_sel, 5, ' .sgs-button__icon' ) . '{transition:transform ' . $time . ';}';
+			$state(
+				$aside_sel,
+				array(
+					' > :last-child .sgs-button__icon',
+					' > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon',
+				),
+				'transform:translateX(' . $nudge . 'px)'
+			);
+			$calm[] = sgs_mega_panel_drawer_card_slot_sel( $aside_sel, 5, ' .sgs-button__icon' );
+		}
+		$css .= '@media (prefers-reduced-motion: reduce){' . implode( ',', $calm ) . '{transition:none;}}';
+		return $css;
 	}
 }

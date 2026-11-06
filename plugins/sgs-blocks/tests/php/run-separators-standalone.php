@@ -103,7 +103,7 @@ ok( has( $css, '.u .bar > .item:not(:first-child)::before{content:"";position:ab
 ok( has( $css, '--sgs-sep-g-column:var(--gap, 8px)' ) && has( $css, '--sgs-sep-w-column:1px' ), 'the gap and thickness reach the rule as custom properties' );
 ok( ! has( $css, 'style="' ), 'no inline style attribute (Spec 32)' );
 ok( has( $css, '.u .bar > .item:hover + .u .bar > .item::before' ) || has( $css, '.u .bar > .item:hover + .u .bar > .item' ), 'hovering the item BEFORE a line repaints it (adjacent-sibling reach)' );
-ok( has( $css, 'border-inline-start-color:' ) && has( $css, SGS_HOVER_MEDIA . '{' . SGS_HOVER_NOT_TOUCH ), 'the hover colour swap is touch-guarded' );
+ok( has( $css, 'border-inline-start-color:' ) && has( $css, SGS_HOVER_NOT_TOUCH ), 'the hover colour swap is touch-guarded' );
 
 $stacked = sgs_separators_css( array( 'row' => $col['column'] ), array_merge( $list, array( 'direction' => 'column', 'gap_expr' => array( 'row' => '12px' ) ) ), $caps );
 ok( has( $stacked, 'inset-block-start:calc(' ) && has( $stacked, 'border-block-start:var(--sgs-sep-w-row)' ) && has( $stacked, 'inset-inline:0;' ), 'stacked items draw a horizontal line on the block-start edge' );

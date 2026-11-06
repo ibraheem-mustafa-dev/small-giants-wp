@@ -3,11 +3,13 @@
 		"in_picker": false,
 		"owned_properties": {
 			"channels": [
-				"translate"
+				"translate",
+				"scale"
 			],
 			"properties": [
 				"--sgs-float-x",
-				"--sgs-float-y"
+				"--sgs-float-y",
+				"--sgs-float-s"
 			],
 			"slots": []
 		},

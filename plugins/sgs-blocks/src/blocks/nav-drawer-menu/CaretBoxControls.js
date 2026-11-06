@@ -11,7 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { ToggleControl } from '@wordpress/components';
-import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, fillRow, textRow } from '../../components';
+import { ResponsiveLengthControl, SgsBorderControl, SgsColourPanel, ShadowControl, shadowAttrKeys, fillRow, textRow } from '../../components';
 
 /**
  * @param {Object}   root0               Props.
@@ -75,6 +75,12 @@ export default function CaretBoxControls( { attributes, setAttributes } ) {
 						onChange: ( value ) => setAttributes( { caretBoxBorderColourOpen: value ?? '' } ),
 					},
 				] }
+			/>
+			<ShadowControl
+				label={ __( 'Expander circle shadow and hover glow', 'sgs-blocks' ) }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				attrNames={ shadowAttrKeys( 'caretBoxShadow', { hover: true, hoverColour: true } ) }
 			/>
 			<ToggleControl
 				label={ __( 'Same circle round trailing icons', 'sgs-blocks' ) }

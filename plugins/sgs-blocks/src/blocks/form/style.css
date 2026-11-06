@@ -643,23 +643,27 @@ select.sgs-form-field__input {
 	display: none;
 	position: absolute;
 	top: 0.5rem;
-	right: 0.5rem;
-	width: 20px;
-	height: 20px;
+	inset-inline-end: 0.5rem;
+	width: var(--sgs-tile-check-size, 20px);
+	height: var(--sgs-tile-check-size, 20px);
+	flex: none;
+	color: var(--wp--preset--color--text-inverse, #fff);
 	/* FIX #4 extension: checkmark badge uses accent-text to match border. */
 	background-color: var(--wp--preset--color--accent-text, #7a6b00);
 	border-radius: 50%;
 }
 
+/* The tick is drawn from the element's colour and scales with --sgs-tile-check-size (20px gives the 5 x 9 tick at
+   4px / 7px, 2px stroke). */
 .sgs-form-tile__check::after {
 	content: "";
 	position: absolute;
-	top: 4px;
-	left: 7px;
-	width: 5px;
-	height: 9px;
-	border: solid var(--wp--preset--color--text-inverse, #fff);
-	border-width: 0 2px 2px 0;
+	top: calc(var(--sgs-tile-check-size, 20px) * 0.2);
+	left: calc(var(--sgs-tile-check-size, 20px) * 0.35);
+	width: calc(var(--sgs-tile-check-size, 20px) * 0.25);
+	height: calc(var(--sgs-tile-check-size, 20px) * 0.45);
+	border: solid currentcolor;
+	border-width: 0 max(2px, calc(var(--sgs-tile-check-size, 20px) * 0.1)) max(2px, calc(var(--sgs-tile-check-size, 20px) * 0.1)) 0;
 	transform: rotate(45deg);
 }
 
@@ -667,6 +671,38 @@ select.sgs-form-field__input {
    'border' and 'background' show ONLY their own named effect, no badge. */
 .sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked) .sgs-form-tile__check {
 	display: block;
+}
+
+/* selectedCheckPosition (sgs/form-field-tiles) shows the chosen tile's tick whatever selectedStyle is, so the tick
+   is independent of the border and tint. 'corner' keeps the badge in the top-end corner; 'inline-start' puts the
+   tick before the text, which lays the tile out in a row. The inline tick is a bare mark in the tile's text colour
+   (the circle fill, tick colour and size are the tileCheck* settings); its defaults sit in :where() so those
+   settings, which print after this sheet, always win. */
+.sgs-form-field--tiles-check-corner .sgs-form-tile--selected .sgs-form-tile__check,
+.sgs-form-field--tiles-check-corner .sgs-form-tile:has(input:checked) .sgs-form-tile__check,
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile--selected .sgs-form-tile__check,
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile:has(input:checked) .sgs-form-tile__check {
+	display: block;
+}
+
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile__check {
+	position: relative;
+	inset: auto;
+	order: -1;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) {
+	--sgs-tile-check-size: 14px;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile {
+	flex-direction: row;
+	justify-content: center;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__check {
+	color: inherit;
+	background-color: transparent;
 }
 
 /* Tiles on a narrow container fall back to 2 columns (1 below 300px). No !important: a tiles field's own

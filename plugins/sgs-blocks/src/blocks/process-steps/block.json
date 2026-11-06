@@ -33,6 +33,7 @@
 		},
 		"sgs": {
 			"motion": true,
+			"motionItems": "step",
 			"iconPicker": true,
 			"arrayContentLift": true,
 			"boxFamilies": {
@@ -231,11 +232,23 @@
 					"_note": "Colour and the full typography family (prefix 'description') are independently controlled. Typography emits through sgs_typography_css_rule() as a descendant of the block root, so it out-ranks style.css's `:where()` defaults; unset, those defaults paint."
 				},
 				"connector": {
-					"motion": false,
 					"label": "Connector line",
 					"order": 6,
-					"clusters": [],
-					"_note": "connectorStyle (line/none) is a structural variant selector — no colour/fill control exists for the connector on this block (unlike sgs/timeline's connectorColour). Declared for documentation only; orphan-scan-exempt (no prefix). The connector never renders when `layout` is 'list' (style.css hides the step's ::after regardless of connectorStyle), since a stacked list of plain numbered copy has no line to connect."
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "connectorColour",
+						"css:height": "connectorThickness",
+						"css:margin-top": "connectorOffset",
+						"css:width": "connectorWidth"
+					},
+					"absentIn": [
+						"list"
+					],
+					"absentWhy": "The continuous connector line prints only with connectorLine on, and never in the list layout.",
+					"_note": "connectorStyle (line/arrow/dots) is a structural variant selector for the per-step segments and is not mapped. connectorLine adds one real element, `.sgs-process-steps__connector`, a single line behind the badges; the per-step line segments are then hidden. Being a real element it is a motion target, so an entrance on this part (scale across from 0, origin left) draws the line in on scroll. connectorOffset is the distance from the top of the steps to the line's centre (empty centres it on the badges), connectorWidth is its width (empty runs it edge to edge)."
 				},
 				"step": {
 					"label": "Each process step",
@@ -356,6 +369,40 @@
 		"connectorStyle": {
 			"type": "string",
 			"default": "line"
+		},
+		"connectorLine": {
+			"type": "boolean",
+			"default": false,
+			"description": "Draws one continuous line behind the badges as a real element (the connector part), which can take an entrance such as a draw-in on scroll. Off keeps the per-step line segments."
+		},
+		"connectorColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the continuous connector line. Empty keeps the border token."
+		},
+		"connectorThickness": {
+			"type": "string",
+			"default": "",
+			"description": "Thickness of the continuous connector line (a CSS length). Empty keeps 2px."
+		},
+		"connectorOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the top of the steps to the centre of the continuous connector line (a CSS length). Empty centres it on the badges."
+		},
+		"connectorWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Width of the continuous connector line (a CSS length), drawn from the left edge. Empty runs it edge to edge."
+		},
+		"numberHoverTrigger": {
+			"type": "string",
+			"enum": [
+				"step",
+				"number"
+			],
+			"default": "step",
+			"description": "What a pointer must be over to repaint the badge's hover colours. 'step' (default): anywhere on the step. 'number': only the badge itself."
 		},
 		"numberStyle": {
 			"type": "string",

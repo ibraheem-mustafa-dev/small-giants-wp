@@ -124,7 +124,7 @@ final class TypographyNumberStyleAndShadowTest extends TestCase {
 		);
 
 		$this->assertMatchesRegularExpression( '/\{[^}]*text-shadow:0px 4px 12px #FFFFFFCB;[^}]*\}/', $out['css'], 'resting shadow is untouched' );
-		$this->assertMatchesRegularExpression( '/@media ?\(hover: hover\)[^{]*\{[^{]*:hover\{[^}]*text-shadow:0px 4px 12px #D8CA50;/', $out['css'], 'hover keeps the offsets and blur, changes only the colour' );
+		$this->assertMatchesRegularExpression( '/:where\(:root:not\(\.sgs-touch-input\)\)[^{]*:hover\{[^}]*text-shadow:0px 4px 12px #D8CA50;/', $out['css'], 'hover keeps the offsets and blur, changes only the colour' );
 	}
 
 	public function test_a_hover_colour_slug_resolves_and_a_hostile_one_is_refused(): void {

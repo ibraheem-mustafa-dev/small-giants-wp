@@ -615,6 +615,9 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 					row.dataset.sgsRowHideOnScroll
 				),
 				shrinkTiers: parseTierList( row.dataset.sgsRowShrink ),
+				scrollAwayTiers: parseTierList(
+					row.dataset.sgsRowScrollAway
+				),
 				// Collapse bookkeeping (FR-37-40). `collapsed` is null until
 				// the first collapse decision, so the very first tick does not
 				// write an inline height onto a row that is already correct.
@@ -744,6 +747,72 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 			row.el.classList.remove( 'is-row-collapse-mode' );
 		}
 
+		/**
+		 * Let the rows that scroll away with the page leave by normal scrolling.
+		 *
+		 * A row set to scroll away stays in the header's flow, and the header's sticky offset becomes the negative
+		 * of the height of the rows that lead the header and scroll away at this device tier, so the page scrolls
+		 * those rows out of view and the first row that stays pins at the top of the screen. The header's own
+		 * resting offset (what its stylesheet rule gives it) is read afresh each time, never remembered.
+		 */
+		function syncScrollAway() {
+			const tier = getCurrentDeviceTier();
+			const headers = new Set();
+			rowData.forEach( function ( row ) {
+				if ( row.scrollAwayTiers.length && row.headerEl ) {
+					headers.add( row.headerEl );
+				}
+			} );
+			headers.forEach( function ( header ) {
+				header.style.removeProperty( 'top' );
+				if ( 'sticky' !== window.getComputedStyle( header ).position ) {
+					return;
+				}
+				let away = 0;
+				const rowsInOrder = Array.prototype.filter.call(
+					header.querySelectorAll( '.sgs-site-header-row' ),
+					function ( el ) {
+						return el.closest( 'header.sgs-site-header' ) === header;
+					}
+				);
+				for ( const el of rowsInOrder ) {
+					const data = rowData.find( function ( row ) {
+						return row.el === el;
+					} );
+					if ( ! data || data.scrollAwayTiers.indexOf( tier ) === -1 ) {
+						break;
+					}
+					away += el.getBoundingClientRect().height;
+				}
+				if ( away > 0 ) {
+					const base =
+						parseFloat( window.getComputedStyle( header ).top ) || 0;
+					header.style.setProperty(
+						'top',
+						base - away + 'px',
+						'important'
+					);
+				}
+			} );
+		}
+
+		const scrollAwayRows = rowData.filter( function ( row ) {
+			return row.scrollAwayTiers.length > 0;
+		} );
+		if ( scrollAwayRows.length ) {
+			window.addEventListener( 'resize', syncScrollAway, {
+				passive: true,
+			} );
+			if ( 'ResizeObserver' in window ) {
+				const observer = new window.ResizeObserver( syncScrollAway );
+				scrollAwayRows.forEach( function ( row ) {
+					observer.observe( row.el );
+				} );
+			} else {
+				syncScrollAway();
+			}
+		}
+
 		let rafScheduled = false;
 		let prevScrollY = window.scrollY;
 		// Allowance beyond the transition for the scroll-anchoring shift and
@@ -793,7 +862,10 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 				// The choice is re-made every tick because pinning can change
 				// under the visitor (a breakpoint, or the operator toggling
 				// sticky in the editor preview).
-				if ( row.hideOnScrollTiers.indexOf( tier ) !== -1 ) {
+				if (
+					row.hideOnScrollTiers.indexOf( tier ) !== -1 &&
+					row.scrollAwayTiers.indexOf( tier ) === -1
+				) {
 					if ( rowCollapsesWhenHidden( row ) ) {
 						row.el.classList.add( 'is-row-collapse-mode' );
 						if ( now < row.settleUntil ) {

@@ -39,7 +39,7 @@
 /* Aside background — RESTING state. render.php emits --sgs-mega-aside-bg (+
    -gradient) onto this instance's own `.{uid}` class whenever the operator
    sets `asideBg`, but until this rule existed nothing on the frontend ever
-   READ that custom property at rest — only the :hover/:focus-within rule
+   READ that custom property at rest — only the :hover/:has(:focus-visible) rule
    below consumed it, so an operator's asideBg silently never painted and the
    element fell through to the parent sgs/mega-panel's own `:where(.sgs-mega-
    aside){background-color:var(--sgs-mm-card)}` rule (mega-panel/render.php),
@@ -55,7 +55,7 @@
 /* Aside background hover/focus — fallback chain:
    hover var → resting var → panel-derived default → CSS default. */
 .sgs-mega-aside:hover,
-.sgs-mega-aside:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
+.sgs-mega-aside:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	background-color: var( --sgs-mega-aside-bg-hover, var( --sgs-mega-aside-bg, var( --sgs-mm-card, transparent ) ) );
 	background-image: var( --sgs-mega-aside-bg-hover-gradient, var( --sgs-mega-aside-bg-gradient, none ) );
 }

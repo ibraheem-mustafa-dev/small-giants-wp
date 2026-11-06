@@ -81,7 +81,7 @@
 	   box-shadow reads --sgs-btn-transition-easing-shadow (hover-easing-colour
 	   / hover-easing-shadow), each falling back to the preset's hover-easing,
 	   so a move can ease on a spring while its shadow and colour ease plainly. */
-	transition: background-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), border-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), translate var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), box-shadow var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), opacity var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
+	transition: background-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), border-color var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), transform var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), translate var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), box-shadow var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing-shadow, var(--wp--custom--button-presets--default--hover-easing-shadow, var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))))), opacity var(--sgs-btn-transition-duration, var(--wp--custom--button-presets--default--hover-transition, 0.18s)) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease))), gap var(--sgs-btn-gap-transition, 0s) var(--sgs-btn-transition-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	-webkit-appearance: none;
 	appearance: none;
 
@@ -152,6 +152,24 @@
 .sgs-button:focus:not(:focus-visible) {
 	color: var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text)));
 	text-decoration: none;
+}
+
+/*
+ * Visual-only button (`visualOnly`): a <span> that looks like the button inside a card that is itself the link
+ * (sgsBlockLink). It is no control: it never takes pointer events, and it takes the hover look of the card (the
+ * nearest `[data-sgs-hover-group]`, the same group the card's motion reads) instead of its own hover.
+ */
+:where(.sgs-button--visual-only) {
+	pointer-events: none;
+}
+
+:where(:root:not(.sgs-touch-input)) [data-sgs-hover-group]:hover .sgs-button.sgs-button--visual-only,
+[data-sgs-hover-group]:has(:focus-visible) .sgs-button.sgs-button--visual-only:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
+	text-decoration: none;
+	color: var(--sgs-btn-color-hover, var(--sgs-btn-color, var(--sgs-mb-btn-color-default, var(--wp--preset--color--text))));
+	background-color: var(--sgs-btn-bg-hover, var(--sgs-btn-bg, var(--sgs-mb-btn-bg-hover-default, var(--sgs-mb-btn-bg-default, transparent))));
+	background-image: var(--sgs-btn-bg-hover-image, var(--sgs-btn-bg-image, var(--sgs-mb-btn-bg-hover-image-default, var(--sgs-mb-btn-bg-image-default, none))));
+	border-color: var(--sgs-btn-border-hover, var(--sgs-btn-border, var(--sgs-mb-btn-border-default, transparent)));
 }
 
 /* ── Style presets (Spec 32) — each SETS the six colour vars from the

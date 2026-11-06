@@ -161,6 +161,28 @@
 				}
 			}
 		},
+		"openStatusDotPulseWhen": {
+			"type": "string",
+			"default": "open",
+			"enum": [ "open", "always" ],
+			"description": "Only read by displayType 'open-status', when the pulse is on. 'open' pulses the dot only while the business is open; 'always' pulses it while closed too. The ring takes the colour of the dot in the current state. No pulse under reduced motion.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether the status dot pulses only while open or in both states.",
+					"trigger": "the dot pulse being on (endless animation); none under reduced motion",
+					"parameters": {
+						"value": {
+							"unit": "enum: open | always"
+						}
+					}
+				}
+			}
+		},
+		"openStatusLinePattern": {
+			"type": "string",
+			"default": "{lead} {time} {when}",
+			"description": "Only read by displayType 'open-status'. The word order of the closing or opening line. {lead} is the Closes or Opens wording, {time} the clock time and {when} today, tomorrow or the weekday, e.g. '{lead} {when} at {time}' reads 'Opens tomorrow at 9:30am'. The reopening line ('Closed until 2:30pm') keeps its own order."
+		},
 		"openStatusDotPulseDuration": {
 			"type": "number",
 			"default": 1600,

@@ -27,7 +27,7 @@
  * from-opacity at 1 unless the entrance sets `allowLcpFade`.
  *
  * Hover groups: any block whose root carries a whole-block link (`sgsBlockLink` or `sgsBlockLinkAuto`, the blockLink
- * extension that also adds `.sgs-has-block-link`) gets `data-sgs-hover-group`. While a block whose hover layers use
+ * extension that also adds `.sgs-has-block-link`) or a container set to `hoverAsCard` gets `data-sgs-hover-group`. While a block whose hover layers use
  * `source: group` renders, `$GLOBALS['sgs_hover_group_active']` is true, so `sgs_hover_state_rules()` adds the group
  * alternative to that block's existing hover colour rules.
  *
@@ -436,7 +436,7 @@ final class Sgs_Motion_Renderer {
 		}
 		$attrs      = isset( $block['attrs'] ) && is_array( $block['attrs'] ) ? $block['attrs'] : array();
 		$root_attrs = array();
-		if ( ! empty( $attrs['sgsBlockLink'] ) || ! empty( $attrs['sgsBlockLinkAuto'] ) ) {
+		if ( ! empty( $attrs['sgsBlockLink'] ) || ! empty( $attrs['sgsBlockLinkAuto'] ) || ! empty( $attrs['hoverAsCard'] ) ) {
 			$root_attrs['data-sgs-hover-group'] = '';
 		}
 		// `sgsFocusRests`: the block's hover state and hover effects play on pointer hover only, so every element the

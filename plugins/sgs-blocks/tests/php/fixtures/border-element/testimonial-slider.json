@@ -119,7 +119,7 @@
         " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },
@@ -151,16 +151,16 @@
             "pointer-events:none",
             "position:absolute"
         ],
-        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-within": [
+        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:has(:focus-visible)": [
             "border-color:transparent"
         ],
-        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:focus-within::before": [
+        " || .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:has(:focus-visible)::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover": [
             "border-color:transparent"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover::before": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-testimonial-slider-UID.wp-block-sgs-testimonial-slider:hover::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },

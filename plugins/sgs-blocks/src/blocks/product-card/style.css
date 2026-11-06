@@ -710,7 +710,7 @@
 }
 
 .product-card:not( .product-card--live ):hover,
-.product-card:not( .product-card--live ):focus-within,
+.product-card:not( .product-card--live ):has(:focus-visible),
 .product-card:not( .product-card--live ):focus-visible {
 	outline-color: var( --sgs-hover-primary, var( --wp--preset--color--primary, #1f7a7a ) );
 }

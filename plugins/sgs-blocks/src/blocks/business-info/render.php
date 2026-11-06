@@ -939,7 +939,7 @@ $root_classes = array(
 );
 
 if ( 'open-status' === $display_type && ! empty( $attributes['openStatusDotPulse'] ) ) {
-	$root_classes[] = 'sgs-business-info-wrap--pulse';
+	$root_classes[] = 'always' === ( $attributes['openStatusDotPulseWhen'] ?? 'open' ) ? 'sgs-business-info-wrap--pulse-always' : 'sgs-business-info-wrap--pulse';
 }
 
 if ( '' !== $preset_text_slug ) {

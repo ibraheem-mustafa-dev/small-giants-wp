@@ -207,7 +207,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	const megaAsideHoverPreviewCss =
 		asideBgHoverDecl || asideBorderHoverDecl
-			? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:focus-within{${ asideBgHoverDecl }${ asideBorderHoverDecl }}`
+			? `.${ megaAsidePreviewScope }:hover,.${ megaAsidePreviewScope }:has(:focus-visible){${ asideBgHoverDecl }${ asideBorderHoverDecl }}`
 			: '';
 
 	const blockProps = useBlockProps( {

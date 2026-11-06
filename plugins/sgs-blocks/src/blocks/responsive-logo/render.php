@@ -530,6 +530,18 @@ if ( $mobile_decls ) {
 $sgs_rl_wrapper_args = array(
 	'class' => 'sgs-responsive-logo' . $animation_modifier . $has_dark_logo_modifier . $colour_auto_modifier . ' ' . $uid,
 );
+// The inline logo's named parts animate from a data document read by src/shared/svg-parts/svg-parts.js.
+if ( $inline_svg_on && $desktop_logo_id > 0 ) {
+	require_once dirname( __DIR__, 3 ) . '/includes/helpers-svg-parts.php';
+	$sgs_rl_parts_data = sgs_svg_parts_data(
+		$attributes['svgParts'] ?? array(),
+		(string) ( $attributes['svgPartsTrigger'] ?? 'visible' ),
+		$attributes['svgPartsHoverCooldown'] ?? 1400
+	);
+	if ( '' !== $sgs_rl_parts_data ) {
+		$sgs_rl_wrapper_args['data-sgs-svg-parts'] = $sgs_rl_parts_data;
+	}
+}
 $wrapper_attributes = get_block_wrapper_attributes( $sgs_rl_wrapper_args );
 
 // ── SVG inline render (draw layer, or the inlineSvg setting) ─────────────────

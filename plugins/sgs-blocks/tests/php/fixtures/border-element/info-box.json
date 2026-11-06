@@ -81,7 +81,7 @@
         " || .sgs-info-box-UID.sgs-info-box:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ]
     },
@@ -108,16 +108,16 @@
             "pointer-events:none",
             "position:absolute"
         ],
-        " || .sgs-info-box-UID.sgs-info-box:focus-within": [
+        " || .sgs-info-box-UID.sgs-info-box:has(:focus-visible)": [
             "border-color:transparent"
         ],
-        " || .sgs-info-box-UID.sgs-info-box:focus-within::before": [
+        " || .sgs-info-box-UID.sgs-info-box:has(:focus-visible)::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover": [
             "border-color:transparent"
         ],
-        "@media (hover:hover) and (pointer:fine) || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover::before": [
+        " || :where(:root:not(.sgs-touch-input)) .sgs-info-box-UID.sgs-info-box:hover::before": [
             "background:linear-gradient(45deg,#0f0,#ff0)"
         ]
     },
