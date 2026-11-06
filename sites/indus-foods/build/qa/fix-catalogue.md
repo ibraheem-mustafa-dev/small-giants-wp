@@ -501,3 +501,11 @@ What the numbers mean:
   - rounds 1 to 7 audited still images only.
 - **Logo:** the `svgParts` value drafted from `indus-logo.js` is `r8-census/logo-svgparts.json`. `src/shared/svg-parts/svg-parts.js::entranceFrames` must animate the individual `translate` and `scale` properties rather than `transform`: a CSS `transform` keyframe replaces an SVG group's own `transform` attribute.
 - **Re-verify against wave 2:** lane C counted some form rows framework-open (the focus halo, tile ticks) that wave 2 now has settings for. Re-measure those with the settings set before building anything.
+
+## Round 8 outcomes so far (2026-11-06, on local-indus; indus-test has the framework, not the page changes)
+
+Council: three cold raters on waves 1 and 2 (23 findings), then one fresh reviewer on this wave. Confirmed and fixed: keyboard focus on a button paints its hover again; the touch circle shows; timeline Tab reaches off-screen cards with shadows kept; icon-list text shift on every marker; a logo no longer boots twice; visual-only buttons keep their words; tiles with a description stack; testimonial easing tokens resolve; connector not-hidden prints nothing; a declared shadow role keeps a framework slug. Rejected on evidence: the field ring contrast and magnet defaults (Bean's rulings), the timeline overlap (shadows measured whole).
+
+Findings closed by the applier's settings, by family (second dry run): motion 309, clip 105, link 96, chrome 90, width 71, statemotion 58, state 48, form 41, drawer 26, pin 15, tiles 6. Measures: the Careers grid equals the draft at 1440, 1100, 768 and 375 (columns and first card width); the About card links, Careers row link, Blog card link and drawer settings pass their checks; no console error, overflow, stuck-invisible element or nested link on Home, About, Careers, Retail, Contact, Apply and Blog at three widths. The census's 27px gutter rows were an artefact: a width read during an entrance is scaled .96.
+
+Corrections: the social icon hover was already live, so nothing was built for it. Draft drawer dividers are white at 16%, as live; README 31's gold is out of date. Blog renders through template 508, so its surface patches that template.
