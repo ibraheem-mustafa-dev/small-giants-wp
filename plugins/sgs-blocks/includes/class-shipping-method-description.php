@@ -45,6 +45,7 @@ final class Shipping_Method_Description {
 			\add_filter( 'woocommerce_shipping_instance_form_fields_' . $method_id, array( __CLASS__, 'add_field' ) );
 		}
 		\add_filter( 'woocommerce_shipping_rate_description', array( __CLASS__, 'rate_description' ), 10, 2 );
+		\add_filter( 'woocommerce_package_rates', array( __CLASS__, 'add_pickup_details' ) );
 	}
 
 	/**
