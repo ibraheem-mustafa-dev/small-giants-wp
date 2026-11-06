@@ -85,12 +85,16 @@ function fill( { target, draft, live, saved, block, db, widths } ) {
 	if ( ! px( min ) ) {
 		return [ { status: 'no-setting', prop: 'grid-fill', why: `the draft's track minimum ${ min } is not a length` } ];
 	}
-	const want = Object.fromEntries( widths.filter( ( w ) => fillOf( draft[ w ].declared ) ).map( ( w ) => [ w, fillOf( draft[ w ].declared ).min ] ) );
-	const have = saved.minColumnWidth ?? {};
-	if ( Object.entries( want ).every( ( [ w, v ] ) => have[ TIER_OF[ w ] ] === v ) ) {
-		return [ { status: 'equal', prop: 'grid-fill', why: 'the column minimum is set' } ];
+	// `minColumnWidth` only feeds a block's intrinsic columns; the draft's own track list is what fills the row.
+	const want = Object.fromEntries( widths.filter( ( w ) => fillOf( draft[ w ].declared ) ).map( ( w ) => {
+		const f = fillOf( draft[ w ].declared );
+		return [ TIER_OF[ w ], `repeat(${ f.mode }, minmax(${ f.min }, 1fr))` ];
+	} ) );
+	const have = saved.gridTemplateColumns ?? {};
+	if ( Object.entries( want ).every( ( [ t, v ] ) => have[ t ] === v ) ) {
+		return [ { status: 'equal', prop: 'grid-fill', why: 'the draft track list is set' } ];
 	}
-	return [ { status: 'op', prop: 'grid-fill', why: `${ target.tpl } fills by ${ mode } minmax(${ min })`, writes: [ { attr: 'minColumnWidth', value: tiered( saved, 'minColumnWidth', want ) } ], checks: trackChecks( draft, widths ) } ];
+	return [ { status: 'op', prop: 'grid-fill', why: `${ target.tpl } fills by ${ mode } minmax(${ min })`, writes: [ { attr: 'gridTemplateColumns', value: want }, ...( saved.minColumnWidth ? [ { attr: 'minColumnWidth', unset: true } ] : [] ) ], checks: trackChecks( draft, widths ) } ];
 }
 
 // Top-level tokens of a track list: `40px minmax(0px, 1fr)` is two.

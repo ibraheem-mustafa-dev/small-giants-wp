@@ -250,7 +250,10 @@ async function main() {
 	const snapshotFile = path.join( REPO, 'sites', client, 'theme-snapshot.json' );
 	const snapshot = fs.existsSync( snapshotFile ) ? loadSnapshot( snapshotFile ) : null;
 	const rawSnapshot = fs.existsSync( snapshotFile ) ? JSON.parse( fs.readFileSync( snapshotFile, 'utf8' ) ) : null;
-	const blocks = readBlocks( site, surfaces.map( ( s ) => s.postId ), tmp );
+	// A posts page renders through the `home` template, so that surface's blocks live there and not on its page.
+	const shelled = surfaces.filter( ( s ) => 'home' === s.shell );
+	const blocks = readBlocks( site, [ ...surfaces.map( ( s ) => s.postId ), ...( shelled.length ? [ 'template:home' ] : [] ) ], tmp );
+	shelled.forEach( ( s ) => ( s.postId = blocks.templates?.home || s.postId ) );
 	const clientData = loadClientData( REPO, client );
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );

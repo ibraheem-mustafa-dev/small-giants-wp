@@ -27,10 +27,12 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--site", required=True)
     ap.add_argument("--out", required=True, type=Path)
-    ap.add_argument("posts", nargs="+", type=int)
+    ap.add_argument("posts", nargs="+", help="post ids, or template:<slug> for a saved block template")
     a = ap.parse_args()
     if not re.fullmatch(r"local-[a-z0-9-]+", a.site):
         sys.exit("--site must be a local mirror (local-<name>).")
+    if not all(re.fullmatch(r"\d+|template:[a-z0-9-]+", p) for p in a.posts):
+        sys.exit("Each post must be an id or template:<slug>.")
     php = to_wsl(REPO / "scripts/local-wp/read-block-attrs.php")
     ids = " ".join(str(p) for p in a.posts)
     cmd = f"cd /var/www/{a.site} && wp --allow-root --user=1 eval-file {shlex.quote(php)} {shlex.quote(to_wsl(a.out))} {ids}"

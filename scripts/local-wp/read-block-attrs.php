@@ -3,7 +3,7 @@
  * Lists every block of the given posts that carries a `cr-ref-` class token, with its block name and saved attributes.
  *
  * Run through scripts/local-wp/read-block-attrs.py (it calls `wp eval-file` inside WSL). Read-only.
- * Arguments (from wp eval-file): <out-file.json> <post-id> [<post-id> ...]
+ * Arguments (from wp eval-file): <out-file.json> <post-id or template:slug> [...]
  * Output: { "<post-id>": { "blocks": { "<ref>": { "block": "sgs/container", "attrs": { ... } } }, "duplicates": [] } }.
  * A ref held by two blocks of a post is listed in `duplicates`, because a patch that matches it would refuse.
  *
@@ -38,6 +38,20 @@ $sgs_rba_walk = static function ( array $blocks, array &$found, array &$dupes ) 
 };
 
 foreach ( $args as $sgs_rba_id ) {
+	// `template:<slug>` names a saved block template: a posts page renders through `home`, not through its own page.
+	if ( 0 === strpos( $sgs_rba_id, 'template:' ) ) {
+		$sgs_rba_found = get_posts(
+			array(
+				'post_type'   => 'wp_template',
+				'post_status' => 'any',
+				'name'        => substr( $sgs_rba_id, 9 ),
+				'numberposts' => 1,
+				'fields'      => 'ids',
+			)
+		);
+		$sgs_rba_all['templates'][ substr( $sgs_rba_id, 9 ) ] = $sgs_rba_found ? (int) $sgs_rba_found[0] : 0;
+		$sgs_rba_id = $sgs_rba_found ? (string) $sgs_rba_found[0] : '0';
+	}
 	$sgs_rba_post   = get_post( (int) $sgs_rba_id );
 	$sgs_rba_blocks = array();
 	$sgs_rba_dupes  = array();
