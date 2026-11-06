@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11235,
+    "row_count": 11238,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -10119,6 +10119,7 @@
     "sgs/timeline::borderRadius": "visual",
     "sgs/timeline::borderStyle": "visual",
     "sgs/timeline::borderWidth": "visual",
+    "sgs/timeline::cardWidth": "layout",
     "sgs/timeline::connectorColour": "color",
     "sgs/timeline::connectorColourGradient": "colour-gradient",
     "sgs/timeline::connectorColourHover": "color",
@@ -10194,6 +10195,8 @@
     "sgs/timeline::panelBarFillGradient": "colour-gradient",
     "sgs/timeline::panelBarHeight": "layout",
     "sgs/timeline::panelBarTrackColour": "color",
+    "sgs/timeline::panelContentGutter": null,
+    "sgs/timeline::panelContentMaxWidth": "layout",
     "sgs/timeline::panelCounter": "boolean-visibility",
     "sgs/timeline::panelCounterBasis": "enum-mode",
     "sgs/timeline::panelCounterFormat": "enum-mode",

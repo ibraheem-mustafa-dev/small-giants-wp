@@ -48102,6 +48102,14 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardWidth",
+      "fields": {
+        "css_property": "flex-basis",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "connectorColour",
       "fields": {
         "css_property": "background-color",
@@ -48315,6 +48323,22 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "panelFill"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelContentGutter",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelContent"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelContentMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "panelContent"
       }
     },
     {
