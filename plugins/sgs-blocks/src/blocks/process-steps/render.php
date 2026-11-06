@@ -446,7 +446,7 @@ if ( is_array( $sgs_connector_hidden ) && array() !== $sgs_connector_hidden && '
 			array(
 				'value'     => $sgs_connector_hidden,
 				'css'       => 'display',
-				'transform' => static fn( $raw ): string => is_bool( $raw ) || is_numeric( $raw ) ? ( $raw ? 'none' : 'block' ) : '',
+				'transform' => static fn( $raw ): string => is_bool( $raw ) || is_numeric( $raw ) ? ( $raw ? 'none' : '' ) : '',
 			),
 		)
 	);

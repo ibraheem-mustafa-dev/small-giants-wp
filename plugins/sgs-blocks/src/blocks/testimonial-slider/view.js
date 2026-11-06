@@ -69,6 +69,21 @@
 import { initMotionPause } from '../../shared/motion-pause/index.js';
 
 /**
+ * An easing the Web Animations API can read: it cannot resolve `var()`, so a site token is read from the element.
+ *
+ * @param {string}  value CSS easing, possibly `var(--token, fallback)`.
+ * @param {Element} el    Element the token resolves on.
+ * @return {string} A literal easing.
+ */
+function waapiEasing( value, el ) {
+	const token = /^var\(\s*(--[\w-]+)\s*,\s*(.+)\)$/.exec( value );
+	if ( ! token ) {
+		return value;
+	}
+	return getComputedStyle( el ).getPropertyValue( token[ 1 ] ).trim() || token[ 2 ];
+}
+
+/**
  * Are we running inside wp-admin (the block editor) rather than the frontend?
  *
  * WordPress loads a block's `viewScriptModule` in the EDITOR as well as on the
@@ -129,7 +144,7 @@ sliders.forEach( ( slider ) => {
 	const fadeUp = slider.dataset.change === 'fade-up';
 	const changeDistance = Number.parseFloat( slider.dataset.changeDistance || '26' ) || 0;
 	const changeDuration = Number.parseInt( slider.dataset.changeDuration || '520', 10 ) || 0;
-	const changeEasing = slider.dataset.changeEasing || 'ease';
+	const changeEasing = waapiEasing( slider.dataset.changeEasing || 'ease', slider );
 
 	const total = originalSlides.length;
 	// Loop padding covers the largest visible count of any device, so it holds at every width.

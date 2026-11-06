@@ -54,9 +54,10 @@ def shadow_text(block, pad, unit):
 
 def with_client_presets(block, text):
     """The framework block plus this client's own shadow roles (Spec 32 FR-32-18): presets the extractor marked `_source: declared`."""
-    own = {p["slug"] for p in block.get("presets", [])}
     held = json.loads(text).get("settings", {}).get("shadow", {}).get("presets", [])
-    return {**block, "presets": block.get("presets", []) + [p for p in held if "declared" == p.get("_source") and p.get("slug") not in own]}
+    declared = {p.get("slug"): p for p in held if "declared" == p.get("_source")}
+    presets = [declared.pop(p["slug"], p) for p in block.get("presets", [])]
+    return {**block, "presets": presets + list(declared.values())}
 
 
 def synced(text, block, colour, hover):
@@ -164,6 +165,9 @@ def self_test():
     roles = json.dumps({"settings": {"shadow": {"presets": [{"slug": "old"}, {"slug": "card", "_source": "declared"}]}, "custom": {}}}, indent="  ")
     kept = [p["slug"] for p in json.loads(synced(roles, block, "var(--x)", hover))["settings"]["shadow"]["presets"]]
     check("a declared client role stays and a stale preset goes", ["a", "card"] == kept)
+    named = json.dumps({"settings": {"shadow": {"presets": [{"slug": "a", "shadow": "client", "_source": "declared"}]}, "custom": {}}}, indent="  ")
+    won = json.loads(synced(named, block, "var(--x)", hover))["settings"]["shadow"]["presets"]
+    check("a declared role keeps a framework slug it names", 1 == len(won) and "client" == won[0]["shadow"])
     # A snapshot whose "custom" object has OTHER keys after shadowColour (the real shape:
     # buttonPresets, etc.) still gets shadowHover inserted without disturbing them.
     with_siblings = json.dumps(

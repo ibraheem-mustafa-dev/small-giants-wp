@@ -174,7 +174,7 @@ function block_link_fallback_label( string $block_link, string $html, string $so
 		return (string) $host;
 	}
 
-	$text = trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( wp_strip_all_tags( (string) preg_replace( '#<(script|style).*?</>#is', '', $html ) ), ENT_QUOTES ) ) );
+	$text = trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( wp_strip_all_tags( (string) preg_replace( '#<(script|style)\b.*?</\1>#is', '', $html ) ), ENT_QUOTES ) ) );
 	if ( '' !== $text ) {
 		return mb_strlen( $text ) > 80 ? mb_substr( $text, 0, 80 ) : $text;
 	}
