@@ -6,6 +6,8 @@
 //   [--recalibrate] re-measures a block's slot map and this site's default paint even when both are current: one
 //   measured on another site is replaced, and a marker or state-target change (which the read key does not cover)
 //   takes effect.
+//   Without it, a block whose build changed is measured incrementally where that can be proven safe (FR-48-93,
+//   lib/calibrate-incremental.mjs); each result line names its mode, and why a full measurement ran.
 //   [--slot-map-only] writes no default paint, even when one is due (stage 0, FR-48-3).
 //   [--allow-loss sgs/a:settingX,sgs/b:discovered:layout] accepts a named loss. A new slot map that drops a setting the
 //   existing one reaches is not written (the candidate goes to cache/<block>.refused.json and the block fails) unless the
@@ -21,335 +23,37 @@
 // the WooCommerce basket, and each instance keeps the pass in which its marker shows (lib/calibrate-basket.mjs).
 import fs from 'fs';
 import path from 'path';
-import { spawn, spawnSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import v8 from 'v8';
-import { createRequire } from 'module';
 import { fileURLToPath } from 'url';
-import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
+import { openDb } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
-import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
-import { slotMapSkip, paintSkip, dueOutputs, instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
+import { slotMapSkip, paintSkip, dueOutputs, parseAllowLoss } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
-import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, sizeForReading, replanQueue } from './lib/calibrate-chunk.mjs';
-import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-container.mjs';
-import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
-import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
-import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
+import { EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap } from './lib/calibrate-chunk.mjs';
 import { withTestOrder } from './lib/calibrate-order.mjs';
-import { stageClock } from './lib/calibrate-timing.mjs';
-import { setWishlist } from './lib/calibrate-wishlist.mjs';
+import { calibrateBlock } from './lib/calibrate-block.mjs';
+import { build } from './lib/calibrate-pages.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
-import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
+import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 
+export { statePaint, missingPaintStates } from './lib/calibrate-block.mjs';
 export { remotePlugin, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
 const CACHE = path.join( HERE, 'cache' );
-// Most instances one calibration page holds: larger blocks are built in chunks (google-reviews has about 400, and a
-// save of that page failed with an invalid JSON response on 2026-10-03; 157 saved).
-// SGS_CAL_CHUNK overrides it for a run (a block whose page times out on the host is read in smaller chunks).
-export const CHUNK = Number( process.env.SGS_CAL_CHUNK ) > 0 ? Number( process.env.SGS_CAL_CHUNK ) : 150;
-
-// Asynchronous on purpose: the run's own Playwright connection must keep answering while the child opens its tab in the
-// shared browser (Chrome holds a new tab paused until every attached client lets it run; a blocked event loop never does).
-async function build( target, treeFile, extra = [] ) {
-	const r = await new Promise( ( resolve ) => {
-		// NODE_HEAP_FLAG: a calibration tree of several hundred instances outgrew the default heap before the limit.
-		const child = spawn( 'node', buildSpawnArgs( path.join( REPO, 'scripts', 'wp-build-page.js' ), target, treeFile, extra ), { cwd: REPO } );
-		let stdout = '';
-		let stderr = '';
-		let timedOut = false;
-		child.stdout.on( 'data', ( d ) => ( stdout += d ) );
-		child.stderr.on( 'data', ( d ) => ( stderr += d ) );
-		const timer = setTimeout( () => {
-			timedOut = true;
-			child.kill();
-		}, CHILD_TIMEOUT_MS );
-		child.on( 'close', ( status ) => {
-			clearTimeout( timer );
-			resolve( { status, stdout, stderr, timedOut } );
-		} );
-	} );
-	const last = ( r.stdout || '' ).trim().split( '\n' ).pop();
-	let json = null;
-	try {
-		json = JSON.parse( last );
-	} catch {}
-	return { code: r.status, json, timedOut: r.timedOut, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
-}
 
 // One browser for the whole run, one login (lib/wp-run-session.mjs).
 const openBrowser = ( site, env ) => openRunSession( site, env, EDITOR_TIMEOUT_MS );
 
-// Every attribute name the block declares today (its own and the shared extensions'), from the framework DB: the slot
-// map refusal ignores a setting the block no longer has.
-function declaredAttrs( db, block ) {
-	return new Set( db.prepare( 'SELECT attr_name FROM block_attributes WHERE block_slug = ?' ).all( block ).map( ( r ) => r.attr_name ) );
-}
-
 // The key a site's default paint is kept under: the deployed build's md5 and the snapshot's, plus the block's paint
 // states (calibration-fixtures.json `paintStates`) where it has them, so a changed paint state is measured again.
-// A paint state's paint: every property, or only `props` (the properties its render shape changes) where the state
-// names them. A filtered state keeps no context keys (`_tag`, `_parentDisplay`, ...); Fill reads those from the default.
-export function statePaint( elements, props ) {
-	if ( ! Array.isArray( props ) ) {
-		return elements;
-	}
-	return Object.fromEntries( Object.entries( elements ).map( ( [ p, widths ] ) => [ p, Object.fromEntries( Object.entries( widths ).map( ( [ w, styles ] ) => [ w, Object.fromEntries( Object.entries( styles || {} ).filter( ( [ k ] ) => props.includes( k ) ) ) ] ) ) ] ) );
-}
-
-// The paint states a fixture declares that a run did not measure.
-export function missingPaintStates( fixture, paintStates ) {
-	return ( fixture?.paintStates || [] ).map( ( s ) => s.name ).filter( ( n ) => ! paintStates?.[ n ] );
-}
-
 export function paintKeyOf( slotKey, snapshotKey, fixture ) {
 	const states = fixture?.paintStates;
 	return states?.length ? `${ slotKey }-${ snapshotKey }-${ md5( JSON.stringify( states ) ).slice( 0, 8 ) }` : `${ slotKey }-${ snapshotKey }`;
-}
-
-async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image, allowLoss = {} } ) {
-	const short = block.replace( /^sgs\//, '' );
-	const clock = stageClock();
-	const fixture = fixtures[ block ];
-	if ( ! fixture ) {
-		return { block, error: 'no fixture in calibration-fixtures.json (not guessed)' };
-	}
-	// A block whose render returns before any output on this site is named here, before a page is built or waited on.
-	const renderPhp = path.join( REPO, 'plugins/sgs-blocks/src/blocks', short, 'render.php' );
-	const why = renderedNothingReason( block, { renderSource: fs.existsSync( renderPhp ) ? fs.readFileSync( renderPhp, 'utf8' ) : '', rawSnapshot } );
-	if ( why ) {
-		return { block, error: why };
-	}
-	const schema = blockSchema( block ) || {};
-	const rows = attrsFor( db, block ).filter( ( r ) => longhands( r.css_property ).length );
-	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
-	const variant = variantInfo( db, block );
-	const ctx = instanceCtx( variant, image, fixture );
-	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx } );
-	// Text, presence and link settings paint no CSS property, so attrsFor never returns them: they are queried by role
-	// and planned apart (lib/calibrate-content.mjs), then read for existence, text and link attributes.
-	const contentPlan = planContentInstances( block, { contentRows: contentRowsFor( db, block ), variant, schema, fixture, ctx } );
-	const needles = needlesOf( contentPlan.instances );
-	let instances = [ ...plan.instances, ...contentPlan.instances ];
-	const noMarker = new Set( [ ...plan.noMarker, ...contentPlan.noMarker ] );
-	// A state with no trigger (lib/calibrate.mjs::STATE_TRIGGERS) is reported, never calibrated.
-	const states = rows.filter( ( r ) => r.css_state && undefined === triggerFor( r.css_state ) ).map( ( r ) => `${ r.attr_name }:${ r.css_state }` );
-	instances = instancesDue( instances.filter( ( i ) => ! i.row || undefined !== i.trigger ), due );
-	const treeFile = path.join( CACHE, `${ short }.tree.json` );
-	const rejected = [];
-	// A block with more instances than one page saves reliably is built in chunks (the fixture's own `chunk`, else CHUNK);
-	// every chunk carries each variant's default instance, so a marker is always compared with a default read on the same
-	// page load. A chunk whose build times out is halved and rebuilt (lib/calibrate-chunk.mjs::splitOnTimeout).
-	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
-	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
-	let size = chunkSizeFor( fixture, CHUNK );
-	const queue = planChunks( defaults, others, size );
-	const kept = [];
-	let done = 0;
-	while ( queue.length ) {
-		let list = queue.shift();
-		const where = () => ( done + queue.length ? ` (chunk ${ done + 1 } of ${ done + queue.length + 1 })` : '' );
-		// Halves the chunk in hand and puts its pieces first in the queue; false when it cannot be split further.
-		const halve = () => {
-			const split = splitOnTimeout( list, size );
-			if ( ! split ) {
-				return false;
-			}
-			size = split.size;
-			queue.unshift( ...split.chunks );
-			return true;
-		};
-		let timedOut = false;
-		let staleTree = false;
-		for ( let attempt = 0; attempt < 3 && ! timedOut; attempt++ ) {
-			writeTree( treeFile, buildTree( block, fixture, list ) );
-			const dry = await clock.time( 'dryRun', () => build( target, treeFile, [ '--post-id', String( target.postId ), '--dry-run' ] ) );
-			if ( dry.timedOut ) {
-				timedOut = true;
-				break;
-			}
-			if ( 0 === dry.code ) {
-				staleTree = false;
-				break;
-			}
-			// wp-build-page names each rejected node by its tree path: "[<i>] sgs/container > ...". Drop those instances.
-			const bad = new Set( [ ...dry.err.matchAll( /^\s*\[(\d+)\] sgs\/container[^:]*: (.*)$/gm ) ].map( ( m ) => {
-				rejected.push( { key: list[ Number( m[ 1 ] ) ].key, message: m[ 2 ] } );
-				return Number( m[ 1 ] );
-			} ) );
-			if ( ! bad.size ) {
-				return { block, error: `calibration tree rejected${ where() }: ${ dry.err.slice( -600 ) }` };
-			}
-			list = list.filter( ( _, i ) => ! bad.has( i ) );
-			staleTree = true;
-		}
-		// The last attempt's rejections leave the tree file holding nodes that are no longer in the list.
-		if ( ! timedOut && staleTree ) {
-			writeTree( treeFile, buildTree( block, fixture, list ) );
-		}
-		let built = null;
-		if ( ! timedOut ) {
-			built = await clock.time( 'build', () => build( target, treeFile, [ '--post-id', String( target.postId ) ] ) );
-			timedOut = built.timedOut;
-			Object.entries( built.json?.stages || {} ).forEach( ( [ k, v ] ) => clock.add( `build.${ k.replace( /Ms$/, '' ) }`, v ) );
-		}
-		if ( timedOut ) {
-			if ( halve() ) {
-				continue;
-			}
-			return { block, error: `calibration build timed out on a chunk of ${ list.length } instance(s) that cannot be split further${ where() }` };
-		}
-		if ( ! built.json?.ok ) {
-			return { block, error: `calibration build failed${ where() }: ${ built.err.slice( -600 ) }` };
-		}
-		await closeStrayTabs( shared );
-		const pageUrl = built.json.link || `${ env.url }/?page_id=${ target.postId }`;
-		// A fixture's basket line (lib/calibrate-basket.mjs): the page is read again holding it, and each instance keeps the
-		// pass in which its marker shows.
-		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
-		const settleGone = fixture.settleGone || null;
-		const owner = { block, site };
-		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner } ) ) ];
-		clock.addReads( passes[ 0 ].timing );
-		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
-		// (lib/calibrate-chunk.mjs::sizeForReading): a block whose instances draw hundreds of elements reads fewer per page.
-		const drawn = Math.max( 0, ...WIDTHS.map( ( w ) => {
-			const reads = Object.values( passes[ 0 ][ w ] || {} );
-			return reads.length ? reads.reduce( ( a, r ) => a + Object.keys( r || {} ).length, 0 ) / reads.length : 0;
-		} ) );
-		const fits = sizeForReading( size, drawn, list.filter( ( i ) => i.isDefault || i.isBase ).length );
-		if ( fits < size ) {
-			size = fits;
-			queue.splice( 0, queue.length, ...replanQueue( queue, size ) );
-		}
-		if ( fixture.basket ) {
-			await setBasket( shared.page, env.url, fixture.basket );
-			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settleGone, owner } ) );
-			} finally {
-				await setBasket( shared.page, env.url, null );
-			}
-		}
-		// A fixture's wishlist (lib/calibrate-wishlist.mjs): the page is read again with one saved product, and the user's
-		// own list is put back.
-		if ( fixture.wishlist ) {
-			const runPhp = wpEvalRunner( target, site, REPO );
-			setWishlist( runPhp, env.user, true );
-			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone, owner } ) );
-			} finally {
-				setWishlist( runPhp, env.user, false );
-			}
-		}
-		// A second pass only when this chunk holds a content instance: the content read records node existence, text and
-		// link attributes, which no computed-style read carries.
-		const contentReads = list.some( ( i ) => i.content ) ? await clock.time( 'contentRead', () => readContentAll( shared.page, pageUrl, list, needles ) ) : {};
-		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
-		const chunkDefault = {};
-		const chunkBase = {};
-		list.forEach( ( inst, n ) => {
-			inst.isDefault && ( chunkDefault[ inst.variant ] = n );
-			inst.isBase && ( chunkBase[ inst.baseKey ] = n );
-		} );
-		const at = ( n, src ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, src[ w ]?.[ n ] ] ) );
-		list.forEach( ( inst, n ) => {
-			// Baselines are only ever compared against; defaults are kept once.
-			if ( inst.isBase || ( inst.isDefault && done > 0 ) ) {
-				return;
-			}
-			if ( inst.baseKey && undefined === chunkBase[ inst.baseKey ] ) {
-				rejected.push( { key: inst.key, message: 'its baseline instance was rejected, so there is nothing to compare it with' } );
-				return;
-			}
-			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
-			// A style instance's pass is the one where its setting is reached (lib/calibrate.mjs::slotFor on that pass).
-			const reached = inst.row && ! inst.content && inst.marker
-				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
-				: null;
-			const reads = pickPass( passes, n, d, reached );
-			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
-		} );
-		done++;
-	}
-	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
-	instances = kept;
-	const untested = [ ...states ];
-	// Default paint: every variant's elements (a path seen in several variants keeps the first).
-	const elements = {};
-	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
-	// Each paint state's own default paint, with the condition Fill matches a node against (lib/paint-state.mjs).
-	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.read ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: statePaint( defaultPaint( i.read ), i.paintState.props ) } ] ) );
-	// A state the fixture declares that was not measured (its instance rejected or unread): the paint is not written, so
-	// the next run measures it again instead of keeping a paint key that claims the state.
-	const statesMissing = missingPaintStates( fixture, paintStates );
-	// A block whose tiers follow its container's width (an @container rule) reaches a tier at fewer page widths by design.
-	// Either the built stylesheet holds an @container rule, or the render emits them at run time (site-footer-row's
-	// built style-index.css has none, because the wrapper writes its tier rules when it renders).
-	const containerQuery = isContainerQueryBlock( short, path.join( REPO, 'plugins/sgs-blocks/build/blocks' ), path.join( REPO, 'plugins/sgs-blocks/src/blocks' ) );
-	const settings = {};
-	const dead = [];
-	const oneWidth = [];
-	const discovered = {};
-	instances.forEach( ( inst ) => {
-		if ( inst.discover ) {
-			const fx = discoverEffects( inst.def, inst.read );
-			const d = ( discovered[ inst.discover.attr ] ??= {} );
-			for ( const [ prop, e ] of Object.entries( fx ) ) {
-				( d[ prop ] ??= { slots: [], values: {}, ...( inst.discover.tier ? { tier: inst.discover.tier } : {} ) } );
-				d[ prop ].slots = [ ...new Set( [ ...d[ prop ].slots, ...e.slots ] ) ];
-				d[ prop ].values[ inst.discover.value ] = e.value;
-			}
-			return;
-		}
-		if ( inst.content || ! inst.row ) {
-			return;
-		}
-		const name = inst.row.attr_name;
-		if ( [ 'hover', 'focus', 'class', 'open' ].includes( inst.trigger ) && inst.hoverMissed ) {
-			untested.push( `${ name }:${ inst.row.css_state } (${ missedReason( inst.hoverWhy ) })` );
-			return;
-		}
-		if ( 'scroll' === inst.trigger && inst.scrollMissed ) {
-			untested.push( `${ name }:${ inst.row.css_state } (the header never took is-header-scrolled)` );
-			return;
-		}
-		// A scrolled marker is compared with its variant's default read scrolled too, so the state's own look is not
-		// counted as the marker's effect.
-		const s = 'scroll' === inst.trigger
-			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled, { containerQuery, own: stateTarget( block, inst.row ) } )
-			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery, own: stateTarget( block, inst.row ) } );
-		foldReading( { settings, dead, oneWidth }, inst, s );
-	} );
-	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
-	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
-	// text, presence and link are omitted entirely when the block has nothing of that kind.
-	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead ) );
-	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
-	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
-	const browserVersion = shared.context.browser()?.version() ?? null;
-	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
-	// A paint-only run built only the default and paint-state instances (lib/cache.mjs::instancesDue); only the due output is written.
-	const { slotMap, paint } = splitCalibration( file );
-	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
-	decision.write && writeSlotMap( CACHE, block, slotMap );
-	decision.write && fs.rmSync( refusedFile( CACHE, block ), { force: true } );
-	due.paint && ! statesMissing.length && writePaint( CACHE, site, block, paint );
-	if ( decision.lost.length ) {
-		fs.writeFileSync( refusedFile( CACHE, block ), JSON.stringify( { ...slotMap, refusedBecause: { lost: decision.lost } }, null, 1 ) );
-		const names = decision.lost.map( ( l ) => l.setting ).join( ', ' );
-		return { block, error: `refused: the new slot map drops ${ names } that the existing one reaches; candidate kept in cache/${ block.replace( /^sgs\//, '' ) }.refused.json; pass --allow-loss ${ block }:<setting> to accept a named loss`, instances: instances.length, chunks: done, timing: clock.summary() };
-	}
-	if ( due.paint && statesMissing.length ) {
-		return { block, error: `paint state(s) ${ statesMissing.join( ', ' ) } not measured (rejected or unread); the default paint was not written, so the next run measures it again` };
-	}
-	if ( ! due.slotMap ) {
-		return { block, paintOnly: true, elements: Object.keys( elements ).length, paintStates: Object.keys( paintStates ).length, rejected: rejected.length, timing: clock.summary() };
-	}
-	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length, instances: instances.length, chunks: done, timing: clock.summary() };
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) && needsBiggerHeap( v8.getHeapStatistics().heap_size_limit ) ) {
@@ -447,7 +151,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// rest of the run continues.
 			try {
 				// A fixture's `order` (lib/calibrate-order.mjs): the block is read holding a test order for the logged-in user.
-				results.push( await withTestOrder( fixtures[ b ], { runPhp: wpEvalRunner( target, site, REPO ), customer: env.user }, () => calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), due: due[ b ], allowLoss } ) ) );
+				results.push( await withTestOrder( fixtures[ b ], { runPhp: wpEvalRunner( target, site, REPO ), customer: env.user }, () => calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), snapshotKey: paintSuffix, due: due[ b ], allowLoss, cache: CACHE, repo: REPO, recalibrate } ) ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}
@@ -456,7 +160,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	} finally {
 		const empty = path.join( CACHE, 'empty.tree.json' );
 		writeTree( empty, [] );
-		const r = await build( target, empty, [ '--post-id', String( target.postId ) ] );
+		const r = await build( REPO, target, empty, [ '--post-id', String( target.postId ) ] );
 		console.log( r.json?.ok ? 'calibration page emptied' : `[WARN] calibration page not emptied: ${ r.err.slice( -300 ) }` );
 		await shared.close();
 		releaseSlotLocks();

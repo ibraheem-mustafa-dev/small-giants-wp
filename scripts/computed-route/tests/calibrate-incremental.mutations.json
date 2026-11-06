@@ -1,0 +1,146 @@
+[
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const failed = verify( reading );",
+		"replace": "const failed = null;",
+		"why": "a moved paint or a canary difference would keep the partial reading"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "return failed ? { reading: await measure( all ), mode: 'full', why: failed }",
+		"replace": "return failed ? { reading, mode: 'full', why: failed }",
+		"why": "the fallback would keep the partial reading and call it full"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( a[ prop ] !== b[ prop ] ) {",
+		"replace": "if ( false ) {",
+		"why": "a moved default value would pass"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( ! before[ path ] || ! after[ path ] ) {",
+		"replace": "if ( false ) {",
+		"why": "a changed element list would pass"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const bad = names.find( ( n ) => JSON.stringify( canonical( rowsOf( prev, n ) ) ) !== JSON.stringify( canonical( rowsOf( next, n ) ) ) );",
+		"replace": "const bad = null;",
+		"why": "a canary that moved would pass"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( ( prev.incremental?.chain || 0 ) >= MAX_CHAIN ) {",
+		"replace": "if ( false ) {",
+		"why": "the chain would run without a cap"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": ">= MAX_CHAIN ) {",
+		"replace": "> MAX_CHAIN ) {",
+		"why": "the cap would be one run late"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( prev.fixtureKey !== fixtureKey ) {",
+		"replace": "if ( false ) {",
+		"why": "a changed fixture moves every path and would pass"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( prevPaint.paintKey?.split( '-' )[ 1 ] !== snapshotKey ) {",
+		"replace": "if ( false ) {",
+		"why": "a snapshot change would read as a moved paint or pass unchecked"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( ! prevPaint?.elements ) {",
+		"replace": "if ( false ) {",
+		"why": "nothing to compare the default paint with"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const keep = ( name ) => declared.has( name ) && ! fresh.has( name );",
+		"replace": "const keep = ( name ) => ! fresh.has( name );",
+		"why": "a removed attribute would stay in the map"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const keep = ( name ) => declared.has( name ) && ! fresh.has( name );",
+		"replace": "const keep = ( name ) => declared.has( name );",
+		"why": "a measured setting's old row would survive its new reading"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "known[ n ] !== prints[ n ] || open.has( n ) || ! hasRows( prev, n )",
+		"replace": "known[ n ] !== prints[ n ] || ! hasRows( prev, n )",
+		"why": "a setting that read dead would stay dead though its code was fixed"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "known[ n ] !== prints[ n ] || open.has( n ) || ! hasRows( prev, n )",
+		"replace": "! known[ n ] || open.has( n ) || ! hasRows( prev, n )",
+		"why": "a changed setting would not be measured, only a new one"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const unplanned = rowNames( prev ).filter( ( n ) => ! owned[ n ] && ( ! declared || declared.has( n ) ) );",
+		"replace": "const unplanned = [];",
+		"why": "an unplanned old row would stay unmeasured"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": " && ( ! declared || declared.has( n ) )",
+		"replace": "",
+		"why": "a removed attribute would force a full run instead of leaving the map"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "code: index.get( name ) || [],",
+		"replace": "code: [],",
+		"why": "a changed line of a setting's render would not count"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "( i.isBase && bases.has( i.baseKey ) )",
+		"replace": "false",
+		"why": "a measured setting would have no baseline to compare with"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( prev[ key ] !== value ) {",
+		"replace": "if ( false ) {",
+		"why": "a browser upgrade would stamp unmeasured rows as read by it"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "if ( prevPaint.slotKey !== prev.slotKey ) {",
+		"replace": "if ( false ) {",
+		"why": "a paint older than the map would be compared as its baseline"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": " || ! hasRows( prev, n ) );",
+		"replace": " );",
+		"why": "a discovery or content setting that read nothing would never be measured again"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "const candidates = Object.keys( owned ).filter( ( n ) => ! chosen.has( n ) );",
+		"replace": "const candidates = Object.keys( owned ).filter( ( n ) => ! chosen.has( n ) && prev.settings?.[ n ] );",
+		"why": "discovery and content rows would never be sampled"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "return out.length || ! lightest ? out : [ lightest ];",
+		"replace": "return out;",
+		"why": "a run could prove itself on no canary at all"
+	},
+	{
+		"file": "lib/calibrate-incremental.mjs",
+		"find": "replace( /^content-(text|presence|link)-/, '' )",
+		"replace": "replace( /^content-[a-z]+-/, '' )",
+		"why": "a setting called content would be read as a content instance"
+	}
+]

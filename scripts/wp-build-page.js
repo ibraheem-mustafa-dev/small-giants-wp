@@ -35,6 +35,7 @@
  *   Site Editor saves, which overrides the theme file). The tree is validated in the Site Editor's block registry
  *   and the saved copy is read back and checked exactly like a page.
  *   --dry-run validates the tree in the editor and saves nothing.
+ *   --no-reload           skip the reload that checks the saved blocks parse back (a page only read on the front end)
  *   --editor-timeout <ms> how long a page load, the editor boot and a save may each take (default 60000); a large
  *   calibration page on a slow host needs longer.
  *   SGS_MAX_RENDERS (environment, default 6): how many of the editor's server-render requests (block-renderer) run
@@ -73,6 +74,7 @@ function parseArgs( argv ) {
 		else if ( a === '--template-part' ) args.templatePart = argv[ ++i ];
 		else if ( a === '--template' ) args.template = argv[ ++i ];
 		else if ( a === '--dry-run' ) args.dryRun = true;
+		else if ( a === '--no-reload' ) args.noReload = true;
 		else if ( a === '--editor-timeout' ) args.editorTimeout = Math.max( 1, Number( argv[ ++i ] ) || 60000 );
 	}
 	return args;
@@ -574,6 +576,11 @@ async function main() {
 		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
 		const lost = await verifySavedPost( page, saved.id, builtNames );
 		if ( lost ) fail( 5, lost );
+		// A page read on the front end, not edited (calibration): what the saved content renders is the check.
+		if ( args.noReload ) {
+			console.log( JSON.stringify( { ok: true, id: saved.id, link: saved.link, invalid: [], stages } ) );
+			return;
+		}
 		let expected = built.serialised;
 		stageStart.reload = Date.now();
 		let check = await reload( saved.id );

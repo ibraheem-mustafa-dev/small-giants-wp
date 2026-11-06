@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 48
-spec_version: "0.3.0"
+spec_version: "0.4.0"
 title: "Cloning system: Claude Design handoff to a working SGS site"
 project: small-giants-wp
 created: 2026-10-11
-last_verified: 2026-10-12
+last_verified: 2026-11-06
 status: active
 supersedes: .claude/specs/archive/47-COMPUTED-ROUTE-DRAFT-TO-TREE.md (spec_version 0.18.0)
 references:
@@ -104,7 +104,7 @@ Status: built (2026-10-11). `lib/resolve.mjs::TIER_OF` maps 375, 768 and 1440 on
 
 ### 3.2 Block calibration: `lib/calibrate.mjs` and `calibrate.mjs` (FR-47-2)
 
-The modules that implement it (`lib/calibrate-props.mjs`, `lib/calibrate-markers.mjs`, `lib/calibrate-instances.mjs`, `lib/calibrate-read.mjs`, `lib/calibrate-content.mjs`, `lib/calibrate-chunk.mjs`, `lib/calibrate-container.mjs`, `lib/cache.mjs`, `lib/deploy-hash.mjs`) are indexed in `scripts/computed-route/README.md`.
+The modules that implement it (`lib/calibrate-props.mjs`, `lib/calibrate-markers.mjs`, `lib/calibrate-instances.mjs`, `lib/calibrate-read.mjs`, `lib/calibrate-content.mjs`, `lib/calibrate-chunk.mjs`, `lib/calibrate-container.mjs`, `lib/calibrate-block.mjs`, `lib/calibrate-pages.mjs`, `lib/calibrate-incremental.mjs`, `lib/calibrate-timing.mjs`, `lib/cache.mjs`, `lib/deploy-hash.mjs`) are indexed in `scripts/computed-route/README.md`.
 
 Calibration has two outputs with different scopes:
 - **Slot map:** which rendered element and property each setting paints, how its value transforms, and which value forms it accepts. It does not depend on the site. It is measured once on the canary and cached per block, keyed by the md5 of the block's deployed `build/blocks/<block>/` directory read over SSH, so the key matches what the server runs.
@@ -166,6 +166,22 @@ Status: partly built (`calibrate.mjs`, `lib/calibrate*.mjs`, `lib/deploy-hash.mj
 Each setting's calibration records the value forms it accepts beyond a plain literal, by rendering a marker in each form and reading whether the element takes it: a palette slug and a hex (colour, built), a `clamp()` and a `vw` length (fluid sizes), and a `repeat(n, …)` template or a column count (grids). The list is the setting's `forms` field in the cache. A setting is "built" for a fluid or grid form only once its `forms` list names that form; until then the resolver writes per tier (FR-48-1) and the row is instrument debt (R-48-4). Done when: recalibrating `sgs/heading` and `sgs/container` records `clamp` on a font-size setting that accepts it and `repeat` on the container's grid template setting, and a planted setting that strips `clamp()` records no `clamp`.
 
 Status: built (2026-10-11). `lib/calibrate-markers.mjs` adds `clamp` (`clamp(13px, 9px + 3vw, 71px)`), `vw` (`4vw`), `repeat` (`repeat(3, 1fr)`) and `count` probes; a form is recorded only when one element carries the expected value at 375, 768 and 1440 (0.5px tolerance for lengths), and a probe that misses never makes a setting dead (`tests/calibrate-forms.test.mjs`, MUST FAIL: a planted stripped `clamp()`). Recalibrated on `local-indus`: heading `fontSize` records `clamp` and `vw`, container `gridTemplateColumns` records `repeat`. The live planted-strip block is not built (the case is proven on synthetic readings). Colour `hex` and `slug` keep the earlier, looser reach rule.
+
+### FR-48-93 -- Incremental calibration
+
+A block whose build changed re-measures only what changed, and proves the rest of its slot map is still true. The target is about a minute for a block gaining a few settings. Bean approved the design on 2026-11-06: incremental measurement, a cap of 5 incremental runs in a row, and dead settings always measured again.
+
+- **What changed.** Every slot map carries `fingerprints` (one hash per setting) and `fixtureKey`. A fingerprint covers the setting's database row, its planned instances (markers, preconditions, state target) and the lines of the block's built PHP that name it (`lib/calibrate-incremental.mjs::fingerprints`), so a changed marker counts as well as a new attribute.
+- **What is measured.** Each variant's default, the paint states, the baselines those need, every setting whose fingerprint is new or changed, every setting the last run left dead, untested or rejected, every discovery or content setting that read nothing, and a canary of unchanged settings of any kind (`lib/calibrate-incremental.mjs::planIncremental`). The canary aims for 5% of the block's unchanged settings, at least 6 and at most 20, within 40 instances, in an order set by the build hash so each build samples others; a setting too heavy for the budget is skipped, and a block whose settings are all too heavy still gives its lightest one (`canaryFor`).
+- **Fallback.** The block is measured in full, and the run prints `fullBecause`, when: `--recalibrate` is passed; the block has no slot map or no fingerprints; the read list, measuring site, fixture, Playwright version, browser version or site snapshot changed; this site has no default paint to compare with, or its paint was read under another read list or belongs to another build than the map; or the chain has reached `MAX_CHAIN` (5) incremental runs (`fullBecause`). It also falls back when a declared setting's old row is no longer planned (`planIncremental`, `unplanned`), when any element, width or property of a default or paint-state paint differs from the old paint (`paintMoved`), or when any field of any row of a canary differs from the old map (`canaryDiffers`). The partial reading is discarded (`measureWithFallback`). A block whose slot map is current and whose paint alone is due builds only its defaults and paint states (`lib/cache.mjs::instancesDue`).
+- **Merge.** New rows replace old ones, and every row of a setting the block no longer declares leaves the map (`mergeSlotMap`). `slotMapWriteDecision` judges the merged map's `settings` and `discovered`, so a setting that goes dead is still refused. The map records `incremental: { chain, lastFull, lastFullAt }`; a full run has no such field. `measured` is the date of the last run, so `incremental.lastFullAt` is when the whole block was last read.
+- **Accepted limit.** Reachable stale rows are bounded, not impossible: a change in shared code that repoints one setting, moves no default paint and misses the canary stays stale until the next full run, at most 5 runs away. `slotKey` hashes `build/blocks/<block>/` only, so a change in `includes/` alone starts no run at all, as it never has.
+- **Lean page build.** `wp-build-page.js --no-reload` checks the tree and saves in one child, with no separate dry run and no reload. A block's first page keeps the reload, so a block the editor rejects still fails there, and a block the editor tidies on load (`normalisedOnFirstLoad`) keeps the settling save on every page (`lib/calibrate-pages.mjs::measurePages`). The editor still opens once per page.
+- **Timing.** Every block's result line carries its mode and stage timings in seconds (`lib/calibrate-timing.mjs::stageClock`).
+
+Done when: a block gaining a setting calibrates in about a minute with the safety fallback proven by a failing-then-passing test.
+
+Status: built (2026-11-06), with `sgs/form` above the target. Measured on `local-sandybrown` with 3 settings removed from each map to stand in for 3 gained: `sgs/button` 35.5 s (228.1 s before), `sgs/container` 73.0 s (354.4 s for a full run with the lean build), `sgs/form` 270.1 s (1,351.3 s before); every row of every merged map matched its full measurement. `sgs/form` measures 135 settings on such a run, 101 of them dead, and 64 of the dead are whole families whose elements its fixture does not render (step counter, review step, saved notice, optional tag). The lean build took full runs to 114.8 s for `sgs/button` and 1,017.1 s for `sgs/form` with no reading changed. Planted faults on `sgs/button`, run live: a moved default paint and a changed canary each fell back to a full run naming the cause, and a removed attribute left the map on an incremental run. Tests: `tests/calibrate-incremental.test.mjs`, with `tests/calibrate-incremental.mutations.json` (24 of 24 mutations killed).
 
 ### FR-48-3 -- Stage-0 calibration of the client's block set
 
