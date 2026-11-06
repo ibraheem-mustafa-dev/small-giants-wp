@@ -3,7 +3,7 @@ import { createHash } from 'crypto';
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { modifierOf, GRADIENT_PAINTS } from './db.mjs';
-import { longhandsOf } from './css-families.mjs';
+import { longhandsOf, isCssProperty } from './css-families.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
@@ -67,26 +67,36 @@ const ALIASES = {
 // The longhand properties a setting's css_property covers, as calibration reads them. A property calibration reads is its
 // own longhand; any other is reached through the longhands the CSS families give it (lib/css-families.mjs::longhandsOf:
 // `overflow` through overflow-x and overflow-y, `padding-block` through padding-top and padding-bottom), so a
-// shorthand or logical spelling needs no entry here. A modifier row
-// (`grid-template-columns:count`, a track count) is read under the property it modifies (lib/db.mjs::modifierOf).
+// shorthand or logical spelling needs no entry here. A CSS property with no read longhand is its own longhand: the
+// block routing it reads it as well (unreadProps). A modifier row (`grid-template-columns:count`, a track count) is
+// read under the property it modifies (lib/db.mjs::modifierOf).
 export function longhands( cssProperty ) {
+	const read = ( list ) => list.filter( ( p ) => READ_PROPS.includes( p ) );
 	return [ ...new Set( cssProperty.split( ',' ).map( ( s ) => s.trim() ).map( ( p ) => modifierOf( p ) || p ).flatMap( ( p ) => {
 		if ( ALIASES[ p ] ) {
-			return ALIASES[ p ];
+			return read( ALIASES[ p ] );
 		}
 		if ( /^(padding|margin)$/.test( p ) ) {
-			return SIDES.map( ( s ) => `${ p }-${ s }` );
+			return read( SIDES.map( ( s ) => `${ p }-${ s }` ) );
 		}
 		const m = p.match( /^border-(width|color|style)$/ );
 		if ( m ) {
-			return SIDES.map( ( s ) => `border-${ s }-${ m[ 1 ] }` );
+			return read( SIDES.map( ( s ) => `border-${ s }-${ m[ 1 ] }` ) );
 		}
 		if ( 'gap' === p ) {
-			return [ 'row-gap', 'column-gap', 'gap' ];
+			return read( [ 'row-gap', 'column-gap', 'gap' ] );
 		}
 		if ( 'text-decoration' === p ) {
-			return [ 'text-decoration-line' ];
+			return read( [ 'text-decoration-line' ] );
 		}
-		return READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p );
-	} ) ) ].filter( ( p ) => READ_PROPS.includes( p ) );
+		const reached = read( READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p ) );
+		return reached.length || ! isCssProperty( p ) ? reached : [ p ];
+	} ) ) ];
+}
+
+// The properties a block's routed rows paint beyond READ_PROPS, read for that block alone: its pages carry them, its
+// default paint records them and its paint key names them (calibrate.mjs::paintKeyOf), while READ_KEY and every other
+// block's files stay as they are.
+export function unreadProps( rows ) {
+	return [ ...new Set( rows.flatMap( ( r ) => longhands( r.css_property ) ) ) ].filter( ( p ) => ! READ_PROPS.includes( p ) ).sort();
 }

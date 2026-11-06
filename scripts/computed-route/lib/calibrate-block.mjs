@@ -7,6 +7,7 @@ import { attrsFor, enumSettings, variantInfo } from './db.mjs';
 import { blockSchema } from './resolve.mjs';
 import { instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, readPaint, slotMapWriteDecision, refusedFile } from './cache.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './calibrate-container.mjs';
+import { unreadProps } from './calibrate-props.mjs';
 import { READ_KEY, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, missedReason } from './calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, collectContent } from './calibrate-content.mjs';
 import { stageClock } from './calibrate-timing.mjs';
@@ -136,7 +137,7 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	if ( incremental?.unplanned.length ) {
 		fullWhy = `${ incremental.unplanned.join( ', ' ) } no longer planned`;
 	}
-	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock };
+	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps: unreadProps( rows ) };
 	let run;
 	try {
 		run = await measureWithFallback( {

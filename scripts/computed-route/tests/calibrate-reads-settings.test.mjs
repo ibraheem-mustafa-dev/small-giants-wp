@@ -5,7 +5,8 @@
 // read longhands (overflow), and planned no marker for a free-text text-shadow.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { READ_PROPS, longhands } from '../lib/calibrate-props.mjs';
+import { READ_PROPS, longhands, unreadProps } from '../lib/calibrate-props.mjs';
+import { paintKeyOf } from '../calibrate.mjs';
 import { markersFor, slotFor } from '../lib/calibrate.mjs';
 import { preconditionsFor } from '../lib/calibrate-instances.mjs';
 import { attrsFor, openDb } from '../lib/db.mjs';
@@ -54,6 +55,21 @@ test( 'MUST FAIL: a free-text text-shadow setting and a free-text overflow setti
 	const colour = rowOf( 'sgs/text', 'textShadowColour' );
 	const pre = preconditionsFor( colour, blockSchema( 'sgs/text' ), {}, {} );
 	assert.match( pre.textShadow ?? '', /^\d+px \d+px \d+px$/, 'a colour alone composes no shadow: the shape it colours is its precondition' );
+} );
+
+test( 'MUST FAIL: a routed CSS property the global list lacks is read for its own block alone, so the list READ_KEY hashes stays as it was', () => {
+	assert.equal( READ_PROPS.includes( 'align-self' ), false, 'the global list does not grow' );
+	assert.deepEqual( longhands( 'align-self' ), [ 'align-self' ] );
+	assert.deepEqual( longhands( 'mask-image' ), [ 'mask-image' ] );
+	assert.deepEqual( longhands( 'not-a-css-property' ), [], 'negative control: a name that is no CSS property reads nothing' );
+	assert.deepEqual( longhands( 'overflow' ), [ 'overflow-x', 'overflow-y' ], 'a property reached through read longhands stays there' );
+	for ( const [ block, attr, prop ] of [ [ 'sgs/button', 'alignSelf', 'align-self' ], [ 'sgs/post-grid', 'readMorePin', 'align-self' ], [ 'sgs/label', 'markerIcon', 'mask-image' ] ] ) {
+		assert.ok( unreadProps( attrsFor( db, block ) ).includes( prop ), `${ block } reads ${ prop }` );
+		assert.ok( markersFor( rowOf( block, attr ), blockSchema( block ), SNAPSHOT ).length, `${ block }.${ attr } gets a marker` );
+	}
+	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/text' ) ), [], 'negative control: a block routing only read properties reads no more' );
+	assert.equal( paintKeyOf( 'a', 'b', {}, [] ), paintKeyOf( 'a', 'b', {} ), 'an untouched block keeps its paint key' );
+	assert.notEqual( paintKeyOf( 'a', 'b', {}, [ 'align-self' ] ), paintKeyOf( 'a', 'b', {} ), 'a paint read without the property is stale, never taken as its absence' );
 } );
 
 // The detector: a routed SGS setting whose css_property is CSS but which calibration neither reads nor reaches through a

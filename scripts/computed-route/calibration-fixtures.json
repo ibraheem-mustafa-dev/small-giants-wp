@@ -1507,6 +1507,12 @@
   "sgs/label": {
     "attributes": {
       "text": "40 designer brands"
+    },
+    "preconditions": {
+      "markerIcon": {
+        "dot": true,
+        "markerShape": "icon"
+      }
     }
   },
   "sgs/media": {

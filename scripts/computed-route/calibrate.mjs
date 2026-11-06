@@ -26,7 +26,8 @@ import path from 'path';
 import { spawnSync } from 'child_process';
 import v8 from 'v8';
 import { fileURLToPath } from 'url';
-import { openDb } from './lib/db.mjs';
+import { openDb, attrsFor } from './lib/db.mjs';
+import { unreadProps } from './lib/calibrate-props.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
 import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
@@ -51,9 +52,9 @@ const openBrowser = ( site, env ) => openRunSession( site, env, EDITOR_TIMEOUT_M
 
 // The key a site's default paint is kept under: the deployed build's md5 and the snapshot's, plus the block's paint
 // states (calibration-fixtures.json `paintStates`) where it has them, so a changed paint state is measured again.
-export function paintKeyOf( slotKey, snapshotKey, fixture ) {
+export function paintKeyOf( slotKey, snapshotKey, fixture, extraProps = [] ) {
 	const states = fixture?.paintStates;
-	return states?.length ? `${ slotKey }-${ snapshotKey }-${ md5( JSON.stringify( states ) ).slice( 0, 8 ) }` : `${ slotKey }-${ snapshotKey }`;
+	return [ slotKey, snapshotKey, ...( states?.length ? [ md5( JSON.stringify( states ) ).slice( 0, 8 ) ] : [] ), ...( extraProps.length ? [ md5( JSON.stringify( extraProps ) ).slice( 0, 8 ) ] : [] ) ].join( '-' );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) && needsBiggerHeap( v8.getHeapStatistics().heap_size_limit ) ) {
@@ -98,10 +99,12 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const recalibrate = argv.includes( '--recalibrate' );
 	const slotMapOnly = argv.includes( '--slot-map-only' );
 	const allowLoss = parseAllowLoss( flag( '--allow-loss' ) );
+	const db = openDb();
+	const paintKeyFor = ( b ) => paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ], unreadProps( attrsFor( db, b ) ) );
 	const due = {};
 	for ( const b of asked ) {
 		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
-		const paintWhy = paintSkip( CACHE, b, site, paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), recalibrate );
+		const paintWhy = paintSkip( CACHE, b, site, paintKeyFor( b ), recalibrate );
 		due[ b ] = dueOutputs( slotWhy, paintWhy, slotMapOnly );
 		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );
 	}
@@ -143,7 +146,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const measured = blocks.filter( ( b ) => ! held.some( ( r ) => r.block === b ) );
 	const env = readEnv( target.envFile, target.envKey );
 	const shared = await openBrowser( site, env );
-	const ctx = { site, target, env, shared, fixtures: gate.ready, snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db: openDb(), rejectedOut: [], image: target.image || null };
+	const ctx = { site, target, env, shared, fixtures: gate.ready, snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db, rejectedOut: [], image: target.image || null };
 	const results = [ ...gate.blocked, ...held ];
 	try {
 		for ( const b of measured ) {
@@ -151,7 +154,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// rest of the run continues.
 			try {
 				// A fixture's `order` (lib/calibrate-order.mjs): the block is read holding a test order for the logged-in user.
-				results.push( await withTestOrder( fixtures[ b ], { runPhp: wpEvalRunner( target, site, REPO ), customer: env.user }, () => calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), snapshotKey: paintSuffix, due: due[ b ], allowLoss, cache: CACHE, repo: REPO, recalibrate } ) ) );
+				results.push( await withTestOrder( fixtures[ b ], { runPhp: wpEvalRunner( target, site, REPO ), customer: env.user }, () => calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyFor( b ), snapshotKey: paintSuffix, due: due[ b ], allowLoss, cache: CACHE, repo: REPO, recalibrate } ) ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}

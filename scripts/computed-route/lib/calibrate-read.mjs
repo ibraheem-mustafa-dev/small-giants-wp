@@ -186,7 +186,7 @@ const SETTLE_TIMEOUT_MS = 120000;
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
 // { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
 // hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
-export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' } } = {} ) {
+export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' }, extraProps = [] } = {} ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
@@ -198,7 +198,7 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner, extraProps } );
 		} finally {
 			await p.close();
 		}
@@ -250,14 +250,14 @@ export async function openToggle( page ) {
 
 // The reader's arguments: an inherited property's own paint is read on the default instances only, so a marked
 // instance's read carries no `_own:` key for the slot finder to take as a change.
-const args = ( instances, only ) => [ instances.length, CAL_PREFIX, READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, only, OWN_INHERITED, instances.flatMap( ( inst, n ) => ( inst.isDefault ? [ n ] : [] ) ) ];
+const args = ( instances, only, extraProps = [] ) => [ instances.length, CAL_PREFIX, [ ...READ_PROPS, ...extraProps ], elementPath.toString(), [ ...CAL_PSEUDO_PROPS, ...extraProps ], TEXT_PSEUDO_PROPS, only, OWN_INHERITED, instances.flatMap( ( inst, n ) => ( inst.isDefault ? [ n ] : [] ) ) ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
 // it is hidden), the state's ancestor class added, or (open) the instance's own disclosure opened (lib/calibrate-open.mjs). A 'probe' state is entered by the first state-vocabulary
 // mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
-async function readUnderTrigger( page, instances, n, inst ) {
-	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n ) ) )[ n ];
+async function readUnderTrigger( page, instances, n, inst, extraProps ) {
+	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n, extraProps ) ) )[ n ];
 	if ( 'probe' === inst.trigger ) {
 		const mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 		if ( ! mark || mark.missing ) {
@@ -368,7 +368,7 @@ export function missingDependencyReason( block, site, noticeText ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner, extraProps } ) {
 	const t0 = Date.now();
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
@@ -402,7 +402,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		throw new Error( missingDependencyReason( owner.block, owner.site, noticeText ) );
 	}
 	const t1 = Date.now();
-	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
+	out[ w ] = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );
 	const t2 = Date.now();
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
@@ -414,7 +414,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		const left = page.url() !== calibrationUrl ? page.url() : null;
 		const { read, why } = left
 			? { read: null, why: `an earlier trigger left the calibration page for ${ left }` }
-			: await readUnderTrigger( page, instances, n, inst );
+			: await readUnderTrigger( page, instances, n, inst, extraProps );
 		if ( read ) {
 			out[ w ][ n ] = read;
 			hoverHit.add( n );
@@ -428,7 +428,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		const readScrolled = async ( wait ) => {
 			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
 			await page.waitForTimeout( wait );
-			const all = await page.evaluate( readInstancesInPage, args( instances ) );
+			const all = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );
 			const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
 			return { all, hit };
 		};

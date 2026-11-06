@@ -51,7 +51,7 @@ export async function build( repo, target, treeFile, extra = [] ) {
 
 // Builds and reads `instances` page by page. Returns { kept, rejected, pages }: each instance with its reads and its
 // page's default reads. Throws PageError when a page cannot be built.
-export async function measurePages( block, instances, { fixture, site, target, env, shared, repo, treeFile, needles, clock } ) {
+export async function measurePages( block, instances, { fixture, site, target, env, shared, repo, treeFile, needles, clock, extraProps } ) {
 	const rejected = [];
 	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
 	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
@@ -111,7 +111,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
 		const settleGone = fixture.settleGone || null;
 		const owner = { block, site };
-		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner } ) ) ];
+		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps } ) ) ];
 		clock.addReads( passes[ 0 ].timing );
 		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
 		// (lib/calibrate-chunk.mjs::sizeForReading): a block whose instances draw hundreds of elements reads fewer per page.
@@ -127,7 +127,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
 			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settleGone, owner } ) );
+				passes.push( await readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps } ) );
 			} finally {
 				await setBasket( shared.page, env.url, null );
 			}
@@ -138,7 +138,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 			const runPhp = wpEvalRunner( target, site, repo );
 			setWishlist( runPhp, env.user, true );
 			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone, owner } ) );
+				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone, owner, extraProps } ) );
 			} finally {
 				setWishlist( runPhp, env.user, false );
 			}
