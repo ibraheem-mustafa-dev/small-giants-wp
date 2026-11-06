@@ -3,7 +3,8 @@
     "Spec 38 (Motion System) FR-38-24 bundle-size budget baseline.",
     "These are MEASURED (gzip, bytes) build actuals recorded via --update-baseline \u2014 NOT the Spec 38 section 4.4 table (which is an ESTIMATE, see script docstring).",
     "Last updated: 2026-09-04.",
-    "2026-11-04: fx-horizontal-panel.js re-recorded alone at its measured 2422 (from 1977, +22.5% over two months): the timeline travel-end mode (panelTravelEnd) and the shared breakpoint queries it now imports; every other entry unchanged."
+    "2026-11-04: fx-horizontal-panel.js re-recorded alone at its measured 2422 (from 1977, +22.5% over two months): the timeline travel-end mode (panelTravelEnd) and the shared breakpoint queries it now imports; every other entry unchanged.",
+    "2026-11-06: fx-cursor-field.js re-recorded alone at its measured 3246 (from 2669, +21.6%): the touch circle mode (touchMode circle, tap toggles a fixed circle reveal); every other entry unchanged."
   ],
   "recorded_date": "2026-09-04",
   "unit": "gzip-bytes",
@@ -14,7 +15,7 @@
   },
   "modules": {
     "shared/effects/fx-carousel-loop.js": 1465,
-    "shared/effects/fx-cursor-field.js": 2669,
+    "shared/effects/fx-cursor-field.js": 3246,
     "shared/effects/fx-generative-background.js": 11820,
     "shared/effects/fx-grid-dots.js": 2987,
     "shared/effects/fx-magnet.js": 1119,
