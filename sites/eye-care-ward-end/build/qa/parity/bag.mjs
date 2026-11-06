@@ -47,7 +47,7 @@ export default {
 	// header's count bubble and the bag drawer, so the page words under them are left out.
 	auto: { exclude: { draft: [ 'main' ], live: [ 'main' ] }, normalise: [ { side: 'live', from: /^(\+?£[\d,]+)\.00$/, to: '$1', reason: 'Pennies on every price in the bag drawer, product page, cart and checkout (Bean 2026-09-25)' } ] },
 	draft: {
-		url: 'https://mintcream-lyrebird-224487.hostingersite.com/',
+		url: process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/',
 		open: async ( h ) => {
 			await h.clickText( '^sunglasses$', { wait: 900 } );
 			await h.clickText( '^oversized cat-eye$', { wait: 900 } );

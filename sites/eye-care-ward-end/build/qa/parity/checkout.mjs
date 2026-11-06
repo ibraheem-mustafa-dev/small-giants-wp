@@ -16,7 +16,8 @@
 //   run against a real filled cart either confirms them or turns up `missing` rows to fix.
 //
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/checkout.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE_PRODUCT = 'https://darkcyan-grouse-898606.hostingersite.com/product/gucci-oversized-cat-eye/?cb={cb}';
 const LIVE_CHECKOUT = 'https://darkcyan-grouse-898606.hostingersite.com/checkout/?cb={cb}';
 const vis = 'const vis = (e) => e && e.offsetParent !== null;';

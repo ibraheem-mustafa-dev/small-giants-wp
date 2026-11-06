@@ -3,7 +3,8 @@
 // "Which size am I?" size-guide modal. Does NOT walk the lens pop-up (its own config, lens.mjs)
 // or the bag drawer (a later wave).
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/product.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/product/gucci-oversized-cat-eye/?cb={cb}';
 // Word multiset of a text, for accepted-difference matchers.
 const words = ( t ) => String( t ).replace( /\s+/g, ' ' ).trim().toLowerCase().split( ' ' ).sort().join( ' ' );

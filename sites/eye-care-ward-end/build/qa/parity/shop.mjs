@@ -2,7 +2,8 @@
 // from a fresh page and applies one filter by clicking it on both sides, as a shopper does (a filter loaded
 // by URL skips WooCommerce's Interactivity re-render, which is where the panel's looks broke).
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/shop.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/shop/?cb={cb}';
 const LF = '#sgs-shop-filters';
 // The draft’s product grid: the grid in main whose every child is a priced card (no aside below desktop).

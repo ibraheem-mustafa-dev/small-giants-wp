@@ -4,7 +4,8 @@
 // strip, and the optician bio. Each section's heading, text, media and buttons are named pairs; the
 // product-card and shape-tile grids follow shop.mjs's one-representative-card-plus-parts pattern.
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/home.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/?cb={cb}';
 
 // The Best sellers grid: the grid in main whose every child is a priced card (copied from shop.mjs's

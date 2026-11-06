@@ -3,7 +3,8 @@
 // The footer is the same on every page, so the Home page carries it. The walker excludes footer landmarks from
 // its automatic word check by default; auto.root points it at the footer element on both sides.
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/footer.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 // The footer element on either side (the draft's has no class; live's is the sgs/site-footer block), so one
 // selector serves both sides and the --self baselines.
 const FOOTER = 'footer:not([class]), footer.sgs-site-footer';

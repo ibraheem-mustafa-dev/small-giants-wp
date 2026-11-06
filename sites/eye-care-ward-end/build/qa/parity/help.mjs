@@ -9,7 +9,8 @@
 // in the group, opened by a real click" (GAP-CHECKLIST 11: walk the open state with a click on
 // the question, so the entrance animation is actually sampled).
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/help.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/help/?cb={cb}';
 
 const Q1 = 'Are these frames genuine?';
@@ -155,6 +156,8 @@ const config = {
 		{ name: 'faq-question-2', states: [ 'faq-item2-open' ], draft: { js: dBtn( Q2 ) }, live: { js: lBtn( Q2 ) }, hover: true, box: [ 'h' ] },
 		{ name: 'faq-answer-2', states: [ 'faq-item2-open' ], draft: { js: dAnswer( Q2 ) }, live: { js: lAnswer( Q2 ) }, box: [ 'h' ], props: [ 'font-family', 'font-size', 'line-height', 'color' ] },
 		{ name: 'faq-icon-2', states: [ 'faq-item2-open' ], draft: { js: dIcon( Q2 ) }, live: { js: lIcon( Q2 ) }, text: false, props: [ 'color' ] },
+		// Items 3-8: the answer each state opens, read the same way as item 2's.
+		...LATER_QS.map( ( q, i ) => ( { name: `faq-answer-${ i + 3 }`, states: [ `faq-item${ i + 3 }-open` ], draft: { js: dAnswer( q ) }, live: { js: lAnswer( q ) }, box: [ 'h' ], props: [ 'font-family', 'font-size', 'line-height', 'color' ] } ) ),
 		// The size-guide modal itself. After the next deploy this is the site-wide modal living in
 		// the footer (anchor #size-guide), so it resolves on live from this page too — before that
 		// deploy ships, live has no matching element yet (a real, dated gap, not one of Bean's

@@ -3,7 +3,8 @@
 // the lens-type cards, no <details>/aria-expanded/dialog in its content, one button that only
 // navigates to the shop). Walks the opening view only; the walker adds "auto-scrolled" itself.
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/lenses.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/?cb={cb}';
 
 // The draft's four lens-type cards: the grid whose every child names one of the four types.

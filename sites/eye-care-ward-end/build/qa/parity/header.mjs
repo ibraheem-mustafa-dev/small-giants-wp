@@ -23,7 +23,8 @@
 // `scrolled` (the last state, so no earlier state runs on a scrolled page): the draft shrinks its header once
 // window.scrollY > 40 (middle-row padding 20px to 10px, logo 48px to 40px, wordmark image 110px to 91px wide, each on a .35s
 // transition); live shrinks its middle row past `data-sgs-header-scrolled-offset`.
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/?cb={cb}';
 
 const vis = 'const vis = (e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height > 0 && getComputedStyle(e).visibility !== "hidden"; };';

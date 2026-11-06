@@ -5,7 +5,8 @@
 // single condensed row (no opening-hours toggle on either side), so the states below are the
 // three the brief asks for: opening, a field focused, and the form submitted empty.
 // Run: node scripts/parity/draft-live-walk.mjs sites/eye-care-ward-end/build/qa/parity/contact.mjs
-const DRAFT = 'https://mintcream-lyrebird-224487.hostingersite.com/';
+// The draft is the handoff folder served locally (E:/sgs-tmp/r10/serve.mjs pattern: serveDraft on port 57990); mintcream now hosts the clone test site.
+const DRAFT = process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/';
 const LIVE = 'https://darkcyan-grouse-898606.hostingersite.com/contact/?cb={cb}';
 
 // The draft's five form fields, matched by their placeholder (no visible <label> either side —

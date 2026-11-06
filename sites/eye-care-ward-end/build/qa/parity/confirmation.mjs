@@ -33,7 +33,7 @@ const config = {
 		normalise: [ { side: 'live', from: /^(\+?£[\d,]+)\.00$/, to: '$1', reason: 'Pennies on every price on the confirmation page (Bean 2026-09-25)' } ],
 	},
 	draft: {
-		url: 'https://mintcream-lyrebird-224487.hostingersite.com/',
+		url: process.env.SGS_DRAFT_URL || 'http://127.0.0.1:57990/',
 		open: async ( h ) => {
 			await h.clickText( '^sunglasses$', { wait: 900 } );
 			await h.clickText( '^oversized cat-eye$', { wait: 900 } );
