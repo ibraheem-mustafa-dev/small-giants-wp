@@ -24619,6 +24619,30 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "connectorOffset",
+      "fields": {
+        "css_property": "margin-top",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorThickness",
+      "fields": {
+        "css_property": "height",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "descriptionColour",
       "fields": {
         "css_property": "color",
@@ -45805,30 +45829,6 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "connectorOffset",
-      "fields": {
-        "css_property": "margin-top",
-        "css_element": "connector"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "connectorThickness",
-      "fields": {
-        "css_property": "height",
-        "css_element": "connector"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
-      "attr": "connectorWidth",
-      "fields": {
-        "css_property": "width",
-        "css_element": "connector"
       }
     },
     {
