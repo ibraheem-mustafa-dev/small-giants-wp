@@ -132,3 +132,12 @@ test( 'records: a selector hook limits a record to the elements that carry it', 
 	assert.equal( carriesHook( inside, { data: [] } ), true, 'a hook on something inside the element narrows nothing' );
 	assert.equal( carriesHook( peek, null ), true, 'an unread element passes' );
 } );
+
+test( 'ops: taking a failed op back keeps another op that merged into the same attribute', () => {
+	const blocks = { 90: { blocks: { 'cr-ref-x-1': { attrs: { sgsMotion: { v: 1 } } } } } };
+	const base = { postId: 90, ref: 'cr-ref-x-1', block: 'sgs/container' };
+	const good = { ...base, writes: [ { attr: 'sgsMotion', value: { good: 1 }, merge: 'deep' } ] };
+	const bad = { ...base, writes: [ { attr: 'sgsMotion', value: { bad: 1 }, merge: 'deep' } ] };
+	assert.deepEqual( restoreOf( bad, blocks, [ good ] ).set.sgsMotion, { v: 1, good: 1 } );
+	assert.deepEqual( restoreOf( bad, blocks, [] ).set.sgsMotion, { v: 1 }, 'alone, it goes back to what was saved' );
+} );

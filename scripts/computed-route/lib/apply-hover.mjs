@@ -35,18 +35,62 @@ async function hoverRead( page, { keys, finderOf, resolveSrc, wait = 700 } ) {
 	const out = {};
 	for ( const key of keys ) {
 		const finder = finderOf( key );
-		const at = await page.evaluate( hoverPointOf, [ finder, resolveSrc ] );
-		if ( ! at || at.unreached ) {
+		// Smooth scrolling can carry the page on after the pointer lands, so each landing is confirmed and re-aimed.
+		let at = null;
+		let over = false;
+		for ( let tries = 0; tries < 3 && ! over; tries++ ) {
+			await settled( page, finder, resolveSrc );
+			at = await page.evaluate( hoverPointOf, [ finder, resolveSrc ] );
+			if ( ! at || at.unreached ) {
+				break;
+			}
+			await page.mouse.move( at.x, at.y );
+			await page.waitForTimeout( 80 );
+			over = await page.evaluate( ( [ f, src ] ) => {
+				// eslint-disable-next-line no-new-func
+				return !! new Function( `return (${ src });` )()( f )?.matches( ':hover' );
+			}, [ finder, resolveSrc ] );
+		}
+		if ( ! over ) {
 			out[ key ] = { unreached: true };
+			await page.mouse.move( 1, 1 );
 			continue;
 		}
-		await page.mouse.move( at.x, at.y );
 		await page.waitForTimeout( wait );
 		out[ key ] = await page.evaluate( hoverStyles, [ finder, HOVER_READ_PROPS, resolveSrc, PAINT_SRC, { paintPart: true } ] );
 		await page.mouse.move( 1, 1 );
 		await page.waitForTimeout( 150 );
 	}
 	return out;
+}
+
+// Waits until an element has stopped moving: an entrance that plays on arrival carries it out from under the pointer, so a
+// hover read before it ends lands on nothing. Bounded: a loop that never settles reads after three seconds.
+export async function settled( page, finder, resolveSrc ) {
+	await page.evaluate( ( [ f, src ] ) => {
+		// eslint-disable-next-line no-new-func
+		const el = new Function( `return (${ src });` )()( f );
+		el?.scrollIntoView( { block: 'center', behavior: 'instant' } );
+		const box = () => {
+			const r = el?.getBoundingClientRect();
+			return r ? `${ Math.round( r.left ) } ${ Math.round( r.top ) } ${ Math.round( r.width ) }` : '';
+		};
+		return new Promise( ( done ) => {
+			let last = box();
+			let calm = 0;
+			let waited = 0;
+			const tick = setInterval( () => {
+				const now = box();
+				calm = now === last ? calm + 1 : 0;
+				last = now;
+				waited += 100;
+				if ( calm >= 4 || waited >= 3000 ) {
+					clearInterval( tick );
+					done();
+				}
+			}, 100 );
+		} );
+	}, [ finder, resolveSrc ] );
 }
 
 export async function stateReads( page, { extras, finderOf, resolveSrc, side } ) {
@@ -80,5 +124,5 @@ export function motionOf( styles ) {
 	return { scale: Math.hypot( a, b ) * sc, x: e + ( tx || 0 ), y: f + ( ty || 0 ), rotate: ( Math.atan2( b, a ) * 180 ) / Math.PI + rot };
 }
 
-// Whether two poses agree to a hundredth of a scale, two pixels and a degree.
-export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 2 && Math.abs( a.y - b.y ) <= 2 && Math.abs( a.rotate - b.rotate ) <= 1;
+// Whether two poses agree to a hundredth of a scale, six pixels and a degree: a magnet pulls up to five.
+export const motionClose = ( a, b ) => Boolean( a && b ) && Math.abs( a.scale - b.scale ) <= 0.011 && Math.abs( a.x - b.x ) <= 6 && Math.abs( a.y - b.y ) <= 6 && Math.abs( a.rotate - b.rotate ) <= 1;

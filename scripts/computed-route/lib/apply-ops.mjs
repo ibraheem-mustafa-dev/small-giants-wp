@@ -57,14 +57,17 @@ export function patchesOf( posts ) {
 	return out;
 }
 
-// The patch that puts an op's block back as it was saved: used when a re-read shows the op changed nothing.
-export function restoreOf( op, blocks ) {
+// The patch that takes one failed op back out of a block. Each attribute it wrote returns to what the block's kept ops leave
+// there, so an op sharing the attribute (several families merge into sgsMotion) keeps its work; with none, to the saved value.
+export function restoreOf( op, blocks, kept = [] ) {
 	const saved = blocks[ op.postId ]?.blocks?.[ op.ref ]?.attrs ?? {};
+	const others = kept.filter( ( o ) => o !== op && o.postId === op.postId && o.ref === op.ref );
+	const after = foldOps( others, blocks ).get( op.postId )?.get( op.ref )?.node.attributes ?? saved;
 	const set = {};
 	const unset = [];
 	for ( const { attr } of op.writes ) {
-		if ( attr in saved ) {
-			set[ attr ] = saved[ attr ];
+		if ( attr in after ) {
+			set[ attr ] = after[ attr ];
 		} else {
 			unset.push( attr );
 		}

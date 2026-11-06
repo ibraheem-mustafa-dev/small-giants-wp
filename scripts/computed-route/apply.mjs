@@ -169,7 +169,10 @@ function judge( ops, reads ) {
 				return { ...c, got: facts?.fx ?? null, ok: String( facts?.fx ?? '' ).split( ' ' ).includes( c.fx ) };
 			}
 			if ( c.motion ) {
-				return { ...c, got: motionOf( facts?.hover ), ok: motionClose( motionOf( facts?.hover ), c.want ) };
+				const pose = motionOf( facts?.hover );
+				// A magnet moves the element towards the pointer, so a magnetic element's position proves nothing: its scale does.
+				const moved = /magnet/.test( facts?.fx ?? '' ) && pose ? { ...pose, x: c.want.x, y: c.want.y } : pose;
+				return { ...c, got: pose, ok: motionClose( moved, c.want ) };
 			}
 			if ( c.all ) {
 				const every = ( facts?.probes?.fields || [] ).map( ( f ) => f[ c.all ]?.[ c.prop ] ).filter( ( v ) => undefined !== v );
@@ -177,7 +180,9 @@ function judge( ops, reads ) {
 			}
 			return { ...c, got, ok: matches( got, c.want ) };
 		} );
-		return { op, results, ok: results.every( ( r ) => r.ok ), unchecked: ! results.length };
+		// A value that could not be read (a moving marquee tile) proves nothing: the op stays and reports unchecked.
+		const read = results.filter( ( r ) => null !== ( r.got ?? null ) );
+		return { op, results: read, ok: read.every( ( r ) => r.ok ), unchecked: ! read.length };
 	} );
 }
 
@@ -304,10 +309,11 @@ async function main() {
 			for ( const { op } of judged.filter( ( j ) => j.unchecked ) ) {
 				rowOf( op ) && ( rowOf( op ).status = 'unchecked' );
 			}
-			for ( const { op } of judged.filter( ( j ) => ! j.ok ) ) {
-				patch( site, op.postId, [ restoreOf( op, blocks ) ], tmp, false );
+			const kept = judged.filter( ( j ) => j.ok ).map( ( j ) => j.op );
+			for ( const { op, results } of judged.filter( ( j ) => ! j.ok ) ) {
+				patch( site, op.postId, [ restoreOf( op, blocks, kept ) ], tmp, false );
 				rowOf( op ) && ( rowOf( op ).status = 'no-effect' );
-				console.log( `no effect: ${ op.ref } ${ op.family } ${ op.prop }` );
+				console.log( `no effect: ${ op.ref } ${ op.family } ${ op.prop }: ${ JSON.stringify( results.filter( ( r ) => ! r.ok ).map( ( r ) => [ r.width, r.prop, r.got, r.want ] ) ) }` );
 			}
 			const verify = { generated: new Date().toISOString(), rows: judged.flatMap( ( { op, results } ) => results.map( ( r ) => ( { record: op.record ?? null, target: op.ref, state: op.state ?? 'rest', ok: r.ok, measured: r.got ?? null, want: r.want } ) ) ).filter( ( r ) => r.record ) };
 			fs.writeFileSync( path.join( outDir, 'verify.json' ), JSON.stringify( verify, null, 1 ) );
