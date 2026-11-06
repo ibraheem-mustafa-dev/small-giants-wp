@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 // How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of
 // each piece, and halving a piece whose build timed out. Pure: no browser, no site.
 
@@ -21,7 +23,7 @@ export const CHILD_TIMEOUT_MS = 3 * EDITOR_TIMEOUT_MS;
 
 // The argument list for `node` running wp-build-page.js against one calibration tree.
 export function buildSpawnArgs( script, target, treeFile, extra = [] ) {
-	return [ NODE_HEAP_FLAG, script, '--env-file', target.envFile, '--env-key', target.envKey, '--tree', treeFile, '--editor-timeout', String( EDITOR_TIMEOUT_MS ), ...extra ];
+	return [ NODE_HEAP_FLAG, script, '--env-file', process.env.SGS_SECRETS_ROOT ? path.resolve( process.env.SGS_SECRETS_ROOT, target.envFile ) : target.envFile, '--env-key', target.envKey, '--tree', treeFile, '--editor-timeout', String( EDITOR_TIMEOUT_MS ), ...extra ];
 }
 
 // The most instances one page of this block holds: the fixture's own `chunk` (a block whose page times out on the host

@@ -17,8 +17,9 @@ const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
 const CACHE = path.join( HERE, '..', 'cache' );
 
-// A site's credentials from its secrets file (never printed): { url, user, pwd }.
-export function readEnv( file, key, repo = REPO ) {
+// A site's credentials from its secrets file (never printed): { url, user, pwd }. A worktree holds no secrets: SGS_SECRETS_ROOT
+// names the checkout that does, and the file is read there, never copied.
+export function readEnv( file, key, repo = process.env.SGS_SECRETS_ROOT || REPO ) {
 	const o = {};
 	fs.readFileSync( path.resolve( repo, file ), 'utf8' ).split( /\r?\n/ ).forEach( ( l ) => {
 		const m = l.match( /^([A-Z0-9_]+)=(.*)$/ );
