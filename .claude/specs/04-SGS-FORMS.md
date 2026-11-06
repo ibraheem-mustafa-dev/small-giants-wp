@@ -138,7 +138,7 @@ All field blocks share these attributes:
 | `placeholder` | string | Placeholder text |
 | `helpText` | string | Hint text below field |
 | `required` | boolean | Is this field required? |
-| `width` | string | full | half | third (full below a 560px-wide form; a third-width number box stays three across from 300px) |
+| `width` | string | full | half | third | auto (full below a 560px-wide form; a third-width number box stays three across from 300px; auto takes no span, so a grid of its own inside the form places the field) |
 | `labelStyle` | string | visible | hidden: shown above the field or read by screen readers only (number and file fields; a hidden label leaves no floating-label room and shows the placeholder) |
 | `conditionalField` | string | Field name to watch for conditional display |
 | `conditionalOperator` | string | equals | not_equals | contains | greater_than | is_empty |
