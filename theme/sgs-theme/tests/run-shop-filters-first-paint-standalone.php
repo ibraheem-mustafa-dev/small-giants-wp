@@ -71,7 +71,7 @@ namespace SGS\Theme {
 
 	$GLOBALS['t_label'] = "A\"l\l\r\nx";
 	add_shop_segmented_label_style();
-	$check( ':root{--sgs-segmented-all-label:"A\\"l\\l  x";}' === $GLOBALS['t_inline_css'], 'quote and backslash are escaped and CR/LF become spaces' );
+	$check( ':root{--sgs-segmented-all-label:"A\\"l\\\\l  x";}' === $GLOBALS['t_inline_css'], 'quote and backslash are escaped and CR/LF become spaces' );
 
 	echo "{$pass} passed, {$fail} failed\n";
 	exit( $fail > 0 ? 1 : 0 );
