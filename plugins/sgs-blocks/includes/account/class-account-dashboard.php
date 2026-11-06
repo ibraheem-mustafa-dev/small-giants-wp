@@ -68,11 +68,25 @@ final class Account_Dashboard {
 		if ( ! function_exists( 'wc_get_account_menu_items' ) ) {
 			return '';
 		}
+		// One lookup per hidden-items setting per request: the menu asks once per menu item.
+		$key = md5( (string) wp_json_encode( is_array( Account_Endpoints::$active ) ? ( Account_Endpoints::$active['hiddenEndpoints'] ?? array() ) : array() ) );
+		if ( isset( self::$first_cache[ $key ] ) ) {
+			return self::$first_cache[ $key ];
+		}
+		self::$first_cache[ $key ] = '';
 		foreach ( array_keys( \wc_get_account_menu_items() ) as $endpoint ) {
 			if ( 'dashboard' !== $endpoint && 'customer-logout' !== $endpoint ) {
-				return (string) $endpoint;
+				self::$first_cache[ $key ] = (string) $endpoint;
+				break;
 			}
 		}
-		return '';
+		return self::$first_cache[ $key ];
 	}
+
+	/**
+	 * First visible endpoint per hidden-items setting, for the request.
+	 *
+	 * @var array<string,string>
+	 */
+	private static $first_cache = array();
 }
