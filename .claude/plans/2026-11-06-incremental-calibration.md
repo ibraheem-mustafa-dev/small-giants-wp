@@ -36,9 +36,9 @@ Measured on local-sandybrown (local-indus was in use by the Indus stream), with 
 |---|---|---|---|
 | `sgs/button` | 228 s | 115 s | 36 s |
 | `sgs/container` | not timed | 354 s | 73 s |
-| `sgs/form` | 1,351 s | 1,017 s | 270 s |
+| `sgs/form` | 1,351 s | 1,017 s | 168 s |
 
-`sgs/form` misses the one-minute target: it measures 135 settings on such a run, 101 of them dead, and 64 of the dead are families whose elements its fixture never renders.
+`sgs/form` stays above the one-minute target: its pages are heavy, and it re-measures 41 dead and 14 untested settings on every run. 28 of the dead belong to the review step, whose elements only JavaScript builds when a visitor reaches it. The fixture work took its live settings from 337 to 400.
 
 ## Steps
 
@@ -51,5 +51,5 @@ Measured on local-sandybrown (local-indus was in use by the Indus stream), with 
 - [x] Lean editor flag.
 - [x] Prove on a mirror, before and after minutes.
 - [x] Spec 48, `scripts/computed-route/README.md`, `.claude/dev-setup.md`; /qc-council.
-- [ ] `sgs/form` fixture renders its step counter, review step, saved notice and optional tag, so a gained setting takes about a minute.
+- [x] `sgs/form` fixture renders its step counter, saved notice, optional tag, status row, nav icon, sticky actions and upload icon. The review step stays dead: JavaScript builds it.
 - [ ] /handoff.

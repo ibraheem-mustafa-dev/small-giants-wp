@@ -2,6 +2,7 @@
 // full measurement of the block. Every MUST FAIL case is a way a stale row could otherwise pass silently.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { preconditionsFor } from '../lib/calibrate-instances.mjs';
 import { MAX_CHAIN, CANARY_MIN, CANARY_MAX, CANARY_INSTANCES, attrOfKey, settingOf, fixtureKeyOf, codeIndex, fingerprints, canaryFor, fullBecause, planIncremental, paintMoved, canaryDiffers, mergeSlotMap, measureWithFallback } from '../lib/calibrate-incremental.mjs';
 
 const row = ( name, o = {} ) => ( { attr_name: name, css_property: 'color', css_element: 'title', ...o } );
@@ -257,4 +258,16 @@ test( 'a setting that went dead replaces its old live row, so the loss guard see
 test( 'a fixture hash follows the fixture', () => {
 	assert.equal( fixtureKeyOf( { a: 1 } ), fixtureKeyOf( { a: 1 } ) );
 	assert.notEqual( fixtureKeyOf( { a: 1 } ), fixtureKeyOf( { a: 2 } ) );
+} );
+
+const familySchema = { stepCounter: { type: 'boolean', default: false }, stepCounterColour: { type: 'string', default: '' }, otherColour: { type: 'string', default: '' } };
+const familyCtx = { familyPreconditions: { stepCounter: { stepCounter: true } } };
+
+test( 'MUST FAIL: a fixture family turns on the attribute gating every setting named after it', () => {
+	assert.deepEqual( preconditionsFor( { attr_name: 'stepCounterColour', css_property: 'color' }, familySchema, {}, familyCtx ), { stepCounter: true } );
+} );
+
+test( 'negative control: a setting outside the family is left alone, and a gate is never its own precondition', () => {
+	assert.deepEqual( preconditionsFor( { attr_name: 'otherColour', css_property: 'color' }, familySchema, {}, familyCtx ), {} );
+	assert.deepEqual( preconditionsFor( { attr_name: 'stepCounter', css_property: '' }, familySchema, {}, familyCtx ), {} );
 } );

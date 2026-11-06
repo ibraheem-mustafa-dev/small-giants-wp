@@ -94,7 +94,7 @@ function gatingToggle( attr, schema, current ) {
 // the fixture's per-setting `preconditions`, so a content setting gated by another attribute (business-info's
 // addressLink renders only under displayType address) gets the same preconditions as a style setting.
 export function instanceCtx( variant, image, fixture = {} ) {
-	return { ...variant, image, settingPreconditions: fixture.preconditions || {} };
+	return { ...variant, image, settingPreconditions: fixture.preconditions || {}, familyPreconditions: fixture.familyPreconditions || {} };
 }
 
 // The attributes a setting's element needs before the setting can paint, from the framework's own data: its variant
@@ -129,6 +129,16 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	for ( const [ attr, value ] of Object.entries( ctx.settingPreconditions?.[ row.attr_name ] || {} ) ) {
 		if ( schema[ attr ] && current[ attr ] !== value ) {
 			out[ attr ] = value;
+		}
+	}
+	// A family of settings one attribute gates, whatever the attribute is called (`stepCounter` gates every stepCounter*
+	// setting, `savedProgress` every savedNotice* setting): the fixture's `familyPreconditions`, by the name each family
+	// starts with. A gate is never its own precondition, because its marker has to be read against it being off.
+	for ( const [ stem, attrs ] of Object.entries( ctx.familyPreconditions || {} ) ) {
+		for ( const [ attr, value ] of Object.entries( row.attr_name.startsWith( stem ) ? attrs : {} ) ) {
+			if ( attr !== row.attr_name && schema[ attr ] && JSON.stringify( current[ attr ] ) !== JSON.stringify( value ) ) {
+				out[ attr ] = value;
+			}
 		}
 	}
 	// An opacity paints nothing until its colour partner holds a colour (an overlay's backgroundOverlayColour is empty by

@@ -939,6 +939,14 @@
       "submitLabel": "Send message",
       "successMessage": "Thanks — I'll come back to you shortly."
     },
+    "familyPreconditions": {
+      "stepCounter": { "stepCounter": true },
+      "statusRow": { "stepCounter": true },
+      "savedNotice": { "savedProgress": true },
+      "savedProgress": { "savedProgress": true },
+      "navIcon": { "navIcon": "arrow-right" },
+      "actionsSticky": { "actionsSticky": { "desktop": true, "tablet": true, "mobile": true } }
+    },
     "inner": [
       {
         "name": "sgs/form-field-text",
@@ -999,6 +1007,7 @@
           "columnHeading": "SPH",
           "rowHeading": "R",
           "required": false,
+          "optionalTag": true,
           "width": "half"
         }
       },
@@ -1040,6 +1049,7 @@
           "fieldName": "upload",
           "label": "Upload",
           "zoneStyle": "panel",
+          "zoneIcon": "upload",
           "buttonLabel": "Choose file",
           "helpText": "PDF or image",
           "required": false,
