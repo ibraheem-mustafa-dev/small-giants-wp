@@ -68,7 +68,7 @@ export const NAME_ONLY = {
 export const KEY_ONLY = {
 	'indus-foods': { 'custom-brand-blue-light': [ '--brand-blue-light' ], 'custom-ink': [ '--ink', '--selection-fg' ], 'custom-tint-on-blue': [ '--tint-on-blue' ] },
 	'eye-care-ward-end': { 'primary-hover': [ '--ink-hover' ], 'surface-stage': [ '--surface-alt' ], 'border-strong': [ '--border-strong' ], 'text-soft': [ '--text-strong' ],
-		'text-subtle': [ '--text-muted' ], 'text-label': [ '--text-3' ], 'whatsapp-hover': [ '--wa-hover' ], 'whatsapp-soft': [ '--wa-soft' ], 'whatsapp-line': [ '--wa-border' ] },
+		'text-subtle': [ '--text-muted' ], 'text-label': [ '--text-3' ] },
 	'mamas-munches-redesign': { 'custom-body-copy': [ '--mm-body', '--mm-text-body' ] },
 };
 
@@ -114,4 +114,21 @@ test( 'the derived answer keys match their sources (no hand edit)', () => {
 	for ( const client of Object.keys( KEYS ).filter( ( c ) => 'ruled' !== KEYS[ c ] ) ) {
 		assert.deepEqual( JSON.parse( fs.readFileSync( keyFile( client ), 'utf8' ) ).roles, derive( client, KEYS[ client ] ), client );
 	}
+} );
+
+// Spec 48 FR-48-31: WhatsApp is a brand colour like Facebook's, so a token named for it holds no palette slot.
+test( 'MUST FAIL: Eye Care\'s --wa and every --wa-* token, and Indus\'s --whatsapp-green, get no slot and each row names WhatsApp', () => {
+	for ( const [ client, names ] of [ [ 'eye-care-ward-end', [ '--wa', '--wa-hover', '--wa-ink', '--wa-ink-deep', '--wa-soft', '--wa-border' ] ], [ 'indus-foods', [ '--whatsapp-green' ] ] ] ) {
+		const { p } = compareClient( client );
+		for ( const name of names ) {
+			const row = p.rows.find( ( r ) => name === r.token );
+			assert.ok( row, `${ client } ${ name }` );
+			assert.deepEqual( [ row.role, row.roles, row.brand ], [ null, [], 'whatsapp' ], `${ client } ${ name }: ${ row.why }` );
+		}
+	}
+} );
+
+test( 'negative control: a token no brand names keeps the slug a rendered fact gives it', () => {
+	const { p } = compareClient( 'eye-care-ward-end' );
+	assert.ok( p.rows.find( ( r ) => '--acc' === r.token ).roles.includes( 'accent' ) );
 } );

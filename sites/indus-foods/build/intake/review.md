@@ -105,7 +105,7 @@ Accept all: [ ]
 | `palette:--text-link-hover` | --text-link-hover #075E80 | role:link-hover,primary-dark | 0.95: the draft declares --text-link-hover: var(--brand-blue-hover) | role:link-hover |
 | `palette:--text-muted` | --text-muted #68727C | role:text-muted | 0.95: the draft declares --text-muted: var(--grey-muted) (the slug's own name) | role:text-muted |
 | `palette:--tint-on-blue` | --tint-on-blue #E3EFF4 | role:custom-tint-on-blue | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | role:custom-tint-on-blue |
-| `palette:--whatsapp-green` | --whatsapp-green #25D366 | role:whatsapp | 0.95: the ground of the links that open WhatsApp (23 elements); the name --whatsapp-green agrees | role:whatsapp |
+| `palette:--whatsapp-green` | --whatsapp-green #25D366 | no slug (one-off) | 0.9: brand colour: WhatsApp (the brand registry names it), painted by the brand's own setting, so no palette slot | one-off |
 
 ## Site Info (site-info)
 

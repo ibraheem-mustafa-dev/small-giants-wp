@@ -11,12 +11,12 @@ import { fileURLToPath } from 'url';
 import { readTokens } from '../lib/tokens.mjs';
 import { proposePalette, loadPaletteSlugs, ciede2000, hexDistance, dedupeColours, summariseUsage,
 	brandFamilies, ruleLinkHover, ruleLink, ruleHeading, ruleReserved, ruleOnGround, ruleSection, ruleFooter, ruleBorder, ruleStatus,
-	ruleWhatsapp, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand } from '../lib/intake-palette.mjs';
+	NAME_RULES, ruleTextMuted, ruleTextInverse, ruleText, ruleSurface, ruleBrand } from '../lib/intake-palette.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const DIR = path.join( HERE, 'fixtures', 'intake-palette' );
 const USAGE = JSON.parse( fs.readFileSync( path.join( DIR, 'usage.json' ), 'utf8' ) );
-const SLUGS = [ 'primary', 'primary-dark', 'accent', 'accent-light', 'success', 'error', 'whatsapp', 'surface', 'surface-alt', 'text',
+const SLUGS = [ 'primary', 'primary-dark', 'accent', 'accent-light', 'success', 'error', 'surface', 'surface-alt', 'text',
 	'text-muted', 'text-inverse', 'border', 'border-light', 'footer-bg', 'heading', 'link', 'link-hover', 'section', 'section-text' ]
 	.map( ( slug ) => ( { slug, name: slug } ) );
 const read = readTokens( path.join( DIR, 'export' ) );
@@ -156,7 +156,7 @@ test( 'name rules: each proposes its role and ignores other names', () => {
 	assert.equal( ruleStatus( w( 'success' ) ).role, 'success' );
 	assert.equal( ruleStatus( w( 'danger-light' ) ).role, 'error-light' );
 	assert.equal( ruleStatus( w( 'green' ) ), null );
-	assert.equal( ruleWhatsapp( w( 'whatsapp-green' ) ).role, 'whatsapp' );
+	assert.ok( ! NAME_RULES.some( ( rule ) => 'whatsapp' === rule( w( 'whatsapp-green' ) )?.role ), 'WhatsApp is a brand colour: no name rule gives it a slot' );
 	assert.equal( ruleTextMuted( w( 'grey-muted' ) ).role, 'text-muted' );
 	assert.equal( ruleTextMuted( w( 'brand-muted' ) ), null );
 	assert.equal( ruleTextInverse( w( 'text-inverse' ) ).role, 'text-inverse' );
