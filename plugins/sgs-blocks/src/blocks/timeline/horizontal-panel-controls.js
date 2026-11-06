@@ -380,6 +380,22 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 					onChange={ ( next ) => setAttributes( { panelBarHeight: next } ) }
 				/>
 			) }
+			<WholeNumberControl
+				label={ __( 'Space between counter, bar and hint (px)', 'sgs-blocks' ) }
+				value={ panelRowGap }
+				min={ 0 }
+				max={ 400 }
+				onChange={ ( next ) => setAttributes( { panelRowGap: next } ) }
+			/>
+			<WholeNumberControl
+				label={ __( 'Space below the row (px)', 'sgs-blocks' ) }
+				value={ panelRowSpacing }
+				min={ 0 }
+				max={ 400 }
+				onChange={ ( next ) => setAttributes( { panelRowSpacing: next } ) }
+			/>
+		</PanelBody>
+		<PanelBody title={ __( 'Pinned content width', 'sgs-blocks' ) } initialOpen={ false }>
 			<ScrollLengthControl
 				label={ __( 'Content max width (px)', 'sgs-blocks' ) }
 				help={ __( 'Caps the counter row and the cards to one centred column this wide. Empty uses the full width.', 'sgs-blocks' ) }
@@ -394,20 +410,6 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 				value={ panelContentGutter }
 				max={ 600 }
 				onChange={ ( obj ) => setAttributes( { panelContentGutter: obj } ) }
-			/>
-			<WholeNumberControl
-				label={ __( 'Space between counter, bar and hint (px)', 'sgs-blocks' ) }
-				value={ panelRowGap }
-				min={ 0 }
-				max={ 400 }
-				onChange={ ( next ) => setAttributes( { panelRowGap: next } ) }
-			/>
-			<WholeNumberControl
-				label={ __( 'Space below the row (px)', 'sgs-blocks' ) }
-				value={ panelRowSpacing }
-				min={ 0 }
-				max={ 400 }
-				onChange={ ( next ) => setAttributes( { panelRowSpacing: next } ) }
 			/>
 		</PanelBody>
 		<PanelBody title={ __( 'Pinned counter typography', 'sgs-blocks' ) } initialOpen={ false }>
