@@ -34,9 +34,9 @@ import {
 	usePreviewTier,
 	boxPreview,
 	patchTier,
-	cssLengthValue,
 	flattenPresetSetting,
 } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
