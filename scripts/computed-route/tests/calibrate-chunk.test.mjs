@@ -4,7 +4,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, RUN_HEAP_BYTES, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK } from '../lib/calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, RUN_HEAP_BYTES, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, halveChunk, planChunks, splitOnTimeout, MIN_CHUNK, ELEMENT_BUDGET, sizeForReading, replanQueue } from '../lib/calibrate-chunk.mjs';
 
 test( 'MUST FAIL (the build child ran on the default heap and was killed at 300s): the spawn passes --max-old-space-size=8192 before the script', () => {
 	assert.equal( NODE_HEAP_FLAG, '--max-old-space-size=8192' );
@@ -79,4 +79,33 @@ test( 'MUST FAIL (CR4, the run ran out of its 4 GB heap after 46 minutes): a run
 	const src = fs.readFileSync( new URL( '../calibrate.mjs', import.meta.url ), 'utf8' );
 	assert.match( src, /needsBiggerHeap\( v8\.getHeapStatistics\(\)\.heap_size_limit \)/ );
 	assert.match( src, /spawnSync\( process\.execPath, \[ NODE_HEAP_FLAG, \.\.\.process\.argv\.slice\( 1 \) \]/ );
+} );
+
+// A page of sgs/nav-bar-menu: 80 defaults and baselines on every page, 422 elements an instance (2026-10-29: at 150
+// non-defaults a page passed 7 GB while it was read; at 40 the whole run stayed near 5 GB).
+const inst = ( k, def = false ) => ( { key: `i${ k }`, ...( def ? { isDefault: true } : {} ) } );
+
+test( 'MUST FAIL: a page of large instances is cut to the element budget, its defaults counted', () => {
+	assert.equal( sizeForReading( 150, 422, 80 ), Math.floor( ELEMENT_BUDGET / 422 ) - 80 );
+	assert.ok( ( 80 + sizeForReading( 150, 422, 80 ) ) * 422 <= ELEMENT_BUDGET );
+} );
+
+test( 'negative control: a block of small instances keeps its chunk size', () => {
+	assert.equal( sizeForReading( 150, 20, 10 ), 150 );
+	assert.equal( sizeForReading( 40, 20, 10 ), 40, 'never more than the size in hand' );
+} );
+
+test( 'MUST FAIL: defaults that alone fill the budget still leave one instance a page', () => {
+	assert.equal( sizeForReading( 150, 2000, 80 ), MIN_CHUNK );
+	assert.equal( sizeForReading( 150, 0, 0 ), 150, 'an empty reading changes nothing' );
+} );
+
+test( 'MUST FAIL: the queued pages are planned again at the new size, every page keeping the defaults, in order', () => {
+	const defaults = [ inst( 'd1', true ), { key: 'b1', isBase: true } ];
+	const queue = planChunks( defaults, Array.from( { length: 10 }, ( _, k ) => inst( k ) ), 5 );
+	const next = replanQueue( queue, 3 );
+	assert.equal( next.length, 4 );
+	next.forEach( ( page ) => assert.deepEqual( page.slice( 0, 2 ), defaults ) );
+	assert.deepEqual( next.flatMap( ( page ) => page.slice( 2 ).map( ( i ) => i.key ) ), Array.from( { length: 10 }, ( _, k ) => `i${ k }` ) );
+	assert.deepEqual( replanQueue( [], 3 ), [] );
 } );
