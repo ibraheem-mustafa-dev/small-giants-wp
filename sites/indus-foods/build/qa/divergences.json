@@ -583,5 +583,31 @@
     },
     "reason": "Live shows 10 brand logos, the draft 9 (ND18). Left at 10 because the client's real content will change the list. The tile height (64px, tileMinHeight at tablet and mobile) still follows the draft.",
     "decided": "2026-11-07 Bean ruling (Indus round 8 review)"
+  },
+  {
+    "id": "D-40",
+    "block": "sgs/button",
+    "scope": "every page, all widths (nav-bar menu items excluded: they stay over-only as in the draft, J-11)",
+    "node": "every magnetic button, CTA strip included",
+    "state": "hover",
+    "property": "magnet engage, radius, pull, follow duration",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft's buttons (J-10) only move while the pointer is over them, which Bean finds broken; the round 5 proximity values (radius 120px, 14x10px, 600ms) were too wide and fast. Every button pulls gently from about 60px away, at most 5px across and 4px down, eased over about 350ms. Replaces the 2026-11-06 ruling that made the draft's over-only values the default.",
+    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 1)"
+  },
+  {
+    "id": "D-41",
+    "block": "sgs/button",
+    "scope": "every page, all widths",
+    "node": "naked text buttons with an underline and an arrow (e.g. Read our story)",
+    "state": "hover",
+    "property": "color, scale",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "The draft darkens the text (#0A7EA8 to #075E80) and the clone also enlarged it; Bean ruled both stopped: the text colour stays the resting colour and the button does not scale on hover. The arrow gap nudge stays.",
+    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)"
   }
 ]
