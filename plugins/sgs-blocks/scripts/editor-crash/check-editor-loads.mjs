@@ -178,7 +178,7 @@ const targets = await attempt( 'list-targets', async () => {
 		const get = async ( route ) => {
 			const all = [];
 			for ( let pageNumber = 1; pageNumber <= 50; pageNumber++ ) {
-				const response = await fetch( `${ root }${ route }${ route.includes( '?' ) ? '&' : '?' }per_page=100&page=${ pageNumber }&context=edit&_fields=id,slug,title`, { headers: { 'X-WP-Nonce': nonce } } );
+				const response = await fetch( `${ root }${ route }${ route.includes( '?' ) ? '&' : '?' }per_page=100&page=${ pageNumber }&context=edit&_fields=id,slug,title,content`, { headers: { 'X-WP-Nonce': nonce } } );
 				if ( ! response.ok ) break;
 				const batch = await response.json();
 				all.push( ...batch );
@@ -189,6 +189,14 @@ const targets = await attempt( 'list-targets', async () => {
 		const [ pages, posts, templates, parts ] = await Promise.all( [ get( 'wp/v2/pages?status=any' ), get( 'wp/v2/posts?status=any' ), get( 'wp/v2/templates' ), get( 'wp/v2/template-parts' ) ] );
 		return { pages, posts, templates, parts };
 	} );
+	// A target whose saved content holds no block (an emptied calibration page) has nothing for the editor to validate: it is
+	// listed as a note, never opened, so it can neither hang the run nor read as clean.
+	const hasBlocks = ( t ) => /<!-- wp:/.test( t.content?.raw ?? '' );
+	for ( const kind of [ 'pages', 'posts', 'templates', 'parts' ] ) {
+		const empty = found[ kind ].filter( ( t ) => ! hasBlocks( t ) );
+		empty.length && note( `no-blocks-to-validate ${ kind }`, { ids: empty.map( ( t ) => t.id ) } );
+		found[ kind ] = found[ kind ].filter( hasBlocks );
+	}
 	const list = [
 		...found.pages.map( ( p ) => ( { label: `page ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit` } ) ),
 		...found.posts.map( ( p ) => ( { label: `post ${ p.id } ${ p.slug }`, id: String( p.id ), url: `/wp-admin/post.php?post=${ p.id }&action=edit` } ) ),
