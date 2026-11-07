@@ -80,7 +80,7 @@ function gallery( ctx ) {
 	}
 	const scale = scaleOf( hoverTo( [ tile ], 'transform' ).value );
 	const glow = GLOW.exec( hoverTo( [ tile ], 'box-shadow' )?.value ?? '' );
-	const writes = [ { attr: 'scaleHover', value: scale }, ...( glow ? [ { attr: 'shadowHover', value: glow[ 1 ] }, { attr: 'shadowHoverColour', value: glow[ 2 ] } ] : [] ) ];
+	const writes = [ { attr: 'scaleHover', value: String( scale ) }, ...( glow ? [ { attr: 'shadowHover', value: glow[ 1 ] }, { attr: 'shadowHoverColour', value: glow[ 2 ] } ] : [] ) ];
 	return [ settle( { prop: 'scaleHover', why: `${ ctx.target.tpl } tile scales ${ scale } with a shadow on hover (${ tile.id })`, saved: ctx.saved, writes, record: tile.id, state: 'hover' } ) ];
 }
 
