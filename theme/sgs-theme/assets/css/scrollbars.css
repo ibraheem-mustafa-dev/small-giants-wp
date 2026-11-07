@@ -72,3 +72,70 @@
 		border-radius: 999px;
 	}
 }
+
+/*
+ * Overlay scrollbar (assets/js/sgs-overlay-scroll.js). The script adds `.sgs-overlay-scroll` once it has mounted, which hides
+ * the native bar on that scroller only and draws a thumb over the end edge that takes no layout width; without script the slim
+ * bar above stays. A scope overrides --sgs-overlay-scroll-width (visible thumb), --sgs-overlay-scroll-hit (pointer area) and
+ * --sgs-overlay-scroll-inset (gap from the edge); the colour is --sgs-scrollbar-thumb. The thumb's height and position are
+ * custom properties the script sets at run time.
+ */
+.sgs-overlay-scroll.sgs-overlay-scroll {
+	scrollbar-width: none;
+	scrollbar-gutter: auto;
+}
+
+.sgs-overlay-scroll.sgs-overlay-scroll::-webkit-scrollbar {
+	display: none;
+	width: 0;
+	height: 0;
+}
+
+:where(.sgs-overlay-scroll--relative) {
+	position: relative;
+}
+
+:where(.sgs-overlay-scroll__thumb) {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	z-index: 2;
+	box-sizing: border-box;
+	width: var(--sgs-overlay-scroll-hit, 8px);
+	height: var(--sgs-overlay-scroll-h, 0);
+	transform: translate3d(0, var(--sgs-overlay-scroll-y, 0), 0);
+	opacity: 0;
+	pointer-events: none;
+	cursor: default;
+	touch-action: none;
+	transition: opacity 200ms ease;
+}
+
+:where(.sgs-overlay-scroll__thumb)::before {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	inset-inline-end: var(--sgs-overlay-scroll-inset, 2px);
+	width: var(--sgs-overlay-scroll-width, 4px);
+	border-radius: 999px;
+	background: var(--sgs-scrollbar-thumb);
+}
+
+:where(.sgs-overlay-scroll__thumb[hidden]) {
+	display: none;
+}
+
+:where(.sgs-overlay-scroll__thumb.is-visible) {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+:where(.sgs-overlay-scroll__thumb:hover, .sgs-overlay-scroll__thumb.is-dragging)::before {
+	width: calc(var(--sgs-overlay-scroll-width, 4px) + 2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:where(.sgs-overlay-scroll__thumb) {
+		transition: none;
+	}
+}

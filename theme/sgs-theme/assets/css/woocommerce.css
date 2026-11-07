@@ -2592,11 +2592,10 @@ body.sgs-shop-filters-plain .sgs-shop-filters:modal {
 }
 
 /* ── The panel's scrollbar ──
- * The browser's own scrollbar, deliberately not the theme's brand scrollbar colour
- * (scrollbars.css), so the sheet's bar reads as the native control it replaces while
- * the sheet is open (8d), not a second, fainter control. `auto` resets the theme's
- * :where(*) scrollbar-color for this scroller (the equivalent of `sgs-scrollbar-native`
- * for markup this stylesheet does not print). */
+ * The shared overlay scrollbar (scrollbars.css, sgs-overlay-scroll.js) draws the sheet's bar over its edge once the script
+ * has mounted, so the filter groups keep their full width. Without script this scroller shows the browser's own bar:
+ * `auto` resets the theme's :where(*) scrollbar-color for it (the equivalent of `sgs-scrollbar-native` for markup this
+ * stylesheet does not print). */
 .sgs-shop-filters__scroll {
 	scrollbar-color: auto;
 	/* A 2px horizontal overflow (scrollWidth 342 vs clientWidth 340, measured

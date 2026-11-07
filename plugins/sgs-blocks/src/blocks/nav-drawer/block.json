@@ -504,7 +504,7 @@
 		"drawerScrollbarGutter": {
 			"type": "boolean",
 			"default": true,
-			"description": "Reserve the scrollbar's width on the drawer's scrolling surface (CSS scrollbar-gutter: stable), so the content keeps its width when a section opens and the drawer first overflows. Off: the scrollbar takes width only while it shows, so the content is as wide as the drawer allows. Classic scrollbars only; overlay scrollbars reserve nothing either way."
+			"description": "Reserve the scrollbar's width on the drawer's scrolling surface (CSS scrollbar-gutter: stable), so the content keeps its width when a section opens and the drawer first overflows. Off: the scrollbar takes width only while it shows, so the content is as wide as the drawer allows. Applies where the shared overlay scrollbar has not mounted (no script, or a classic bar); the overlay scrollbar reserves nothing either way."
 		},
 		"chromeRowBg": {
 			"type": "string",

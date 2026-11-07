@@ -438,6 +438,15 @@ function enqueue_styles(): void {
 		asset_version( 'assets/css/scrollbars.css', $theme_version )
 	);
 
+	// Shared overlay scrollbar (the script half of scrollbars.css): one module for every overlay panel.
+	wp_register_script_module(
+		'@sgs/overlay-scroll',
+		get_theme_file_uri( 'assets/js/sgs-overlay-scroll.js' ),
+		array(),
+		asset_version( 'assets/js/sgs-overlay-scroll.js', $theme_version )
+	);
+	wp_enqueue_script_module( '@sgs/overlay-scroll' );
+
 	wp_enqueue_style(
 		'sgs-utilities',
 		get_theme_file_uri( 'assets/css/utilities.css' ),
