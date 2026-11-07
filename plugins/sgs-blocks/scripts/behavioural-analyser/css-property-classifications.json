@@ -40045,6 +40045,27 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "tileBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "tileBorderColourHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_layer": "GRID_AREA",
+        "css_element": "item",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "tileBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -40077,6 +40098,15 @@
         "css_property": "background-image",
         "css_layer": "GRID_AREA",
         "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "visibleItems",
+      "fields": {
+        "css_property": "display",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -41937,6 +41967,34 @@
         "css_property": "border-radius",
         "css_layer": "GRID",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/mega-aside",
+      "attr": "asideShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "GRID",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
