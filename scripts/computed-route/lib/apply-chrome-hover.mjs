@@ -5,6 +5,7 @@ import { reachOf } from './apply-skeleton.mjs';
 import { hoverTo, recordsOf, rotation, scaleOf, settle, translate } from './apply-chrome-records.mjs';
 import { rowIndentOff } from './apply-chrome-rows.mjs';
 import { singleShadow } from './apply-chrome-cards.mjs';
+import { asideCard, ownPanel } from './apply-chrome-aside.mjs';
 
 const GLOW = /^(.*?)\s+((?:rgba?|hsla?)\([^)]*\)|#[0-9a-f]{3,8})$/i;
 
@@ -41,8 +42,11 @@ function megaPanel( ctx ) {
 	const named = ( ids ) => hovers( recordsOf( { target: { owns: ids, tpl: ctx.target.tpl }, recordsIndex: ctx.recordsIndex } ) );
 	const aside = named( within( 'sgs/mega-aside' ) );
 	const group = named( within( 'sgs/mega-group' ) );
+	// The draft draws link rows (and so the row arrow) only in a panel whose own drawer node holds a mega-group; a cards or brands panel has none.
+	const own = ownPanel( nodes, ctx.surface );
+	const ownRows = ! own || nodes.slice( own.index + 1, own.last + 1 ).some( ( n ) => 'sgs/mega-group' === n.b );
 	const hasAside = Object.values( ctx.all?.blocks ?? {} ).some( ( b ) => 'sgs/mega-aside' === b.block );
-	const out = [];
+	const out = hasAside ? asideCard( ctx, nodes ) : [];
 	const add = ( prop, value, record ) => out.push( settle( { prop, why: `${ ctx.target.tpl } ${ prop } ${ value } from the drawer's ${ record.id }`, saved: ctx.saved, writes: [ { attr: prop, value } ], record: record.id, state: 'hover' } ) );
 	const pick = ( list, re, axis ) => {
 		for ( const r of list.filter( ( x ) => ! re || describes( x, re ) ) ) {
@@ -62,14 +66,15 @@ function megaPanel( ctx ) {
 	tilt && add( 'drawerCardHoverRotate', rotation( tilt.t.value ), tilt.r );
 	const arrow = pick( hasAside ? aside : group, /^span \{\{ arrowIcon \}\}$/, 'X' );
 	arrow && add( 'drawerCardLinkShiftHover', translate( arrow.t.value ), arrow.r );
-	const fade = group.find( ( r ) => describes( r, /arrowIcon/ ) && hoverTo( [ r ], 'opacity' ) );
+	const fade = ownRows && group.find( ( r ) => describes( r, /arrowIcon/ ) && hoverTo( [ r ], 'opacity' ) );
 	if ( fade && ! hoverTo( [ fade ], 'color' ) ) {
 		// The record gives opacity only: the arrow keeps its own colour (the row's text colour, or the colour set for it) and reaches full opacity.
 		const keep = ctx.saved.drawerLinkTrailingColour || ctx.saved.drawerLinkLabelColour;
-		if ( 'arrow' === ctx.saved.drawerLinkTrailingIcon && keep ) {
-			out.push( settle( { prop: 'drawerLinkTrailingColourHover', why: `${ ctx.target.tpl } the row arrow goes from 40% to full opacity on hover (${ fade.id }) in its own colour ${ keep }`, saved: ctx.saved, writes: [ { attr: 'drawerLinkTrailingColourHover', value: keep } ], record: fade.id, state: 'hover' } ) );
+		if ( keep ) {
+			const writes = [ ...( 'arrow' === ctx.saved.drawerLinkTrailingIcon ? [] : [ { attr: 'drawerLinkTrailingIcon', value: 'arrow' } ] ), { attr: 'drawerLinkTrailingColourHover', value: keep } ];
+			out.push( settle( { prop: 'drawerLinkTrailingColourHover', why: `${ ctx.target.tpl } the row arrow goes from 40% to full opacity on hover (${ fade.id }) in its own colour ${ keep }`, saved: ctx.saved, writes, record: fade.id, state: 'hover' } ) );
 		} else {
-			out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only and the panel has no arrow icon or row colour to hold it at full opacity` } );
+			out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only and the saved panel holds no row text colour to keep it at` } );
 		}
 	}
 	return out;

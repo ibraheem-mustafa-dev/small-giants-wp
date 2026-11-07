@@ -6,6 +6,7 @@ import { recordsOf, settle } from './apply-chrome-records.mjs';
 import { stateLook } from './apply-records.mjs';
 import { numberHover } from './apply-chrome-number.mjs';
 import { iconHoverColour } from './apply-chrome-iconcolour.mjs';
+import { closeIconSize } from './apply-chrome-closeicon.mjs';
 
 const TIER = { [ TIER_WIDTHS[ 0 ] ]: 'desktop', [ TIER_WIDTHS[ 1 ] ]: 'tablet', [ TIER_WIDTHS[ 2 ] ]: 'mobile' };
 const toHex = ( rgb ) => {
@@ -253,11 +254,5 @@ export function stateRule( ctx ) {
 		return drawerRow( ctx );
 	}
 	const own = cursorField( ctx );
-	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIcon, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
-}
-
-// The close glyph's size sets the arm length per pixel of size, a ratio the live read does not expose (the glyph's path lives in the
-// block's markup), so the draft's bar length cannot become a size without a guess.
-function closeIcon( { saved } ) {
-	return saved.closeIconSize ? [ { status: 'no-setting', prop: 'closeIconSize', why: 'the draft close glyph is two 18px bars; the live glyph is an svg whose arm length per pixel of size the read does not expose, so a size cannot be derived without a guess' } ] : [];
+	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIconSize, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
 }
