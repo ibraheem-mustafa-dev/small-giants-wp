@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11291,
+    "row_count": 11295,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1677,6 +1677,7 @@
     "sgs/business-info::openStatusOpenLabel": null,
     "sgs/business-info::openStatusOpenText": "color",
     "sgs/business-info::openStatusOpensLabel": null,
+    "sgs/business-info::openStatusOpensPattern": "text-content",
     "sgs/business-info::openStatusReopensLabel": null,
     "sgs/business-info::openStatusShowLine": "boolean-visibility",
     "sgs/business-info::padding": "layout",
@@ -6957,6 +6958,7 @@
     "sgs/nav-bar-menu::submenuOpacity": "visual",
     "sgs/nav-bar-menu::submenuOpacityHover": "visual",
     "sgs/nav-bar-menu::submenuOpenOn": "enum-mode",
+    "sgs/nav-bar-menu::submenuOpenOnFocus": "behaviour",
     "sgs/nav-bar-menu::submenuPadding": "layout",
     "sgs/nav-bar-menu::submenuSeparators": "visual",
     "sgs/nav-bar-menu::submenuShadow": "visual",
@@ -7157,6 +7159,7 @@
     "sgs/nav-drawer-menu::ornamentTextLetterSpacing": "typography",
     "sgs/nav-drawer-menu::ornamentTextLetterSpacingUnit": "typography",
     "sgs/nav-drawer-menu::padding": "layout",
+    "sgs/nav-drawer-menu::parentRowAction": "behaviour",
     "sgs/nav-drawer-menu::ref": "technical",
     "sgs/nav-drawer-menu::separators": "visual",
     "sgs/nav-drawer-menu::sgsChildSizing": "layout",
@@ -7364,6 +7367,7 @@
     "sgs/nav-drawer::drawerGap": "layout",
     "sgs/nav-drawer::drawerPadding": "layout",
     "sgs/nav-drawer::drawerRef": "technical",
+    "sgs/nav-drawer::drawerScrollbarGutter": "boolean-visibility",
     "sgs/nav-drawer::drawerTextColour": "color",
     "sgs/nav-drawer::drawerTextColourGradient": "colour-gradient",
     "sgs/nav-drawer::drawerTextColourHover": "color",

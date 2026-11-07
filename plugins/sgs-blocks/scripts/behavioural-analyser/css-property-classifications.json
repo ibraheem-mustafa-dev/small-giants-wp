@@ -43908,6 +43908,13 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "drawerScrollbarGutter",
+      "fields": {
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "drawerTextColourGradient",
       "fields": {
         "css_property": "color-gradient",
