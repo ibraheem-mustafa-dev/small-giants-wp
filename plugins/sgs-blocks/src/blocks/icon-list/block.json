@@ -114,6 +114,7 @@
 				},
 				"marker": {
 					"selector": ".sgs-icon-list__item::before",
+					"motion": false,
 					"label": "Round dot marker",
 					"order": 3,
 					"clusters": [

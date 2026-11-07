@@ -103,6 +103,7 @@ require_once __DIR__ . '/wp-stubs.php';
 // themselves. The harness has no bootstrap, so it must load this file the
 // same way the bootstrap does — require_once'ing the real implementation,
 // never reimplementing field_id()/field_open()/etc. as stubs here.
+require_once $sgs_blocks_dir . '/includes/conditional-field.php';
 require_once $sgs_blocks_dir . '/includes/forms/field-render-helpers.php';
 
 // Real SGS code: sgs/trustpilot-reviews calls sgs_trustpilot_score_label(), which the plugin
