@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 38A
-spec_version: "1.8"
+spec_version: "1.9"
 title: "SGS motion model: three layered motion panels per element, stored values, token-backed presets, stagger and runtime"
 project: small-giants-wp
 status: approved design, M1 foundations built, M2 renderer and shared stylesheet built, wave 11 built (M3.W effect stylesheet convention, M3.1 effect rows and the modular Rotate, M6.1 migration core; Gate 4 passed 2026-10-13)
@@ -10,6 +10,7 @@ session_date: 2026-10-12
 last_verified: 2026-10-15
 parent_spec: Spec 38 (`.claude/specs/38-SGS-MOTION-SYSTEM.md`, the tier doctrine and effect roster)
 status_history:
+  - "2026-11-07: v1.9, site reveal default (Bean, Indus round 8): a client's reveal is global tokens and rules, and a block stores only what differs (§8.1, FR-38A-61 to FR-38A-64)."
   - "2026-10-12: v1.0, design approved by Bean (decisions D1 to D7 of the research report), not built"
   - "2026-10-12: v1.1, §5.4 per-effect control sets from the effects audit, FR-38A-34 to 53, nav motion, looping media and block-private state-change motion brought into scope, §17 cross-spec items resolved, not built"
   - "2026-10-12: v1.2, independent review resolved: each panel holds layers (drafts stack magnet, sheen and ripple, or tilt, scale and lift, on one element), §10 channel table with owners, composition and refusals, exact device tiers, numeric token bands, stagger fallback and close delays, §13 destinations for every input attribute, per-effect lines moved to Appendix A, FR-38A-54 to 56 (shared kit atoms, field-type helpers and their gate, phase M1), not built"
@@ -374,6 +375,19 @@ WordPress leaves an enqueued script module out of the import map, so the trigger
 - **Time-based reveals only.** Scroll-linked effects take no stagger; a staggered scrub is Tier G (Spec 38 FR-38-7).
 - **Rejected.** `sibling-index()`, stylesheet `nth-child` ladders that derive a delay from position, and any runtime delay computation.
 
+### 8.1 Site reveal default
+
+A client's scroll reveal is a site-wide default, set once, so most elements need no motion of their own (Bean, 2026-11-07). Tokens already give an entrance its values; this default also says which elements have one. A site with no default behaves exactly as before.
+
+- **Source.** The extractor reads the handoff's `animations.json` scroll-reveal records and writes the result into `settings.custom.entrance` in `sites/<client>/theme-snapshot.json`. The handoff stays a data source: it never ships a stylesheet.
+- **Tokens.** `entrance.duration`, `entrance.distance` and `entrance.easing` keep their names. New keys: `entrance.scale`, `entrance.start` (the start line, from the record's observer margin), `entrance.staggerStep`, `entrance.staggerCap` and `entrance.staggerEvery` (the index restarts after this many items).
+- **Rules.** `entrance.reveal` holds named rules, each with its own values: `heading` (an `h2` and the paragraph right after it) and `item` (each child of a grid or wrapped flex container with two or more children). A rule the draft does not have is absent. Both skip the page's first section, as the draft does, and the LCP rule in §9 stands.
+- **Rendering.** `Sgs_Motion_Renderer` builds the entrance when a block inside the main content matches a rule and stores no entrance of its own. It emits through the normal path, so the output is the same stylesheet rules and `data-sgs-me` attributes as a stored entrance. Header, footer, drawer and mega panels are outside the default. An `item`'s delay comes from its index on the server, so no script computes it.
+- **Layout test.** `item` reads the container's stored layout, not computed style. A draft's selection can change per breakpoint, so a child that differs at one width stores its own entrance.
+- **Exceptions.** A block's own entrance wins outright. A block that must not reveal stores `entrance.off`, shown in the Entrance panel as a toggle beside the inherited values, so an exception is always visible and editable. Parts, stagger on a block's own repeated items, and effects the rules do not cover stay on the block.
+- **Reduced motion.** Identical to a stored entrance (§12).
+- **Cleaning up.** A stored entrance equal to what the default would produce is redundant, and the applier removes it. Stored values stay only where they differ from the default.
+
 ## 9. Runtime per motion type
 
 | Motion | Mechanism | Tier | JS |
@@ -484,6 +498,7 @@ These are the attribute and file names the old motion mechanisms stored in exist
 ## 14. How the cloning route uses it
 
 - **FR-48-47** writes each draft element's entrance into `entrance.base` (and its text effects into `entrance.text`): from and to values, extra keyframes, duration, the draft's actual delay per element and device, easing and trigger. It no longer chooses a stagger setting; the helper is only a convenience.
+- A record the site reveal default covers (§8.1) is not written per block: the route writes a block's entrance only where it differs from the default.
 - **FR-48-77** writes recognised hover values into `hover.state`, recognised hover-driven effects into `hover.effects` and recognised special effects into `effects`, one layer per effect with its parameters, keeping every effect the draft stacks on one element.
 - Each written value snaps to a token reference when it equals that client's token value; otherwise it is a literal.
 - Repeated template items get server-written delays, so the tool writes the loop's step, not per-item values.
@@ -554,6 +569,11 @@ These are the attribute and file names the old motion mechanisms stored in exist
 - **FR-38A-60 Width is a hover value, and the burger's three bars are motion parts.** The hover state's `width` is a real width change from `restWidth` (a styling value, `--sgs-w-rest`, default 100% of the element's box) to the hover width (`--sgs-mh-to-w`) on the state's duration, delay and easing, through the `width` channel (§10), off under reduced motion; rest width has one home, the motion rest value, so rest and hover sit together. `sgs/nav-bar-menu` declares Bar 1, Bar 2 and Bar 3 of the default burger glyph as parts (`burger-bar-1` to `burger-bar-3`, each printed with its own `sgs-nav-bar-menu__burger-bar-N` class beside the shared `sgs-nav-bar-menu__burger-bar`), absent where the glyph prints no bars (a text-only trigger, a custom icon) and, for Bar 3, in the two-bar glyph; the menu button is a repeated-item host (`supports.sgs.animationItems`), so a Hover state with source Card hovered on a bar follows the button. Each bar has its own corner rounding (`burgerBar1BorderRadius` to `burgerBar3BorderRadius`), the bars line up by `burgerBarAlign`, and the button has the shared shadow control (`burgerShadow`, `burgerShadowColour`, with `--sgs-focus-under`) and its Hover shape and colour (`burgerShadowHover`, `burgerShadowColourHover`, composed by `sgs_shadow_decls()` as `sgs/button`'s `boxShadowHover` is, painted on hover and keyboard focus through `sgs_hover_state_rules()`, and replacing the automatic lift; a hover shape alone draws nothing at rest; timing is the Hover state's shadow duration and easing; proven by `tests/php/run-burger-shadow-hover-standalone.php`). *Done when:* the Indus draft's bars (18, 13 and 8px growing to 18px, the third with a 40ms delay) and Mama's (22, 22 and 16px) render with those widths and timings (`tests/php/run-burger-bar-motion-standalone.php`), and the part gates pass. A hover layer on a bar never cancels the burger's open and close morph: the emitter appends a block's own base transition entries to the part's `transition` list (filter `sgs_motion_base_transition`, answered for the bars and the icon box by `includes/nav-menu-markup.php::sgs_nav_bar_menu_burger_base_transition`). Status: built (2026-10-24, Bean's decision of that date, `.claude/plans/2026-10-23-cloning-tool-completion.md` Decisions for Phase 1 item 3; commits `761a8f136` and `f210aaa3d`); rendered in Chromium at 375, 768 and 1440 from the built CSS: Indus bars rest at 18, 13 and 8px and grow to 18px, Bar 3 still at rest 20ms after hover while Bar 2 has moved, Mama's bars rest at 22, 22 and 16px (its draft has no hover rule), and the X morph is mid-transition 60ms after opening.
 
   Status: built (72e9d7dcd, 3c0469d82; keyboard-only focus bf31e54df), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `npx wp-scripts test-unit-js tests/js/cursor-field-reveal-open.test.js` passes.
+
+- **FR-38A-61 Reveal tokens from the handoff.** The extractor writes `settings.custom.entrance`, its stagger keys and `entrance.reveal` from `animations.json`. *Done when:* on Indus the snapshot holds A-09's 800ms, 40px, .96 scale, 80ms step and 560ms cap and A-07's 850ms, 22px and 6px blur, a draft with no scroll-reveal record writes no `entrance.reveal`, and no client value is hardcoded.
+- **FR-38A-62 Site reveal default renders.** *Done when:* with `entrance.reveal` set, a block with no entrance that matches a rule emits the same reveal as a stored entrance, with the first section, header, footer, drawer and mega panels excluded; with it unset the rendered output of every fixture is byte-identical to before.
+- **FR-38A-63 An exception is visible and editable.** `entrance.off` and a block's own entrance override the default, and the Entrance panel shows which is in force. *Done when:* the block's panel toggles the default off, a saved `off` renders no entrance, and the schema refuses an unknown key.
+- **FR-38A-64 Blocks store only what differs.** The applier and the cloning route write no entrance equal to the default and remove a stored one that is. *Done when:* a second applier run gives zero ops, every removal keeps the rendered reveal the same on the live page, and a block that differs keeps its values.
 
 ## 16. Phasing
 
