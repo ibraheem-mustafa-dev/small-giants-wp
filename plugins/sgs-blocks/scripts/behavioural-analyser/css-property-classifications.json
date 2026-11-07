@@ -24620,6 +24620,15 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "connectorColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "connectorHidden",
       "fields": {
         "css_property": "display",
@@ -38335,6 +38344,15 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "consentColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "consent-text"
       }
     },
     {

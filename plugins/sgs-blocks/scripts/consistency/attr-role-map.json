@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11306,
+    "row_count": 11308,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4170,6 +4170,7 @@
     "sgs/form::confirmationEmail": "boolean-visibility",
     "sgs/form::confirmationMessage": null,
     "sgs/form::confirmationSubject": null,
+    "sgs/form::consentColour": "color",
     "sgs/form::consentFontFamily": "typography",
     "sgs/form::consentFontSize": "typography",
     "sgs/form::consentFontSizeUnit": "typography",
@@ -4875,7 +4876,7 @@
     "sgs/gallery::tilePadding": "layout",
     "sgs/gallery::transitionDuration": "motion",
     "sgs/gallery::transitionEasing": "motion",
-    "sgs/gallery::visibleItems": null,
+    "sgs/gallery::visibleItems": "styling",
     "sgs/gift-order::basketHelp": null,
     "sgs/gift-order::basketLabel": null,
     "sgs/gift-order::characterCountText": "text-content",
@@ -8133,6 +8134,7 @@
     "sgs/process-steps::borderStyle": "visual",
     "sgs/process-steps::borderWidth": "visual",
     "sgs/process-steps::connectorColour": "color",
+    "sgs/process-steps::connectorColourGradient": "colour-gradient",
     "sgs/process-steps::connectorHidden": "styling",
     "sgs/process-steps::connectorLine": "behaviour",
     "sgs/process-steps::connectorOffset": "styling",
