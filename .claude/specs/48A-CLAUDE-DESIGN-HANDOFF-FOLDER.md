@@ -92,7 +92,7 @@ Status: done 2026-10-11.
 ### FR-48A-13 -- Structured reach, typed keys, one threshold form, stable part ids
 All of these are optional, so an earlier export still validates. The handoff never names an SGS block: block choice is made at cloning.
 - `data-part="<id>"` on a meaningful element is a stable name for what the element is in the design (`hero-cta`, `filter-rail`). It is identity only and is kept unchanged between exports.
-- A `surfaces.json` state may carry `how_to_reach_structured` beside the `how_to_reach` prose: `{ setState: { ... }, storeCalls: [ { path, args } ], event: { type, target } }` (`handoff-schema/surfaces.schema.json::$defs.state`). `target` is a `data-part` id or a `data-dc-tpl` index.
+- A `surfaces.json` state may carry `how_to_reach_structured` beside the `how_to_reach` prose: `{ setState: { ... }, storeCalls: [ { path, args } ], event: { type, target } }` (`.claude/claude-design-handoff/handoff-schema/surfaces.schema.json::$defs.state`). `target` is a `data-part` id or a `data-dc-tpl` index.
 - A state may carry `state_key_sources`, mapping each `state_keys` key to `state`, `derived` or `instance`.
 - A state that depends on a width carries `breakpoint`: `{ basis: "state.w", op, value }`.
 - `handoff-schema/METHOD.md` reads the logic at 375, 768 and 1440.
