@@ -17,10 +17,10 @@ export function exactColours( writes, value, rawSnapshot ) {
 	} );
 }
 
-export function stateItem( { ctx, prop, value, rest, state, slot, width = 1440, record = null, label, probe = null, extra = null } ) {
+export function stateItem( { ctx, prop, value, rest, state, slot, width = 1440, record = null, label, probe = null, extra = null, fontPx = null } ) {
 	const { block, saved, calFor, db, snapshot } = ctx;
 	const node = { attributes: structuredClone( saved ) };
-	const res = resolveProperty( { node, block, prop, draft: { [ width ]: value }, baseline: () => undefined, slots: [ slot ], calibration: calFor( block ), db, snapshot, log: [], state, siblings: {}, rest } );
+	const res = resolveProperty( { node, block, prop, draft: { [ width ]: value }, baseline: () => undefined, slots: [ slot ], calibration: calFor( block ), db, snapshot, log: [], state, siblings: {}, rest, ...( fontPx ? { fontPx: { [ width ]: fontPx } } : {} ) } );
 	const base = { prop: label ?? prop, state: state ?? undefined, ...( record ? { record } : {} ) };
 	if ( 'equal' === res.status ) {
 		return { ...base, status: 'equal', why: `${ label ?? prop } already paints ${ value }` };

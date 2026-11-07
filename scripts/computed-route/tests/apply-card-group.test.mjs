@@ -7,7 +7,7 @@ import { judge } from '../apply.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadCalibration } from '../lib/cache.mjs';
 import { parseColour } from '../lib/normalise.mjs';
-import { groupHosts } from '../lib/apply-group-read.mjs';
+import { groupHosts, hostedFacts } from '../lib/apply-group-read.mjs';
 
 const db = openDb();
 const tools = motionTools( db, null );
@@ -91,6 +91,14 @@ test( 'judge reads a hoverHost check from the card read of the child', () => {
 	assert.equal( judge( [ op ], reads )[ 0 ].ok, true );
 	reads.s[ 1440 ].facts[ 'cr-ref-t-1' ].group.children[ 0 ].hover.color = navy;
 	assert.equal( judge( [ op ], reads )[ 0 ].ok, false );
+} );
+
+test( 'hostedFacts carries the own fx of a child so an ambient float is discounted from the hover pose; a child with none carries null', () => {
+	const host = { group: { children: [ kid( 'cr-ref-t-2', box( 0, 0, 1, 1 ), '', still, { transform: 'none' } ) ] } };
+	assert.equal( hostedFacts( host, 'cr-ref-t-2', { fx: 'ambient-float' } ).fx, 'ambient-float' );
+	// Negative control: no own read, no fx; an unknown child has no facts.
+	assert.equal( hostedFacts( host, 'cr-ref-t-2' ).fx, null );
+	assert.equal( hostedFacts( host, 'cr-ref-t-9', { fx: 'ambient-float' } ), undefined );
 } );
 
 test( 'hosts: a block holding a hover group flag is hovered as one card; a plain one is not', () => {

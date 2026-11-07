@@ -71,7 +71,7 @@ function hoverLayer( { ctx, d, l } ) {
 	if ( ! verdict.valid ) {
 		return [ { status: 'no-setting', prop: 'tile hover motion', state: 'hover', why: `sgsMotion write refused: ${ verdictProblems( verdict ).join( '; ' ).slice( 0, 300 ) }` } ];
 	}
-	return [ { status: 'op', prop: 'tile hover motion', state: 'hover', why: `tile hover pose ${ JSON.stringify( want ) } from ${ records.map( ( r ) => r.id ).join( ', ' ) }`, writes: [ { attr: 'sgsMotion', value: { v: 1, elements: { tile: { hover: m.element.hover } } }, merge: 'deep' } ], record: records[ 0 ].id, checks: [ { width: 1440, prop: 'transform', want: d.hover.tile.transform, probe: [ 'hover', 'tile' ] } ] } ];
+	return [ { status: 'op', prop: 'tile hover motion', state: 'hover', why: `tile hover pose ${ JSON.stringify( want ) } from ${ records.map( ( r ) => r.id ).join( ', ' ) }`, writes: [ { attr: 'sgsMotion', value: { v: 1, elements: { tile: { hover: m.element.hover } } }, merge: 'deep' } ], record: records[ 0 ].id, checks: [ { width: 1440, prop: 'pose', want: d.hover.tile.pose, probe: [ 'hover', 'tile' ] } ] } ];
 }
 
 function multiSelect( { ctx, d, l } ) {
@@ -101,7 +101,7 @@ export const tiles = {
 			of( 'tile-check', null, 'selected', 'check', CHECK );
 		}
 		if ( want && want !== have ) {
-			items.push( { status: 'op', prop: 'selectedCheckPosition', why: `the draft's tick is ${ 'corner' === want ? 'a corner badge' : 'in line with the text' }; the live tile ${ have ? `shows it as ${ have }` : 'shows none' }`, writes: [ { attr: 'selectedCheckPosition', value: want } ], checks: [ { width: 1440, prop: 'position', want: 'corner' === want ? 'absolute' : 'static', probe: [ 'selected', 'check' ] } ] } );
+			items.push( { status: 'op', prop: 'selectedCheckPosition', why: `the draft's tick is ${ 'corner' === want ? 'a corner badge' : 'in line with the text' }; the live tile ${ have ? `shows it as ${ have }` : 'shows none' }`, writes: [ { attr: 'selectedCheckPosition', value: want } ], checks: [ { width: 1440, prop: 'placement', want, probe: [ 'selected', 'check' ] } ] } );
 		}
 		if ( d.hover && l.hover ) {
 			of( 'tile', 'hover', 'hover', 'tile', HOVERED );

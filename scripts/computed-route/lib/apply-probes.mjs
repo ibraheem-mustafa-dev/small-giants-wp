@@ -140,12 +140,37 @@ function tileFacts( [ finder, resolveSrc, props, checkProps, labelProps ] ) {
 		return null;
 	}
 	const read = ( el, p ) => Object.fromEntries( p.map( ( x ) => [ x, getComputedStyle( el ).getPropertyValue( x ).trim() ] ) );
+	// Where a visitor sees the tick: a corner badge (absolute) or in line with the text. A block's inline tick is positioned (relative, to
+	// hold its drawn mark) where a draft's is static, so `position` itself says nothing about the placement.
+	const placementOf = ( el ) => ( 'none' === getComputedStyle( el ).display ? null : 'absolute' === getComputedStyle( el ).position ? 'corner' : 'inline-start' );
+	// How the element stands as a visitor sees it: the translate, rotate and scale properties and the transform composed into one
+	// matrix (CSS applies them in that order), to two decimals. The framework's hover motion moves an element through translate and
+	// scale where a draft's rule uses transform, so the transform property alone says nothing about whether the element moved.
+	const poseOf = ( el ) => {
+		const cs = getComputedStyle( el );
+		const m = new DOMMatrix();
+		const nums = ( v ) => String( v ).split( /\s+/ ).map( parseFloat );
+		if ( 'none' !== cs.translate ) {
+			const [ x, y = 0 ] = nums( cs.translate );
+			m.translateSelf( x, y );
+		}
+		if ( 'none' !== cs.rotate ) {
+			m.rotateSelf( 0, 0, nums( cs.rotate ).pop() );
+		}
+		if ( 'none' !== cs.scale ) {
+			const [ x, y = x ] = nums( cs.scale );
+			m.scaleSelf( x, y );
+		}
+		'none' !== cs.transform && m.multiplySelf( new DOMMatrix( cs.transform ) );
+		const r = ( n ) => ( Math.round( n * 100 ) / 100 ) + 0;
+		return `matrix(${ [ m.a, m.b, m.c, m.d, m.e, m.f ].map( r ).join( ', ' ) })`;
+	};
 	// The tick: the block's own badge, else a small absolute badge, else an inline svg (a draft's tick before the label).
 	const check = tile.querySelector( '.sgs-form-tile__check' ) || [ ...tile.querySelectorAll( '*' ) ].find( ( e ) => 'absolute' === getComputedStyle( e ).position && parseFloat( getComputedStyle( e ).width ) <= 48 ) || tile.querySelector( 'svg' );
 	const label = tile.querySelector( '.sgs-form-tile__label' ) || tile.firstElementChild;
 	const r = tile.getBoundingClientRect();
 	const host = tile.closest( '[data-sc-name]' );
-	return { tile: read( tile, props ), check: check ? read( check, checkProps ) : null, label: label ? read( label, labelProps ) : null, at: { x: r.left + r.width / 2, y: r.top + r.height / 2 }, hovered: tile.matches( ':hover' ), tplId: tile.getAttribute( 'data-dc-tpl' ), dc: host?.getAttribute( 'data-sc-name' ) ?? null };
+	return { tile: { ...read( tile, props ), pose: poseOf( tile ) }, check: check ? { ...read( check, checkProps ), placement: placementOf( check ) } : null, label: label ? read( label, labelProps ) : null, at: { x: r.left + r.width / 2, y: r.top + r.height / 2 }, hovered: tile.matches( ':hover' ), tplId: tile.getAttribute( 'data-dc-tpl' ), dc: host?.getAttribute( 'data-sc-name' ) ?? null };
 }
 
 // Puts the pointer on the element `pick` names (smooth scrolling can carry the page on after it lands, so the box is re-read until

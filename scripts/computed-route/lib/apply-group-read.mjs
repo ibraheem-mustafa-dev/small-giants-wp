@@ -26,6 +26,14 @@ export function groupHosts( { surface, saved, recordsIndex, db = null } ) {
 	} ).map( ( t ) => t.key ?? t.ref );
 }
 
+// A child's facts under its card's hover (`hoverHost` on a check): the card read's entry for the child, shaped as facts. `own` is the
+// child's own read, whose `fx` (an ambient float, a magnet) the judge discounts from the hover pose: a floating child's scale and
+// travel at the moment of the read are the float's as well as the hover's.
+export function hostedFacts( host, ref, own = null ) {
+	const child = host?.group?.children?.find( ( k ) => k.key === ref );
+	return child ? { styles: child.rest, hover: child.hover, fx: own?.fx ?? null } : undefined;
+}
+
 // In-page: the blocks inside the card as [ { key, finder, box, text } ], and a point on the card no child holds.
 export function groupScan( [ finder, resolveSrc, side ] ) {
 	// eslint-disable-next-line no-new-func

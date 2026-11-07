@@ -24,7 +24,7 @@ const RUNTIME = /\b(?:var|calc|clamp|min|max|env|attr)\(|\bv[wh]\b|\d(?:vw|vh|vm
 const COLOUR_FN = /\b(?:hsla?|rgba?|hwb|lab|lch|oklab|oklch|color)\([^()]*\)/gi;
 const runtimeValue = ( v ) => RUNTIME.test( v ) || v.replace( COLOUR_FN, '' ).includes( '%' );
 const FONT_WEIGHTS = { normal: 400, bold: 700 };
-const firstFamily = ( v ) => String( v ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' ).toLowerCase();
+export const firstFamily = ( v ) => String( v ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' ).toLowerCase();
 const ms = ( v ) => {
 	const m = /^(-?\d*\.?\d+)(ms|s)$/.exec( String( v ).trim() );
 	return m ? Number( m[ 1 ] ) * ( 's' === m[ 2 ] ? 1000 : 1 ) : null;

@@ -4,6 +4,7 @@ import { attrRow, candidates } from './db.mjs';
 import { parseColour, snapColour, toHex } from './normalise.mjs';
 import { exactHome } from './fill-part-pairing.mjs';
 import { differs, stateItem } from './apply-state-resolve.mjs';
+import { firstFamily } from './fill-confirm.mjs';
 
 const distinct = ( values ) => [ ...new Set( values.filter( ( v ) => undefined !== v && '' !== v && null !== v ) ) ];
 
@@ -49,19 +50,23 @@ function directItem( { ctx, at, row, element, prop, state, want, label, check } 
 
 // drafts and lives: the values one property takes across the probed parts of each side. `check` is the extra check shape the
 // judge reads (`probe`: a path into facts.probes; `all`: the key of every field's styles). Several draft values for a property
-// the block holds once are reported, never averaged.
-export function partItems( { ctx, element, prop, state = null, drafts, lives, label = null, check = {}, why = '' } ) {
-	const want = distinct( drafts );
+// the block holds once are reported, never averaged. `fontPx`: the part's own font size in px, the basis a unitless line height or an
+// em letter spacing is converted against (the resolver's default is the 16px root).
+export function partItems( { ctx, element, prop, state = null, drafts, lives, label = null, check = {}, why = '', fontPx = null } ) {
+	// A font stack paints as its first family (the route's own comparison, fill-confirm.mjs::TOLERANCE): stacks sharing it are one value.
+	const stacks = 'font-family' === prop;
+	const collapse = ( values ) => ( stacks ? [ ...new Map( distinct( values ).map( ( v ) => [ firstFamily( v ), v ] ) ).values() ] : distinct( values ) );
+	const want = collapse( drafts );
 	if ( ! want.length ) {
 		return [];
 	}
-	const have = distinct( lives );
+	const have = collapse( lives );
 	const prefix = `${ element }${ state ? ` ${ state }` : '' } ${ prop }`;
 	const at = settingAt( { db: ctx.db, block: ctx.block, calFor: ctx.calFor, element, prop, state } );
 	if ( want.length > 1 ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ at ? `${ at.attr } holds one value for all of them` : 'the block has no setting for it' }; the draft has ${ want.length } different values: ${ want.join( ' | ' ) }${ why }` } ];
 	}
-	if ( 1 === have.length && ! differs( want[ 0 ], have[ 0 ] ) ) {
+	if ( 1 === have.length && ( stacks ? firstFamily( want[ 0 ] ) === firstFamily( have[ 0 ] ) : ! differs( want[ 0 ], have[ 0 ] ) ) ) {
 		return [];
 	}
 	if ( ! at ) {
@@ -74,7 +79,7 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 			return [ direct ];
 		}
 	}
-	const item = stateItem( { ctx, prop, value: want[ 0 ], state, slot: at.slot, label: label ?? at.attr, extra: check } );
+	const item = stateItem( { ctx, prop, value: want[ 0 ], state, slot: at.slot, label: label ?? at.attr, extra: check, fontPx } );
 	// The resolver may paint a prop through a setting of another part (the wrapper's); only a setting of this part counts.
 	const own = candidates( ctx.db, ctx.block, prop, state ).filter( ( r ) => r.css_element === element ).map( ( r ) => r.attr_name );
 	const stray = 'op' === item.status ? item.writes.filter( ( w ) => ! own.includes( w.attr ) ) : [];
