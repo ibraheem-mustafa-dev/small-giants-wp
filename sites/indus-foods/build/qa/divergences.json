@@ -503,6 +503,7 @@
   },
   {
     "id": "D-34",
+    "block": "sgs/timeline",
     "scope": "About timeline, 768px and under",
     "node": "timeline headings",
     "state": "*",
@@ -552,6 +553,7 @@
   },
   {
     "id": "D-38",
+    "block": "sgs/mega-panel",
     "surfaces": ["mega-about", "mega-brands", "mega-trade"],
     "scope": "desktop mega panels About, Brands and Trade",
     "node": "panel shadow",
@@ -565,7 +567,7 @@
   },
   {
     "id": "D-39",
-    "surfaces": ["drawer-brands"],
+    "surfaces": ["mega-brands"],
     "scope": "nav drawer, Brands panel, all widths",
     "node": "brand logo tiles",
     "state": "rest",
