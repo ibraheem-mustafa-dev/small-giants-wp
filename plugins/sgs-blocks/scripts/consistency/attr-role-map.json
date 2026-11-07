@@ -5978,7 +5978,7 @@
     "sgs/icon-list::linkUnderlineThickness": "typography",
     "sgs/icon-list::listColumns": "layout",
     "sgs/icon-list::margin": "layout",
-    "sgs/icon-list::markerOffset": "styling",
+    "sgs/icon-list::markerOffset": "text-content",
     "sgs/icon-list::markerSize": "select-from-enum",
     "sgs/icon-list::markerType": "select-from-enum",
     "sgs/icon-list::menuRef": "technical",

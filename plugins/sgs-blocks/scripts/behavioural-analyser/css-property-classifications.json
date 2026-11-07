@@ -32344,6 +32344,7 @@
       "attr": "cardBorderStyle",
       "fields": {
         "css_property": "border-style",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -32352,6 +32353,7 @@
       "attr": "cardBorderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48876,6 +48878,7 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48884,6 +48887,7 @@
       "attr": "cardBackgroundColourGradient",
       "fields": {
         "css_property": "background-image",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48893,6 +48897,7 @@
       "fields": {
         "css_property": "border-color",
         "role": "color",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48901,6 +48906,7 @@
       "attr": "cardBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48909,6 +48915,7 @@
       "attr": "cardBorderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48917,6 +48924,7 @@
       "attr": "cardPadding",
       "fields": {
         "css_property": "padding",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
@@ -48925,6 +48933,7 @@
       "attr": "cardShadow",
       "fields": {
         "css_property": "box-shadow",
+        "css_layer": "GRID",
         "css_element": "card"
       }
     },
