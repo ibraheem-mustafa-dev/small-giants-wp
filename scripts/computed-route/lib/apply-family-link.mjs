@@ -80,11 +80,12 @@ export const link = {
 			}
 			url = own;
 		}
-		// A card that is one link reads out what it says, as the draft's anchor does, not only its cue.
-		const words = clean( d.text || buttons.map( ( b ) => b.draft.text ).find( Boolean ) );
-		const label = words.length > 80 ? words.slice( 0, 80 ).replace( /\s+\S*$/, '' ) : words;
+		// A card that is one link reads out what it says, as the draft's anchor does: an empty label takes the block's own text
+		// (link-overlay.php::block_link_fallback_label). A saved label that is only the card's cue would hide the rest.
+		const cues = buttons.map( ( b ) => clean( b.draft.text ) ).filter( Boolean );
+		const label = saved.sgsBlockLinkLabel && ! cues.includes( saved.sgsBlockLinkLabel ) && saved.sgsBlockLinkLabel.length > 20 ? saved.sgsBlockLinkLabel : '';
 		const items = [];
-		if ( saved.sgsBlockLink === url && saved.sgsBlockLinkLabel === label ) {
+		if ( saved.sgsBlockLink === url && ( saved.sgsBlockLinkLabel ?? '' ) === label ) {
 			items.push( { status: 'equal', prop: 'card-link', why: 'the card links' } );
 		} else {
 			const writes = [ { attr: 'sgsBlockLink', value: url }, { attr: 'sgsBlockLinkLabel', value: label } ];

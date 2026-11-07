@@ -86,10 +86,10 @@ test( 'link: a click row with no href takes the address its button already reach
 
 test( 'link: negative control, a plain container and an already linked card write nothing new', () => {
 	assert.deepEqual( link.decide( ctxFor( f( { tag: 'div', href: null, styles: { cursor: 'auto' } } ) ) ), [] );
-	const done = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest', sgsBlockLinkLabel: 'Row' }, button: { visualOnly: true } } ) );
+	const done = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest' }, button: { visualOnly: true } } ) );
 	assert.deepEqual( done.map( ( i ) => i.status ), [ 'equal' ] );
 	const cue = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest', sgsBlockLinkLabel: 'Register' }, button: { visualOnly: true } } ) );
-	assert.deepEqual( cue[ 0 ].writes.find( ( w ) => 'sgsBlockLinkLabel' === w.attr ).value, 'Row', 'a card named by its cue takes the card text' );
+	assert.equal( cue[ 0 ].writes.find( ( w ) => 'sgsBlockLinkLabel' === w.attr ).value, '', 'a card named by its cue takes the card text' );
 	assert.equal( live404.rows.length, 1 );
 } );
 
