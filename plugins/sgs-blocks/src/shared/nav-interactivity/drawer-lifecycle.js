@@ -52,15 +52,24 @@ export function whenAnimationsSettle( el, done ) {
 
 	// getAnimations() flushes style, so the animations the state change just
 	// started are already in the list.
-	const animations =
+	// An endless loop inside the element never settles, and an animation that
+	// has already ended has nothing left: only what is still to run counts.
+	const animations = (
 		'function' === typeof el.getAnimations
 			? el.getAnimations( { subtree: true } )
-			: [];
+			: []
+	).filter(
+		( animation ) =>
+			'finished' !== animation.playState &&
+			Number.isFinite( animation.effect?.getComputedTiming?.().endTime )
+	);
 	let latest = 0;
 	animations.forEach( ( animation ) => {
-		const end = animation.effect?.getComputedTiming?.().endTime;
-		if ( Number.isFinite( end ) && end > latest ) {
-			latest = end;
+		const left =
+			animation.effect.getComputedTiming().endTime -
+			( animation.currentTime ?? 0 );
+		if ( left > latest ) {
+			latest = left;
 		}
 	} );
 	timer = setTimeout( finish, latest + 50 );
