@@ -19,7 +19,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1085 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 1086 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 859 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
@@ -2451,8 +2451,8 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/intake-palette-grounds.mjs` | script-call | The ground each colour sits on, read in the page beside the 1440 rest reading (lib/intake-reading.mjs::readSurface's `probe`) for the palette… |
 | `computed-route/lib/intake-palette-into.mjs` | script-call | `intake.mjs --palette-only <client> --into-intake` (Spec 48 FR-48-31): the new palette proposal put where the marking path reads it. intake.json's… |
 | `computed-route/lib/intake-palette-run.mjs` | script-call | `intake.mjs --palette-only <client> [--record]` (Spec 48 FR-48-31): the palette proposal without the other intake stages. The secret-free worker… |
-| `computed-route/lib/intake-palette-usage.mjs` | script-call | The palette roles read from where each value paints in the draft (Spec 48 FR-48-31, §11 FR-33-2), for lib/intake-palette.mjs::proposePalette. Each… |
-| `computed-route/lib/intake-palette.mjs` | script-call | The palette role proposal for Bean's intake review (Spec 48 FR-48-31, §11 FR-33-2, R-47-7). Declared colour tokens |
+| `computed-route/lib/intake-palette-usage.mjs` | manifest+script-call | The palette roles read from where each value paints in the draft (Spec 48 FR-48-31, §11 FR-33-2), for lib/intake-palette.mjs::proposePalette. Each… |
+| `computed-route/lib/intake-palette.mjs` | manifest+script-call | The palette role proposal for Bean's intake review (Spec 48 FR-48-31, §11 FR-33-2, R-47-7). Declared colour tokens |
 | `computed-route/lib/intake-pool.mjs` | script-call | The browser-unit pool of the intake command (Spec 48 FR-48-28, FR-48-17). Each unit (one route read, one census width and page, one defect width, one… |
 | `computed-route/lib/intake-process.mjs` | script-call | The secret-free intake process (Spec 48 FR-48-23, Spec 48A FR-48A-10): intake workers run in a new Node process given only an allowlisted… |
 | `computed-route/lib/intake-props.mjs` | script-call | Prop variants (Spec 48 FR-48-29). A component draft mounted through `dc-import` declares its props in the `data-props` attribute of its `<script… |
