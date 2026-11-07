@@ -377,6 +377,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		iconColourGradient,
 		iconColourHoverGradient,
 		iconSize,
+		listColumns,
+		markerSize,
+		markerOffset,
 		iconBackgroundColour,
 		iconBoxSize,
 		separators,
@@ -504,11 +507,43 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		previewTier,
 		colourPalette
 	);
+	// List columns at the previewed tier (the narrowest tier with a value wins, falling outwards, as the front end's
+	// media queries do) and the round dot marker's sizes, which style.css reads through custom properties.
+	const columnsCount = parseInt(
+		[ 'mobile', 'tablet', 'desktop' ]
+			.slice( [ 'mobile', 'tablet', 'desktop' ].indexOf( previewTier ) )
+			.map( ( t ) => ( listColumns || {} )[ t ] )
+			.find( ( v ) => '' !== ( v ?? '' ) ),
+		10
+	);
+	const columnsPreview =
+		columnsCount > 0
+			? {
+					display: 'grid',
+					gridTemplateColumns: `repeat(${ Math.min(
+						columnsCount,
+						6
+					) }, minmax(0, 1fr))`,
+			  }
+			: {};
+	const dotPreview =
+		'bullet' === markerType && markerSize
+			? {
+					'--sgs-ilist-dot-size': markerSize,
+					'--sgs-ilist-dot-offset': markerOffset || '1.25em',
+					'--sgs-ilist-dot-colour':
+						colourVar( iconColour ) || 'currentColor',
+					paddingInlineStart: markerOffset || '1.25em',
+			  }
+			: {};
 	const blockProps = useBlockProps( {
 		className: [
 			'sgs-icon-list',
 			`sgs-icon-list--icon-${ iconSize }`,
 			`sgs-icon-list--marker-${ resolvedMarkerType }`,
+			'bullet' === markerType &&
+				markerSize &&
+				'sgs-icon-list--marker-dot',
 			`sgs-ed-sep-${ clientId }`,
 		]
 			.filter( Boolean )
@@ -517,6 +552,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			...previewStyle,
 			...elementPreview.root,
 			gap: gapVar( gap || '20' ),
+			...columnsPreview,
+			...dotPreview,
 		},
 	} );
 
@@ -546,10 +583,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// same rules), so the whole padded row is the click target. The list-item modes cover the row with a ::after on
 	// the link instead, which paints nothing and so has no canvas twin.
 	const linkFillsRow =
-		!! itemPaddingBlock && [ 'icon', 'emoji' ].includes( markerType || 'icon' );
+		!! itemPaddingBlock &&
+		[ 'icon', 'emoji' ].includes( markerType || 'icon' );
 	// The narrowest tier with a value wins, falling outwards, as the front end's media queries do.
 	const itemGapValue = [ previewTier, 'tablet', 'desktop' ]
-		.slice( 'mobile' === previewTier ? 0 : 'tablet' === previewTier ? 1 : 2 )
+		.slice(
+			'mobile' === previewTier ? 0 : 'tablet' === previewTier ? 1 : 2
+		)
 		.map( ( t ) => ( itemGap || {} )[ t ] )
 		.find( ( v ) => 'string' === typeof v && '' !== v );
 	const itemStyle = {
@@ -968,7 +1008,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Heading', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SgsFreeTextField type="rich"
+					<SgsFreeTextField
+						type="rich"
 						label={ __( 'Heading text', 'sgs-blocks' ) }
 						help={
 							'menu' === resolvedSource
@@ -1168,6 +1209,76 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 						/>
 					) }
+					{ 'bullet' === markerType && (
+						<>
+							<SgsLengthControl
+								label={ __( 'Dot size', 'sgs-blocks' ) }
+								help={ __(
+									'Diameter of a round dot drawn in the icon colour. Empty keeps the browser disc.',
+									'sgs-blocks'
+								) }
+								value={ markerSize || '' }
+								onChange={ ( val ) =>
+									setAttributes( { markerSize: val || '' } )
+								}
+								presets={ false }
+							/>
+							{ !! markerSize && (
+								<SgsLengthControl
+									label={ __(
+										'Text offset from the dot',
+										'sgs-blocks'
+									) }
+									help={ __(
+										'Distance from the list edge to where the text starts. Empty uses 1.25em.',
+										'sgs-blocks'
+									) }
+									value={ markerOffset || '' }
+									onChange={ ( val ) =>
+										setAttributes( {
+											markerOffset: val || '',
+										} )
+									}
+									presets={ false }
+								/>
+							) }
+						</>
+					) }
+					<ResponsiveOverride
+						value={ listColumns }
+						onChange={ ( obj ) =>
+							setAttributes( { listColumns: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SelectControl
+								label={ __( 'List columns', 'sgs-blocks' ) }
+								value={
+									'string' === typeof ownValue ||
+									'number' === typeof ownValue
+										? String( ownValue )
+										: ''
+								}
+								options={ [
+									{
+										label: __( 'Inherit', 'sgs-blocks' ),
+										value: '',
+									},
+									...[ 1, 2, 3, 4, 5, 6 ].map( ( n ) => ( {
+										label: String( n ),
+										value: String( n ),
+									} ) ),
+								] }
+								onChange={ ( val ) =>
+									setOwnValue(
+										val ? parseInt( val, 10 ) : ''
+									)
+								}
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
 					<SelectControl
 						label={ __( 'Icon size', 'sgs-blocks' ) }
 						value={ iconSize }
@@ -1200,7 +1311,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<ResponsiveOverride
 						value={ itemGap }
-						onChange={ ( obj ) => setAttributes( { itemGap: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { itemGap: obj } )
+						}
 					>
 						{ ( { ownValue, setOwnValue } ) => (
 							<SgsLengthControl

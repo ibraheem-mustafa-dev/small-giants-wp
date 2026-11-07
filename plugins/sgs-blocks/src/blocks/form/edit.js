@@ -35,6 +35,7 @@ import FormEmbedEdit from './FormEmbedEdit';
 import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import SubmitMotionControls from './SubmitMotionControls';
+import FormButtonShapeControls from './FormButtonShapeControls';
 import SavedProgressPanel from './SavedProgressPanel';
 import StepSettingsPanel from './StepSettingsPanel';
 import ButtonLabelControls from './ButtonLabelControls';
@@ -819,6 +820,20 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 								},
 						  ]
 						: [] ),
+					textRow( {
+						key: 'next-text',
+						label: __( 'Next button text colour', 'sgs-blocks' ),
+						attrs: { base: 'nextColourText', hover: 'nextColourTextHover' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'prev-text',
+						label: __( 'Previous button text colour', 'sgs-blocks' ),
+						attrs: { base: 'prevColourText', hover: 'prevColourTextHover' },
+						attributes,
+						setAttributes,
+					} ),
 					{
 						key: 'prev-button-background',
 						label: __( 'Previous button background colour', 'sgs-blocks' ),
@@ -1306,6 +1321,15 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( value ) => setAttributes( { actionsFlexWrap: value } ) }
 					/>
 					<SubmitMotionControls attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				<PanelBody title={ __( 'Submit button border', 'sgs-blocks' ) } initialOpen={ false }>
+					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="submit" name={ __( 'Submit button', 'sgs-blocks' ) } />
+				</PanelBody>
+				<PanelBody title={ __( 'Next button shape', 'sgs-blocks' ) } initialOpen={ false }>
+					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="next" name={ __( 'Next button', 'sgs-blocks' ) } withPadding withMotion />
+				</PanelBody>
+				<PanelBody title={ __( 'Previous button shape', 'sgs-blocks' ) } initialOpen={ false }>
+					<FormButtonShapeControls attributes={ attributes } setAttributes={ setAttributes } prefix="prev" name={ __( 'Previous button', 'sgs-blocks' ) } withPadding withMotion />
 				</PanelBody>
 
 			</InspectorControls>

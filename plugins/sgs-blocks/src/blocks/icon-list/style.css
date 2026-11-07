@@ -44,6 +44,28 @@
 	display: list-item;
 }
 
+/* Round dot marker (markerSize set on a bullet list): the dot is a CSS circle drawn in the space the list's
+   start padding leaves; its size, colour and offset are the scoped rule render.php prints. The editor canvas
+   feeds the same sizes through these custom properties. */
+.sgs-icon-list--marker-dot {
+	list-style: none;
+}
+
+:where(.sgs-icon-list--marker-dot > .sgs-icon-list__item) {
+	position: relative;
+}
+
+.sgs-icon-list--marker-dot > .sgs-icon-list__item::before {
+	content: "";
+	position: absolute;
+	border-radius: 50%;
+	width: var(--sgs-ilist-dot-size, 0.4em);
+	height: var(--sgs-ilist-dot-size, 0.4em);
+	background-color: var(--sgs-ilist-dot-colour, currentColor);
+	inset-inline-start: calc(-1 * var(--sgs-ilist-dot-offset, 1.25em));
+	top: calc(0.75em - var(--sgs-ilist-dot-size, 0.4em) / 2);
+}
+
 /* Individual item */
 .sgs-icon-list__item {
 	display: flex;

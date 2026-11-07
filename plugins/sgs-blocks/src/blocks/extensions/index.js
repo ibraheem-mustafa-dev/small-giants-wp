@@ -50,6 +50,7 @@
 import './responsive-device-toggle';
 import './hover-effects';
 import './child-sizing';
+import './float-position';
 import './time-text';
 import './custom-css';
 import './focus-rests';
@@ -87,4 +88,5 @@ import '../../components/colour-picker/color-picker/editor.scss';
 import '../../components/colour-picker/dropdown/editor.scss';
 // Child sizing's editor-canvas preview rules (an editor stylesheet imported from a non-entry module is attributed to an arbitrary block's frontend bundle, so it is imported here).
 import './child-sizing.scss';
+import './float-position.scss';
 import './conditional-visibility';

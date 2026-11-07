@@ -1,0 +1,26 @@
+// Editor-canvas preview for the float-position extension (float-position.js).
+// The frontend rules are emitted per instance by includes/float-position.php;
+// these mirror them for the tier the editor is previewing.
+.sgs-float-position--static {
+	position: static;
+	top: auto;
+	right: auto;
+	bottom: auto;
+	left: auto;
+}
+
+.sgs-float-position--relative,
+.sgs-float-position--absolute {
+	top: var(--sgs-float-top, auto);
+	right: var(--sgs-float-right, auto);
+	bottom: var(--sgs-float-bottom, auto);
+	left: var(--sgs-float-left, auto);
+}
+
+.sgs-float-position--relative {
+	position: relative;
+}
+
+.sgs-float-position--absolute {
+	position: absolute;
+}

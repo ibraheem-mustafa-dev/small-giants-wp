@@ -96,6 +96,13 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 			/>
 			<ToggleControl
+				label={ __( 'Show the Open now / Closed pill', 'sgs-blocks' ) }
+				help={ __( 'Off prints the closing or opening line on its own, for a card that already shows the status elsewhere.', 'sgs-blocks' ) }
+				checked={ false !== attributes.openStatusShowPill }
+				onChange={ ( val ) => setAttributes( { openStatusShowPill: val } ) }
+				__nextHasNoMarginBottom
+			/>
+			<ToggleControl
 				label={ __( 'Pulse the dot while open', 'sgs-blocks' ) }
 				help={ __( 'An endless expanding ring around the dot while the business is open. It does not play for visitors who ask their device for reduced motion.', 'sgs-blocks' ) }
 				checked={ !! attributes.openStatusDotPulse }

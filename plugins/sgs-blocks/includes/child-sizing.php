@@ -5,12 +5,14 @@
  * The server half of `src/blocks/extensions/child-sizing.js`. A block that
  * lists `childSizing` in `supports.sgs.enabledExtensions` gets two per-device
  * attributes:
- *   - `sgsChildSizing` {desktop,tablet,mobile}: 'fit' | 'fill' | 'fixed'
+ *   - `sgsChildSizing` {desktop,tablet,mobile}: 'fit' | 'fill' | 'fixed' | 'span'
  *     ('' or missing on desktop = the block's own natural sizing; a blank
  *     tablet/mobile tier inherits the tier above);
  *   - `sgsChildWidth`  {desktop,tablet,mobile}: a CSS length, or 'auto' (the block's natural size, which never
  *     shrinks), read by 'fixed'.
  *
+ * 'span' takes the whole row of a grid parent (`grid-column:1/-1`) and prints no
+ * flex declarations; every other tier then resets the span (`grid-column:auto`).
  * 'fill' takes the space left over in the row (`flex:1 1 0%`), so the
  * siblings keep their natural size and this block gets the rest; 'fit' sizes
  * to the content (and, in a column, no longer stretches across it); 'fixed' holds the given width. The rules land on the
@@ -64,9 +66,28 @@ function child_sizing_tier_width( string $mode, string $raw ): string {
  * @param string $width     Sanitised CSS length ('' when unset).
  * @param bool   $any_fixed Whether any tier uses a fixed width, so 'fit' and
  *                          'fill' must also cancel that width at their tier.
+ * @param bool   $any_span  Whether any tier spans the row, so every other tier
+ *                          must also cancel the grid span (`grid-column:auto`).
  * @return string Declarations without braces ('' = emit nothing).
  */
-function child_sizing_declarations( string $mode, string $width, bool $any_fixed ): string {
+function child_sizing_declarations( string $mode, string $width, bool $any_fixed, bool $any_span = false ): string {
+	if ( 'span' === $mode ) {
+		// The whole row of a grid parent; no flex declarations.
+		return 'grid-column:1/-1;';
+	}
+	$decls = child_sizing_flex_declarations( $mode, $width, $any_fixed );
+	return $any_span ? 'grid-column:auto;' . $decls : $decls;
+}
+
+/**
+ * The flex declarations for 'fit' | 'fill' | 'fixed' | '' (natural).
+ *
+ * @param string $mode      Resolved mode.
+ * @param string $width     Sanitised CSS length ('' when unset).
+ * @param bool   $any_fixed Whether any tier uses a fixed width.
+ * @return string
+ */
+function child_sizing_flex_declarations( string $mode, string $width, bool $any_fixed ): string {
 	$reset_width = $any_fixed ? 'width:auto;max-width:none;' : '';
 	switch ( $mode ) {
 		case 'fill':
@@ -125,12 +146,14 @@ function inject_child_sizing( $block_content, $block ) {
 
 	$resolved  = array();
 	$any_fixed = false;
+	$any_span  = false;
 	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
 		$mode              = (string) sgs_resolve_tier( $modes, $tier, '' )['value'];
-		$mode              = in_array( $mode, array( 'fit', 'fill', 'fixed' ), true ) ? $mode : '';
+		$mode              = in_array( $mode, array( 'fit', 'fill', 'fixed', 'span' ), true ) ? $mode : '';
 		$width             = child_sizing_tier_width( $mode, (string) sgs_resolve_tier( $widths, $tier, '' )['value'] );
 		$resolved[ $tier ] = array( $mode, $width );
 		$any_fixed         = $any_fixed || ( 'fixed' === $mode && '' !== $width );
+		$any_span          = $any_span || 'span' === $mode;
 	}
 
 	// One state key per tier (mode + width) so the shared tier emitter can
@@ -140,49 +163,16 @@ function inject_child_sizing( $block_content, $block ) {
 	foreach ( $resolved as $tier => $pair ) {
 		$key             = $pair[0] . '|' . $pair[1];
 		$states[ $tier ] = $key;
-		$css_by[ $key ]  = child_sizing_declarations( $pair[0], $pair[1], $any_fixed );
+		$css_by[ $key ]  = child_sizing_declarations( $pair[0], $pair[1], $any_fixed, $any_span );
 	}
 	if ( '' === implode( '', $css_by ) ) {
 		return $block_content;
 	}
 
-	// Skip any leading <style>/<script> a block prepends to reach its real root.
-	$offset = 0;
-	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $offset ), $lead ) ) {
-		$close     = '</' . strtolower( $lead[1] ) . '>';
-		$close_pos = stripos( $block_content, $close, $offset );
-		if ( false === $close_pos ) {
-			return $block_content;
-		}
-		$offset = $close_pos + strlen( $close );
-	}
-	$head = substr( $block_content, 0, $offset );
-	$root = substr( $block_content, $offset );
-
-	$root_tag = sgs_extract_root_opening_tag( ltrim( $root ) );
-	if ( '' === $root_tag ) {
-		return $block_content;
-	}
-	// The scope reuses the block's own uid class when it has one; add it only
-	// when it was freshly minted.
 	$css_for = static function ( string $scope_class ) use ( $states, $css_by ): string {
 		return sgs_emit_tier_rules_map( '.sgs-child-sizing.' . $scope_class, $states, $css_by, '', '|' );
 	};
-	$scope   = sgs_scope_class_for_root( $root_tag, 'sgs-child-sizing', $css_for );
-	$has_uid = (bool) preg_match( '/\bclass=["\'][^"\']*\b' . preg_quote( $scope, '/' ) . '\b/', $root_tag );
-	$classes = $has_uid ? 'sgs-child-sizing' : 'sgs-child-sizing ' . $scope;
-
-	if ( preg_match( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', $root ) ) {
-		$root = preg_replace( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', '$1' . $classes . ' ', $root, 1 );
-	} else {
-		$root = preg_replace( '/^(\s*<\w+)(\b)/', '$1 class="' . $classes . '"$2', $root, 1 );
-	}
-
-	// Two classes (marker + scope) so a per-instance choice outranks a block's
-	// own single-class sizing default such as `.sgs-button--full`.
-	$css = $css_for( $scope );
-	if ( '' === $css ) {
-		return $head . $root;
-	}
-	return $head . $root . '<style>' . wp_strip_all_tags( $css ) . '</style>';
+	// Two classes (marker + scope) so a per-instance choice outranks a block's own single-class sizing default
+	// such as `.sgs-button--full`.
+	return sgs_inject_scoped_rules( $block_content, 'sgs-child-sizing', $css_for );
 }

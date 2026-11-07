@@ -59,6 +59,10 @@ import CollectionEmptyConditionControl, {
 	isCollectionEmptyConditionActive,
 	collectionEmptyConditionSummary,
 } from './CollectionEmptyConditionControl';
+import FormAnswerConditionControl, {
+	isFormAnswerConditionActive,
+	formAnswerConditionSummary,
+} from './FormAnswerConditionControl';
 
 /**
  * Guard against double registration.
@@ -249,6 +253,10 @@ function buildConditionSummary( attributes ) {
 		parts.push( collectionEmptyConditionSummary( attributes ) );
 	}
 
+	if ( isFormAnswerConditionActive( attributes ) ) {
+		parts.push( formAnswerConditionSummary( attributes ) );
+	}
+
 	return parts.join( ' · ' );
 }
 
@@ -268,7 +276,8 @@ function hasActiveCondition( attributes ) {
 		!! attributes.sgsConditionUrlParam ||
 		!! attributes.sgsConditionReferrer ||
 		'none' !== attributes.sgsConditionProductReviews ||
-		isCollectionEmptyConditionActive( attributes )
+		isCollectionEmptyConditionActive( attributes ) ||
+		isFormAnswerConditionActive( attributes )
 	);
 }
 
@@ -640,6 +649,13 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 
 							{ /* ─── Related product collection is empty ─── */ }
 							<CollectionEmptyConditionControl
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+							/>
+
+							{ /* ─── Form answer (blocks inside an sgs/form) ─── */ }
+							<FormAnswerConditionControl
+								clientId={ clientId }
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 							/>

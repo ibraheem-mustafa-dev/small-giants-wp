@@ -374,11 +374,10 @@ foreach ( $text_targets as list( $text_suffix, $text_align, $own_normal, $own_ho
 	);
 }
 
-// Date letter case: style.scss draws the date in uppercase; a set value replaces it.
-$date_text_transform = (string) ( $attributes['dateTextTransform'] ?? '' );
-if ( in_array( $date_text_transform, array( 'none', 'uppercase', 'lowercase', 'capitalize' ), true ) ) {
-	$scoped_css[] = $root_sel . ' .sgs-timeline__date{text-transform:' . $date_text_transform . ';}';
-}
+// Date and description typography (size, line height, spacing, family, weight, style, letter case, text stroke) through
+// the shared typography emitter; style.scss draws the date in uppercase and a set letter case replaces it.
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'date', $root_sel . ' .sgs-timeline__date', '', false, false, sgs_object_attr_keys( $block ) );
+$scoped_css[] = sgs_typography_css_rule( $attributes, 'descriptionText', $description_sel, '', false, false, sgs_object_attr_keys( $block ) );
 
 // Two-state link colour (Task 3, 2026-09-07) — the per-entry description
 // field permits `core/link`, so a linked selection needs its own colour.
@@ -526,6 +525,14 @@ if ( 'vertical' === $orientation ) {
 	// layout. 'end' (content right, date left) is the base same-side rule in
 	// style.scss and needs no class; only 'start' gets one.
 	if ( 'same-side' === $content_layout && 'start' === $content_side ) {
+		$wrapper_classes[] = 'sgs-timeline--side-start';
+	}
+} elseif ( 'same-side' === $content_layout ) {
+	// A horizontal timeline reads the same two settings: 'same-side' turns each entry into a two-column card (text on
+	// one side, the image on the other) from 768px up; contentSide 'start' puts the text on the start side. The other
+	// two layouts mean nothing for a row of cards and print no class.
+	$wrapper_classes[] = 'sgs-timeline--content-same-side';
+	if ( 'start' === $content_side ) {
 		$wrapper_classes[] = 'sgs-timeline--side-start';
 	}
 }
@@ -744,18 +751,136 @@ foreach (
 	$scoped_css[] = sgs_emit_responsive_css( $root_sel . ' ' . $part_target[0], $part_specs );
 }
 
-// Swipeable-card width: a per-device percentage the carousel layout reads (style.scss, `--sgs-timeline-card-width`).
-if ( 'carousel' === $mobile_layout && ! empty( $attributes['cardWidth'] ) && is_array( $attributes['cardWidth'] ) ) {
+// Card width: a per-device number. The swipeable layout (767px and below) reads it as a percentage of the row
+// (`--sgs-timeline-card-width`); the horizontal timeline at 768px and up reads it as a percentage of the viewport
+// width (`--sgs-timeline-card-width-vw`), because its row is as wide as its cards.
+$card_width_specs = array();
+if ( 'carousel' === $mobile_layout ) {
+	$card_width_specs[] = array(
+		'value'        => $attributes['cardWidth'] ?? array(),
+		'css'          => '--sgs-timeline-card-width',
+		'unit_default' => '%',
+	);
+}
+if ( 'horizontal' === $orientation ) {
+	$card_width_specs[] = array(
+		'value'        => $attributes['cardWidth'] ?? array(),
+		'css'          => '--sgs-timeline-card-width-vw',
+		'unit_default' => 'vw',
+	);
+	$card_width_specs[] = array(
+		'value' => $attributes['cardMaxWidth'] ?? array(),
+		'css'   => 'max-width',
+	);
+}
+foreach ( $card_width_specs as $card_width_spec ) {
+	if ( ! empty( $card_width_spec['value'] ) && is_array( $card_width_spec['value'] ) ) {
+		$scoped_css[] = sgs_emit_responsive_css( 'max-width' === $card_width_spec['css'] ? $root_sel . ' .sgs-timeline__entry' : $root_sel, array( $card_width_spec ) );
+	}
+}
+
+// Entry card box (horizontal orientation only): background, border, radius, shadow and padding of each entry.
+$entry_sel = $root_sel . ' .sgs-timeline__entry';
+if ( 'horizontal' === $orientation ) {
+	$card_border = sgs_border_element_decls(
+		$attributes,
+		'card',
+		$entry_sel,
+		array(
+			'colour'     => array(
+				'base'     => 'cardBorderColour',
+				'gradient' => 'cardBorderColourGradient',
+			),
+			'ring_width' => '1px',
+		)
+	);
+	$card_decls  = $card_border['base'];
+	$card_paint  = sgs_background_paint_decl( (string) ( $attributes['cardBackgroundColour'] ?? '' ), (string) ( $attributes['cardBackgroundColourGradient'] ?? '' ) );
+	if ( '' !== $card_paint ) {
+		$card_decls[] = $card_paint;
+	}
+	$card_shadow = sgs_shadow_decls(
+		$attributes,
+		array(
+			'base'   => 'cardShadow',
+			'colour' => 'cardShadowColour',
+		),
+		( $block instanceof \WP_Block ) ? (string) $block->name : ''
+	);
+	$card_decls  = array_merge( $card_decls, $card_shadow['normal'] );
+	if ( $card_decls ) {
+		$scoped_css[] = "{$entry_sel}{" . implode( ';', $card_decls ) . ';}';
+	}
+	$scoped_css = array_merge( $scoped_css, $card_border['rules'] );
+	if ( $card_border['tablet'] ) {
+		$scoped_css[] = sgs_emit_tier_decls( $entry_sel, array( 'tablet' => $card_border['tablet'] ) );
+	}
+	if ( $card_border['mobile'] ) {
+		$scoped_css[] = sgs_emit_tier_decls( $entry_sel, array( 'mobile' => $card_border['mobile'] ) );
+	}
+	if ( ! empty( $attributes['cardColumnGap'] ) && is_array( $attributes['cardColumnGap'] ) ) {
+		$scoped_css[] = sgs_emit_responsive_css( $entry_sel, array( array( 'value' => $attributes['cardColumnGap'], 'css' => 'column-gap', 'unit_default' => 'px' ) ) );
+	}
+	// The card padding prints as the real padding and as `--sgs-tl-card-pad-<side>`: the stylesheet's first/last-entry and
+	// swipeable-card padding rules read the custom properties, so a set padding wins there without a specificity contest.
+	if ( ! empty( $attributes['cardPadding'] ) && is_array( $attributes['cardPadding'] ) ) {
+		$scoped_css[] = sgs_emit_responsive_css(
+			$entry_sel,
+			array(
+				array(
+					'value'        => $attributes['cardPadding'],
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+				array(
+					'value'        => $attributes['cardPadding'],
+					'css'          => '--sgs-tl-card-pad',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+	}
+}
+
+// Entry image slot: a per-device aspect ratio (the picture fills and crops to it) and corner radius.
+$media_sel   = $root_sel . ' .sgs-timeline__media-slot';
+$media_clip  = false;
+$media_ratio = ! empty( $attributes['mediaAspectRatio'] ) && is_array( $attributes['mediaAspectRatio'] );
+if ( $media_ratio ) {
 	$scoped_css[] = sgs_emit_responsive_css(
-		$root_sel,
+		$media_sel,
 		array(
 			array(
-				'value'        => $attributes['cardWidth'],
-				'css'          => '--sgs-timeline-card-width',
-				'unit_default' => '%',
+				'value'     => $attributes['mediaAspectRatio'],
+				'css'       => 'aspect-ratio',
+				'transform' => static function ( $raw ) {
+					return preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:\/\s*(\d+(?:\.\d+)?)\s*)?$/', (string) $raw, $ratio_parts ) && (float) $ratio_parts[1] > 0 && (float) ( $ratio_parts[2] ?? 1 ) > 0
+						? $ratio_parts[1] . ( isset( $ratio_parts[2] ) && '' !== $ratio_parts[2] ? ' / ' . $ratio_parts[2] : '' )
+						: '';
+				},
 			),
 		)
 	);
+	$scoped_css[] = $media_sel . ' .sgs-timeline__media{height:100%;}';
+	$media_clip   = true;
+}
+$media_radius = sgs_border_element_decls( $attributes, 'media', $media_sel, array( 'radius' => 'mediaBorderRadius' ) );
+if ( $media_radius['base'] || $media_radius['tablet'] || $media_radius['mobile'] ) {
+	$media_clip = true;
+}
+if ( $media_radius['base'] ) {
+	$scoped_css[] = "{$media_sel}{" . implode( ';', $media_radius['base'] ) . ';}';
+}
+if ( $media_radius['tablet'] ) {
+	$scoped_css[] = sgs_emit_tier_decls( $media_sel, array( 'tablet' => $media_radius['tablet'] ) );
+}
+if ( $media_radius['mobile'] ) {
+	$scoped_css[] = sgs_emit_tier_decls( $media_sel, array( 'mobile' => $media_radius['mobile'] ) );
+}
+if ( $media_clip ) {
+	$scoped_css[] = $media_sel . '{overflow:hidden;}';
 }
 
 require __DIR__ . '/horizontal-panel.php';

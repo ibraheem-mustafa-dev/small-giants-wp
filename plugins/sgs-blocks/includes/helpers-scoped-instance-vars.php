@@ -36,6 +36,7 @@ const SGS_SCOPE_PLACEHOLDER = 'sgs-scope-placeholder';
  */
 const SGS_MINTED_SCOPE_PREFIXES = array(
 	'sgs-child-sizing',
+	'sgs-float-position',
 	'sgs-imgctl',
 	'sgs-fxpath',
 	'sgs-fxshape',
@@ -157,4 +158,48 @@ function sgs_extract_root_opening_tag( string $root_and_beyond ): string {
 		return $tag_match[0];
 	}
 	return '';
+}
+
+/**
+ * Add a marker class and a scope class to a block's root element and append the scoped rules as the block's own
+ * `<style>` tag (never a `style=""` attribute). Any leading `<style>`/`<script>` the block prepends is skipped to
+ * reach the real root. The scope reuses the block's own uid class when it has one.
+ *
+ * @param string   $block_content Rendered block HTML.
+ * @param string   $marker        Marker class and minted-scope prefix (in SGS_MINTED_SCOPE_PREFIXES).
+ * @param callable $css_for       Receives the scope class (no dot), returns the scoped CSS ('' = emit nothing).
+ * @return string Block HTML with the classes and the rules added.
+ */
+function sgs_inject_scoped_rules( string $block_content, string $marker, callable $css_for ): string {
+	$offset = 0;
+	while ( preg_match( '/^\s*<(style|script)\b[^>]*>/i', substr( $block_content, $offset ), $lead ) ) {
+		$close     = '</' . strtolower( $lead[1] ) . '>';
+		$close_pos = stripos( $block_content, $close, $offset );
+		if ( false === $close_pos ) {
+			return $block_content;
+		}
+		$offset = $close_pos + strlen( $close );
+	}
+	$head = substr( $block_content, 0, $offset );
+	$root = substr( $block_content, $offset );
+
+	$root_tag = sgs_extract_root_opening_tag( ltrim( $root ) );
+	if ( '' === $root_tag ) {
+		return $block_content;
+	}
+	$scope   = sgs_scope_class_for_root( $root_tag, $marker, $css_for );
+	$has_uid = (bool) preg_match( '/\bclass=["\'][^"\']*\b' . preg_quote( $scope, '/' ) . '\b/', $root_tag );
+	$classes = $has_uid ? $marker : $marker . ' ' . $scope;
+
+	if ( preg_match( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', $root ) ) {
+		$root = preg_replace( '/^(\s*<\w+\b[^>]*\bclass=["\'])/', '$1' . $classes . ' ', $root, 1 );
+	} else {
+		$root = preg_replace( '/^(\s*<\w+)(\b)/', '$1 class="' . $classes . '"$2', $root, 1 );
+	}
+
+	$css = $css_for( $scope );
+	if ( '' === $css ) {
+		return $head . $root;
+	}
+	return $head . $root . '<style>' . wp_strip_all_tags( $css ) . '</style>';
 }

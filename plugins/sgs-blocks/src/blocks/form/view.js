@@ -648,7 +648,7 @@ function evaluateCondition( formRoot, watchName, operator, expected ) {
 }
 
 /**
- * Apply conditional logic to all fields with data-conditional-field set.
+ * Apply conditional logic to every element with data-conditional-field set (a field, or any other block inside the form).
  *
  * Called on init and on every change event within the form.
  *
@@ -656,7 +656,7 @@ function evaluateCondition( formRoot, watchName, operator, expected ) {
  */
 function applyConditionalLogic( formRoot ) {
 	const conditionalFields = formRoot.querySelectorAll(
-		'.sgs-form-field[data-conditional-field]'
+		'[data-conditional-field]'
 	);
 
 	conditionalFields.forEach( ( fieldEl ) => {

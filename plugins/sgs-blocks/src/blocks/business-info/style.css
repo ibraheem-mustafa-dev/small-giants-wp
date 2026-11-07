@@ -434,7 +434,7 @@
 /* ── Open status ─────────────────────────────────────────────────────────────
    view.js sets data-state="open|closed" on the root once it has worked the status out; until
    then the server's plain hours text shows and the pill stays hidden. The dot and pill colours
-   are the --sgs-os-* custom properties (block attributes), each with a default here. The pill
+   are the --sgs-os-* custom properties (block attributes), each with a default here (green open, amber closed). The pill
    text and tint follow the surrounding text colour so it reads on a light or a dark ground, and
    state is carried by the words as well as the dot colour. */
 .sgs-open-status {
@@ -444,7 +444,7 @@
 }
 
 .sgs-open-status[data-state="closed"] {
-	--sgs-os-dot: var(--sgs-os-closed-dot, #ef4444);
+	--sgs-os-dot: var(--sgs-os-closed-dot, #e8a13a);
 	--sgs-os-pill-text: var(--sgs-os-closed-text, currentColor);
 	--sgs-os-pill-bg: var(--sgs-os-closed-bg, color-mix(in srgb, currentColor 12%, transparent));
 }

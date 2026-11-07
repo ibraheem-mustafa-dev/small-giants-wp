@@ -74,6 +74,7 @@
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",
 						"css:gap": "gap",
+						"css:grid-template-columns": "listColumns",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:background-color-gradient": "backgroundColourGradient"
 					},
@@ -110,6 +111,19 @@
 					},
 					"absentIn": [ "bullet-plain" ],
 					"absentWhy": "The icon span prints only for the icon and emoji marker types; bullet and number markers are list styling."
+				},
+				"marker": {
+					"selector": ".sgs-icon-list__item::before",
+					"label": "Round dot marker",
+					"order": 3,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:width": "markerSize",
+						"css:inset-inline-start": "markerOffset"
+					},
+					"_note": "The CSS-drawn round dot beside each row of a bullet list, printed only when `markerSize` is set (otherwise the bullet is the browser's native disc). Its colour is the block-level `iconColour`; the text offset is the root's `markerOffset` (padding-inline-start on the list, the dot sits in that space)."
 				},
 				"item": {
 					"label": "Each item row",
@@ -432,6 +446,21 @@
 		"iconSize": {
 			"type": "string",
 			"default": "medium"
+		},
+		"listColumns": {
+			"type": "object",
+			"default": {},
+			"description": "How many columns the list's rows sit in, per device {desktop,tablet,mobile}. Each tier is a whole number from 1 to 6; an empty tier inherits the tier below. Unset keeps the single stacked column."
+		},
+		"markerSize": {
+			"type": "string",
+			"default": "",
+			"description": "Diameter of the round dot marker of a bullet list (a CSS length, e.g. \"6px\"). Empty keeps the browser's native disc. The dot is painted in iconColour."
+		},
+		"markerOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the list's left edge to where the text of each row starts, for the round dot marker (a CSS length, e.g. \"16px\"). Empty uses 1.25em. Only applies when markerSize is set."
 		},
 		"iconBackgroundColour": {
 			"type": "string",

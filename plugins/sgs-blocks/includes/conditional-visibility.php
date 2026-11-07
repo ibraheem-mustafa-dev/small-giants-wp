@@ -260,6 +260,12 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 		}
 	}
 
+	// Condition 10: a form answer decides in the visitor's browser (view.js), so the block renders with
+	// data-conditional-* attributes and the form shows or hides it.
+	if ( ! empty( $attrs['sgsConditionFormField'] ) ) {
+		$block_content = inject_form_answer_condition( $block_content, $attrs );
+	}
+
 	// All conditions passed — render the block normally.
 	return $block_content;
 }

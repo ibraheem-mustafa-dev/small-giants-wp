@@ -45,7 +45,8 @@
 			"boxFamilies": {
 				"padding": [
 					"padding",
-					"contentPadding"
+					"contentPadding",
+					"cardPadding"
 				],
 				"margin": [
 					"margin",
@@ -54,10 +55,13 @@
 					"descriptionMargin"
 				],
 				"borderRadius": [
-					"borderRadius"
+					"borderRadius",
+					"cardBorderRadius",
+					"mediaBorderRadius"
 				],
 				"borderWidth": [
-					"borderWidth"
+					"borderWidth",
+					"cardBorderWidth"
 				]
 			},
 			"elements": {
@@ -182,13 +186,22 @@
 						"css:margin": "dateMargin",
 						"css:color": "dateColour",
 						"css:color-gradient": "dateColourGradient",
-						"css:text-transform": "dateTextTransform"
+						"css:text-transform": "dateTextTransform",
+						"css:font-size": "dateFontSize",
+						"css:line-height": "dateLineHeight",
+						"css:letter-spacing": "dateLetterSpacing",
+						"css:font-family": "dateFontFamily",
+						"css:font-weight": "dateFontWeight",
+						"css:font-style": "dateFontStyle",
+						"css:-webkit-text-stroke-width": "dateTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "dateTextStrokeColour"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:color": "dateColourHover",
-								"css:color-gradient": "dateColourHoverGradient"
+								"css:color-gradient": "dateColourHoverGradient",
+								"css:-webkit-text-stroke-color": "dateTextStrokeColourHover"
 							}
 						}
 					},
@@ -207,7 +220,12 @@
 					"attrMap": {
 						"css:margin": "descriptionMargin",
 						"css:color": "descriptionTextColour",
-						"css:color-gradient": "descriptionTextColourGradient"
+						"css:color-gradient": "descriptionTextColourGradient",
+						"css:font-size": "descriptionTextFontSize",
+						"css:line-height": "descriptionTextLineHeight",
+						"css:font-family": "descriptionTextFontFamily",
+						"css:font-weight": "descriptionTextFontWeight",
+						"css:font-style": "descriptionTextFontStyle"
 					},
 					"states": {
 						"hover": {
@@ -287,7 +305,8 @@
 						"css:text-decoration-offset-link": "descriptionLinkUnderlineOffset",
 						"css:min-height": "milestoneMinHeight",
 						"css:margin-bottom": "entryGap",
-						"css:flex-basis": "cardWidth"
+						"css:flex-basis": "cardWidth",
+						"css:max-width": "cardMaxWidth"
 					},
 					"states": {
 						"hover": {
@@ -298,12 +317,44 @@
 					},
 					"_note": "Per-entry fields (date/title/description/icon/image) are plain repeater content from the `entries` array — no independent per-entry style controls exist beyond the block-wide title/date/connector colours above. `supports.sgs.imageControls` was removed 2026-08-11 (Spec 35 capability-routing doctrine) — the per-entry image renders at natural/auto size with no crop box, so object-fit/position never applied; the declaration was dead weight, not a manifest element. Mirrors sgs/accordion's `item` element and sgs/quote's `quote-body`. Task 3 (2026-08-30) maps `milestoneMinHeight`/`entryGap` here: both are genuine CSS custom-property VALUES routed via the scoped `<style>` (Spec 32), same convention as `connectorColour`/`dateColour` above. `milestoneSize` is deliberately NOT mapped — it is a layout-MODE selector, not a CSS property, and this block maps none of its siblings (`orientation`, `contentLayout`, `mobileLayout`, `rowStripes`). A first draft invented a bare `variant` attrMap key for it; measured against the whole tree, 46 of the 47 non-`css:`/`native:` attrMap keys are `anim:*` and `variant` had zero precedent, with no reader for it in audit-element-manifest or sgs-update. Mode selectors belong in the ORPHAN:BY-DESIGN bucket the audit already uses for `iconPosition`/`tileShape`/`logoFit`/`labelCollapse`, not in attrMap. ⚠ The design doc §8 predicted these new attributes would need a cross-track `/sgs-update` reseed. MEASURED: they do not. `check-element-manifest-conformance` failed only because this element declared `\"clusters\": []`, so an attrMap entry on it had no cluster member to be claimed by; regenerating `attr-role-map.json` alone did NOT clear it (that map derives from the DB, which does not know a brand-new attribute). Declaring the `layout` cluster took UNCLASSIFIED to 0 with no DB write at all."
 				},
+				"card": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card (horizontal)",
+					"order": 1,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "card",
+					"attrMap": {
+						"css:background-color": "cardBackgroundColour",
+						"css:background-image": "cardBackgroundColourGradient",
+						"css:padding": "cardPadding",
+						"css:border-radius": "cardBorderRadius",
+						"css:border-width": "cardBorderWidth",
+						"css:border-color": "cardBorderColour",
+						"css:border-color-gradient": "cardBorderColourGradient",
+						"css:border-style": "cardBorderStyle",
+						"css:box-shadow": "cardShadow",
+						"css:column-gap": "cardColumnGap"
+					},
+					"_note": "The card box of each entry in a horizontal timeline (background, padding, border, radius, shadow), printed on the entry element only when orientation is horizontal. With contentLayout 'same-side' the entry also becomes a two-column card (text on one side, media on the other, contentSide choosing the text side) from 768px up.",
+					"absentIn": [ "vertical" ],
+					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
 				"image": {
 					"selector": ".sgs-timeline__media-slot",
 					"label": "Entry image",
 					"order": 4,
-					"clusters": [],
-					"_note": "The picture (or video or SVG) each entry prints opposite its text. A motion target only: the entry image takes entrance and hover from the Motion panel, and no block attribute styles it.",
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:aspect-ratio": "mediaAspectRatio",
+						"css:border-radius": "mediaBorderRadius"
+					},
+					"_note": "The picture (or video or SVG) each entry prints opposite its text. The entry image takes entrance and hover from the Motion panel; mediaAspectRatio crops the slot to a ratio per device and mediaBorderRadius rounds it.",
 					"absentIn": [ "progress", "plain" ],
 					"absentWhy": "The entry image renders only for an entry that has an image; these paths render entries without one."
 				},
@@ -1321,10 +1372,154 @@
 				}
 			}
 		},
+		"cardBackgroundColour": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: background colour of each entry card. Empty keeps the entry transparent."
+		},
+		"cardBackgroundColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"cardPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: padding inside each entry card, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). Empty keeps the stylesheet padding."
+		},
+		"cardBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: corner radius of each entry card, per device."
+		},
+		"cardBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: border width of each entry card (per-side box, or a tier object of boxes)."
+		},
+		"cardBorderStyle": {
+			"type": "string",
+			"default": "solid",
+			"enum": ["none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset"]
+		},
+		"cardBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColourGradient": {
+			"type": "string",
+			"default": ""
+		},
+		"cardShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card (the shared ShadowControl value)."
+		},
+		"cardShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"cardColumnGap": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline, text-beside-image cards: the gap between the text column and the image column, per device ({desktop,tablet,mobile} tier object of CSS lengths). Empty keeps the theme spacing. The image column is as wide as milestoneMediaWidth."
+		},
+		"cardMaxWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: the widest an entry card may grow, per device ({desktop,tablet,mobile} tier object of CSS lengths such as 900px). Empty means no cap."
+		},
+		"mediaAspectRatio": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot aspect ratio per device ({desktop,tablet,mobile} tier object of ratios such as \"4 / 5\"). Empty keeps the image at its natural shape."
+		},
+		"mediaBorderRadius": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot corner radius per device ({desktop,tablet,mobile} tier object of corner boxes)."
+		},
+		"dateFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"dateFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"dateFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"dateFontStyle": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "normal", "italic"]
+		},
+		"dateLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"dateLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"dateTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"dateTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"dateTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"descriptionTextFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"descriptionTextFontStyle": {
+			"type": "string",
+			"default": "",
+			"enum": ["", "normal", "italic"]
+		},
+		"descriptionTextLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"descriptionTextLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
 		"cardWidth": {
 			"type": "object",
 			"default": {},
-			"description": "Swipeable-cards layout (767px and below): width of each card as a percentage of the row, per device tier {desktop,tablet,mobile}. Empty keeps 85% up to 320px.",
+			"description": "Width of each card as a percentage, per device tier {desktop,tablet,mobile}. Swipeable cards (767px and below): a percentage of the row. Horizontal timeline at 768px and up: a percentage of the viewport width. Empty keeps 85% up to 320px on phones and 220px on larger screens.",
 			"sgs": {
 				"meaning": {
 					"what": "Sets how wide each swipeable timeline card is, so the next card peeks in from the side.",

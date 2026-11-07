@@ -34,7 +34,8 @@
 				}
 			},
 			"enabledExtensions": [
-				"childSizing"
+				"childSizing",
+				"floatPosition"
 			],
 			"iconPicker": true,
 			"boxFamilies": {

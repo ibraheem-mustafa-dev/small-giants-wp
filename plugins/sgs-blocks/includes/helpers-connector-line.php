@@ -63,11 +63,12 @@ if ( ! function_exists( 'sgs_connector_line_decls' ) ) {
 
 		$decls[] = $size_prop . ':0';
 		$decls[] = 'background:none';
-		$decls[] = 'border-style:' . $style;
 		if ( '' !== $colour ) {
 			$decls[] = 'border-color:' . $colour;
 		}
-		if ( '' !== $thickness ) {
+		$has_border_width = '' !== $thickness;
+		if ( $has_border_width ) {
+			$decls[] = 'border-style:' . $style;
 			$decls[] = 'border-width:0';
 			$decls[] = $side . '-width:' . $thickness;
 		}

@@ -93,18 +93,8 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 	}
 
 	$data_attrs = '';
-
-	if ( ! empty( $conditional_field ) ) {
-		$operator = $attributes['conditionalOperator'] ?? 'equals';
-		$value    = $attributes['conditionalValue'] ?? '';
-
-		// The watched field submits under its fieldName cleaned by sanitize_key() (field_submission_name()).
-		$data_attrs = sprintf(
-			' data-conditional-field="%s" data-conditional-operator="%s" data-conditional-value="%s"',
-			esc_attr( sanitize_key( (string) $conditional_field ) ),
-			esc_attr( $operator ),
-			esc_attr( $value )
-		);
+	foreach ( \SGS\Blocks\conditional_data_attributes( $attributes ) as $key => $value ) {
+		$data_attrs .= sprintf( ' %s="%s"', $key, esc_attr( $value ) );
 	}
 
 	$wrapper_attributes = get_block_wrapper_attributes(

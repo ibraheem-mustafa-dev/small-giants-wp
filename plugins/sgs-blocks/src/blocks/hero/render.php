@@ -1113,6 +1113,18 @@ $classes = array(
 	$uid,
 );
 
+// A split hero whose alignItems is set to anything but stretch positions its
+// media box itself (the box then sizes to its content instead of filling the row).
+if ( $is_split ) {
+	$hero_align_items_tiers = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
+	foreach ( $hero_align_items_tiers as $hero_align_items_value ) {
+		if ( is_string( $hero_align_items_value ) && '' !== $hero_align_items_value && 'stretch' !== $hero_align_items_value ) {
+			$classes[] = 'sgs-hero--media-aligned';
+			break;
+		}
+	}
+}
+
 // NO-INLINE: this block emits zero inline style property declarations.
 // Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
 // (composite caveat, per the migration contract: do NOT pass these as wrapper

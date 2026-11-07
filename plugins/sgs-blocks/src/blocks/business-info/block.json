@@ -115,6 +115,22 @@
 				}
 			}
 		},
+		"openStatusShowPill": {
+			"type": "boolean",
+			"default": true,
+			"description": "Only read by displayType 'open-status'. Prints the Open now or Closed pill. Off prints the line alone.",
+			"sgs": {
+				"meaning": {
+					"what": "Shows or hides the Open now or Closed pill of the open-status display, leaving the closing or opening line.",
+					"trigger": "always, in the open-status display",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
+		},
 		"openStatusOpenDot": {
 			"type": "string",
 			"default": "",

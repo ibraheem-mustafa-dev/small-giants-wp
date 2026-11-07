@@ -140,8 +140,8 @@ function ScrollLengthControl( { label, help, value, min = 0, max = 400, onChange
 export function CardWidthControl( { attributes, setAttributes } ) {
 	return (
 		<ScrollLengthControl
-			label={ __( 'Swipeable card width (%)', 'sgs-blocks' ) }
-			help={ __( 'How much of the row each card fills at 767px and below; the rest shows the next card. Empty keeps 85% up to 320px.', 'sgs-blocks' ) }
+			label={ __( 'Card width (%)', 'sgs-blocks' ) }
+			help={ __( 'Phones (767px and below, swipeable cards): the share of the row each card fills; empty keeps 85% up to 320px. Horizontal timeline at 768px and up: the share of the screen width each card fills; empty keeps 220px.', 'sgs-blocks' ) }
 			value={ attributes.cardWidth }
 			min={ 30 }
 			max={ 100 }

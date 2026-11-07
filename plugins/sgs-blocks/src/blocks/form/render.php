@@ -417,6 +417,23 @@ if ( ! empty( $submit_box_decls ) ) {
 	$sgs_form_supports_css .= '.' . $sgs_form_uid . ' .sgs-form__button--submit{' . implode( ';', $submit_box_decls ) . '}';
 }
 
+// Submit button border and radius: the shared sgs_button_element_style_css() reads only the
+// border keys handed to it, so the submit colour, fill and padding keep their own emitters above.
+$sgs_form_submit_border_css = sgs_button_element_style_css(
+	array_intersect_key(
+		$attributes,
+		array_flip( array( 'submitColourBorder', 'submitColourBorderHover', 'submitBorderStyle', 'submitBorderWidth', 'submitBorderRadius' ) )
+	),
+	'submit',
+	'.' . $sgs_form_uid . ' .sgs-form__button--submit'
+);
+if ( '' !== $sgs_form_submit_border_css ) {
+	if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+		$sgs_form_supports_classes[] = $sgs_form_uid;
+	}
+	$sgs_form_supports_css .= $sgs_form_submit_border_css;
+}
+
 // Submit button resting shadow, hover shadow and hover lift (sgs_form_submit_motion_css): unset
 // prints nothing.
 $sgs_form_submit_motion = sgs_form_submit_motion_css( '.' . $sgs_form_uid . ' .sgs-form__button--submit', $attributes, $block->name ?? '' );
@@ -970,6 +987,17 @@ if ( '' !== $sgs_form_next_css ) {
 		$sgs_form_supports_classes[] = $sgs_form_uid;
 	}
 	$sgs_form_supports_css .= $sgs_form_next_css;
+}
+
+// Next and Previous resting shadow, hover shadow and hover lift: the submit button's emitter under their own prefix.
+foreach ( array( 'prev', 'next' ) as $sgs_form_nav_prefix ) {
+	$sgs_form_nav_motion = sgs_form_submit_motion_css( '.' . $sgs_form_uid . ' .sgs-form__button--' . $sgs_form_nav_prefix, $attributes, $block->name ?? '', $sgs_form_nav_prefix );
+	if ( '' !== $sgs_form_nav_motion ) {
+		if ( ! in_array( $sgs_form_uid, $sgs_form_supports_classes, true ) ) {
+			$sgs_form_supports_classes[] = $sgs_form_uid;
+		}
+		$sgs_form_supports_css .= $sgs_form_nav_motion;
+	}
 }
 
 // Tile border — routed through the shared sgs_border_states_css() emitter

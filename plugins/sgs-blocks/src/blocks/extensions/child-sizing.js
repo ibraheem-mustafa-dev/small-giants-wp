@@ -1,5 +1,5 @@
 /**
- * Child sizing: how a block sizes itself inside a flex row.
+ * Child sizing: how a block sizes itself inside a flex row, or spans a grid row.
  *
  * WordPress core answers this with `layout.selfStretch` (fit / fill / fixed +
  * `flexSize`) in the Dimensions panel. SGS blocks replace native supports with
@@ -10,7 +10,7 @@
  *
  * Attributes (per tier, `{desktop,tablet,mobile}`; a blank tablet/mobile tier
  * inherits the tier above):
- *   - sgsChildSizing: '' (the block's natural size) | 'fit' | 'fill' | 'fixed'
+ *   - sgsChildSizing: '' (the block's natural size) | 'fit' | 'fill' | 'fixed' | 'span' (takes its whole grid row)
  *   - sgsChildWidth:  a CSS length, or 'auto' (natural size that never shrinks), read when the tier's sizing is 'fixed'
  *
  * The frontend rules come from includes/child-sizing.php (render_block, a
@@ -32,7 +32,7 @@ import SgsLengthControl from '../../components/SgsLengthControl';
 import { resolveResponsiveTier } from '../../utils/responsive';
 
 const SLUG = 'childSizing';
-const MODES = [ 'fit', 'fill', 'fixed' ];
+const MODES = [ 'fit', 'fill', 'fixed', 'span' ];
 const DEVICE_TO_TIER = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
 const WIDTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -47,6 +47,7 @@ const MODE_OPTIONS = [
 	{ value: 'fit', label: __( 'Fit content', 'sgs-blocks' ) },
 	{ value: 'fill', label: __( 'Fill remaining space', 'sgs-blocks' ) },
 	{ value: 'fixed', label: __( 'Fixed width', 'sgs-blocks' ) },
+	{ value: 'span', label: __( 'Span the whole row', 'sgs-blocks' ) },
 ];
 const MODE_OPTIONS_TIER = [
 	{ value: '', label: __( '— Same as the larger screen —', 'sgs-blocks' ) },

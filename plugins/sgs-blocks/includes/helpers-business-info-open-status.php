@@ -70,6 +70,7 @@ if ( ! function_exists( 'sgs_business_info_open_status_html' ) ) {
 		}
 		$labels    = sgs_business_info_open_status_labels( $attributes );
 		$show_line = ! array_key_exists( 'openStatusShowLine', $attributes ) || ! empty( $attributes['openStatusShowLine'] );
+		$show_pill = ! array_key_exists( 'openStatusShowPill', $attributes ) || ! empty( $attributes['openStatusShowPill'] );
 		$timezone  = function_exists( 'wp_timezone_string' ) ? (string) wp_timezone_string() : 'UTC';
 		$config    = array(
 			'timezone' => $timezone,
@@ -84,12 +85,18 @@ if ( ! function_exists( 'sgs_business_info_open_status_html' ) ) {
 		$line_text = $editor ? trim( (string) preg_replace( '/\s+/', ' ', strtr( $labels['pattern'], array( '{lead}' => $labels['closes'], '{time}' => '5pm', '{when}' => $labels['today'] ) ) ) ) : $fallback;
 		$show_text = $editor && ! $show_line ? '' : $line_text;
 
+		// Pill off: the pill element is not printed (view.js skips a missing pill), only the line stays.
+		$pill_html = $show_pill ? sprintf(
+			'<p class="sgs-open-status__pill"%1$s><span class="sgs-open-status__dot" aria-hidden="true"></span><span class="sgs-open-status__label">%2$s</span></p>',
+			$pill_attr,
+			esc_html( $labels['open'] )
+		) : '';
+
 		return sprintf(
-			'<div class="sgs-business-info sgs-open-status" data-sgs-open-status data-state="%1$s" data-config="%2$s"><p class="sgs-open-status__pill"%3$s><span class="sgs-open-status__dot" aria-hidden="true"></span><span class="sgs-open-status__label">%4$s</span></p><p class="sgs-open-status__line">%5$s</p></div>',
+			'<div class="sgs-business-info sgs-open-status" data-sgs-open-status data-state="%1$s" data-config="%2$s">%3$s<p class="sgs-open-status__line">%4$s</p></div>',
 			esc_attr( $state ),
 			esc_attr( (string) wp_json_encode( $config ) ),
-			$pill_attr,
-			esc_html( $labels['open'] ),
+			$pill_html,
 			esc_html( $show_text )
 		);
 	}

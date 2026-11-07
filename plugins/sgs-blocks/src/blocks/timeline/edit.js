@@ -44,6 +44,7 @@ import {
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
+import { cardColourRows, EntryCardControls, EntryImageShapeControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
 
 // Per-device spacing boxes of the entry parts: [ attribute, label ].
 const ENTRY_PART_BOXES = [
@@ -63,6 +64,11 @@ const DATE_TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'UPPERCASE', 'sgs-blocks' ), value: 'uppercase' },
 	{ label: __( 'lowercase', 'sgs-blocks' ), value: 'lowercase' },
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
+];
+
+const HORIZONTAL_CARD_LAYOUT_OPTIONS = [
+	{ label: __( 'Stacked (date, then text)', 'sgs-blocks' ), value: 'alternating' },
+	{ label: __( 'Text beside image', 'sgs-blocks' ), value: 'same-side' },
 ];
 
 const HEADING_LEVEL_OPTIONS = [
@@ -525,6 +531,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		'title',
 		previewTier
 	);
+	// Date and description typography: render.php's sgs_typography_css_rule( $attributes, 'date' | 'descriptionText' ).
+	const datePreviewStyle = typographyPreviewStyle( attributes, 'date', previewTier );
+	const descriptionPreviewStyle = typographyPreviewStyle( attributes, 'descriptionText', previewTier );
 	const {
 		orientation,
 		contentLayout,
@@ -604,9 +613,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		orientation === 'vertical'
 			? `sgs-timeline--content-${ contentLayout }`
 			: '',
-		orientation === 'vertical' &&
-		contentLayout === 'same-side' &&
-		contentSide === 'start'
+		orientation === 'horizontal' && contentLayout === 'same-side'
+			? 'sgs-timeline--content-same-side'
+			: '',
+		contentLayout === 'same-side' && contentSide === 'start'
 			? 'sgs-timeline--side-start'
 			: '',
 		`sgs-timeline--line-${ connectorLineStyleOf( connectorLineStyle ) }`,
@@ -1267,6 +1277,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						),
 					},
 					...pinnedColourRows( attributes, setAttributes ),
+					...cardColourRows( attributes, setAttributes ),
 				] }
 			/>
 			<InspectorControls group="styles">
@@ -1338,42 +1349,62 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ orientation === 'vertical' && (
+					{ ( 'horizontal' === orientation || 'vertical' === orientation ) && (
 						<SelectControl
-							label={ __( 'How entries line up', 'sgs-blocks' ) }
-							value={ contentLayout }
-							options={ CONTENT_LAYOUT_OPTIONS }
+							label={
+								'horizontal' === orientation
+									? __( 'Card layout', 'sgs-blocks' )
+									: __( 'How entries line up', 'sgs-blocks' )
+							}
+							value={
+								'horizontal' === orientation && 'same-side' !== contentLayout
+									? 'alternating'
+									: contentLayout
+							}
+							options={
+								'horizontal' === orientation
+									? HORIZONTAL_CARD_LAYOUT_OPTIONS
+									: CONTENT_LAYOUT_OPTIONS
+							}
 							onChange={ ( val ) =>
 								setAttributes( { contentLayout: val } )
 							}
-							help={ __(
-								'Alternating flips content left/right on each entry.',
-								'sgs-blocks'
-							) }
+							help={
+								'horizontal' === orientation
+									? __(
+											'Text beside image turns each entry into a card with the text on one side and the picture on the other, from 768px up.',
+											'sgs-blocks'
+									  )
+									: __(
+											'Alternating flips content left/right on each entry.',
+											'sgs-blocks'
+									  )
+							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
 						/>
 					) }
-					{ /* Which side of the line — meaningless outside 'same-side'
+					{ /* Which side of the line (vertical) or which side the text
+					     sits (horizontal card) — meaningless outside 'same-side'
 					     (alternating flips by definition; single-column is
 					     one-sided), so it is hidden rather than disabled for the
 					     other two layouts, per the brief. */ }
-					{ orientation === 'vertical' &&
-						contentLayout === 'same-side' && (
-							<SelectControl
-								label={ __(
-									'Which side of the line',
-									'sgs-blocks'
-								) }
-								value={ contentSide }
-								options={ CONTENT_SIDE_OPTIONS }
-								onChange={ ( val ) =>
-									setAttributes( { contentSide: val } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						) }
+					{ contentLayout === 'same-side' && (
+						<SelectControl
+							label={
+								'horizontal' === orientation
+									? __( 'Which side the text sits', 'sgs-blocks' )
+									: __( 'Which side of the line', 'sgs-blocks' )
+							}
+							value={ contentSide }
+							options={ CONTENT_SIDE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { contentSide: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Alternating row colours', 'sgs-blocks' ) }
 						checked={ rowStripes }
@@ -1402,7 +1433,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							'sgs-blocks'
 						) }
 					/>
-					{ 'carousel' === mobileLayout && (
+					{ ( 'carousel' === mobileLayout || 'horizontal' === orientation ) && (
 						<CardWidthControl
 							attributes={ attributes }
 							setAttributes={ setAttributes }
@@ -1643,6 +1674,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 				</PanelBody>
 				<PanelBody
+					title={ __( 'Entry date typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<EntryDateTypography attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Entry description typography', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<EntryDescriptionTypography attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				<EntryCardControls attributes={ attributes } setAttributes={ setAttributes } />
+				<EntryImageShapeControls attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
 					title={ __( 'Padding, margin & border', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
@@ -1811,10 +1856,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						]
 							.filter( Boolean )
 							.join( ' ' ) }
+						style={
+							'horizontal' === orientation
+								? {
+										...( attributes.cardBackgroundColour
+											? { backgroundColor: colourVar( attributes.cardBackgroundColour ) }
+											: {} ),
+										...tierBoxLonghands( attributes.cardPadding, previewTier, 'padding' ),
+								  }
+								: undefined
+						}
 					>
 						<time
 							className="sgs-timeline__date"
 							style={ {
+								...datePreviewStyle,
 								...dateColourStyle,
 								...tierBoxLonghands( attributes.dateMargin, previewTier, 'margin' ),
 								...( [ 'none', 'uppercase', 'lowercase', 'capitalize' ].includes( attributes.dateTextTransform )
@@ -1886,6 +1942,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									tagName="div"
 									className="sgs-timeline__description"
 									style={ {
+										...descriptionPreviewStyle,
 										...descriptionColourStyle,
 										...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
 									} }

@@ -615,6 +615,12 @@ foreach ( array(
 // the wp-block root (the list itself when there is no heading; the wrapping
 // `<div>` when there is — see step 8).
 $list_visual_classes  = 'sgs-icon-list sgs-icon-list--icon-' . esc_attr( $icon_size ) . ' sgs-icon-list--marker-' . esc_attr( $marker_type );
+// Round dot marker: a bullet list with a marker size paints its own CSS dot instead of the browser's disc.
+$marker_dot_size   = 'bullet' === $marker_type ? sgs_css_single_length_value( $attributes['markerSize'] ?? '' ) : '';
+$marker_dot_offset = sgs_css_single_length_value( $attributes['markerOffset'] ?? '' );
+if ( '' !== $marker_dot_size ) {
+	$list_visual_classes .= ' sgs-icon-list--marker-dot';
+}
 $wrapper_only_classes = $uid;
 
 // Spec 32 FR-32-1/FR-32-4 (enforced by
@@ -703,6 +709,38 @@ if ( 'numbered' === $marker_type ) {
 		$scoped_css[] = $sgs_ilist_list_sel . '{list-style-type:decimal-leading-zero;}';
 	}
 	$scoped_css[] = $sgs_ilist_list_sel . ' > .sgs-icon-list__item::marker{' . implode( ';', $sgs_ilist_num_decls ) . ';}';
+}
+if ( '' !== $marker_dot_size ) {
+	$marker_dot_offset = '' !== $marker_dot_offset ? $marker_dot_offset : '1.25em';
+	$marker_dot_colour = '' !== trim( (string) $icon_colour ) ? sgs_colour_value( $icon_colour ) : 'currentColor';
+	$scoped_css[]      = $sgs_ilist_list_sel . '{padding-inline-start:' . $marker_dot_offset . ';}';
+	$scoped_css[]      = $sgs_ilist_list_sel . ' > .sgs-icon-list__item::before{width:' . $marker_dot_size . ';height:' . $marker_dot_size . ';background-color:' . $marker_dot_colour . ';inset-inline-start:calc(-1 * ' . $marker_dot_offset . ');top:calc(0.75em - ' . $marker_dot_size . ' / 2);}';
+}
+// List columns, per device: the shared responsive emitter prints grid-template-columns (and display:grid) on the list.
+if ( ! empty( $attributes['listColumns'] ) && is_array( $attributes['listColumns'] ) ) {
+	$sgs_ilist_columns_tiers = sgs_responsive_normalise_object( $attributes['listColumns'] );
+	$scoped_css[]            = sgs_emit_responsive_css(
+		$sgs_ilist_list_sel,
+		array(
+			array(
+				'value'     => $sgs_ilist_columns_tiers,
+				'css'       => 'display',
+				'cast'      => 'int',
+				'transform' => static function ( $count ): string {
+					return (int) $count > 0 ? 'grid' : '';
+				},
+			),
+			array(
+				'value'     => $sgs_ilist_columns_tiers,
+				'css'       => 'grid-template-columns',
+				'cast'      => 'int',
+				'transform' => static function ( $count ): string {
+					$count = (int) $count;
+					return $count > 0 ? 'repeat(' . min( $count, 6 ) . ',minmax(0,1fr))' : '';
+				},
+			),
+		)
+	);
 }
 // Per-item colour/gradient — each item resolves its OWN colour
 // and gradient (falling back to the block-level default when unset), and its

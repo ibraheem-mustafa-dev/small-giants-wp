@@ -171,6 +171,12 @@ function sgs_shadow_lift_attr_names( string $prefix = '' ): array {
 	if ( 'submit' === $prefix ) {
 		return array( 'lift' => 'submitShadowLiftOnHover' );
 	}
+	if ( 'next' === $prefix ) {
+		return array( 'lift' => 'nextShadowLiftOnHover' );
+	}
+	if ( 'prev' === $prefix ) {
+		return array( 'lift' => 'prevShadowLiftOnHover' );
+	}
 	if ( 'addToCart' === $prefix ) {
 		return array( 'lift' => 'addToCartShadowLiftOnHover' );
 	}

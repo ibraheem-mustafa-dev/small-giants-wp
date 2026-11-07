@@ -772,16 +772,83 @@
 	text-align: center;
 	--sgs-text-ms: auto;
 	--sgs-text-me: auto;
-	padding: 0 var(--wp--preset--spacing--20, 1rem);
+	// The card padding (`cardPadding`) prints as `--sgs-tl-card-pad-<side>`; unset, these are the stylesheet's own values.
+	padding: var(--sgs-tl-card-pad-top, 0) var(--sgs-tl-card-pad-right, var(--wp--preset--spacing--20, 1rem)) var(--sgs-tl-card-pad-bottom, 0)
+		var(--sgs-tl-card-pad-left, var(--wp--preset--spacing--20, 1rem));
 	scroll-snap-align: start;
 	list-style: none;
 
 	&:first-child {
-		padding-left: 0;
+		padding-left: var(--sgs-tl-card-pad-left, 0);
 	}
 
 	&:last-child {
-		padding-right: 0;
+		padding-right: var(--sgs-tl-card-pad-right, 0);
+	}
+}
+
+// Card width and the two-column card (768px up). `cardWidth` prints `--sgs-timeline-card-width-vw`; unset keeps 220px.
+// contentLayout 'same-side' makes each entry a card with the text (date and content) on one side and the image on the
+// other, the media column as wide as `milestoneMediaWidth` and the gap between the columns `cardColumnGap`: contentSide 'start' puts the text first, 'end' puts the image first. An entry with no image is one column.
+@media (min-width: 768px) {
+	.sgs-timeline--horizontal .sgs-timeline__entry {
+		flex-basis: var(--sgs-timeline-card-width-vw, min(220px, 80vw));
+	}
+
+	.sgs-timeline--horizontal.sgs-timeline--content-same-side .sgs-timeline__entry {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			'date'
+			'content';
+		column-gap: var(--wp--preset--spacing--30, 1.5rem);
+		align-items: end;
+		align-content: center;
+		text-align: left;
+
+		.sgs-timeline__date {
+			grid-area: date;
+			text-align: left;
+			--sgs-text-ms: 0;
+			--sgs-text-me: 0;
+		}
+
+		// The dot belongs to the connector line, which a row of cards does not draw.
+		.sgs-timeline__node {
+			display: none;
+		}
+
+		.sgs-timeline__content {
+			grid-area: content;
+			align-self: start;
+			text-align: left;
+			--sgs-text-ms: 0;
+			--sgs-text-me: 0;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-area: media;
+			max-width: none;
+			align-self: stretch;
+		}
+	}
+
+	.sgs-timeline--horizontal.sgs-timeline--content-same-side::before {
+		display: none;
+	}
+
+	.sgs-timeline--horizontal.sgs-timeline--content-same-side .sgs-timeline__entry--has-media {
+		grid-template-columns: minmax(0, 1fr) minmax(0, var(--sgs-timeline-media-width, 0.9fr));
+		grid-template-areas:
+			'date media'
+			'content media';
+	}
+
+	.sgs-timeline--horizontal.sgs-timeline--content-same-side:not(.sgs-timeline--side-start) .sgs-timeline__entry--has-media {
+		grid-template-columns: minmax(0, var(--sgs-timeline-media-width, 0.9fr)) minmax(0, 1fr);
+		grid-template-areas:
+			'media date'
+			'media content';
 	}
 }
 
@@ -1637,7 +1704,7 @@
 			flex: 0 0 var(--sgs-timeline-card-width, min(85%, 320px));
 			scroll-snap-align: start;
 			margin-bottom: 0;
-			padding: var(--wp--preset--spacing--20, 1rem) 0 0;
+			padding: var(--sgs-tl-card-pad-top, var(--wp--preset--spacing--20, 1rem)) var(--sgs-tl-card-pad-right, 0) var(--sgs-tl-card-pad-bottom, 0) var(--sgs-tl-card-pad-left, 0);
 			// The per-card connector indicator this mode replaces the rail
 			// with — filled in the connector colour, one border per card
 			// rather than one continuous scrubbing fill.

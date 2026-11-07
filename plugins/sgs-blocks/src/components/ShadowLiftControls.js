@@ -32,6 +32,12 @@ export function shadowLiftAttrKeys( prefix = '' ) {
 	if ( 'submit' === prefix ) {
 		return { lift: 'submitShadowLiftOnHover' };
 	}
+	if ( 'next' === prefix ) {
+		return { lift: 'nextShadowLiftOnHover' };
+	}
+	if ( 'prev' === prefix ) {
+		return { lift: 'prevShadowLiftOnHover' };
+	}
 	return { lift: `${ prefix }ShadowLiftOnHover` };
 }
 

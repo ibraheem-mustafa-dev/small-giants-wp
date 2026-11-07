@@ -203,7 +203,7 @@
    the box ("SPH") and a row heading in the gutter to the left of the row ("R");
    a form step holding row headings keeps that gutter (--sgs-form-row-heading-gutter,
    32px unless a layout sets its own). */
-.sgs-form-field__column-heading {
+:where(.sgs-form-field__column-heading) {
 	display: block;
 	margin-bottom: 8px;
 	color: var(--wp--preset--color--text-muted, #555);
@@ -355,7 +355,6 @@
 	border-radius: var(--wp--custom--border-radius--small, 4px);
 	font-family: inherit;
 	background-color: var(--wp--preset--color--surface, #fff);
-	color: var(--wp--preset--color--text, #1e1e1e);
 	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), box-shadow var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 	min-height: 44px;
 }
@@ -367,6 +366,7 @@
    declaration still beats an inherited value at any specificity, so these
    paint whenever the control is unset. */
 :where(.sgs-form-field__input) {
+	color: var(--wp--preset--color--text, #1e1e1e);
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 	line-height: 1.5;
 }
@@ -433,7 +433,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 }
 
-.sgs-form-field__required {
+:where(.sgs-form-field__required) {
 	color: var(--wp--preset--color--text, #1e1e1e);
 }
 
@@ -450,7 +450,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 }
 
-.sgs-form-field__help {
+:where(.sgs-form-field__help) {
 	color: var(--wp--preset--color--text-muted, #555);
 	margin-top: 0.25rem;
 	margin-bottom: 0;
@@ -645,7 +645,7 @@ select.sgs-form-field__input {
 	overflow-wrap: anywhere;
 }
 
-.sgs-form-tile__check {
+:where(.sgs-form-tile__check) {
 	display: none;
 	position: absolute;
 	top: 0.5rem;
@@ -838,7 +838,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 }
 
-.sgs-form-field__file-hint {
+:where(.sgs-form-field__file-hint) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
@@ -875,7 +875,7 @@ select.sgs-form-field__input {
 	line-height: 1.5;
 }
 
-.sgs-form-field__file-button {
+:where(.sgs-form-field__file-button) {
 	display: inline-flex;
 	align-items: center;
 	margin-top: 6px;
@@ -891,7 +891,7 @@ select.sgs-form-field__input {
 	text-transform: uppercase;
 }
 
-.sgs-form-file__progress {
+:where(.sgs-form-file__progress) {
 	padding: 0.75rem;
 	color: var(--wp--preset--color--text-muted, #555);
 }
@@ -911,7 +911,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--small, 0.9375rem);
 }
 
-.sgs-form-file__error {
+:where(.sgs-form-file__error) {
 	color: var(--sgs-error-text, #991b1b);
 }
 
@@ -957,7 +957,7 @@ select.sgs-form-field__input {
 	line-height: 1.5;
 }
 
-.sgs-form-field__consent-text a {
+:where(.sgs-form-field__consent-text a) {
 	/* The 85% resting tint is mixed into the text colour, never an opacity on the link:
 	 * opacity on the link also fades its focus indicator. */
 	color: color-mix( in srgb, var(--wp--preset--color--primary-dark, #0f7e80) 85%, transparent );
@@ -965,7 +965,7 @@ select.sgs-form-field__input {
 }
 
 @supports not (color: color-mix( in srgb, red 50%, transparent )) {
-	.sgs-form-field__consent-text a {
+	:where(.sgs-form-field__consent-text a) {
 		color: var(--wp--preset--color--primary-dark, #0f7e80);
 	}
 }
@@ -1208,11 +1208,12 @@ select.sgs-form-field__input {
 	transition: background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), opacity var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
 }
 
-/* Button typography is a zero-specificity default; the submit button's own
- * controls (submit* attributes, render.php) outrank it. */
+/* Button typography is a zero-specificity default read from the site's button
+ * look (the same primary preset tokens sgs/button reads, then the theme's
+ * regular size); the button controls (submit*, navButton*) outrank it. */
 :where(.sgs-form__button) {
-	font-size: var(--wp--preset--font-size--small, 0.9375rem);
-	font-weight: 600;
+	font-size: var(--wp--custom--button-presets--primary--font-size, var(--wp--preset--font-size--regular, 1rem));
+	font-weight: var(--wp--custom--button-presets--primary--font-weight, 600);
 	line-height: 1.5;
 }
 
@@ -1226,7 +1227,7 @@ select.sgs-form-field__input {
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
  * scoped `.{uid}` rule always wins. */
-:where(.sgs-form__button--primary) {
+:where(.sgs-form__button--primary, .sgs-form__button--next) {
 	background-color: var(--wp--preset--color--primary, #0f7e80);
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #fff));
 }
@@ -1300,7 +1301,7 @@ select.sgs-form-field__input {
 	margin-bottom: 0.5rem;
 }
 
-.sgs-form-review__intro {
+:where(.sgs-form-review__intro) {
 	color: var(--wp--preset--color--text-muted, #555);
 	margin-bottom: 1rem;
 }
@@ -1321,7 +1322,7 @@ select.sgs-form-field__input {
 	min-width: 0;
 }
 
-.sgs-form-review__term {
+:where(.sgs-form-review__term) {
 	color: var(--wp--preset--color--text-muted, #555);
 }
 
@@ -1443,7 +1444,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 }
 
-.sgs-form-field__error-message {
+:where(.sgs-form-field__error-message) {
 	display: none;
 	color: var(--sgs-error-border, #dc2626);
 	margin-top: 0.25rem;
@@ -1468,7 +1469,7 @@ select.sgs-form-field__input {
 	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
 }
 
-.sgs-form-field__error {
+:where(.sgs-form-field__error) {
 	display: block;
 	min-height: 1.2em; /* Reserve space so layout does not shift */
 	color: var(--sgs-error-border, #dc2626);

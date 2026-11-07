@@ -279,6 +279,12 @@ section.sgs-hero {
 	height: 100%;
 }
 
+/* An alignItems other than stretch lets the media box size to its content so the
+   grid can centre, start or end it; stretch or unset keeps it filling the row. */
+.sgs-hero--media-aligned .sgs-hero__media {
+	height: auto;
+}
+
 /* Media overlay — Wave 6 (2026-09-01). The hand-rolled `.sgs-hero__media-overlay`
    span + its own rule (position/inset/z-index/pointer-events) were REMOVED. The
    overlay now paints via the shared `assets/css/media-atoms/overlay.css` rule

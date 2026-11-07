@@ -171,6 +171,15 @@
               "src": [
                 "file:./assets/fonts/montserrat/montserrat-variable-latin.woff2"
               ]
+            },
+            {
+              "fontFamily": "Montserrat",
+              "fontWeight": "800",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/montserrat/montserrat-wght800-outline-latin.woff2"
+              ]
             }
           ]
         },
@@ -186,6 +195,15 @@
               "fontDisplay": "swap",
               "src": [
                 "file:./assets/fonts/montserrat/montserrat-variable-latin.woff2"
+              ]
+            },
+            {
+              "fontFamily": "Montserrat",
+              "fontWeight": "800",
+              "fontStyle": "normal",
+              "fontDisplay": "swap",
+              "src": [
+                "file:./assets/fonts/montserrat/montserrat-wght800-outline-latin.woff2"
               ]
             }
           ],

@@ -19,8 +19,20 @@
 			"file": "child-sizing.js",
 			"rule": { "mode": "allowlist", "enabledSlug": "childSizing", "requiresClassName": false },
 			"attributes": {
-				"sgsChildSizing": { "type": "object", "default": {}, "enum": [ "fit", "fill", "fixed" ], "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_element": "wrapper" },
+				"sgsChildSizing": { "type": "object", "default": {}, "enum": [ "fit", "fill", "fixed", "span" ], "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_element": "wrapper" },
 				"sgsChildWidth": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "requires": { "sgsChildSizing": { "desktop": "fixed", "tablet": "fixed", "mobile": "fixed" } } }
+			}
+		},
+		{
+			"id": "floatPosition",
+			"file": "float-position.js",
+			"rule": { "mode": "allowlist", "enabledSlug": "floatPosition", "requiresClassName": false },
+			"attributes": {
+				"sgsPosition": { "type": "object", "default": {}, "enum": [ "static", "relative", "absolute" ], "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "position", "css_element": "wrapper" },
+				"sgsInsetTop": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "top", "css_element": "wrapper", "requires": { "sgsPosition": { "desktop": "absolute", "tablet": "absolute", "mobile": "absolute" } } },
+				"sgsInsetRight": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "right", "css_element": "wrapper", "requires": { "sgsPosition": { "desktop": "absolute", "tablet": "absolute", "mobile": "absolute" } } },
+				"sgsInsetBottom": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "bottom", "css_element": "wrapper", "requires": { "sgsPosition": { "desktop": "absolute", "tablet": "absolute", "mobile": "absolute" } } },
+				"sgsInsetLeft": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "left", "css_element": "wrapper", "requires": { "sgsPosition": { "desktop": "absolute", "tablet": "absolute", "mobile": "absolute" } } }
 			}
 		},
 		{
@@ -73,7 +85,10 @@
 				"sgsConditionUrlParam": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsConditionReferrer": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsConditionProductReviews": { "type": "string", "default": "none", "enum": [ "none", "has", "none-yet" ], "role": "behaviour" },
-				"sgsConditionCollectionQueryId": { "type": "number", "default": 0, "role": "behaviour" }
+				"sgsConditionCollectionQueryId": { "type": "number", "default": 0, "role": "behaviour" },
+				"sgsConditionFormField": { "type": "string", "default": "", "role": "behaviour" },
+				"sgsConditionFormOperator": { "type": "string", "default": "equals", "role": "behaviour" },
+				"sgsConditionFormValue": { "type": "string", "default": "", "role": "behaviour" }
 			}
 		},
 		{

@@ -298,6 +298,10 @@
 						"css:background-image": "submitBackgroundGradient",
 						"css:padding": "submitPadding",
 						"css:box-shadow": "submitShadow",
+						"css:border-color": "submitColourBorder",
+						"css:border-style": "submitBorderStyle",
+						"css:border-width": "submitBorderWidth",
+						"css:border-radius": "submitBorderRadius",
 						"css:min-height": "submitMinHeight",
 						"css:font-size": "submitFontSize",
 						"css:font-weight": "submitFontWeight",
@@ -318,6 +322,7 @@
 						"hover": {
 							"attrMap": {
 								"css:box-shadow": "submitShadowHover",
+								"css:border-color": "submitColourBorderHover",
 								"css:background-color": "submitBackgroundHover",
 								"css:background-image": "submitBackgroundHoverGradient",
 								"css:color": "submitColourHover",
@@ -338,13 +343,23 @@
 					"prefix": "prev",
 					"attrMap": {
 						"css:background-color": "prevColourBackground",
-						"css:background-image": "prevColourBackgroundGradient"
+						"css:background-image": "prevColourBackgroundGradient",
+						"css:color": "prevColourText",
+						"css:border-color": "prevColourBorder",
+						"css:border-style": "prevBorderStyle",
+						"css:border-width": "prevBorderWidth",
+						"css:border-radius": "prevBorderRadius",
+						"css:padding": "prevPadding",
+						"css:box-shadow": "prevShadow"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "prevColourBackgroundHover",
-								"css:background-image": "prevColourBackgroundHoverGradient"
+								"css:background-image": "prevColourBackgroundHoverGradient",
+								"css:color": "prevColourTextHover",
+								"css:border-color": "prevColourBorderHover",
+								"css:box-shadow": "prevShadowHover"
 							}
 						}
 					},
@@ -362,13 +377,23 @@
 					"prefix": "next",
 					"attrMap": {
 						"css:background-color": "nextColourBackground",
-						"css:background-image": "nextColourBackgroundGradient"
+						"css:background-image": "nextColourBackgroundGradient",
+						"css:color": "nextColourText",
+						"css:border-color": "nextColourBorder",
+						"css:border-style": "nextBorderStyle",
+						"css:border-width": "nextBorderWidth",
+						"css:border-radius": "nextBorderRadius",
+						"css:padding": "nextPadding",
+						"css:box-shadow": "nextShadow"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
 								"css:background-color": "nextColourBackgroundHover",
-								"css:background-image": "nextColourBackgroundHoverGradient"
+								"css:background-image": "nextColourBackgroundHoverGradient",
+								"css:color": "nextColourTextHover",
+								"css:border-color": "nextColourBorderHover",
+								"css:box-shadow": "nextShadowHover"
 							}
 						}
 					},
@@ -1888,6 +1913,141 @@
 		"nextColourBackgroundHoverGradient": {
 			"type": "string",
 			"default": ""
+		},
+		"prevColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"default": "solid"
+		},
+		"prevBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"prevBorderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"prevColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"prevColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"prevLiftHover": {
+			"type": "number",
+			"default": 0
+		},
+		"prevShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"prevShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"prevShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"prevShadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"nextColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nextBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"default": "solid"
+		},
+		"nextBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"nextBorderRadius": {
+			"type": "object",
+			"default": {}
+		},
+		"nextColourText": {
+			"type": "string",
+			"default": ""
+		},
+		"nextColourTextHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nextPadding": {
+			"type": "object",
+			"default": {}
+		},
+		"nextLiftHover": {
+			"type": "number",
+			"default": 0
+		},
+		"nextShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"nextShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"nextShadowHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nextShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"nextShadowLiftOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"submitColourBorder": {
+			"type": "string",
+			"default": ""
+		},
+		"submitColourBorderHover": {
+			"type": "string",
+			"default": ""
+		},
+		"submitBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"default": "solid"
+		},
+		"submitBorderWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"submitBorderRadius": {
+			"type": "object",
+			"default": {}
 		},
 		"tileBorderColour": {
 			"type": "string",

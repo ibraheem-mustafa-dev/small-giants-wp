@@ -1026,7 +1026,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 3,
+        "paintDeclarations": 4,
         "replacedCoreSupports": [
           "anchor",
           "border",
@@ -1475,7 +1475,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 11,
+        "paintDeclarations": 12,
         "replacedCoreSupports": []
       }
     },
