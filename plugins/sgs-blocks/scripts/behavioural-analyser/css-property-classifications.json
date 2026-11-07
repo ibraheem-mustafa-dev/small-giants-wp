@@ -10058,6 +10058,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "actionsStickyPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "OUTER",
+        "css_element": "actions"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "actionsTopMargin",
       "fields": {
         "css_property": "margin-top",
@@ -11685,6 +11694,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "nextBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "nextButtonFill",
       "fields": {
         "css_property": "flex",
@@ -11725,6 +11758,52 @@
         "css_property": "background-image",
         "css_element": "next-button",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "next-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "next-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "next-button"
       }
     },
     {
@@ -11861,6 +11940,30 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "prevBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "prevColourBackground",
       "fields": {
         "css_property": "background-color",
@@ -11893,6 +11996,52 @@
         "css_property": "background-image",
         "css_element": "prev-button",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "prev-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "prev-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "prev-button"
       }
     },
     {
@@ -12854,10 +13003,53 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "submitBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitColour",
       "fields": {
         "css_property": "color",
         "css_element": "button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "submit-button",
+        "css_state": "hover"
       }
     },
     {
@@ -12932,6 +13124,14 @@
       "attr": "submitMinHeight",
       "fields": {
         "css_property": "min-height",
+        "css_element": "submit-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "submitPadding",
+      "fields": {
+        "css_property": "padding",
         "css_element": "submit-button"
       }
     },
@@ -17983,8 +18183,8 @@
       "slug": "sgs/icon-list",
       "attr": "iconColour",
       "fields": {
-        "css_property": "color",
-        "css_element": "item-icon"
+        "css_property": "background-color,color",
+        "css_element": "item"
       }
     },
     {
@@ -18197,10 +18397,35 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "listColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "markerOffset",
+      "fields": {
+        "css_property": "inset-inline-start",
+        "css_element": "marker"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "markerSize",
+      "fields": {
+        "css_property": "width",
+        "css_element": "marker"
       }
     },
     {
@@ -24620,15 +24845,6 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "connectorColourGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "connector"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
       "attr": "connectorHidden",
       "fields": {
         "css_property": "display",
@@ -24638,18 +24854,18 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "connectorOffset",
+      "attr": "connectorLineStyle",
       "fields": {
-        "css_property": "margin-top",
+        "css_property": "border-style",
         "css_layer": "OUTER",
         "css_element": "connector"
       }
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "connectorThickness",
+      "attr": "connectorOffset",
       "fields": {
-        "css_property": "height",
+        "css_property": "margin-top",
         "css_layer": "OUTER",
         "css_element": "connector"
       }
@@ -32125,6 +32341,47 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardColumnGap",
+      "fields": {
+        "css_property": "column-gap",
+        "css_layer": "GRID",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "connectorLineStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "counterFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -32229,6 +32486,81 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "dateFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "date",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "dateTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "date"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "dateTextTransform",
       "fields": {
         "css_property": "text-transform",
@@ -32293,6 +32625,46 @@
       "fields": {
         "css_property": "text-decoration-thickness-link",
         "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "description-text"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "description-text"
       }
     },
     {
@@ -32365,6 +32737,14 @@
       "fields": {
         "css_property": "margin",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "mediaAspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "image"
       }
     },
     {
@@ -38293,15 +38673,6 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "actionsStickyPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_layer": "OUTER",
-        "css_element": "actions"
-      }
-    },
-    {
-      "slug": "sgs/form",
       "attr": "actionsStickyShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -38539,11 +38910,45 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "nextShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "next-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "nextShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "next-button",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "optionalColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "optional-tag"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "prev-button"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "prevShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "prev-button",
+        "css_state": "hover"
       }
     },
     {
@@ -38679,14 +39084,6 @@
         "css_property": "background-image",
         "css_element": "submit-button",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "submitPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "submit-button"
       }
     },
     {
@@ -45929,6 +46326,24 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "connectorColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "connectorThickness",
+      "fields": {
+        "css_property": "height",
+        "css_layer": "OUTER",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "descriptionColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -48457,6 +48872,64 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardBackgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardBorderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "cardWidth",
       "fields": {
         "css_property": "flex-basis",
@@ -48661,6 +49134,14 @@
         "css_property": "color",
         "role": "color",
         "css_element": "hint"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "mediaBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "image"
       }
     },
     {
