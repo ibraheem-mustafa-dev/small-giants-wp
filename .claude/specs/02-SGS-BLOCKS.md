@@ -359,7 +359,7 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `slidesVisible` is a `{d
 
 ### Process Steps (`sgs/process-steps`)
 
-**Purpose:** Horizontal timeline showing a multi-step process. Attributes: `/wp-blocks schema sgs/process-steps` (the number style attribute is `numberStyle`). The connector can paint a gradient (`connectorColourGradient`). Pending (local commit `2868ee346`, not on main until its reseed and migration): `connectorStyle` keeps only the connector type (line, arrow, dots) and the line style (solid, dashed, dotted) moves to `connectorLineStyle`, edited with the shared `BorderStyleControl` and printed by `plugins/sgs-blocks/includes/helpers-connector-line.php::sgs_connector_line_decls`.
+**Purpose:** Horizontal timeline showing a multi-step process. Attributes: `/wp-blocks schema sgs/process-steps` (the number style attribute is `numberStyle`). The connector can paint a gradient (`connectorColourGradient`). Pending (the unpushed commit "connector line style through the shared border style control" in the worktree E:/sgs-tmp/wt-indus, not on main until its reseed and migration): `connectorStyle` keeps only the connector type (line, arrow, dots) and the line style (solid, dashed, dotted) moves to `connectorLineStyle`, edited with the shared `BorderStyleControl` and printed by `plugins/sgs-blocks/includes/helpers-connector-line.php::sgs_connector_line_decls`.
 
 **Render:** **Dynamic** (`render.php`).
 
@@ -1166,7 +1166,7 @@ Attributes: `/wp-blocks schema sgs/collapsible-text`. The body is collapsible on
 
 ### sgs/timeline
 
-Date-based timeline (distinct from existing sgs/process-steps which is positional/numbered). Vertical or horizontal orientation. Alternating / left / centre alignment (vertical only). Scroll-reveal via IntersectionObserver with stagger delay (default 100ms) honouring prefers-reduced-motion. Connector style: line / dashed / dotted (pending, local commit `2868ee346`: this becomes `connectorLineStyle`, solid / dashed / dotted through the shared `BorderStyleControl`, and `connectorStyle` is removed from the timeline). Semantic ol/li/time markup.
+Date-based timeline (distinct from existing sgs/process-steps which is positional/numbered). Vertical or horizontal orientation. Alternating / left / centre alignment (vertical only). Scroll-reveal via IntersectionObserver with stagger delay (default 100ms) honouring prefers-reduced-motion. Connector style: line / dashed / dotted (pending, the unpushed commit "connector line style through the shared border style control" in the worktree E:/sgs-tmp/wt-indus: this becomes `connectorLineStyle`, solid / dashed / dotted through the shared `BorderStyleControl`, and `connectorStyle` is removed from the timeline). Semantic ol/li/time markup.
 
 Attributes: `/wp-blocks schema sgs/timeline`. SGS-BEM: `.sgs-timeline` root + `--vertical/horizontal` + `--align-{left,centre,alternating}` + `__entry` / `__date` / `__node` / `__content` / `__title` / `__description` / `__image` / `__connector` + `.is-revealed` state.
 
