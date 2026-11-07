@@ -14,6 +14,9 @@ import { pressTokens } from './snapshot-tokens.mjs';
 const RECORD_PROP = { 'border-top-color': /^border(-top)?-color$/, 'border-top-width': /^border(-top)?-width$/ };
 const named = ( look, prop ) => look.property === prop || RECORD_PROP[ prop ]?.test( look.property );
 
+// True when the element's hover value for prop equals its own resting value. An unread resting value is never taken as equal.
+const restsAs = ( read, hover, prop ) => undefined !== read?.styles?.[ prop ] && ! differs( hover[ prop ], read.styles[ prop ] );
+
 export const state = {
 	name: 'state',
 	props: [],
@@ -34,6 +37,12 @@ export const state = {
 				}
 				// An element with no border still reports a border colour: its text colour, which paints nothing.
 				if ( 'border-top-color' === prop && ! ( parseFloat( dHover[ 'border-top-width' ] ) > 0 ) ) {
+					continue;
+				}
+				// A property the hover changes on neither side is a resting difference, reported as one so the gate judges it against the
+				// block's resting settings and no family's silence hides it.
+				if ( restsAs( draft[ 1440 ], dHover, prop ) && restsAs( live[ 1440 ], lHover, prop ) ) {
+					items.push( { status: 'no-setting', prop, why: `resting difference the hover holds on both sides: draft ${ draft[ 1440 ].styles[ prop ] }, live ${ live[ 1440 ].styles[ prop ] }; no applier family writes a resting ${ prop }` } );
 					continue;
 				}
 				// A gradient ground stays through the hover: the flat colour of a hover setting would paint over it.

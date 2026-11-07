@@ -13,11 +13,25 @@ const shorthandOf = ( prop ) => prop.replace( /^(border|padding|margin)-(top|rig
 // Hover and focus timing on a block is a recorded framework gap: no block has a per-property setting for it.
 const TIMING = /^transition-(duration|timing-function)$/;
 
+// The state a row is about: its own field, else a state word before the property (`tile hover border-top-color`). Empty is the
+// resting look.
+const STATES = /^(hover|focus|active|open|checked|current)$/;
+const stateOf = ( row ) => row.state ?? String( row.prop ?? '' ).trim().split( /\s+/ ).slice( 0, -1 ).find( ( w ) => STATES.test( w ) ) ?? '';
+
+// A setting holds a state when the DB records it (block_attributes.css_state), or, unrecorded, when its name ends in the state.
+const holds = ( s, state ) => ( s.css_state ?? /(Hover|Focus|Active|Open|Checked|Current)$/.exec( s.attr_name )?.[ 1 ].toLowerCase() ?? '' ) === state;
+
 export function judgeRow( row, settingsOf ) {
-	const settings = settingsOf( row.block );
-	if ( ! settings.length ) {
+	const all = settingsOf( row.block );
+	if ( ! all.length ) {
 		return 'unjudged';
 	}
+	// A row naming a setting by its attribute is about that setting, whatever its state.
+	if ( all.some( ( s ) => s.attr_name === row.prop && /[A-Z]/.test( s.attr_name ) ) ) {
+		return 'unresolved';
+	}
+	// A resting setting cannot hold a hover value, nor a hover setting a resting one.
+	const settings = all.filter( ( s ) => holds( s, stateOf( row ) ) );
 	if ( settings.some( ( s ) => s.attr_name === row.prop ) ) {
 		return 'unresolved';
 	}

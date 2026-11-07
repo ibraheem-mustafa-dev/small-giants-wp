@@ -169,7 +169,7 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 					ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block.block, family: family.name, ...item } );
 					row( { family: family.name, status: 'written', prop: item.prop, why: item.why, ref: item.ref ?? target.ref } );
 				} else {
-					row( { family: family.name, status: item.status, prop: item.prop, why: item.why } );
+					row( { family: family.name, status: item.status, prop: item.prop, why: item.why, ...( item.state ? { state: item.state } : {} ), ...( item.block ? { block: item.block } : {} ) } );
 				}
 			}
 		}
@@ -421,7 +421,7 @@ async function main() {
 			fs.rmSync( pendingPath, { force: true } );
 		}
 		// Before the DB closes: what the block's own settings say about every no-setting row (lib/apply-gate.mjs).
-		const settingsOf = ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );
+		const settingsOf = ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property, css_state FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );
 		gate = gateRows( allRows, settingsOf );
 	} finally {
 		await browser.close();
