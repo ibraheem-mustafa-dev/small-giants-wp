@@ -1,6 +1,6 @@
 {
   "generated": "2026-11-06",
-  "source": ".claude/prompts/Bean Indus Issues List.txt (Bean's round 8 review)",
+  "source": "sites/indus-foods/build/qa/bean-r8-issues-list.txt (Bean's round 8 review)",
   "method": "seven read-only investigators (one lane each) and two cold verifiers; measured on local-indus and the served draft",
   "classes": {
     "S": "setting exists, never applied",

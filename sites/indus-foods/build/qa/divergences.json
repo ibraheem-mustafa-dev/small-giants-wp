@@ -562,5 +562,18 @@
     },
     "reason": "Bean asked for the white border he saw; the draft's border is the same faint line as live, and the visible gap is the draft's second soft shadow, which live adds (not a divergence once built; recorded so the walker reads the shadow as the target).",
     "decided": "2026-11-06 Bean ruling (Indus round 8 review)"
+  },
+  {
+    "id": "D-39",
+    "surfaces": ["drawer-brands"],
+    "scope": "nav drawer, Brands panel, all widths",
+    "node": "brand logo tiles",
+    "state": "rest",
+    "property": "tile count",
+    "expected": {
+      "rule": "bean-ruling"
+    },
+    "reason": "Live shows 10 brand logos, the draft 9 (ND18). Left at 10 because the client's real content will change the list. The tile height (64px, tileMinHeight at tablet and mobile) still follows the draft.",
+    "decided": "2026-11-07 Bean ruling (Indus round 8 review)"
   }
 ]

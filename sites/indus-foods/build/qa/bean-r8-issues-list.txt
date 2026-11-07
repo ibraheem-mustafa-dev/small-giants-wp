@@ -1,0 +1,152 @@
+Header-
+1. LinkedIn and FB icon letters are very thick.
+2. Hover on IG icon turns the whole circle completely white. (I think this was fixed on the Mamas live so I thought it'd be a fix that would've fixed it theme wide.)
+3. The logo is totally static both in resting state and when hovered and has lost the really cool entrance animation.
+4. Hover effects on social media icons don't pass over as touch effects on touchscreen platform widths (mobile/tablet) - Might want to investigate this a bit deeper because I thought this was just built in as a global thing.
+4b. Note - I've just gone through the homepage and footer on tablet width and can confirm that loads of hover effects (and entrance animations), including colours and especially motion effects, are missing in a huge amount of areas on tablet and mobile. This needs a framework fix, as it's super inconsistent in what is preserved and what is dropped, and in some cases it is randomly replaced with something different e.g. the Quick Links in the footer when clicked on touch screen devices the text turns blue instead of gold.
+5. The burger menu lines should be a little thicker I think and when hovered/clicked it should turn invert the colour and the 3 bars should go full width so all 3 bars are the same width as the top bar and the bars colours should be white while the bg colour should be blue.
+6. The draft progress bar always has the full gradient fit inside the visible bar, ours stretches across the screen and the progress bar reveals it slowly. - The progress bar of the timeline block on the about page on live has the correct setup.
+7. The top strip of the header gets hidden in an instant jarring manner. It should naturally get hidden by scrolling down and then as soon as the middle row is the top, then the header is stuck in place at the top but it seems like the top row is sticky until a certain scroll amount and then it's just hidden instantly.
+8. When one of the nav bar menu options is hovered on it applies a magnetic button effect on the text of that menu item in the horizontal plane only and its quite a smooth/slower movement as the menu text's room where it can move around is tiny as you can see exactly what it should act like on the draft.
+9. Brands mega menu opening animation is completely absent, the brand items/tiles should have a staggered reveal animation when the mega menu is opened.
+10. The corners on the right side of the about, brands and trade mega menus are sharp when they should be rounded.
+11. The mega menus are supposed to have a thin white border around them.
+12. The about, sectors and trade mega menus opening animation/entrance animation of the contents in the mega menus-
+12A. All 3 mega menus open and then there's a delay before any content that has an entrance animation starts animating into view (this is the menu part of the about and trade mega menus and in the sectors mega menu the 4 cards animate up when revealed/when the mega menu is opened) and during that gap in time there's this slider on the right side which then after the animation, the mega menu suddenly expands to cover the area where the slider is.
+
+Nav Drawer-
+1. Entrance animations are partial or completely missing from parts.
+1A. The menu inside the drawer starts its entrance animation before the drawer has finished its opening animation. All blocks inside need their entrance animation to start when the drawer finishes opening.
+1B. The drawer menu's staggered entrance animation is very off and missing a lot. In the draft every step of the animation is very visible and each row fades in from the right one by one finishing with the social media row under the menu.
+1C. The drawer footer should animate, coming up from the bottom of the screen but it doesn't on the live.
+2. The decorative ring has a looping animation where it expands a bit and then goes back to normal which repeats infinitely.
+3. Point 1 and 2 of the header issues apply to the icons in the drawer too.
+4. Same logo issue as the 3 described in point 3.
+5. Hover on the phone and mail icons should make the bg colour of the circle gold but in the live its left empty.
+6. Same issue as the global touch/tap effect not preserving the hover state's effects in colours, animation etc in several areas.
+7. When hovering on/tapping a menu option the menu item text should move to the right slightly and the ring that has the arrow/chevron on the right side of the menu item should have a gold glow effect around it.
+8. The chevron flipping effect on opening/closing a menu item's dropdown/mega menu has a bounce in the draft that isn't preserved in the live version.
+10. Opening a menu item dropdown/mega menu pushes everything to the left a bit on the live because the slider pushes it but in the draft the slider that appears doesn't do that.
+11A. The opening animations of all of the mega menus in the drawer version are either non-existent on the live version or just really crappy. In the draft, each item in the mega menu has a really nice opening animation, animating in order.
+11B. The closing animations of all 4 mega menus is completely missing in the live version, it just instantly closes.
+12. The card at the top of the About and Trade mega menus is one single item that is fully clickable, the draft gives the little arrow icon the hyperlink alone and its own animation on hover. The full card's animation is missing on live, it should rise and get a shadow and the arrow icon should move right.
+13. The menu items in the About and Trade mega menus should keep the number on the left static while the heading and text moves right and the arrow on the right should turn black.
+14. The sectors mega menu shouldn't have a border, but the live has a thin golden border.
+15. The sectors mega menu - The 4 cards' top corners are straight but they should be rounded like the bottom corners.
+16. The 4 cards hover effects are wrong, live lifts the card but the draft cards rotate anti-clockwise slightly and the arrow moves to the right.
+17. Brands Mega Menu - First pointed is a change from the draft, the 'Our Brands' heading looks ugly how it is currently. Hide it in this drawer variation of the brands mega menu.
+18. The brand tiles are super short, the draft placeholder items are taller.
+19. The hover effect on each brand tile should be a raise, add shadow and black border. Live just adds a grey tint on the logo image
+20. When hovering or touching the close button of the drawer, the bg of the circle should turn white and the X should spin.
+21. The X in the live site is longer and I think thinner than the draft.
+
+Footer-
+1. Opening Hours - The Opening/Closed circles is supposed to be orange when out of hours but live has red.
+2. Also, the opening/closed circle is supposed to have a constant ping effect with waves of the same orange/green that the circle is going out in waves.
+3. Hover on IG icon turns the whole circle completely white.
+4. Quick links items, when hovered, are supposed to have the text in the item move to the right away from their bullet point.
+5. This is a global issue for all magnetic buttons - The distance is way too large and speed is too fast
+6. The logo is totally static both in resting state and when hovered
+7. Back to top button hover effects are completely missing from live.
+8. The WhatsApp floating block should move up when hovered over, and we need to remove the darkening of the background green colour because it makes the text hard to read. Also, should add the shine hover effect that occurs when hovering on every other button on the site.
+9. The WhatsApp icon in the WhatsApp floating cta button doesn't look centre aligned, it seems like it's a little too far left.
+
+Homepage-
+1. Homepage hero image is missing the resting animation where it calmly floats up and down on an infinite loop. (The animation already exists on the testimonial section image)
+2. Hero's block entrance animation starts off with the blocks visible on live, but the draft has them fade in.
+3. Our Brands logos are supposed to link to the brand page they represent.
+4. Brands slider has a weird gap in it at the end of each set of repeat of logos, should be seamless.
+5. Brands slider logos are missing their shadows.
+6. Brands slider logos don't have any hover effect individually, only hover effect is the slider ticker slows down but nothing for the logo you hover on which should enlarge and have its shadow enlarge too.
+7. Hover shine effect on Food Services cards also goes on the card's buttons and images too. The effect is on the card, it should not effect blocks that are on a higher layer. (This issue as well as most others on this page are prevalent cross the rest of the site e.g. on the sectors pages the Other sectors section has the same cards as in this section with the same shine effect going on the image too.)
+8. 'Why Choose Indus Foods?' Hover colours are very wrong. Firstly, all hover effects are per card, so when I hover over 1 of the 4 cards, every block/element in it should be in its hover state, there are no individual hover effects. Secondly, the heading and text should turn gold. Lastly, the icons are supposed to enlarge and tilt like 15 degrees counter-clockwise.- The hover effect for the label at the bottom of the card and the card bg colour work perfectly.
+9. 'Our Heritage' section's 'Read our story' button is wrong, ours is the generic enlarge. The draft has the arrow move to the right and the underline stretch to match the arrow's movement so its still underlining the whole content.
+10. Timeline bar is supposed to be extending to full width from scrolling down but ours is static.
+11. Each circle in the draft in the timeline needs to be hovered on for it to have its hover effect but on the live, the description text under the circle can be hovered and it'll also trigger the hover effect.
+12. Testimonial section image doesn't have any entrance animation
+13. Process steps section has the exact same issue as the timeline described in point 12 and 13
+14. Just seems like the simple entrance animation of fading up is missing from several blocks when it should be universal per section as well as having some unique ones after the fade up e.g. the timeline bars. This needs to be enforced globally I think. I found it missing on buttons like in the CTA strip above the footer on the homepage, image in testimonial slider, process steps block etc.
+15. When the hero switches to the stacked mode, all of the content is stuck on the left side of the screen including the image.
+
+Mega Menu parent pages-
+- The mega menu parent pages like about, brands and trade should not have a middle breadcrumb, they are that parent page that is currently set as their parent. (This an accepted difference to the draft)
+
+About Page-
+1. Same issues with entrance animations being missing all over the place. (Not mentioning this again across other pages much as this needs a full-on deep investigation and fix from a framework/structural level - from what I've seen of the handoff files/docs a lot of these should be set globally via tokens or just be easy for you to check they exist by reading the handoff and making sure they exist in every place that the files say)
+2. Progress bar is supposed to have a max width of 1240 px and have smaller padding on the sides.
+3. Timeline card shadows are cut off at the bottom.
+4. Final timeline card doesn't scroll far enough before the timeline gets unpinned and we continue scrolling down the page. Needs to be closer to the centre. I can see that the draft has it much further in than live.
+5. Explore Indus foods section's cards should have each card be a full clickable object and have no individual hover effect on the learn more part because it isn't a real button.
+6. On tablet the hero bg svg animation is way too zoomed in
+7. The timeline on 768 px or under is supposed to have each card be much wider almost filling the width with enough space for the next card to be visible on its right.
+8. Really dislike the weird blue outline headings on the tablet and mobile versions of the timeline block. Can you just switch the heading colour to gold?
+
+Our Story-
+1. Repeat issues from other pages with the same blocks (e.g. timeline block) and all of the missing/incorrect animation issues e.g. The hero content doesn't fade into view properly because it starts off visible with a blur effect and the hero image has no entrance animation when it's supposed to reveal from the middle to the edges. (This is common across all pages btw)
+2.The images in the 'Still family-run' and 'Part of the trade' sections are supposed to be rounded but they have pointed corners and the border that is supposed to wrap around them in has rounded corners. This is something that was fixed on the hero image of this page and across other pages too. This needs to be fixed exhaustively for every instance.
+3. See our certifications button, enlarges instead of real hover animation which is the exact same as described in homepage's point 9.
+
+Certifications-
+1. The 4 accreditations cards have the top and the rounded edges on the top 2 corners cut off them.
+2. Repeat issues from previous pages. (I'm not saying this again but don't assume all of those other issues mentioned earlier that are found more than once are not on a page because I haven't mentioned it. Ask if clarity is needed)
+
+Community-
+1. Where we help section has same issue as certifications point 1.
+2. Few images have same issue as Our story page point 2.
+
+Careers-
+
+1. On teams section the each row for a team is supposed to be counted as a single card, the live has the button as a separate real button. The link should be clickable across the whole card and hovering on the card should also switch the button colours to the inverse (gold text + arrow and the bg colour should be what the text colour is at rest) and the arrow should move to the right.
+2. Send Application button on form should have the shine effect on hover.
+3. Talk To Us card next to the form should have the pin effect on it until the bottom edge of it is the same y position/height as the bottom edge of the form it's next to. (This pin effect is correctly implemented on the apply page next to the trade application form)
+4. Just realised that point 3 is a super common issue that could be occurring in many other pages and instances within a page. e.g. On the same careers page the left side of the Teams section where the heading is, is supposed to be pinned in the same way like this so it's always visible while its content is visible on the right.
+
+Blog page-
+1. Absolutely no entrance animations on the blogs listed on the page.
+2. When I clicked the filters, if a category has less than 4 blogs in it, the grid for the cards matches the number so a category with 1 blog will have that card fill the full width that 4 cards are sit in.
+3. The top line of each blog card is supposed to be a pill with the category name on the left and the date on the right. The live has the date on the left of the top line and then on the line below it has the category label and the label bg colour extends to fill the full width of the card.
+4. The button is treated as an actual button instead of the card being fully clickable like in about page point 5 and careers point 1.
+
+All 4 sectors pages-
+1. Shine issue on other sectors cards like on homepage.
+2. Other sectors cards have same button/card issue as about page point 5, careers point 1 and blog page point 4.
+3. The retail page also has the same issue as homepage point 9 in the white label section.
+
+Brands-
+1. Explore Sanam button/link has the same issue as homepage point 9.
+
+Brand Subpages-
+1. No issues aside from the global entrance animation issues.
+2. Also, the click effect for the range cards on touch screen devices (mobile + tablet) is different on the draft, our live has it reveal the full image when tapped but the draft has it so a specific circle cut out is made visible and then on the next tap it is hidden again.
+
+Apply Trade-
+1A. When an option is selected in the form, the draft shows a white tick on the left of the text in the selected pill. The live is missing that.
+1B. Also, when hovering on an option that pill should lift a bit and the border should turn blue.
+2. When selected the input text boxes tunr white in the draft and have a blue focus ring on the inside of the border. The same occurs when a dropdown is opened and the options come out also have a white background until hovered on.
+3. When the continue button is pressed on the draft is pressed when the required fields to move on aren't filled, the contents in the form do this shake left and right animation, but the live doesn't have any movement.
+
+Catalogue-
+1. The form looks nothing like the draft, the styling of everything in it is wrong.
+2. The existing customers card next to the form should have the same pin effect that works on the apply for trade page. Same issue as described in careers point 3.
+
+Delivery-
+1. 2 headings on this page have the pin issue described in careers point 3 and 4.
+2. This isn't seen in the draft but can you slow the accordion open/close animation just a small amount.
+
+FAQs-
+1. Same as Delivery point 2.
+
+Terms and Conditions-
+1. The main section is missing several bits of content -
+1A. The summary points on the left are missing the names of the 7 sections.
+1B. The first point has the heading in the styles of the number that should be before it on the same line.
+1C. All of the other heading lines have the numbers but are completely missing the headings.
+2. The summary points have the same problem as described in careers point 3 and 4.
+
+Contact-
+1. The options in 01 of the form have the wrong hover effect, live gets a border but draft doesn't, it gets a life up and shadow.
+2. The selected option is styled like a primary button on live but the draft is blue bg, white text, dark tick (can't say the actual colour, might be slate) and the circle around the tick is gold.
+3. For the text boxes, they have the same issue as the apply for trade page's text boxes. Need to turn the bg white, border gets thicker, border stays same colour and it gets a thin blue focus border line inside the actual border.
+4. Also, when clicking the text boxes, the labels which sit inside the boxes, just move up on the live form but on the draft the text size gets shrunk too.
+5. The reply by options are broken on live, selecting the other 2 options doesn't work.
+6. For the reply by options, I want an accepted difference fix. The selected pill's bg goes black, I want to switch it to the blue that the buttons use so it's consistent with the rest of the website.
