@@ -333,16 +333,50 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const fieldBorderDecls = borderBoxPreview( fieldBorderWidth, fieldBorderStyle );
 	const fieldBackgroundValue = resolveColourToken( fieldBackground, palette );
 	const fieldTextValue = resolveColourToken( fieldTextColour, palette );
-	const labelColourValue = resolveColourToken( attributes.labelColour, palette );
-	const requiredMarkValue = resolveColourToken( attributes.requiredMarkColour, palette );
-	const optionalColourValue = resolveColourToken( attributes.optionalColour, palette );
-	const fileIconBackgroundValue = resolveColourToken( attributes.fileIconBackground, palette );
-	const fileIconColourValue = resolveColourToken( attributes.fileIconColour, palette );
-	const stepCounterColourValue = resolveColourToken( attributes.stepCounterColour, palette );
-	const trackColourValue = resolveColourToken( attributes.progressTrackColour, palette );
-	const stepNumberInactiveValue = resolveColourToken( attributes.stepNumberInactiveBackground, palette );
-	const stepNumberDoneBg = resolveColourToken( attributes.stepNumberCompletedBackground, palette );
-	const stepNumberDoneColour = resolveColourToken( attributes.stepNumberCompletedColour, palette );
+	const labelColourValue = resolveColourToken(
+		attributes.labelColour,
+		palette
+	);
+	const consentColourValue = resolveColourToken(
+		attributes.consentColour,
+		palette
+	);
+	const requiredMarkValue = resolveColourToken(
+		attributes.requiredMarkColour,
+		palette
+	);
+	const optionalColourValue = resolveColourToken(
+		attributes.optionalColour,
+		palette
+	);
+	const fileIconBackgroundValue = resolveColourToken(
+		attributes.fileIconBackground,
+		palette
+	);
+	const fileIconColourValue = resolveColourToken(
+		attributes.fileIconColour,
+		palette
+	);
+	const stepCounterColourValue = resolveColourToken(
+		attributes.stepCounterColour,
+		palette
+	);
+	const trackColourValue = resolveColourToken(
+		attributes.progressTrackColour,
+		palette
+	);
+	const stepNumberInactiveValue = resolveColourToken(
+		attributes.stepNumberInactiveBackground,
+		palette
+	);
+	const stepNumberDoneBg = resolveColourToken(
+		attributes.stepNumberCompletedBackground,
+		palette
+	);
+	const stepNumberDoneColour = resolveColourToken(
+		attributes.stepNumberCompletedColour,
+		palette
+	);
 	// The device the canvas previews; every tier-aware preview below reads it.
 	const previewTier = usePreviewTier();
 	// The sticky buttons row at the previewed device, as render.php prints it where sticky is on.
@@ -465,45 +499,172 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	const typographyPreviewRules = [
 		labelTypographyDecls && `.${ formPreviewScope } .sgs-form-field__label{${ labelTypographyDecls }}`,
 		fieldTypographyDecls && `${ fieldSel }{${ fieldTypographyDecls }}`,
-		typographyPreviewCss( attributes, 'tileIcon', `.${ formPreviewScope } .sgs-form-tile__icon`, previewTier ),
-		typographyPreviewCss( attributes, 'tileLabel', `.${ formPreviewScope } .sgs-form-tile__label`, previewTier ),
-		typographyPreviewCss( attributes, 'consent', `.${ formPreviewScope } .sgs-form-field__consent-text`, previewTier ),
-		typographyPreviewCss( attributes, 'reviewTerm', `.${ formPreviewScope } .sgs-form-review__term`, previewTier ),
-		typographyPreviewCss( attributes, 'submit', `.${ formPreviewScope } .sgs-form__button--submit`, previewTier ),
-		typographyPreviewCss( attributes, 'navButton', `.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`, previewTier ),
-		typographyPreviewCss( attributes, 'helpText', `.${ formPreviewScope } .sgs-form-field__help,.${ formPreviewScope } .sgs-form-field__file-hint`, previewTier ),
-		typographyPreviewCss( attributes, 'errorText', `.${ formPreviewScope } .sgs-form-field__error,.${ formPreviewScope } .sgs-form-field__error-message`, previewTier ),
-		typographyPreviewCss( attributes, 'fileStatus', `.${ formPreviewScope } .sgs-form-file__preview,.${ formPreviewScope } .sgs-form-file__progress`, previewTier ),
-		typographyPreviewCss( attributes, 'optional', `.${ formPreviewScope } .sgs-form-field__optional`, previewTier ),
-		typographyPreviewCss( attributes, 'fileButton', `.${ formPreviewScope } .sgs-form-field__file-button`, previewTier ),
-		typographyPreviewCss( attributes, 'filePrompt', `.${ formPreviewScope } .sgs-form-field__file-label`, previewTier ),
-		typographyPreviewCss( attributes, 'gridColHeading', `.${ formPreviewScope } .sgs-form-field__column-heading`, previewTier ),
-		typographyPreviewCss( attributes, 'gridRowHeading', `.${ formPreviewScope } .sgs-form-field__row-heading`, previewTier ),
-		typographyPreviewCss( attributes, 'stepNumber', `.${ formPreviewScope } .sgs-form__progress-step-number`, previewTier ),
-		typographyPreviewCss( attributes, 'reviewHeading', `.${ formPreviewScope } .sgs-form-review__heading`, previewTier ),
-		typographyPreviewCss( attributes, 'reviewDetail', `.${ formPreviewScope } .sgs-form-review__detail`, previewTier ),
-		typographyPreviewCss( attributes, 'stepLabel', `.${ formPreviewScope } .sgs-form__progress-step-label`, previewTier ),
-		typographyPreviewCss( attributes, 'stepCounter', `.${ formPreviewScope } .sgs-form__step-counter`, previewTier ),
-		typographyPreviewCss( attributes, 'savedNotice', `.${ formPreviewScope } .sgs-form__saved-notice`, previewTier ),
-		labelColourValue && `.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
-		requiredMarkValue && `.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
-		optionalColourValue && `.${ formPreviewScope } .sgs-form-field__optional{color:${ optionalColourValue };}`,
-		markGapValue && `.${ formPreviewScope } .sgs-form-field__required,.${ formPreviewScope } .sgs-form-field__optional{margin-inline-start:${ markGapValue };}`,
-		fileIconBackgroundValue && `.${ formPreviewScope } .sgs-form-field__file-icon{background-color:${ fileIconBackgroundValue };}`,
-		fileIconColourValue && `.${ formPreviewScope } .sgs-form-field__file-icon{color:${ fileIconColourValue };}`,
-		fileIconBoxValue && `.${ formPreviewScope } .sgs-form-field__file-icon{width:${ fileIconBoxValue };height:${ fileIconBoxValue };}`,
-		fileIconSizeValue && `.${ formPreviewScope } .sgs-form-field__file-icon svg{width:${ fileIconSizeValue };height:${ fileIconSizeValue };}`,
-		zoneBoxDecls && `.${ formPreviewScope } .sgs-form-field__file-label{${ zoneBoxDecls }}`,
-		zoneIconRadiusDecls && `.${ formPreviewScope } .sgs-form-field__file-icon{${ zoneIconRadiusDecls }}`,
-		tierValueOf( attributes.requiredMarkHidden, previewTier ) && `.${ formPreviewScope } .sgs-form-field__required{display:none;}`,
-		stepCounterColourValue && `.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
-		trackColourValue && `.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,
-		( trackColourValue || trackHeightValue ) && `.${ formPreviewScope } .sgs-form__progress{border-radius:999px;overflow:hidden;}`,
-		trackHeightValue && `.${ formPreviewScope } .sgs-form__progress{height:${ trackHeightValue };}.${ formPreviewScope } .sgs-form__progress-bar{height:100%;}`,
-		stepNumberInactiveValue && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
-		( stepNumberDoneBg || stepNumberDoneColour ) && `.${ formPreviewScope } .sgs-form__progress-step--completed .sgs-form__progress-step-number{${ stepNumberDoneBg ? `background-color:${ stepNumberDoneBg };border-color:${ stepNumberDoneBg };` : '' }${ stepNumberDoneColour ? `color:${ stepNumberDoneColour };` : '' }}`,
-		stickyDecls && `.${ formPreviewScope } .sgs-form__actions{${ stickyDecls }}`,
-		actionsMarginValue && `.${ formPreviewScope } .sgs-form__actions{margin-top:${ actionsMarginValue };}`,
+		typographyPreviewCss(
+			attributes,
+			'tileIcon',
+			`.${ formPreviewScope } .sgs-form-tile__icon`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'tileLabel',
+			`.${ formPreviewScope } .sgs-form-tile__label`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'consent',
+			`.${ formPreviewScope } .sgs-form-field__consent-text`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'reviewTerm',
+			`.${ formPreviewScope } .sgs-form-review__term`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'submit',
+			`.${ formPreviewScope } .sgs-form__button--submit`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'navButton',
+			`.${ formPreviewScope } .sgs-form__button--prev,.${ formPreviewScope } .sgs-form__button--next`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'helpText',
+			`.${ formPreviewScope } .sgs-form-field__help,.${ formPreviewScope } .sgs-form-field__file-hint`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'errorText',
+			`.${ formPreviewScope } .sgs-form-field__error,.${ formPreviewScope } .sgs-form-field__error-message`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'fileStatus',
+			`.${ formPreviewScope } .sgs-form-file__preview,.${ formPreviewScope } .sgs-form-file__progress`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'optional',
+			`.${ formPreviewScope } .sgs-form-field__optional`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'fileButton',
+			`.${ formPreviewScope } .sgs-form-field__file-button`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'filePrompt',
+			`.${ formPreviewScope } .sgs-form-field__file-label`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'gridColHeading',
+			`.${ formPreviewScope } .sgs-form-field__column-heading`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'gridRowHeading',
+			`.${ formPreviewScope } .sgs-form-field__row-heading`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'stepNumber',
+			`.${ formPreviewScope } .sgs-form__progress-step-number`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'reviewHeading',
+			`.${ formPreviewScope } .sgs-form-review__heading`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'reviewDetail',
+			`.${ formPreviewScope } .sgs-form-review__detail`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'stepLabel',
+			`.${ formPreviewScope } .sgs-form__progress-step-label`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'stepCounter',
+			`.${ formPreviewScope } .sgs-form__step-counter`,
+			previewTier
+		),
+		typographyPreviewCss(
+			attributes,
+			'savedNotice',
+			`.${ formPreviewScope } .sgs-form__saved-notice`,
+			previewTier
+		),
+		labelColourValue &&
+			`.${ formPreviewScope } .sgs-form-field__label{color:${ labelColourValue };}`,
+		consentColourValue &&
+			`.${ formPreviewScope } .sgs-form-field__consent-text{color:${ consentColourValue };}`,
+		requiredMarkValue &&
+			`.${ formPreviewScope } .sgs-form-field__required{color:${ requiredMarkValue };}`,
+		optionalColourValue &&
+			`.${ formPreviewScope } .sgs-form-field__optional{color:${ optionalColourValue };}`,
+		markGapValue &&
+			`.${ formPreviewScope } .sgs-form-field__required,.${ formPreviewScope } .sgs-form-field__optional{margin-inline-start:${ markGapValue };}`,
+		fileIconBackgroundValue &&
+			`.${ formPreviewScope } .sgs-form-field__file-icon{background-color:${ fileIconBackgroundValue };}`,
+		fileIconColourValue &&
+			`.${ formPreviewScope } .sgs-form-field__file-icon{color:${ fileIconColourValue };}`,
+		fileIconBoxValue &&
+			`.${ formPreviewScope } .sgs-form-field__file-icon{width:${ fileIconBoxValue };height:${ fileIconBoxValue };}`,
+		fileIconSizeValue &&
+			`.${ formPreviewScope } .sgs-form-field__file-icon svg{width:${ fileIconSizeValue };height:${ fileIconSizeValue };}`,
+		zoneBoxDecls &&
+			`.${ formPreviewScope } .sgs-form-field__file-label{${ zoneBoxDecls }}`,
+		zoneIconRadiusDecls &&
+			`.${ formPreviewScope } .sgs-form-field__file-icon{${ zoneIconRadiusDecls }}`,
+		tierValueOf( attributes.requiredMarkHidden, previewTier ) &&
+			`.${ formPreviewScope } .sgs-form-field__required{display:none;}`,
+		stepCounterColourValue &&
+			`.${ formPreviewScope } .sgs-form__step-counter{color:${ stepCounterColourValue };}`,
+		trackColourValue &&
+			`.${ formPreviewScope } .sgs-form__progress{background-color:${ trackColourValue };}`,
+		( trackColourValue || trackHeightValue ) &&
+			`.${ formPreviewScope } .sgs-form__progress{border-radius:999px;overflow:hidden;}`,
+		trackHeightValue &&
+			`.${ formPreviewScope } .sgs-form__progress{height:${ trackHeightValue };}.${ formPreviewScope } .sgs-form__progress-bar{height:100%;}`,
+		stepNumberInactiveValue &&
+			`.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active):not(.sgs-form__progress-step--completed) .sgs-form__progress-step-number{background-color:${ stepNumberInactiveValue };}`,
+		( stepNumberDoneBg || stepNumberDoneColour ) &&
+			`.${ formPreviewScope } .sgs-form__progress-step--completed .sgs-form__progress-step-number{${
+				stepNumberDoneBg
+					? `background-color:${ stepNumberDoneBg };border-color:${ stepNumberDoneBg };`
+					: ''
+			}${
+				stepNumberDoneColour ? `color:${ stepNumberDoneColour };` : ''
+			}}`,
+		stickyDecls &&
+			`.${ formPreviewScope } .sgs-form__actions{${ stickyDecls }}`,
+		actionsMarginValue &&
+			`.${ formPreviewScope } .sgs-form__actions{margin-top:${ actionsMarginValue };}`,
 		// The same declarations and custom properties render.php prints (its sticky-off reset reads the properties).
 		actionsBorderWidth && `.${ formPreviewScope } .sgs-form__actions{border-top:${ actionsBorderWidth } ${ attributes.actionsBorderTopStyle || 'solid' } ${ actionsBorderColour };--sgs-form-actions-border-width:${ actionsBorderWidth };--sgs-form-actions-border-style:${ attributes.actionsBorderTopStyle || 'solid' };--sgs-form-actions-border-colour:${ actionsBorderColour };}`,
 		actionsSpaceValue && `.${ formPreviewScope } .sgs-form__actions{--sgs-form-actions-space:${ actionsSpaceValue };}`,
@@ -827,6 +988,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						key: 'field-label',
 						label: __( 'Field label colour', 'sgs-blocks' ),
 						attrs: { base: 'labelColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
+						key: 'consent-text',
+						label: __( 'Consent text colour', 'sgs-blocks' ),
+						attrs: { base: 'consentColour' },
 						attributes,
 						setAttributes,
 					} ),

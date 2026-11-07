@@ -241,6 +241,7 @@
 					],
 					"attrMap": {
 						"css:background-color": "connectorColour",
+						"css:background-image": "connectorColourGradient",
 						"css:height": "connectorThickness",
 						"css:margin-top": "connectorOffset",
 						"css:width": "connectorWidth",
@@ -251,7 +252,7 @@
 						"list-numbered"
 					],
 					"absentWhy": "The continuous connector line prints only with connectorLine on (path row-connector), and never in the list layout.",
-					"_note": "connectorStyle (line/arrow/dots) is a structural variant selector for the per-step segments and is not mapped. connectorLine adds one real element, `.sgs-process-steps__connector`, a single line behind the badges; the per-step line segments are then hidden. Being a real element it is a motion target, so an entrance on this part (scale across from 0, origin left) draws the line in on scroll. connectorOffset is the distance from the top of the steps to the line's centre (empty centres it on the badges), connectorWidth is its width (empty runs it edge to edge)."
+					"_note": "connectorStyle (line/dashed/arrow/dots) is a structural variant selector for the per-step segments and is not mapped. connectorLine adds one real element, `.sgs-process-steps__connector`, a single line behind the badges; the per-step line segments are then hidden. Being a real element it is a motion target, so an entrance on this part (scale across from 0, origin left) draws the line in on scroll. connectorOffset is the distance from the top of the steps to the line's centre (empty centres it on the badges), connectorWidth is its width (empty runs it edge to edge)."
 				},
 				"step": {
 					"label": "Each process step",
@@ -382,6 +383,11 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour of the continuous connector line. Empty keeps the border token."
+		},
+		"connectorColourGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient painted on the continuous connector line as its background image, over connectorColour. Empty paints the flat colour only."
 		},
 		"connectorThickness": {
 			"type": "string",

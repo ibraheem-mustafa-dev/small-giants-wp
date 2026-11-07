@@ -49,6 +49,7 @@ const LAYOUT_OPTIONS = [
 
 const CONNECTOR_OPTIONS = [
 	{ label: __( 'Line', 'sgs-blocks' ), value: 'line' },
+	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
 	{ label: __( 'Arrow', 'sgs-blocks' ), value: 'arrow' },
 	{ label: __( 'Dots', 'sgs-blocks' ), value: 'dots' },
 ];
@@ -145,6 +146,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		connectorStyle,
 		connectorLine,
 		connectorColour,
+		connectorColourGradient,
 		connectorThickness,
 		connectorOffset,
 		connectorWidth,
@@ -319,9 +321,22 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	// The continuous connector line, mirroring render.php: colour, thickness (height), offset from the top
 	// (margin-top) and width. An empty value keeps the stylesheet default.
+	const connectorDashed = 'dashed' === connectorStyle;
 	const connectorPreviewStyle = {
-		backgroundColor: colourVar( connectorColour ) || undefined,
-		height: cssLengthValue( connectorThickness, spacingSlugs ) || undefined,
+		...( connectorDashed
+			? {
+					borderTopColor: colourVar( connectorColour ) || undefined,
+					borderTopWidth:
+						cssLengthValue( connectorThickness, spacingSlugs ) ||
+						undefined,
+			  }
+			: {
+					backgroundColor: colourVar( connectorColour ) || undefined,
+					backgroundImage: connectorColourGradient || undefined,
+					height:
+						cssLengthValue( connectorThickness, spacingSlugs ) ||
+						undefined,
+			  } ),
 		marginTop: cssLengthValue( connectorOffset, spacingSlugs ) || undefined,
 		width: cssLengthValue( connectorWidth, spacingSlugs ) || undefined,
 	};
@@ -755,7 +770,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				>
 					<ToolsPanel
 						label={ __( 'Layout and spacing', 'sgs-blocks' ) }
-						resetAll={ () => setAttributes( { layout: 'row', stepGap: '', stepRowGap: {}, flexWrap: '', numberGap: '', connectorStyle: 'line', connectorLine: false, connectorColour: '', connectorThickness: '', connectorOffset: '', connectorWidth: '', connectorHidden: {} } ) }
+						resetAll={ () =>
+							setAttributes( {
+								layout: 'row',
+								stepGap: '',
+								stepRowGap: {},
+								flexWrap: '',
+								numberGap: '',
+								connectorStyle: 'line',
+								connectorLine: false,
+								connectorColour: '',
+								connectorColourGradient: '',
+								connectorThickness: '',
+								connectorOffset: '',
+								connectorWidth: '',
+								connectorHidden: {},
+							} )
+						}
 					>
 						<ToolsPanelItem
 							label={ __( 'Layout', 'sgs-blocks' ) }
@@ -849,6 +880,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									label={ __( 'Connector style', 'sgs-blocks' ) }
 									value={ connectorStyle }
 									options={ CONNECTOR_OPTIONS }
+									help={ __(
+										'Dashed draws a dashed border in the connector colour and thickness. A gradient cannot be dashed, so Dashed ignores the connector gradient.',
+										'sgs-blocks'
+									) }
 									onChange={ ( val ) =>
 										setAttributes( { connectorStyle: val } )
 									}
@@ -897,9 +932,20 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ 'list' !== layout && connectorLine && (
 							<>
 								<ToolsPanelItem
-									label={ __( 'Connector colour', 'sgs-blocks' ) }
-									hasValue={ () => !! connectorColour }
-									onDeselect={ () => setAttributes( { connectorColour: '' } ) }
+									label={ __(
+										'Connector colour',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										!! connectorColour ||
+										!! connectorColourGradient
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											connectorColour: '',
+											connectorColourGradient: '',
+										} )
+									}
 								>
 									<DesignTokenPicker
 										label={ __( 'Connector colour', 'sgs-blocks' ) }
@@ -910,6 +956,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 												value: connectorColour,
 												onChange: ( val ) => setAttributes( { connectorColour: val ?? '' } ),
 												linked: true,
+												gradientValue:
+													connectorColourGradient,
+												onGradientChange: ( val ) =>
+													setAttributes( {
+														connectorColourGradient:
+															val ?? '',
+													} ),
 											},
 										] }
 									/>

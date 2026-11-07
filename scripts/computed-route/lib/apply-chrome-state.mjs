@@ -27,6 +27,13 @@ const paintOf = ( f ) => {
 	const side = [ 'top', 'bottom' ].find( ( x ) => Number.parseFloat( f.styles[ `border-${ x }-width` ] ) > 0 && 'none' !== f.styles[ `border-${ x }-style` ] );
 	return side ? toHex( f.styles[ `border-${ side }-color` ] ) : null;
 };
+// A line the draft paints with a linear gradient: the gradient with each rgb stop as hex, else null.
+export const gradientOf = ( f ) => {
+	const img = String( f.styles[ 'background-image' ] ?? '' ).trim();
+	return /^linear-gradient\(/.test( img ) && ! /url\(/.test( img ) ? img.replace( /rgba?\([^)]+\)/g, ( c ) => toHex( c ) ) : null;
+};
+// A line the draft draws dashed: no background paint, a dashed top or bottom border.
+export const isDashed = ( f ) => ! gradientOf( f ) && [ 'top', 'bottom' ].some( ( x ) => 'dashed' === f.styles[ `border-${ x }-style` ] && Number.parseFloat( f.styles[ `border-${ x }-width` ] ) > 0 );
 const shown = ( f ) => f && 'none' !== f.styles?.display && f.box?.w > 0 && f.box?.h > 0;
 
 // The open-status badge in its closed state, read from the draft under the closed clock (apply.mjs: ctx.closed): the dot's colour,
@@ -167,6 +174,8 @@ function processSteps( ctx ) {
 		const writes = [
 			{ attr: 'connectorLine', value: true },
 			...( paintOf( line ) ? [ { attr: 'connectorColour', value: paintOf( line ) } ] : [] ),
+			...( gradientOf( line ) ? [ { attr: 'connectorColourGradient', value: gradientOf( line ) } ] : saved.connectorColourGradient ? [ { attr: 'connectorColourGradient', unset: true } ] : [] ),
+			...( isDashed( line ) ? [ { attr: 'connectorStyle', value: 'dashed' } ] : 'dashed' === saved.connectorStyle ? [ { attr: 'connectorStyle', value: 'line' } ] : [] ),
 			{ attr: 'connectorThickness', value: `${ Math.round( h * 10 ) / 10 }px` },
 			{ attr: 'connectorWidth', value: `${ Math.round( line.box.w ) }px` },
 			{ attr: 'connectorOffset', value: `${ Math.round( ( line.box.y + h / 2 - draft[ top ].box.y ) * 10 ) / 10 }px` },

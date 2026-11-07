@@ -81,3 +81,15 @@ test( 'tiles: the hover check reads the composed pose, so a lift made through tr
 	after.s[ 1440 ].facts[ 'cr-ref-x-1' ].probes.hover.tile.pose = 'matrix(1, 0, 0, 1, 0, 0)';
 	assert.equal( judge( [ { surface: 's', ref: 'cr-ref-x-1', checks: op.checks } ], after )[ 0 ].ok, false );
 } );
+
+// Needs the reseeded framework DB: skipped (not failed) until `sgs/form` carries `consentColour`.
+const hasConsentColour = db.prepare( "SELECT 1 FROM block_attributes WHERE block_slug = 'sgs/form' AND attr_name = 'consentColour'" ).get();
+test( 'form: a consent text colour that differs writes consentColour; an equal colour writes nothing', { skip: ! hasConsentColour && 'framework DB not reseeded with consentColour' }, () => {
+	const consent = ( color ) => ( { 'font-size': '14px', 'font-weight': '400', 'font-family': 'x', 'line-height': '21px', color } );
+	const items = form.decide( ctx( { draft: at( probe( label(), consent( 'rgb(74, 85, 99)' ) ) ), live: at( probe( label(), consent( 'rgb(30, 42, 60)' ) ) ) } ) );
+	const item = items.find( ( i ) => 'consentColour' === i.writes?.[ 0 ]?.attr );
+	assert.ok( item, JSON.stringify( items.map( ( i ) => [ i.prop, i.status ] ) ) );
+	assert.equal( item.status, 'op' );
+	const same = form.decide( ctx( { draft: at( probe( label(), consent( 'rgb(30, 42, 60)' ) ) ), live: at( probe( label(), consent( 'rgb(30, 42, 60)' ) ) ) } ) );
+	assert.ok( ! same.some( ( i ) => 'consentColour' === i.writes?.[ 0 ]?.attr ) );
+} );

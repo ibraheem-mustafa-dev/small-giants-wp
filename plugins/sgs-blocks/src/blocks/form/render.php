@@ -552,6 +552,10 @@ $sgs_field_css .= \SGS\Blocks\Forms\field_focus_css( $attributes, $sgs_form_uid 
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileIcon', '.' . $sgs_form_uid . ' .sgs-form-tile__icon', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'tileLabel', '.' . $sgs_form_uid . ' .sgs-form-tile__label', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'reviewTerm', '.' . $sgs_form_uid . ' .sgs-form-review__term', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_consent_text = sgs_text_decls( $attributes, array( 'base' => 'consentColour' ) );
+if ( ! empty( $sgs_consent_text['normal'] ) ) {
+	$sgs_field_css .= '.' . $sgs_form_uid . ' .sgs-form-field__consent-text{' . implode( ';', $sgs_consent_text['normal'] ) . ';}';
+}
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'consent', '.' . $sgs_form_uid . ' .sgs-form-field__consent-text', '', false, false, sgs_object_attr_keys( $block ) );
 // A blank family needs no fifth argument: .sgs-form__button declares
 // font-family:inherit in style.css, so the button follows the form's own font.

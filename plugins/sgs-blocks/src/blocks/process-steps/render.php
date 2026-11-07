@@ -414,13 +414,19 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid 
 // style.css's `:where()` defaults.
 if ( $connector_line ) {
 	$connector_decls = array();
+	$connector_dashed = 'dashed' === $connector_style;
 	$connector_colour = (string) ( $attributes['connectorColour'] ?? '' );
 	if ( '' !== $connector_colour ) {
-		$connector_decls[] = 'background-color:' . sgs_colour_value( $connector_colour );
+		$connector_decls[] = ( $connector_dashed ? 'border-top-color:' : 'background-color:' ) . sgs_colour_value( $connector_colour );
+	}
+	// A gradient cannot be a dashed border: the dashed style draws the flat colour and ignores the gradient.
+	$connector_gradient = $connector_dashed ? '' : sgs_css_gradient_value( (string) ( $attributes['connectorColourGradient'] ?? '' ) );
+	if ( '' !== $connector_gradient ) {
+		$connector_decls[] = 'background-image:' . $connector_gradient;
 	}
 	$connector_thickness = sgs_css_length_value( (string) ( $attributes['connectorThickness'] ?? '' ) );
 	if ( '' !== $connector_thickness ) {
-		$connector_decls[] = 'height:' . $connector_thickness;
+		$connector_decls[] = ( $connector_dashed ? 'border-top-width:' : 'height:' ) . $connector_thickness;
 	}
 	$connector_offset = sgs_css_length_value( (string) ( $attributes['connectorOffset'] ?? '' ) );
 	if ( '' !== $connector_offset ) {

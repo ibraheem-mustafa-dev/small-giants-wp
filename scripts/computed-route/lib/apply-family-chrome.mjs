@@ -13,7 +13,7 @@ import { burgerBars, connectorLine, pulseDot, rowWrapper, stateRule } from './ap
 export const chrome = {
 	name: 'chrome',
 	slots: true,
-	props: [ 'display', 'position', 'height', 'width', 'background-color', 'right', 'bottom', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color' ],
+	props: [ 'display', 'position', 'height', 'width', 'background-color', 'background-image', 'right', 'bottom', 'border-top-width', 'border-top-style', 'border-top-color', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color' ],
 	// Whether a surface needs the closed-clock read: it holds an open-status badge.
 	closedClock( { saved } ) {
 		return Object.values( saved ).some( ( b ) => 'sgs/business-info' === b.block && 'open-status' === b.attrs?.displayType );

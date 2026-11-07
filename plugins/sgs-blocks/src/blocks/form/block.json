@@ -599,6 +599,7 @@
 					"clusters": [ "text" ],
 					"prefix": "consent",
 					"attrMap": {
+						"css:color": "consentColour",
 						"css:font-size": "consentFontSize",
 						"css:font-weight": "consentFontWeight",
 						"css:font-style": "consentFontStyle",
@@ -614,7 +615,7 @@
 						"css:column-count": "consentTextColumns",
 						"css:writing-mode": "consentWritingMode"
 					},
-					"_note": "Typography only (consent* family, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own.",
+					"_note": "Typography and colour (consent* family and consentColour, render.php sgs_typography_css_rule on .{uid} .sgs-form-field__consent-text). The class is emitted by the child sgs/form-field-consent block, which declares no typography attributes of its own.",
 					"states": {
 						"hover": {
 							"attrMap": {
@@ -2615,6 +2616,11 @@
 			"type": "string",
 			"enum": [ "", "horizontal-tb", "vertical-rl", "vertical-lr" ],
 			"default": ""
+		},
+		"consentColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the consent checkbox text. Empty = inherit the form's text colour."
 		},
 		"consentFontSize": {
 			"type": "object",
