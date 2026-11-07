@@ -108,9 +108,8 @@
 
 /* ===== Connector Lines ===== */
 
-/* Line connector between steps (the dashed style draws the same segment as a dashed border, below) */
-.sgs-process-steps--connector-line .sgs-process-steps__step:not(:last-child)::after,
-.sgs-process-steps--connector-dashed .sgs-process-steps__step:not(:last-child)::after {
+/* Line connector between steps */
+.sgs-process-steps--connector-line .sgs-process-steps__step:not(:last-child)::after {
 	content: "";
 	position: absolute;
 	top: calc(var(--sgs-step-number-size) / 2);
@@ -120,14 +119,34 @@
 	background-color: var(--wp--preset--color--border, #D4DBE5);
 }
 
-/* Dashed connector: a zero-height line whose top border is dashed, so the browser picks the dash pattern, for the
-   per-step segments and the continuous line alike. connectorColour and connectorThickness set the border colour and
-   width; the line's own background (and any gradient) is off. */
-.sgs-process-steps--connector-dashed .sgs-process-steps__step:not(:last-child)::after,
-.sgs-process-steps--connector-dashed .sgs-process-steps__connector {
+/* Dashed or dotted line (connectorLineStyle): a zero-height line whose top border carries the style, so the browser
+   picks the pattern, for the per-step segments and the continuous line alike. render.php's connector emitter prints
+   the style keyword, colour and width; these are the stylesheet defaults. */
+.sgs-process-steps--connector-line.sgs-process-steps--line-dashed .sgs-process-steps__step:not(:last-child)::after,
+.sgs-process-steps--connector-line.sgs-process-steps--line-dotted .sgs-process-steps__step:not(:last-child)::after,
+.sgs-process-steps--line-dashed .sgs-process-steps__connector,
+.sgs-process-steps--line-dotted .sgs-process-steps__connector {
 	height: 0;
 	background: none;
-	border-top: 2px dashed var(--wp--preset--color--border, #D4DBE5);
+	border-style: solid;
+	border-width: 2px 0 0;
+	border-color: var(--wp--preset--color--border, #D4DBE5);
+}
+
+.sgs-process-steps--line-dashed .sgs-process-steps__connector {
+	border-style: dashed;
+}
+
+.sgs-process-steps--line-dotted .sgs-process-steps__connector {
+	border-style: dotted;
+}
+
+.sgs-process-steps--connector-line.sgs-process-steps--line-dashed .sgs-process-steps__step:not(:last-child)::after {
+	border-style: dashed;
+}
+
+.sgs-process-steps--connector-line.sgs-process-steps--line-dotted .sgs-process-steps__step:not(:last-child)::after {
+	border-style: dotted;
 }
 
 /* Arrow connector */

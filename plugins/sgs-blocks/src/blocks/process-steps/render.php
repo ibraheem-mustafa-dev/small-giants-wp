@@ -69,6 +69,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-connector-line.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -95,6 +96,7 @@ $layout           = in_array( $attributes['layout'] ?? '', $allowed_layouts, tru
 	? $attributes['layout']
 	: 'row';
 $connector_style         = $attributes['connectorStyle'] ?? 'line';
+$connector_line_style    = sgs_connector_line_style( $attributes['connectorLineStyle'] ?? '' );
 $number_style            = $attributes['numberStyle'] ?? 'circle';
 $number_colour           = $attributes['numberColour'] ?? '';
 $number_background       = $attributes['numberBackground'] ?? '';
@@ -165,6 +167,7 @@ $root_sel = '.' . $uid . '.sgs-process-steps';
 // Wrapper class array (parity with save.js className).
 $wrapper_classes   = array( 'sgs-process-steps', $uid );
 $wrapper_classes[] = 'sgs-process-steps--connector-' . esc_attr( $connector_style );
+$wrapper_classes[] = 'sgs-process-steps--line-' . $connector_line_style;
 $wrapper_classes[] = 'sgs-process-steps--number-' . esc_attr( $number_style );
 // Only emitted for the non-default value (default 'row').
 if ( 'list' === $layout ) {
@@ -410,24 +413,17 @@ $scoped_css[] = sgs_typography_css_rule( $attributes, 'number', '.' . $uid . '.s
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'title', '.' . $uid . '.sgs-process-steps .sgs-process-steps__title', '', false, false, sgs_object_attr_keys( $block ) );
 $scoped_css[] = sgs_typography_css_rule( $attributes, 'description', '.' . $uid . '.sgs-process-steps .sgs-process-steps__description', '', false, false, sgs_object_attr_keys( $block ) );
 
-// Continuous connector line: colour, thickness, offset from the top and inset from both sides. Unset values keep
+// Connector line: its style (solid, dashed, dotted) through the shared emitter. The continuous line (connectorLine)
+// also takes colour and thickness; the per-step segments keep style.css's colour and thickness. Unset values keep
 // style.css's `:where()` defaults.
 if ( $connector_line ) {
-	$connector_decls = array();
-	$connector_dashed = 'dashed' === $connector_style;
-	$connector_colour = (string) ( $attributes['connectorColour'] ?? '' );
-	if ( '' !== $connector_colour ) {
-		$connector_decls[] = ( $connector_dashed ? 'border-top-color:' : 'background-color:' ) . sgs_colour_value( $connector_colour );
-	}
-	// A gradient cannot be a dashed border: the dashed style draws the flat colour and ignores the gradient.
-	$connector_gradient = $connector_dashed ? '' : sgs_css_gradient_value( (string) ( $attributes['connectorColourGradient'] ?? '' ) );
-	if ( '' !== $connector_gradient ) {
-		$connector_decls[] = 'background-image:' . $connector_gradient;
-	}
-	$connector_thickness = sgs_css_length_value( (string) ( $attributes['connectorThickness'] ?? '' ) );
-	if ( '' !== $connector_thickness ) {
-		$connector_decls[] = ( $connector_dashed ? 'border-top-width:' : 'height:' ) . $connector_thickness;
-	}
+	$connector_decls = sgs_connector_line_decls(
+		$connector_line_style,
+		'horizontal',
+		'' !== (string) ( $attributes['connectorColour'] ?? '' ) ? sgs_colour_value( (string) $attributes['connectorColour'] ) : '',
+		sgs_css_gradient_value( (string) ( $attributes['connectorColourGradient'] ?? '' ) ),
+		sgs_css_length_value( (string) ( $attributes['connectorThickness'] ?? '' ) )
+	);
 	$connector_offset = sgs_css_length_value( (string) ( $attributes['connectorOffset'] ?? '' ) );
 	if ( '' !== $connector_offset ) {
 		$connector_decls[] = 'margin-top:' . $connector_offset;
@@ -439,6 +435,9 @@ if ( $connector_line ) {
 	if ( $connector_decls ) {
 		$scoped_css[] = $root_sel . ' .sgs-process-steps__connector{' . implode( ';', $connector_decls ) . ';}';
 	}
+} elseif ( 'line' === $connector_style && 'solid' !== $connector_line_style ) {
+	$scoped_css[] = $root_sel . ' .sgs-process-steps__step:not(:last-child)::after{'
+		. implode( ';', sgs_connector_line_decls( $connector_line_style, 'horizontal', '', '', '' ) ) . ';}';
 }
 
 // Connector hidden per device (connectorHidden): the continuous line when it is on, else the per-step segments.

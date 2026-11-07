@@ -57,6 +57,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-connector-line.php';
 require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 // ---------------------------------------------------------------------------
@@ -104,7 +105,7 @@ $content_side = in_array( $content_side, array( 'start', 'end' ), true ) ? $cont
 // timeline never carries a rule from it.
 $mobile_layout    = $attributes['mobileLayout'] ?? 'stacked';
 $mobile_layout    = in_array( $mobile_layout, array( 'stacked', 'carousel' ), true ) ? $mobile_layout : 'stacked';
-$connector_style  = $attributes['connectorStyle'] ?? 'line';
+$connector_line_style = sgs_connector_line_style( $attributes['connectorLineStyle'] ?? '' );
 $connector_colour = $attributes['connectorColour'] ?? 'border';
 // connectorColourGradient (2026-09-06, colour-conformance closeout) — the
 // `--sgs-connector-colour-gradient` sibling, same sgs_custom_property_gradient_decls()
@@ -199,7 +200,6 @@ $stripe_b_hover_gradient = $attributes['rowStripeColourBHoverGradient'] ?? '';
 // and $content_side were already validated above, so they need no separate
 // sanitisation pass here.
 $orientation     = in_array( $orientation, array( 'vertical', 'horizontal' ), true ) ? $orientation : 'vertical';
-$connector_style = in_array( $connector_style, array( 'line', 'dashed', 'dotted' ), true ) ? $connector_style : 'line';
 
 // Date gutter — the date in its OWN column, opposite the content, on every row.
 //
@@ -307,6 +307,16 @@ $border = sgs_border_element_decls(
 );
 
 $scoped_css = array();
+
+// Connector line style (connectorLineStyle) through the shared emitter: a dashed or dotted rail is a zero-width (vertical)
+// or zero-height (horizontal) line whose border carries the style, in the connector colour and width custom properties.
+// Solid keeps style.scss's background paint. The selector carries the style class so it out-ranks the hover paint.
+if ( 'solid' !== $connector_line_style ) {
+	$rail_axis = 'vertical' === $orientation ? 'vertical' : 'horizontal';
+	$rail_sel  = $root_sel . '.sgs-timeline--line-' . $connector_line_style . '::before';
+	$scoped_css[] = $rail_sel . '{' . implode( ';', sgs_connector_line_decls( $connector_line_style, $rail_axis, 'var(--sgs-connector-colour)', '', 'var(--sgs-connector-width)' ) ) . ';}';
+	$scoped_css[] = $root_sel . '.sgs-timeline--line-' . $connector_line_style . ':hover::before,' . $root_sel . '.sgs-timeline--line-' . $connector_line_style . ':focus-visible::before{border-color:var(--sgs-connector-colour-hover,var(--sgs-connector-colour));}';
+}
 
 // --- Background layer (Task 1, 2026-09-07) — ::after layer frees the root for
 // background-clip:text on text colour gradients. sgs_block_background_layer_css()
@@ -519,7 +529,7 @@ if ( 'vertical' === $orientation ) {
 		$wrapper_classes[] = 'sgs-timeline--side-start';
 	}
 }
-$wrapper_classes[] = 'sgs-timeline--connector-' . $connector_style;
+$wrapper_classes[] = 'sgs-timeline--line-' . $connector_line_style;
 if ( $progress_fill ) {
 	// FR-38-35 — suppression of the always-drawn ::before is keyed on THIS
 	// class, never on @supports: an @supports-keyed hide would leave a doubled

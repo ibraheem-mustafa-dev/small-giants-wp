@@ -242,6 +242,7 @@
 					"attrMap": {
 						"css:background-color": "connectorColour",
 						"css:background-image": "connectorColourGradient",
+						"css:border-style": "connectorLineStyle",
 						"css:height": "connectorThickness",
 						"css:margin-top": "connectorOffset",
 						"css:width": "connectorWidth",
@@ -252,7 +253,7 @@
 						"list-numbered"
 					],
 					"absentWhy": "The continuous connector line prints only with connectorLine on (path row-connector), and never in the list layout.",
-					"_note": "connectorStyle (line/dashed/arrow/dots) is a structural variant selector for the per-step segments and is not mapped. connectorLine adds one real element, `.sgs-process-steps__connector`, a single line behind the badges; the per-step line segments are then hidden. Being a real element it is a motion target, so an entrance on this part (scale across from 0, origin left) draws the line in on scroll. connectorOffset is the distance from the top of the steps to the line's centre (empty centres it on the badges), connectorWidth is its width (empty runs it edge to edge)."
+					"_note": "connectorStyle (line/arrow/dots) is the connector type, a structural variant selector for the per-step segments, and is not mapped; connectorLineStyle (solid/dashed/dotted) is its line style. connectorLine adds one real element, `.sgs-process-steps__connector`, a single line behind the badges; the per-step line segments are then hidden. Being a real element it is a motion target, so an entrance on this part (scale across from 0, origin left) draws the line in on scroll. connectorOffset is the distance from the top of the steps to the line's centre (empty centres it on the badges), connectorWidth is its width (empty runs it edge to edge)."
 				},
 				"step": {
 					"label": "Each process step",
@@ -372,7 +373,13 @@
 		},
 		"connectorStyle": {
 			"type": "string",
-			"default": "line"
+			"default": "line",
+			"description": "Connector type between the steps: line, arrow or dots. The line's own style (solid, dashed, dotted) is connectorLineStyle."
+		},
+		"connectorLineStyle": {
+			"type": "string",
+			"default": "solid",
+			"description": "Line style of the connector: solid, dashed or dotted (the border style picker). Solid paints the connector colour or gradient as a background; dashed and dotted draw a zero-height line with a border of the connector thickness and colour, so a gradient is ignored (the style wins)."
 		},
 		"connectorLine": {
 			"type": "boolean",

@@ -23,7 +23,7 @@ export const chrome = {
 		if ( ctx.target.slot ) {
 			return rowWrapper( ctx );
 		}
-		return { 'sgs/nav-bar-menu': burgerBars, 'sgs/process-steps': connectorLine, 'sgs/business-info': pulseDot }[ ctx.block ]?.( ctx ) ?? [];
+		return { 'sgs/nav-bar-menu': burgerBars, 'sgs/process-steps': connectorLine, 'sgs/timeline': connectorLine, 'sgs/business-info': pulseDot }[ ctx.block ]?.( ctx ) ?? [];
 	},
 	decide( ctx ) {
 		return [ logoRule, hoverRule, iconRule, stateRule, groundRule, itemCardHover, arrowHover, headingLevel ].flatMap( ( rule ) => rule( ctx ) );

@@ -16,6 +16,7 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import {
+	BorderStyleControl,
 	IconPicker,
 	SgsColourPanel,
 	SgsBorderControl,
@@ -40,6 +41,7 @@ import {
 	sanitiseSvg,
 	gapVar,
 } from '../../utils';
+import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 
@@ -235,12 +237,6 @@ const MILESTONE_MIN_HEIGHT_OPTIONS = [
 	{ label: '100vh', value: '100vh' },
 	{ label: '520px', value: '520px' },
 	{ label: '600px', value: '600px' },
-];
-
-const CONNECTOR_OPTIONS = [
-	{ label: __( 'Solid line', 'sgs-blocks' ), value: 'line' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
-	{ label: __( 'Dotted', 'sgs-blocks' ), value: 'dotted' },
 ];
 
 /**
@@ -536,7 +532,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		mobileLayout,
 		entries,
 		headingLevel,
-		connectorStyle,
+		connectorLineStyle,
 		connectorColour,
 		connectorColourGradient,
 		connectorColourHover,
@@ -613,7 +609,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		contentSide === 'start'
 			? 'sgs-timeline--side-start'
 			: '',
-		`sgs-timeline--connector-${ connectorStyle }`,
+		`sgs-timeline--line-${ connectorLineStyleOf( connectorLineStyle ) }`,
 		connectorProgressFill ? 'sgs-timeline--connector-progress' : '',
 		'sgs-timeline--media-under',
 		rowStripes ? 'sgs-timeline--row-stripes' : '',
@@ -640,6 +636,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// Editor-canvas preview CSS for the per-entry description link colour
 	// (Task 3, 2026-09-07) — applies block-wide, matching the frontend.
 	// Extended with gradient support (CHECK A, 2026-09-07).
+	// A dashed or dotted rail: the shared connector emitter's declarations on the root's ::before, as render.php prints them.
+	const railPreviewCss =
+		'solid' === connectorLineStyleOf( connectorLineStyle )
+			? ''
+			: `#block-${ clientId }.sgs-timeline::before{${ connectorLineCss(
+					connectorLineStyle,
+					'vertical' === orientation ? 'vertical' : 'horizontal',
+					{ colour: 'var(--sgs-connector-colour)', thickness: 'var(--sgs-connector-width)' }
+			  ) }}#block-${ clientId }.sgs-timeline:hover::before{border-color:var(--sgs-connector-colour-hover,var(--sgs-connector-colour))}`;
+
 	const linkPreviewCss =
 		linkUnderlinePreviewCss(
 			`.${ linkPreviewUid } .sgs-timeline__description`,
@@ -828,6 +834,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			{ linkPreviewCss && <style>{ linkPreviewCss }</style> }
+			{ railPreviewCss && <style>{ railPreviewCss }</style> }
 			<SgsColourPanel
 				rows={ [
 					{
@@ -1408,16 +1415,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Connector', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Connector style', 'sgs-blocks' ) }
-						value={ connectorStyle }
-						options={ CONNECTOR_OPTIONS }
+					<BorderStyleControl
+						label={ __( 'Line style', 'sgs-blocks' ) }
+						value={ connectorLineStyle }
 						onChange={ ( val ) =>
-							setAttributes( { connectorStyle: val } )
+							setAttributes( { connectorLineStyle: val || 'solid' } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
+					<p className="components-base-control__help">
+						{ __( 'Dashed and dotted draw a border in the connector colour, so a connector gradient is ignored.', 'sgs-blocks' ) }
+					</p>
 					<ToggleControl
 						label={ __( 'Fill connector on scroll', 'sgs-blocks' ) }
 						help={ __(

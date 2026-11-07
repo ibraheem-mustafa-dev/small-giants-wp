@@ -1674,7 +1674,8 @@
                   "mobile": "list"
                 },
                 "numberStyle": "circle",
-                "connectorStyle": "dashed",
+                "connectorStyle": "line",
+                "connectorLineStyle": "dashed",
                 "connector": {
                   "desktop": "show",
                   "tablet": "show",

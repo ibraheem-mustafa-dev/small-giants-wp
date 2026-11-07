@@ -25,7 +25,7 @@ const HEADING_LEVEL_OPTIONS = [
 	{ label: __( 'Paragraph (not a heading)', 'sgs-blocks' ), value: 'p' },
 ];
 
-import { ResponsiveControl, FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
+import { ResponsiveControl, FlexWrapControl, IconPicker, IconPreview, ResponsiveBoxControl, fillRow, SgsBorderControl, DesignTokenPicker, TypographyControls, SgsLengthControl, ResponsiveOverride, BorderStyleControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, ShadowLiftControls } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	backgroundPaintPreview,
@@ -38,6 +38,7 @@ import {
 	flattenPresetSetting,
 } from '../../utils';
 import { cssLengthValue } from '../../utils/css-length';
+import { connectorLineStyleOf, connectorLineStyleProps } from '../../utils/connector-line';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 
 // Spec 35 Part B: 2 options, short labels → ToggleGroupControl (mirrors
@@ -49,7 +50,6 @@ const LAYOUT_OPTIONS = [
 
 const CONNECTOR_OPTIONS = [
 	{ label: __( 'Line', 'sgs-blocks' ), value: 'line' },
-	{ label: __( 'Dashed', 'sgs-blocks' ), value: 'dashed' },
 	{ label: __( 'Arrow', 'sgs-blocks' ), value: 'arrow' },
 	{ label: __( 'Dots', 'sgs-blocks' ), value: 'dots' },
 ];
@@ -144,6 +144,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		headingLevel,
 		layout,
 		connectorStyle,
+		connectorLineStyle,
 		connectorLine,
 		connectorColour,
 		connectorColourGradient,
@@ -299,6 +300,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 	const className = [
 		'sgs-process-steps',
 		`sgs-process-steps--connector-${ connectorStyle }`,
+		`sgs-process-steps--line-${ connectorLineStyleOf( connectorLineStyle ) }`,
 		`sgs-process-steps--number-${ numberStyle }`,
 		'list' === layout ? 'sgs-process-steps--layout-list' : '',
 		connectorLine && 'list' !== layout ? 'sgs-process-steps--connector-rail' : '',
@@ -321,22 +323,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	// The continuous connector line, mirroring render.php: colour, thickness (height), offset from the top
 	// (margin-top) and width. An empty value keeps the stylesheet default.
-	const connectorDashed = 'dashed' === connectorStyle;
 	const connectorPreviewStyle = {
-		...( connectorDashed
-			? {
-					borderTopColor: colourVar( connectorColour ) || undefined,
-					borderTopWidth:
-						cssLengthValue( connectorThickness, spacingSlugs ) ||
-						undefined,
-			  }
-			: {
-					backgroundColor: colourVar( connectorColour ) || undefined,
-					backgroundImage: connectorColourGradient || undefined,
-					height:
-						cssLengthValue( connectorThickness, spacingSlugs ) ||
-						undefined,
-			  } ),
+		...connectorLineStyleProps( connectorLineStyle, 'horizontal', {
+			colour: colourVar( connectorColour ) || '',
+			gradient: connectorColourGradient || '',
+			thickness: cssLengthValue( connectorThickness, spacingSlugs ) || '',
+		} ),
 		marginTop: cssLengthValue( connectorOffset, spacingSlugs ) || undefined,
 		width: cssLengthValue( connectorWidth, spacingSlugs ) || undefined,
 	};
@@ -778,6 +770,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								flexWrap: '',
 								numberGap: '',
 								connectorStyle: 'line',
+								connectorLineStyle: 'solid',
 								connectorLine: false,
 								connectorColour: '',
 								connectorColourGradient: '',
@@ -877,19 +870,31 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								onDeselect={ () => setAttributes( { connectorStyle: 'line' } ) }
 							>
 								<SelectControl
-									label={ __( 'Connector style', 'sgs-blocks' ) }
+									label={ __( 'Connector type', 'sgs-blocks' ) }
 									value={ connectorStyle }
 									options={ CONNECTOR_OPTIONS }
-									help={ __(
-										'Dashed draws a dashed border in the connector colour and thickness. A gradient cannot be dashed, so Dashed ignores the connector gradient.',
-										'sgs-blocks'
-									) }
 									onChange={ ( val ) =>
 										setAttributes( { connectorStyle: val } )
 									}
 									__nextHasNoMarginBottom
 									__next40pxDefaultSize
 								/>
+							</ToolsPanelItem>
+						) }
+						{ 'list' !== layout && (
+							<ToolsPanelItem
+								label={ __( 'Connector line style', 'sgs-blocks' ) }
+								hasValue={ () => 'solid' !== connectorLineStyleOf( connectorLineStyle ) }
+								onDeselect={ () => setAttributes( { connectorLineStyle: 'solid' } ) }
+							>
+								<BorderStyleControl
+									label={ __( 'Connector line style', 'sgs-blocks' ) }
+									value={ connectorLineStyle }
+									onChange={ ( val ) => setAttributes( { connectorLineStyle: val || 'solid' } ) }
+								/>
+								<p className="components-base-control__help">
+									{ __( 'Dashed and dotted draw a border in the connector colour and thickness, so a connector gradient is ignored (the style wins).', 'sgs-blocks' ) }
+								</p>
 							</ToolsPanelItem>
 						) }
 						{ 'list' !== layout && (

@@ -32,8 +32,20 @@ export const gradientOf = ( f ) => {
 	const img = String( f.styles[ 'background-image' ] ?? '' ).trim();
 	return /^linear-gradient\(/.test( img ) && ! /url\(/.test( img ) ? img.replace( /rgba?\([^)]+\)/g, ( c ) => toHex( c ) ) : null;
 };
-// A line the draft draws dashed: no background paint, a dashed top or bottom border.
-export const isDashed = ( f ) => ! gradientOf( f ) && [ 'top', 'bottom' ].some( ( x ) => 'dashed' === f.styles[ `border-${ x }-style` ] && Number.parseFloat( f.styles[ `border-${ x }-width` ] ) > 0 );
+// A line the draft draws dashed or dotted (connectorLineStyle): no gradient, a dashed or dotted border on the line's own side
+// (top or bottom for a horizontal line, left or right for a vertical one). Solid returns ''.
+export const lineStyleOf = ( f ) => {
+	if ( gradientOf( f ) ) {
+		return '';
+	}
+	const sides = [ 'top', 'bottom', 'left', 'right' ].filter( ( x ) => Number.parseFloat( f.styles[ `border-${ x }-width` ] ) > 0 );
+	return sides.map( ( x ) => f.styles[ `border-${ x }-style` ] ).find( ( s ) => 'dashed' === s || 'dotted' === s ) ?? '';
+};
+// The connectorLineStyle write for a drawn line: its dashed or dotted style, or solid over a stale non-solid one, else nothing.
+const lineStyleWrites = ( line, saved ) => {
+	const style = lineStyleOf( line );
+	return style ? [ { attr: 'connectorLineStyle', value: style } ] : saved.connectorLineStyle && 'solid' !== saved.connectorLineStyle ? [ { attr: 'connectorLineStyle', value: 'solid' } ] : [];
+};
 const shown = ( f ) => f && 'none' !== f.styles?.display && f.box?.w > 0 && f.box?.h > 0;
 
 // The open-status badge in its closed state, read from the draft under the closed clock (apply.mjs: ctx.closed): the dot's colour,
@@ -148,14 +160,14 @@ function burger( { saved, aux, target } ) {
 	return [ settle( { prop: 'burgerBarThickness', why: `${ target.tpl } burger bars are ${ Object.values( value ).join( '/' ) } tall`, saved, writes: [ { attr: 'burgerBarThickness', value: next } ] } ) ];
 }
 
-// A connector line the draft draws as one element: the record that draws it (scaleX 0 to 1) names it.
+// A connector line the draft draws as one element: the record that draws it (scaleX or scaleY 0 to 1) names it.
 export const connectorLine = ( { target, recordsIndex } ) => {
 	const reach = new Set( target.reach ?? [] );
 	const out = [];
 	for ( const list of recordsIndex.values() ) {
 		for ( const r of list ) {
 			const ids = [].concat( r.element?.template_tpl_id ?? [] ).map( Number );
-			const draws = ( r.properties || [] ).some( ( p ) => 'transform' === p.property && /scaleX\(0\)/.test( p.from ?? '' ) );
+			const draws = ( r.properties || [] ).some( ( p ) => 'transform' === p.property && /scale[XY]\(0\)/.test( p.from ?? '' ) );
 			ids.filter( ( id ) => reach.has( id ) && draws ).forEach( ( id ) => out.push( { key: `${ target.key ?? target.ref }~${ id }`, tpl: `Root/${ id }#0` } ) );
 		}
 	}
@@ -163,6 +175,13 @@ export const connectorLine = ( { target, recordsIndex } ) => {
 };
 
 const LINE_RULE = /[^{}@]*::?(?:before|after)\s*\{[^{}]*\}\s*/g;
+
+// The timeline's rail: its dashed or dotted style from the draft's drawn line.
+function timelineRail( { saved, draft, aux, target } ) {
+	const line = Object.values( aux )[ 0 ]?.[ TIER_WIDTHS[ 0 ] ];
+	const writes = shown( line ) && draft[ TIER_WIDTHS[ 0 ] ]?.box ? lineStyleWrites( line, saved ) : [];
+	return writes.length ? [ settle( { prop: 'connectorLineStyle', why: `${ target.tpl } draws a ${ lineStyleOf( line ) || 'solid' } rail`, saved, writes } ) ] : [];
+}
 
 function processSteps( ctx ) {
 	const { saved, draft, aux, target } = ctx;
@@ -175,7 +194,7 @@ function processSteps( ctx ) {
 			{ attr: 'connectorLine', value: true },
 			...( paintOf( line ) ? [ { attr: 'connectorColour', value: paintOf( line ) } ] : [] ),
 			...( gradientOf( line ) ? [ { attr: 'connectorColourGradient', value: gradientOf( line ) } ] : saved.connectorColourGradient ? [ { attr: 'connectorColourGradient', unset: true } ] : [] ),
-			...( isDashed( line ) ? [ { attr: 'connectorStyle', value: 'dashed' } ] : 'dashed' === saved.connectorStyle ? [ { attr: 'connectorStyle', value: 'line' } ] : [] ),
+			...lineStyleWrites( line, saved ),
 			{ attr: 'connectorThickness', value: `${ Math.round( h * 10 ) / 10 }px` },
 			{ attr: 'connectorWidth', value: `${ Math.round( line.box.w ) }px` },
 			{ attr: 'connectorOffset', value: `${ Math.round( ( line.box.y + h / 2 - draft[ top ].box.y ) * 10 ) / 10 }px` },
@@ -263,5 +282,5 @@ export function stateRule( ctx ) {
 		return drawerRow( ctx );
 	}
 	const own = cursorField( ctx );
-	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIconSize, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
+	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/timeline': timelineRail, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIconSize, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
 }

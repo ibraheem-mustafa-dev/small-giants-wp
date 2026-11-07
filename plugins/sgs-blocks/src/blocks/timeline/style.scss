@@ -387,16 +387,14 @@
 		width: var(--sgs-connector-width);
 		background-color: var(--sgs-connector-colour);
 		// connectorColourGradient sibling (2026-09-06, colour-conformance
-		// closeout) — the dashed/dotted variants below already override with a
-		// full `background:` shorthand, so this is naturally superseded there.
+		// closeout). A dashed or dotted line (connectorLineStyle) is printed by render.php
+		// as a border and drops this background.
 		background-image: var(--sgs-connector-colour-gradient, none);
 	}
 
 	// connectorColourHover/HoverGradient (colour-conformance FILL closeout,
 	// 2026-09-06) — fallback chain hover -> resting -> default, same shape as
-	// before-after's handleColour. Naturally superseded on the dashed/dotted
-	// variants below exactly as the resting rule is (their `background:`
-	// shorthand wins on both states, equal specificity + later source order).
+	// before-after's handleColour. A dashed or dotted line out-ranks it in render.php's scoped rule and takes its hover colour from a border-color rule there.
 	&:hover::before,
 	&:focus-visible::before {
 		background-color: var(--sgs-connector-colour-hover, var(--sgs-connector-colour));
@@ -408,30 +406,6 @@
 		left: var(--sgs-timeline-rail-offset, var(--sgs-node-size));
 		transform: none;
 	}
-}
-
-// Dashed connector.
-.sgs-timeline--vertical.sgs-timeline--connector-dashed::before {
-	background: repeating-linear-gradient(
-		to bottom,
-		var(--sgs-connector-colour) 0,
-		var(--sgs-connector-colour) 8px,
-		transparent 8px,
-		transparent 16px
-	);
-	background-color: transparent;
-}
-
-// Dotted connector.
-.sgs-timeline--vertical.sgs-timeline--connector-dotted::before {
-	background: repeating-linear-gradient(
-		to bottom,
-		var(--sgs-connector-colour) 0,
-		var(--sgs-connector-colour) 3px,
-		transparent 3px,
-		transparent 9px
-	);
-	background-color: transparent;
 }
 
 // ── Vertical entry layout ──────────────────────────────────────────────────────
@@ -788,30 +762,6 @@
 			padding-block-end: var(--sgs-timeline-shadow-room, 5rem);
 		}
 	}
-}
-
-// Dashed connector — horizontal.
-.sgs-timeline--horizontal.sgs-timeline--connector-dashed::before {
-	background: repeating-linear-gradient(
-		to right,
-		var(--sgs-connector-colour) 0,
-		var(--sgs-connector-colour) 8px,
-		transparent 8px,
-		transparent 16px
-	);
-	background-color: transparent;
-}
-
-// Dotted connector — horizontal.
-.sgs-timeline--horizontal.sgs-timeline--connector-dotted::before {
-	background: repeating-linear-gradient(
-		to right,
-		var(--sgs-connector-colour) 0,
-		var(--sgs-connector-colour) 3px,
-		transparent 3px,
-		transparent 9px
-	);
-	background-color: transparent;
 }
 
 .sgs-timeline--horizontal .sgs-timeline__entry {
