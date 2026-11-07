@@ -582,6 +582,142 @@
                   ]
                 },
                 {
+                  "b": "sgs/mega-panel",
+                  "t": "134",
+                  "a": {
+                    "source": "sgs_mega_menu: sectors"
+                  },
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/card-grid",
+                      "t": "158",
+                      "a": {
+                        "variant": "card",
+                        "columns": {
+                          "mobile": 2
+                        }
+                      },
+                      "l": "g2",
+                      "x": 4,
+                      "item": {
+                        "slot": "card",
+                        "t": "160",
+                        "l": "col",
+                        "c": [
+                          {
+                            "slot": "image",
+                            "t": "161",
+                            "k": "img"
+                          },
+                          {
+                            "slot": "title",
+                            "t": "164",
+                            "k": "h"
+                          },
+                          {
+                            "slot": "arrow",
+                            "t": "165",
+                            "k": "icon"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/mega-panel",
+                  "t": "134",
+                  "a": {
+                    "source": "sgs_mega_menu: brands"
+                  },
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/label",
+                      "t": "168",
+                      "k": "chip"
+                    },
+                    {
+                      "b": "sgs/gallery",
+                      "t": "169",
+                      "a": {
+                        "columns": {
+                          "mobile": 2
+                        }
+                      },
+                      "l": "g2",
+                      "x": 9,
+                      "item": {
+                        "slot": "logo tile",
+                        "t": "171",
+                        "k": "logo"
+                      }
+                    },
+                    {
+                      "b": "sgs/mega-aside",
+                      "t": "173",
+                      "l": "col",
+                      "c": [
+                        {
+                          "slot": "tag",
+                          "t": "175",
+                          "k": "chip"
+                        },
+                        {
+                          "slot": "text",
+                          "t": "176",
+                          "k": "p"
+                        },
+                        {
+                          "slot": "cta",
+                          "t": "177",
+                          "k": "link"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "b": "sgs/mega-panel",
+                  "t": "134",
+                  "a": {
+                    "source": "sgs_mega_menu: trade"
+                  },
+                  "l": "col",
+                  "c": [
+                    {
+                      "b": "sgs/mega-aside",
+                      "t": "139",
+                      "l": "col",
+                      "c": [
+                        {
+                          "slot": "media + tag",
+                          "t": "140",
+                          "k": "img",
+                          "ratio": "5/2"
+                        },
+                        {
+                          "slot": "title, desc, arrow",
+                          "t": "143",
+                          "k": "p"
+                        }
+                      ]
+                    },
+                    {
+                      "b": "sgs/mega-group",
+                      "t": "149",
+                      "l": "col",
+                      "x": 5,
+                      "item": {
+                        "slot": "link: num, label, desc",
+                        "t": "151",
+                        "k": "link2"
+                      }
+                    }
+                  ]
+                },
+                {
                   "slot": "rows 03–06",
                   "t": "125",
                   "x": 4,
