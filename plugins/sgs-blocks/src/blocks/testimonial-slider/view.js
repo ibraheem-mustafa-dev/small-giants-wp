@@ -67,6 +67,7 @@
  */
 
 import { initMotionPause } from '../../shared/motion-pause/index.js';
+import { layoutBox } from '../../shared/layout-box.js';
 
 /**
  * An easing the Web Animations API can read: it cannot resolve `var()`, so a site token is read from the element.
@@ -214,7 +215,7 @@ sliders.forEach( ( slider ) => {
 	track.appendChild( list );
 
 	/**
-	 * Measure one real slide's rendered width + the list's gap, in px.
+	 * Measure one real slide's layout width (transform-independent, so an entrance scale never shortens the step) + the list's gap, in px.
 	 * Re-run on resize since flex-basis is a percentage of the viewport width.
 	 */
 	function measure() {
@@ -225,7 +226,7 @@ sliders.forEach( ( slider ) => {
 			return;
 		}
 		const gapPx = Number.parseFloat( getComputedStyle( list ).gap ) || 0;
-		slideStep = sample.getBoundingClientRect().width + gapPx;
+		slideStep = layoutBox( sample ).width + gapPx;
 	}
 
 	/**

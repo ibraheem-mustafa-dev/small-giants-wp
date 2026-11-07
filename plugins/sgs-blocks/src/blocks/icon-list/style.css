@@ -156,13 +156,15 @@
  * identical — theme.json sets body colour to var:preset|color|text.
  * A set textColour still wins: render.php emits it as a scoped `.{uid}` rule. */
 
-/* Per-item hover: text shifts to primary, icon scales up */
+/* Per-item hover: text shifts to primary, icon scales up. A linked row paints the text only while the pointer is over its link, so
+ * the padding beside the link does not change colour. */
 /* Spec 32: no block emits an inline `style` property declaration,
  * so a `:not([style*=…])` guard always matches and the fallback is
  * unconditional. This value is PAINTED (not what the element inherits), so
  * it is kept — but de-specified via :where() (0,0,0) so the operator's own
  * scoped `.{uid}` rule always wins. */
-:where(.sgs-icon-list__item:hover .sgs-icon-list__text),
+:where(.sgs-icon-list__item:not(.sgs-icon-list__item--linked):hover .sgs-icon-list__text),
+:where(.sgs-icon-list__item--linked .sgs-icon-list__text:has(.sgs-icon-list__item-link:hover)),
 :where(.sgs-icon-list__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__text) {
 	color: var(--wp--preset--color--primary-dark);
 }

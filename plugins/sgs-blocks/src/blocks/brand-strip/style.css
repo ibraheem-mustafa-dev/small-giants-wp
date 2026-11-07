@@ -137,11 +137,8 @@
 	width: 100%;
 }
 
-/* When few logos, ensure the set fills at least half the viewport
- * so the marquee has no visible gaps on wide screens. */
-.sgs-brand-strip[data-sgs-marquee="on"] .sgs-brand-strip__set {
-	min-width: 50vw;
-}
+/* A marquee set is exactly as wide as its tiles. fx-marquee.js clones the set until the copies overfill the strip, so the
+ * gap between sets is the item gap at every width (a set padded to a fixed width would add dead space after its last tile). */
 
 /* ===== Item — uniform tile =====
  * Every tile is a FIXED-size box regardless of the logo's source aspect

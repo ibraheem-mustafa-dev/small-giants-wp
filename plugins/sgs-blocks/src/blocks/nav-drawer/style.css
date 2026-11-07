@@ -212,6 +212,11 @@
 	max-width: 100%;
 }
 
+/* A chrome logo whose parts animate or scale draws outside its viewBox, so its inline SVG stays unclipped. */
+:where(.sgs-nav-drawer__chrome-logo[data-sgs-svg-parts] > svg, [data-sgs-svg-parts] .sgs-nav-drawer__chrome-logo-picture > svg) {
+	overflow: visible;
+}
+
 :where(.sgs-nav-drawer__chrome-slot) {
 	margin: 0;
 	min-width: 0;

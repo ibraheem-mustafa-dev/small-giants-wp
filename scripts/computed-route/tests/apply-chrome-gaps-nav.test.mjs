@@ -90,3 +90,13 @@ test( 'drawer feature card negative controls: no inventory card, an unwanted pan
 	const done = base( { clientData: { inventory: inv }, all: { ...aside().all, blocks: { ...aside().all.blocks, 'cr-a': { block: 'sgs/mega-aside', attrs: saved }, 'cr-b': { block: 'sgs/button', attrs: { visualOnly: true } } } } } );
 	assert.deepEqual( done.map( ( r ) => r.status ), [ 'equal', 'equal' ] );
 } );
+
+test( 'row arrow: a draft row that ends in an arrow gets the arrow icon even when the saved panel holds no row colour to keep it at', () => {
+	const skeleton = tree( panel( 'about', [ { b: 'sgs/mega-group', t: '149' } ] ), panel( 'sectors', [ { b: 'sgs/card-grid', t: '158' } ] ) );
+	const run = ( saved ) => chrome.decide( { block: 'sgs/mega-panel', skeleton, surface: { name: 'mega-about' }, saved, draft: {}, live: {}, aux: {}, recordsIndex: recordIndex( [ rec( 'TR-033', 149, 'span {{ link.label }}', [ { property: 'transform', from: null, to: 'translateX(4px)' } ] ), fade ], 'D' ), target: { tpl: 'Root/85#0', key: 'k', ref: 'k', owns: [] }, all: { blocks: {} } } );
+	const items = run( {} );
+	assert.deepEqual( items.find( ( i ) => 'drawerLinkTrailingIcon' === i.prop )?.writes, [ { attr: 'drawerLinkTrailingIcon', value: 'arrow' } ] );
+	assert.ok( items.some( ( i ) => 'no-setting' === i.status && 'drawerLinkTrailingColourHover' === i.prop ) );
+	// Negative control: an arrow already saved is equal, and a panel with no arrow record writes none.
+	assert.equal( run( { drawerLinkTrailingIcon: 'arrow' } ).find( ( i ) => 'drawerLinkTrailingIcon' === i.prop )?.status, 'equal' );
+} );

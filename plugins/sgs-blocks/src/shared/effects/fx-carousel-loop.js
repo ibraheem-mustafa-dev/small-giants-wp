@@ -95,6 +95,7 @@
 
 import { isNativeHorizontalScroller } from './motion-utils';
 import { bootGated } from './off-switch';
+import { layoutOffset } from '../layout-box';
 
 /** Elements the render layer marked as loop-eligible. */
 const SELECTOR = '[data-sgs-loop]';
@@ -244,9 +245,7 @@ export function initCarouselLoop( el ) {
 	leadingClones.forEach( ( clone ) => el.insertBefore( clone, firstOriginal ) );
 	trailingClones.forEach( ( clone ) => el.appendChild( clone ) );
 
-	const groupRectAtStart = el.getBoundingClientRect();
-	const firstOriginalRectAtStart = firstOriginal.getBoundingClientRect();
-	el.scrollLeft += firstOriginalRectAtStart.left - groupRectAtStart.left;
+	el.scrollLeft += layoutOffset( firstOriginal, el ).x;
 
 	/**
 	 * Distance, in scrollLeft units, from the first original item to its own
@@ -263,9 +262,10 @@ export function initCarouselLoop( el ) {
 		if ( ! trailingClones.length || ! trailingClones[ 0 ].isConnected ) {
 			return 0;
 		}
-		const firstRect = firstOriginal.getBoundingClientRect();
-		const firstCloneRect = trailingClones[ 0 ].getBoundingClientRect();
-		return firstCloneRect.left - firstRect.left;
+		return (
+			layoutOffset( trailingClones[ 0 ], el ).x -
+			layoutOffset( firstOriginal, el ).x
+		);
 	}
 
 	/**
@@ -279,8 +279,6 @@ export function initCarouselLoop( el ) {
 		if ( loopWidth <= 0 ) {
 			return 0;
 		}
-		const groupRect = el.getBoundingClientRect();
-		const firstRect = firstOriginal.getBoundingClientRect();
 		// The scrollLeft value that would put the first original flush with
 		// el's own left edge — i.e. "the start of the originals band". This
 		// is a document-space CONSTANT (the first original's fixed content
@@ -295,7 +293,7 @@ export function initCarouselLoop( el ) {
 		// The `-` this line originally shipped with produced
 		// `2*scrollLeft - loopWidth`, a moving target that made every
 		// boundary check wrong.
-		const bandStart = el.scrollLeft + ( firstRect.left - groupRect.left );
+		const bandStart = el.scrollLeft + layoutOffset( firstOriginal, el ).x;
 		const EPSILON = 1;
 		if ( el.scrollLeft < bandStart - EPSILON ) {
 			return loopWidth;

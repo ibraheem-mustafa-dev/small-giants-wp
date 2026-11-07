@@ -1,7 +1,7 @@
 /**
  * The magnet boot module's defaults (Spec 38A FR-38A-40): an element that stores no magnet values leans toward the pointer
- * only while the pointer is over it, by up to 5px on x and 4px on y, easing toward the pointer; stored values and the
- * proximity mode stay available.
+ * from 60px outside its box, by up to 5px on x and 4px on y, easing toward the pointer over 350ms; stored values and the
+ * over-only mode stay available.
  */
 
 /* global jest, describe, test, expect */
@@ -27,22 +27,23 @@ function options( attrs ) {
 }
 
 describe( 'magnet defaults', () => {
-	test( 'no stored values: over the element, normalised 10 by 8 total travel, 250ms follow and return', () => {
+	test( 'no stored values: proximity 60px, normalised 10 by 8 total travel, 350ms follow and return', () => {
 		const o = options( '' );
-		expect( o.engage ).toBe( 'over' );
+		expect( o.engage ).toBe( 'proximity' );
+		expect( o.radius ).toBe( 60 );
 		expect( o.pullModel ).toBe( 'normalised' );
 		expect( o.maxPullX ).toBe( 10 );
 		expect( o.maxPullY ).toBe( 8 );
-		expect( o.followDuration ).toBe( 250 );
-		expect( o.returnDuration ).toBe( 250 );
+		expect( o.followDuration ).toBe( 350 );
+		expect( o.returnDuration ).toBe( 350 );
 		expect( o.returnEasing ).toBe( 'cubic-bezier(0.16, 0.84, 0.32, 1)' );
 	} );
 
-	test( 'stored values keep winning, proximity and the distance model stay available', () => {
+	test( 'stored values keep winning, over-only and the distance model stay available', () => {
 		const o = options(
-			'data-sgs-fx-magnet-engage="proximity" data-sgs-fx-magnet-pull-model="distance" data-sgs-fx-magnet-strength="14" data-sgs-fx-magnet-max-pull-y="10" data-sgs-fx-magnet-return-duration="600" data-sgs-fx-magnet-follow-duration="0" data-sgs-fx-magnet-follow-easing="ease-in"'
+			'data-sgs-fx-magnet-engage="over" data-sgs-fx-magnet-pull-model="distance" data-sgs-fx-magnet-strength="14" data-sgs-fx-magnet-max-pull-y="10" data-sgs-fx-magnet-return-duration="600" data-sgs-fx-magnet-follow-duration="0" data-sgs-fx-magnet-follow-easing="ease-in"'
 		);
-		expect( o.engage ).toBe( 'proximity' );
+		expect( o.engage ).toBe( 'over' );
 		expect( o.pullModel ).toBe( 'distance' );
 		expect( o.maxPullX ).toBe( 14 );
 		expect( o.maxPullY ).toBe( 10 );

@@ -20,7 +20,10 @@ import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
+import { finish, rulingFor } from './lib/apply-rulings.mjs';
 import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
+import { applyOptions } from './apply-options.mjs';
+import { loadDraftSource } from './lib/apply-intent.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
 import { numeric } from './lib/apply-motion-default.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
@@ -167,10 +170,16 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 			row( { family: '*', status: 'unpaired', why: block ? 'the ref is on two blocks of the post' : 'no block carries this ref in the post' } );
 			continue;
 		}
+		// A ruling with an `apply` field (lib/apply-rulings.mjs) takes its removals first, and the families see the block as ruled.
+		const rule = rulingFor( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, attrs: block?.attrs ?? {}, part: target.slot ?? null } );
+		if ( rule.writes.length ) {
+			ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block.block, family: 'ruling', status: 'op', prop: 'ruling', why: `${ rule.rows.map( ( r ) => r.id ).join( ', ' ) }: ${ rule.writes.map( ( w ) => ( w.unset ? `remove ${ w.attr }` : `set ${ w.attr }` ) ).join( ', ' ) }`, writes: rule.writes, checks: [] } );
+			row( { family: 'ruling', status: 'written', prop: 'ruling', why: `${ rule.rows.map( ( r ) => r.id ).join( ', ' ) } applied` } );
+		}
 		// A skeleton slot is a part of its owner, read for the families that ask for slots; no other family writes from it.
 		// A layer target (lib/apply-layer-targets.mjs) goes to the layers family alone, and no other target does.
 		for ( const family of families.filter( ( f ) => ( target.layer ? f.layers : ! f.layers ) && ( ! target.slot || f.slots ) ) ) {
-			const items = family.decide( { target, surface, block: block?.block ?? null, saved: block?.attrs ?? {}, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
+			const items = family.decide( { target, surface, block: block?.block ?? null, saved: rule.attrs, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
 			// A text block sharing its wrapper's draft element (part 'text', lib/pair-wrappers.mjs) is held to the element's text
 			// properties only: its box belongs to the wrapper's own pair.
 			for ( const item of items.filter( ( i ) => 'text' !== target.part || TEXT_PROP.test( String( i.prop ?? '' ).trim().split( /\s+/ ).pop() ) ) ) {
@@ -178,7 +187,12 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
-					ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block?.block ?? item.insert?.block ?? null, family: family.name, ...item } );
+					const ruled = item.writes ? { writes: finish( item.writes, rule ) } : {};
+					if ( item.writes && ! ruled.writes.length ) {
+						row( { family: family.name, status: 'ledger', prop: item.prop, why: `${ rule.rows.map( ( r ) => r.id ).join( ', ' ) } overrules the draft value` } );
+						continue;
+					}
+					ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block?.block ?? item.insert?.block ?? null, family: family.name, ...item, ...ruled } );
 					row( { family: family.name, status: 'written', prop: item.prop, why: item.why, ref: item.ref ?? target.ref } );
 				} else {
 					row( { family: family.name, status: item.status, prop: item.prop, why: item.why, ...( item.state ? { state: item.state } : {} ), ...( item.block ? { block: item.block } : {} ) } );
@@ -314,7 +328,7 @@ async function main() {
 	const shelled = surfaces.filter( ( s ) => 'home' === s.shell );
 	const blocks = readBlocks( site, [ ...surfaces.map( ( s ) => s.postId ), ...( shelled.length ? [ 'template:home' ] : [] ) ], tmp );
 	shelled.forEach( ( s ) => ( s.postId = blocks.templates?.home || s.postId ) );
-	const clientData = loadClientData( REPO, client );
+	const clientData = { ...loadClientData( REPO, client ), draftSource: loadDraftSource( REPO, client ) };
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );
 	for ( const surface of surfaces ) {
@@ -443,7 +457,9 @@ async function main() {
 		await browser.close();
 		db.close?.();
 	}
-	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summary( allRows ) }\n`;
+	// The site options the draft states (the reading progress bar's gradient, colour and height) go with a whole run.
+	const optionRows = only || wanted || has( '--no-options' ) ? [] : await applyOptions( { repo: REPO, client, origin: draftOrigin, write } );
+	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summary( allRows ) }\n${ optionRows.map( ( o ) => `option ${ o.status } ${ o.name }` ).join( '\n' ) }\n`;
 	fs.writeFileSync( path.join( outDir, 'summary.md' ), text );
 	console.log( text );
 	fs.writeFileSync( path.join( outDir, 'no-setting-review.json' ), JSON.stringify( gate.judged, null, 1 ) );

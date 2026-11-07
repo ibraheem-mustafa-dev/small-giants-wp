@@ -23,6 +23,7 @@ export function ledgerIndex( rows = [], { surfaces = null, writable = null } = {
 		block: blockOf( r ),
 		part: r.part ? String( r.part ).toLowerCase() : null,
 		surfaces: r.surfaces ?? null,
+		apply: r.apply ?? null,
 	} ) );
 	const refused = refusals( index, { surfaces, writable: writable ?? writableProps() } );
 	if ( refused.length ) {
@@ -45,6 +46,10 @@ export function refusals( index, { surfaces = null, writable = [] } ) {
 				out.push( { id: row.id, why: named.length ? `\`surfaces\` names ${ unknown.map( ( s ) => `"${ s }"` ).join( ', ' ) }, which is no surface in the page map; use a surface name from the client's surfaces.json` : '`surfaces` is empty; list the surfaces it covers or remove the field' } );
 			}
 		}
+		const keys = Object.keys( row.apply ?? {} ).filter( ( k ) => ! [ 'when', 'remove', 'set' ].includes( k ) );
+		if ( keys.length || ( row.apply && ! row.block && ! row.refs.length ) ) {
+			out.push( { id: row.id, why: keys.length ? `\`apply\` holds ${ keys.join( ', ' ) }; it takes only when, remove and set` : '`apply` names no block or cr-ref node, so it would change every block' } );
+		}
 		const reaches = writable.filter( ( p ) => propHit( row, p ) );
 		if ( reaches.length && ! row.refs.length && ! row.block && ! row.part ) {
 			out.push( { id: row.id, why: `property "${ row.props.join( ', ' ) }" is one the applier writes (${ reaches.slice( 0, 3 ).join( ', ' ) }${ reaches.length > 3 ? ', ...' : '' }) and the ruling names no element: add \`node\` (a cr-ref), \`block\` (a block slug such as sgs/timeline) or \`part\`` } );
@@ -61,13 +66,17 @@ export function surfaceNames( build ) {
 	return [ ...new Set( [ ...Object.keys( surfaces ?? {} ), ...( Array.isArray( pageMap ) ? pageMap : [] ).map( ( p ) => p.slug ).filter( Boolean ) ] ) ];
 }
 
+// Whether a ruling covers a place: a named cr-ref, or its surface (scope or `surfaces`), block and part.
+export function placeHit( row, { ref, surface, block = null, part = null } ) {
+	const named = row.surfaces ? row.surfaces.includes( surface ) : row.scope.includes( surface ) || row.scope.includes( '*' ) || row.scope.includes( 'every' );
+	const here = ! row.part || String( part ?? '' ).toLowerCase().includes( row.part );
+	return row.refs.length ? row.refs.includes( ref ) : named && ( ! row.block || row.block === block ) && here;
+}
+
 export function ledgerMatch( index, { ref, surface, block = null, state = '*', prop, part = null } ) {
 	for ( const row of index ) {
-		const named = row.surfaces ? row.surfaces.includes( surface ) : row.scope.includes( surface ) || row.scope.includes( '*' ) || row.scope.includes( 'every' );
-		const here = ! row.part || String( part ?? '' ).toLowerCase().includes( row.part );
-		const place = row.refs.length ? row.refs.includes( ref ) : named && ( ! row.block || row.block === block ) && here;
 		const when = '*' === row.state || '*' === state || row.state === state;
-		if ( place && when && propHit( row, prop ) ) {
+		if ( placeHit( row, { ref, surface, block, part } ) && when && propHit( row, prop ) ) {
 			return row.id;
 		}
 	}

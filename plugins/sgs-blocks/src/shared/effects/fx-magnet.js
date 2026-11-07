@@ -16,23 +16,21 @@
  * @package
  */
 
-import {
-	registerMagnet,
-	DEFAULT_RADIUS,
-	DEFAULT_RETURN_MS,
-	DEFAULT_FOLLOW_MS,
-} from '@sgs/magnet';
+import { registerMagnet } from '@sgs/magnet';
 import { bootGated } from './off-switch';
 
 /** Elements the render layer marked. */
 const SELECTOR = '[data-sgs-fx~="magnet"]';
 
 /**
- * Fallbacks when an instance declares no value of its own: the pull of a button that leans toward the pointer only while
- * the pointer is over it. The pull model is normalised, so the strengths are the TOTAL travel across the element
- * (10px on x, 8px on y): the element moves at most half of each (5px and 4px) either way, reaching it at its edge.
- * Return and follow share one easing.
+ * Fallbacks when an instance declares no value of its own: a gentle proximity pull. The element starts leaning toward
+ * the pointer 60px outside its box and eases in over 350ms as the pointer closes in. The pull model is normalised, so the
+ * strengths are the TOTAL travel across the element (10px on x, 8px on y): the element moves at most half of each (5px
+ * and 4px) either way. Return and follow share one easing and one duration.
  */
+const DEFAULT_RADIUS = 60;
+const DEFAULT_RETURN_MS = 350;
+const DEFAULT_FOLLOW_MS = 350;
 const DEFAULT_STRENGTH = 10;
 const DEFAULT_STRENGTH_Y = 8;
 const DEFAULT_FACTOR = 0.35;
@@ -89,9 +87,9 @@ export function resolveMovingPart( el ) {
  * Every value is BOUNDED rather than trusted: a huge radius would make a button
  * react from across the page, and a huge pull would tear it out of its layout.
  * An absent attribute falls back to the default, never to zero. `engage`
- * defaults to `over` (the pull runs only while the pointer is over the element)
- * with the normalised pull model; `proximity` (a catch area around the box,
- * 120px by default) and the `distance` model are chosen explicitly.
+ * defaults to `proximity` (a 60px catch area around the box) with the normalised
+ * pull model; `over` (the pull runs only while the pointer is over the element)
+ * and the `distance` model are chosen explicitly.
  *
  * @param {HTMLElement} el The marked element.
  * @return {Object} Options for `createMagnet`.
@@ -114,9 +112,9 @@ export function readOptions( el ) {
 	);
 	return {
 		engage:
-			'proximity' === el.getAttribute( 'data-sgs-fx-magnet-engage' )
-				? 'proximity'
-				: 'over',
+			'over' === el.getAttribute( 'data-sgs-fx-magnet-engage' )
+				? 'over'
+				: 'proximity',
 		pullModel:
 			'distance' === el.getAttribute( 'data-sgs-fx-magnet-pull-model' )
 				? 'distance'

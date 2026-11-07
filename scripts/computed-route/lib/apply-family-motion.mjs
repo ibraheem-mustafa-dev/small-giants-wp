@@ -15,7 +15,7 @@ import { openWords } from './motion-states.mjs';
 import { clientPalette, clientTokens, tokenTypes } from './motion-tokens.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { stateRows } from './state-vocab.mjs';
-import { recordsFor } from './apply-records.mjs';
+import { carriesHook, recordsFor } from './apply-records.mjs';
 import { callsAt, recordsOf, triggerFor } from './apply-motion-calls.mjs';
 import { behaviourWrites } from './apply-motion-behaviours.mjs';
 import { draftEntrance, sameEntrance } from './apply-motion-entrance.mjs';
@@ -25,6 +25,8 @@ import { splitParts } from './apply-motion-parts.mjs';
 import { claimedElsewhere, groupsOf, ownsGroup, placeGroup, staggerFor } from './apply-motion-items.mjs';
 import { changeAnimation, heroSvgParts, svgRecordsOf } from './apply-motion-rules.mjs';
 import { innerIdsOf, isOpenRecord, recordsIn } from './apply-drawer-core.mjs';
+import { descendantRows } from './apply-owned.mjs';
+import { strayRemovals } from './apply-stray.mjs';
 
 const shared = new Map();
 function toolsFor( db, rawSnapshot ) {
@@ -158,7 +160,8 @@ export const motion = {
 					whys.push( 'frame entrance moved from split-media (the image element) to media' );
 				}
 				if ( ! e.reason && stagger[ name ] ) {
-					const want = { apply: true, ...stagger[ name ] };
+					// An index formula runs across the whole list, so a grid keeps one sequence (`perRow: false`) instead of restarting per row.
+					const want = { apply: true, perRow: false, ...stagger[ name ] };
 					if ( ! same( doc.stagger, want ) ) {
 						doc.stagger = want;
 						whys.push( `${ name } stagger offset ${ want.offset }ms, step ${ want.step }ms${ want.cap ? `, at most ${ want.cap }ms` : '' }` );
@@ -186,6 +189,8 @@ export const motion = {
 			}
 			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db, facts: Object.values( draft ).find( Boolean ) } );
 			items.push( ...b.items );
+			// An effect the draft gives no record of this element is another element's: removed.
+			draft[ 1440 ] && whys.push( ...strayRemovals( { doc, part: name, wanted: b.wanted, recs: recs.filter( ( r ) => carriesHook( r, Object.values( draft ).find( Boolean ) ) ), records } ) );
 			whys.push( ...b.whys );
 			ids.push( ...b.ids );
 			settings.push( ...b.settings );
@@ -197,6 +202,7 @@ export const motion = {
 		if ( ! ownCalls && ! reached && ! heroParts && left.length ) {
 			items.push( { status: 'no-setting', prop: 'motion', why: `the draft animates descendants of ${ target.tpl } (${ left.map( ( g ) => g.tpl ).join( ', ' ) }), which ${ block } draws with no motion part of its own to hold them` } );
 		}
+		items.push( ...descendantRows( { target, block, recordsIndex, surface: input.surface, allRecords: records } ) );
 		marqueeFade( { doc, draft, recs: own, mdb, items, whys, ids } );
 		for ( const [ k, v ] of Object.entries( doc.elements ) ) {
 			Object.keys( v ).length || delete doc.elements[ k ];

@@ -209,20 +209,14 @@ function describe( kind, absolute, dayStart ) {
 }
 
 /**
- * A clock time the way a person says it: "5pm", "9:30am", "noon", "midnight".
+ * A clock time the way a person says it: "5pm", "9:30am", "12pm" (midday) and "12am" (midnight).
  *
  * @param {number} minutes Minutes after midnight.
  * @return {string} Spoken time.
  */
-export function formatTime( minutes, words = { noon: 'noon', midnight: 'midnight' } ) {
+export function formatTime( minutes ) {
 	const h = Math.floor( minutes / 60 ) % 24;
 	const m = minutes % 60;
-	if ( 0 === m && 0 === h ) {
-		return words.midnight;
-	}
-	if ( 0 === m && 12 === h ) {
-		return words.noon;
-	}
 	const suffix = h < 12 ? 'am' : 'pm';
 	const hour = h % 12 || 12;
 	return m ? `${ hour }:${ String( m ).padStart( 2, '0' ) }${ suffix }` : `${ hour }${ suffix }`;
@@ -234,7 +228,7 @@ const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
  * The status line, e.g. "Closes at 5pm today" or "Opens at 9:30am tomorrow".
  *
  * `labels` carries the wording: closes, opens, reopens ("Closed until"), today, tomorrow,
- * noon, midnight, days (seven weekday names, Monday first) and pattern, the word order of the
+ * days (seven weekday names, Monday first) and pattern, the word order of the
  * closes and opens lines with {lead}, {time} and {when} placeholders (default "{lead} {time} {when}");
  * opensPattern, when set, is the word order of the opens line alone.
  *
@@ -243,7 +237,7 @@ const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
  * @return {string} The line.
  */
 export function buildLine( change, labels ) {
-	const time = formatTime( change.minutes, labels );
+	const time = formatTime( change.minutes );
 	let when = '';
 	if ( 0 === change.dayOffset ) {
 		when = labels.today;
@@ -255,9 +249,13 @@ export function buildLine( change, labels ) {
 	if ( 'reopens' === change.kind ) {
 		return `${ labels.reopens } ${ time }`;
 	}
-	const lead = 'closes' === change.kind ? labels.closes : labels.opens;
-	const values = { lead, time, when };
 	const pattern = ( 'closes' !== change.kind && labels.opensPattern ) || labels.pattern || DEFAULT_LINE_PATTERN;
+	let lead = 'closes' === change.kind ? labels.closes : labels.opens;
+	if ( /\bat\s+\{time\}/.test( pattern ) ) {
+		// The pattern supplies its own "at" before the time, so a lead that already ends in "at" ("Closes at") drops it.
+		lead = lead.replace( /\s+at\s*$/i, '' );
+	}
+	const values = { lead, time, when };
 	return pattern
 		.replace( /\{(lead|time|when)\}/g, ( match, key ) => values[ key ] )
 		.replace( /\s+/g, ' ' )

@@ -37,6 +37,7 @@ import {
 /* eslint-enable import/no-unresolved */
 import { isEffectOffAtThisTier } from './off-switch';
 import { QUERY_MOBILE, QUERY_TABLET } from '../../utils/breakpoints';
+import { layoutBox, layoutScale } from '../layout-box';
 
 const SELECTOR = '[data-sgs-fx~="marquee"]';
 const SET = '[data-sgs-marquee-set]';
@@ -222,9 +223,9 @@ export function createMarquee( root ) {
 	}
 
 	function measure( vertical ) {
-		const first = original.getBoundingClientRect();
+		const first = layoutBox( original );
 		const size = vertical ? first.height : first.width;
-		const viewport = root.getBoundingClientRect();
+		const viewport = layoutBox( root );
 		const view = vertical ? viewport.height : viewport.width;
 		return { size, view };
 	}
@@ -234,7 +235,10 @@ export function createMarquee( root ) {
 		if ( second ) {
 			const a = original.getBoundingClientRect();
 			const b = second.getBoundingClientRect();
-			const delta = vertical ? b.top - a.top : b.left - a.left;
+			const scale = layoutScale( original );
+			const delta = vertical
+				? ( b.top - a.top ) / scale.y
+				: ( b.left - a.left ) / scale.x;
 			if ( Number.isFinite( delta ) && delta > 0 ) {
 				return delta;
 			}

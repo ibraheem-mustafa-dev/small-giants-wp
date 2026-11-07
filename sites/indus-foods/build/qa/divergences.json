@@ -595,7 +595,14 @@
       "rule": "bean-ruling"
     },
     "reason": "The draft's buttons (J-10) only move while the pointer is over them, which Bean finds broken; the round 5 proximity values (radius 120px, 14x10px, 600ms) were too wide and fast. Every button pulls gently from about 60px away, at most 5px across and 4px down, eased over about 350ms. Replaces the 2026-11-06 ruling that made the draft's over-only values the default.",
-    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 1)"
+    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 1)",
+    "apply": {
+      "remove": {
+        "effectValues": {
+          "magnet": [ "engage", "pullModel", "axis", "radius", "strength", "factor", "maxPullX", "maxPullY", "returnDuration", "returnEasing", "followDuration" ]
+        }
+      }
+    }
   },
   {
     "id": "D-41",
@@ -608,7 +615,12 @@
       "rule": "bean-ruling"
     },
     "reason": "The draft darkens the text (#0A7EA8 to #075E80) and the clone also enlarged it; Bean ruled both stopped: the text colour stays the resting colour and the button does not scale on hover. The arrow gap nudge stays.",
-    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)"
+    "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)",
+    "apply": {
+      "when": { "attrs": { "inheritStyle": "link" } },
+      "remove": { "hoverPose": true },
+      "set": { "colourTextHover": "@colourText" }
+    }
   },
   {
     "id": "D-42",

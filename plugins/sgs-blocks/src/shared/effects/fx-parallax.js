@@ -41,6 +41,7 @@
 // eslint-disable-next-line import/no-unresolved -- a webpack external (script module `@sgs/scroll-driver`).
 import { observe, unobserve } from '@sgs/scroll-driver';
 import { bootGated } from './off-switch';
+import { layoutBox, ownScale } from '../layout-box';
 
 const SELECTOR = '[data-sgs-fx~="parallax"]';
 const BASIS_ATTRIBUTE = 'data-sgs-fx-parallax-basis';
@@ -94,14 +95,22 @@ export function translateY( value ) {
  */
 export function restRect( el ) {
 	const rect = el.getBoundingClientRect();
+	const style = window.getComputedStyle( el );
+	const layoutHeight = layoutBox( el ).height;
+	const originY =
+		Number.parseFloat( String( style.transformOrigin || '' ).split( ' ' )[ 1 ] ) || 0;
+	// A held scale moves the painted top by originY * (1 - scale); undo it so the rest top is the layout one.
 	return {
-		top: rect.top - translateY( window.getComputedStyle( el ).translate ),
-		height: rect.height,
+		top:
+			rect.top -
+			translateY( style.translate ) -
+			originY * ( 1 - ownScale( el ).y ),
+		height: layoutHeight,
 	};
 }
 
 function writeTravel( el, progress ) {
-	const height = el.getBoundingClientRect().height;
+	const height = layoutBox( el ).height;
 	const text = viewTravel( progress, window.innerHeight, height ) + 'px';
 	if ( lastTravel.get( el ) === text ) {
 		return;

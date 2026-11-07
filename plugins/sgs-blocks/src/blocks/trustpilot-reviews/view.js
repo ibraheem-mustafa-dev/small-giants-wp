@@ -14,6 +14,7 @@
  */
 
 import { initMotionPause } from '../../shared/motion-pause/index.js';
+import { layoutBox } from '../../shared/layout-box.js';
 
 const SCROLL_EPSILON = 4; // px tolerance when comparing scroll positions
 
@@ -55,7 +56,7 @@ const initCarousel = ( root ) => {
 	const loopEnabled = track.dataset.sgsLoop === '1';
 
 	const getStep = () => {
-		const cardWidth = cards[ 0 ].getBoundingClientRect().width;
+		const cardWidth = layoutBox( cards[ 0 ] ).width;
 		const gap = parseFloat( getComputedStyle( track ).columnGap || getComputedStyle( track ).gap || 16 );
 		return cardWidth + gap;
 	};

@@ -26,6 +26,9 @@
 
 /* ----- Variant: plain (eyebrow — no background, no padding) ----- */
 .wp-block-sgs-label.is-style-plain {
+	/* The snapshot's eyebrow type role (settings.custom.typeRoles.eyebrow); unset keeps the base size and spacing. */
+	font-size: var(--wp--custom--type-roles--eyebrow--font-size, 12px);
+	letter-spacing: var(--wp--custom--type-roles--eyebrow--letter-spacing, 0.08em);
 	background: none;
 	padding: 0;
 	border-radius: 0;

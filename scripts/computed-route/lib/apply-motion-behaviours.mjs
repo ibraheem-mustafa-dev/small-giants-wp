@@ -51,10 +51,10 @@ function addSettings( { out, r, mine, saved, block, db, row } ) {
 }
 
 // { whys, items, settings, ids, fx }: the document is changed in place; `settings` are block attributes to write beside it and
-// `fx` the effect names written (the live marker data-sgs-fx names each).
+// `fx` the effect names written (the live marker data-sgs-fx names each) and `wanted` every effect name the records give, written or held.
 export function behaviourWrites( { recs, allRecords, block, part, doc, saved, mdb, schema, ctx, db, facts = null } ) {
 	offered ??= loadEffectOffers();
-	const out = { whys: [], items: [], settings: [], ids: [], fx: [] };
+	const out = { whys: [], items: [], settings: [], ids: [], fx: [], wanted: new Set() };
 	const done = new Set();
 	for ( const r of recs.filter( ( x ) => carriesHook( x, facts ) ) ) {
 		const b = done.has( r.id ) ? null : recogniseBehaviour( r, { records: allRecords } );
@@ -92,6 +92,7 @@ export function behaviourWrites( { recs, allRecords, block, part, doc, saved, md
 				continue;
 			}
 			( b.unread || [] ).forEach( ( u ) => row( 'no-setting', `${ u.field }: ${ u.reason }` ) );
+			b.effects.forEach( ( e ) => out.wanted.add( e.effect ) );
 			for ( const e of b.effects ) {
 				const w = finishedEffect( e, { block, target: part, mdb, schema, offers: offered, ctx, id: `${ e.effect }-1` } );
 				if ( w.refused ) {

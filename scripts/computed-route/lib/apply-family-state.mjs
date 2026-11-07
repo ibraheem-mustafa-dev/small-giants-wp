@@ -12,6 +12,8 @@ import { partOfLive } from './apply-state-scope.mjs';
 import { timingItems } from './apply-state-timing.mjs';
 import { pressVariant } from './fill-state-tokens.mjs';
 import { pressTokens } from './snapshot-tokens.mjs';
+import { strayHovers } from './apply-stray.mjs';
+import { spanItems } from './apply-hover-span.mjs';
 
 const RECORD_PROP = { 'border-top-color': /^border(-top)?-color$/, 'border-top-width': /^border(-top)?-width$/ };
 const named = ( look, prop ) => look.property === prop || RECORD_PROP[ prop ]?.test( look.property );
@@ -28,9 +30,16 @@ export const state = {
 		const records = recordsFor( recordsIndex, target.tpl );
 		const dHover = draft[ 1440 ]?.hover;
 		const lHover = live[ 1440 ]?.hover;
+		// A hover setting is written only from a record that targets this element; a block with no hover record carries none.
+		items.push( ...strayHovers( ctx ) );
 		if ( dHover && lHover && ! dHover.unreached && ! lHover.unreached ) {
 			for ( const prop of Object.keys( dHover ).filter( ( p ) => ! MOTION_LOOKS.includes( p ) && 'icon' !== p ) ) {
 				if ( ! differs( dHover[ prop ], lHover[ prop ] ) ) {
+					continue;
+				}
+				// A look no record of this element names is another element's (an ancestor's hover reaches a child by inheritance).
+				if ( records.some( ( r ) => 'hover' === r.trigger?.type ) && ! records.some( ( r ) => stateLook( r )?.looks.some( ( l ) => named( l, prop ) || prop.startsWith( `${ l.property }-` ) ) ) ) {
+					items.push( { status: 'equal', prop, state: 'hover', why: `no draft hover record of this element names ${ prop }: its hover ${ prop } is not its own` } );
 					continue;
 				}
 				// A card's hover colour reaches no child that keeps its own colour: the children's group hover (lib/apply-card-group.mjs) holds it.
@@ -77,7 +86,7 @@ export const state = {
 			const { tokens, gaps } = pressTokens( { declared }, variant );
 			items.push( { status: 'no-setting', prop: 'active', state: 'active', snapshot: 'press look', tokens, why: `snapshot: press look (${ variant })${ gaps.length ? `; ${ gaps.join( '; ' ) }` : '' }` } );
 		}
-		items.push( ...timingItems( ctx ) );
+		items.push( ...spanItems( ctx ), ...timingItems( ctx ) );
 		return items;
 	},
 };

@@ -111,7 +111,7 @@ test( 'a list block writes its root entrance and the document stagger from the r
 	const ctx = { ...base, target: { ref: 'x-2', tpl: 'Root/29#0', owns: [ 29, 30 ], reach: [ 29, 30 ], via: 'pair' }, block: 'sgs/nav-drawer-menu', saved: { sgsMotion: { v: 1, elements: { root: { entrance: { base: { trigger: 'open', values: { from: { opacity: 0, translateY: 14 }, to: { opacity: 1, translateY: 0 }, duration: 520 } } } } }, stagger: { apply: true, offset: 80, step: 45, cap: 440 } } }, recordsIndex: index( [ r ] ) };
 	const item = drawer.decide( ctx ).find( ( i ) => 'op' === i.status && 'open entrance' === i.prop );
 	const w = item.writes[ 0 ].value;
-	assert.deepEqual( w.stagger, { apply: true, offset: 140, step: 55, cap: 20000 } );
+	assert.deepEqual( w.stagger, { apply: true, offset: 140, step: 55, cap: 20000, perRow: false } );
 	assert.equal( w.elements.root.entrance.base.values.delay, undefined );
 	assert.equal( w.elements.root.entrance.base.values.from.translateY, 0 );
 	assert.equal( w.elements.root.entrance.base.values.from.translateX, 32 );

@@ -74,6 +74,8 @@ function megaPanel( ctx ) {
 			const writes = [ ...( 'arrow' === ctx.saved.drawerLinkTrailingIcon ? [] : [ { attr: 'drawerLinkTrailingIcon', value: 'arrow' } ] ), { attr: 'drawerLinkTrailingColourHover', value: keep } ];
 			out.push( settle( { prop: 'drawerLinkTrailingColourHover', why: `${ ctx.target.tpl } the row arrow goes from 40% to full opacity on hover (${ fade.id }) in its own colour ${ keep }`, saved: ctx.saved, writes, record: fade.id, state: 'hover' } ) );
 		} else {
+			// The draft's row has an arrow: it is drawn even where its hover colour has no value to keep it at.
+			out.push( settle( { prop: 'drawerLinkTrailingIcon', why: `${ ctx.target.tpl } the draft's link rows end in an arrow (${ fade.id })`, saved: ctx.saved, writes: [ { attr: 'drawerLinkTrailingIcon', value: 'arrow' } ], record: fade.id, state: 'hover' } ) );
 			out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only and the saved panel holds no row text colour to keep it at` } );
 		}
 	}

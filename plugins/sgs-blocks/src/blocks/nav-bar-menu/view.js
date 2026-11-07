@@ -126,23 +126,31 @@ function initBarEffects( root ) {
 
 	if ( bar.hasAttribute( 'data-magnet' ) ) {
 		// M-10 (§4.8) — `data-magnet-strength` rides only when the operator has
-		// set `itemMagnetStrength` (render.php). Absent: `initMagnet(el)` with
-		// no options — today's exact behaviour (magnet.js's own factor 0.15,
-		// 8px cap). Present: the operator's own factor, with the cap LIFTED
-		// (`maxPull: Infinity`) — the pointer only ever engages while inside
-		// the item's own box (the listener is on the item itself), so the pull
-		// is naturally bounded by the item's own geometry, not an invented cap.
+		// set `itemMagnetStrength` (render.php). Absent: magnet.js's own factor
+		// 0.15 and 8px cap. Present: the operator's own factor, with the cap
+		// LIFTED (`maxPull: Infinity`) — the pointer only ever engages while
+		// inside the item's own box, so the pull is naturally bounded by the
+		// item's own geometry, not an invented cap.
+		// The magnet is bound to the item's link (its whole padded box) with
+		// `engage: 'over'`, and moves only the label inside it: only the hovered
+		// item's label moves, only while the pointer is over that item.
 		const strengthAttr = bar.getAttribute( 'data-magnet-strength' );
 		const strength = null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
 		const magnetOpts = Number.isFinite( strength )
 			? { factor: strength, maxPull: Infinity }
-			: undefined;
+			: {};
 
 		bar.querySelectorAll( '.sgs-nav-bar-menu__magnet-target' ).forEach(
-			( el ) =>
+			( label ) => {
+				const link = label.closest( '.sgs-nav-bar-menu__link' ) || label;
 				activeCleanups.push(
-					initLabelMagnet( el, magnetOpts )
-				)
+					initLabelMagnet( link, {
+						...magnetOpts,
+						engage: 'over',
+						target: label,
+					} )
+				);
+			}
 		);
 	}
 }

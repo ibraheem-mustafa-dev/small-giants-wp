@@ -110,7 +110,7 @@ test( 'a list of cards in a block that declares its items part becomes that part
 	const run = ( animate, block = 'sgs/post-grid' ) => motion.decide( { target, block, saved: {}, draft: at( { box: { y: 900 }, items: { n: 4 } } ), animate: at( animate ), recordsIndex, records: [ rec ], db, rawSnapshot, surface: { pairs: [ target ] }, all: { blocks: {}, drafts: {} } } );
 	const op = run( calls ).find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
 	assert.equal( op.elements.card.entrance.base.values.delay ?? 0, 0 );
-	assert.deepEqual( op.stagger, { apply: true, offset: 0, step: 80, cap: 560 } );
+	assert.deepEqual( op.stagger, { apply: true, perRow: false, offset: 0, step: 80, cap: 560 } );
 	assert.deepEqual( run( [ card( 0 ) ] ).map( ( i ) => i.status ), [ 'no-setting' ] );
 	assert.deepEqual( run( calls, 'sgs/container' ).map( ( i ) => i.status ), [ 'no-setting' ] );
 	const clip = calls.map( ( c ) => ( { ...c, frames: [ { opacity: 0, clipPath: 'inset(10%)' }, { opacity: 1, clipPath: 'inset(0)' } ] } ) );

@@ -2,7 +2,7 @@
 //   { generated: <ISO time>, rows: [ { record: 'A-16', target: <the element or part measured>, state: <the state
 //   measured, e.g. 'load', 'hover'>, ok: <boolean>, measured: <what the page showed>, want: <what the draft showed> } ] }
 // A key `animation:<record>` is done live only when it has at least one row and every row for it has ok true. With no
-// verify.json no key is reported done: its status is "not read live". Tree evidence stays a separate column.
+// verify.json no key is reported done: its status is "not read live". A row's `status` (lib/verify-live.mjs) keeps a sampled or mirror-host row from counting as done. Tree evidence stays a separate column.
 // A client's delivery map (sites/<client>/build/qa/delivery-map.json): one key for every coverage id the client's
 // intake review names, every active record of its handoff animations.json and every state of its surfaces.json, each
 // owned by a unit of the plan the map names, or marked done or accepted. `mapProblems` is the check: a missing,
@@ -22,6 +22,7 @@ import { classify } from './motion-layers.mjs';
 import { walk as walkTree } from './tree.mjs';
 import { openRows } from './solve-rows.mjs';
 import { boundNodes, nodeElementKeys } from './delivery-bind.mjs';
+import { rowsState } from './verify-live.mjs';
 
 export const PRIOR = 'prior';
 
@@ -35,7 +36,7 @@ export function readVerify( file ) {
 	return fs.existsSync( file ) ? readJson( file ) : null;
 }
 
-// { state: 'not read live' | 'done' | 'not done', why } for one `animation:<id>` key, from the parsed verify.json (null when absent).
+// { state: 'not read live' | 'done' | 'sampled' | 'built-not-pushed' | 'not done', why } for one `animation:<id>` key, from the parsed verify.json (null when absent).
 export function liveStatus( key, verify ) {
 	if ( ! verify ) {
 		return { state: 'not read live', why: 'no verify.json' };
@@ -45,8 +46,7 @@ export function liveStatus( key, verify ) {
 	if ( ! rows.length ) {
 		return { state: 'not done', why: 'verify.json has no row for it' };
 	}
-	const bad = rows.filter( ( r ) => true !== r.ok );
-	return bad.length ? { state: 'not done', why: `${ bad.length } of ${ rows.length } verify row(s) not ok (first: ${ bad[ 0 ].target ?? '?' } ${ bad[ 0 ].state ?? '' }, measured ${ JSON.stringify( bad[ 0 ].measured ) }, want ${ JSON.stringify( bad[ 0 ].want ) })` } : { state: 'done', why: `${ rows.length } verify row(s) ok` };
+	return rowsState( rows );
 }
 
 // The map file's path for a client.

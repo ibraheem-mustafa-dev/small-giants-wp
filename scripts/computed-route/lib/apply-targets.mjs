@@ -6,6 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadSkeleton, skeletonTargets, surfaceFor } from './apply-skeleton.mjs';
 import { pairId } from './reveal-merge.mjs';
+import { ownsWithoutPaired } from './apply-owned.mjs';
 
 const readJson = ( f, fallback = null ) => ( fs.existsSync( f ) ? JSON.parse( fs.readFileSync( f, 'utf8' ) ) : fallback );
 
@@ -77,8 +78,10 @@ export function withSkeleton( surface, saved, skeleton ) {
 		return { pairs: surface.pairs, notes: [], aliases: {} };
 	}
 	const { targets, owners, notes, aliases } = skeletonTargets( { nodes: sk.nodes, pairs: surface.pairs, saved } );
-	const pairs = surface.pairs.map( ( p ) => ( owners.has( p.ref ) ? { ...p, owns: [ ...new Set( owners.get( p.ref ).owns ) ], reach: [ ...new Set( owners.get( p.ref ).reach ) ] } : p ) );
-	return { pairs: [ ...pairs, ...targets ], notes, aliases };
+	const all = [ ...surface.pairs, ...targets ];
+	const mine = ( p, span ) => [ ...new Set( owners.get( p.ref )[ span ] ) ];
+	const pairs = surface.pairs.map( ( p ) => ( owners.has( p.ref ) ? { ...p, owns: ownsWithoutPaired( mine( p, 'owns' ), p, all ), reach: mine( p, 'reach' ) } : p ) );
+	return { pairs: [ ...pairs, ...targets.map( ( t ) => ( { ...t, owns: ownsWithoutPaired( t.owns, t, all ) } ) ) ], notes, aliases };
 }
 
 export async function loadSurfaces( { repo, client, only = null, draftOrigin } ) {

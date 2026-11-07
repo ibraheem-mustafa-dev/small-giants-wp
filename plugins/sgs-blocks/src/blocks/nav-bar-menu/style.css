@@ -151,6 +151,8 @@
 	box-sizing: border-box;
 	color: inherit;
 	display: flex;
+	/* The snapshot's nav type role (settings.custom.typeRoles.nav); unset inherits the bar's size. */
+	font-size: var(--wp--custom--type-roles--nav--font-size, inherit);
 	min-height: 44px;
 	padding: 8px var(--sgs-nav-link-pad-end) 8px 12px;
 	text-decoration: none;

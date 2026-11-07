@@ -717,6 +717,15 @@
         "section-mobile",
         "section-tablet"
       ],
+      "typeRoles": {
+        "eyebrow": {
+          "fontSize": "13px",
+          "letterSpacing": ".14em"
+        },
+        "nav": {
+          "fontSize": "17px"
+        }
+      },
       "selection": {
         "background": "var(--wp--preset--color--brand-gold)",
         "colour": "var(--wp--preset--color--ink)"

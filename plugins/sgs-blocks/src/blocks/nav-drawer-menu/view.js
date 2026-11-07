@@ -125,13 +125,20 @@ function initBarEffects( root ) {
 			null !== strengthAttr ? parseFloat( strengthAttr ) : NaN;
 		const magnetOpts = Number.isFinite( strength )
 			? { factor: strength, maxPull: Infinity }
-			: undefined;
+			: {};
 
 		bar.querySelectorAll( '.sgs-nav-drawer-menu__magnet-target' ).forEach(
-			( el ) =>
+			( label ) => {
+				const link =
+					label.closest( '.sgs-nav-drawer-menu__link' ) || label;
 				activeCleanups.push(
-					initLabelMagnet( el, magnetOpts )
-				)
+					initLabelMagnet( link, {
+						...magnetOpts,
+						engage: 'over',
+						target: label,
+					} )
+				);
+			}
 		);
 	}
 

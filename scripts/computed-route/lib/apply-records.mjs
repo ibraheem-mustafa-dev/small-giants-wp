@@ -29,11 +29,11 @@ export function recordsFor( index, tpl ) {
 }
 
 // Whether a draft element is one a record runs on. A record lists every instance of a template, but its selector can narrow
-// that to elements carrying a hook (`[data-peek]`, `closest('[data-mag]')`): those elements only. A selector that names
+// that to elements carrying a hook (`[data-peek]`, `closest('[data-mag]')`, `querySelector('[data-hero-img]')`): those elements only. A selector that names
 // something inside the element, or no hook, passes. `facts` is the element's read; an unread element passes.
 export function carriesHook( record, facts ) {
-	const hook = /^\[(data-[\w-]+)\]$|closest\('\[(data-[\w-]+)\]'\)/.exec( String( record.element?.selector ?? '' ).trim() );
-	return ! hook || ! facts?.data || facts.data.includes( hook[ 1 ] ?? hook[ 2 ] );
+	const hook = /^\[(data-[\w-]+)\]$|closest\('\[(data-[\w-]+)\]'\)|querySelector\('\[(data-[\w-]+)\]'\)/.exec( String( record.element?.selector ?? '' ).trim() );
+	return ! hook || ! facts?.data || facts.data.includes( hook[ 1 ] ?? hook[ 2 ] ?? hook[ 3 ] );
 }
 
 // A pseudo record's look: { state, looks: [ { property, from, to, duration_ms, delay_ms, easing } ] }. Null for any other record.

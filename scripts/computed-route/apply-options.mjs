@@ -42,55 +42,69 @@ export function optionsOf( bar ) {
 
 const wp = ( site, args ) => spawnSync( 'wsl', [ '-d', 'Ubuntu', '-u', 'root', '--', 'bash', '-lc', `cd /var/www/${ site } && wp --allow-root ${ args }` ], { encoding: 'utf8' });
 
+// The draft's progress bar as the page computes it: { position, height, backgroundImage, backgroundColor }, or null. `browser` is an
+// open Playwright browser (the applier's own), else one is launched for the read.
+async function readBar( { origin, width, tpl, browser = null } ) {
+	const own = browser ?? await chromium.launch();
+	try {
+		const page = await own.newPage( { viewport: { width, height: 900 } } );
+		await page.goto( `${ origin }/`, { waitUntil: 'domcontentloaded' } );
+		await page.waitForFunction( () => document.querySelectorAll( '[data-dc-tpl]' ).length > 40, null, { timeout: 30000 } );
+		const bar = await page.evaluate( ( id ) => {
+			const el = document.querySelector( `[data-dc-tpl="${ id }"]` );
+			const c = el && getComputedStyle( el );
+			return c && { position: c.position, height: c.height, backgroundImage: c.backgroundImage, backgroundColor: c.backgroundColor };
+		}, tpl );
+		await page.close();
+		return bar;
+	} finally {
+		browser || await own.close();
+	}
+}
+
+// The option step the applier runs with its own pass: reads the draft's bar and sets each option on the mirror (`write`), or reports
+// it. Returns the rows [ { name, value, have, status } ]. `read` and `run` are the page read and the wp-cli call (replaceable in tests).
+export async function applyOptions( { repo = REPO, client, origin = 'http://127.0.0.1:5181', width = 1440, write = false, browser = null, say = console.log, read = readBar, run = wp } ) {
+	const surfaces = JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
+	const site = Object.values( surfaces ).find( ( s ) => s.site )?.site;
+	if ( ! /^local-[a-z0-9-]+$/.test( site ?? '' ) ) {
+		throw new Error( `${ site } is not a local mirror` );
+	}
+	const records = JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'handoff', 'animations.json' ), 'utf8' ) ).records;
+	const tpl = progressTpl( records );
+	if ( ! tpl ) {
+		say( 'the handoff holds no scroll record that scales an element along X: no progress bar option to set' );
+		return [];
+	}
+	const bar = await read( { origin: origin.replace( /\/$/, '' ), width, tpl, browser } );
+	if ( ! bar || ! /^(fixed|sticky)$/.test( bar.position ) ) {
+		say( `draft element ${ tpl } is not a fixed bar (${ JSON.stringify( bar ) }): nothing written` );
+		return [];
+	}
+	const rows = [];
+	for ( const [ name, value ] of Object.entries( optionsOf( bar ) ) ) {
+		const have = run( site, `option get ${ name }` ).stdout.trim();
+		const same = String( value ) === have;
+		const status = same ? 'equal' : write ? 'written' : 'would write';
+		say( `${ status } ${ name }: draft ${ value } | ${ site } ${ have || '(unset)' }` );
+		if ( write && ! same ) {
+			const r = run( site, `option update ${ name } ${ JSON.stringify( String( value ) ) }` );
+			if ( 0 !== r.status ) {
+				throw new Error( `could not write ${ name }: ${ r.stderr || r.stdout }` );
+			}
+		}
+		rows.push( { name, value, have, status } );
+	}
+	return rows;
+}
+
 async function main() {
 	const client = process.argv[ 2 ];
 	if ( ! client || client.startsWith( '--' ) ) {
 		console.error( 'usage: node scripts/computed-route/apply-options.mjs <client> [--draft <origin>] [--width 1440] [--write]' );
 		process.exit( 2 );
 	}
-	const surfaces = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
-	const site = Object.values( surfaces ).find( ( s ) => s.site )?.site;
-	if ( ! /^local-[a-z0-9-]+$/.test( site ?? '' ) ) {
-		throw new Error( `${ site } is not a local mirror` );
-	}
-	const records = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', client, 'handoff', 'animations.json' ), 'utf8' ) ).records;
-	const tpl = progressTpl( records );
-	if ( ! tpl ) {
-		console.log( 'the handoff holds no scroll record that scales an element along X: no progress bar option to set' );
-		return;
-	}
-	const origin = flag( '--draft', 'http://127.0.0.1:5181' ).replace( /\/$/, '' );
-	const width = Number( flag( '--width', 1440 ) );
-	const browser = await chromium.launch();
-	let bar;
-	try {
-		const page = await browser.newPage( { viewport: { width, height: 900 } } );
-		await page.goto( `${ origin }/`, { waitUntil: 'domcontentloaded' } );
-		await page.waitForFunction( () => document.querySelectorAll( '[data-dc-tpl]' ).length > 40, null, { timeout: 30000 } );
-		bar = await page.evaluate( ( id ) => {
-			const el = document.querySelector( `[data-dc-tpl="${ id }"]` );
-			const c = el && getComputedStyle( el );
-			return c && { position: c.position, height: c.height, backgroundImage: c.backgroundImage, backgroundColor: c.backgroundColor };
-		}, tpl );
-	} finally {
-		await browser.close();
-	}
-	if ( ! bar || ! /^(fixed|sticky)$/.test( bar.position ) ) {
-		console.log( `draft element ${ tpl } is not a fixed bar (${ JSON.stringify( bar ) }): nothing written` );
-		return;
-	}
-	const write = process.argv.includes( '--write' );
-	for ( const [ name, value ] of Object.entries( optionsOf( bar ) ) ) {
-		const have = wp( site, `option get ${ name }` ).stdout.trim();
-		const same = String( value ) === have;
-		console.log( `${ same ? 'equal' : write ? 'written' : 'would write' } ${ name }: draft ${ value } | ${ site } ${ have || '(unset)' }` );
-		if ( write && ! same ) {
-			const r = wp( site, `option update ${ name } ${ JSON.stringify( String( value ) ) }` );
-			if ( 0 !== r.status ) {
-				throw new Error( `could not write ${ name }: ${ r.stderr || r.stdout }` );
-			}
-		}
-	}
+	await applyOptions( { client, origin: flag( '--draft', 'http://127.0.0.1:5181' ), width: Number( flag( '--width', 1440 ) ), write: process.argv.includes( '--write' ) } );
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {

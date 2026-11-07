@@ -7,6 +7,8 @@ import { stateLook } from './apply-records.mjs';
 import { numberHover } from './apply-chrome-number.mjs';
 import { iconHoverColour } from './apply-chrome-iconcolour.mjs';
 import { closeIconSize } from './apply-chrome-closeicon.mjs';
+import { menuIntent } from './apply-intent.mjs';
+import { constantLength, relativeLength } from './apply-lengths.mjs';
 
 const TIER = { [ TIER_WIDTHS[ 0 ] ]: 'desktop', [ TIER_WIDTHS[ 1 ] ]: 'tablet', [ TIER_WIDTHS[ 2 ] ]: 'mobile' };
 const toHex = ( rgb ) => {
@@ -183,6 +185,18 @@ function timelineRail( { saved, draft, aux, target } ) {
 	return writes.length ? [ settle( { prop: 'connectorLineStyle', why: `${ target.tpl } draws a ${ lineStyleOf( line ) || 'solid' } rail`, saved, writes } ) ] : [];
 }
 
+// The connector's width and its offset from the top of the steps, read at every width where the line shows: the width relative to
+// the steps' own width (or per device), the offset as px only where every width agrees. { writes, gaps }.
+export function connectorLengths( { saved, draft, aux, block, db } ) {
+	const lines = Object.values( aux )[ 0 ];
+	const widths = TIER_WIDTHS.filter( ( w ) => shown( lines?.[ w ] ) && draft[ w ]?.box );
+	const sample = ( of ) => Object.fromEntries( widths.map( ( w ) => [ w, of( w ) ] ) );
+	const width = relativeLength( { db, block: block ?? 'sgs/process-steps', attr: 'connectorWidth', samples: sample( ( w ) => ( { px: lines[ w ].box.w, of: draft[ w ].box.w } ) ) } );
+	const offset = constantLength( { db, block: block ?? 'sgs/process-steps', attr: 'connectorOffset', samples: sample( ( w ) => ( { px: lines[ w ].box.y + parseFloat( lines[ w ].styles.height ) / 2 - draft[ w ].box.y } ) ) } );
+	const writes = [ [ 'connectorWidth', width ], [ 'connectorOffset', offset ] ].filter( ( [ , r ] ) => r.value ).map( ( [ attr, r ] ) => ( { attr, value: r.value } ) );
+	return { writes, gaps: [ width, offset ].filter( ( r ) => r.reason ).map( ( r ) => ( { status: 'no-setting', prop: 'connectorLine', why: r.reason } ) ), saved };
+}
+
 function processSteps( ctx ) {
 	const { saved, draft, aux, target } = ctx;
 	const out = [];
@@ -190,14 +204,14 @@ function processSteps( ctx ) {
 	const line = Object.values( aux )[ 0 ]?.[ top ];
 	if ( shown( line ) && draft[ top ]?.box ) {
 		const h = parseFloat( line.styles.height );
+		const lengths = connectorLengths( ctx );
 		const writes = [
 			{ attr: 'connectorLine', value: true },
 			...( paintOf( line ) ? [ { attr: 'connectorColour', value: paintOf( line ) } ] : [] ),
 			...( gradientOf( line ) ? [ { attr: 'connectorColourGradient', value: gradientOf( line ) } ] : saved.connectorColourGradient ? [ { attr: 'connectorColourGradient', unset: true } ] : [] ),
 			...lineStyleWrites( line, saved ),
 			{ attr: 'connectorThickness', value: `${ Math.round( h * 10 ) / 10 }px` },
-			{ attr: 'connectorWidth', value: `${ Math.round( line.box.w ) }px` },
-			{ attr: 'connectorOffset', value: `${ Math.round( ( line.box.y + h / 2 - draft[ top ].box.y ) * 10 ) / 10 }px` },
+			...lengths.writes,
 		];
 		// The tiers where the draft's line is not drawn (no element, or display none) while the steps are: connectorHidden holds true
 		// there and nowhere else.
@@ -208,7 +222,7 @@ function processSteps( ctx ) {
 			const rest = saved.sgsCustomCss.replace( LINE_RULE, '' ).trim();
 			rest === saved.sgsCustomCss || writes.push( rest ? { attr: 'sgsCustomCss', value: rest } : { attr: 'sgsCustomCss', unset: true } );
 		}
-		out.push( settle( { prop: 'connectorLine', why: `${ target.tpl } draws one ${ line.styles.height } connector line`, saved, writes } ) );
+		out.push( settle( { prop: 'connectorLine', why: `${ target.tpl } draws one ${ line.styles.height } connector line`, saved, writes } ), ...lengths.gaps );
 	}
 	const records = recordsOf( ctx, 'reach' ).filter( ( r ) => 'hover' === r.trigger?.type );
 	const own = records.filter( ( r ) => /style-hover/.test( r.trigger?.detail ?? '' ) );
@@ -220,14 +234,19 @@ function processSteps( ctx ) {
 	return out;
 }
 
-// The floating button's distance from the viewport edges, read from the draft's fixed element at desktop.
+// The floating button's distance from the viewport edges, read from the draft's fixed element at every width where it shows: one
+// value for every device, so it is written only where the widths agree.
 function whatsapp( { saved, draft, target } ) {
-	const f = draft[ TIER_WIDTHS[ 0 ] ];
-	if ( ! f || 'fixed' !== f.styles?.position || ! shown( f ) ) {
+	const reads = TIER_WIDTHS.map( ( w ) => draft[ w ] ).filter( ( f ) => f && 'fixed' === f.styles?.position && shown( f ) );
+	if ( ! reads.length || ! reads.every( ( f ) => /px$/.test( f.styles.right ) && /px$/.test( f.styles.bottom ) ) ) {
 		return [];
 	}
-	const value = { right: f.styles.right, bottom: f.styles.bottom };
-	return /px$/.test( value.right ) && /px$/.test( value.bottom ) ? [ settle( { prop: 'floatingOffset', why: `${ target.tpl } floats ${ value.right } from the right and ${ value.bottom } from the bottom`, saved, writes: [ { attr: 'floatingOffset', value } ] } ) ] : [];
+	const edge = ( side ) => [ ...new Set( reads.map( ( f ) => f.styles[ side ] ) ) ];
+	if ( edge( 'right' ).length > 1 || edge( 'bottom' ).length > 1 ) {
+		return [ { status: 'no-setting', prop: 'floatingOffset', why: `${ target.tpl } floats ${ edge( 'right' ).join( ' / ' ) } from the right and ${ edge( 'bottom' ).join( ' / ' ) } from the bottom by device; floatingOffset is one value for every device` } ];
+	}
+	const value = { right: reads[ 0 ].styles.right, bottom: reads[ 0 ].styles.bottom };
+	return [ settle( { prop: 'floatingOffset', why: `${ target.tpl } floats ${ value.right } from the right and ${ value.bottom } from the bottom`, saved, writes: [ { attr: 'floatingOffset', value } ] } ) ];
 }
 
 // A card whose image circle the draft shows on hover (a clip-path circle set by :hover on the card): a tap on a touch screen
@@ -282,5 +301,5 @@ export function stateRule( ctx ) {
 		return drawerRow( ctx );
 	}
 	const own = cursorField( ctx );
-	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/timeline': timelineRail, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIconSize, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
+	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': ( c ) => [ ...burger( c ), ...menuIntent( c ) ], 'sgs/process-steps': processSteps, 'sgs/timeline': timelineRail, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIconSize, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
 }

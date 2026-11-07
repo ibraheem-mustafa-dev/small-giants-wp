@@ -303,6 +303,12 @@
 		}
 	}
 
+	// A logo whose parts animate or scale (`data-sgs-svg-parts` on the block root) draws outside its viewBox
+	// (a rising sun, a growing ring), so its inline SVG stays unclipped; a logo with no parts keeps the default clip.
+	:where( &[data-sgs-svg-parts] .sgs-responsive-logo__svg svg ) {
+		overflow: visible;
+	}
+
 	// ── Fallback picture (used alongside inline SVG for tablet/mobile) ────────
 	&__picture--fallback {
 		display: none; // hidden on desktop; shown via breakpoint below

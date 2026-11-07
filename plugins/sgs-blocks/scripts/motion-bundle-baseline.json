@@ -14,7 +14,7 @@
     "tier_h_lottie": 61440
   },
   "modules": {
-    "shared/effects/fx-carousel-loop.js": 1465,
+    "shared/effects/fx-carousel-loop.js": 1760,
     "shared/effects/fx-cursor-field.js": 3246,
     "shared/effects/fx-generative-background.js": 11820,
     "shared/effects/fx-grid-dots.js": 2987,

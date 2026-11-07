@@ -85,20 +85,29 @@ export function surfaceFor( skeleton, name ) {
 }
 
 // The draft id span a node reaches: its own ids up to the next node with a later first id, and never less than its subtree's ids.
+// It finds the pair or alias a node resolves to (an unlisted wrapper's pair sits one id after it); it does not say who owns a record.
 export function reachOf( nodes, node ) {
 	if ( null === node.lo ) {
 		return [];
 	}
 	const next = nodes.slice( node.last + 1 ).find( ( n ) => null !== n.lo && n.lo > node.lo );
-	const subMax = Math.max( node.lo, ...nodes.slice( node.index, node.last + 1 ).flatMap( ( n ) => n.ids ) );
+	const subMax = subtreeMax( nodes, node );
 	const hi = Math.max( subMax, next ? next.lo - 1 : subMax );
 	return Array.from( { length: Math.min( hi - node.lo + 1, 400 ) }, ( _, i ) => node.lo + i );
 }
 
-// Draft ids a block node owns for records: its reach less every descendant block's reach.
+// The last draft id of a node's own subtree: its ids and every descendant node's.
+const subtreeMax = ( nodes, node ) => Math.max( node.lo, ...nodes.slice( node.index, node.last + 1 ).flatMap( ( n ) => n.ids ) );
+
+// Draft ids a block node owns for records: its subtree's ids (first id to the subtree's last, never the ids that follow it: an
+// unlisted element after the subtree, such as a frame that wraps the next node, is not this node's) less every descendant block's reach.
 export function ownedIds( nodes, node ) {
+	if ( null === node.lo ) {
+		return [];
+	}
 	const skip = new Set( nodes.slice( node.index + 1, node.last + 1 ).filter( ( n ) => n.b ).flatMap( ( n ) => reachOf( nodes, n ) ) );
-	return reachOf( nodes, node ).filter( ( id ) => ! skip.has( id ) );
+	const hi = subtreeMax( nodes, node );
+	return reachOf( nodes, node ).filter( ( id ) => id <= hi && ! skip.has( id ) );
 }
 
 const idOfTpl = ( tpl ) => Number( /^Root\/(\d+)#\d+$/.exec( String( tpl ?? '' ) )?.[ 1 ] ?? NaN );
@@ -161,7 +170,7 @@ export function skeletonTargets( { nodes, pairs, saved } ) {
 	// logo node that names the wrapper resolves to the logo block paired one id later.
 	const alias = new Map();
 	for ( const n of blockNodes.filter( ( x ) => ! refOf.has( x.index ) ) ) {
-		const span = new Set( ownedIds( nodes, n ) );
+		const span = new Set( reachOf( nodes, n ) );
 		const hit = anchors.find( ( a ) => span.has( a.id ) && saved[ a.ref ]?.block === n.b );
 		if ( hit ) {
 			alias.set( n.index, hit.ref );

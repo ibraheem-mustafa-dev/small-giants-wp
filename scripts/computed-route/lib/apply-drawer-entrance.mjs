@@ -26,7 +26,8 @@ function closeOf( rec, { part, mdb, ctx, open } ) {
 	return { close: { to: { ...to, ...( undefined === opacity ? {} : { opacity } ) }, closeDuration: l.values.duration, closeEasing: l.values.easing, ...( l.values.delay ? { closeDelay: l.values.delay } : {} ) } };
 }
 
-const stagerOf = ( st ) => ( { apply: true, offset: st.offset, step: st.step, cap: st.cap ?? LIMITS.cap } );
+// The draft's delay is `offset + step * index` over the items in document order: one run across the whole list, so a grid does not restart it per row (`perRow: false`).
+const stagerOf = ( st ) => ( { apply: true, offset: st.offset, step: st.step, cap: st.cap ?? LIMITS.cap, perRow: false } );
 
 export function entranceItems( { c, target, block, saved, aux, records, animate } ) {
 	const { mdb, schema, tctx, open, owns, reach, reachRecs, recs } = c;

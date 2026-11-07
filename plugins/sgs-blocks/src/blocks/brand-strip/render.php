@@ -385,8 +385,15 @@ if ( '' !== $root_bg_hover_decl ) {
 }
 $root_text_hover_effective = sgs_resolve_text_colour_or_gradient( $root_text_hover_colour, $root_text_hover_gradient );
 $root_text_hover_decl      = sgs_text_colour_decl( $root_text_hover_effective );
+// A flat hover colour belongs to the tile under the pointer: the strip is a row of independent tiles, so a
+// root-level `color` would recolour every tile at once. A gradient (text clip) keeps the root scope.
+$tile_text_hover_decl = '';
 if ( '' !== $root_text_hover_decl ) {
-	$root_hover_decls[] = $root_text_hover_decl;
+	if ( false === strpos( $root_text_hover_decl, 'background-clip' ) ) {
+		$tile_text_hover_decl = $root_text_hover_decl;
+	} else {
+		$root_hover_decls[] = $root_text_hover_decl;
+	}
 }
 /*
  * `nameColourHover` is NOT part of the root bucket (fixed 2026-09-05).
@@ -404,6 +411,9 @@ if ( '' !== $root_text_hover_decl ) {
  * Emitted below as an ancestor-hover rule on the name's own selector instead,
  * the same shape sgs/testimonial uses for its per-element hover colours.
  */
+if ( '' !== $tile_text_hover_decl ) {
+	$scoped_css[] = sgs_hover_state_rules( "{$root_sel} .sgs-brand-strip__item", $tile_text_hover_decl, ':focus-within' );
+}
 if ( $root_hover_decls ) {
 	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $root_hover_decls ), ':focus-within' );
 	// Focus fallback selector matches the guarded-hover-rule shape so the

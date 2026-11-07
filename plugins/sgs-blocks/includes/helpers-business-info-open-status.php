@@ -35,8 +35,6 @@ if ( ! function_exists( 'sgs_business_info_open_status_labels' ) ) {
 			'opensPattern' => $pick( 'openStatusOpensPattern', '' ),
 			'today'        => __( 'today', 'sgs-blocks' ),
 			'tomorrow'     => __( 'tomorrow', 'sgs-blocks' ),
-			'noon'         => __( 'noon', 'sgs-blocks' ),
-			'midnight'     => __( 'midnight', 'sgs-blocks' ),
 			'days'         => array(
 				__( 'Monday', 'sgs-blocks' ),
 				__( 'Tuesday', 'sgs-blocks' ),
@@ -82,7 +80,8 @@ if ( ! function_exists( 'sgs_business_info_open_status_html' ) ) {
 		// Fallback: no pill, the stored hours as text. An editor preview shows the open state instead.
 		$state     = $editor ? 'open' : '';
 		$pill_attr = $editor ? '' : ' hidden';
-		$line_text = $editor ? trim( (string) preg_replace( '/\s+/', ' ', strtr( $labels['pattern'], array( '{lead}' => $labels['closes'], '{time}' => '5pm', '{when}' => $labels['today'] ) ) ) ) : $fallback;
+		$editor_lead = preg_match( '/\bat\s+\{time\}/', $labels['pattern'] ) ? (string) preg_replace( '/\s+at\s*$/i', '', $labels['closes'] ) : $labels['closes'];
+		$line_text   = $editor ? trim( (string) preg_replace( '/\s+/', ' ', strtr( $labels['pattern'], array( '{lead}' => $editor_lead, '{time}' => '5pm', '{when}' => $labels['today'] ) ) ) ) : $fallback;
 		$show_text = $editor && ! $show_line ? '' : $line_text;
 
 		// Pill off: the pill element is not printed (view.js skips a missing pill), only the line stays.

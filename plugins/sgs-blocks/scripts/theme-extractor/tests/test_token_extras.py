@@ -60,7 +60,7 @@ def test_draft_without_them_changes_nothing(tmp_path):
     before = copy.deepcopy(BASELINE)
     before["settings"]["color"]["palette"] = [{"slug": "brand-gold", "color": "#D8CA50", "name": "Gold"}]
     snap, done = run(tmp_path, readme="## Notes\nNo colours here.\n")
-    assert snap == before and done == {"shadow": [], "selection": False, "palette": []}
+    assert snap == before and done == {"shadow": [], "selection": False, "palette": [], "typeRoles": []}
 
 
 def test_selection_needs_both_halves(tmp_path):
@@ -72,3 +72,14 @@ def test_brand_colour_takes_no_palette_entry(tmp_path):
     snap, done = run(tmp_path, colours=":root{--brand-gold:#D8CA50;--social-linkedin:#0A66C2;--whatsapp-green:#25D366}")
     hexes = {e["color"].upper() for e in snap["settings"]["color"]["palette"]}
     assert not hexes & {"#0A66C2", "#25D366"} and done["palette"] == ["custom-0a6e93"]
+
+
+def test_type_roles_reach_custom_with_their_tracking(tmp_path):
+    snap, done = run(tmp_path, spacing=":root{--fs-eyebrow:13px;--fs-nav:17px;--tracking-eyebrow:.14em;--fs-mono:12px;--tracking-mono:.14em}")
+    assert snap["settings"]["custom"]["typeRoles"] == {"eyebrow": {"fontSize": "13px", "letterSpacing": ".14em"}, "nav": {"fontSize": "17px"}}
+    assert done["typeRoles"] == ["eyebrow", "nav"]
+
+
+def test_type_roles_negative_controls(tmp_path):
+    snap, done = run(tmp_path, spacing=":root{--fs-eyebrow:var(--fs-body);--tracking-nav:.1em;--fs-other:15px}")
+    assert "typeRoles" not in snap["settings"].get("custom", {}) and done["typeRoles"] == []

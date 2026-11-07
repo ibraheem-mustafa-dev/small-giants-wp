@@ -44,6 +44,7 @@
  */
 
 import { prefersReducedMotion, isTouchInput } from './motion-utils';
+import { layoutBox, layoutOffset } from '../layout-box';
 
 // D1059 split (2026-09-14): this module is SHARED between sgs/nav-bar-menu
 // and sgs/nav-drawer-menu -- each has its OWN BEM root, so the link
@@ -58,11 +59,9 @@ import { prefersReducedMotion, isTouchInput } from './motion-utils';
  * @return {{x: number, w: number}} Offset from the bar's left edge + width.
  */
 function measure( barEl, link ) {
-	const barRect = barEl.getBoundingClientRect();
-	const linkRect = link.getBoundingClientRect();
 	return {
-		x: linkRect.left - barRect.left,
-		w: linkRect.width,
+		x: layoutOffset( link, barEl ).x,
+		w: layoutBox( link ).width,
 	};
 }
 

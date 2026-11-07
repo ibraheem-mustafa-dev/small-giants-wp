@@ -30,8 +30,6 @@ const LABELS = {
 	reopens: 'Closed until',
 	today: 'today',
 	tomorrow: 'tomorrow',
-	noon: 'noon',
-	midnight: 'midnight',
 	days: [ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday' ],
 };
 
@@ -97,8 +95,8 @@ describe( 'computeStatus', () => {
 		expect( at( '2026-10-16T11:30:00Z' ) ).toEqual( { open: false, line: 'Closed until 2:30pm' } );
 	} );
 
-	test( 'inside the morning split session: Closes at noon today', () => {
-		expect( at( '2026-10-16T09:00:00Z' ) ).toEqual( { open: true, line: 'Closes at noon today' } );
+	test( 'inside the morning split session: Closes at 12pm today', () => {
+		expect( at( '2026-10-16T09:00:00Z' ) ).toEqual( { open: true, line: 'Closes at 12pm today' } );
 	} );
 
 	test( 'a closed day names the next opening day when it is not tomorrow', () => {
@@ -150,8 +148,8 @@ describe( 'formatTime', () => {
 	test( 'speaks times the UK way', () => {
 		expect( formatTime( 17 * 60 ) ).toBe( '5pm' );
 		expect( formatTime( 9 * 60 + 30 ) ).toBe( '9:30am' );
-		expect( formatTime( 12 * 60 ) ).toBe( 'noon' );
-		expect( formatTime( 0 ) ).toBe( 'midnight' );
+		expect( formatTime( 12 * 60 ) ).toBe( '12pm' );
+		expect( formatTime( 0 ) ).toBe( '12am' );
 		expect( formatTime( 13 * 60 + 5 ) ).toBe( '1:05pm' );
 	} );
 } );
@@ -178,6 +176,10 @@ describe( 'buildLine word order', () => {
 		const labels = { ...LABELS, opens: 'Opens', opensPattern: '{lead} {when} at {time}' };
 		expect( buildLine( change( 'opens', 1 ), labels ) ).toBe( 'Opens tomorrow at 9:30am' );
 		expect( buildLine( change( 'closes', 0 ), labels ) ).toBe( 'Closes at 9:30am today' );
+	} );
+	test( 'a pattern that carries its own at drops the trailing at of the lead', () => {
+		const labels = { ...LABELS, pattern: '{lead} {when} at {time}' };
+		expect( buildLine( change( 'closes', 0 ), labels ) ).toBe( 'Closes today at 9:30am' );
 	} );
 	test( 'with no opening order both lines use the line order', () => {
 		expect( buildLine( change( 'opens', 1 ), LABELS ) ).toBe( 'Opens at 9:30am tomorrow' );
