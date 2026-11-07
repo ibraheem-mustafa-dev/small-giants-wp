@@ -101,12 +101,13 @@ test( 'tiles: a two-pixel lift the draft has and the live tile lacks is a hover 
 	assert.deepEqual( tiles.decide( ctx( mk( 0 ), mk( 0 ) ) ).filter( ( i ) => 'tile hover motion' === i.prop ), [] );
 } );
 
-test( 'consent text: a size differing from the draft is the form\'s consent size; a colour no setting holds is a named no-setting row', () => {
+test( 'consent text: a size and a colour differing from the draft are the form\'s consent settings', () => {
 	const c = { target: { ref: 'cr-ref-x-0', tpl: 'Root/9#0' }, block: 'sgs/form', saved: {}, recordsIndex: new Map(), calFor, db, snapshot };
 	const size = partItems( { ctx: c, element: 'consent-text', prop: 'font-size', drafts: [ '14px' ], lives: [ '19px' ], check: { probe: [ 'consent' ] } } );
 	assert.equal( size[ 0 ].status, 'op' );
 	assert.equal( size[ 0 ].writes[ 0 ].attr, 'consentFontSize' );
 	const colour = partItems( { ctx: c, element: 'consent-text', prop: 'color', drafts: [ 'rgb(74, 85, 99)' ], lives: [ 'rgb(30, 42, 60)' ] } );
-	assert.equal( colour[ 0 ].status, 'no-setting' );
+	assert.equal( colour[ 0 ].status, 'op' );
+	assert.equal( colour[ 0 ].writes[ 0 ].attr, 'consentColour' );
 	assert.deepEqual( partItems( { ctx: c, element: 'consent-text', prop: 'font-size', drafts: [ '14px' ], lives: [ '14px' ] } ), [] );
 } );
