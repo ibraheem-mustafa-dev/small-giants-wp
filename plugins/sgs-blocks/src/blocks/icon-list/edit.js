@@ -1212,6 +1212,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ 'bullet' === markerType && (
 						<>
 							<SgsLengthControl
+								scale="font-size"
 								label={ __( 'Dot size', 'sgs-blocks' ) }
 								help={ __(
 									'Diameter of a round dot drawn in the icon colour. Empty keeps the browser disc.',

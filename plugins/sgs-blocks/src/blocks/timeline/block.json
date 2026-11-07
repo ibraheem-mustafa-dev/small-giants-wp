@@ -322,6 +322,7 @@
 					"motion": false,
 					"label": "Entry card (horizontal)",
 					"order": 1,
+					"layer": "GRID",
 					"clusters": [
 						"fill",
 						"layout"

@@ -37,6 +37,28 @@
 			"_reason": "2026-10-13: the submit button hover lift, classified exactly as sgs/button::liftHover (the shared lift helper, includes/helpers-hover-lift.php, prints translate on :hover)."
 		},
 		{
+			"slug": "sgs/form",
+			"attr": "prevLiftHover",
+			"fields": {
+				"role": "styling",
+				"css_property": "translate",
+				"css_element": "prev-button",
+				"css_state": "hover"
+			},
+			"_reason": "2026-11-07: the Previous-step button hover lift, classified exactly as sgs/button::liftHover (the shared lift helper, includes/helpers-hover-lift.php, prints translate on :hover)."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "nextLiftHover",
+			"fields": {
+				"role": "styling",
+				"css_property": "translate",
+				"css_element": "next-button",
+				"css_state": "hover"
+			},
+			"_reason": "2026-11-07: the Next-step button hover lift, classified exactly as sgs/button::liftHover (the shared lift helper, includes/helpers-hover-lift.php, prints translate on :hover)."
+		},
+		{
 			"slug": "sgs/mega-panel",
 			"attr": "drawerCardLayout",
 			"fields": {

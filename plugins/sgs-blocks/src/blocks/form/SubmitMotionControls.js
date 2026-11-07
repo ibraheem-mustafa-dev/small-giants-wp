@@ -21,7 +21,13 @@ import { HOVER_LIFT_MAX_PX } from '../../utils/hover-lift';
  */
 export default function SubmitMotionControls( { attributes, setAttributes, prefix = 'submit' } ) {
 	const liftKey = `${ prefix }LiftHover`;
-	const shadowKeys = shadowAttrKeys( `${ prefix }Shadow`, { hover: true, hoverColour: true } );
+	// One literal call per button so the wiring scan sees every shadow attribute name.
+	const shadowKeysByPrefix = {
+		submit: shadowAttrKeys( 'submitShadow', { hover: true, hoverColour: true } ),
+		next: shadowAttrKeys( 'nextShadow', { hover: true, hoverColour: true } ),
+		prev: shadowAttrKeys( 'prevShadow', { hover: true, hoverColour: true } ),
+	};
+	const shadowKeys = shadowKeysByPrefix[ prefix ] ?? shadowKeysByPrefix.submit;
 	return (
 		<>
 			<RangeControl

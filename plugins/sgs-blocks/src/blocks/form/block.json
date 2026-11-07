@@ -338,7 +338,9 @@
 					"label": "Previous-step button",
 					"order": 3,
 					"clusters": [
-						"fill"
+						"text",
+						"fill",
+						"layout"
 					],
 					"prefix": "prev",
 					"attrMap": {
@@ -372,7 +374,9 @@
 					"label": "Next-step button",
 					"order": 4,
 					"clusters": [
-						"fill"
+						"text",
+						"fill",
+						"layout"
 					],
 					"prefix": "next",
 					"attrMap": {

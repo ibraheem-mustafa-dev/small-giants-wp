@@ -43,6 +43,7 @@ import FieldMarksPanel from './FieldMarksPanel';
 import UploadZonePanel from './UploadZonePanel';
 import FieldFocusPanel from './FieldFocusPanel';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
+import { formButtonShapePreviewStyle } from './button-shape-preview';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 import AuthoredText from '../../components/AuthoredText';
@@ -188,6 +189,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		attributes.submitColourGradient,
 		( val ) => resolveColourToken( val, palette ) || undefined
 	);
+	// The device the canvas previews; every tier-aware preview below reads it.
+	const previewTier = usePreviewTier();
 	const submitButtonStyle = {
 		...submitTextPreviewStyle,
 		...backgroundPaintPreview( submitBackground, attributes.submitBackgroundGradient, palette ),
@@ -197,6 +200,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 				: undefined,
 		minHeight: submitMinHeight ? `${ submitMinHeight }px` : undefined,
 		...submitShadowPreviewStyle( attributes, palette ),
+		...formButtonShapePreviewStyle( attributes, 'submit', palette, previewTier, { full: false } ),
 	};
 	const progressBarStyle = backgroundPaintPreview( progressBarColour, progressBarColourGradient, palette );
 
@@ -209,18 +213,16 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 	// Submit button preview below was built to close. Resting state only —
 	// the Hover-suffixed siblings are already canvas-exempted, same doctrine
 	// as every other hover value this session.
-	const prevButtonStyle = backgroundPaintPreview(
-		prevColourBackground,
-		prevColourBackgroundGradient,
-		palette
-	);
+	const prevButtonStyle = {
+		...backgroundPaintPreview( prevColourBackground, prevColourBackgroundGradient, palette ),
+		...formButtonShapePreviewStyle( attributes, 'prev', palette, previewTier ),
+	};
 
 	// Next-button canvas preview: the twin of the Previous preview above (resting state only).
-	const nextButtonStyle = backgroundPaintPreview(
-		nextColourBackground,
-		nextColourBackgroundGradient,
-		palette
-	);
+	const nextButtonStyle = {
+		...backgroundPaintPreview( nextColourBackground, nextColourBackgroundGradient, palette ),
+		...formButtonShapePreviewStyle( attributes, 'next', palette, previewTier ),
+	};
 
 	// GROUND-TRUTH: source=file, confirmed against render.php:311-373 +
 	// helpers-colour-variants.php's sgs_border_states_css()/sgs_fill_states_css()
@@ -378,8 +380,6 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		attributes.stepNumberCompletedColour,
 		palette
 	);
-	// The device the canvas previews; every tier-aware preview below reads it.
-	const previewTier = usePreviewTier();
 	// The sticky buttons row at the previewed device, as render.php prints it where sticky is on.
 	const stickyOn = !! tierValueOf( attributes.actionsSticky, previewTier );
 	const stickyBg = resolveColourToken( attributes.actionsStickyBackground, palette );

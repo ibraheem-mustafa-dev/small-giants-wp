@@ -225,10 +225,16 @@ const withFloatPositionPreview = createHigherOrderComponent(
 			return <BlockListBlock { ...props } />;
 		}
 		const vars = {};
+		const edgeValues = {
+			top: attributes.sgsInsetTop,
+			right: attributes.sgsInsetRight,
+			bottom: attributes.sgsInsetBottom,
+			left: attributes.sgsInsetLeft,
+		};
 		if ( FLOATING.includes( mode ) ) {
-			EDGES.forEach( ( { attr, property } ) => {
+			EDGES.forEach( ( { property } ) => {
 				const value = resolveResponsiveTier(
-					attributes[ attr ] || {},
+					edgeValues[ property ] || {},
 					tier
 				).value;
 				if ( value ) {

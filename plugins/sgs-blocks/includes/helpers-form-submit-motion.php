@@ -28,31 +28,35 @@ if ( ! function_exists( 'sgs_form_submit_shadow_map' ) ) {
 	 * @return array<string,string> The map.
 	 */
 	function sgs_form_submit_shadow_map( string $prefix = 'submit' ): array {
-		// The three buttons' names are written out so the wiring scan sees each attribute.
-		$maps = array(
-			'submit' => array(
-				'base'         => 'submitShadow',
-				'colour'       => 'submitShadowColour',
-				'hover'        => 'submitShadowHover',
-				'hover_colour' => 'submitShadowColourHover',
-				'lift_prefix'  => 'submit',
-			),
-			'next'   => array(
+		// Each button returns its own literal map so the wiring scan follows every attribute name.
+		if ( 'next' === $prefix ) {
+			return array(
 				'base'         => 'nextShadow',
 				'colour'       => 'nextShadowColour',
 				'hover'        => 'nextShadowHover',
 				'hover_colour' => 'nextShadowColourHover',
+				'lift'         => 'nextLiftHover',
 				'lift_prefix'  => 'next',
-			),
-			'prev'   => array(
+			);
+		}
+		if ( 'prev' === $prefix ) {
+			return array(
 				'base'         => 'prevShadow',
 				'colour'       => 'prevShadowColour',
 				'hover'        => 'prevShadowHover',
 				'hover_colour' => 'prevShadowColourHover',
+				'lift'         => 'prevLiftHover',
 				'lift_prefix'  => 'prev',
-			),
+			);
+		}
+		return array(
+			'base'         => 'submitShadow',
+			'colour'       => 'submitShadowColour',
+			'hover'        => 'submitShadowHover',
+			'hover_colour' => 'submitShadowColourHover',
+			'lift'         => 'submitLiftHover',
+			'lift_prefix'  => 'submit',
 		);
-		return $maps[ $prefix ] ?? $maps['submit'];
 	}
 }
 
@@ -67,8 +71,9 @@ if ( ! function_exists( 'sgs_form_submit_motion_css' ) ) {
 	 * @return string CSS rules, or '' when no shadow and no lift is set.
 	 */
 	function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '', string $prefix = 'submit' ): string {
-		$shadow = sgs_shadow_decls( $attributes, sgs_form_submit_shadow_map( $prefix ), $block_name );
-		$lift   = sgs_hover_lift_px( $attributes[ $prefix . 'LiftHover' ] ?? 0 );
+		$map    = sgs_form_submit_shadow_map( $prefix );
+		$shadow = sgs_shadow_decls( $attributes, $map, $block_name );
+		$lift   = sgs_hover_lift_px( $attributes[ $map['lift'] ] ?? 0 );
 		if ( ! $shadow['normal'] && ! $shadow['hover'] && $lift <= 0 ) {
 			return '';
 		}

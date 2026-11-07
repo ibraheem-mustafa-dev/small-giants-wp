@@ -42,6 +42,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
+import { timelineCardPreviewStyle, timelineMediaPreviewStyle } from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 import { cardColourRows, EntryCardControls, EntryImageShapeControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
@@ -1863,6 +1864,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 											? { backgroundColor: colourVar( attributes.cardBackgroundColour ) }
 											: {} ),
 										...tierBoxLonghands( attributes.cardPadding, previewTier, 'padding' ),
+										...timelineCardPreviewStyle( attributes, previewTier ),
 								  }
 								: undefined
 						}
@@ -1889,6 +1891,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						{ entryHasMedia( entry ) && (
 							<div
 								className="sgs-timeline__media-slot"
+								style={ timelineMediaPreviewStyle( attributes, previewTier ) }
 								/* Mirrors render.php: a decorative milestone
 								   picture is hidden from assistive tech rather
 								   than announced. Reflected on the canvas too so

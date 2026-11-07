@@ -23,12 +23,6 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'render_block', __NAMESPACE__ . '\inject_float_position', 10, 2 );
 
 const FLOAT_POSITION_MODES = array( 'static', 'relative', 'absolute' );
-const FLOAT_POSITION_EDGES = array(
-	'top'    => 'sgsInsetTop',
-	'right'  => 'sgsInsetRight',
-	'bottom' => 'sgsInsetBottom',
-	'left'   => 'sgsInsetLeft',
-);
 
 /**
  * Whether a block type has opted into the float-position extension.
@@ -93,10 +87,12 @@ function inject_float_position( $block_content, $block ) {
 
 	$tiers      = array( 'desktop', 'tablet', 'mobile' );
 	$positions  = sgs_responsive_normalise_object( $attrs['sgsPosition'] );
-	$edge_attrs = array();
-	foreach ( FLOAT_POSITION_EDGES as $property => $attr ) {
-		$edge_attrs[ $property ] = sgs_responsive_normalise_object( $attrs[ $attr ] ?? null );
-	}
+	$edge_attrs = array(
+		'top'    => sgs_responsive_normalise_object( $attrs['sgsInsetTop'] ?? null ),
+		'right'  => sgs_responsive_normalise_object( $attrs['sgsInsetRight'] ?? null ),
+		'bottom' => sgs_responsive_normalise_object( $attrs['sgsInsetBottom'] ?? null ),
+		'left'   => sgs_responsive_normalise_object( $attrs['sgsInsetLeft'] ?? null ),
+	);
 
 	$resolved  = array();
 	$any_float = false;

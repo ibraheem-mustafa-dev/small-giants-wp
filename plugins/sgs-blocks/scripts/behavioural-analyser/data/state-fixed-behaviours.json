@@ -1383,12 +1383,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
-   "selector": "[data-sgs-hover-group]:hover .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
+   "selector": "[data-sgs-hover-group]:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
    "reason": "fixed paint, no setting: the outline shape answering its card, as its own hover arm (2026-11-07)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
-   "selector": "[data-sgs-hover-group]:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
+   "selector": "[data-sgs-hover-group]:hover .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
    "reason": "fixed paint, no setting: the outline shape answering its card, as its own hover arm (2026-11-07)"
   },
   {
@@ -2534,6 +2534,21 @@
   {
    "file": "theme/sgs-theme/assets/css/focus.css",
    "selector": "input[type=\"range\"]:not(.sgs-focus-source):focus-visible:not(#wpadminbar *)::-webkit-slider-thumb",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/scrollbars.css",
+   "selector": ":where(.sgs-overlay-scroll__thumb.is-visible)",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/scrollbars.css",
+   "selector": ":where(.sgs-overlay-scroll__thumb:hover, .sgs-overlay-scroll__thumb.is-dragging)::before",
+   "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/scrollbars.css",
+   "selector": ":where(.sgs-overlay-scroll__thumb[hidden])",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
