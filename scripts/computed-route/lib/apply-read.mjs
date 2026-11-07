@@ -5,6 +5,7 @@
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { attachStateReads, stateReads } from './apply-hover.mjs';
 import { openDraft, openLive } from './pairs-page.mjs';
+import { readRevealGroups } from './apply-reveal-read.mjs';
 
 const PIXEL = Buffer.from( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64' );
 
@@ -154,9 +155,11 @@ export function factsOf( { items, props, resolveSrc } ) {
 export async function readSurface( { browser, surface, side, width, props, extras = null, clock = null } ) {
 	// A skeleton slot target reads the part's own element (`live`, null when no calibrated part matches it); `aux` names more draft
 	// elements a family reads beside the target (the burger's bars), keyed `<key>~<tpl>`.
-	const items = surface.pairs.flatMap( ( p ) => ( 'draft' === side
+	const itemsOf = ( pairs ) => pairs.flatMap( ( p ) => ( 'draft' === side
 		? [ { key: p.key ?? p.ref, finder: { tpl: p.tpl } }, ...( p.aux || [] ).map( ( a ) => ( { key: a.key, finder: { tpl: a.tpl } } ) ) ]
 		: ( null === p.live ? [] : [ { key: p.key ?? p.ref, finder: p.live ?? `.${ p.ref }` } ] ) ) );
+	// A draft pair with `reveal` is an element the draft shows only in that state: it is read on its own page (lib/apply-reveal-read.mjs).
+	const items = itemsOf( 'draft' === side ? surface.pairs.filter( ( p ) => ! p.reveal ) : surface.pairs );
 	const open = 'draft' === side ? openDraft : openLive;
 	const shim = preparedBrowser( browser, { side, clock } );
 	for ( let attempt = 0; attempt < 3; attempt++ ) {
@@ -168,6 +171,18 @@ export async function readSurface( { browser, surface, side, width, props, extra
 				if ( 1440 === width && ( extras?.hover?.length || extras?.probes?.length || extras?.groups?.length ) ) {
 					const finderOf = ( key ) => items.find( ( i ) => i.key === key ).finder;
 					attachStateReads( read, await stateReads( page, { extras: { ...extras, hover: ( extras.hover || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ), probes: ( extras.probes || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ), groups: ( extras.groups || [] ).filter( ( k ) => items.some( ( i ) => i.key === k ) ) }, finderOf, resolveSrc: resolveFinder.toString(), side } ) );
+				}
+				if ( 'draft' === side && surface.pairs.some( ( p ) => p.reveal ) ) {
+					const shown = await readRevealGroups( {
+						open: ( cfg, w, state ) => open( shim, cfg, w, state ),
+						cfg: surface.cfg,
+						width,
+						pairs: surface.pairs,
+						ready: ( pg ) => pg.evaluate( () => document.querySelectorAll( '[data-dc-tpl]' ).length > 40 ),
+						readPage: ( pg, pairs ) => pg.evaluate( factsOf, { items: itemsOf( pairs ), props, resolveSrc: resolveFinder.toString() } ),
+					} );
+					Object.assign( read.facts, shown.facts );
+					read.animate.push( ...shown.animate );
 				}
 				return read;
 			}

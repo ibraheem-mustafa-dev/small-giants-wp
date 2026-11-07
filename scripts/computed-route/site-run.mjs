@@ -32,6 +32,7 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
+import { handoffRecords } from './lib/skeleton-reveal.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
@@ -295,7 +296,8 @@ export async function main( argv ) {
 ` );
 				return `${ inv.elements.length } elements (intake's inventory${ stateOnly ? ' with the state open' : '' }, in the served key space)`;
 			}
-			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } );
+			// A page's closed states (an accordion's answer, a form's later step) are read too (lib/skeleton-reveal.mjs).
+			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ), reveal: 'page' === kind ? { records: handoffRecords( { repo: REPO, client } ) } : null } );
 			fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 			fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );

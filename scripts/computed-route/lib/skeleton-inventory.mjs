@@ -8,6 +8,8 @@ import { tplKeyOf } from '../../parity/lib/collect.mjs';
 import { tplLineOf } from './identity.mjs';
 import { loadChromium } from './fill-read.mjs';
 import { applyStateRoute } from './state-route.mjs';
+import { discoverReveals, readReveals } from './skeleton-reveal.mjs';
+import { recId } from './reveal-merge.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
@@ -205,9 +207,67 @@ function restoreOverlays() {
 	}
 }
 
+// The screenshots of one width's records (1440 for every shown element, 375 only where an element's size or place inside its
+// parent changed), taken with the overlays outside the root hidden; `shotsDir` null takes none but still marks `layoutChanged`.
+// An element read in a reveal state is not on the page at the opening state, so it has no crop.
+async function shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } ) {
+	if ( 1440 !== w && 375 !== w ) {
+		return;
+	}
+	shotsDir && await page.evaluate( hideOverlays, root );
+	for ( const r of res.records ) {
+		if ( ! r.visible ) {
+			skipped.push( { w, key: r.key, why: r.box ? `not visible (box ${ r.box.w }x${ r.box.h })` : 'not rendered (no layout box)' } );
+			continue;
+		}
+		if ( 375 === w ) {
+			const d = runs[ 1440 ].records.find( ( x ) => x.key === r.key && ! x.reveal );
+			const pd = d && runs[ 1440 ].records.find( ( x ) => x.key === d.parentKey && ! x.reveal );
+			const pm = res.records.find( ( x ) => x.key === r.parentKey );
+			const rel = ( a, pa ) => ( a?.box && pa?.box ? [ a.box.x - pa.box.x, a.box.y - pa.box.y ] : [ 0, 0 ] );
+			const [ dx, dy ] = rel( d, pd );
+			const [ mx, my ] = rel( r, pm );
+			r.layoutChanged = ! d?.box || Math.abs( d.box.w - r.box.w ) > 1 || Math.abs( d.box.h - r.box.h ) > 1 || Math.abs( dx - mx ) > 1 || Math.abs( dy - my ) > 1;
+			if ( ! r.layoutChanged ) {
+				continue;
+			}
+		}
+		if ( ! shotsDir ) {
+			continue;
+		}
+		const file = `${ safe( r.key ) }@${ w }.png`;
+		try {
+			await page.locator( `[data-inv-i="${ r.i }"]` ).screenshot( { path: path.join( shotsDir, file ), animations: 'disabled', timeout: 15000 } );
+			( shots[ r.key ] ||= {} )[ w ] = `shots/${ file }`;
+		} catch ( e ) {
+			skipped.push( { w, key: r.key, why: `screenshot failed: ${ e.message.split( '\n' )[ 0 ] }` } );
+		}
+	}
+	shotsDir && await page.evaluate( restoreOverlays );
+}
+
+// Reads the states of the root that show more than its opening state (lib/skeleton-reveal.mjs) and merges their elements into
+// `res.records`; the states are found at each width (a control can exist at one width only, such as a compact layout's toggle).
+// Does nothing without `reveal` ({ records }: the handoff's surfaces.json records).
+async function addReveals( { page, res, args, reveal, w, log } ) {
+	if ( ! reveal ) {
+		return;
+	}
+	const states = await discoverReveals( page, { root: args[ 0 ], records: reveal.records, log } );
+	const read = async () => {
+		const r = await page.evaluate( collect, args );
+		if ( r.error ) {
+			throw new Error( `${ r.error } in a reveal state at ${ w }px` );
+		}
+		return r.records;
+	};
+	res.records = await readReveals( { page, states, read, base: res.records, log } );
+	log( `inventory ${ w }px reveals: ${ states.length } states, ${ res.records.length } elements` );
+}
+
 // The read on a page the caller prepared (readInventory with `page`): per width, resize, `settle( page, width )`, clear
 // the previous read's data-inv-i marks, read; screenshots only with `shotsDir`; overlays hidden for crops are restored.
-async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips } ) {
+async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal } ) {
 	if ( 'function' !== typeof settleAt ) {
 		throw new Error( 'readInventory with a page needs settle( page, width ): the caller drives settling' );
 	}
@@ -220,45 +280,15 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ];
+		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
 		runs[ w ] = res;
 		log( `inventory ${ w }px: ${ res.records.length } elements` );
-		if ( 1440 !== w && 375 !== w ) {
-			continue;
-		}
-		shotsDir && await page.evaluate( hideOverlays, root );
-		for ( const r of res.records ) {
-			if ( ! r.visible ) {
-				skipped.push( { w, key: r.key, why: r.box ? `not visible (box ${ r.box.w }x${ r.box.h })` : 'not rendered (no layout box)' } );
-				continue;
-			}
-			if ( 375 === w ) {
-				const d = runs[ 1440 ].records.find( ( x ) => x.key === r.key );
-				const pd = d && runs[ 1440 ].records.find( ( x ) => x.key === d.parentKey );
-				const pm = res.records.find( ( x ) => x.key === r.parentKey );
-				const rel = ( a, pa ) => ( a?.box && pa?.box ? [ a.box.x - pa.box.x, a.box.y - pa.box.y ] : [ 0, 0 ] );
-				const [ dx, dy ] = rel( d, pd );
-				const [ mx, my ] = rel( r, pm );
-				r.layoutChanged = ! d?.box || Math.abs( d.box.w - r.box.w ) > 1 || Math.abs( d.box.h - r.box.h ) > 1 || Math.abs( dx - mx ) > 1 || Math.abs( dy - my ) > 1;
-				if ( ! r.layoutChanged ) {
-					continue;
-				}
-			}
-			if ( ! shotsDir ) {
-				continue;
-			}
-			const file = `${ safe( r.key ) }@${ w }.png`;
-			try {
-				await page.locator( `[data-inv-i="${ r.i }"]` ).screenshot( { path: path.join( shotsDir, file ), animations: 'disabled', timeout: 15000 } );
-				( shots[ r.key ] ||= {} )[ w ] = `shots/${ file }`;
-			} catch ( e ) {
-				skipped.push( { w, key: r.key, why: `screenshot failed: ${ e.message.split( '\n' )[ 0 ] }` } );
-			}
-		}
-		shotsDir && await page.evaluate( restoreOverlays );
+		await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
+		await addReveals( { page, res, args, reveal, w, log } );
 	}
 	return summarise( { runs, shots, skipped, url: url ?? page.url(), root } );
 }
@@ -268,10 +298,11 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 // Without `page`, a browser of its own opens `url` at each width. With `page` (a page the caller already prepared,
 // opened and settled, such as intake's sandboxed harness page), nothing is launched or navigated: readOnPage resizes it
 // to each width and the caller's `settle( page, width )` settles it; `shotsDir` may be null (no screenshots) and `url`
-// only labels the result (default: the page's url).
-export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null, strips = null } ) {
+// only labels the result (default: the page's url). `reveal` ({ records }, or null for none) adds the elements the root
+// shows only in a state a click reaches (lib/skeleton-reveal.mjs): each carries `reveal: { component, keys }`.
+export async function readInventory( { url, root, shotsDir, log = () => {}, page = null, settle: settleAt = null, strips = null, reveal = null } ) {
 	if ( page ) {
-		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips } );
+		return readOnPage( { page, url, root, shotsDir, log, settle: settleAt, strips, reveal } );
 	}
 	const { chromium } = await loadChromium();
 	const browser = await chromium.launch( { headless: true } );
@@ -286,48 +317,15 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ];
+			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
 			runs[ w ] = res;
 			log( `inventory ${ w }px: ${ res.records.length } elements` );
-			if ( 1440 === w || 375 === w ) {
-				// Hide fixed and sticky overlays outside the root so crops show only the element (boxes were measured before this).
-				await page.evaluate( ( sel ) => {
-					const r = document.querySelector( sel );
-					for ( const e of document.body.querySelectorAll( '*' ) ) {
-						if ( ! r.contains( e ) && ! e.contains( r ) && ! e.closest( '[data-inv-strip]' ) && ! e.querySelector( '[data-inv-strip]' ) && [ 'fixed', 'sticky' ].includes( getComputedStyle( e ).position ) ) {
-							e.style.setProperty( 'visibility', 'hidden', 'important' );
-						}
-					}
-				}, root );
-				for ( const r of res.records ) {
-					if ( ! r.visible ) {
-						skipped.push( { w, key: r.key, why: r.box ? `not visible (box ${ r.box.w }x${ r.box.h })` : 'not rendered (no layout box)' } );
-						continue;
-					}
-					if ( 375 === w ) {
-						const d = runs[ 1440 ].records.find( ( x ) => x.key === r.key );
-						const pd = d && runs[ 1440 ].records.find( ( x ) => x.key === d.parentKey );
-						const pm = res.records.find( ( x ) => x.key === r.parentKey );
-						const rel = ( a, pa ) => ( a?.box && pa?.box ? [ a.box.x - pa.box.x, a.box.y - pa.box.y ] : [ 0, 0 ] );
-						const [ dx, dy ] = rel( d, pd );
-						const [ mx, my ] = rel( r, pm );
-						r.layoutChanged = ! d?.box || Math.abs( d.box.w - r.box.w ) > 1 || Math.abs( d.box.h - r.box.h ) > 1 || Math.abs( dx - mx ) > 1 || Math.abs( dy - my ) > 1;
-						if ( ! r.layoutChanged ) {
-							continue;
-						}
-					}
-					const file = `${ safe( r.key ) }@${ w }.png`;
-					try {
-						await page.locator( `[data-inv-i="${ r.i }"]` ).screenshot( { path: path.join( shotsDir, file ), animations: 'disabled', timeout: 15000 } );
-						( shots[ r.key ] ||= {} )[ w ] = `shots/${ file }`;
-					} catch ( e ) {
-						skipped.push( { w, key: r.key, why: `screenshot failed: ${ e.message.split( '\n' )[ 0 ] }` } );
-					}
-				}
-			}
+			await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
+			await addReveals( { page, res, args, reveal, w, log } );
 			await ctx.close();
 		}
 	} finally {
@@ -341,17 +339,17 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 // alternative sits beside its sibling branch. An element read at 1440 keeps its place and its record unchanged.
 export function withWidthOnly( runs ) {
 	const out = [ ...runs[ 1440 ].records ];
-	const have = new Set( out.map( ( r ) => r.key ) );
+	const have = new Set( out.map( recId ) );
 	for ( const w of INVENTORY_WIDTHS.filter( ( x ) => 1440 !== x ) ) {
 		const recs = runs[ w ]?.records || [];
 		recs.forEach( ( r, i ) => {
-			if ( have.has( r.key ) ) {
+			if ( have.has( recId( r ) ) ) {
 				return;
 			}
-			const prev = recs.slice( 0, i ).reverse().find( ( x ) => have.has( x.key ) );
-			const at = prev ? out.findIndex( ( x ) => x.key === prev.key ) + 1 : 0;
+			const prev = recs.slice( 0, i ).reverse().find( ( x ) => have.has( recId( x ) ) );
+			const at = prev ? out.findIndex( ( x ) => recId( x ) === recId( prev ) ) + 1 : 0;
 			out.splice( at, 0, { ...r, box: null, visible: false, position: null } );
-			have.add( r.key );
+			have.add( recId( r ) );
 		} );
 	}
 	return out;
@@ -360,16 +358,20 @@ export function withWidthOnly( runs ) {
 // The inventory from the per-width reads ({ width: collect result }).
 function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
-	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
-	const elements = withWidthOnly( runs ).map( ( r ) => {
+	const at = ( w, id ) => runs[ w ].records.find( ( x ) => recId( x ) === id );
+	const records = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
-		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
+		const id = recId( r );
+		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
 	} );
+	// The opening state's elements stay a list of their own; what only a state shows is kept beside it (lib/reveal-merge.mjs).
+	const elements = records.filter( ( r ) => ! r.reveal );
+	const revealed = records.filter( ( r ) => r.reveal );
 	const tagOk = ( r ) => !! r.srcTag && r.srcTag.replace( /^sc-raw-/, '' ).toLowerCase() === r.tag;
 	const checks = {
-		rootName: base.rootName, rootKey: base.rootKey, unstamped: base.unstamped, duplicateKeys: elements.length - new Set( elements.map( ( r ) => r.key ) ).size,
-		perWidthCounts: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, runs[ w ].records.length ] ) ), tagAgree: elements.filter( tagOk ).length, tagDisagree: elements.filter( ( r ) => ! tagOk( r ) ).map( ( r ) => [ r.key, r.srcTag, r.tag ] ),
-		keysMissingAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, elements.filter( ( r ) => ! at( w, r.key ) ).map( ( r ) => r.key ) ] ) ), screenshotSkips: skipped,
+		rootName: base.rootName, rootKey: base.rootKey, unstamped: base.unstamped, duplicateKeys: records.length - new Set( records.map( recId ) ).size,
+		perWidthCounts: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, runs[ w ].records.filter( ( r ) => ! r.reveal ).length ] ) ), tagAgree: elements.filter( tagOk ).length, tagDisagree: elements.filter( ( r ) => ! tagOk( r ) ).map( ( r ) => [ r.key, r.srcTag, r.tag ] ),
+		keysMissingAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, records.filter( ( r ) => ! at( w, recId( r ) ) ).map( recId ) ] ) ), screenshotSkips: skipped,
 	};
-	return { generated: new Date().toISOString(), source: url, root, ...( base.beside?.length ? { beside: base.beside } : {} ), keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, elements };
+	return { generated: new Date().toISOString(), source: url, root, ...( base.beside?.length ? { beside: base.beside } : {} ), keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, elements, ...( revealed.length ? { revealed } : {} ) };
 }

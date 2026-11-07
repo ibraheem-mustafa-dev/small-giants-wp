@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadSkeleton, skeletonTargets, surfaceFor } from './apply-skeleton.mjs';
+import { pairId } from './reveal-merge.mjs';
 
 const readJson = ( f, fallback = null ) => ( fs.existsSync( f ) ? JSON.parse( fs.readFileSync( f, 'utf8' ) ) : fallback );
 
@@ -12,8 +13,9 @@ const readJson = ( f, fallback = null ) => ( fs.existsSync( f ) ? JSON.parse( fs
 // once the post's blocks are known (withSkeleton).
 export const pairsOf = ( cfg, origin = {}, refreshed = null ) => pairsReport( cfg, origin, refreshed ).pairs;
 
-// { pairs, refused }. `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the config's and origin's for
-// the same ref, and a ref it names unpaired is dropped with its reason. A draft element that several refs claim with different
+// { pairs, refused, stale }. `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the config's and origin's for
+// the same ref, and a ref it names unpaired is dropped with its reason. A pair with `reveal` is an element the draft shows only
+// in that state, read with the draft put in it (lib/apply-reveal-read.mjs). A draft element that several refs claim with different
 // content (their origin fingerprints' text differs) is refused for all of them: a write for one block would land on the others.
 export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const out = new Map();
@@ -29,8 +31,12 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 		}
 	}
 	const refused = [];
+	// The refreshed file names every saved block, paired or with a reason: an old pair whose ref it does not name is on no block of
+	// the post any more, so it is dropped (reported in `stale`), not left to show as a pair without a block.
+	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) ) : [];
+	stale.forEach( ( ref ) => out.delete( ref ) );
 	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
-		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh' } );
+		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh', ...( tpl.reveal ? { reveal: tpl.reveal } : {} ) } );
 	}
 	for ( const [ ref, why ] of Object.entries( refreshed?.unpaired || {} ) ) {
 		out.delete( ref );
@@ -38,7 +44,7 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	}
 	const byTpl = new Map();
 	for ( const p of out.values() ) {
-		byTpl.set( p.tpl, [ ...( byTpl.get( p.tpl ) || [] ), p.ref ] );
+		byTpl.set( pairId( p ), [ ...( byTpl.get( pairId( p ) ) || [] ), p.ref ] );
 	}
 	for ( const [ tpl, refs ] of byTpl ) {
 		const content = new Set( refs.map( ( r ) => origin[ r ]?.fingerprint?.textHash ?? '' ).filter( Boolean ) );
@@ -49,7 +55,7 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 			} );
 		}
 	}
-	return { pairs: [ ...out.values() ], refused };
+	return { pairs: [ ...out.values() ], refused, stale };
 }
 
 // The draft's address for a surface, on the origin the draft is served from now: a config records the port of its own run.

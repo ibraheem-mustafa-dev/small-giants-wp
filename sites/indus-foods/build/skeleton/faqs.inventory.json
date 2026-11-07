@@ -296,7 +296,28 @@
       "768": [],
       "1440": []
     },
-    "screenshotSkips": []
+    "screenshotSkips": [],
+    "revealStates": [
+      {
+        "reveal": {
+          "component": "Root",
+          "keys": {
+            "faqOpen": {
+              "faqs-0-0-0": true,
+              "faqs-0-0-1": true,
+              "faqs-0-0-2": true,
+              "faqs-0-1-0": true,
+              "faqs-0-1-1": true,
+              "faqs-0-1-2": true,
+              "faqs-0-2-0": true,
+              "faqs-0-2-1": true,
+              "faqs-0-2-2": true
+            }
+          }
+        },
+        "elements": 9
+      }
+    ]
   },
   "elements": [
     {
@@ -5691,6 +5712,890 @@
         "375": "shots/Root_526_0@375.png",
         "1440": "shots/Root_526_0@1440.png"
       }
+    }
+  ],
+  "revealed": [
+    {
+      "key": "Root/598#0",
+      "parentKey": "Root/594#0",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Any registered business buying for foodservice, manufacturing, retail or wholesale. Apply online and our team will review your details.",
+      "allText": "Any registered business buying for foodservice, manufacturing, retail or wholesale. Apply online and our team will revie",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 689.5,
+          "w": 335,
+          "h": 129.6
+        },
+        "768": {
+          "x": 32,
+          "y": 685.5,
+          "w": 704,
+          "h": 76.8
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 673,
+          "w": 671.6,
+          "h": 76.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#0",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#1",
+      "parentKey": "Root/594#1",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Once your account is open, your account manager will share pricing for the ranges you buy.",
+      "allText": "Once your account is open, your account manager will share pricing for the ranges you buy.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 896.1,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 839.3,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 826.8,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#1",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#2",
+      "parentKey": "Root/594#2",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Yes. We offer custom packaging and white label options for retail and food service customers.",
+      "allText": "Yes. We offer custom packaging and white label options for retail and food service customers.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1076.3,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 966.7,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 954.1,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#2",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#3",
+      "parentKey": "Root/594#3",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "We deliver across the UK from our Birmingham hub and supply customers in Europe.",
+      "allText": "We deliver across the UK from our Birmingham hub and supply customers in Europe.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1383,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1244.6,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1146.5,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#3",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#4",
+      "parentKey": "Root/594#4",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Minimum order values depend on your location and account. We’ll confirm yours when your account is opened.",
+      "allText": "Minimum order values depend on your location and account. We’ll confirm yours when your account is opened.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1563.1,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1372,
+          "w": 704,
+          "h": 76.8
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1273.9,
+          "w": 671.6,
+          "h": 76.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#4",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#5",
+      "parentKey": "Root/594#5",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Yes. Collection from our Birmingham site can be arranged with your account manager.",
+      "allText": "Yes. Collection from our Birmingham site can be arranged with your account manager.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1743.3,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1525.8,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1427.7,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#5",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#6",
+      "parentKey": "Root/594#6",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Over 6,000 lines across ambient, chilled and frozen.",
+      "allText": "Over 6,000 lines across ambient, chilled and frozen.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2050,
+          "w": 335,
+          "h": 76.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1803.7,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1620.1,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#6",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#7",
+      "parentKey": "Root/594#7",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Yes. Contact us for copies of our current certificates.",
+      "allText": "Yes. Contact us for copies of our current certificates.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2203.8,
+          "w": 335,
+          "h": 76.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1931.1,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1747.5,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#7",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#8",
+      "parentKey": "Root/594#8",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Sanam is our own brand, covering rice, flour, spices, lentils, dried fruit and nuts. We also supply Shan, Green Leaf and The Lemon Tree.",
+      "allText": "Sanam is our own brand, covering rice, flour, spices, lentils, dried fruit and nuts. We also supply Shan, Green Leaf and",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2357.6,
+          "w": 335,
+          "h": 129.6
+        },
+        "768": {
+          "x": 32,
+          "y": 2058.5,
+          "w": 704,
+          "h": 76.8
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1874.9,
+          "w": 671.6,
+          "h": 76.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "faqs-0-0-0": true,
+            "faqs-0-0-1": true,
+            "faqs-0-0-2": true,
+            "faqs-0-1-0": true,
+            "faqs-0-1-1": true,
+            "faqs-0-1-2": true,
+            "faqs-0-2-0": true,
+            "faqs-0-2-1": true,
+            "faqs-0-2-2": true
+          }
+        }
+      },
+      "after": "Root/596#8",
+      "layoutChanged375": null,
+      "screenshots": {}
     }
   ]
 }

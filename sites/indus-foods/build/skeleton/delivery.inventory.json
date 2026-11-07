@@ -271,7 +271,22 @@
       "768": [],
       "1440": []
     },
-    "screenshotSkips": []
+    "screenshotSkips": [],
+    "revealStates": [
+      {
+        "reveal": {
+          "component": "Root",
+          "keys": {
+            "faqOpen": {
+              "delivery-2-0-0": true,
+              "delivery-2-0-1": true,
+              "delivery-2-0-2": true
+            }
+          }
+        },
+        "elements": 3
+      }
+    ]
   },
   "elements": [
     {
@@ -7769,6 +7784,284 @@
         "375": "shots/Root_526_0@375.png",
         "1440": "shots/Root_526_0@1440.png"
       }
+    }
+  ],
+  "revealed": [
+    {
+      "key": "Root/598#0",
+      "parentKey": "Root/594#0",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Minimum order values depend on your location and account. Your account manager will confirm yours when your account is opened.",
+      "allText": "Minimum order values depend on your location and account. Your account manager will confirm yours when your account is o",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2860.9,
+          "w": 335,
+          "h": 129.6
+        },
+        "768": {
+          "x": 32,
+          "y": 2692.4,
+          "w": 704,
+          "h": 76.8
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 2446.2,
+          "w": 671.6,
+          "h": 76.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "delivery-2-0-0": true,
+            "delivery-2-0-1": true,
+            "delivery-2-0-2": true
+          }
+        }
+      },
+      "after": "Root/596#0",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#1",
+      "parentKey": "Root/594#1",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Delivery days depend on your route. We’ll agree a regular schedule with you.",
+      "allText": "Delivery days depend on your route. We’ll agree a regular schedule with you.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3067.4,
+          "w": 335,
+          "h": 76.8
+        },
+        "768": {
+          "x": 32,
+          "y": 2846.2,
+          "w": 704,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 2600,
+          "w": 671.6,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "delivery-2-0-0": true,
+            "delivery-2-0-1": true,
+            "delivery-2-0-2": true
+          }
+        }
+      },
+      "after": "Root/596#1",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/598#2",
+      "parentKey": "Root/594#2",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 598,
+      "attrs": {
+        "style": "padding: 0px 52px 24px 0px; font-size: 16px; color: rgb(74, 85, 99); line-height: 1.65; text-wrap: pretty;"
+      },
+      "words": "Check your delivery on arrival and tell us about any shortages or damage as soon as possible so we can put it right.",
+      "allText": "Check your delivery on arrival and tell us about any shortages or damage as soon as possible so we can put it right.",
+      "srcLine": 856,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isFaq }}",
+          "tpl": "585"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.groups }}",
+          "as": "g",
+          "tpl": "587"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ g.items }}",
+          "as": "q",
+          "tpl": "593"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ q.open }}",
+          "tpl": "597"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ q.a }}",
+      "snippet": "<div style=\"padding:0 52px 24px 0;font-size:16px;color:#4A5563;line-height:1.65;text-wrap:pretty;\" data-dc-tpl=\"598\">{{ q.a }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3239.2,
+          "w": 335,
+          "h": 103.2
+        },
+        "768": {
+          "x": 32,
+          "y": 2973.5,
+          "w": 704,
+          "h": 76.8
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 2727.4,
+          "w": 671.6,
+          "h": 76.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "reveal": {
+        "component": "Root",
+        "keys": {
+          "faqOpen": {
+            "delivery-2-0-0": true,
+            "delivery-2-0-1": true,
+            "delivery-2-0-2": true
+          }
+        }
+      },
+      "after": "Root/596#2",
+      "layoutChanged375": null,
+      "screenshots": {}
     }
   ]
 }

@@ -2,7 +2,9 @@
 // Skeleton writer (Spec 48 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft
 // links, plus a review table. Output folder: sites/<client>/build/skeleton/. The draft url is
 // sites/<client>/build/surfaces.json[surface].draftUrl.
-//   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector>
+//   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector> [--route <#/route>] [--reveals]
+//     (--route: the fragment the served draft opens at, for a hash-routed page; --reveals: also read the states a click reaches, an
+//     accordion's answer or a form's later step, each element carrying `reveal: { component, keys }`: lib/skeleton-reveal.mjs)
 //     (a header surface's inventory also holds the strips beside its root, rules.headerSlots)
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --saved
 //     (the inventory intake saved for the surface's intake skeleton, in the served key space: a form surface, which is read at its
@@ -24,6 +26,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from './lib/db.mjs';
 import { assertDraftPage, serveDraft } from './lib/draft.mjs';
 import { readInventory } from './lib/skeleton-inventory.mjs';
+import { handoffRecords } from './lib/skeleton-reveal.mjs';
 import { loadFacts, decisionsProblems, REPO } from './lib/skeleton-facts.mjs';
 import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys } from './lib/skeleton-rerun.mjs';
@@ -163,7 +166,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		const served = p.draftUrl ? null : await serveDraft( assertDraftPage( p.draftDir, p.draftIndex ), { index: p.draftIndex } );
 		let inv;
 		try {
-			inv = await read( { url: served ? served.url : p.draftUrl, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ) } );
+			inv = await read( { url: `${ served ? served.url : p.draftUrl }${ flag( '--route' ) ?? '' }`, root, shotsDir: p.shots, log, strips: inventoryStrips( { client, surface, repo } ), reveal: argv.includes( '--reveals' ) ? { records: handoffRecords( { repo, client } ) } : null } );
 		} finally {
 			served && await served.close();
 		}
