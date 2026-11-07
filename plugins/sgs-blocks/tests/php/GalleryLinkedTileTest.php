@@ -228,4 +228,22 @@ final class GalleryLinkedTileTest extends TestCase {
 		$this->assertSame( 1, substr_count( $out['css'], '--sgs-gallery-tap-min:0px' ) );
 		$this->assertMatchesRegularExpression( '/max-width:767px\)\{[^{]*\{min-height:30px;--sgs-gallery-tap-min:0px;\}/', $out['css'] );
 	}
+
+	public function test_the_tile_border_colour_has_a_hover_state(): void {
+		$base  = array(
+			'tileBorderWidth'  => array(
+				'top'    => '1px',
+				'right'  => '1px',
+				'bottom' => '1px',
+				'left'   => '1px',
+			),
+			'tileBorderColour' => '#1e2a3c',
+		);
+		$item  = '.wp-block-sgs-gallery .sgs-gallery__item';
+		$plain = $this->render_block( 'sgs/gallery', $this->attrs( array(), $base ) );
+		$this->assertStringNotContainsString( $item . ':hover{border-color', $plain['css'] );
+
+		$hover = $this->render_block( 'sgs/gallery', $this->attrs( array(), $base + array( 'tileBorderColourHover' => '#c8102e' ) ) );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $item, '/' ) . ':hover[^{]*\{border-color:#c8102e/', $hover['css'] );
+	}
 }

@@ -9,7 +9,7 @@ import { galleryLayoutTiers } from '../layout-tiers';
 import { LAYOUT_OPTIONS, ASPECT_RATIO_OPTIONS } from './gallery-options';
 
 export default function LayoutSettingsPanel( { attributes, setAttributes, set } ) {
-	const { layout, columns, aspectRatio, scrollItemWidth, scrollInset } = attributes;
+	const { layout, columns, visibleItems, aspectRatio, scrollItemWidth, scrollInset } = attributes;
 	const layoutTiers = galleryLayoutTiers( layout );
 
 	return (
@@ -108,6 +108,27 @@ export default function LayoutSettingsPanel( { attributes, setAttributes, set } 
 								onChange={ setOwnValue }
 								min={ 1 }
 								max={ 6 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						) }
+					</ResponsiveOverride>
+					{ /* visibleItems is a TIER OBJECT too (ResponsiveOverride); 0 or empty shows every item. The editor canvas
+					     keeps every item visible so each stays editable. */ }
+					<ResponsiveOverride
+						label={ __( 'Items shown', 'sgs-blocks' ) }
+						value={ visibleItems }
+						onChange={ ( obj ) => setAttributes( { visibleItems: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, setOwnValue } ) => (
+							<RangeControl
+								label={ __( 'Items shown', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __( '0 shows every item. The editor always shows them all.', 'sgs-blocks' ) }
+								value={ ownValue !== '' ? ownValue : ( effectiveValue !== '' ? effectiveValue : 0 ) }
+								onChange={ setOwnValue }
+								min={ 0 }
+								max={ 24 }
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>

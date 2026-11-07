@@ -55,6 +55,7 @@ import entry_buttons
 import font_weights
 import heading_weight
 import motion_tokens
+import reveal_tokens
 import declared_tokens
 import patch_merge as patch_mod
 import verify_against_draft
@@ -849,6 +850,7 @@ def main(argv=None) -> int:
     motion_tokens.apply_easings(snap, draft_tokens, html, trace)
     movement = motion_tokens.propose_movement_timing(html, draft_tokens, trace)
     motion_tokens.apply_movement_timing(snap, movement, baseline, trace)
+    reveal_tokens.apply_reveal(snap, reveal_tokens.read_records(draft.parent), trace)
     if confirmed is not None:
         # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
         client_slugs = frozenset()

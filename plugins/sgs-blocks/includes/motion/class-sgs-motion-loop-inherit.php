@@ -52,6 +52,9 @@ final class Sgs_Motion_Loop_Inherit {
 	/** The attributes an inherited entrance writes on an item, the only ones the query data may carry. */
 	const ITEM_ATTRS = array( 'data-sgs-me', 'data-sgs-me-keyframes' );
 
+	/** The hover markers the item part's own hover state writes on each item (`Sgs_Motion_Emitter::hover_part_markers`). */
+	const HOVER_ATTRS = array( 'data-sgs-mh', 'data-sgs-mh-move', 'data-sgs-mh-scale', 'data-sgs-mh-rotate' );
+
 	/** The longest keyframe value a carried keyframes attribute may hold (a CSS length, angle or number is far shorter). */
 	const KEYFRAME_VALUE_MAX = 64;
 
@@ -116,7 +119,31 @@ final class Sgs_Motion_Loop_Inherit {
 	 */
 	public static function item_attrs( string $block_name, array $attributes, string $item_selector ): array {
 		$emitted = self::inherited( $block_name, $attributes, $item_selector, '.sgs-x ' . $item_selector, false );
-		return null === $emitted ? array() : array_intersect_key( $emitted['attrs'], array_flip( self::ITEM_ATTRS ) );
+		$attrs   = null === $emitted ? array() : array_intersect_key( $emitted['attrs'], array_flip( self::ITEM_ATTRS ) );
+		return $attrs + self::hover_attrs( $block_name, $attributes, $item_selector );
+	}
+
+	/**
+	 * The hover markers the block's own hover state on its item part writes on each printed item (`data-sgs-mh` and the
+	 * movement markers a stylesheet's built-in lift reads), so items printed after the first render carry them too. Empty
+	 * when the part has no self-driven hover state.
+	 *
+	 * @param string              $block_name    Block slug.
+	 * @param array<string,mixed> $attributes    The block's attributes.
+	 * @param string              $item_selector Class selector of one item under the root.
+	 * @return array<string,string>
+	 */
+	public static function hover_attrs( string $block_name, array $attributes, string $item_selector ): array {
+		$part = self::item_part( $block_name, $item_selector );
+		$raw  = $attributes[ Sgs_Motion_Renderer::ATTR ] ?? null;
+		if ( null === $part || empty( $raw ) ) {
+			return array();
+		}
+		$state = Sgs_Motion_Document::sanitise( $raw )['elements'][ $part ]['hover']['state'] ?? null;
+		if ( ! is_array( $state ) || 'self' !== (string) ( $state['source'] ?? 'self' ) ) {
+			return array();
+		}
+		return array( 'data-sgs-mh' => 'self' ) + Sgs_Motion_Emitter::hover_part_markers( $state );
 	}
 
 	/**
@@ -134,6 +161,10 @@ final class Sgs_Motion_Loop_Inherit {
 		}
 		$out = array();
 		foreach ( $raw as $name => $value ) {
+			if ( in_array( $name, self::HOVER_ATTRS, true ) && is_string( $value ) && ( 'data-sgs-mh' === $name ? 'self' === $value : '' === $value ) ) {
+				$out[ $name ] = $value;
+				continue;
+			}
 			if ( ! in_array( $name, self::ITEM_ATTRS, true ) || ! is_string( $value ) ) {
 				return array();
 			}
@@ -149,7 +180,7 @@ final class Sgs_Motion_Loop_Inherit {
 			}
 			$out[ $name ] = $value;
 		}
-		return isset( $out['data-sgs-me'] ) ? $out : array();
+		return isset( $out['data-sgs-me'] ) || ( ! isset( $out['data-sgs-me-keyframes'] ) && array() !== $out ) ? $out : array();
 	}
 
 	/**
@@ -203,9 +234,11 @@ final class Sgs_Motion_Loop_Inherit {
 		if ( array() === $attrs || '' === $html || '' === $item_class ) {
 			return $html;
 		}
+		// An item already holding the first attribute (the entrance's, else the first hover marker) was stamped before.
+		$guard     = isset( $attrs['data-sgs-me'] ) ? 'data-sgs-me' : (string) array_key_first( $attrs );
 		$processor = new \WP_HTML_Tag_Processor( $html );
 		while ( $processor->next_tag() ) {
-			if ( null === $processor->get_attribute( 'data-sgs-me' ) && true === $processor->has_class( $item_class ) ) {
+			if ( null === $processor->get_attribute( $guard ) && true === $processor->has_class( $item_class ) ) {
 				foreach ( $attrs as $attr => $value ) {
 					$processor->set_attribute( $attr, $value );
 				}

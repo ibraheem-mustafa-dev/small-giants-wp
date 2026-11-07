@@ -442,6 +442,16 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 		} );
 		ro.observe( header );
 
+		// The row engine moves the header's sticky `top` by an inline style
+		// when rows scroll away; the bottom edge changes while the height does
+		// not, so a style change republishes.
+		if ( typeof window.MutationObserver !== 'undefined' ) {
+			new window.MutationObserver( publishGated ).observe( header, {
+				attributes: true,
+				attributeFilter: [ 'style' ],
+			} );
+		}
+
 		// A viewport resize can cross a breakpoint that changes the header's
 		// `position` without changing its border-box height, so the observer
 		// alone is not sufficient. rAF-coalesced; the getComputedStyle read

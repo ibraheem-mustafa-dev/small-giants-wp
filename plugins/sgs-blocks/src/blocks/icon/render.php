@@ -275,6 +275,10 @@ if ( ! empty( $attributes['iconFill'] ) && 'fill' !== $glyph_kind && in_array( $
 if ( 'start' !== $icon_align ) {
 	$classes[] = 'sgs-icon--align-' . $icon_align;
 }
+// An own hover layer driven by the hover group (a card) opts the glyph, ground, border and shadow into the card's hover.
+if ( class_exists( '\SGS\Blocks\Motion\Sgs_Motion_Renderer' ) && \SGS\Blocks\Motion\Sgs_Motion_Renderer::block_uses_group( $attributes ) ) {
+	$classes[] = 'sgs-icon--follows-group';
+}
 if ( $is_hidden_empty ) {
 	$classes[] = 'sgs-icon--hidden-empty';
 }

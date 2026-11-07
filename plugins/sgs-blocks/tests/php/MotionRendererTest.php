@@ -226,7 +226,7 @@ final class MotionRendererTest extends TestCase {
 		);
 		$this->assertStringContainsString( 'data-sgs-mh="group"', $out );
 		$this->assertStringContainsString( '[data-sgs-hover-group]:hover .x', $rules );
-		$this->assertStringContainsString( '[data-sgs-hover-group]:focus-within .x', $rules );
+		$this->assertStringContainsString( '[data-sgs-hover-group]:has(:focus-visible) .x', $rules );
 		$this->assertStringNotContainsString( 'data-sgs-hover-group', sgs_hover_state_rules( '.x', 'color:red' ), 'only while the group block renders' );
 	}
 }

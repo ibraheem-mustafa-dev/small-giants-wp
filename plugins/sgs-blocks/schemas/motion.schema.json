@@ -10361,6 +10361,16 @@
 				},
 				"text": {
 					"$ref": "#/$defs/EntranceTextEffectList"
+				},
+				"off": {
+					"$ref": "#/$defs/boolean",
+					"description": "Turns the site's reveal default (the client's `entrance.reveal` rules) off for this block; a block's own entrance needs no flag, it always wins.",
+					"x-sgs-field": {
+						"fieldType": "boolean",
+						"cssProperty": null,
+						"state": null,
+						"perDevice": false
+					}
 				}
 			},
 			"additionalProperties": false

@@ -339,6 +339,25 @@ if ( '' !== $gap_mobile ) {
 	$gallery_responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . '{--sgs-gap:' . $gap_mobile . '}}';
 }
 
+// Visible items per device (`visibleItems`): the items after the first N are hidden inside that device's own range. A tier
+// with no value inherits the wider one; 0 shows every item. The ranges are disjoint (SGS_Breakpoints::query), so each
+// device's rule stands alone and no rule has to undo another.
+$sgs_gallery_visible_obj = sgs_responsive_normalise_object( $attributes['visibleItems'] ?? null );
+$sgs_gallery_visible_eff = null;
+foreach ( array(
+	'desktop' => 'desktop',
+	'tablet'  => 'tablet-only',
+	'mobile'  => 'mobile',
+) as $sgs_gallery_tier => $sgs_gallery_range ) {
+	$sgs_gallery_raw = $sgs_gallery_visible_obj[ $sgs_gallery_tier ] ?? '';
+	if ( '' !== $sgs_gallery_raw && null !== $sgs_gallery_raw && is_numeric( $sgs_gallery_raw ) ) {
+		$sgs_gallery_visible_eff = absint( $sgs_gallery_raw );
+	}
+	if ( null !== $sgs_gallery_visible_eff && $sgs_gallery_visible_eff > 0 ) {
+		$gallery_responsive_css .= SGS_Breakpoints::media( $sgs_gallery_range ) . '{' . $root_sel . ' .sgs-gallery__item:nth-child(n+' . ( $sgs_gallery_visible_eff + 1 ) . '){display:none;}}';
+	}
+}
+
 // -------------------------------------------------------------------------
 // Explicit image-controls crop (Spec 35 capability-routing doctrine, Part 9,
 // mechanism (c)). block.json declares `imageControlsExplicit:true` so the

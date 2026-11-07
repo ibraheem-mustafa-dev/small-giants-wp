@@ -28,6 +28,7 @@ import { presetBySlug } from './layers/stamp';
 import { RestampConfirm, useRestamp } from './layers/restamp';
 import EntranceFineTune from './entrance/EntranceFineTune';
 import EntranceStagger from './entrance/EntranceStagger';
+import EntranceSiteDefault from './entrance/EntranceSiteDefault';
 import './stagger/with-stagger-rerun';
 import EntranceTextEffects from './entrance/EntranceTextEffects';
 import PresetThumbnailGrid from './thumbnails/PresetThumbnailGrid';
@@ -219,6 +220,12 @@ export default function EntrancePanel( {
 			<ReplayButton
 				onReplay={ () => replay( clientId, target ) }
 				disabled={ ! base }
+			/>
+			<EntranceSiteDefault
+				blockName={ blockName }
+				clientId={ clientId }
+				motion={ motion }
+				hasOwn={ layers.layersOf( 'root', BASE_LIST ).length > 0 }
 			/>
 			<p className="sgs-motion-atom__help">
 				{ __(

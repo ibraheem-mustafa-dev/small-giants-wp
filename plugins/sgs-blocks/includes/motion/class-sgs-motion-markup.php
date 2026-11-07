@@ -362,11 +362,20 @@ final class Sgs_Motion_Markup {
 			if ( null === $close_at ) {
 				continue;
 			}
+			// The glare layer is the element's first child, so every positioned child that follows paints above it (a button
+			// stays on top of the shine); every other layer is appended after the content.
 			$spans = '';
+			$first = '';
 			foreach ( is_array( $keys ) ? $keys : array() as $key ) {
-				$spans .= '<span class="sgs-motion-layer" data-sgs-layer="' . esc_attr( $key ) . '" aria-hidden="true"></span>';
+				$span = '<span class="sgs-motion-layer" data-sgs-layer="' . esc_attr( $key ) . '" aria-hidden="true"></span>';
+				if ( 'glare' === $key ) {
+					$first .= $span;
+				} else {
+					$spans .= $span;
+				}
 			}
 			$html = substr_replace( $html, $spans, $close_at, 0 );
+			$html = substr_replace( $html, $first, $open_end, 0 );
 		}
 		return $html;
 	}

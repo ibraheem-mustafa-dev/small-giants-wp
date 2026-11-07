@@ -12,6 +12,7 @@
  *   rest        a REST request
  *   context     the request's `context` query value
  *   can_edit    current_user_can( 'edit_posts' )
+ *   load_motion load the motion model (the hover-group opt-in)
  * Output: JSON { ok, html, error }.
  *
  * @package SGS\Blocks\Tests
@@ -52,6 +53,11 @@ define( 'SGS_BLOCKS_PATH', $plugin . '/' );
 require_once $plugin . '/scripts/qa/lib/wp-stubs.php';
 require_once $plugin . '/includes/class-sgs-site-info-binding.php';
 require_once $plugin . '/includes/render-helpers.php';
+
+if ( ! empty( $spec['load_motion'] ) ) {
+	// The motion model, for the icon's hover-group opt-in (Sgs_Motion_Renderer::block_uses_group).
+	require_once $plugin . '/includes/motion-loader.php';
+}
 
 $attributes = is_array( $spec['attributes'] ?? null ) ? $spec['attributes'] : array();
 $bind       = (string) ( $spec['bind'] ?? '' );

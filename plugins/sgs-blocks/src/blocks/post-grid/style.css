@@ -529,13 +529,19 @@
 
 .sgs-post-grid__card--card:hover,
 .sgs-post-grid__card--flat:hover {
-	transform: translateY( -4px ) scale( var( --sgs-hover-scale, 1 ) );
+	transform: var( --sgs-card-lift-hover, translateY( -4px ) ) scale( var( --sgs-hover-scale, 1 ) );
 	/* AUTOMATIC LIFT (design H4, task lift-2) — render.php fills --sgs-hover-shadow with
 	   the automatic lift (or an explicit hover, which always wins). Unset (switch off, or
 	   no resting shadow) falls back to the RESTING shadow itself (--sgs-card-shadow, same
 	   default as the resting rule above), i.e. no visible change — not the old hardcoded
 	   literal lift, which ignored the switch entirely. */
 	box-shadow: var( --sgs-hover-shadow, var( --sgs-card-shadow, 0 2px 12px rgba( 0, 0, 0, 0.08 ) ) );
+}
+
+/* A card's own Motion hover movement (`data-sgs-mh-move`, written on each card by the card target's hover state) replaces
+   the built-in lift, so the two never stack. The empty value leaves only the scale. */
+.sgs-post-grid__card[data-sgs-mh-move] {
+	--sgs-card-lift-hover: ;
 }
 
 /*

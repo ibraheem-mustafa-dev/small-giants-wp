@@ -20,6 +20,8 @@ const NAMES = {
 		BorderStyle: 'tileBorderStyle',
 		BorderColour: 'tileBorderColour',
 		BorderColourGradient: 'tileBorderColourGradient',
+		BorderColourHover: 'tileBorderColourHover',
+		BorderColourHoverGradient: 'tileBorderColourHoverGradient',
 		BorderRadius: 'tileBorderRadius',
 	},
 };
@@ -27,6 +29,38 @@ const NAMES = {
 export default function GalleryBorderControl( { attributes, setAttributes, prefix = '' } ) {
 	const key = ( part ) => NAMES[ prefix ][ part ];
 	const radius = attributes[ key( 'BorderRadius' ) ];
+
+	// The tile's border colour has a Hover tab (the helper reads tileBorderColourHover*); the grid wrapper has none.
+	const colourProps = 'tile' === prefix
+		? {
+			colourStates: [
+				{
+					key: 'normal',
+					label: __( 'Normal', 'sgs-blocks' ),
+					value: attributes.tileBorderColour,
+					onChange: ( val ) => setAttributes( { tileBorderColour: val ?? '' } ),
+					gradientValue: attributes.tileBorderColourGradient,
+					onGradientChange: ( val ) => setAttributes( { tileBorderColourGradient: val ?? '' } ),
+					linked: true,
+				},
+				{
+					key: 'hover',
+					label: __( 'Hover', 'sgs-blocks' ),
+					value: attributes.tileBorderColourHover,
+					onChange: ( val ) => setAttributes( { tileBorderColourHover: val ?? '' } ),
+					gradientValue: attributes.tileBorderColourHoverGradient,
+					onGradientChange: ( val ) => setAttributes( { tileBorderColourHoverGradient: val ?? '' } ),
+					linked: true,
+				},
+			],
+		}
+		: {
+			colourValue: attributes[ key( 'BorderColour' ) ],
+			onColourChange: ( val ) => setAttributes( { [ key( 'BorderColour' ) ]: val ?? '' } ),
+			colourGradientValue: attributes[ key( 'BorderColourGradient' ) ],
+			onColourGradientChange: ( val ) => setAttributes( { [ key( 'BorderColourGradient' ) ]: val ?? '' } ),
+			colourLinked: true,
+		};
 
 	return (
 		<>
@@ -40,11 +74,7 @@ export default function GalleryBorderControl( { attributes, setAttributes, prefi
 						styleValue={ attributes[ key( 'BorderStyle' ) ] }
 						onStyleChange={ ( val ) => setAttributes( { [ key( 'BorderStyle' ) ]: val } ) }
 						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourValue={ attributes[ key( 'BorderColour' ) ] }
-						onColourChange={ ( val ) => setAttributes( { [ key( 'BorderColour' ) ]: val ?? '' } ) }
-						colourGradientValue={ attributes[ key( 'BorderColourGradient' ) ] }
-						onColourGradientChange={ ( val ) => setAttributes( { [ key( 'BorderColourGradient' ) ]: val ?? '' } ) }
-						colourLinked={ true }
+						{ ...colourProps }
 						radiusValues={ {
 								base: radius?.desktop ?? {},
 								tablet: radius?.tablet ?? {},

@@ -18,6 +18,9 @@
 		"align": false,
 		"sgs": {
 			"motion": true,
+			"enabledExtensions": [
+				"blockLink"
+			],
 			"boxFamilies": {
 				"asidePadding": [ "asidePadding" ]
 			},
@@ -37,7 +40,9 @@
 						"css:justify-content": "asideJustify",
 						"css:border-color": "asideBorderColour",
 						"css:border-width": "asideBorderWidth",
-						"css:border-color-gradient": "asideBorderColourGradient"
+						"css:border-color-gradient": "asideBorderColourGradient",
+						"css:box-shadow": "asideShadow",
+						"css:box-shadow-color": "asideShadowColour"
 					},
 					"states": {
 						"hover": {
@@ -45,7 +50,8 @@
 								"css:background-color": "asideBgHover",
 								"css:background-image": "asideBgHoverGradient",
 								"css:border-color": "asideBorderColourHover",
-								"css:border-color-gradient": "asideBorderColourHoverGradient"
+								"css:border-color-gradient": "asideBorderColourHoverGradient",
+								"css:box-shadow": "asideShadowHover"
 							}
 						}
 					},
@@ -55,6 +61,24 @@
 		}
 	},
 	"attributes": {
+		"asideShadow": {
+			"type": "string",
+			"default": "",
+			"description": "Resting box-shadow SHAPE of the aside (a preset slug or a layered shape); colour comes from asideShadowColour."
+		},
+		"asideShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"asideShadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state box-shadow SHAPE, painted on :hover and :focus-within in place of the resting shape; colour comes from asideShadowColourHover, else asideShadowColour. Unset: the resting shape's automatic lift applies when a resting shadow is set."
+		},
+		"asideShadowColourHover": {
+			"type": "string",
+			"default": ""
+		},
 		"asideFormat": {
 			"type": "string",
 			"default": "feature",

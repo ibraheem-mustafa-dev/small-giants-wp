@@ -115,6 +115,7 @@ final class Sgs_Motion_Renderer {
 		self::$lone_main                   = false;
 		self::$content_seen                = false;
 		self::$used                        = array();
+		Sgs_Motion_Reveal_Default::reset();
 		$GLOBALS['sgs_hover_group_active'] = false;
 	}
 
@@ -245,7 +246,7 @@ final class Sgs_Motion_Renderer {
 	 * @param string $name Block name.
 	 * @return bool
 	 */
-	private static function supports( string $name ): bool {
+	public static function supports( string $name ): bool {
 		if ( '' === $name || ! class_exists( '\WP_Block_Type_Registry' ) ) {
 			return false;
 		}
@@ -296,6 +297,9 @@ final class Sgs_Motion_Renderer {
 			self::$first_pending = false;
 			$first               = true;
 		}
+		$first   = (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block );
+		$reveal  = Sgs_Motion_Reveal_Default::resolve( $doc, $block, self::$stack, $first, self::$content_seen, $transparent );
+		$doc     = $reveal['doc'];
 		$dropped = array();
 		if ( null !== $parent_block && null !== $top && array() !== $top['doc'] && isset( $doc['elements']['root'] ) ) {
 			foreach ( $top['doc']['elements'] as $parent_element ) {
@@ -311,12 +315,12 @@ final class Sgs_Motion_Renderer {
 		self::$stack[]                     = array(
 			'name'        => (string) ( $block['blockName'] ?? '' ),
 			'doc'         => $doc,
-			'first'       => (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block ),
+			'first'       => $first,
 			'transparent' => $transparent,
 			'group'       => $group,
 			'dropped'     => $dropped,
 			'parent'      => is_object( $parent_block ) && isset( $parent_block->name ) && is_string( $parent_block->name ) ? $parent_block->name : '',
-		);
+		) + $reveal['frame'];
 		$GLOBALS['sgs_hover_group_active'] = $group;
 		return $parsed_block;
 	}
@@ -409,6 +413,18 @@ final class Sgs_Motion_Renderer {
 			}
 		}
 		return $element;
+	}
+
+	/**
+	 * Whether a block's stored motion has a hover layer driven by its hover group (`source: group`): the opt-in a block's
+	 * own stylesheet reads to follow its card's hover with the colours its CSS paints (the icon's `.sgs-icon--follows-group`).
+	 *
+	 * @param array<string,mixed> $attributes The block's attributes.
+	 * @return bool
+	 */
+	public static function block_uses_group( array $attributes ): bool {
+		$raw = $attributes[ self::ATTR ] ?? null;
+		return ! empty( $raw ) && self::uses_source( Sgs_Motion_Document::sanitise( $raw ), 'group' );
 	}
 
 	/**

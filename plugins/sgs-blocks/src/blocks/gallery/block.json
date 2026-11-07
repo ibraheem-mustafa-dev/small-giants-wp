@@ -120,6 +120,7 @@
 						"css:border-color": "borderColour",
 						"css:border-radius": "borderRadius",
 						"css:gap": "gap",
+						"css:display": "visibleItems",
 						"css:grid-template-columns": "gridTemplateColumns",
 						"css:grid-template-rows": "gridTemplateRows",
 						"css:grid-auto-rows": "gridAutoRows",
@@ -196,7 +197,9 @@
 						"hover": {
 							"attrMap": {
 								"css:background-color": "tileColourHover",
-								"css:background-image": "tileColourHoverGradient"
+								"css:background-image": "tileColourHoverGradient",
+								"css:border-color": "tileBorderColourHover",
+								"css:border-color-gradient": "tileBorderColourHoverGradient"
 							}
 						}
 					},
@@ -367,6 +370,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Edge padding of a swipe row, per device (a CSS length): printed as padding-inline and scroll-padding-inline on the grid, so cards run to the screen edge while the first card lines up with the page content."
+		},
+		"visibleItems": {
+			"type": "object",
+			"default": {},
+			"description": "How many items show per device, a tier object {desktop,tablet,mobile} of whole numbers; an unset tier inherits the wider one and 0 or empty shows every item. The items after the first N are hidden by an `:nth-child(n+N+1)` rule inside that device's range (grid, masonry and flex layouts); the editor canvas always shows every item so each stays editable."
 		},
 		"columns": {
 			"type": "object",
@@ -640,6 +648,16 @@
 			"type": "string",
 			"default": "",
 			"description": "Gradient border ring for each item's tile. Non-empty wins over tileBorderColour."
+		},
+		"tileBorderColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour of each item's tile on hover and keyboard focus. Empty keeps the resting border colour."
+		},
+		"tileBorderColourHoverGradient": {
+			"type": "string",
+			"default": "",
+			"description": "Gradient border ring for each item's tile on hover and keyboard focus. Non-empty wins over tileBorderColourHover."
 		},
 		"tileBorderRadius": {
 			"type": "object",

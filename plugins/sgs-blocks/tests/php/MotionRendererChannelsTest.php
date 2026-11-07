@@ -53,10 +53,11 @@ final class MotionRendererChannelsTest extends TestCase {
 			),
 		);
 		$out    = $this->render( $motion );
-		$this->assertStringEndsWith(
-			'<span class="sgs-motion-layer" data-sgs-layer="glare" aria-hidden="true"></span><span class="sgs-motion-layer" data-sgs-layer="sheen" aria-hidden="true"></span></div>',
-			$out
-		);
+		$glare = '<span class="sgs-motion-layer" data-sgs-layer="glare" aria-hidden="true"></span>';
+		$sheen = '<span class="sgs-motion-layer" data-sgs-layer="sheen" aria-hidden="true"></span>';
+		$this->assertStringEndsWith( $sheen . '</div>', $out, 'every layer but the glare is appended after the content' );
+		$this->assertSame( 1, preg_match( '/^<div[^>]*>' . preg_quote( $glare, '/' ) . '/', $out ), 'the glare layer is the first child of its host, under its positioned content' );
+		$this->assertSame( 1, substr_count( $out, $glare ) );
 		$this->assertStringContainsString( 'data-sgs-mc="injected"', $out, 'glare paints a layer and drives no transform' );
 		$this->assertStringNotContainsString( 'data-sgs-ml-mark', $out );
 	}

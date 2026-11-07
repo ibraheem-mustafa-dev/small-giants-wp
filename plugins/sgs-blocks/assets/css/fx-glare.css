@@ -11,14 +11,20 @@
  * channel: `assets/css/motion.css` owns it.
  */
 
+/* The host is a stacking context so the layer below can sit behind its content. */
+:where([data-sgs-fx~="glare"]) {
+	isolation: isolate;
+}
+
 .sgs-motion-layer[data-sgs-layer="glare"] {
 	background-image: radial-gradient(
 		circle at var(--sgs-glare-x, 50%) var(--sgs-glare-y, 50%),
 		var(--sgs-glare-colour, #fff),
 		transparent var(--sgs-glare-size, 55%)
 	);
-	/* Under the host's content: a container lifts its direct children to z-index 1 (zero specificity), so the layer
-	   sits at 0, above the host's own background and below every child. */
+	/* The layer is the host's first child (`Sgs_Motion_Markup::inject_layers`) and the host is its own stacking context
+	   (above), so at z-index 0 it paints over the host's background and its in-flow content (a photo shows the shine) and
+	   under every positioned child that follows it (a button or a lifted container child stays on top). */
 	z-index: 0;
 	opacity: 0;
 	transition: opacity var(--wp--custom--duration--quick, 150ms) var(--wp--custom--easing--ease-out, ease-out);

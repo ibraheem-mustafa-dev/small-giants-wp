@@ -28,6 +28,8 @@ import {
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl } from '@wordpress/components';
 import {
+	ShadowControl,
+	shadowAttrKeys,
 	ResponsiveBoxControl,
 	ResponsiveOverride,
 	resolveColourToken,
@@ -447,6 +449,16 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						onChange={ ( tier, next ) =>
 							setAttributes( { asideBorderWidth: next } )
 						}
+					/>
+
+					<ShadowControl
+						label={ __( 'Shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ shadowAttrKeys( 'asideShadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
 					/>
 				</PanelBody>
 			</InspectorControls>

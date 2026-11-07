@@ -98,8 +98,10 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 			$item,
 			array(
 				'colour' => array(
-					'base'     => 'tileBorderColour',
-					'gradient' => 'tileBorderColourGradient',
+					'base'           => 'tileBorderColour',
+					'hover'          => 'tileBorderColourHover',
+					'gradient'       => 'tileBorderColourGradient',
+					'hover_gradient' => 'tileBorderColourHoverGradient',
 				),
 			)
 		);
@@ -107,6 +109,9 @@ if ( ! function_exists( 'sgs_gallery_tile_css' ) ) {
 			$css .= $item . '{' . implode( ';', $border['base'] ) . ';}';
 		}
 		$css .= implode( '', $border['rules'] );
+		if ( $border['hover'] ) {
+			$css .= sgs_hover_state_rules( $item, implode( ';', $border['hover'] ), ':focus-within' );
+		}
 		if ( $border['tablet'] ) {
 			$css .= sgs_emit_tier_decls( $item, array( 'tablet' => $border['tablet'] ) );
 		}

@@ -118,7 +118,8 @@
 		            box-shadow var(--sgs-transition-duration, 300ms) var(--sgs-transition-easing, ease-in-out);
 	}
 
-	.sgs-info-box.sgs-has-hover-scale:hover {
+	/* The block's own Motion hover scale (`data-sgs-mh-scale` on the root) replaces this built-in scale. */
+	.sgs-info-box.sgs-has-hover-scale:not([data-sgs-mh-scale]):hover {
 		transform: scale(var(--sgs-hover-scale, 1.05));
 	}
 

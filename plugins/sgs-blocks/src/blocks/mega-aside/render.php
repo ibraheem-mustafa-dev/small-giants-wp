@@ -123,6 +123,24 @@ if ( $aside_border['mobile'] ) {
 	$css .= sgs_emit_tier_decls( $root_sel, array( 'mobile' => $aside_border['mobile'] ) );
 }
 
+// Shadow: resting and hover shapes through the shared assembler (a hover shape, else the resting shape's automatic lift).
+$aside_shadow = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'asideShadow',
+		'colour'       => 'asideShadowColour',
+		'hover'        => 'asideShadowHover',
+		'hover_colour' => 'asideShadowColourHover',
+	),
+	'sgs/mega-aside'
+);
+if ( $aside_shadow['normal'] ) {
+	$css .= $root_sel . '{' . implode( ';', $aside_shadow['normal'] ) . ';}';
+}
+if ( $aside_shadow['hover'] ) {
+	$css .= sgs_hover_state_rules( $root_sel, implode( ';', $aside_shadow['hover'] ), ':focus-within' );
+}
+
 if ( function_exists( 'sgs_emit_responsive_css' ) && ! empty( $aside_padding_obj ) ) {
 	$css .= sgs_emit_responsive_css(
 		$root_sel,
