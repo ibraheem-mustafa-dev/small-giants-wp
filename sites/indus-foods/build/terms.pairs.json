@@ -1,0 +1,293 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-terms-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-6": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-7": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-8": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-12": {
+   "tpl": "Root/643#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-13": {
+   "tpl": "Root/645#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-14": {
+   "tpl": "Root/646#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-15": {
+   "tpl": "Root/645#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-16": {
+   "tpl": "Root/646#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-17": {
+   "tpl": "Root/645#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-18": {
+   "tpl": "Root/646#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-19": {
+   "tpl": "Root/645#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-20": {
+   "tpl": "Root/646#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-21": {
+   "tpl": "Root/645#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-22": {
+   "tpl": "Root/646#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-23": {
+   "tpl": "Root/645#5",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-24": {
+   "tpl": "Root/646#5",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-25": {
+   "tpl": "Root/645#6",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-26": {
+   "tpl": "Root/646#6",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-29": {
+   "tpl": "Root/650#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-30": {
+   "tpl": "Root/652#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-32": {
+   "tpl": "Root/650#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-34": {
+   "tpl": "Root/652#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-36": {
+   "tpl": "Root/650#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-38": {
+   "tpl": "Root/652#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-40": {
+   "tpl": "Root/650#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-42": {
+   "tpl": "Root/652#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-44": {
+   "tpl": "Root/650#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-46": {
+   "tpl": "Root/652#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-48": {
+   "tpl": "Root/650#5",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-50": {
+   "tpl": "Root/652#5",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-52": {
+   "tpl": "Root/650#6",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-54": {
+   "tpl": "Root/652#6",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-13n": {
+   "tpl": "Root/645#0",
+   "how": "text \"trade accounts\"",
+   "part": "text"
+  },
+  "cr-ref-terms-15n": {
+   "tpl": "Root/645#1",
+   "how": "text \"orders\"",
+   "part": "text"
+  },
+  "cr-ref-terms-17n": {
+   "tpl": "Root/645#2",
+   "how": "text \"pricing\"",
+   "part": "text"
+  },
+  "cr-ref-terms-19n": {
+   "tpl": "Root/645#3",
+   "how": "text \"delivery\"",
+   "part": "text"
+  },
+  "cr-ref-terms-21n": {
+   "tpl": "Root/645#4",
+   "how": "text \"shortages, damage & returns\"",
+   "part": "text"
+  },
+  "cr-ref-terms-23n": {
+   "tpl": "Root/645#5",
+   "how": "text \"payment\"",
+   "part": "text"
+  },
+  "cr-ref-terms-25n": {
+   "tpl": "Root/645#6",
+   "how": "text \"contact\"",
+   "part": "text"
+  },
+  "cr-ref-terms-29-num": {
+   "tpl": "Root/651#0",
+   "how": "text \"01\""
+  },
+  "cr-ref-terms-29-h": {
+   "tpl": "Root/650#0",
+   "how": "heading \"trade accounts\"",
+   "part": "text"
+  },
+  "cr-ref-terms-32-num": {
+   "tpl": "Root/651#1",
+   "how": "text \"02\""
+  },
+  "cr-ref-terms-32-h": {
+   "tpl": "Root/650#1",
+   "how": "heading \"orders\"",
+   "part": "text"
+  },
+  "cr-ref-terms-36-num": {
+   "tpl": "Root/651#2",
+   "how": "text \"03\""
+  },
+  "cr-ref-terms-36-h": {
+   "tpl": "Root/650#2",
+   "how": "heading \"pricing\"",
+   "part": "text"
+  },
+  "cr-ref-terms-40-num": {
+   "tpl": "Root/651#3",
+   "how": "text \"04\""
+  },
+  "cr-ref-terms-40-h": {
+   "tpl": "Root/650#3",
+   "how": "heading \"delivery\"",
+   "part": "text"
+  },
+  "cr-ref-terms-44-num": {
+   "tpl": "Root/651#4",
+   "how": "text \"05\""
+  },
+  "cr-ref-terms-44-h": {
+   "tpl": "Root/650#4",
+   "how": "heading \"shortages, damage & returns\"",
+   "part": "text"
+  },
+  "cr-ref-terms-48-num": {
+   "tpl": "Root/651#5",
+   "how": "text \"06\""
+  },
+  "cr-ref-terms-48-h": {
+   "tpl": "Root/650#5",
+   "how": "heading \"payment\"",
+   "part": "text"
+  },
+  "cr-ref-terms-52-num": {
+   "tpl": "Root/651#6",
+   "how": "text \"07\""
+  },
+  "cr-ref-terms-52-h": {
+   "tpl": "Root/650#6",
+   "how": "heading \"contact\"",
+   "part": "text"
+  },
+  "cr-ref-terms-11": {
+   "tpl": "Root/642#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-27": {
+   "tpl": "Root/647#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-28": {
+   "tpl": "Root/649#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-31": {
+   "tpl": "Root/649#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-35": {
+   "tpl": "Root/649#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-39": {
+   "tpl": "Root/649#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-43": {
+   "tpl": "Root/649#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-47": {
+   "tpl": "Root/649#5",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-51": {
+   "tpl": "Root/649#6",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-terms-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-terms-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-terms-9": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-terms-10": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

@@ -1,0 +1,371 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-faqs-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-6": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-7": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-8": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-9": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-10": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-11": {
+   "tpl": "Root/586#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-12": {
+   "tpl": "Root/588#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-13": {
+   "tpl": "Root/589#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-15": {
+   "tpl": "Root/591#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-16": {
+   "tpl": "Root/592#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-26": {
+   "tpl": "Root/588#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-29": {
+   "tpl": "Root/591#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-40": {
+   "tpl": "Root/588#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-43": {
+   "tpl": "Root/591#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-54": {
+   "tpl": "Root/344#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-55": {
+   "tpl": "Root/345#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-56": {
+   "tpl": "Root/515#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-60": {
+   "tpl": "Root/520#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-61": {
+   "tpl": "Root/522#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-62": {
+   "tpl": "Root/523#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-64": {
+   "tpl": "Root/525#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-65": {
+   "tpl": "Root/526#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-14": {
+   "tpl": "Root/590#0",
+   "how": "text \"01\""
+  },
+  "cr-ref-faqs-a16-0": {
+   "tpl": "Root/594#0",
+   "how": "item \"who can open a trade account?\""
+  },
+  "cr-ref-faqs-t16-0": {
+   "tpl": "Root/598#0",
+   "how": "text \"any registered business buying for foods\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a16-1": {
+   "tpl": "Root/594#1",
+   "how": "item \"how do i see prices?\""
+  },
+  "cr-ref-faqs-t16-1": {
+   "tpl": "Root/598#1",
+   "how": "text \"once your account is open, your account \"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a16-2": {
+   "tpl": "Root/594#2",
+   "how": "item \"can i use my own branding?\""
+  },
+  "cr-ref-faqs-t16-2": {
+   "tpl": "Root/598#2",
+   "how": "text \"yes. we offer custom packaging and white\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-28": {
+   "tpl": "Root/590#1",
+   "how": "text \"02\""
+  },
+  "cr-ref-faqs-a30-0": {
+   "tpl": "Root/594#3",
+   "how": "item \"where do you deliver?\""
+  },
+  "cr-ref-faqs-t30-0": {
+   "tpl": "Root/598#3",
+   "how": "text \"we deliver across the uk from our birmin\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a30-1": {
+   "tpl": "Root/594#4",
+   "how": "item \"is there a minimum order?\""
+  },
+  "cr-ref-faqs-t30-1": {
+   "tpl": "Root/598#4",
+   "how": "text \"minimum order values depend on your loca\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a30-2": {
+   "tpl": "Root/594#5",
+   "how": "item \"can i collect my order?\""
+  },
+  "cr-ref-faqs-t30-2": {
+   "tpl": "Root/598#5",
+   "how": "text \"yes. collection from our birmingham site\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-42": {
+   "tpl": "Root/590#2",
+   "how": "text \"03\""
+  },
+  "cr-ref-faqs-a44-0": {
+   "tpl": "Root/594#6",
+   "how": "item \"how many products do you stock?\""
+  },
+  "cr-ref-faqs-t44-0": {
+   "tpl": "Root/598#6",
+   "how": "text \"over 6,000 lines across ambient, chilled\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a44-1": {
+   "tpl": "Root/594#7",
+   "how": "item \"are you brc and halal certified?\""
+  },
+  "cr-ref-faqs-t44-1": {
+   "tpl": "Root/598#7",
+   "how": "text \"yes. contact us for copies of our curren\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-a44-2": {
+   "tpl": "Root/594#8",
+   "how": "item \"what are your own brands?\""
+  },
+  "cr-ref-faqs-t44-2": {
+   "tpl": "Root/598#8",
+   "how": "text \"sanam is our own brand, covering rice, f\"",
+   "reveal": {
+    "component": "Root",
+    "keys": {
+     "faqOpen": {
+      "faqs-0-0-0": true,
+      "faqs-0-0-1": true,
+      "faqs-0-0-2": true,
+      "faqs-0-1-0": true,
+      "faqs-0-1-1": true,
+      "faqs-0-1-2": true,
+      "faqs-0-2-0": true,
+      "faqs-0-2-1": true,
+      "faqs-0-2-2": true
+     }
+    }
+   }
+  },
+  "cr-ref-faqs-27": {
+   "tpl": "Root/589#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-41": {
+   "tpl": "Root/589#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-59": {
+   "tpl": "Root/519#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-63": {
+   "tpl": "Root/524#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-faqs-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-faqs-30": {
+   "tpl": "Root/592#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-faqs-44": {
+   "tpl": "Root/592#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-faqs-57": {
+   "tpl": "Root/516#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-faqs-58": {
+   "tpl": "Root/517#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

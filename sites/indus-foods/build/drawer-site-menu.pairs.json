@@ -1,0 +1,70 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-drawer-site-menu-0": {
+   "tpl": "Root/108#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-10": {
+   "tpl": "Root/121#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-11": {
+   "tpl": "Root/122#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-12": {
+   "tpl": "Root/178#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-13": {
+   "tpl": "Root/179#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-19": {
+   "tpl": "Root/196#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-20": {
+   "tpl": "Root/197#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-drawer-site-menu-8": {
+   "tpl": "Root/117#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-14": {
+   "tpl": "Root/180#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-15": {
+   "tpl": "Root/181#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-16": {
+   "tpl": "Root/184#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-17": {
+   "tpl": "Root/187#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-18": {
+   "tpl": "Root/193#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-drawer-site-menu-1": {
+   "tpl": "Root/109#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-drawer-site-menu-2": {
+   "tpl": "Root/110#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {
+  "cr-ref-drawer-site-menu-6": "sgs/social-icons is structural: no draft element inside its parent's has its box (98x44 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-drawer-site-menu-7": "sgs/icon is structural: no draft element has its box (44x44 at 375px), so the draft draws nothing of its own for it"
+ },
+ "unpaired": {}
+}

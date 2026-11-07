@@ -1,0 +1,125 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-mega-sectors-0": {
+   "tpl": "Root/85#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-1": {
+   "tpl": "Root/87#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-2": {
+   "tpl": "Root/88#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-3": {
+   "tpl": "Root/89#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-4": {
+   "tpl": "Root/90#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-5": {
+   "tpl": "Root/91#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-6": {
+   "tpl": "Root/92#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-8": {
+   "tpl": "Root/87#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-9": {
+   "tpl": "Root/88#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-10": {
+   "tpl": "Root/89#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-11": {
+   "tpl": "Root/90#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-12": {
+   "tpl": "Root/91#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-13": {
+   "tpl": "Root/92#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-15": {
+   "tpl": "Root/87#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-16": {
+   "tpl": "Root/88#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-17": {
+   "tpl": "Root/89#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-18": {
+   "tpl": "Root/90#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-19": {
+   "tpl": "Root/91#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-20": {
+   "tpl": "Root/92#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-22": {
+   "tpl": "Root/87#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-23": {
+   "tpl": "Root/88#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-24": {
+   "tpl": "Root/89#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-25": {
+   "tpl": "Root/90#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-26": {
+   "tpl": "Root/91#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-27": {
+   "tpl": "Root/92#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-sectors-7": {
+   "tpl": "Root/93#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-mega-sectors-14": {
+   "tpl": "Root/93#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-mega-sectors-21": {
+   "tpl": "Root/93#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-mega-sectors-28": {
+   "tpl": "Root/93#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {
+  "cr-ref-mega-sectors-0g": "sgs/container is structural: no draft element inside its parent's has its text or box (1022x301.7 at 1440px), so the draft draws nothing of its own for it"
+ },
+ "unpaired": {}
+}

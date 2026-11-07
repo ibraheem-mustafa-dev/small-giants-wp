@@ -1,0 +1,205 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-footer-0": {
+   "tpl": "Root/653#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-2": {
+   "tpl": "Root/658#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-3": {
+   "tpl": "Root/659#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-4": {
+   "tpl": "Root/660#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-5": {
+   "tpl": "Root/661#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-6": {
+   "tpl": "Root/662#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-7": {
+   "tpl": "Root/663#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-8": {
+   "tpl": "Root/664#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-9": {
+   "tpl": "Root/665#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-10": {
+   "tpl": "Root/666#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-11": {
+   "tpl": "Root/667#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-12": {
+   "tpl": "Root/668#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-13": {
+   "tpl": "Root/669#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-14": {
+   "tpl": "Root/670#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-16": {
+   "tpl": "Root/672#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-23": {
+   "tpl": "Root/684#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-24": {
+   "tpl": "Root/685#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-31": {
+   "tpl": "Root/703#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-33": {
+   "tpl": "Root/708#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-35": {
+   "tpl": "Root/710#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-37": {
+   "tpl": "Root/712#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-40": {
+   "tpl": "Root/717#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-41": {
+   "tpl": "Root/718#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-43": {
+   "tpl": "Root/721#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-44": {
+   "tpl": "Root/723#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-45": {
+   "tpl": "Root/726#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-46": {
+   "tpl": "Root/727#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-47": {
+   "tpl": "Root/728#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-sep1": {
+   "tpl": "Root/722#0",
+   "how": "text \"|\""
+  },
+  "cr-ref-footer-22": {
+   "tpl": "Root/682#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-footer-25": {
+   "tpl": "Root/686#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-26": {
+   "tpl": "Root/687#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-27": {
+   "tpl": "Root/690#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-28": {
+   "tpl": "Root/693#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-29": {
+   "tpl": "Root/699#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-32": {
+   "tpl": "Root/704#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-footer-1": {
+   "tpl": "Root/657#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-15": {
+   "tpl": "Root/671#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-17": {
+   "tpl": "Root/673#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-18": {
+   "tpl": "Root/675#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-19": {
+   "tpl": "Root/677#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-20": {
+   "tpl": "Root/680#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-21": {
+   "tpl": "Root/681#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-30": {
+   "tpl": "Root/702#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-34": {
+   "tpl": "Root/709#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-36": {
+   "tpl": "Root/711#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-38": {
+   "tpl": "Root/713#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-39": {
+   "tpl": "Root/714#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-footer-42": {
+   "tpl": "Root/720#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {
+  "cr-ref-footer-45t": "no unclaimed draft text shows \"back to top\" in any state the draft shows (or it is already paired)"
+ }
+}

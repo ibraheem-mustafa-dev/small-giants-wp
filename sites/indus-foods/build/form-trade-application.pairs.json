@@ -1,17 +1,17 @@
 {
  "generated": "refresh-pairs.mjs",
  "pairs": {
-  "cr-ref-form-trade-application-0": {
-   "tpl": "Root>TradeApplication@466#0/6#0",
-   "how": "the draft root"
-  },
   "cr-ref-form-trade-application-2": {
    "tpl": "Root>TradeApplication@466#0/23#0",
-   "how": "heading \"tell us about your business\""
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-trade-application-3": {
    "tpl": "Root>TradeApplication@466#0/24#0",
-   "how": "text \"the basics we need to set up your accoun\""
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-trade-application-0": {
+   "tpl": "Root>TradeApplication@466#0/6#0",
+   "how": "the draft root"
   },
   "cr-ref-form-trade-application-4": {
    "tpl": "Root>TradeApplication@466#0/47#0",
@@ -40,50 +40,426 @@
   "cr-ref-form-trade-application-11": {
    "tpl": "Root>TradeApplication@466#0/47#1",
    "how": "field \"food hygiene rating\""
+  },
+  "cr-ref-form-trade-application-13": {
+   "tpl": "Root>TradeApplication@466#0/23#0",
+   "how": "heading \"where are you based?\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-14": {
+   "tpl": "Root>TradeApplication@466#0/24#0",
+   "how": "text \"we deliver across the uk and europe. tel\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-15": {
+   "tpl": "Root>TradeApplication@466#0/39#0",
+   "how": "field \"business address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-16": {
+   "tpl": "Root>TradeApplication@466#0/39#1",
+   "how": "field \"town or city\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-17": {
+   "tpl": "Root>TradeApplication@466#0/39#2",
+   "how": "field \"postcode\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-18": {
+   "tpl": "Root>TradeApplication@466#0/55#0",
+   "how": "field \"deliver to this address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-19": {
+   "tpl": "Root>TradeApplication@466#0/31#0",
+   "how": "heading \"delivery address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1,
+     "v": {
+      "sameDelivery": false
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-20": {
+   "tpl": "Root>TradeApplication@466#0/39#3",
+   "how": "field \"delivery address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1,
+     "v": {
+      "sameDelivery": false
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-21": {
+   "tpl": "Root>TradeApplication@466#0/39#4",
+   "how": "field \"delivery postcode\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1,
+     "v": {
+      "sameDelivery": false
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-22": {
+   "tpl": "Root>TradeApplication@466#0/47#0",
+   "how": "field \"preferred delivery window\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1,
+     "v": {
+      "sameDelivery": false
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-23": {
+   "tpl": "Root>TradeApplication@466#0/45#0",
+   "how": "field \"access notes for drivers\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 1
+    }
+   }
+  },
+  "cr-ref-form-trade-application-25": {
+   "tpl": "Root>TradeApplication@466#0/23#0",
+   "how": "heading \"who should we speak to?\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-26": {
+   "tpl": "Root>TradeApplication@466#0/24#0",
+   "how": "text \"your main contact and the person respons\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-27": {
+   "tpl": "Root>TradeApplication@466#0/39#0",
+   "how": "field \"first name\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-28": {
+   "tpl": "Root>TradeApplication@466#0/39#1",
+   "how": "field \"last name\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-29": {
+   "tpl": "Root>TradeApplication@466#0/41#0",
+   "how": "field \"your role\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-30": {
+   "tpl": "Root>TradeApplication@466#0/39#2",
+   "how": "field \"email\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-31": {
+   "tpl": "Root>TradeApplication@466#0/39#3",
+   "how": "field \"phone\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-32": {
+   "tpl": "Root>TradeApplication@466#0/47#0",
+   "how": "field \"best way to reach you\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-33": {
+   "tpl": "Root>TradeApplication@466#0/31#0",
+   "how": "heading \"owner or director\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-34": {
+   "tpl": "Root>TradeApplication@466#0/39#4",
+   "how": "field \"full name\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-35": {
+   "tpl": "Root>TradeApplication@466#0/39#5",
+   "how": "field \"home postcode\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 2
+    }
+   }
+  },
+  "cr-ref-form-trade-application-37": {
+   "tpl": "Root>TradeApplication@466#0/23#0",
+   "how": "heading \"how will you order?\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-38": {
+   "tpl": "Root>TradeApplication@466#0/24#0",
+   "how": "text \"this helps us set up the right pricing, \"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-39": {
+   "tpl": "Root>TradeApplication@466#0/47#0",
+   "how": "field \"ranges you're interested in\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-40": {
+   "tpl": "Root>TradeApplication@466#0/47#1",
+   "how": "field \"brands you stock or use\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-41": {
+   "tpl": "Root>TradeApplication@466#0/41#0",
+   "how": "field \"estimated weekly spend\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-42": {
+   "tpl": "Root>TradeApplication@466#0/41#1",
+   "how": "field \"how often will you order?\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-43": {
+   "tpl": "Root>TradeApplication@466#0/47#2",
+   "how": "field \"how would you like to pay?\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3
+    }
+   }
+  },
+  "cr-ref-form-trade-application-44": {
+   "tpl": "Root>TradeApplication@466#0/31#0",
+   "how": "heading \"credit account details\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-45": {
+   "tpl": "Root>TradeApplication@466#0/41#2",
+   "how": "field \"credit limit requested\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-46": {
+   "tpl": "Root>TradeApplication@466#0/39#0",
+   "how": "field \"trade reference 1\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-47": {
+   "tpl": "Root>TradeApplication@466#0/39#1",
+   "how": "field \"trade reference 2\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-48": {
+   "tpl": "Root>TradeApplication@466#0/55#0",
+   "how": "field \"i agree to indus foods carrying out a cr\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-49": {
+   "tpl": "Root>TradeApplication@466#0/62#0",
+   "how": "field \"supporting document\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 3,
+     "v": {
+      "payment": "Credit account (30 days)"
+     },
+     "errs": {},
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-50": {
+   "tpl": "Root>TradeApplication@466#0/23#0",
+   "how": "the text of its blocks of the draft element",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "step": 4
+    }
+   }
   }
  },
+ "structural": {
+  "cr-ref-form-trade-application-1": "sgs/form-step is structural: no draft element inside its parent's has its text or box (794.3x727.1 at 1440px), so the draft draws nothing of its own for it",
+  "cr-ref-form-trade-application-12": "sgs/form-step is structural: it is hidden at 1440 and 375, and no draft element in any state shows exactly its blocks' text inside its parent element, so the draft draws nothing of its own for it",
+  "cr-ref-form-trade-application-24": "sgs/form-step is structural: it is hidden at 1440 and 375, and no draft element in any state shows exactly its blocks' text inside its parent element, so the draft draws nothing of its own for it",
+  "cr-ref-form-trade-application-36": "sgs/form-step is structural: it is hidden at 1440 and 375, and no draft element in any state shows exactly its blocks' text inside its parent element, so the draft draws nothing of its own for it",
+  "cr-ref-form-trade-application-50s": "sgs/form-step is structural: it is hidden at 1440 and 375, and no draft element in any state shows exactly its blocks' text inside its parent element, so the draft draws nothing of its own for it"
+ },
  "unpaired": {
-  "cr-ref-form-trade-application-1": "sgs/form-step has no draft element of its own to pair by type and text",
-  "cr-ref-form-trade-application-8": "no unclaimed draft field shows \"companies house number\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-12": "sgs/form-step has no draft element of its own to pair by type and text",
-  "cr-ref-form-trade-application-13": "no unclaimed draft heading shows \"where are you based?\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-14": "no unclaimed draft text shows \"we deliver across the uk and europe. tell us where\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-15": "no unclaimed draft field shows \"business address\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-16": "no unclaimed draft field shows \"town or city\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-17": "no unclaimed draft field shows \"postcode\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-18": "sgs/form-field-checkbox has no text to pair by",
-  "cr-ref-form-trade-application-19": "no unclaimed draft heading shows \"delivery address\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-20": "no unclaimed draft field shows \"delivery address\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-21": "no unclaimed draft field shows \"delivery postcode\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-22": "no unclaimed draft field shows \"preferred delivery window\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-23": "no unclaimed draft field shows \"access notes for drivers\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-24": "sgs/form-step has no draft element of its own to pair by type and text",
-  "cr-ref-form-trade-application-25": "no unclaimed draft heading shows \"who should we speak to?\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-26": "no unclaimed draft text shows \"your main contact and the person responsible for t\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-27": "no unclaimed draft field shows \"first name\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-28": "no unclaimed draft field shows \"last name\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-29": "no unclaimed draft field shows \"your role\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-30": "no unclaimed draft field shows \"email\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-31": "no unclaimed draft field shows \"phone\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-32": "no unclaimed draft field shows \"best way to reach you\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-33": "no unclaimed draft heading shows \"owner or director\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-34": "no unclaimed draft field shows \"full name\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-35": "no unclaimed draft field shows \"home postcode\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-36": "sgs/form-step has no draft element of its own to pair by type and text",
-  "cr-ref-form-trade-application-37": "no unclaimed draft heading shows \"how will you order?\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-38": "no unclaimed draft text shows \"this helps us set up the right pricing, ranges and\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-39": "no unclaimed draft field shows \"ranges you're interested in\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-40": "no unclaimed draft field shows \"brands you stock or use\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-41": "no unclaimed draft field shows \"estimated weekly spend\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-42": "no unclaimed draft field shows \"how often will you order?\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-43": "no unclaimed draft field shows \"how would you like to pay?\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-44": "no unclaimed draft heading shows \"credit account details\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-45": "no unclaimed draft field shows \"credit limit requested\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-46": "no unclaimed draft field shows \"trade reference 1\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-47": "no unclaimed draft field shows \"trade reference 2\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-48": "sgs/form-field-checkbox has no text to pair by",
-  "cr-ref-form-trade-application-49": "no unclaimed draft field shows \"supporting document\" at rest (a state the draft does not render, or it is already paired)",
-  "cr-ref-form-trade-application-50s": "sgs/form-step has no draft element of its own to pair by type and text",
-  "cr-ref-form-trade-application-50": "sgs/form-review has no draft element of its own to pair by type and text"
+  "cr-ref-form-trade-application-8": "no unclaimed draft field shows \"companies house number\" in any state the draft shows (or it is already paired)"
  }
 }

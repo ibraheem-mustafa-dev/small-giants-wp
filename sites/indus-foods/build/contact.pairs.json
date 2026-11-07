@@ -1,0 +1,175 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-contact-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-6": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-7": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-8": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-9": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-10": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-11": {
+   "tpl": "Root/528#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-12": {
+   "tpl": "Root/529#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-13": {
+   "tpl": "Root/531#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-14": {
+   "tpl": "Root/532#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-19": {
+   "tpl": "Root/531#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-20": {
+   "tpl": "Root/532#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-25": {
+   "tpl": "Root/531#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-26": {
+   "tpl": "Root/532#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-31": {
+   "tpl": "Root/537#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-32": {
+   "tpl": "Root/538#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-33": {
+   "tpl": "Root/539#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-36": {
+   "tpl": "Root/347#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-37": {
+   "tpl": "Root/348#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-38": {
+   "tpl": "Root/350#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-39": {
+   "tpl": "Root/352#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-contact-17": {
+   "tpl": "Root/535#0",
+   "how": "text \"55–58 stratford street north\""
+  },
+  "cr-ref-contact-18": {
+   "tpl": "Root/536#0",
+   "how": "text \"sparkbrook, birmingham b11 1bu\""
+  },
+  "cr-ref-contact-24": {
+   "tpl": "Root/536#1",
+   "how": "text \"sales, orders and accounts\""
+  },
+  "cr-ref-contact-30": {
+   "tpl": "Root/536#2",
+   "how": "text \"we'll route your message to the right te\""
+  },
+  "cr-ref-contact-43": {
+   "tpl": "Root>EnquiryForm@468#0/6#0",
+   "how": "the draft form element"
+  },
+  "cr-ref-contact-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-15": {
+   "tpl": "Root/533#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-16": {
+   "tpl": "Root/534#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-21": {
+   "tpl": "Root/533#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-22": {
+   "tpl": "Root/534#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-23": {
+   "tpl": "Root/535#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-27": {
+   "tpl": "Root/533#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-28": {
+   "tpl": "Root/534#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-29": {
+   "tpl": "Root/535#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-34": {
+   "tpl": "Root/344#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-35": {
+   "tpl": "Root/345#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-40": {
+   "tpl": "Root/468#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-41": {
+   "tpl": "Root>EnquiryForm@468#0/3#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-contact-42": {
+   "tpl": "Root>EnquiryForm@468#0/4#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

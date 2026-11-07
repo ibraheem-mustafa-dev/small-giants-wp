@@ -1,0 +1,383 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-certifications-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-5": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-6": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-7": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-8": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-9": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-10": {
+   "tpl": "Root/347#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-11": {
+   "tpl": "Root/348#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-12": {
+   "tpl": "Root/350#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-13": {
+   "tpl": "Root/352#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-14": {
+   "tpl": "Root/479#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-20": {
+   "tpl": "Root/487#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-21": {
+   "tpl": "Root/489#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-22": {
+   "tpl": "Root/490#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-23": {
+   "tpl": "Root/491#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-29": {
+   "tpl": "Root/487#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-30": {
+   "tpl": "Root/489#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-31": {
+   "tpl": "Root/490#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-32": {
+   "tpl": "Root/491#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-38": {
+   "tpl": "Root/487#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-39": {
+   "tpl": "Root/489#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-40": {
+   "tpl": "Root/490#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-41": {
+   "tpl": "Root/491#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-47": {
+   "tpl": "Root/487#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-48": {
+   "tpl": "Root/489#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-49": {
+   "tpl": "Root/490#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-50": {
+   "tpl": "Root/491#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-55": {
+   "tpl": "Root/401#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-56": {
+   "tpl": "Root/403#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-57": {
+   "tpl": "Root/405#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-63": {
+   "tpl": "Root/414#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-64": {
+   "tpl": "Root/420#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-69": {
+   "tpl": "Root/414#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-70": {
+   "tpl": "Root/420#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-75": {
+   "tpl": "Root/414#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-76": {
+   "tpl": "Root/420#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-81": {
+   "tpl": "Root/414#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-82": {
+   "tpl": "Root/420#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-83": {
+   "tpl": "Root/344#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-84": {
+   "tpl": "Root/345#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-85": {
+   "tpl": "Root/515#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-89": {
+   "tpl": "Root/520#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-90": {
+   "tpl": "Root/522#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-91": {
+   "tpl": "Root/523#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-93": {
+   "tpl": "Root/525#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-94": {
+   "tpl": "Root/526#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-60": {
+   "tpl": "Root/411#0",
+   "how": "text \"01\""
+  },
+  "cr-ref-certifications-66": {
+   "tpl": "Root/411#1",
+   "how": "text \"02\""
+  },
+  "cr-ref-certifications-72": {
+   "tpl": "Root/411#2",
+   "how": "text \"03\""
+  },
+  "cr-ref-certifications-78": {
+   "tpl": "Root/411#3",
+   "how": "text \"04\""
+  },
+  "cr-ref-certifications-15": {
+   "tpl": "Root/481#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-18": {
+   "tpl": "Root/485#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-19": {
+   "tpl": "Root/486#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-24": {
+   "tpl": "Root/481#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-27": {
+   "tpl": "Root/485#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-28": {
+   "tpl": "Root/486#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-33": {
+   "tpl": "Root/481#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-36": {
+   "tpl": "Root/485#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-37": {
+   "tpl": "Root/486#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-42": {
+   "tpl": "Root/481#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-45": {
+   "tpl": "Root/485#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-46": {
+   "tpl": "Root/486#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-51": {
+   "tpl": "Root/344#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-52": {
+   "tpl": "Root/345#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-53": {
+   "tpl": "Root/398#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-58": {
+   "tpl": "Root/408#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-62": {
+   "tpl": "Root/413#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-68": {
+   "tpl": "Root/413#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-71": {
+   "tpl": "Root/410#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-74": {
+   "tpl": "Root/413#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-80": {
+   "tpl": "Root/413#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-88": {
+   "tpl": "Root/519#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-92": {
+   "tpl": "Root/524#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-certifications-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-16": {
+   "tpl": "Root/483#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-17": {
+   "tpl": "Root/484#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-25": {
+   "tpl": "Root/483#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-26": {
+   "tpl": "Root/484#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-34": {
+   "tpl": "Root/483#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-35": {
+   "tpl": "Root/484#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-43": {
+   "tpl": "Root/483#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-44": {
+   "tpl": "Root/484#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-54": {
+   "tpl": "Root/399#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-59": {
+   "tpl": "Root/410#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-61": {
+   "tpl": "Root/412#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-65": {
+   "tpl": "Root/410#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-67": {
+   "tpl": "Root/412#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-73": {
+   "tpl": "Root/412#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-77": {
+   "tpl": "Root/410#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-79": {
+   "tpl": "Root/412#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-86": {
+   "tpl": "Root/516#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-certifications-87": {
+   "tpl": "Root/517#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

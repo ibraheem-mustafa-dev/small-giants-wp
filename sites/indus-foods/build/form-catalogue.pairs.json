@@ -1,0 +1,59 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-form-catalogue-1": {
+   "tpl": "Root/551#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-catalogue-2": {
+   "tpl": "Root/552#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-catalogue-12": {
+   "tpl": "Root/571#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-catalogue-0": {
+   "tpl": "Root/550#0",
+   "how": "the draft root"
+  },
+  "cr-ref-form-catalogue-4": {
+   "tpl": "Root/556#0",
+   "how": "field \"name\""
+  },
+  "cr-ref-form-catalogue-5": {
+   "tpl": "Root/556#1",
+   "how": "field \"business name\""
+  },
+  "cr-ref-form-catalogue-6": {
+   "tpl": "Root/556#2",
+   "how": "field \"email\""
+  },
+  "cr-ref-form-catalogue-7": {
+   "tpl": "Root/556#3",
+   "how": "field \"phone\""
+  },
+  "cr-ref-form-catalogue-8": {
+   "tpl": "Root/556#4",
+   "how": "field \"sector\""
+  },
+  "cr-ref-form-catalogue-9": {
+   "tpl": "Root/556#5",
+   "how": "field \"format\""
+  },
+  "cr-ref-form-catalogue-10": {
+   "tpl": "Root/556#6",
+   "how": "field \"postal address (printed copies)\""
+  },
+  "cr-ref-form-catalogue-3": {
+   "tpl": "Root/553#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-form-catalogue-11": {
+   "tpl": "Root/570#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

@@ -1,0 +1,279 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-lemon-tree-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-6": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-7": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-8": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-9": {
+   "tpl": "Root/336#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-10": {
+   "tpl": "Root/338#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-11": {
+   "tpl": "Root/338#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-12": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-13": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-14": {
+   "tpl": "Root/379#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-16": {
+   "tpl": "Root/382#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-17": {
+   "tpl": "Root/384#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-18": {
+   "tpl": "Root/386#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-27": {
+   "tpl": "Root/344#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-28": {
+   "tpl": "Root/345#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-29": {
+   "tpl": "Root/347#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-30": {
+   "tpl": "Root/348#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-31": {
+   "tpl": "Root/350#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-32": {
+   "tpl": "Root/352#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-33": {
+   "tpl": "Root/479#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-37": {
+   "tpl": "Root/487#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-38": {
+   "tpl": "Root/490#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-39": {
+   "tpl": "Root/491#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-45": {
+   "tpl": "Root/487#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-46": {
+   "tpl": "Root/490#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-47": {
+   "tpl": "Root/491#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-53": {
+   "tpl": "Root/487#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-54": {
+   "tpl": "Root/490#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-55": {
+   "tpl": "Root/491#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-58": {
+   "tpl": "Root/344#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-59": {
+   "tpl": "Root/345#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-60": {
+   "tpl": "Root/515#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-64": {
+   "tpl": "Root/520#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-65": {
+   "tpl": "Root/522#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-66": {
+   "tpl": "Root/523#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-68": {
+   "tpl": "Root/525#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-69": {
+   "tpl": "Root/526#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-34": {
+   "tpl": "Root/481#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-35": {
+   "tpl": "Root/485#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-36": {
+   "tpl": "Root/486#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-42": {
+   "tpl": "Root/481#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-43": {
+   "tpl": "Root/485#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-44": {
+   "tpl": "Root/486#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-50": {
+   "tpl": "Root/481#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-51": {
+   "tpl": "Root/485#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-52": {
+   "tpl": "Root/486#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-63": {
+   "tpl": "Root/519#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-67": {
+   "tpl": "Root/524#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-lemon-tree-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-15": {
+   "tpl": "Root/380#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-19": {
+   "tpl": "Root/388#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-20": {
+   "tpl": "Root/390#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-21": {
+   "tpl": "Root/390#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-22": {
+   "tpl": "Root/390#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-23": {
+   "tpl": "Root/390#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-24": {
+   "tpl": "Root/394#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-25": {
+   "tpl": "Root/395#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-26": {
+   "tpl": "Root/396#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-61": {
+   "tpl": "Root/516#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-62": {
+   "tpl": "Root/517#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-40": {
+   "tpl": "Root/495#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-41": {
+   "tpl": "Root/496#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-48": {
+   "tpl": "Root/495#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-49": {
+   "tpl": "Root/496#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-56": {
+   "tpl": "Root/495#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-lemon-tree-57": {
+   "tpl": "Root/496#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

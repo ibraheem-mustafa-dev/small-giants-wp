@@ -1,0 +1,79 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-header-1": {
+   "tpl": "Root/9#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-2": {
+   "tpl": "Root/11#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-3": {
+   "tpl": "Root/13#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-4": {
+   "tpl": "Root/14#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-6": {
+   "tpl": "Root/20#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-12": {
+   "tpl": "Root/40#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-13": {
+   "tpl": "Root/43#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-17": {
+   "tpl": "Root/54#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-15": {
+   "tpl": "Root/58#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-header-7": {
+   "tpl": "Root/22#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-header-8": {
+   "tpl": "Root/23#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-header-9": {
+   "tpl": "Root/26#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-header-10": {
+   "tpl": "Root/29#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-header-11": {
+   "tpl": "Root/35#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-header-0": {
+   "tpl": "Root/39#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-header-14": {
+   "tpl": "Root/56#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-header-16": {
+   "tpl": "Root/45#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {
+  "cr-ref-header-5": "sgs/button is structural: its draft element Root/14#0 is held by cr-ref-header-4, the outermost block with that box and text"
+ },
+ "unpaired": {
+  "cr-ref-header-18": "sgs/site-header-row is hidden at 1440 and 375 and holds no text: there is nothing to measure it against"
+ }
+}

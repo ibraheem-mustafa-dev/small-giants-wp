@@ -102,13 +102,18 @@ export function mergeRevealRecords( base, reads ) {
 	const byKey = new Map();
 	const note = ( r ) => byKey.set( r.key, [ ...( byKey.get( r.key ) || [] ), r ] );
 	base.forEach( note );
-	for ( const { reveal, records } of reads ) {
-		const additive = adds( base, records );
+	for ( const { reveal, records, of = null } of reads ) {
+		// A nested state (`of`: the id of the state it refines, lib/skeleton-reveal.mjs::discoverNested) only adds to that state: an
+		// element it shares with the opening state or with that state is the same element, even where text under it grew.
+		const additive = of ? true : adds( base, records );
 		const twinOf = new Map();
 		const placedBy = new Map();
 		records.forEach( ( r ) => {
 			const parentTwin = null === r.parentKey || undefined === r.parentKey || twinOf.has( r.parentKey ) && twinOf.get( r.parentKey );
-			const twin = ( byKey.get( r.key ) || [] ).find( ( x ) => x.tag === r.tag && x.words === r.words && ( additive || ( x.allText === r.allText && parentTwin ) ) );
+			// In a nested state a key can be renumbered (the copies of a template count from the top of each read), so an element is
+			// the parent's own only when its parent key matches too, and, with no element under it, its text.
+			const sameInNested = ( x ) => x.parentKey === r.parentKey && ( r.allText !== r.words || x.allText === r.allText ) && ( ! x.reveal || revealId( x.reveal ) === of );
+			const twin = ( byKey.get( r.key ) || [] ).find( ( x ) => x.tag === r.tag && x.words === r.words && ( of ? sameInNested( x ) : additive || ( x.allText === r.allText && parentTwin ) ) );
 			twinOf.set( r.key, !! twin );
 			const before = placedBy.get( records[ records.indexOf( r ) - 1 ]?.key );
 			if ( twin ) {

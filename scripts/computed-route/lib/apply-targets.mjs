@@ -33,17 +33,22 @@ export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const refused = [];
 	// The refreshed file names every saved block, paired or with a reason: an old pair whose ref it does not name is on no block of
 	// the post any more, so it is dropped (reported in `stale`), not left to show as a pair without a block.
-	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) ) : [];
+	const stale = refreshed ? [ ...out.keys() ].filter( ( ref ) => ! ( ref in ( refreshed.pairs || {} ) ) && ! ( ref in ( refreshed.unpaired || {} ) ) && ! ( ref in ( refreshed.structural || {} ) ) ) : [];
 	stale.forEach( ( ref ) => out.delete( ref ) );
 	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
-		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh', ...( tpl.reveal ? { reveal: tpl.reveal } : {} ) } );
+		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh', ...( tpl.reveal ? { reveal: tpl.reveal } : {} ), ...( tpl.part ? { part: tpl.part } : {} ) } );
+	}
+	// A structural block is one the draft draws no element for (lib/pair-wrappers.mjs): reported, never paired.
+	for ( const [ ref, why ] of Object.entries( refreshed?.structural || {} ) ) {
+		out.delete( ref );
+		refused.push( { ref, why, structural: true } );
 	}
 	for ( const [ ref, why ] of Object.entries( refreshed?.unpaired || {} ) ) {
 		out.delete( ref );
 		refused.push( { ref, why } );
 	}
 	const byTpl = new Map();
-	for ( const p of out.values() ) {
+	for ( const p of [ ...out.values() ].filter( ( x ) => ! x.part ) ) {
 		byTpl.set( pairId( p ), [ ...( byTpl.get( pairId( p ) ) || [] ), p.ref ] );
 	}
 	for ( const [ tpl, refs ] of byTpl ) {

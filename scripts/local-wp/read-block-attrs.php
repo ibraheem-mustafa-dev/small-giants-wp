@@ -4,7 +4,7 @@
  *
  * Run through scripts/local-wp/read-block-attrs.py (it calls `wp eval-file` inside WSL). Read-only.
  * Arguments (from wp eval-file): <out-file.json> <post-id or template:slug> [...]
- * Output: { "<post-id>": { "blocks": { "<ref>": { "block": "sgs/container", "attrs": { ... } } }, "duplicates": [] } }.
+ * Output: { "<post-id>": { "blocks": { "<ref>": { "block": "sgs/container", "attrs": { ... }, "parent": "<ref of the nearest enclosing block, or null>" } }, "duplicates": [] } }.
  * A ref held by two blocks of a post is listed in `duplicates`, because a patch that matches it would refuse.
  *
  * @package SGS
@@ -16,24 +16,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $sgs_rba_out  = (string) array_shift( $args );
 $sgs_rba_all  = array();
-$sgs_rba_walk = static function ( array $blocks, array &$found, array &$dupes ) use ( &$sgs_rba_walk ): void {
+$sgs_rba_walk = static function ( array $blocks, array &$found, array &$dupes, ?string $parent = null ) use ( &$sgs_rba_walk ): void {
 	foreach ( $blocks as $block ) {
 		if ( empty( $block['blockName'] ) ) {
 			continue;
 		}
 		$tokens = preg_split( '/\s+/', (string) ( $block['attrs']['className'] ?? '' ) ) ?: array();
+		$own    = null;
 		foreach ( $tokens as $token ) {
 			if ( 0 === strpos( $token, 'cr-ref-' ) ) {
 				if ( isset( $found[ $token ] ) ) {
 					$dupes[] = $token;
 				}
 				$found[ $token ] = array(
-					'block' => $block['blockName'],
-					'attrs' => $block['attrs'],
+					'block'  => $block['blockName'],
+					'attrs'  => $block['attrs'],
+					'parent' => $parent,
 				);
+				$own = $own ?? $token;
 			}
 		}
-		$sgs_rba_walk( $block['innerBlocks'] ?? array(), $found, $dupes );
+		$sgs_rba_walk( $block['innerBlocks'] ?? array(), $found, $dupes, $own ?? $parent );
 	}
 };
 

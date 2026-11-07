@@ -1,0 +1,503 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-careers-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-5": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-6": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-7": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-8": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-9": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-10": {
+   "tpl": "Root/347#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-11": {
+   "tpl": "Root/348#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-12": {
+   "tpl": "Root/350#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-13": {
+   "tpl": "Root/352#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-14": {
+   "tpl": "Root/479#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-18": {
+   "tpl": "Root/487#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-19": {
+   "tpl": "Root/490#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-20": {
+   "tpl": "Root/491#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-24": {
+   "tpl": "Root/487#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-25": {
+   "tpl": "Root/490#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-26": {
+   "tpl": "Root/491#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-30": {
+   "tpl": "Root/487#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-31": {
+   "tpl": "Root/490#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-32": {
+   "tpl": "Root/491#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-36": {
+   "tpl": "Root/487#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-37": {
+   "tpl": "Root/490#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-38": {
+   "tpl": "Root/491#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-39": {
+   "tpl": "Root/344#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-40": {
+   "tpl": "Root/345#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-41": {
+   "tpl": "Root/347#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-42": {
+   "tpl": "Root/348#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-43": {
+   "tpl": "Root/350#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-44": {
+   "tpl": "Root/352#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-45": {
+   "tpl": "Root/354#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-46": {
+   "tpl": "Root/422#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-47": {
+   "tpl": "Root/424#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-48": {
+   "tpl": "Root/425#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-49": {
+   "tpl": "Root/426#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-50": {
+   "tpl": "Root/427#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-51": {
+   "tpl": "Root/428#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-52": {
+   "tpl": "Root/429#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-53": {
+   "tpl": "Root/430#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-54": {
+   "tpl": "Root/431#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-55": {
+   "tpl": "Root/432#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-56": {
+   "tpl": "Root/424#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-57": {
+   "tpl": "Root/425#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-58": {
+   "tpl": "Root/426#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-59": {
+   "tpl": "Root/427#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-60": {
+   "tpl": "Root/428#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-61": {
+   "tpl": "Root/429#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-62": {
+   "tpl": "Root/430#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-63": {
+   "tpl": "Root/431#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-64": {
+   "tpl": "Root/432#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-65": {
+   "tpl": "Root/424#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-66": {
+   "tpl": "Root/425#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-67": {
+   "tpl": "Root/426#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-68": {
+   "tpl": "Root/427#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-69": {
+   "tpl": "Root/428#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-70": {
+   "tpl": "Root/429#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-71": {
+   "tpl": "Root/430#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-72": {
+   "tpl": "Root/431#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-73": {
+   "tpl": "Root/432#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-78": {
+   "tpl": "Root/401#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-79": {
+   "tpl": "Root/403#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-80": {
+   "tpl": "Root/405#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-86": {
+   "tpl": "Root/414#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-87": {
+   "tpl": "Root/418#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-89": {
+   "tpl": "Root/420#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-94": {
+   "tpl": "Root/414#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-95": {
+   "tpl": "Root/418#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-97": {
+   "tpl": "Root/420#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-102": {
+   "tpl": "Root/414#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-103": {
+   "tpl": "Root/418#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-105": {
+   "tpl": "Root/420#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-110": {
+   "tpl": "Root/414#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-111": {
+   "tpl": "Root/418#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-113": {
+   "tpl": "Root/420#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-122": {
+   "tpl": "Root/575#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-123": {
+   "tpl": "Root/577#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-83": {
+   "tpl": "Root/411#0",
+   "how": "text \"01\""
+  },
+  "cr-ref-careers-91": {
+   "tpl": "Root/411#1",
+   "how": "text \"02\""
+  },
+  "cr-ref-careers-99": {
+   "tpl": "Root/411#2",
+   "how": "text \"03\""
+  },
+  "cr-ref-careers-107": {
+   "tpl": "Root/411#3",
+   "how": "text \"04\""
+  },
+  "cr-ref-careers-118": {
+   "tpl": "Root/550#0",
+   "how": "the draft form element"
+  },
+  "cr-ref-careers-15": {
+   "tpl": "Root/481#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-16": {
+   "tpl": "Root/485#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-17": {
+   "tpl": "Root/486#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-21": {
+   "tpl": "Root/481#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-22": {
+   "tpl": "Root/485#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-23": {
+   "tpl": "Root/486#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-27": {
+   "tpl": "Root/481#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-28": {
+   "tpl": "Root/485#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-29": {
+   "tpl": "Root/486#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-33": {
+   "tpl": "Root/481#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-34": {
+   "tpl": "Root/485#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-35": {
+   "tpl": "Root/486#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-74": {
+   "tpl": "Root/344#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-75": {
+   "tpl": "Root/345#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-76": {
+   "tpl": "Root/398#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-77": {
+   "tpl": "Root/399#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-81": {
+   "tpl": "Root/408#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-82": {
+   "tpl": "Root/410#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-85": {
+   "tpl": "Root/413#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-90": {
+   "tpl": "Root/410#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-93": {
+   "tpl": "Root/413#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-98": {
+   "tpl": "Root/410#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-101": {
+   "tpl": "Root/413#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-106": {
+   "tpl": "Root/410#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-109": {
+   "tpl": "Root/413#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-careers-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-84": {
+   "tpl": "Root/412#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-92": {
+   "tpl": "Root/412#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-100": {
+   "tpl": "Root/412#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-108": {
+   "tpl": "Root/412#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-114": {
+   "tpl": "Root/344#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-115": {
+   "tpl": "Root/345#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-116": {
+   "tpl": "Root/541#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-117": {
+   "tpl": "Root/542#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-119": {
+   "tpl": "Root/572#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-120": {
+   "tpl": "Root/573#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-121": {
+   "tpl": "Root/574#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-124": {
+   "tpl": "Root/578#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-125": {
+   "tpl": "Root/580#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-126": {
+   "tpl": "Root/580#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-127": {
+   "tpl": "Root/580#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-careers-128": {
+   "tpl": "Root/583#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

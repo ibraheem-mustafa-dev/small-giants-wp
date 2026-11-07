@@ -1,0 +1,147 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-mega-trade-0": {
+   "tpl": "Root/67#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-1": {
+   "tpl": "Root/68#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-2": {
+   "tpl": "Root/70#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-3": {
+   "tpl": "Root/71#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-5": {
+   "tpl": "Root/73#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-6": {
+   "tpl": "Root/74#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-7": {
+   "tpl": "Root/70#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-8": {
+   "tpl": "Root/71#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-10": {
+   "tpl": "Root/73#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-11": {
+   "tpl": "Root/74#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-12": {
+   "tpl": "Root/70#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-13": {
+   "tpl": "Root/71#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-15": {
+   "tpl": "Root/73#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-16": {
+   "tpl": "Root/74#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-17": {
+   "tpl": "Root/70#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-18": {
+   "tpl": "Root/71#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-20": {
+   "tpl": "Root/73#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-21": {
+   "tpl": "Root/74#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-22": {
+   "tpl": "Root/70#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-23": {
+   "tpl": "Root/71#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-25": {
+   "tpl": "Root/73#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-26": {
+   "tpl": "Root/74#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-27": {
+   "tpl": "Root/76#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-28": {
+   "tpl": "Root/77#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-29": {
+   "tpl": "Root/78#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-30": {
+   "tpl": "Root/79#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-31": {
+   "tpl": "Root/80#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-32": {
+   "tpl": "Root/81#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-33": {
+   "tpl": "Root/82#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-34": {
+   "tpl": "Root/83#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-4": {
+   "tpl": "Root/72#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-9": {
+   "tpl": "Root/72#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-14": {
+   "tpl": "Root/72#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-19": {
+   "tpl": "Root/72#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-mega-trade-24": {
+   "tpl": "Root/72#4",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

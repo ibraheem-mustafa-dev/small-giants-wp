@@ -1,0 +1,397 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-home-1": {
+   "tpl": "Root/203#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-2": {
+   "tpl": "Root/206#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-3": {
+   "tpl": "Root/207#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-4": {
+   "tpl": "Root/208#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-5": {
+   "tpl": "Root/209#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-6": {
+   "tpl": "Root/210#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-7": {
+   "tpl": "Root/211#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-8": {
+   "tpl": "Root/213#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-9": {
+   "tpl": "Root/213#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-10": {
+   "tpl": "Root/213#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-11": {
+   "tpl": "Root/218#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-12": {
+   "tpl": "Root/220#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-14": {
+   "tpl": "Root/226#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-15": {
+   "tpl": "Root/227#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-16": {
+   "tpl": "Root/228#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-17": {
+   "tpl": "Root/229#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-21": {
+   "tpl": "Root/235#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-22": {
+   "tpl": "Root/236#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-23": {
+   "tpl": "Root/237#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-27": {
+   "tpl": "Root/235#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-28": {
+   "tpl": "Root/236#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-29": {
+   "tpl": "Root/237#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-33": {
+   "tpl": "Root/235#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-34": {
+   "tpl": "Root/236#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-39": {
+   "tpl": "Root/235#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-40": {
+   "tpl": "Root/236#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-41": {
+   "tpl": "Root/237#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-42": {
+   "tpl": "Root/238#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-43": {
+   "tpl": "Root/239#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-44": {
+   "tpl": "Root/240#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-45": {
+   "tpl": "Root/241#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-47": {
+   "tpl": "Root/244#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-48": {
+   "tpl": "Root/245#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-49": {
+   "tpl": "Root/246#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-50": {
+   "tpl": "Root/247#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-52": {
+   "tpl": "Root/244#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-53": {
+   "tpl": "Root/245#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-54": {
+   "tpl": "Root/246#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-55": {
+   "tpl": "Root/247#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-57": {
+   "tpl": "Root/244#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-58": {
+   "tpl": "Root/245#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-59": {
+   "tpl": "Root/246#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-60": {
+   "tpl": "Root/247#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-62": {
+   "tpl": "Root/244#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-63": {
+   "tpl": "Root/245#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-64": {
+   "tpl": "Root/246#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-65": {
+   "tpl": "Root/247#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-66": {
+   "tpl": "Root/248#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-67": {
+   "tpl": "Root/249#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-70": {
+   "tpl": "Root/252#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-71": {
+   "tpl": "Root/253#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-72": {
+   "tpl": "Root/254#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-75": {
+   "tpl": "Root/265#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-76": {
+   "tpl": "Root/266#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-77": {
+   "tpl": "Root/268#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-78": {
+   "tpl": "Root/269#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-86": {
+   "tpl": "Root/294#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-87": {
+   "tpl": "Root/295#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-88": {
+   "tpl": "Root/298#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-89": {
+   "tpl": "Root/305#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-90": {
+   "tpl": "Root/306#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-91": {
+   "tpl": "Root/307#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-92": {
+   "tpl": "Root/308#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-94": {
+   "tpl": "Root/310#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-95": {
+   "tpl": "Root/311#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-18": {
+   "tpl": "Root/231#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-24": {
+   "tpl": "Root/231#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-30": {
+   "tpl": "Root/231#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-36": {
+   "tpl": "Root/231#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-46": {
+   "tpl": "Root/243#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-51": {
+   "tpl": "Root/243#1",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-56": {
+   "tpl": "Root/243#2",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-61": {
+   "tpl": "Root/243#3",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-68": {
+   "tpl": "Root/250#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-93": {
+   "tpl": "Root/309#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-home-81": {
+   "tpl": "Root/289#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-home-96": {
+   "tpl": "Root/312#0",
+   "how": "the text of its blocks of the draft element"
+  },
+  "cr-ref-home-96a": {
+   "tpl": "Root/313#0",
+   "how": "the text of its blocks of the draft element"
+  },
+  "cr-ref-home-96b": {
+   "tpl": "Root/314#0",
+   "how": "the text of its blocks of the draft element"
+  },
+  "cr-ref-home-13": {
+   "tpl": "Root/222#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-19": {
+   "tpl": "Root/233#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-20": {
+   "tpl": "Root/234#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-25": {
+   "tpl": "Root/233#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-26": {
+   "tpl": "Root/234#1",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-31": {
+   "tpl": "Root/233#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-32": {
+   "tpl": "Root/234#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-35": {
+   "tpl": "Root/237#2",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-37": {
+   "tpl": "Root/233#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-38": {
+   "tpl": "Root/234#3",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-69": {
+   "tpl": "Root/251#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-73": {
+   "tpl": "Root/255#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-74": {
+   "tpl": "Root/258#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-79": {
+   "tpl": "Root/270#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-80": {
+   "tpl": "Root/287#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-83": {
+   "tpl": "Root/290#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-84": {
+   "tpl": "Root/291#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-home-85": {
+   "tpl": "Root/293#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {
+  "cr-ref-home-82": "sgs/media is structural: no draft element inside its parent's has its box (276.5x276.5 at 1440px), so the draft draws nothing of its own for it"
+ },
+ "unpaired": {}
+}

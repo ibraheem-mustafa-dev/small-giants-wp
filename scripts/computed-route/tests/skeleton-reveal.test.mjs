@@ -5,7 +5,7 @@ import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mergeRevealRecords, withRevealed, toggleStates, splitMerged, holdsAll, recId, revealId } from '../lib/reveal-merge.mjs';
-import { discoverReveals, readReveals } from '../lib/skeleton-reveal.mjs';
+import { discoverReveals, readReveals, discoverNested, MAX_NESTED } from '../lib/skeleton-reveal.mjs';
 import { refreshPairs } from '../lib/refresh-pairs.mjs';
 import { pairsReport } from '../lib/apply-targets.mjs';
 import { revealGroups } from '../lib/apply-reveal-read.mjs';
@@ -202,4 +202,84 @@ test( 'negative control: a surface with no hidden state gives no state and the s
 	const base = await recordsOf( page );
 	assert.equal( await readReveals( { page, states, read: () => recordsOf( page ), base } ), base );
 	await page.close();
+} );
+
+// A form-like page: step 1 has a checkbox button ("Deliver here") that shows an address block, a chip row where every chip adds the
+// same mark, a tick that goes away when the box is cleared, and a "Next" button that changes the step (not a refinement).
+const FORM_PAGE = `<!doctype html><html><body><div class="sc-host" data-sc-name="Root"><main id="surface"></main></div><script>
+const host = document.querySelector('.sc-host');
+const main = document.getElementById('surface');
+const logic = { state: { step: 0, same: true, chip: null, hide: false }, setState(p) { Object.assign(this.state, p); draw(); } };
+host['__reactFiber$t'] = { stateNode: { logic, __name: 'Root' }, return: null };
+const el = (tag, tpl, text, onClick) => { const e = document.createElement(tag); e.setAttribute('data-dc-tpl', tpl); e.textContent = text; if (onClick) { e['__reactProps$t'] = { onClick }; e.addEventListener('click', onClick); } return e; };
+function draw() {
+  main.replaceChildren();
+  main.setAttribute('data-dc-tpl', '1');
+  main.append(el('h1', '2', 'Form'));
+  if (logic.state.step === 1) {
+    main.append(el('h2', '3', 'Premises'));
+    const box = el('button', '4', 'Deliver here', () => logic.setState({ same: !logic.state.same }));
+    if (logic.state.same) box.append(el('svg', '6', ''));
+    main.append(box);
+    if (!logic.state.same) { main.append(el('h3', '7', 'Delivery address')); main.append(el('label', '8', 'Delivery postcode')); }
+    ['A', 'B'].forEach((c) => { main.append(el('button', '9', 'Chip ' + c, () => logic.setState({ chip: c }))); });
+    if (logic.state.chip) main.append(el('span', '10', 'selected'));
+    main.append(el('button', '11', 'Next', () => logic.setState({ step: 2 })));
+    main.append(el('button', '12', 'Swap', () => logic.setState({ hide: true })));
+    if (!logic.state.hide) main.append(el('p', '13', 'Shown until swapped'));
+    else main.append(el('p', '14', 'Swapped in'));
+  }
+}
+draw();
+</script></body></html>`;
+
+test( 'discoverNested finds a choice inside a state (a checkbox whose tick goes away shows an address block), once per added elements, and never repeats a parent\'s own key', async () => {
+	const page = await browser.newPage();
+	await page.setContent( FORM_PAGE );
+	const parents = [ { component: 'Root', keys: { step: 1 }, covers: [], merged: false, source: 'record' } ];
+	const found = await discoverNested( page, { root: '#surface', parents, seen: new Set( [ JSON.stringify( [ 'Root', { step: 1 } ] ) ] ), settle: () => page.waitForTimeout( 60 ) } );
+	// The checkbox (the drawn tick goes away: not content hidden) and the chips (both add the same mark: one state) are kept; Next
+	// sets the parent's own key and Swap hides a paragraph, so neither is.
+	assert.deepEqual( found.map( ( s ) => s.keys ), [ { step: 1, same: false }, { step: 1, chip: 'A' } ] );
+	assert.ok( found.every( ( s ) => 'nested' === s.source ) );
+	assert.equal( await page.evaluate( () => document.querySelectorAll( '[data-dc-tpl]' ).length ), 2, 'the page is back in its opening state (the heading and the root)' );
+	await page.close();
+} );
+
+test( 'negative control: nested discovery is bounded and a surface with no parent state gives nothing', async () => {
+	const page = await browser.newPage();
+	await page.setContent( FORM_PAGE );
+	assert.deepEqual( await discoverNested( page, { root: '#surface', parents: [], seen: new Set(), settle: () => {} } ), [] );
+	// A parent whose controls change nothing new (the opening state has none): no nested state.
+	const none = await discoverNested( page, { root: '#surface', parents: [ { component: 'Root', keys: { step: 0 } } ], seen: new Set(), settle: () => page.waitForTimeout( 60 ) } );
+	assert.deepEqual( none, [] );
+	assert.ok( MAX_NESTED > 0 && Number.isInteger( MAX_NESTED ) );
+	await page.close();
+} );
+
+test( 'mergeRevealRecords keeps only what a nested state adds over its parent, though text under shared wrappers grew', () => {
+	const rec = ( key, tag, words, allText, parentKey ) => ( { key, tag, words, allText, parentKey } );
+	const base = [ rec( 'k/root', 'div', '', 'Top', null ), rec( 'k/h', 'h1', 'Top', 'Top', 'k/root' ), rec( 'k/old', 'p', 'Old', 'Old', 'k/root' ) ];
+	const stepRead = [ rec( 'k/root', 'div', '', 'Top Step', null ), rec( 'k/h', 'h1', 'Top', 'Top', 'k/root' ), rec( 'k/step', 'div', '', 'Step', 'k/root' ), rec( 'k/s', 'p', 'Step', 'Step', 'k/step' ) ];
+	const nestedRead = [ rec( 'k/root', 'div', '', 'Top Step More', null ), rec( 'k/h', 'h1', 'Top', 'Top', 'k/root' ), rec( 'k/step', 'div', '', 'Step More', 'k/root' ), rec( 'k/s', 'p', 'Step', 'Step', 'k/step' ), rec( 'k/n', 'label', 'More', 'More', 'k/step' ) ];
+	const parent = { component: 'F', keys: { step: 1 } };
+	const child = { component: 'F', keys: { step: 1, more: true } };
+	const merged = mergeRevealRecords( base, [ { reveal: parent, records: stepRead }, { reveal: child, records: nestedRead, of: revealId( parent ) } ] );
+	assert.deepEqual( merged.filter( ( r ) => r.reveal && revealId( r.reveal ) === revealId( child ) ).map( ( r ) => r.key ), [ 'k/n' ], 'only the new label is the nested state\'s' );
+	assert.deepEqual( merged.filter( ( r ) => r.reveal && revealId( r.reveal ) === revealId( parent ) ).map( ( r ) => r.key ), [ 'k/root', 'k/h', 'k/step', 'k/s' ] );
+	// Negative control: the reads replace the opening step's content, so without `of` the wrappers whose text grew are new elements of the second state.
+	const plain = mergeRevealRecords( base, [ { reveal: parent, records: stepRead }, { reveal: child, records: nestedRead } ] );
+	assert.ok( plain.filter( ( r ) => r.reveal && revealId( r.reveal ) === revealId( child ) ).length > 1 );
+} );
+
+test( 'a nested state keeps an element whose key was renumbered under a new parent, and drops the one under the same parent', () => {
+	const rec = ( key, tag, words, allText, parentKey ) => ( { key, tag, words, allText, parentKey } );
+	const base = [ rec( 'k/root', 'div', '', '', null ) ];
+	const parent = { component: 'F', keys: { step: 3 } };
+	const stepRead = [ rec( 'k/root', 'div', '', '', null ), rec( 'k/w1', 'div', '', '', 'k/root' ), rec( 'k/i', 'input', '', '', 'k/w1' ) ];
+	// The nested state adds a second field: its wrapper is new and its input is again the first copy of the input template.
+	const nestedRead = [ rec( 'k/root', 'div', '', '', null ), rec( 'k/w1', 'div', '', '', 'k/root' ), rec( 'k/i', 'input', '', '', 'k/w1' ), rec( 'k/w2', 'div', '', '', 'k/root' ), rec( 'k/i', 'input', '', '', 'k/w2' ) ];
+	const merged = mergeRevealRecords( base, [ { reveal: parent, records: stepRead }, { reveal: { component: 'F', keys: { step: 3, more: true } }, records: nestedRead, of: revealId( parent ) } ] );
+	const mine = merged.filter( ( r ) => r.reveal && revealId( r.reveal ) === revealId( { component: 'F', keys: { step: 3, more: true } } ) );
+	assert.deepEqual( mine.map( ( r ) => [ r.key, r.parentKey ] ), [ [ 'k/w2', 'k/root' ], [ 'k/i', 'k/w2' ] ] );
 } );

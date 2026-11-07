@@ -50,13 +50,19 @@ test( 'pairsReport refuses one draft element claimed by blocks of different cont
 	assert.deepEqual( refreshed.refused.map( ( x ) => x.why ), [ 'not shown', 'not shown' ] );
 } );
 
-test( 'gate: the Indus trade application surface has no duplicate draft element and every saved block has a pair or a reason', () => {
-	const f = new URL( '../../../sites/indus-foods/build/form-trade-application.pairs.json', import.meta.url );
-	if ( ! fs.existsSync( f ) ) {
+test( 'gate: every saved pairs file has no duplicate draft element, and no block is both paired, unpaired and structural', () => {
+	const dir = new URL( '../../../sites/indus-foods/build/', import.meta.url );
+	if ( ! fs.existsSync( dir ) ) {
 		return;
 	}
-	const { pairs, unpaired } = JSON.parse( fs.readFileSync( f, 'utf8' ) );
-	const tpls = Object.values( pairs ).map( ( p ) => p.tpl );
-	assert.equal( new Set( tpls ).size, tpls.length );
-	assert.ok( Object.keys( unpaired ).every( ( r ) => unpaired[ r ].length > 10 ) );
+	for ( const name of fs.readdirSync( dir ).filter( ( n ) => n.endsWith( '.pairs.json' ) ) ) {
+		const { pairs, unpaired = {}, structural = {} } = JSON.parse( fs.readFileSync( new URL( name, dir ), 'utf8' ) );
+		// An element is paired once per draft state; a `part` pair shares the element its wrapper block holds.
+		const tpls = Object.values( pairs ).filter( ( p ) => ! p.part ).map( ( p ) => `${ p.tpl }@${ JSON.stringify( p.reveal ?? null ) }` );
+		assert.equal( new Set( tpls ).size, tpls.length, `${ name }: a draft element is paired twice` );
+		const refs = [ ...Object.keys( pairs ), ...Object.keys( unpaired ), ...Object.keys( structural ) ];
+		assert.equal( new Set( refs ).size, refs.length, `${ name }: a block is in two of pairs, unpaired and structural` );
+		assert.ok( [ ...Object.values( unpaired ), ...Object.values( structural ) ].every( ( why ) => why.length > 10 ), `${ name }: a reason is missing` );
+		assert.ok( Object.values( pairs ).filter( ( p ) => p.part ).every( ( p ) => Object.values( pairs ).some( ( q ) => ! q.part && q.tpl === p.tpl && JSON.stringify( q.reveal ?? null ) === JSON.stringify( p.reveal ?? null ) ) ), `${ name }: a part pair has no wrapper pair on its element` );
+	}
 } );

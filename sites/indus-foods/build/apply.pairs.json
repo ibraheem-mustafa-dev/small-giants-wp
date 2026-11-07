@@ -1,0 +1,256 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-apply-1": {
+   "tpl": "Root/316#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-3": {
+   "tpl": "Root/323#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-6": {
+   "tpl": "Root/331#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-7": {
+   "tpl": "Root/333#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-8": {
+   "tpl": "Root/334#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-16": {
+   "tpl": "Root>TradeApplication@466#0/104#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-17": {
+   "tpl": "Root>TradeApplication@466#0/105#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-apply-ck1": {
+   "tpl": "Root>TradeApplication@466#0/95#0",
+   "how": "text \"your trading and registered business nam\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "ckOpen": true
+    }
+   }
+  },
+  "cr-ref-apply-ck2": {
+   "tpl": "Root>TradeApplication@466#0/95#1",
+   "how": "text \"companies house and vat numbers (if you \"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "ckOpen": true
+    }
+   }
+  },
+  "cr-ref-apply-ck3": {
+   "tpl": "Root>TradeApplication@466#0/95#2",
+   "how": "text \"business and delivery address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "ckOpen": true
+    }
+   }
+  },
+  "cr-ref-apply-ck4": {
+   "tpl": "Root>TradeApplication@466#0/95#3",
+   "how": "text \"owner or director details\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "ckOpen": true
+    }
+   }
+  },
+  "cr-ref-apply-ck5": {
+   "tpl": "Root>TradeApplication@466#0/95#4",
+   "how": "text \"two trade references for a credit accoun\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "ckOpen": true
+    }
+   }
+  },
+  "cr-ref-form-trade-application-73": {
+   "tpl": "Root>TradeApplication@466#0/99#0",
+   "how": "heading \"need a hand?\""
+  },
+  "cr-ref-form-trade-application-74": {
+   "tpl": "Root>TradeApplication@466#0/100#0",
+   "how": "text \"our trade team can complete the applicat\""
+  },
+  "cr-ref-apply-acc-item": {
+   "tpl": "Root>TradeApplication@466#0/88#0",
+   "how": "item \"have these ready\""
+  },
+  "cr-ref-apply-acck1": {
+   "tpl": "Root>TradeApplication@466#0/95#0",
+   "how": "text \"your trading and registered business nam\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-apply-acck2": {
+   "tpl": "Root>TradeApplication@466#0/95#1",
+   "how": "text \"companies house and vat numbers (if you \"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-apply-acck3": {
+   "tpl": "Root>TradeApplication@466#0/95#2",
+   "how": "text \"business and delivery address\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-apply-acck4": {
+   "tpl": "Root>TradeApplication@466#0/95#3",
+   "how": "text \"owner or director details\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-apply-acck5": {
+   "tpl": "Root>TradeApplication@466#0/95#4",
+   "how": "text \"two trade references for a credit accoun\"",
+   "reveal": {
+    "component": "TradeApplication",
+    "keys": {
+     "saved": true
+    }
+   }
+  },
+  "cr-ref-apply-15": {
+   "tpl": "Root>TradeApplication@466#0/103#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-trade-application-56": {
+   "tpl": "Root>TradeApplication@466#0/86#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-57": {
+   "tpl": "Root>TradeApplication@466#0/87#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-59": {
+   "tpl": "Root>TradeApplication@466#0/89#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-61": {
+   "tpl": "Root>TradeApplication@466#0/93#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-62": {
+   "tpl": "Root>TradeApplication@466#0/95#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-63": {
+   "tpl": "Root>TradeApplication@466#0/96#0",
+   "how": "box of the draft element"
+  },
+  "cr-ref-form-trade-application-64": {
+   "tpl": "Root>TradeApplication@466#0/95#1",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-65": {
+   "tpl": "Root>TradeApplication@466#0/96#1",
+   "how": "box of the draft element"
+  },
+  "cr-ref-form-trade-application-66": {
+   "tpl": "Root>TradeApplication@466#0/95#2",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-67": {
+   "tpl": "Root>TradeApplication@466#0/96#2",
+   "how": "box of the draft element"
+  },
+  "cr-ref-form-trade-application-68": {
+   "tpl": "Root>TradeApplication@466#0/95#3",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-69": {
+   "tpl": "Root>TradeApplication@466#0/96#3",
+   "how": "box of the draft element"
+  },
+  "cr-ref-form-trade-application-70": {
+   "tpl": "Root>TradeApplication@466#0/95#4",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-71": {
+   "tpl": "Root>TradeApplication@466#0/96#4",
+   "how": "box of the draft element"
+  },
+  "cr-ref-form-trade-application-72": {
+   "tpl": "Root>TradeApplication@466#0/98#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-form-trade-application-75": {
+   "tpl": "Root>TradeApplication@466#0/101#0",
+   "how": "text and box of the draft element"
+  },
+  "cr-ref-apply-0": {
+   "tpl": "Root/201#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-apply-2": {
+   "tpl": "Root/319#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-apply-9": {
+   "tpl": "Root/344#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-apply-10": {
+   "tpl": "Root/345#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-apply-11": {
+   "tpl": "Root/466#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  },
+  "cr-ref-apply-12": {
+   "tpl": "Root>TradeApplication@466#0/4#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {
+  "cr-ref-apply-card": "sgs/container is structural: no draft element has its box (876.3x1041.6 at 1440px), so the draft draws nothing of its own for it",
+  "cr-ref-form-trade-application-58": "sgs/container is structural: its draft element Root>TradeApplication@466#0/88#0 is held by cr-ref-apply-acc-item, the outermost block with that box and text",
+  "cr-ref-apply-acc": "sgs/accordion is structural: its draft element Root>TradeApplication@466#0/87#0 is held by cr-ref-form-trade-application-57, the outermost block with that box and text",
+  "cr-ref-apply-acc-62": "sgs/container is structural: no draft element inside its parent's has its text or box (291x67.4 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-63": "sgs/icon is structural: no draft element has its box (22x22 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-64": "sgs/container is structural: no draft element inside its parent's has its text or box (291x67.4 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-65": "sgs/icon is structural: no draft element has its box (22x22 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-67": "sgs/icon is structural: no draft element has its box (22x22 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-69": "sgs/icon is structural: no draft element has its box (22x22 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-70": "sgs/container is structural: no draft element inside its parent's has its text or box (291x67.4 at 375px), so the draft draws nothing of its own for it",
+  "cr-ref-apply-acc-71": "sgs/icon is structural: no draft element has its box (22x22 at 375px), so the draft draws nothing of its own for it"
+ },
+ "unpaired": {
+  "cr-ref-apply-13": "sgs/form is hidden at 1440 and 375 and holds no text: there is nothing to measure it against",
+  "cr-ref-form-trade-application-60": "sgs/icon is hidden at 1440 and 375 and holds no text: there is nothing to measure it against",
+  "cr-ref-apply-acc-66": "sgs/container has no draft element of its own to pair by type and text: its blocks' text names Root>TradeApplication@466#0/95#2 and its box names Root>TradeApplication@466#0/16#0, so neither is chosen",
+  "cr-ref-apply-acc-68": "sgs/container has no draft element of its own to pair by type and text: its blocks' text names Root>TradeApplication@466#0/95#3 and its box names Root>TradeApplication@466#0/16#0, so neither is chosen"
+ }
+}

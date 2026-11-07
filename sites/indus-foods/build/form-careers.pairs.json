@@ -1,0 +1,55 @@
+{
+ "generated": "refresh-pairs.mjs",
+ "pairs": {
+  "cr-ref-form-careers-1": {
+   "tpl": "Root/551#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-careers-2": {
+   "tpl": "Root/552#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-careers-12": {
+   "tpl": "Root/571#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-careers-0": {
+   "tpl": "Root/550#0",
+   "how": "the draft root"
+  },
+  "cr-ref-form-careers-4": {
+   "tpl": "Root/556#0",
+   "how": "field \"full name\""
+  },
+  "cr-ref-form-careers-5": {
+   "tpl": "Root/556#1",
+   "how": "field \"email\""
+  },
+  "cr-ref-form-careers-6": {
+   "tpl": "Root/556#2",
+   "how": "field \"phone\""
+  },
+  "cr-ref-form-careers-7": {
+   "tpl": "Root/556#3",
+   "how": "field \"team\""
+  },
+  "cr-ref-form-careers-8": {
+   "tpl": "Root/556#4",
+   "how": "field \"role\""
+  },
+  "cr-ref-form-careers-9": {
+   "tpl": "Root/556#5",
+   "how": "field \"cv\""
+  },
+  "cr-ref-form-careers-10": {
+   "tpl": "Root/556#6",
+   "how": "field \"about you\""
+  },
+  "cr-ref-form-careers-11": {
+   "tpl": "Root/570#0",
+   "how": "kept from the previous pairs: the block has no text to pair by type"
+  }
+ },
+ "structural": {},
+ "unpaired": {}
+}

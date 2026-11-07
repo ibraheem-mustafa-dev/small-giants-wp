@@ -1,29 +1,57 @@
 {
  "generated": "refresh-pairs.mjs",
  "pairs": {
-  "cr-ref-form-enquiry-0": {
-   "tpl": "Root>EnquiryForm@468#0/6#0",
-   "how": "the draft root"
+  "cr-ref-form-enquiry-1": {
+   "tpl": "Root>EnquiryForm@468#0/7#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-2": {
    "tpl": "Root>EnquiryForm@468#0/8#0",
-   "how": "text \"01\""
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-3": {
    "tpl": "Root>EnquiryForm@468#0/9#0",
-   "how": "heading \"what can we help with?\""
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-4": {
    "tpl": "Root>EnquiryForm@468#0/10#0",
-   "how": "text \"choose all that apply\""
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-5": {
+   "tpl": "Root>EnquiryForm@468#0/11#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-6": {
+   "tpl": "Root>EnquiryForm@468#0/20#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-7": {
    "tpl": "Root>EnquiryForm@468#0/21#0",
-   "how": "text \"02\""
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-8": {
    "tpl": "Root>EnquiryForm@468#0/22#0",
-   "how": "heading \"your details\""
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-9": {
+   "tpl": "Root>EnquiryForm@468#0/23#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-25": {
+   "tpl": "Root>EnquiryForm@468#0/40#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-26": {
+   "tpl": "Root>EnquiryForm@468#0/41#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-27": {
+   "tpl": "Root>EnquiryForm@468#0/42#0",
+   "how": "kept from the previous pairs: the draft element has its own box"
+  },
+  "cr-ref-form-enquiry-0": {
+   "tpl": "Root>EnquiryForm@468#0/6#0",
+   "how": "the draft root"
   },
   "cr-ref-form-enquiry-11": {
    "tpl": "Root>EnquiryForm@468#0/26#0",
@@ -49,41 +77,21 @@
    "tpl": "Root>EnquiryForm@468#0/37#0",
    "how": "field \"reply by\""
   },
-  "cr-ref-form-enquiry-26": {
-   "tpl": "Root>EnquiryForm@468#0/41#0",
-   "how": "text \"we reply within one working day. your de\""
-  },
-  "cr-ref-form-enquiry-1": {
-   "tpl": "Root>EnquiryForm@468#0/7#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
-  "cr-ref-form-enquiry-5": {
-   "tpl": "Root>EnquiryForm@468#0/11#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
-  "cr-ref-form-enquiry-6": {
-   "tpl": "Root>EnquiryForm@468#0/20#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
-  "cr-ref-form-enquiry-9": {
-   "tpl": "Root>EnquiryForm@468#0/23#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
   "cr-ref-form-enquiry-10": {
    "tpl": "Root>EnquiryForm@468#0/25#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-12": {
    "tpl": "Root>EnquiryForm@468#0/25#1",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-14": {
    "tpl": "Root>EnquiryForm@468#0/25#2",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-16": {
    "tpl": "Root>EnquiryForm@468#0/25#3",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
+   "how": "kept from the previous pairs: the draft element has its own box"
   },
   "cr-ref-form-enquiry-18": {
    "tpl": "Root>EnquiryForm@468#0/30#0",
@@ -92,15 +100,8 @@
   "cr-ref-form-enquiry-20": {
    "tpl": "Root>EnquiryForm@468#0/36#0",
    "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
-  "cr-ref-form-enquiry-25": {
-   "tpl": "Root>EnquiryForm@468#0/40#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
-  },
-  "cr-ref-form-enquiry-27": {
-   "tpl": "Root>EnquiryForm@468#0/42#0",
-   "how": "kept from the previous pairs: the block has no text to pair by type"
   }
  },
+ "structural": {},
  "unpaired": {}
 }
