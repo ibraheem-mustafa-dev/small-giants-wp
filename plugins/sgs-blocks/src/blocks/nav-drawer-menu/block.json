@@ -1044,6 +1044,30 @@
 				}
 			}
 		},
+		"parentRowAction": {
+			"type": "string",
+			"enum": [
+				"navigate",
+				"toggle"
+			],
+			"default": "navigate",
+			"description": "What tapping the label of a parent row that has its own page does: navigate follows the link and only the caret opens the section; toggle makes the whole row (label and caret) the section's button, the same single-button row a parent with no page of its own already gets. With toggle the parent's own page is not linked from the drawer, so add it as a child link if visitors need it. Parents without a page behave the same either way. PHP-validated against this allow-list.",
+			"sgs": {
+				"meaning": {
+					"what": "Chooses whether tapping a parent row's label follows its link or opens and closes its section.",
+					"trigger": "a tap or key press on a parent row's label",
+					"parameters": {
+						"value": {
+							"unit": "enum",
+							"values": [
+								"navigate",
+								"toggle"
+							]
+						}
+					}
+				}
+			}
+		},
 		"submenuAnimation": {
 			"type": "string",
 			"default": "none",

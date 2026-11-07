@@ -115,6 +115,22 @@
 			}
 		},
 		{
+			"slug": "sgs/nav-bar-menu",
+			"attr": "submenuOpenOnFocus",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-11-07: a switch for whether keyboard focus opens a panel, the sibling of submenuOpenOn; it paints nothing, so 'behaviour' rather than the boolean-visibility its boolean type would derive."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer-menu",
+			"attr": "parentRowAction",
+			"fields": {
+				"role": "behaviour",
+				"_reason": "2026-11-07: chooses whether tapping a parent row's label follows its link or toggles its section; a behaviour switch with no CSS value of its own."
+			}
+		},
+		{
 			"slug": "sgs/trust-bar",
 			"attr": "bgSvgTextShadow",
 			"fields": {
@@ -7909,6 +7925,7 @@
 		{"slug": "sgs/button", "attr": "visualOnly", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): renders the button as a non-interactive visual cue inside a linked card; markup switch."},
 		{"slug": "sgs/business-info", "attr": "openStatusDotPulseWhen", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): whether the open-status pulse runs while open only or in both states; a class switch."},
 		{"slug": "sgs/business-info", "attr": "openStatusLinePattern", "fields": {"role": "text-content"}, "_reason": "2026-11-06 (round 8): the word order of the opens/closes line with {lead} {time} {when} placeholders; authored text."},
+		{"slug": "sgs/business-info", "attr": "openStatusOpensPattern", "fields": {"role": "text-content"}, "_reason": "2026-11-06 (round 8): the word order of the opening line alone, with the same placeholders; it prints words, no CSS."},
 		{"slug": "sgs/form", "attr": "fieldFocusRingStyle", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): whether the field focus ring sits inside or outside the border; selects the ring form, no value of its own."},
 		{"slug": "sgs/form-field-tiles", "attr": "selectedCheckPosition", "fields": {"role": "behaviour"}, "_reason": "2026-11-06 (round 8): where the selected tick shows (inline start or corner); a class switch."},
 		{"slug": "sgs/mega-panel", "attr": "drawerHoverEasingCustom", "fields": {"role": "technical"}, "_reason": "2026-11-06 (round 8): a custom cubic-bezier used when the drawer hover easing is custom; companion of drawerHoverEasing."},

@@ -266,7 +266,7 @@ final class DecorativeImageLayerTest extends TestCase {
 	public function test_tier_widths_come_from_the_shared_breakpoints_not_literals(): void {
 		$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/decorative-image/render.php' );
 
-		$this->assertDoesNotMatchRegularExpression( '/=>\s*(?:1023|767)/', $source, 'no tier width literal in render.php' );
+		$this->assertDoesNotMatchRegularExpression( '/=>\s*(?:1023|767)\b/', $source, 'no tier width literal in render.php' );
 		$this->assertStringContainsString( 'SGS_Breakpoints::max_for_tier', $source );
 
 		$out = $this->render_layer(

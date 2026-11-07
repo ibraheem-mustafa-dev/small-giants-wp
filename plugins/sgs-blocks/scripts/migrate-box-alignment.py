@@ -82,7 +82,7 @@ SOURCE_MARKERS = [
     (_B + 'separator/render.php', r"'left'\s*,\s*'center'\s*,\s*'right'|case\s+'(left|right)'", 'physical separator alignment'),
     (_B + 'separator/edit.js', r"'(left|right)'\s*===\s*alignment|ALIGNMENT_OPTIONS", 'physical separator alignment'),
     (_B + 'nav-drawer/render.php', r"'left'\s*,\s*'center'\s*,\s*'right'|'(left|right)'\s*=>", 'physical drawerAlign maps'),
-    (_B + 'nav-drawer/edit.js', r"drawerAlign:\s*value\s*\|\|\s*'left'|(left|right):\s*'flex-", 'physical drawerAlign map'),
+    (_B + 'nav-drawer/edit.js', r"drawerAlign:\s*value\s*\|\|\s*'left'|\b(left|right):\s*'flex-", 'physical drawerAlign map'),
     (_B + 'tabs/render.php', r"tabAlignment'\]\s*\?\?\s*'left'", 'physical tabAlignment default'),
     (_B + 'tabs/edit.js', r"ALIGNMENT_OPTIONS", 'hand-written alignment options'),
     (_B + 'tabs/style.css', r'sgs-tabs--align-right', 'physical modifier class'),

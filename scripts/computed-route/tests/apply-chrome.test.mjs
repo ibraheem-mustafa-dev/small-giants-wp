@@ -89,7 +89,7 @@ test( 'chrome open status and burger: the closed-clock read gives dot, pulse and
 	};
 	const saved = { displayType: 'open-status', openStatusOpenDot: '#6EE07A', openStatusDotPulse: true };
 	const [ op ] = chrome.decide( ctx( { block: 'sgs/business-info', saved, closed } ) );
-	assert.deepEqual( op.writes, [ { attr: 'openStatusClosedDot', value: '#E8A13A' }, { attr: 'openStatusDotPulseWhen', value: 'always' }, { attr: 'openStatusLinePattern', value: '{lead} {when} at {time}' } ] );
+	assert.deepEqual( op.writes, [ { attr: 'openStatusClosedDot', value: '#E8A13A' }, { attr: 'openStatusDotPulseWhen', value: 'always' }, { attr: 'openStatusOpensPattern', value: '{lead} {when} at {time}' }, { attr: 'openStatusOpensLabel', value: 'Opens' } ] );
 	assert.deepEqual( chrome.decide( ctx( { block: 'sgs/business-info', saved: { displayType: 'hours' }, closed } ) ), [] );
 	assert.equal( chrome.decide( ctx( { block: 'sgs/business-info', saved } ) )[ 0 ].status, 'no-setting' );
 	assert.ok( chrome.closedClock( { saved: { a: { block: 'sgs/business-info', attrs: saved } } } ) );

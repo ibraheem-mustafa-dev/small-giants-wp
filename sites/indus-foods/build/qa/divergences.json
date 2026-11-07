@@ -539,6 +539,7 @@
   },
   {
     "id": "D-37",
+    "block": "sgs/whatsapp-cta",
     "scope": "every page, all widths",
     "node": "floating WhatsApp button",
     "state": "hover",
@@ -551,6 +552,7 @@
   },
   {
     "id": "D-38",
+    "surfaces": ["mega-about", "mega-brands", "mega-trade"],
     "scope": "desktop mega panels About, Brands and Trade",
     "node": "panel shadow",
     "state": "*",

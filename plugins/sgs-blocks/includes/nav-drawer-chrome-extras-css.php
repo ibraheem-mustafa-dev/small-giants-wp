@@ -38,10 +38,18 @@ if ( ! function_exists( 'sgs_nav_drawer_chrome_extras_css' ) ) {
 	function sgs_nav_drawer_chrome_extras_css( array $attributes, string $root_sel, bool $has_logo ): string {
 		$css = '';
 
+		// The stylesheet reserves the scrollbar's width on the scrolling surface so a
+		// section opening does not shift the content; a drawer that opts out takes
+		// the width only while a scrollbar is actually showing.
+		$gutter = ( ! isset( $attributes['drawerScrollbarGutter'] ) || ! empty( $attributes['drawerScrollbarGutter'] ) ) ? 'stable' : 'auto';
+		if ( 'auto' === $gutter ) {
+			$css .= $root_sel . '{scrollbar-gutter:auto;}';
+		}
+
 		if ( ! empty( $attributes['chromeSticky'] ) ) {
 			$body = $root_sel . ' > .sgs-nav-drawer__body';
 			$css .= $root_sel . '[open]{overflow:hidden;scrollbar-gutter:auto;}'
-				. $body . '{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;}'
+				. $body . '{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:' . $gutter . ';}'
 				. $body . ' > *{flex-shrink:0;}';
 		}
 

@@ -63,6 +63,17 @@ test( 'pin: no draft pin, a live pin, or a block with no pin writes nothing', ()
 	assert.equal( pin.decide( { target, draft: widths, live: at( flow ), saved: {}, block: 'sgs/timeline', headers: { 1440: 84 } } )[ 0 ].status, 'no-setting' );
 } );
 
+test( 'ledger: a ruling naming a block or surfaces excuses nothing else on the page', () => {
+	const index = ledgerIndex( [
+		{ id: 'D-1', scope: 'every page', node: 'floating button', state: 'hover', property: 'background-color', block: 'sgs/whatsapp-cta' },
+		{ id: 'D-2', scope: 'panels About and Brands', node: 'panel shadow', property: 'box-shadow', surfaces: [ 'mega-about' ] },
+	] );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'home', block: 'sgs/whatsapp-cta', state: 'hover', prop: 'background-color' } ), 'D-1' );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'home', block: 'sgs/icon', state: 'hover', prop: 'background-color' } ), null );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'mega-about', block: 'sgs/container', prop: 'box-shadow' } ), 'D-2' );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'about', block: 'sgs/container', prop: 'box-shadow' } ), null );
+} );
+
 test( 'ledger: a cr-ref row matches its ref and property; a free-text row matches its surface and property', () => {
 	const index = ledgerIndex( [
 		{ id: 'D-1', scope: 'footer', node: 'cr-ref-footer-22', state: '*', property: 'layout' },

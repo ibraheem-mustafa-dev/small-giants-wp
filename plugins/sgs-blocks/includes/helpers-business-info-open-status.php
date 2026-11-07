@@ -26,17 +26,18 @@ if ( ! function_exists( 'sgs_business_info_open_status_labels' ) ) {
 			return '' !== $value ? $value : $default;
 		};
 		return array(
-			'open'     => $pick( 'openStatusOpenLabel', __( 'Open now', 'sgs-blocks' ) ),
-			'closed'   => $pick( 'openStatusClosedLabel', __( 'Closed', 'sgs-blocks' ) ),
-			'closes'   => $pick( 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ),
-			'opens'    => $pick( 'openStatusOpensLabel', __( 'Opens at', 'sgs-blocks' ) ),
-			'reopens'  => $pick( 'openStatusReopensLabel', __( 'Closed until', 'sgs-blocks' ) ),
-			'pattern'  => $pick( 'openStatusLinePattern', '{lead} {time} {when}' ),
-			'today'    => __( 'today', 'sgs-blocks' ),
-			'tomorrow' => __( 'tomorrow', 'sgs-blocks' ),
-			'noon'     => __( 'noon', 'sgs-blocks' ),
-			'midnight' => __( 'midnight', 'sgs-blocks' ),
-			'days'     => array(
+			'open'         => $pick( 'openStatusOpenLabel', __( 'Open now', 'sgs-blocks' ) ),
+			'closed'       => $pick( 'openStatusClosedLabel', __( 'Closed', 'sgs-blocks' ) ),
+			'closes'       => $pick( 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ),
+			'opens'        => $pick( 'openStatusOpensLabel', __( 'Opens at', 'sgs-blocks' ) ),
+			'reopens'      => $pick( 'openStatusReopensLabel', __( 'Closed until', 'sgs-blocks' ) ),
+			'pattern'      => $pick( 'openStatusLinePattern', '{lead} {time} {when}' ),
+			'opensPattern' => $pick( 'openStatusOpensPattern', '' ),
+			'today'        => __( 'today', 'sgs-blocks' ),
+			'tomorrow'     => __( 'tomorrow', 'sgs-blocks' ),
+			'noon'         => __( 'noon', 'sgs-blocks' ),
+			'midnight'     => __( 'midnight', 'sgs-blocks' ),
+			'days'         => array(
 				__( 'Monday', 'sgs-blocks' ),
 				__( 'Tuesday', 'sgs-blocks' ),
 				__( 'Wednesday', 'sgs-blocks' ),

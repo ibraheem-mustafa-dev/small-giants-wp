@@ -49,6 +49,7 @@ import {
 	PANEL_ALIGNS,
 } from './panel-bounds';
 import { carryCustomCssScope, dropCustomCssScope } from './custom-css-scope';
+import { focusInDecision, focusOutShouldClose } from './focus-open';
 
 /** Focusable-elements selector — inlined (see file header). */
 const FOCUSABLE_SELECTOR =
@@ -659,6 +660,25 @@ function readMegaAlign( root ) {
 const reparentedPanels = new Map();
 
 /**
+ * The megaIds whose panel was opened by keyboard focus (the bar's
+ * `submenuOpenOnFocus`), so only those close when focus leaves.
+ *
+ * @type {Set<string>}
+ */
+const focusOpened = new Set();
+
+/**
+ * A disclosure's panel while it is reparented out of its root, else null.
+ *
+ * @param {{megaId:string}} ctx The disclosure's context.
+ * @return {?HTMLElement} The moved panel.
+ */
+function panelFor( ctx ) {
+	const rec = reparentedPanels.get( ctx.megaId );
+	return rec ? rec.panel : null;
+}
+
+/**
  * `:has()` ancestor-highlight rescue. `reparentPanelIfNeeded()` below moves the panel
  * (the `[data-sgs-mega-panel]` wrap, containing `ul.sgs-nav-bar-menu__submenu`)
  * OUT of `.sgs-nav-bar-menu__submenu-root` while open — but two `nav-menu-css.php`
@@ -1064,9 +1084,80 @@ const { state } = store( 'sgs/mega', {
 			}
 		},
 
-		/** Keyboard focus anywhere in a disclosure root: warm its nav's panel photos. */
-		warmPanels() {
-			warmPanelImages( rootFor( getElement().ref ) );
+		/**
+		 * Keyboard focus anywhere in a disclosure root: warm its nav's panel
+		 * photos and, when the bar's `submenuOpenOnFocus` is on (context
+		 * `openOnFocus`), open the panel for keyboard focus on the item.
+		 *
+		 * @param {FocusEvent} event The focusin event.
+		 */
+		warmPanels( event ) {
+			const ctx = getContext();
+			const { ref } = getElement();
+			const root = rootFor( ref );
+			warmPanelImages( root );
+			if ( ! ctx.openOnFocus ) {
+				return;
+			}
+			const target = event && event.target;
+			const decision = focusInDecision( {
+				target,
+				root,
+				panel: root.querySelector( '[data-sgs-mega-panel]' ) || panelFor( ctx ),
+				isOpen: ctx.isOpen,
+				refocusing: refocusingTrigger,
+				focusVisible: !! target && target.matches( ':focus-visible' ),
+			} );
+			if ( 'none' === decision ) {
+				return;
+			}
+			focusOpened.add( ctx.megaId );
+			if ( 'mark' === decision ) {
+				return;
+			}
+			clearOpenTimer( ctx.megaId );
+			clearCloseTimer( ctx.megaId );
+			ctx.isOpen = true;
+			state.openMegaId = ctx.megaId;
+			syncTriangleWatcher();
+			syncOutsideClickWatcher();
+			repositionPanel( root );
+		},
+
+		/**
+		 * Focus leaving a focus-opened disclosure closes it (context
+		 * `openOnFocus`; bound only when the setting is on).
+		 *
+		 * @param {FocusEvent} event The focusout event.
+		 */
+		focusLeave( event ) {
+			const ctx = getContext();
+			const { ref } = getElement();
+			const root = rootFor( ref );
+			const panel = root.querySelector( '[data-sgs-mega-panel]' ) || panelFor( ctx );
+			if (
+				! focusOutShouldClose( {
+					openedByFocus: focusOpened.has( ctx.megaId ),
+					isOpen: ctx.isOpen,
+					related: event.relatedTarget,
+					root,
+					panel,
+					pointerInside:
+						root.matches( ':hover' ) ||
+						( !! panel && panel.matches( ':hover' ) ),
+				} )
+			) {
+				return;
+			}
+			focusOpened.delete( ctx.megaId );
+			clearOpenTimer( ctx.megaId );
+			clearCloseTimer( ctx.megaId );
+			ctx.isOpen = false;
+			if ( state.openMegaId === ctx.megaId ) {
+				state.openMegaId = null;
+				syncTriangleWatcher();
+				syncOutsideClickWatcher();
+			}
 		},
 
 		/** Toggle on click/tap. On touch (no hover) this is the sole open path. */

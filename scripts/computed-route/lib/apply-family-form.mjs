@@ -9,6 +9,25 @@ import { fieldWidths } from './apply-form-width.mjs';
 const FOCUS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow' ];
 const col = ( fields, key, prop ) => fields.map( ( f ) => f[ key ]?.[ prop ] );
 
+// A focus shadow that is one solid ring, as computed styles print it: `rgba(10, 126, 168, 0.14) 0px 0px 0px 4px`.
+export const ringOf = ( shadow ) => {
+	const m = /^(rgba?\([^)]+\)) 0px 0px 0px ([\d.]+)px$/.exec( String( shadow ?? '' ).trim() );
+	return m ? { colour: m[ 1 ].replace( /,\s+/g, ', ' ), width: Number( m[ 2 ] ) } : null;
+};
+
+// The ring goes through the focus settings by name: the shadow they print is not a calibrated reading.
+function focusRing( { saved, d, l } ) {
+	const ring = ringOf( d.focus?.[ 'box-shadow' ] );
+	if ( ! ring ) {
+		return [];
+	}
+	const held = saved.fieldFocusRingColour === ring.colour && Number( saved.fieldFocusRingWidth ) === ring.width;
+	if ( held || l.focus?.[ 'box-shadow' ]?.includes( `0px 0px 0px ${ ring.width }px` ) ) {
+		return [ { status: 'equal', prop: 'fieldFocusRingWidth', state: 'focus', why: 'the focus ring gives the draft ring' } ];
+	}
+	return [ { status: 'op', prop: 'fieldFocusRingWidth', state: 'focus', why: `focus ring ${ d.focus[ 'box-shadow' ] }`, writes: [ { attr: 'fieldFocusRingColour', value: ring.colour }, { attr: 'fieldFocusRingWidth', value: ring.width } ], checks: [] } ];
+}
+
 export const form = {
 	name: 'form',
 	// grid-column: the span each field reads (the draft's cells are grid items whose placement the field width settings decide).
@@ -28,7 +47,8 @@ export const form = {
 		for ( const prop of LABEL_PROPS ) {
 			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( d.fields, 'label', prop ), lives: col( l.fields, 'label', prop ), check: { all: 'label' }, why } ) );
 		}
-		for ( const prop of FOCUS.filter( () => d.focus && l.focus ) ) {
+		items.push( ...focusRing( { saved: ctx.saved, d, l } ) );
+		for ( const prop of FOCUS.filter( ( p ) => 'box-shadow' !== p || ! ringOf( d.focus?.[ p ] ) ).filter( () => d.focus && l.focus ) ) {
 			items.push( ...partItems( { ctx, element: 'field-input', prop, state: 'focus', drafts: [ d.focus[ prop ] ], lives: [ l.focus[ prop ] ], check: { probe: [ 'focus' ] } } ) );
 		}
 		return [ ...items, ...fieldWidths( ctx ) ];

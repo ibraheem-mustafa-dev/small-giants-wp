@@ -36,6 +36,13 @@ export const state = {
 				if ( 'border-top-color' === prop && ! ( parseFloat( dHover[ 'border-top-width' ] ) > 0 ) ) {
 					continue;
 				}
+				// A gradient ground stays through the hover: the flat colour of a hover setting would paint over it.
+				if ( 'background-color' === prop && saved.backgroundColourGradient && saved.backgroundColourGradient !== 'none' ) {
+					items.push( saved.backgroundColourHoverGradient
+						? { status: 'equal', prop, state: 'hover', why: 'the gradient ground holds through the hover' }
+						: { status: 'op', prop, state: 'hover', why: 'the draft keeps its gradient ground on hover', writes: [ { attr: 'backgroundColourHoverGradient', value: saved.backgroundColourGradient } ], checks: [] } );
+					continue;
+				}
 				const record = records.find( ( r ) => stateLook( r )?.looks.some( ( l ) => named( l, prop ) ) )?.id ?? null;
 				items.push( stateItem( { ctx, prop, value: dHover[ prop ], state: 'hover', slot: '', record } ) );
 			}

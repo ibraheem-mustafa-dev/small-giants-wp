@@ -314,7 +314,7 @@ def cmd_fix(apply):
         src = read(f)
         for s, e, text in sorted(items, reverse=True):
             src = src[:s] + text + src[e:]
-        if not re.search(r"^import[^;]*SgsFreeTextField[^;]*;", src, re.M):
+        if not re.search(r"^import[^;]*\bSgsFreeTextField\b[^;]*;", src, re.M):
             imports = list(re.finditer(r"^import[\s\S]*?;\s*$", src, re.M))
             at = imports[-1].end() if imports else 0
             src = src[:at] + "\n" + import_line(f) + src[at:]
@@ -332,7 +332,7 @@ def cmd_fix(apply):
     return 0
 
 
-SAFE_TEST = re.compile(r"""^(?:!\s*)?(?:empty|isset)\s*\(\s*\$V\s*\)|^''\s*[!=]==?\s*(?:trim\(\s*)?\$V|\$V\s*[!=]==?\s*''|^\$V\s*(?:\?\?|\?:)""")
+SAFE_TEST = re.compile(r"""^(?:!\s*)?(?:empty|isset)\s*\(\s*\$V\s*\)|^''\s*[!=]==?\s*(?:trim\(\s*)?\$V\b|\$V\s*[!=]==?\s*''|^\$V\s*(?:\?\?|\?:)""")
 ASSIGN_CLEAN = re.compile(r"""^\s*(?:\(string\)\s*)?(?:trim\(\s*)?(?:\(string\)\s*)?""")
 
 
@@ -346,7 +346,7 @@ def php_uses(src, attr):
             continue
         clean = re.search(r"sanitize_|esc_|wp_kses|strip_tags|wp_strip|strtoupper|mb_strtoupper|ucfirst|__\(", rhs) is None
         uses = []
-        for u in re.finditer(r"(?<![\w$])\$" + var + r"(?!\s*\[|->|\()", src):
+        for u in re.finditer(r"(?<![\w$])\$" + var + r"\b(?!\s*\[|->|\()", src):
             if u.start() >= m.start() and u.end() <= m.end():
                 continue
             ctx = src[max(0, u.start() - 12):u.start()]

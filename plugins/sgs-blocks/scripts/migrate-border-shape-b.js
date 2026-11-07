@@ -3088,7 +3088,7 @@ function runSelfTest() {
 	// matters. danglingUnguardedVars stays wired at transformRenderPhp for the
 	// cases Pass 2 cannot see, and its own unit assertions above still cover it.
 	const danglerOut = transformRenderPhp( danglerPhp, 'root_sel', 'responsive_css', SINK_STRING, [] );
-	ok( danglerOut !== null && ! /\$w/.test( danglerOut ),
+	ok( danglerOut !== null && ! /\$w\b/.test( danglerOut ),
 		'dangling guard WIRING: stripping must leave NO unguarded read of $w — Pass 2 removes ' +
 			'the orphaned consumer, so the file is safe rather than refused' );
 	// NEGATIVE CONTROL — the identical shape with the read GUARDED must succeed,

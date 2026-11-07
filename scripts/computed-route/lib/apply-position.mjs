@@ -1,6 +1,7 @@
 // Position matching, the applier's last pairing step. A draft element a record names that no pair or skeleton node reaches is
 // looked for among the post's other blocks by where it sits: inside the paired ancestor that holds it on the draft, a live block
 // whose box overlaps it by at least 0.6, with shared words where either side has text (lib/apply-skeleton.mjs::positionMatch).
+// A block a pair already reads is never a match: it has its draft element, and a second one would fight it over the same settings.
 // The pass runs after the first read and returns extra targets for a second decide pass; every match is logged.
 import { overlap, positionMatch } from './apply-skeleton.mjs';
 
@@ -31,7 +32,7 @@ export function matchByPosition( { ids, draftFacts, liveFacts, pairs, saved } ) 
 		let best = null;
 		for ( const ref of Object.keys( saved ) ) {
 			const l = liveFacts[ ref ];
-			if ( ref === ancestor.ref || ! l?.box || ! inside( l.box, liveFacts[ ancestor.ref ].box ) ) {
+			if ( pairs.some( ( p ) => p.ref === ref ) || ! l?.box || ! inside( l.box, liveFacts[ ancestor.ref ].box ) ) {
 				continue;
 			}
 			const score = overlap( d.box, l.box );

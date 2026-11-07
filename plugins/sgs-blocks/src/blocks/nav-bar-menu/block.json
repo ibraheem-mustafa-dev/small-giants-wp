@@ -1115,6 +1115,11 @@
 			"default": "hover",
 			"description": "How a dropdown or mega panel opens on a hover-capable pointer: on hover, or only when the item is clicked. Click mode keeps the panel open until it is clicked again, dismissed with Escape, or a click lands outside it. Mirrored by the PHP allow-list in render.php."
 		},
+		"submenuOpenOnFocus": {
+			"type": "boolean",
+			"default": false,
+			"description": "Keyboard focus on a parent menu item opens its dropdown or mega panel, and focus moving away from the item and its panel closes it. Escape still closes it. Mouse presses and taps do not open it, and a pointer resting over the panel keeps it open. Off by default: focus opens nothing and keyboard visitors open a panel with Enter, Space or the Down arrow."
+		},
 		"submenuBg": {
 			"type": "string",
 			"default": ""

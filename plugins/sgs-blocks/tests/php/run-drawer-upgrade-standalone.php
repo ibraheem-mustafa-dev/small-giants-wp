@@ -85,7 +85,11 @@ ok( false !== strpos( $css, '(min-width:1024px),(min-width:768px) and (max-width
 $root_sel = '.sgs-nav-drawer-x.wp-block-sgs-nav-drawer';
 ok( '' === sgs_nav_drawer_chrome_extras_css( array(), $root_sel, true ), 'chrome extras: nothing set emits nothing' );
 $css = sgs_nav_drawer_chrome_extras_css( array( 'chromeSticky' => true ), $root_sel, false );
-ok( false !== strpos( $css, $root_sel . '[open]{overflow:hidden;}' ) && false !== strpos( $css, '> .sgs-nav-drawer__body{flex:1 1 auto;min-height:0;overflow-y:auto;' ), 'chromeSticky: the body becomes the scrolling area' );
+ok( false !== strpos( $css, $root_sel . '[open]{overflow:hidden;scrollbar-gutter:auto;}' ) && false !== strpos( $css, '> .sgs-nav-drawer__body{flex:1 1 auto;min-height:0;overflow-y:auto;' ), 'chromeSticky: the body becomes the scrolling area' );
+ok( false !== strpos( $css, 'overscroll-behavior:contain;scrollbar-gutter:stable;}' ), 'scrollbar gutter: the sticky body reserves it by default' );
+$css = sgs_nav_drawer_chrome_extras_css( array( 'chromeSticky' => true, 'drawerScrollbarGutter' => false ), $root_sel, false );
+ok( false !== strpos( $css, $root_sel . '{scrollbar-gutter:auto;}' ) && false !== strpos( $css, 'overscroll-behavior:contain;scrollbar-gutter:auto;}' ) && false === strpos( $css, 'scrollbar-gutter:stable' ), 'scrollbar gutter: off hands the dialog and the sticky body back to auto' );
+ok( false === strpos( sgs_nav_drawer_chrome_extras_css( array( 'drawerScrollbarGutter' => true ), $root_sel, false ), 'scrollbar-gutter' ), 'scrollbar gutter: on adds no rule of its own' );
 $box = array(
 	'chromeLogoBoxBg'      => '#FFFFFF',
 	'chromeLogoBoxRadius'  => '14px',

@@ -134,6 +134,12 @@ export function OpenStatusPanel( { attributes, setAttributes } ) {
 				'{lead} {time} {when}',
 				__( 'Placeholders: {lead} (the Closes or Opens wording), {time} and {when} (today, tomorrow or the weekday). "{lead} {when} at {time}" reads "Opens tomorrow at 9:30am".', 'sgs-blocks' )
 			) }
+			{ text(
+				__( 'Opening line word order', 'sgs-blocks' ),
+				'openStatusOpensPattern',
+				'',
+				__( 'Leave empty to use the line word order. Set it when the opening line reads differently from the closing line.', 'sgs-blocks' )
+			) }
 			{ text( __( 'Open label', 'sgs-blocks' ), 'openStatusOpenLabel', __( 'Open now', 'sgs-blocks' ) ) }
 			{ text( __( 'Closed label', 'sgs-blocks' ), 'openStatusClosedLabel', __( 'Closed', 'sgs-blocks' ) ) }
 			{ text( __( 'Closes wording', 'sgs-blocks' ), 'openStatusClosesLabel', __( 'Closes at', 'sgs-blocks' ) ) }

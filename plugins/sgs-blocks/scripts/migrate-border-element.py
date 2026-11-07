@@ -324,7 +324,7 @@ def carries(stmt):
     return has(r'border|radius|corner', stmt, re.I) or HELPER_CALL.search(stmt) is not None
 
 
-EMIT_HELPERS = re.compile(r'(?:sgs_border_gradient_css|sgs_border_states_css|sgs_button_element_style_css)\s*\(')
+EMIT_HELPERS = re.compile(r'\b(?:sgs_border_gradient_css|sgs_border_states_css|sgs_button_element_style_css)\s*\(')
 
 
 def has(pattern, text, flags=0):
@@ -478,7 +478,7 @@ def sink_of(stmts, region_idx, all_stmts):
         if has(r'\bwp_style_engine_get_styles', s) and not has(r'\[\]\s*=|\.=', s):
             continue
         m = re.match(r'\s*(\$\w+)\s*(\[\s*\])?\s*(\.)?=(?!=)', s)
-        if m and has(r'sgs_border_box_decls\s*\(', s) and not appends:
+        if m and has(r'\bsgs_border_box_decls\s*\(', s) and not appends:
             kinds.add('decls-array')
             decl_vars.add(m.group(1))
         elif m:

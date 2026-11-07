@@ -18,6 +18,7 @@ import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
  * @param {Array}    root0.menuOptions   From useNavMenuSource().
  * @param {boolean}  root0.isResolving   From useNavMenuSource().
  * @param {boolean}  root0.accordionScrollIntoView Scroll an opened row near the top.
+ * @param {string}   root0.parentRowAction The block's `parentRowAction` attribute.
  * @param {Function} root0.setAttributes The block's attribute setter.
  */
 export default function MenuSettingsPanel( {
@@ -25,6 +26,7 @@ export default function MenuSettingsPanel( {
 	menuOptions,
 	isResolving,
 	accordionScrollIntoView,
+	parentRowAction,
 	setAttributes,
 } ) {
 	return (
@@ -41,6 +43,18 @@ export default function MenuSettingsPanel( {
 					'Auto follows the site’s primary menu. Choose a specific menu to render an independent one. Manage menus in Appearance → Menus.',
 					'sgs-blocks'
 				) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<SelectControl
+				label={ __( 'Tapping a parent row', 'sgs-blocks' ) }
+				value={ 'toggle' === parentRowAction ? 'toggle' : 'navigate' }
+				options={ [
+					{ label: __( 'Goes to the parent page', 'sgs-blocks' ), value: 'navigate' },
+					{ label: __( 'Opens and closes its section', 'sgs-blocks' ), value: 'toggle' },
+				] }
+				onChange={ ( val ) => setAttributes( { parentRowAction: val } ) }
+				help={ __( 'Applies to parent rows that have a page. With Opens and closes the whole row is one button, so add the parent page as a child link if visitors need it.', 'sgs-blocks' ) }
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>

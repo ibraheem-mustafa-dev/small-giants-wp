@@ -171,3 +171,15 @@ describe( 'parseDay: hours typed without am/pm and closed days (session close co
 		expect( parseDay( '9-12, 1-5 (closed for lunch)' ).length ).toBe( 2 );
 	} );
 } );
+
+describe( 'buildLine word order', () => {
+	const change = ( kind, dayOffset ) => ( { kind, minutes: 570, dayOffset, day: 0 } );
+	test( 'the opening line takes its own order and the closing line stays on the line order', () => {
+		const labels = { ...LABELS, opens: 'Opens', opensPattern: '{lead} {when} at {time}' };
+		expect( buildLine( change( 'opens', 1 ), labels ) ).toBe( 'Opens tomorrow at 9:30am' );
+		expect( buildLine( change( 'closes', 0 ), labels ) ).toBe( 'Closes at 9:30am today' );
+	} );
+	test( 'with no opening order both lines use the line order', () => {
+		expect( buildLine( change( 'opens', 1 ), LABELS ) ).toBe( 'Opens at 9:30am tomorrow' );
+	} );
+} );

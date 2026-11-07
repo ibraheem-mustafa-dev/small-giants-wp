@@ -280,7 +280,7 @@ final class CardGridTemplateCardTest extends TestCase {
 	}
 
 	public function test_the_item_list_never_counts_the_template(): void {
-		if ( ! function_exists( 'SGS\Blocksdd_filter' ) && ! function_exists( 'add_filter' ) ) {
+		if ( ! function_exists( 'SGS\Blocks\add_filter' ) && ! function_exists( 'add_filter' ) ) {
 			function add_filter( ...$args ) { return true; }
 		}
 		if ( ! function_exists( 'get_post_status' ) ) {

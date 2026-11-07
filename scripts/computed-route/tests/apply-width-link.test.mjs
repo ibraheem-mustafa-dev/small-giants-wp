@@ -17,6 +17,13 @@ test( 'width: a held entrance scale is not a difference (same layout box, no op)
 	assert.deepEqual( width.decide( { target, draft, live, saved: {}, block: 'sgs/container', db } ), [] );
 } );
 
+test( 'width: a limit the content band already holds leaves the root alone', () => {
+	const draft = { 1440: f( { styles: { 'max-width': '1320px' } } ), 768: f( { styles: { 'max-width': '1320px' } } ), 375: f( { styles: { 'max-width': '1320px' } } ) };
+	const live = at( f( { styles: { 'max-width': 'none' } } ) );
+	const items = width.decide( { target: { ref: 'r', tpl: 'Root/1#0' }, draft, live, saved: { contentWidth: { desktop: '1320px' } }, block: 'sgs/site-header-row', db: null, widths: [ 1440, 768, 375 ] } );
+	assert.deepEqual( items.filter( ( i ) => 'max-width' === i.prop ).map( ( i ) => i.status ), [ 'equal' ] );
+} );
+
 test( 'width: a different max-width writes the tier object, keeping saved tiers', () => {
 	const draft = { 1440: f( { styles: { 'max-width': '1240px' } } ), 768: f( { styles: { 'max-width': 'none' } } ), 375: f( { styles: { 'max-width': 'none' } } ) };
 	const live = at( f( { styles: { 'max-width': '1400px' } } ) );
@@ -79,8 +86,10 @@ test( 'link: a click row with no href takes the address its button already reach
 
 test( 'link: negative control, a plain container and an already linked card write nothing new', () => {
 	assert.deepEqual( link.decide( ctxFor( f( { tag: 'div', href: null, styles: { cursor: 'auto' } } ) ) ), [] );
-	const done = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest', sgsBlockLinkLabel: 'Register' }, button: { visualOnly: true } } ) );
+	const done = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest', sgsBlockLinkLabel: 'Row' }, button: { visualOnly: true } } ) );
 	assert.deepEqual( done.map( ( i ) => i.status ), [ 'equal' ] );
+	const cue = link.decide( ctxFor( f( { tag: 'div', href: null, text: 'Row', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' } } ), { saved: { sgsBlockLink: '#register-interest', sgsBlockLinkLabel: 'Register' }, button: { visualOnly: true } } ) );
+	assert.deepEqual( cue[ 0 ].writes.find( ( w ) => 'sgsBlockLinkLabel' === w.attr ).value, 'Row', 'a card named by its cue takes the card text' );
 	assert.equal( live404.rows.length, 1 );
 } );
 

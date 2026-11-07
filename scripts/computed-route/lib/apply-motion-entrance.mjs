@@ -49,6 +49,11 @@ export function draftEntrance( { calls, trig, draft, mdb, ctx, target, offers = 
 			}
 		}
 	}
+	// The draft's start line, from its observer's bottom margin, so an element low in the first screen reveals as it does there.
+	const margin = /rootMargin\s+\S+\s+\S+\s+-([\d.]+)%/.exec( trig.detail ?? '' );
+	if ( 'scroll' === layer.trigger && margin ) {
+		layer.values.start = Number( margin[ 1 ] );
+	}
 	const opacity = layer.values.from?.opacity;
 	if ( 'load' === layer.trigger && 0 === opacity && ( draft[ 1440 ]?.box?.y ?? 9999 ) < 900 ) {
 		layer.values.allowLcpFade = true;

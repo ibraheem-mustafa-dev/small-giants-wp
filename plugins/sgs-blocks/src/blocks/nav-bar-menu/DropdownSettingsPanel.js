@@ -46,6 +46,7 @@ import { DRAWER_POST_TYPE, DRAWER_QUERY } from './create-drawer-seed';
  * @param {number}   root0.submenuCloseGrace    The block's `submenuCloseGrace` attribute.
  * @param {number}   root0.submenuIntentDelay   The block's `submenuIntentDelay` attribute.
  * @param {string}   root0.submenuOpenOn        The block's `submenuOpenOn` attribute.
+ * @param {boolean}  root0.submenuOpenOnFocus   The block's `submenuOpenOnFocus` attribute.
  */
 /**
  * Panel placements lined up with the page (Spec 36 FR-36-4 "Panel placement"),
@@ -85,6 +86,7 @@ export default function DropdownSettingsPanel( {
 	submenuCloseGrace,
 	submenuIntentDelay,
 	submenuOpenOn,
+	submenuOpenOnFocus,
 	itemHoverScope,
 } ) {
 	// Only PUBLISHED posts are offered — an unpublished one wouldn't resolve on
@@ -460,6 +462,18 @@ export default function DropdownSettingsPanel( {
 					) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
+				/>
+				<ToggleControl
+					label={ __( 'Open when tabbed to', 'sgs-blocks' ) }
+					help={ __(
+						'Keyboard focus on a menu item opens its panel, and moving focus away closes it. Escape still closes it. Mouse presses and taps do not open it.',
+						'sgs-blocks'
+					) }
+					checked={ !! submenuOpenOnFocus }
+					onChange={ ( value ) =>
+						setAttributes( { submenuOpenOnFocus: value } )
+					}
+					__nextHasNoMarginBottom
 				/>
 				{ submenuOpenOn !== 'click' && (
 					<RangeControl

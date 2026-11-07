@@ -28,7 +28,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 	 * Resolve the drawer menu's per-row options once per render.
 	 *
 	 * @param array $attributes Block attributes.
-	 * @return array{mega_mode:string,roll:string,magnet:bool,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool,ornament_frames_html:string}
+	 * @return array{mega_mode:string,parent_row_toggle:bool,roll:string,magnet:bool,ornament_html:string,ornament_hover_html:string,has_ornament:bool,expander_html:string,media:bool,media_size:string,disabled_ids:string[],ornament_hidden_ids:string[],ornament_reserve:bool,ornament_frames_html:string}
 	 */
 	function sgs_nav_drawer_menu_row_options( array $attributes ): array {
 		$ornament      = is_array( $attributes['itemOrnament'] ?? null ) ? $attributes['itemOrnament'] : array();
@@ -66,6 +66,9 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_options' ) ) {
 					'name'   => 'chevron-down',
 				)
 			) : '',
+			// `parentRowAction` toggle: a parent row with its own page becomes one
+			// whole-row toggle too (sgs_nav_drawer_menu_accordion_html()).
+			'parent_row_toggle'   => 'toggle' === ( $attributes['parentRowAction'] ?? 'navigate' ),
 			'media'               => 'featured-image' === ( $attributes['itemMedia'] ?? '' ),
 			'media_size'          => sgs_nav_drawer_menu_media_size( $media_width ),
 			// G-7 — per-item trailing icon map (item identifier => {source,name}
@@ -237,7 +240,10 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 		$disabled_ids = is_array( $options['disabled_ids'] ?? null ) ? $options['disabled_ids'] : array();
 		$is_disabled  = in_array( (string) ( $item['identifier'] ?? '' ), $disabled_ids, true );
 		$has_url      = ! empty( $item['has_url'] );
-		$row_toggle   = ! $has_url; // I-D9 — no real destination, whole row is the toggle.
+		// I-D9: no real destination, whole row is the toggle. `parentRowAction`
+		// toggle extends that to a parent that has a page, except a disabled one,
+		// which stays a plain non-interactive label.
+		$row_toggle   = ! $has_url || ( ! empty( $options['parent_row_toggle'] ) && ! $is_disabled );
 
 		$label_html    = '';
 		$summary_label = '';

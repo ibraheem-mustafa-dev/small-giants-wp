@@ -183,6 +183,11 @@
 			"default": "{lead} {time} {when}",
 			"description": "Only read by displayType 'open-status'. The word order of the closing or opening line. {lead} is the Closes or Opens wording, {time} the clock time and {when} today, tomorrow or the weekday, e.g. '{lead} {when} at {time}' reads 'Opens tomorrow at 9:30am'. The reopening line ('Closed until 2:30pm') keeps its own order."
 		},
+		"openStatusOpensPattern": {
+			"type": "string",
+			"default": "",
+			"description": "Only read by displayType 'open-status'. The word order of the opening line alone, for a site whose opening and closing lines read differently, e.g. '{lead} {when} at {time}' reads 'Opens tomorrow at 9:30am' while the closing line stays 'Closes at 5pm today'. Empty uses the line word order."
+		},
 		"openStatusDotPulseDuration": {
 			"type": "number",
 			"default": 1600,

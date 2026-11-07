@@ -176,6 +176,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		submenuCloseGrace,
 		submenuIntentDelay,
 		submenuOpenOn,
+		submenuOpenOnFocus,
 		itemHoverScope,
 		scrimFadeDuration,
 		scrimFadeEasing,
@@ -698,6 +699,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					submenuCloseGrace={ submenuCloseGrace }
 					submenuIntentDelay={ submenuIntentDelay }
 					submenuOpenOn={ submenuOpenOn }
+					submenuOpenOnFocus={ submenuOpenOnFocus }
 					itemHoverScope={ itemHoverScope }
 				/>
 

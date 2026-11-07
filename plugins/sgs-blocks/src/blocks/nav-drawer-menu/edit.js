@@ -551,6 +551,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					menuOptions={ menuOptions }
 					isResolving={ isResolving }
 					accordionScrollIntoView={ attributes.accordionScrollIntoView }
+					parentRowAction={ attributes.parentRowAction }
 					setAttributes={ setAttributes }
 				/>
 

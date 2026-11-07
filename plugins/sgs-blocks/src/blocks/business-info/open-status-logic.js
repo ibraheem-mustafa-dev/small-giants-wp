@@ -235,7 +235,8 @@ const DEFAULT_LINE_PATTERN = '{lead} {time} {when}';
  *
  * `labels` carries the wording: closes, opens, reopens ("Closed until"), today, tomorrow,
  * noon, midnight, days (seven weekday names, Monday first) and pattern, the word order of the
- * closes and opens lines with {lead}, {time} and {when} placeholders (default "{lead} {time} {when}").
+ * closes and opens lines with {lead}, {time} and {when} placeholders (default "{lead} {time} {when}");
+ * opensPattern, when set, is the word order of the opens line alone.
  *
  * @param {{kind:string,minutes:number,dayOffset:number,day:number}} change computeStatus().change.
  * @param {Object} labels Wording.
@@ -256,7 +257,7 @@ export function buildLine( change, labels ) {
 	}
 	const lead = 'closes' === change.kind ? labels.closes : labels.opens;
 	const values = { lead, time, when };
-	const pattern = labels.pattern || DEFAULT_LINE_PATTERN;
+	const pattern = ( 'closes' !== change.kind && labels.opensPattern ) || labels.pattern || DEFAULT_LINE_PATTERN;
 	return pattern
 		.replace( /\{(lead|time|when)\}/g, ( match, key ) => values[ key ] )
 		.replace( /\s+/g, ' ' )

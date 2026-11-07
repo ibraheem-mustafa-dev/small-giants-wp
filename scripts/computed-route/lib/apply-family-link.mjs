@@ -80,12 +80,14 @@ export const link = {
 			}
 			url = own;
 		}
-		const label = clean( buttons.map( ( b ) => b.draft.text ).find( Boolean ) || d.text ).slice( 0, 80 );
+		// A card that is one link reads out what it says, as the draft's anchor does, not only its cue.
+		const words = clean( d.text || buttons.map( ( b ) => b.draft.text ).find( Boolean ) );
+		const label = words.length > 80 ? words.slice( 0, 80 ).replace( /\s+\S*$/, '' ) : words;
 		const items = [];
-		if ( saved.sgsBlockLink === url && saved.sgsBlockLinkLabel ) {
+		if ( saved.sgsBlockLink === url && saved.sgsBlockLinkLabel === label ) {
 			items.push( { status: 'equal', prop: 'card-link', why: 'the card links' } );
 		} else {
-			const writes = [ { attr: 'sgsBlockLink', value: url }, { attr: 'sgsBlockLinkLabel', value: saved.sgsBlockLinkLabel || label } ];
+			const writes = [ { attr: 'sgsBlockLink', value: url }, { attr: 'sgsBlockLinkLabel', value: label } ];
 			if ( '_blank' === d.target && ! saved.sgsBlockLinkTarget ) {
 				writes.push( { attr: 'sgsBlockLinkTarget', value: true } );
 			}

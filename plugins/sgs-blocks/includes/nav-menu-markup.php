@@ -76,6 +76,34 @@ if ( ! function_exists( 'sgs_nav_shared_badge_html' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_nav_bar_menu_focus_open_context' ) ) {
+	/**
+	 * The interactivity-context member that switches on keyboard-focus open
+	 * (`submenuOpenOnFocus`): present only when the setting is on, so a bar
+	 * that leaves it off prints exactly the markup it always did.
+	 *
+	 * @param array $submenu Validated submenu settings (open_on_focus).
+	 * @return array{openOnFocus?: bool} The member to merge into the context.
+	 */
+	function sgs_nav_bar_menu_focus_open_context( array $submenu ): array {
+		return ! empty( $submenu['open_on_focus'] ) ? array( 'openOnFocus' => true ) : array();
+	}
+}
+
+if ( ! function_exists( 'sgs_nav_bar_menu_focus_open_attrs' ) ) {
+	/**
+	 * The disclosure root's extra directive for keyboard-focus open: focus
+	 * leaving a focus-opened panel closes it (mega-disclosure.js `focusLeave`).
+	 * Focus arriving is already handled by the root's existing focusin directive.
+	 *
+	 * @param array $submenu Validated submenu settings (open_on_focus).
+	 * @return string The attribute segment with a leading space, or ''.
+	 */
+	function sgs_nav_bar_menu_focus_open_attrs( array $submenu ): string {
+		return ! empty( $submenu['open_on_focus'] ) ? ' data-wp-on--focusout="actions.focusLeave"' : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_nav_bar_menu_split_caret_html' ) ) {
 	/**
 	 * The caret inside a split row's separate toggle button (a parent that has
@@ -167,8 +195,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								'intentDelay' => $submenu['intent_delay'],
 								'closeGrace'  => $submenu['close_grace'],
 								'openOn'      => $submenu['open_on'],
-							)
-						);
+							) + sgs_nav_bar_menu_focus_open_context( $submenu )
+						) . sgs_nav_bar_menu_focus_open_attrs( $submenu );
 						// The caret honours the block's submenuCaret setting, as the
 						// plain dropdown branch below does.
 						$label_html = sgs_label_roll_markup( (string) $item['label'], (string) ( $submenu['label_roll'] ?? '' ) );
@@ -334,8 +362,8 @@ if ( ! function_exists( 'sgs_nav_bar_menu_render_items' ) ) {
 								'intentDelay' => $submenu['intent_delay'],
 								'closeGrace'  => $submenu['close_grace'],
 								'openOn'      => $submenu['open_on'],
-							)
-						);
+							) + sgs_nav_bar_menu_focus_open_context( $submenu )
+						) . sgs_nav_bar_menu_focus_open_attrs( $submenu );
 						$sub_caret  = '';
 						if ( $submenu['caret'] && function_exists( 'sgs_get_lucide_icon' ) ) {
 							$sub_caret = '<span class="sgs-nav-bar-menu__caret" aria-hidden="true">'

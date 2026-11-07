@@ -177,7 +177,7 @@ export function animationRecords( census, { notDefects = [] } = {} ) {
 	// Template and stylesheet records, then code-built transition and animation strings no writer holds.
 	const { rmRecords, defs } = templateRecords( census, add );
 	for ( const raw of codeMotion.filter( ( x ) => ! folded.has( x.id ) ) ) {
-		const r = { ...raw, detail: { ...raw.detail, property: raw.detail.property?.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ), value: String( raw.detail.value ?? '' ).replace( /^(['"`])([\s\S]*)$/, '$2' ) } };
+		const r = { ...raw, detail: { ...raw.detail, property: raw.detail.property?.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ), value: String( raw.detail.value ?? '' ).replace( /^(['"`])([\s\S]*)\1$/, '$2' ) } };
 		const comp = compOf( r );
 		const { p, owner, file } = code( comp );
 		const node = nodeAt( p, offsetOf( p, r.draftId ), /./ ) || p.nodes[ 0 ];

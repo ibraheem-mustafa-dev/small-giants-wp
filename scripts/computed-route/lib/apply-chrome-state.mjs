@@ -53,7 +53,7 @@ function lineOrder( text ) {
 	if ( 1 !== rest.length ) {
 		return null;
 	}
-	return text.replace( words[ 0 ], '{lead}' ).replace( rest[ 0 ], '{when}' ).replace( time, '{time}' );
+	return { lead: words[ 0 ], pattern: text.replace( words[ 0 ], '{lead}' ).replace( rest[ 0 ], '{when}' ).replace( time, '{time}' ) };
 }
 
 function openStatus( { saved, closed, aux, target } ) {
@@ -75,7 +75,8 @@ function openStatus( { saved, closed, aux, target } ) {
 	const pulsing = ( closed.animate ?? [] ).some( ( a ) => a.key === key && JSON.stringify( a.frames ?? '' ).includes( 'box-shadow' ) || ( dotKey && a.key === dotKey ) );
 	saved.openStatusDotPulse && pulsing && writes.push( { attr: 'openStatusDotPulseWhen', value: 'always' } );
 	const order = saved.openStatusShowLine === false ? null : lineOrder( draft.text );
-	order && writes.push( { attr: 'openStatusLinePattern', value: order } );
+	// The closed clock reads the opening line only, so its word order and lead word go on the opening line's own settings.
+	order && writes.push( { attr: 'openStatusOpensPattern', value: order.pattern }, { attr: 'openStatusOpensLabel', value: order.lead } );
 	return writes.length ? [ settle( { prop: 'openStatusClosedDot', why: `${ target.tpl } closed state read from the draft under the closed clock`, saved, writes } ) ] : [];
 }
 

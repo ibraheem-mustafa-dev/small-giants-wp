@@ -49,7 +49,7 @@ const OUT_FILE = path.join(
 /*
  * Matches an extension attribute definition: an `sgs*` name, the cross-block extension convention.
  *
- * `` anchors the match to an identifier start so a longer word merely
+ * `\b` anchors the match to an identifier start so a longer word merely
  * ENDING in these letters is not mistaken for a definition.
  */
 // Attributes registered per block by a `supports.sgs.*` flag, never mirrored to every block. A literal for one of

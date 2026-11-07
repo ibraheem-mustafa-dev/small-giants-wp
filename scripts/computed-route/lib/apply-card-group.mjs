@@ -90,8 +90,8 @@ export function cardGroup( ctx ) {
 	const card = recordsFor( recordsIndex, target.tpl );
 	for ( const d of dGroup.children ) {
 		const looks = changedLooks( d );
-		const pose = poseOf( d );
-		if ( ! Object.keys( looks ).length && ! pose ) {
+		const turn = poseOf( d );
+		if ( ! Object.keys( looks ).length && ! turn ) {
 			continue;
 		}
 		const l = liveMatch( d, lGroup.children, all.blocks, { draft: dGroup.card, live: lGroup.card } );
@@ -103,6 +103,8 @@ export function cardGroup( ctx ) {
 		const { block, attrs } = all.blocks[ ref ];
 		const base = { ref, block, state: 'hover' };
 		const child = { ...ctx, block, saved: attrs, target: { ...target, ref, tpl: d.key } };
+		// An icon's own rotation is a setting of its glyph, so the hover layer carries only the turn the hover adds.
+		const pose = turn && attrs.iconRotate ? { ...turn, rotate: turn.rotate - attrs.iconRotate } : turn;
 		const own = Object.entries( looks ).filter( ( [ p, v ] ) => differs( v, l.hover?.[ p ] ) )
 			.map( ( [ prop, value ] ) => ( { ...base, ...stateItem( { ctx: child, prop, value, state: 'hover', slot: '', extra: { hoverHost: target.ref } } ) } ) );
 		const poseWrong = Boolean( pose ) && ! motionClose( pose, motionOf( l.hover ) );

@@ -47,6 +47,12 @@ function maxWidth( { target, draft, live, saved, block, db, widths } ) {
 	if ( ! apart.length ) {
 		return [];
 	}
+	// A pair can read the draft's content band where the block has a band of its own: a full-width row with a capped inner band.
+	// The limit then belongs to `contentWidth`, and capping the root would cut its background short.
+	const bands = Object.values( saved.contentWidth ?? {} );
+	if ( bands.length && apart.every( ( w ) => bands.includes( draft[ w ].styles[ 'max-width' ] ) ) ) {
+		return [ { status: 'equal', prop: 'max-width', why: 'the content band already holds this limit' } ];
+	}
 	const setting = tierSetting( db, block, 'max-width' );
 	if ( ! setting ) {
 		return [ { status: 'no-setting', prop: 'max-width', why: `${ block } has no per-device max-width setting` } ];

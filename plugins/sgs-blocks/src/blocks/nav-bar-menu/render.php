@@ -192,7 +192,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * reaches this class, so adding a colour control can never change the
 		 * rendered structure.
 		 *
-		 * @var array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string}
+		 * @var array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string, open_on_focus: bool}
 		 */
 		private array $submenu;
 
@@ -203,7 +203,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * @param string $uid          This block instance's uid (CSS scope + id namespace).
 		 * @param array  $submenu      Submenu settings: align (start|center|end),
 		 *                             caret (bool), close_grace (int ms),
-		 *                             intent_delay (int ms), open_on (hover|click),
+		 *                             intent_delay (int ms), open_on (hover|click), open_on_focus (bool),
 		 *                             label_roll ('' | up | up-scale).
 		 */
 		public function __construct( array $featured_ids, string $uid = '', array $submenu = array() ) {
@@ -230,6 +230,9 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 				// Same values as block.json::submenuOpenOn's enum; anything else is hover.
 				'open_on'      => 'click' === ( $submenu['open_on'] ?? '' ) ? 'click' : 'hover',
 
+				// Keyboard focus on a parent item opens its panel (block.json::submenuOpenOnFocus).
+				'open_on_focus' => ! empty( $submenu['open_on_focus'] ),
+
 				// Wave 3C U-6 (M-25): the item label roll, '' | up | up-scale.
 				'label_roll'  => sgs_label_roll_value( $submenu['label_roll'] ?? '' ),
 			);
@@ -242,7 +245,7 @@ if ( ! class_exists( 'SGS_Nav_Menu_Bar_Renderer' ) ) {
 		 * $this->submenu directly. This getter exposes the existing validated
 		 * state; it does not compute anything new.
 		 *
-		 * @return array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string, label_roll: string}
+		 * @return array{align: string, caret: bool, close_grace: int, intent_delay: int, open_on: string, open_on_focus: bool, label_roll: string}
 		 */
 		public function get_submenu(): array {
 			return $this->submenu;
@@ -444,6 +447,7 @@ $bar_renderer = new SGS_Nav_Menu_Bar_Renderer(
 		'close_grace' => (int) ( $attributes['submenuCloseGrace'] ?? 170 ),
 		'intent_delay' => (int) ( $attributes['submenuIntentDelay'] ?? 80 ),
 		'open_on'     => (string) ( $attributes['submenuOpenOn'] ?? 'hover' ),
+		'open_on_focus' => ! empty( $attributes['submenuOpenOnFocus'] ),
 		'label_roll'  => (string) ( $attributes['labelRoll'] ?? '' ),
 	)
 );

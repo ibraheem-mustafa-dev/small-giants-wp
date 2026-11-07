@@ -3,9 +3,9 @@
 // paired block's draft and live values, works out which settings differ, and patches them through patch-block-attrs.py. It
 // never rebuilds a post, and writes nothing without --write.
 //   node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375]
-//        [--draft http://127.0.0.1:5181] [--jobs 4] [--fresh] [--write]
+//        [--draft http://127.0.0.1:5181] [--jobs 4] [--fresh] [--retry] [--write]
 // Output in sites/<client>/build/qa/apply/: <surface>.plan.json (every target's outcome), summary.md, and with --write
-// verify.json (read by delivery-map.mjs). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
+// verify.json (read by delivery-map.mjs) and no-effect.json (writes rolled back after their re-read; --retry tries them again). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
 // no-setting, unpaired or no-effect.
 import { spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
@@ -50,6 +50,9 @@ async function pool( items, jobs, work ) {
 		}
 	} ) );
 }
+
+// Identifies a write, so a rolled-back one is known again on the next run; a changed value is a new write.
+const opKey = ( op ) => `${ op.ref }|${ op.family }|${ op.prop }|${ crypto.createHash( 'sha1' ).update( JSON.stringify( op.writes ) ).digest( 'hex' ).slice( 0, 12 ) }`;
 
 function readBlocks( site, posts, tmp ) {
 	const out = path.join( tmp, `blocks-${ process.pid }-${ Date.now() }.json` );
@@ -136,7 +139,7 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 		for ( const family of families.filter( ( f ) => ! target.slot || f.slots ) ) {
 			const items = family.decide( { target, surface, block: block.block, saved: block.attrs, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
 			for ( const item of items ) {
-				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, state: item.state, prop: item.prop } );
+				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block.block, state: item.state, prop: item.prop } );
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
@@ -178,7 +181,10 @@ export function judge( ops, reads ) {
 			if ( c.motion ) {
 				const pose = motionOf( facts?.hover );
 				// A magnet moves the element towards the pointer, so a magnetic element's position proves nothing: its scale does.
-				const moved = /magnet/.test( facts?.fx ?? '' ) && pose ? { ...pose, x: c.want.x, y: c.want.y } : pose;
+				const magnetic = /\bmagnet\b/.test( facts?.fx ?? '' );
+				// An ambient float scales the same element, so the read holds the hover's scale times the float's: at least the hover's.
+				const floating = /\bambient-float\b/.test( facts?.fx ?? '' ) && pose?.scale >= c.want.scale;
+				const moved = pose && { ...pose, ...( magnetic ? { x: c.want.x, y: c.want.y } : {} ), ...( floating ? { scale: c.want.scale } : {} ) };
 				return { ...c, got: pose, ok: motionNear( moved, c.want ) };
 			}
 			if ( c.all ) {
@@ -271,6 +277,8 @@ async function main() {
 		surface.pairs.filter( ( t ) => t.via?.startsWith( 'skeleton' ) ).forEach( ( t ) => console.log( `${ surface.name }: skeleton ${ t.key } <- ${ t.tpl } (nearest ${ t.nearest_tpl })` ) );
 		Object.entries( joined.aliases ).forEach( ( [ id, ref ] ) => console.log( `${ surface.name }: skeleton wrapper ${ id } resolves to ${ ref }` ) );
 	}
+	const undonePath = path.join( REPO, 'sites', client, 'build/qa/apply/no-effect.json' );
+	const undone = new Set( fs.existsSync( undonePath ) ? JSON.parse( fs.readFileSync( undonePath, 'utf8' ) ) : [] );
 	const browser = await chromium.launch();
 	const allRows = skipped.map( ( s ) => ( { surface: s.surface, family: '*', status: 'unpaired', why: s.why } ) );
 	const allOps = [];
@@ -293,9 +301,10 @@ async function main() {
 				const l2 = await liveReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ) } );
 				const again = decideSurface( { surface: second, drafts: d2, lives: l2, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
 				rows.push( ...again.rows );
-				ops.push( ...again.ops );
+				decided.push( ...again.ops );
 			}
 			// A read that cannot see a saved value (a grid on an inner element) proposes what is already saved: that is no change.
+			// A write the re-read rolled back stays out until --retry and keeps its no-effect row, so a run settles on zero ops.
 			const ops = decided.filter( ( op ) => {
 				const changes = patchesOf( foldOps( [ op ], blocks ) ).size > 0;
 				const row = rows.find( ( r ) => r.ref === ( op.ref ?? r.ref ) && r.family === op.family && r.prop === op.prop && 'written' === r.status );
@@ -303,7 +312,12 @@ async function main() {
 					row.status = 'equal';
 					row.why = 'already saved';
 				}
-				return changes;
+				const rolledBack = changes && ! has( '--retry' ) && undone.has( opKey( op ) );
+				if ( rolledBack && row ) {
+					row.status = 'no-effect';
+					row.why = `rolled back by an earlier run: ${ row.why }`;
+				}
+				return changes && ! rolledBack;
 			} );
 			allRows.push( ...rows );
 			allOps.push( ...ops );
@@ -333,10 +347,13 @@ async function main() {
 			for ( const { op, results } of judged.filter( ( j ) => ! j.ok ) ) {
 				patch( site, op.postId, [ restoreOf( op, blocks, kept ) ], tmp, false );
 				rowOf( op ) && ( rowOf( op ).status = 'no-effect' );
+				undone.add( opKey( op ) );
 				console.log( `no effect: ${ op.ref } ${ op.family } ${ op.prop }: ${ JSON.stringify( results.filter( ( r ) => ! r.ok ).map( ( r ) => [ r.width, r.prop, r.got, r.want ] ) ) }` );
 			}
 			const verify = { generated: new Date().toISOString(), rows: judged.flatMap( ( { op, results } ) => results.map( ( r ) => ( { record: op.record ?? null, target: op.ref, state: op.state ?? 'rest', ok: r.ok, measured: r.got ?? null, want: r.want } ) ) ).filter( ( r ) => r.record ) };
 			fs.writeFileSync( path.join( outDir, 'verify.json' ), JSON.stringify( verify, null, 1 ) );
+			fs.mkdirSync( path.dirname( undonePath ), { recursive: true } );
+			fs.writeFileSync( undonePath, JSON.stringify( [ ...undone ].sort(), null, 1 ) );
 		}
 	} finally {
 		await browser.close();

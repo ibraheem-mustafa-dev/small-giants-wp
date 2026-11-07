@@ -42,6 +42,7 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 		chromeLogoWidth,
 		chromeLogoShow,
 		chromeSticky,
+		drawerScrollbarGutter,
 	} = attributes;
 
 	return (
@@ -178,6 +179,14 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 				help={ __( 'Only the drawer content scrolls; the top row and the drawer background stay still.', 'sgs-blocks' ) }
 				checked={ !! chromeSticky }
 				onChange={ ( value ) => setAttributes( { chromeSticky: value } ) }
+				__nextHasNoMarginBottom
+			/>
+
+			<ToggleControl
+				label={ __( 'Reserve space for the scrollbar', 'sgs-blocks' ) }
+				help={ __( 'On: the menu keeps its width when a section opens and the drawer first scrolls. Off: the scrollbar takes width only while it shows. Has no effect where scrollbars overlay the content.', 'sgs-blocks' ) }
+				checked={ false !== drawerScrollbarGutter }
+				onChange={ ( value ) => setAttributes( { drawerScrollbarGutter: value } ) }
 				__nextHasNoMarginBottom
 			/>
 
