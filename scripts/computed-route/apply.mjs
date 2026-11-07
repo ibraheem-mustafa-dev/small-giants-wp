@@ -29,6 +29,7 @@ import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
 import { motionTools } from './lib/apply-drawer-core.mjs';
 import { loadSurfaces, withSkeleton } from './lib/apply-targets.mjs';
 import { layerTargets } from './lib/apply-layer-targets.mjs';
+import { hostedFacts } from './lib/apply-group-read.mjs';
 import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
@@ -190,17 +191,11 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 	return { rows, ops };
 }
 
-// A child's facts under its card's hover (`hoverHost` on a check): the card read's entry for the child, shaped as facts.
-const hostedFacts = ( host, ref ) => {
-	const child = host?.group?.children?.find( ( k ) => k.key === ref );
-	return child ? { styles: child.rest, hover: child.hover, fx: null } : undefined;
-};
-
 // After a write: each op's checks read on the live page. An op that moved nothing goes back and is reported no-effect.
 export function judge( ops, reads ) {
 	return ops.map( ( op ) => {
 		const results = ( op.checks || [] ).map( ( c ) => {
-			const facts = c.hoverHost ? hostedFacts( reads[ op.surface ]?.[ c.width ]?.facts?.[ c.hoverHost ], op.ref ) : reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ];
+			const facts = c.hoverHost ? hostedFacts( reads[ op.surface ]?.[ c.width ]?.facts?.[ c.hoverHost ], op.ref, reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ] ) : reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ];
 			const got = c.probe ? c.probe.reduce( ( o, k ) => o?.[ k ], facts?.probes )?.[ c.prop ] : ( 'hover' === c.state ? facts?.hover : facts?.styles )?.[ c.prop ];
 			if ( c.tracks ) {
 				const count = String( facts?.styles?.[ 'grid-template-columns' ] ?? '' ).split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) ).length;

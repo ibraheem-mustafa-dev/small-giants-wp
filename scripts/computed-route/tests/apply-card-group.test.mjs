@@ -106,3 +106,15 @@ test( 'hosts: a block holding a hover group flag is hovered as one card; a plain
 	const saved = { a: { block: 'sgs/container', attrs: { hoverAsCard: true } }, b: { block: 'sgs/container', attrs: {} } };
 	assert.deepEqual( groupHosts( { surface, saved, recordsIndex: new Map() } ), [ 'a' ] );
 } );
+
+test( 'judge: a floating child under its card hover is judged with the float discounted', async () => {
+	const { judge } = await import( '../apply.mjs' );
+	const child = { key: 'cr-ref-x-2', rest: { transform: 'none' }, hover: { transform: 'matrix(1.0995, 0, 0, 1.0995, 0, 0)', translate: 'none', scale: 'none', rotate: 'none' } };
+	const reads = { s: { 1440: { facts: { 'cr-ref-x-1': { group: { children: [ child ] } }, 'cr-ref-x-2': { fx: 'ambient-float' } } } } };
+	const op = { surface: 's', ref: 'cr-ref-x-2', checks: [ { width: 1440, hoverHost: 'cr-ref-x-1', motion: true, want: { scale: 1.0657, x: 0, y: 0, rotate: 0 } } ] };
+	const still = { s: { 1440: { facts: { 'cr-ref-x-1': { group: { children: [ child ] } }, 'cr-ref-x-2': {} } } } };
+	const [ floating ] = judge( [ op ], reads );
+	const [ plain ] = judge( [ op ], still );
+	assert.equal( floating.ok, true );
+	assert.equal( plain.ok, false );
+} );
