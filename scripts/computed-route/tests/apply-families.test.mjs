@@ -66,25 +66,25 @@ test( 'pin: no draft pin, a live pin, or a block with no pin writes nothing', ()
 test( 'ledger: a ruling naming a block or surfaces excuses nothing else on the page', () => {
 	const index = ledgerIndex( [
 		{ id: 'D-1', scope: 'every page', node: 'floating button', state: 'hover', property: 'background-color', block: 'sgs/whatsapp-cta' },
-		{ id: 'D-2', scope: 'panels About and Brands', node: 'panel shadow', property: 'box-shadow', surfaces: [ 'mega-about' ] },
+		{ id: 'D-2', scope: 'panels About and Brands', node: 'panel shadow', property: 'box-shadow', block: 'sgs/mega-panel', surfaces: [ 'mega-about' ] },
 	] );
 	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'home', block: 'sgs/whatsapp-cta', state: 'hover', prop: 'background-color' } ), 'D-1' );
 	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'home', block: 'sgs/icon', state: 'hover', prop: 'background-color' } ), null );
-	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'mega-about', block: 'sgs/container', prop: 'box-shadow' } ), 'D-2' );
-	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'about', block: 'sgs/container', prop: 'box-shadow' } ), null );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'mega-about', block: 'sgs/mega-panel', prop: 'box-shadow' } ), 'D-2' );
+	assert.equal( ledgerMatch( index, { ref: 'r', surface: 'about', block: 'sgs/mega-panel', prop: 'box-shadow' } ), null );
 } );
 
 test( 'ledger: a cr-ref row matches its ref and property; a free-text row matches its surface and property', () => {
 	const index = ledgerIndex( [
 		{ id: 'D-1', scope: 'footer', node: 'cr-ref-footer-22', state: '*', property: 'layout' },
 		{ id: 'D-2', scope: 'home', node: 'testimonial avatar', state: '*', property: 'content' },
-		{ id: 'D-3', scope: 'every', node: 'floating button', state: 'hover', property: 'background-color, translate' },
+		{ id: 'D-3', scope: 'every', node: 'floating button', state: 'hover', property: 'background-color, translate', block: 'sgs/whatsapp-cta' },
 	] );
 	assert.equal( ledgerMatch( index, { ref: 'cr-ref-footer-22', surface: 'footer', prop: 'layout' } ), 'D-1' );
 	assert.equal( ledgerMatch( index, { ref: 'cr-ref-footer-23', surface: 'footer', prop: 'layout' } ), null );
 	assert.equal( ledgerMatch( index, { ref: 'cr-ref-home-1', surface: 'home', prop: 'content' } ), 'D-2' );
-	assert.equal( ledgerMatch( index, { ref: 'cr-ref-about-1', surface: 'about', state: 'hover', prop: 'translate' } ), 'D-3' );
-	assert.equal( ledgerMatch( index, { ref: 'cr-ref-about-1', surface: 'about', state: 'rest', prop: 'translate' } ), null );
+	assert.equal( ledgerMatch( index, { ref: 'cr-ref-about-1', surface: 'about', block: 'sgs/whatsapp-cta', state: 'hover', prop: 'translate' } ), 'D-3' );
+	assert.equal( ledgerMatch( index, { ref: 'cr-ref-about-1', surface: 'about', block: 'sgs/whatsapp-cta', state: 'rest', prop: 'translate' } ), null );
 } );
 
 test( 'ops: two ops on one block fold into one patch, a whole attribute at a time; a restore puts them back', () => {

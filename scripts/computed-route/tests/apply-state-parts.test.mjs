@@ -25,7 +25,7 @@ test( 'a hover colour no root setting paints goes to the settings of the parts t
 	const item = colour( state.decide( ctx( { draft: read( {}, { color: GOLD } ), live: read( {}, { color: 'rgb(255, 255, 255)' } ) } ) ) );
 	assert.equal( item.status, 'op' );
 	assert.deepEqual( item.writes.map( ( w ) => w.attr ).sort(), [ 'iconColourHover', 'textColourHover' ] );
-	assert.deepEqual( item.checks, [] );
+	assert.deepEqual( item.checks.map( ( c ) => [ c.part, c.prop, c.state, c.want ] ), [ [ TEXT, 'color', 'hover', GOLD ], [ ICON, 'color', 'hover', GOLD ] ] );
 } );
 
 test( 'negative control: a setting calibrated on the root element is written on the root, not on parts', () => {

@@ -5,7 +5,8 @@ import { candidates } from './db.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
 import { stateItem } from './apply-state-resolve.mjs';
 
-const TIMED = [ [ 'transition-duration', ( ms ) => `${ ms }ms`, 'duration_ms' ], [ 'transition-timing-function', ( v ) => v, 'easing' ] ];
+export const TIMED = [ [ 'transition-duration', ( ms ) => `${ ms }ms`, 'duration_ms' ], [ 'transition-timing-function', ( v ) => v, 'easing' ] ];
+export const TIMED_PROPS = TIMED.map( ( [ prop ] ) => prop );
 
 export function timingItems( ctx ) {
 	const { target, recordsIndex, db, block, calFor } = ctx;

@@ -431,6 +431,8 @@
   },
   {
     "id": "D-28",
+    "block": "sgs/heading",
+    "surfaces": ["mega-about", "mega-sectors", "mega-brands", "mega-trade"],
     "scope": "mega menus (About, Sectors, Brands, Trade), 1440",
     "node": "mega panel promo titles and Sectors card names",
     "state": "*",
@@ -492,7 +494,7 @@
   {
     "id": "D-33",
     "scope": "drawer (1023px and under)",
-    "node": "the 'Our Brands' heading of the Brands mega panel",
+    "node": "the 'Our Brands' heading of the Brands mega panel (cr-ref-mega-brands-2)",
     "state": "*",
     "property": "display",
     "expected": {
@@ -516,6 +518,8 @@
   },
   {
     "id": "D-35",
+    "block": "sgs/accordion-item",
+    "surfaces": ["delivery", "faqs"],
     "scope": "Delivery and FAQs accordions, all widths",
     "node": "accordion panel open and close",
     "state": "*",
@@ -528,6 +532,8 @@
   },
   {
     "id": "D-36",
+    "block": "sgs/form-field-tiles",
+    "surfaces": ["form-enquiry"],
     "scope": "Contact form, all widths",
     "node": "the selected 'Reply by' pill",
     "state": "selected",

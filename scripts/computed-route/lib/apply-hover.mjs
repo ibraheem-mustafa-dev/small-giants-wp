@@ -1,12 +1,14 @@
 // The applier's state reads, shared by the state, form, motion and chrome families. After a surface's resting read at 1440,
 // `stateReads` puts a real pointer on each key in extras.hover and reads its computed style once the transition has run
 // (parity/lib/state-passes.mjs::hoverPass does the same for the walker): facts[ key ].hover. For each key in extras.probes
-// (a form) it reads the first text field and its label at rest and under keyboard focus: facts[ key ].probes.
+// (a form) it reads the first text field and its label at rest and under keyboard focus: facts[ key ].probes. For each key in
+// extras.parts ({ key: { slot: [ prop ] } }, lib/apply-part-hover.mjs) it hovers the block's calibrated part and reads it: facts[ key ].parts.
 import { HOVER_PROPS, hoverPointOf, hoverStyles } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
 import { probeRead } from './apply-probes.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
 import { groupHosts, groupRead } from './apply-group-read.mjs';
+import { partReads } from './apply-part-hover.mjs';
 
 export const HOVER_READ_PROPS = [ ...HOVER_PROPS, 'border-top-width', 'text-decoration-thickness', 'gap' ];
 // Hover looks the motion layer holds; the state family leaves them to it.
@@ -98,11 +100,12 @@ export async function stateReads( page, { extras, finderOf, resolveSrc, side } )
 	const hover = extras?.hover?.length ? await hoverRead( page, { keys: extras.hover, finderOf, resolveSrc } ) : {};
 	const probes = extras?.probes?.length ? await probeRead( page, { keys: extras.probes, finderOf, resolveSrc, tpls: extras.tpls ?? {}, blocks: extras.blocks ?? {}, side } ) : {};
 	const groups = extras?.groups?.length ? await groupRead( page, { keys: extras.groups, finderOf, resolveSrc, side, settled } ) : {};
-	return { hover, probes, groups };
+	const parts = extras?.parts && Object.keys( extras.parts ).length ? await partReads( page, { parts: extras.parts, finderOf, resolveSrc, settled } ) : {};
+	return { hover, probes, groups, parts };
 }
 
 // Folds a state read into a read's facts.
-export function attachStateReads( read, { hover, probes, groups = {} } ) {
+export function attachStateReads( read, { hover, probes, groups = {}, parts = {} } ) {
 	for ( const [ key, styles ] of Object.entries( hover ) ) {
 		read.facts[ key ] && ( read.facts[ key ].hover = styles );
 	}
@@ -111,6 +114,9 @@ export function attachStateReads( read, { hover, probes, groups = {} } ) {
 	}
 	for ( const [ key, group ] of Object.entries( groups ) ) {
 		read.facts[ key ] && ( read.facts[ key ].group = group );
+	}
+	for ( const [ key, part ] of Object.entries( parts ) ) {
+		read.facts[ key ] && ( read.facts[ key ].parts = part );
 	}
 	return read;
 }

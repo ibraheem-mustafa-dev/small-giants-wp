@@ -18,7 +18,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
-import { ledgerIndex, ledgerMatch } from './lib/apply-ledger.mjs';
+import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
 import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
@@ -30,6 +30,7 @@ import { motionTools } from './lib/apply-drawer-core.mjs';
 import { loadSurfaces, withSkeleton } from './lib/apply-targets.mjs';
 import { layerTargets } from './lib/apply-layer-targets.mjs';
 import { hostedFacts } from './lib/apply-group-read.mjs';
+import { partsOf, partStyles } from './lib/apply-part-hover.mjs';
 import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
@@ -168,7 +169,7 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 		for ( const family of families.filter( ( f ) => ( target.layer ? f.layers : ! f.layers ) && ( ! target.slot || f.slots ) ) ) {
 			const items = family.decide( { target, surface, block: block?.block ?? null, saved: block?.attrs ?? {}, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
 			for ( const item of items ) {
-				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop } );
+				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop, part: target.slot ?? null } );
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
@@ -196,7 +197,7 @@ export function judge( ops, reads ) {
 	return ops.map( ( op ) => {
 		const results = ( op.checks || [] ).map( ( c ) => {
 			const facts = c.hoverHost ? hostedFacts( reads[ op.surface ]?.[ c.width ]?.facts?.[ c.hoverHost ], op.ref, reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ] ) : reads[ op.surface ]?.[ c.width ]?.facts?.[ op.ref ];
-			const got = c.probe ? c.probe.reduce( ( o, k ) => o?.[ k ], facts?.probes )?.[ c.prop ] : ( 'hover' === c.state ? facts?.hover : facts?.styles )?.[ c.prop ];
+			const got = c.part ? partStyles( facts, c )?.[ c.prop ] : c.probe ? c.probe.reduce( ( o, k ) => o?.[ k ], facts?.probes )?.[ c.prop ] : ( 'hover' === c.state ? facts?.hover : facts?.styles )?.[ c.prop ];
 			if ( c.tracks ) {
 				const count = String( facts?.styles?.[ 'grid-template-columns' ] ?? '' ).split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) ).length;
 				// A container's grid is on its inner element: no tracks here means this read cannot see it.
@@ -287,7 +288,7 @@ async function main() {
 		throw new Error( `${ site } is not a local mirror` );
 	}
 	const ledgerFile = path.join( REPO, 'sites', client, 'build', 'qa', 'divergences.json' );
-	const ledger = ledgerIndex( fs.existsSync( ledgerFile ) ? JSON.parse( fs.readFileSync( ledgerFile, 'utf8' ) ) : [] );
+	const ledger = ledgerIndex( fs.existsSync( ledgerFile ) ? JSON.parse( fs.readFileSync( ledgerFile, 'utf8' ) ) : [], { surfaces: surfaceNames( path.join( REPO, 'sites', client, 'build' ) ) } );
 	const recordsFile = path.join( REPO, 'sites', client, 'handoff', 'animations.json' );
 	const records = fs.existsSync( recordsFile ) ? JSON.parse( fs.readFileSync( recordsFile, 'utf8' ) ).records : [];
 	const handoff = fs.existsSync( recordsFile ) ? JSON.parse( fs.readFileSync( recordsFile, 'utf8' ) ) : {};
@@ -401,7 +402,7 @@ async function main() {
 			// A failed re-read leaves writes nobody judged: every op goes back, then the error stands.
 			try {
 				await pool( touched, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
-					reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ) } );
+					reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: { ...extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ), parts: partsOf( allOps.filter( ( o ) => o.surface === surface.name ) ) } } );
 				} );
 			} catch ( e ) {
 				for ( const op of allOps ) {

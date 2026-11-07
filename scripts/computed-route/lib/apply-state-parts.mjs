@@ -24,8 +24,9 @@ export function partSlots( { db, calFor, block }, prop, state ) {
 }
 
 // stateItem on the root; when no setting paints the root, the value resolved on each part a setting paints. A part whose setting
-// already holds a different value is left alone (the draft gave that part a look of its own). The writes are not re-read: the
-// applier's re-read measures the block's root, which these settings do not paint (status `unchecked` after a write).
+// already holds a different value is left alone (the draft gave that part a look of its own). Each write carries a check on the
+// part its setting was calibrated on (`part: <slot>`, lib/apply-part-hover.mjs): the re-read puts a pointer on that part and reads
+// its computed style, so the write is kept only where the part shows the draft's value.
 export function stateItemOrParts( args ) {
 	const root = stateItem( args );
 	if ( '' !== args.slot || 'no-setting' !== root.status || ! ROOT_UNPAINTED.test( root.why ) ) {
@@ -33,6 +34,7 @@ export function stateItemOrParts( args ) {
 	}
 	const { ctx, prop, state } = args;
 	const writes = [];
+	const checks = [];
 	const held = [];
 	const own = [];
 	const slots = partSlots( ctx, prop, state );
@@ -40,14 +42,19 @@ export function stateItemOrParts( args ) {
 		const part = stateItem( { ...args, slot } );
 		if ( 'op' === part.status ) {
 			const clash = part.writes.filter( ( w ) => filled( ctx.saved[ w.attr ] ) && JSON.stringify( ctx.saved[ w.attr ] ) !== JSON.stringify( w.value ) );
-			clash.length ? own.push( ...clash.map( ( w ) => w.attr ) ) : writes.push( ...part.writes );
+			if ( clash.length ) {
+				own.push( ...clash.map( ( w ) => w.attr ) );
+			} else {
+				writes.push( ...part.writes );
+				checks.push( ...part.checks.map( ( c ) => ( { ...c, part: slot } ) ) );
+			}
 		} else if ( 'equal' === part.status ) {
 			held.push( ...attrs );
 		}
 	}
 	const base = { prop: args.label ?? prop, state: state ?? undefined, ...( args.record ? { record: args.record } : {} ) };
 	if ( writes.length ) {
-		return { ...base, status: 'op', why: `${ prop } ${ state ?? 'rest' } ${ args.value } on the parts of ${ ctx.block } the draft element stands for: ${ writes.map( ( w ) => w.attr ).join( ', ' ) }`, writes, checks: [] };
+		return { ...base, status: 'op', why: `${ prop } ${ state ?? 'rest' } ${ args.value } on the parts of ${ ctx.block } the draft element stands for: ${ writes.map( ( w ) => w.attr ).join( ', ' ) }`, writes, checks };
 	}
 	if ( held.length || own.length ) {
 		return { ...base, status: 'equal', why: `${ [ ...held, ...own ].join( ', ' ) } already ${ held.length ? `paint ${ args.value }` : 'hold a value of their own' } for the ${ prop } ${ state ?? 'rest' } look of the parts the draft element stands for` };
