@@ -62,16 +62,16 @@ export function loadSkeleton( repo, client ) {
 // Pre-order nodes { b, slot, fw, ids, lo, parent (index or -1), depth, last (index of the subtree's final node) }.
 export function flatten( tree ) {
 	const nodes = [];
-	const walk = ( list, parent, depth ) => {
+	const walk = ( list, parent, depth, isItem = false ) => {
 		for ( const n of [].concat( list || [] ) ) {
 			if ( ! n || 'object' !== typeof n ) {
 				continue;
 			}
 			const ids = idsOf( n.t );
-			const node = { b: n.b ?? null, slot: n.slot ?? null, fw: n.fw ?? null, ids, lo: ids[ 0 ] ?? null, parent, depth, index: nodes.length, last: nodes.length };
+			const node = { b: n.b ?? null, slot: n.slot ?? null, fw: n.fw ?? null, a: n.a ?? null, range: DASHES.test( String( n.t ?? '' ) ), item: isItem, x: n.x ?? null, ids, lo: ids[ 0 ] ?? null, parent, depth, index: nodes.length, last: nodes.length };
 			nodes.push( node );
 			walk( n.c, node.index, depth + 1 );
-			walk( n.item, node.index, depth + 1 );
+			walk( n.item, node.index, depth + 1, true );
 			node.last = nodes.length - 1;
 		}
 	};
@@ -212,6 +212,27 @@ export function skeletonTargets( { nodes, pairs, saved } ) {
 		const id = idOfTpl( p.tpl );
 		const n = blockNodes.find( ( x ) => x.b === saved[ p.ref ]?.block && reachOf( nodes, x ).includes( id ) );
 		n && owners.set( p.ref, { owns: ownedIds( nodes, n ), reach: reachOf( nodes, n ) } );
+	}
+	// Two or more pairs of one block that each claim the whole of one node (the open-status badge and its next-change line, both
+	// inside one hours node): each owns the ids from its own pair to the next pair, the first from the node's start, so a record
+	// names one block only. Only a node whose `t` is a range (not alternatives such as `54/58`, which name separate elements) and that holds a pair of its own is split, over the pairs whose draft id its `t` names; a node with a deeper node of its own block inside it, and a pair that claims less than the node, are left.
+	for ( const n of blockNodes ) {
+		if ( ! n.range || ! refOf.has( n.index ) || nodes.slice( n.index + 1, n.last + 1 ).some( ( x ) => x.b === n.b ) ) {
+			continue;
+		}
+		const span = reachOf( nodes, n );
+		const whole = ownedIds( nodes, n );
+		const claims = ( q ) => JSON.stringify( owners.get( q.ref )?.owns ) === JSON.stringify( whole );
+		const inside = pairs.filter( ( q ) => saved[ q.ref ]?.block === n.b && n.ids.includes( idOfTpl( q.tpl ) ) && ( q.ref === refOf.get( n.index ) || claims( q ) ) ).sort( ( a, b ) => idOfTpl( a.tpl ) - idOfTpl( b.tpl ) );
+		if ( inside.length < 2 ) {
+			continue;
+		}
+		const all = new Set( whole );
+		inside.forEach( ( q, i ) => {
+			const from = 0 === i ? -Infinity : idOfTpl( q.tpl );
+			const to = i + 1 < inside.length ? idOfTpl( inside[ i + 1 ].tpl ) - 1 : Infinity;
+			owners.set( q.ref, { owns: span.filter( ( id ) => all.has( id ) && id >= from && id <= to ), reach: span.filter( ( id ) => id >= from && id <= to ) } );
+		} );
 	}
 	// A pair no node of its own block holds: the innermost node that holds its id gives it a reach (not ownership).
 	for ( const p of pairs.filter( ( q ) => ! owners.has( q.ref ) ) ) {

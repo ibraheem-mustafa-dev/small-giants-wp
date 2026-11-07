@@ -4,6 +4,7 @@
 import { reachOf } from './apply-skeleton.mjs';
 import { hoverTo, recordsOf, rotation, scaleOf, settle, translate } from './apply-chrome-records.mjs';
 import { rowIndentOff } from './apply-chrome-rows.mjs';
+import { singleShadow } from './apply-chrome-cards.mjs';
 
 const GLOW = /^(.*?)\s+((?:rgba?|hsla?)\([^)]*\)|#[0-9a-f]{3,8})$/i;
 
@@ -16,7 +17,7 @@ function drawerMenu( ctx ) {
 		out.push( settle( { prop: 'itemPaddingShiftHover', why: `${ ctx.target.tpl } row text shifts ${ px }px on hover (${ shift.record.id })`, saved: ctx.saved, writes: [ { attr: 'itemPaddingShiftHover', value: `${ px }px` } ], record: shift.record.id, state: 'hover' } ) );
 	}
 	const glow = hoverTo( records, 'box-shadow' );
-	const parts = glow && GLOW.exec( glow.value );
+	const parts = glow && singleShadow( glow.value ) && GLOW.exec( glow.value );
 	if ( parts ) {
 		out.push( settle( { prop: 'caretBoxShadowHover', why: `the caret circle takes a ${ parts[ 1 ] } glow on hover (${ glow.record.id })`, saved: ctx.saved, writes: [ { attr: 'caretBoxShadowHover', value: parts[ 1 ] }, { attr: 'caretBoxShadowColourHover', value: parts[ 2 ] } ], record: glow.record.id, state: 'hover' } ) );
 	}
@@ -87,7 +88,8 @@ function gallery( ctx ) {
 		return [];
 	}
 	const scale = scaleOf( hoverTo( [ tile ], 'transform' ).value );
-	const glow = GLOW.exec( hoverTo( [ tile ], 'box-shadow' )?.value ?? '' );
+	const tileShadow = hoverTo( [ tile ], 'box-shadow' )?.value ?? '';
+	const glow = singleShadow( tileShadow ) ? GLOW.exec( tileShadow ) : null;
 	const writes = [ { attr: 'scaleHover', value: String( scale ) }, ...( glow ? [ { attr: 'shadowHover', value: glow[ 1 ] }, { attr: 'shadowHoverColour', value: glow[ 2 ] } ] : [] ) ];
 	return [ settle( { prop: 'scaleHover', why: `${ ctx.target.tpl } tile scales ${ scale } with a shadow on hover (${ tile.id })`, saved: ctx.saved, writes, record: tile.id, state: 'hover' } ) ];
 }

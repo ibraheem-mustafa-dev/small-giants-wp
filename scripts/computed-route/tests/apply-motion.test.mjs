@@ -7,6 +7,8 @@ import { endless, propertiesOf, callsAt } from '../lib/apply-motion-calls.mjs';
 import { ringScale } from '../lib/apply-motion-loops.mjs';
 import { fadeWidth } from '../lib/apply-family-motion.mjs';
 import { openDb } from '../lib/db.mjs';
+import { defaultRule } from '../lib/apply-motion-default.mjs';
+import { judge } from '../apply.mjs';
 
 const db = openDb();
 const rawSnapshot = JSON.parse( fs.readFileSync( new URL( '../../../sites/indus-foods/theme-snapshot.json', import.meta.url ), 'utf8' ) );
@@ -123,4 +125,62 @@ test( 'a call on an element a record describes as a part of the block is that pa
 	const op = run( 'sgs/process-steps' ).find( ( i ) => 'op' === i.status );
 	assert.ok( op?.writes[ 0 ].value.elements.connector.entrance );
 	assert.equal( run( 'sgs/container' ).some( ( i ) => 'op' === i.status ), false );
+} );
+
+// FR-38A-64: a block stores only what differs from the site reveal default.
+const itemLayer = { trigger: 'scroll', values: { from: { opacity: 0, translateY: 'token:entrance.distance', scale: 0.96 }, to: { opacity: 1, translateY: 0, scale: 1 }, duration: 'token:entrance.duration', easing: 'token:entrance.easing', start: 4 } };
+const scrollCall = { key: target.ref, own: true, frames: [ { opacity: 0, transform: 'translateY(40px) scale(.96)' }, { opacity: 1, transform: 'none' } ], options: { duration: 800, easing: 'cubic-bezier(.16,.84,.32,1)' } };
+const records = [ { id: 'A-09', trigger: { type: 'scroll-into-view', detail: 'IntersectionObserver rootMargin 0px 0px -4% 0px' }, element: { template_tpl_id: '9' }, properties: [] } ];
+// The live read of an element whose entrance prints these custom properties; `me` false is an element with no entrance.
+const read = ( me, styles = {} ) => ( { 1440: { data: me ? [ 'data-sgs-me' ] : [], styles: { '--sgs-me-delay': '', '--sgs-me-dur': '800ms', '--sgs-me-from-ty': '40px', '--sgs-me-from-s': '0.96', '--sgs-me-from-op': '0', ...styles } } } );
+const runDefault = ( saved, live, snap = rawSnapshot, calls = [ scrollCall ] ) => motion.decide( { target, block: 'sgs/container', saved, draft: { 1440: { box: { y: 900 } } }, animate: at( calls ), recordsIndex: new Map( [ [ 'Root/9', records ] ] ), db, rawSnapshot: snap, live } );
+const withBase = ( base ) => ( { sgsMotion: { v: 1, elements: { root: { entrance: { base } } } } } );
+
+test( 'FR-38A-64: a stored entrance equal to the site default is removed, with the proofs the re-read judges', () => {
+	const op = runDefault( withBase( itemLayer ), read( true ) ).find( ( i ) => 'op' === i.status );
+	assert.ok( op, 'a removal op' );
+	assert.deepEqual( op.writes[ 0 ], { attr: 'sgsMotion', unset: true } );
+	assert.equal( op.needsProof, true );
+	assert.deepEqual( op.checks.map( ( c ) => c.me ?? c.prop ), [ true, '--sgs-me-delay', '--sgs-me-dur', '--sgs-me-from-ty', '--sgs-me-from-s', '--sgs-me-from-op' ] );
+	assert.equal( op.checks.find( ( c ) => '--sgs-me-delay' === c.prop ).want, 0, 'the delay is the draft layers own' );
+} );
+
+test( 'FR-38A-64: nothing stored is equal only where the live page shows the draft layer values; a second run is zero ops', () => {
+	assert.deepEqual( runDefault( {}, read( true ) ).map( ( i ) => i.status ), [ 'equal' ] );
+	// Another rule (a heading) gives other values: not equal, so the draft entrance is written.
+	const other = runDefault( {}, read( true, { '--sgs-me-from-ty': '22px', '--sgs-me-dur': '850ms' } ) );
+	assert.equal( other.find( ( i ) => 'op' === i.status )?.writes[ 0 ].value.elements.root.entrance.base.trigger, 'scroll' );
+	// A delay the draft does not have (the item rule's index delay) is not equal either.
+	assert.ok( runDefault( {}, read( true, { '--sgs-me-delay': '80ms' } ) ).some( ( i ) => 'op' === i.status ) );
+} );
+
+test( 'FR-38A-64: a block the default does not reach, or a read that cannot prove it, keeps its entrance', () => {
+	assert.equal( runDefault( {}, read( false ) ).find( ( i ) => 'op' === i.status )?.writes[ 0 ].value.elements.root.entrance.base.trigger, 'scroll' );
+	for ( const live of [ read( false ), read( true, { '--sgs-me-dur': '' } ), undefined ] ) {
+		const items = runDefault( withBase( itemLayer ), live );
+		assert.ok( items.every( ( i ) => 'op' !== i.status || ! i.writes[ 0 ].unset ), 'never removed on an unread page' );
+		assert.ok( ! items.some( ( i ) => i.needsProof ), 'no proof-needing op' );
+	}
+} );
+
+test( 'FR-38A-64 negative controls: a draft entrance that differs, or no default, keeps the stored values', () => {
+	const slow = { ...scrollCall, options: { ...scrollCall.options, duration: 1200 } };
+	const kept = runDefault( withBase( itemLayer ), read( true ), rawSnapshot, [ slow ] ).find( ( i ) => 'op' === i.status );
+	assert.equal( kept.writes[ 0 ].value.elements.root.entrance.base.values.duration, 1200, 'a block that differs keeps its own values' );
+	const noDefault = structuredClone( rawSnapshot );
+	delete noDefault.settings.custom.entrance.reveal;
+	assert.ok( runDefault( withBase( itemLayer ), read( true ), noDefault ).every( ( i ) => 'op' !== i.status || ! i.writes[ 0 ].unset ), 'no default: nothing removed' );
+	assert.equal( defaultRule( itemLayer, rawSnapshot ), 'item' );
+	assert.equal( defaultRule( { ...itemLayer, devices: { mobile: { duration: 400 } } }, rawSnapshot ), null, 'a device override is not the default' );
+} );
+
+test( 'judge: a removal whose re-read shows another rule, or nothing, is rolled back', () => {
+	const op = runDefault( withBase( itemLayer ), read( true ) ).find( ( i ) => 'op' === i.status );
+	const after = ( data, styles ) => ( { s: { 1440: { facts: { [ op.ref ?? target.ref ]: { data, styles } } } } } ).s;
+	const full = { '--sgs-me-delay': '', '--sgs-me-dur': '800ms', '--sgs-me-from-ty': '40px', '--sgs-me-from-s': '0.96', '--sgs-me-from-op': '0' };
+	const j = ( data, styles ) => judge( [ { ...op, surface: 's', ref: target.ref } ], { s: after( data, styles ) } )[ 0 ];
+	assert.equal( j( [ 'data-sgs-me' ], full ).ok, true );
+	assert.equal( j( [ 'data-sgs-me' ], { ...full, '--sgs-me-from-ty': '22px' } ).ok, false, 'a heading rule takes it: rolled back' );
+	assert.equal( j( [ 'data-sgs-me' ], { ...full, '--sgs-me-delay': '160ms' } ).ok, false, 'an index delay: rolled back' );
+	assert.equal( j( [], {} ).ok, false, 'no read: rolled back, not left unchecked' );
 } );

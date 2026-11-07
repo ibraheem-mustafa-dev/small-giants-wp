@@ -4,6 +4,8 @@
 import { TIER_WIDTHS } from './fill-prop.mjs';
 import { recordsOf, settle } from './apply-chrome-records.mjs';
 import { stateLook } from './apply-records.mjs';
+import { numberHover } from './apply-chrome-number.mjs';
+import { iconHoverColour } from './apply-chrome-iconcolour.mjs';
 
 const TIER = { [ TIER_WIDTHS[ 0 ] ]: 'desktop', [ TIER_WIDTHS[ 1 ] ]: 'tablet', [ TIER_WIDTHS[ 2 ] ]: 'mobile' };
 const toHex = ( rgb ) => {
@@ -185,6 +187,7 @@ function processSteps( ctx ) {
 	if ( own.length && ! parent.length ) {
 		out.push( settle( { prop: 'numberHoverTrigger', why: `${ target.tpl } the badge repaints on its own hover (${ own[ 0 ].id })`, saved, writes: [ { attr: 'numberHoverTrigger', value: 'number' } ], record: own[ 0 ].id, state: 'hover' } ) );
 	}
+	out.push( ...numberHover( ctx ) );
 	return out;
 }
 
@@ -250,7 +253,7 @@ export function stateRule( ctx ) {
 		return drawerRow( ctx );
 	}
 	const own = cursorField( ctx );
-	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIcon }[ ctx.block ]?.( ctx ) ?? [] ) ];
+	return [ ...own, ...( { 'sgs/business-info': openStatus, 'sgs/site-header-row': headerRow, 'sgs/nav-bar-menu': burger, 'sgs/process-steps': processSteps, 'sgs/whatsapp-cta': whatsapp, 'sgs/nav-drawer': closeIcon, 'sgs/icon': iconHoverColour }[ ctx.block ]?.( ctx ) ?? [] ) ];
 }
 
 // The close glyph's size sets the arm length per pixel of size, a ratio the live read does not expose (the glyph's path lives in the

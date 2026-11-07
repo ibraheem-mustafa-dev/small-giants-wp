@@ -20,6 +20,7 @@ import { ledgerIndex, ledgerMatch } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
 import { foldOps, matches, patchesOf, restoreOf } from './lib/apply-ops.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
+import { numeric } from './lib/apply-motion-default.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
 import { recordIndex } from './lib/apply-records.mjs';
 import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
@@ -51,6 +52,26 @@ async function pool( items, jobs, work ) {
 			await work( queue.shift() );
 		}
 	} ) );
+}
+
+// verify.json rows by record, target and state: a fresh measurement replaces its earlier row, every other row stays.
+export function mergeVerify( earlier, fresh ) {
+	const idOf = ( r ) => `${ r.record }|${ r.target }|${ r.state }`;
+	const replaced = new Set( fresh.map( idOf ) );
+	return [ ...earlier.filter( ( r ) => ! replaced.has( idOf( r ) ) ), ...fresh ];
+}
+
+// A stamp of what decides whether a write takes effect on the live page: the site's entrance tokens and the motion render sources.
+export function renderStamp( { repo, rawSnapshot } ) {
+	const hash = crypto.createHash( 'sha1' ).update( JSON.stringify( rawSnapshot?.settings?.custom?.entrance ?? null ) );
+	const root = path.join( repo, 'plugins', 'sgs-blocks' );
+	for ( const dir of [ 'includes/motion', 'assets/css', 'assets/js' ] ) {
+		const at = path.join( root, dir );
+		for ( const f of fs.existsSync( at ) ? fs.readdirSync( at ).sort() : [] ) {
+			/^(class-sgs-motion.*\.php|motion.*\.(css|js))$/.test( f ) && hash.update( f ).update( fs.readFileSync( path.join( at, f ) ) );
+		}
+	}
+	return hash.digest( 'hex' ).slice( 0, 16 );
 }
 
 // Identifies a write, so a rolled-back one is known again on the next run; a changed value is a new write.
@@ -153,6 +174,14 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 			}
 		}
 	}
+	// Coverage: every saved block no pair reaches is a row, with the reason a refresh or the pair guard named, so a gap is never silent.
+	if ( false !== surface.coverage ) {
+		const paired = new Set( surface.pairs.map( ( t ) => t.ref ) );
+		const refused = new Map( ( surface.refused || [] ).map( ( r ) => [ r.ref, r.why ] ) );
+		for ( const [ ref, b ] of Object.entries( saved ) ) {
+			paired.has( ref ) || dupes.has( ref ) || rows.push( { surface: surface.name, ref, key: ref, tpl: null, block: b.block, family: '*', status: 'unpaired', why: refused.get( ref ) ?? 'a saved block no pair reaches' } );
+		}
+	}
 	return { rows, ops };
 }
 
@@ -177,6 +206,16 @@ export function judge( ops, reads ) {
 				const got = facts?.items ? `${ facts.items[ c.items ] }px` : null;
 				return { ...c, got, ok: matches( got, c.want ) };
 			}
+			if ( c.num ) {
+				// A time or length custom property, read as a number; an unset delay is zero.
+				const raw = facts?.styles?.[ c.prop ];
+				const n = numeric( raw ) ?? ( '--sgs-me-delay' === c.prop && null !== ( raw ?? null ) ? 0 : null );
+				return { ...c, got: null === n ? 'unread' : n, ok: null !== n && Math.abs( n - c.want ) < 0.01 };
+			}
+			if ( c.me ) {
+				const shown = !! facts?.data?.includes( 'data-sgs-me' );
+				return { ...c, got: shown ? 'entrance' : 'none', ok: shown };
+			}
 			if ( c.fx ) {
 				return { ...c, got: facts?.fx ?? null, ok: String( facts?.fx ?? '' ).split( ' ' ).includes( c.fx ) };
 			}
@@ -197,7 +236,9 @@ export function judge( ops, reads ) {
 		} );
 		// A value that could not be read (a moving marquee tile) proves nothing: the op stays and reports unchecked.
 		const read = results.filter( ( r ) => null !== ( r.got ?? null ) );
-		return { op, results: read, ok: read.every( ( r ) => r.ok ), unchecked: ! read.length };
+		// An op that needs its proof (a removed default-equal entrance) with nothing read, or a value unread, is not kept.
+		const proven = ! op.needsProof || ( results.length > 0 && results.every( ( r ) => null !== ( r.got ?? null ) && 'unread' !== r.got ) );
+		return { op, results: read, ok: read.every( ( r ) => r.ok ) && proven, unchecked: ! read.length && proven };
 	} );
 }
 
@@ -279,8 +320,16 @@ async function main() {
 		surface.pairs.filter( ( t ) => t.via?.startsWith( 'skeleton' ) ).forEach( ( t ) => console.log( `${ surface.name }: skeleton ${ t.key } <- ${ t.tpl } (nearest ${ t.nearest_tpl })` ) );
 		Object.entries( joined.aliases ).forEach( ( [ id, ref ] ) => console.log( `${ surface.name }: skeleton wrapper ${ id } resolves to ${ ref }` ) );
 	}
-	const undonePath = path.join( REPO, 'sites', client, 'build/qa/apply/no-effect.json' );
-	const undone = new Set( fs.existsSync( undonePath ) ? JSON.parse( fs.readFileSync( undonePath, 'utf8' ) ) : [] );
+	// A rolled-back write is remembered with the stamp of what could have changed its outcome (the site's entrance tokens and the
+	// motion render sources); an entry from another stamp is dropped, so a fixed renderer or a changed default retries it.
+	const undonePath = path.join( outDir, 'no-effect.json' );
+	const stamp = renderStamp( { repo: REPO, rawSnapshot } );
+	const undone = new Map( Object.entries( fs.existsSync( undonePath ) ? ( ( v ) => ( Array.isArray( v ) ? {} : v ) )( JSON.parse( fs.readFileSync( undonePath, 'utf8' ) ) ) : {} ).filter( ( [ , at ] ) => at === stamp ) );
+	// A write the last run never judged is unproven: it is checked and the file deleted by hand before another run writes.
+	const pendingPath = path.join( outDir, 'pending.json' );
+	if ( write && fs.existsSync( pendingPath ) ) {
+		throw new Error( `${ pendingPath } exists: a previous write was never judged. Read it, check those blocks on the live page, delete it, then run again.` );
+	}
 	const browser = await chromium.launch();
 	const allRows = skipped.map( ( s ) => ( { surface: s.surface, family: '*', status: 'unpaired', why: s.why } ) );
 	const allOps = [];
@@ -299,7 +348,7 @@ async function main() {
 			const added = has( '--no-position' ) ? [] : await positionTargets( { surface, saved, recordsIndex, readFacts } );
 			added.forEach( ( t ) => console.log( `${ surface.name }: position ${ t.tpl } -> ${ t.ref } (overlap ${ t.overlap }, inside ${ t.nearest_tpl })` ) );
 			if ( added.length ) {
-				const second = { ...surface, pairs: added };
+				const second = { ...surface, pairs: added, coverage: false };
 				const d2 = await draftReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ), cache: tmp, fresh: has( '--fresh' ) } );
 				const l2 = await liveReads( { browser, surface: second, widths, props, extras: extrasOf( { surface: second, saved, recordsIndex, db } ) } );
 				const again = decideSurface( { surface: second, drafts: d2, lives: l2, blocks, families, ledger, db, records, recordsIndex, calFor, clientData, closed, skeleton, snapshot, links, rawSnapshot } );
@@ -333,14 +382,24 @@ async function main() {
 			patch( site, postId, list, tmp, true );
 		}
 		if ( write ) {
+			allOps.length && fs.writeFileSync( pendingPath, JSON.stringify( { written: new Date().toISOString(), ops: allOps.map( ( o ) => ( { surface: o.surface, postId: o.postId, ref: o.ref, family: o.family, prop: o.prop } ) ) }, null, 1 ) );
 			for ( const [ postId, list ] of patches ) {
 				patch( site, postId, list, tmp, false );
 			}
 			const touched = surfaces.filter( ( s ) => allOps.some( ( o ) => o.surface === s.name ) );
 			const reads = {};
-			await pool( touched, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
-				reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ) } );
-			} );
+			// A failed re-read leaves writes nobody judged: every op goes back, then the error stands.
+			try {
+				await pool( touched, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
+					reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ) } );
+				} );
+			} catch ( e ) {
+				for ( const op of allOps ) {
+					patch( site, op.postId, [ restoreOf( op, blocks, [] ) ], tmp, false );
+				}
+				fs.rmSync( pendingPath, { force: true } );
+				throw new Error( `the re-read failed, so every write of this run was restored: ${ e.message }` );
+			}
 			const judged = judge( allOps, reads );
 			const rowOf = ( op ) => allRows.find( ( r ) => r.ref === op.ref && r.family === op.family && r.prop === op.prop && 'written' === r.status );
 			for ( const { op } of judged.filter( ( j ) => j.unchecked ) ) {
@@ -350,13 +409,16 @@ async function main() {
 			for ( const { op, results } of judged.filter( ( j ) => ! j.ok ) ) {
 				patch( site, op.postId, [ restoreOf( op, blocks, kept ) ], tmp, false );
 				rowOf( op ) && ( rowOf( op ).status = 'no-effect' );
-				undone.add( opKey( op ) );
+				undone.set( opKey( op ), stamp );
 				console.log( `no effect: ${ op.ref } ${ op.family } ${ op.prop }: ${ JSON.stringify( results.filter( ( r ) => ! r.ok ).map( ( r ) => [ r.width, r.prop, r.got, r.want ] ) ) }` );
 			}
-			const verify = { generated: new Date().toISOString(), rows: judged.flatMap( ( { op, results } ) => results.map( ( r ) => ( { record: op.record ?? null, target: op.ref, state: op.state ?? 'rest', ok: r.ok, measured: r.got ?? null, want: r.want } ) ) ).filter( ( r ) => r.record ) };
-			fs.writeFileSync( path.join( outDir, 'verify.json' ), JSON.stringify( verify, null, 1 ) );
-			fs.mkdirSync( path.dirname( undonePath ), { recursive: true } );
-			fs.writeFileSync( undonePath, JSON.stringify( [ ...undone ].sort(), null, 1 ) );
+			const fresh = judged.flatMap( ( { op, results } ) => results.map( ( r ) => ( { surface: op.surface, record: op.record ?? null, target: op.ref, state: op.state ?? 'rest', ok: r.ok, measured: r.got ?? null, want: r.want } ) ) ).filter( ( r ) => r.record );
+			// Rows merge by record, target and state: a run that wrote nothing, or only some surfaces, keeps what earlier runs measured.
+			const verifyFile = path.join( outDir, 'verify.json' );
+			const earlier = fs.existsSync( verifyFile ) ? JSON.parse( fs.readFileSync( verifyFile, 'utf8' ) ).rows || [] : [];
+			fs.writeFileSync( verifyFile, JSON.stringify( { generated: new Date().toISOString(), rows: mergeVerify( earlier, fresh ) }, null, 1 ) );
+			fs.writeFileSync( undonePath, JSON.stringify( Object.fromEntries( [ ...undone ].sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) ) ), null, 1 ) );
+			fs.rmSync( pendingPath, { force: true } );
 		}
 		// Before the DB closes: what the block's own settings say about every no-setting row (lib/apply-gate.mjs).
 		const settingsOf = ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );

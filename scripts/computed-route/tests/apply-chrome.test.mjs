@@ -203,3 +203,12 @@ test( 'chrome mega rows: the drawer text shift switches the row indent off for t
 	assert.deepEqual( arrow.writes, [ { attr: 'drawerLinkTrailingColourHover', value: '#2C3E50' } ] );
 	assert.equal( run( {}, {} ).find( ( i ) => 'drawerLinkTrailingColourHover' === i.prop ).status, 'no-setting' );
 } );
+
+test( 'skeleton: two pairs of one block inside one node each own their own span, and a lone pair owns the whole node', () => {
+	const hours = flatten( [ { b: 'sgs/info', t: '10-19' } ] );
+	const two = skeletonTargets( { nodes: hours, pairs: [ { ref: 'cr-ref-y-0', tpl: 'Root/12#0' }, { ref: 'cr-ref-y-1', tpl: 'Root/19#0' } ], saved: { 'cr-ref-y-0': { block: 'sgs/info' }, 'cr-ref-y-1': { block: 'sgs/info' } } } );
+	assert.deepEqual( two.owners.get( 'cr-ref-y-0' ).reach, [ 10, 11, 12, 13, 14, 15, 16, 17, 18 ] );
+	assert.deepEqual( two.owners.get( 'cr-ref-y-1' ).reach, [ 19 ] );
+	const one = skeletonTargets( { nodes: hours, pairs: [ { ref: 'cr-ref-y-0', tpl: 'Root/12#0' } ], saved: { 'cr-ref-y-0': { block: 'sgs/info' } } } );
+	assert.equal( one.owners.get( 'cr-ref-y-0' ).reach.length, 10 );
+} );

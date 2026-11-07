@@ -3,6 +3,7 @@
 // ground, size, inset, corner or inline position, and whether it shows at all) and the resting look go through the resolver at the
 // tile's parts. A hover border is the form's tile hover border setting (the form holds it for every tile field), a hover lift or
 // shadow is the tile element's hover layer of sgsMotion, and a field whose second click keeps the first tile chosen is multiSelect.
+import { instanceKey } from './fact-key.mjs';
 import { colourValue, partItems } from './apply-probe-items.mjs';
 import { elementMotion } from './fill-motion-element.mjs';
 import { motionTools } from './apply-family-statemotion.mjs';
@@ -49,7 +50,7 @@ function hoverLayer( { ctx, d, l } ) {
 		return [];
 	}
 	const { tplId, dc } = d.rest ?? {};
-	const records = ( tplId && dc ? recordsFor( ctx.recordsIndex, `${ dc }/${ tplId }#0` ) : [] ).filter( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_LOOKS.includes( p.property ) && null !== p.to ) );
+	const records = ( tplId && dc ? recordsFor( ctx.recordsIndex, instanceKey( { chain: [ dc ], tpl: tplId, copy: 0 } ) ) : [] ).filter( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_LOOKS.includes( p.property ) && null !== p.to ) );
 	if ( ! records.length ) {
 		return [ { status: 'no-setting', prop: 'tile hover motion', state: 'hover', why: `the draft's tile lifts (${ JSON.stringify( want ) }) but the handoff holds no hover record for its element` } ];
 	}

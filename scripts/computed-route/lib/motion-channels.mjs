@@ -363,15 +363,21 @@ export function keyframeStops( properties ) {
 			continue;
 		}
 		const formulas = String( p.formula ?? '' ).split( ' … ' ).filter( Boolean );
-		for ( const frame of frames ) {
-			const offset = round( Number( frame.offset ) * 100, 2 );
-			if ( frame.computed || ( 'string' === typeof frame.value && formulas.includes( frame.value ) ) ) {
-				out.computed.push( `${ p.property } at ${ offset }%: ${ frame.value }` );
+		// A WAAPI-shaped frame holds its value under the property's own name and may carry no offset: such frames are evenly spaced.
+		// A frame that holds no channel (`none`) returns the property's other channels to rest.
+		const moved = [ ...new Set( frames.flatMap( ( f ) => Object.keys( propertyChannels( p.property, Object.hasOwn( f, 'value' ) ? f.value : f[ p.property ] ).channels ) ) ) ];
+		for ( const [ i, frame ] of frames.entries() ) {
+			const given = null === frame.offset || undefined === frame.offset ? NaN : Number( frame.offset );
+			const offset = round( ( Number.isFinite( given ) ? given : i / ( frames.length - 1 ) ) * 100, 2 );
+			const value = Object.hasOwn( frame, 'value' ) ? frame.value : frame[ p.property ];
+			if ( frame.computed || ( 'string' === typeof value && formulas.includes( value ) ) ) {
+				out.computed.push( `${ p.property } at ${ offset }%: ${ value }` );
 				continue;
 			}
-			const c = propertyChannels( p.property, frame.value );
+			const c = propertyChannels( p.property, value );
 			out.unsupported.push( ...c.unsupported );
-			at.set( offset, { ...( at.get( offset ) || {} ), ...c.channels } );
+			const rest = Object.keys( c.channels ).length ? {} : Object.fromEntries( moved.filter( ( k ) => k in IDENTITY ).map( ( k ) => [ k, IDENTITY[ k ] ] ) );
+			at.set( offset, { ...( at.get( offset ) || {} ), ...rest, ...c.channels } );
 		}
 	}
 	out.stops = [ ...at ].sort( ( a, b ) => a[ 0 ] - b[ 0 ] ).map( ( [ offset, channels ] ) => ( { offset, channels } ) );

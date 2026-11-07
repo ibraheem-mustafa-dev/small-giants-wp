@@ -86,11 +86,14 @@ test( 'hover motion: a differing pose becomes a deep-merged sgsMotion write or a
 } );
 
 test( 'invalid shake: only sgs/form, only a validation-fail record of its own draft component', () => {
-	const records = [ { id: 'A-35', mechanism: 'waapi', element: { dc: 'EnquiryForm', template_tpl_id: '4' }, trigger: { type: 'validation-fail', detail: 'Submit with invalid email' }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'none', keyframes: [ { transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'none' } ] } ], duration_ms: 320, easing: 'linear' } ];
+	const records = [ { id: 'A-35', status: 'active', mechanism: 'waapi', element: { dc: 'EnquiryForm', template_tpl_id: '4' }, trigger: { type: 'validation-fail', detail: 'Submit with invalid email' }, trace: { observed: 'yes', calls: 1 }, properties: [ { property: 'transform', from: 'translateX(0)', to: 'none', keyframes: [ { transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'none' } ] } ], duration_ms: 320, easing: 'linear' } ];
 	const c = ( o ) => ( { target: { ref: 'r', tpl: 'Root>EnquiryForm@468#0/6#0' }, block: 'sgs/form', saved: {}, records, db, rawSnapshot: null, ...o } );
 	const items = invalidShake( c( {} ) );
 	assert.equal( items.length, 1 );
-	assert.ok( [ 'op', 'no-setting' ].includes( items[ 0 ].status ) );
+	assert.equal( items[ 0 ].status, 'op', items[ 0 ].why );
+	// WAAPI-shaped frames (no offset, the value under the property's name) are evenly spaced.
+	assert.deepEqual( items[ 0 ].writes[ 0 ].value.elements.root.entrance.base.values.keyframes.map( ( k ) => k.offset ), [ 0, 33.33, 66.67, 100 ] );
+	assert.deepEqual( items[ 0 ].writes[ 0 ].value.elements.root.entrance.base.values.keyframes.map( ( k ) => k.translateX ), [ 0, -8, 8, 0 ] );
 	assert.deepEqual( invalidShake( c( { block: 'sgs/container' } ) ), [] );
 	assert.deepEqual( invalidShake( c( { target: { ref: 'r', tpl: 'Root>OtherForm@1#0/6#0' } } ) ), [] );
 } );

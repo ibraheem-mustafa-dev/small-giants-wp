@@ -19,6 +19,7 @@ import { recordsFor } from './apply-records.mjs';
 import { callsAt, recordsOf, triggerFor } from './apply-motion-calls.mjs';
 import { behaviourWrites } from './apply-motion-behaviours.mjs';
 import { draftEntrance, sameEntrance } from './apply-motion-entrance.mjs';
+import { ENTRANCE_PROPS, reconcileDefault } from './apply-motion-default.mjs';
 import { loopOp, ringScale } from './apply-motion-loops.mjs';
 import { splitParts } from './apply-motion-parts.mjs';
 import { claimedElsewhere, groupsOf, ownsGroup, placeGroup, staggerFor } from './apply-motion-items.mjs';
@@ -70,7 +71,7 @@ function marqueeFade( { doc, draft, recs, mdb, items, whys, ids } ) {
 
 export const motion = {
 	name: 'motion',
-	props: [ 'opacity' ],
+	props: [ 'opacity', ...ENTRANCE_PROPS ],
 	decide( input ) {
 		const { target, block, saved, draft, recordsIndex, records, db, rawSnapshot } = input;
 		const { mdb, schema, ctx, openWords: words } = toolsFor( db, rawSnapshot );
@@ -90,6 +91,7 @@ export const motion = {
 		const ids = [];
 		const settings = [];
 		const fx = [];
+		const checks = [];
 		const calls = callsAt( animate, key );
 		const own = recordsOf( recordsIndex, target );
 		const parts = splitParts( { block, saved, mdb, calls } );
@@ -139,6 +141,8 @@ export const motion = {
 				const e = draftEntrance( { calls: pc.calls, trig: t.trigger, draft, mdb, ctx, target: name, offers, held: el.entrance?.base } );
 				if ( e.reason ) {
 					items.push( { status: 'no-setting', prop: `${ name } entrance`, why: e.reason } );
+				} else if ( 'root' === name && reconcileDefault( { el, layer: e.layer, rawSnapshot, live: input.live, items, whys, checks } ) ) {
+					t.record && ids.push( t.record );
 				} else if ( sameEntrance( el.entrance?.base, e.layer ) ) {
 					items.push( { status: 'equal', prop: `${ name } entrance`, why: 'the saved entrance gives the draft entrance' } );
 				} else {
@@ -199,11 +203,13 @@ export const motion = {
 		}
 		const changed = JSON.stringify( doc ) !== before;
 		if ( whys.length && ( changed || settings.length ) ) {
-			const verdict = changed ? validateMotionWrite( doc, schema ) : { valid: true };
+			// A document a removal leaves with no element holds nothing: the attribute goes (the schema refuses an empty document).
+			const bare = Object.keys( doc ).every( ( k ) => [ 'v', 'elements' ].includes( k ) ) && ! Object.keys( doc.elements ).length;
+			const verdict = changed && ! bare ? validateMotionWrite( doc, schema ) : { valid: true };
 			if ( verdict.valid ) {
-				const writes = [ ...( changed ? [ { attr: 'sgsMotion', value: doc } ] : [] ), ...settings ];
+				const writes = [ ...( changed ? [ bare ? { attr: 'sgsMotion', unset: true } : { attr: 'sgsMotion', value: doc } ] : [] ), ...settings ];
 				const record = ids.find( Boolean ) ?? null;
-				items.push( { status: 'op', prop: 'motion', why: `${ target.tpl }: ${ whys.join( '; ' ) }`, writes, checks: [ ...new Set( fx ) ].map( ( f ) => ( { width: 1440, fx: f } ) ), ...( record ? { record } : {} ) } );
+				items.push( { status: 'op', prop: 'motion', why: `${ target.tpl }: ${ whys.join( '; ' ) }`, writes, checks: [ ...[ ...new Set( fx ) ].map( ( f ) => ( { width: 1440, fx: f } ) ), ...checks ], ...( checks.length ? { needsProof: true } : {} ), ...( record ? { record } : {} ) } );
 			} else {
 				items.push( { status: 'no-setting', prop: 'motion', why: `sgsMotion write refused: ${ verdictProblems( verdict ).join( '; ' ).slice( 0, 300 ) }` } );
 			}

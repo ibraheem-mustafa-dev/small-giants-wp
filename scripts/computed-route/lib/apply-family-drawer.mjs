@@ -12,6 +12,7 @@ import { auxFor, innerIdsOf, isOpenRecord, motionItem, motionTools, openWordsOf,
 import { entranceItems } from './apply-drawer-entrance.mjs';
 import { closeFade, menuSettings } from './apply-drawer-settings.mjs';
 import { closeHover, formItems, panelItems, ringItems } from './apply-drawer-misc.mjs';
+import { cardHoverDevices, entranceDevices, galleryDevices } from './apply-drawer-devices.mjs';
 
 const set = ( list ) => new Set( ( list || [] ).map( Number ) );
 
@@ -58,6 +59,7 @@ export const drawer = {
 				items.push( { status: 'op', prop: 'closeHoverOpacity', why: `${ target.tpl }: ${ fade.why }`, writes: settings, checks: [], record: fade.id } );
 			}
 		}
+		items.push( ...cardHoverDevices( ctx ), ...entranceDevices( ctx ), ...galleryDevices( ctx ) );
 		items.push( ...ringItems( { c, saved, animate, target, block } ) );
 		items.push( ...formItems( { c, saved, target, block, records } ) );
 		direct && items.push( ...panelItems( { c, saved, block, reach: c.reach, owns: c.owns, reachRecs: c.reachRecs, records } ) );

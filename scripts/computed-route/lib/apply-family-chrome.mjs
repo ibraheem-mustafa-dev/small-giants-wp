@@ -5,6 +5,9 @@
 import { logoRule } from './apply-chrome-logo.mjs';
 import { hoverRule } from './apply-chrome-hover.mjs';
 import { iconRule } from './apply-chrome-icons.mjs';
+import { groundRule } from './apply-chrome-ground.mjs';
+import { headingLevel } from './apply-chrome-heading.mjs';
+import { arrowHover, itemCardHover } from './apply-chrome-cards.mjs';
 import { burgerBars, connectorLine, pulseDot, rowWrapper, stateRule } from './apply-chrome-state.mjs';
 
 export const chrome = {
@@ -23,6 +26,6 @@ export const chrome = {
 		return { 'sgs/nav-bar-menu': burgerBars, 'sgs/process-steps': connectorLine, 'sgs/business-info': pulseDot }[ ctx.block ]?.( ctx ) ?? [];
 	},
 	decide( ctx ) {
-		return [ logoRule, hoverRule, iconRule, stateRule ].flatMap( ( rule ) => rule( ctx ) );
+		return [ logoRule, hoverRule, iconRule, stateRule, groundRule, itemCardHover, arrowHover, headingLevel ].flatMap( ( rule ) => rule( ctx ) );
 	},
 };

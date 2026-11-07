@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Phase 2 site run (Spec 48, plan 2026-10-23-cloning-tool-completion, Phase 2 step 4 and 5): every surface of one client
-// through inventory, skeleton propose, Fill, the build's dry run, the build and the parity walk, with one status line per
-// surface. A failed surface is logged and the run goes on. The draft folder is served once and each page surface opens at
+// through inventory, skeleton propose, Fill, the build's dry run, the build, the applier and the parity walk, with one status
+// line per surface. A failed surface is logged and the run goes on. The draft folder is served once and each page surface opens at
 // its hash route.
 // A surface's inventory root and opener come from its intake skeleton record: a surface that exists only while a draft state
 // holds (record `root.viaState`) takes the inventory intake saved with that state open
@@ -18,7 +18,12 @@
 // A built header, footer or drawer (a page-map layout row) becomes its area's active layout, whatever the pointer named
 // before (lib/site-run-layout.mjs, FR-48-55); a run whose `--only` leaves it out changes no pointer.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b] [--skip-stages inventory,walk]
-//        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
+//        [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
+// The apply stage (apply.mjs for that surface with --write, run one at a time like a build: it writes the site's database and the
+// shared verify.json) sets the existing block settings the Fill and build cannot see, from the draft's runtime, on a local
+// mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note). Its failure stops the
+// surface like any stage; the stage result names the ops written and any no-setting row naming a setting the block has
+// (apply-gate's `unresolved`, which the applier's own exit code fails only on a whole run).
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
 import fs from 'fs';
@@ -42,7 +47,7 @@ import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
-const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
+const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
 
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
 const stamp = () => new Date().toISOString().replace( /\.\d+Z$/, '' ).replace( /:/g, '-' );
@@ -60,6 +65,27 @@ function run( cmd, args, { logFile, env = {}, cwd = REPO } ) {
 			resolve( { code, tail: lines.slice( -4 ).join( ' | ' ).slice( 0, 600 ) } );
 		} );
 	} );
+}
+
+// The apply stage's result, read from the applier's log: the ops planned, the rows by status (from its summary table) and the
+// gate's count. A no-setting row naming a setting the block has fails the stage (`--surfaces` runs skip the applier's own gate,
+// so this is where a part-run is held to it); a no-effect or unchecked write is reported.
+export function applyDetail( logFile, fallback ) {
+	const log = fs.existsSync( logFile ) ? fs.readFileSync( logFile, 'utf8' ) : '';
+	const ops = /^[^\s:]+: (\d+) ops, (\d+) rows$/m.exec( log );
+	const gate = /no-setting rows: (\d+) confirmed, (\d+) unjudged, (\d+) unresolved/.exec( log );
+	if ( ! ops && ! gate ) {
+		return fallback;
+	}
+	// `| family | written | unchecked | equal | ledger | no-setting | unpaired | no-effect |`
+	const rows = log.split( /\r?\n/ ).filter( ( l ) => /^\| [^|]+ (\| \d+ ){7}\|$/.test( l ) ).map( ( l ) => l.split( '|' ).slice( 2, 9 ).map( Number ) );
+	const total = ( n ) => rows.reduce( ( a, r ) => a + r[ n ], 0 );
+	const unresolved = Number( gate?.[ 3 ] ?? 0 );
+	const detail = `${ ops ? `${ ops[ 1 ] } ops` : 'no ops' }${ gate ? `, ${ gate[ 1 ] } no-setting, ${ unresolved } unresolved` : '' }, ${ total( 6 ) } no-effect, ${ total( 1 ) } unchecked`;
+	if ( unresolved ) {
+		throw new Error( `${ detail }: a no-setting row names a setting the block has (no-setting-review.json)` );
+	}
+	return detail;
 }
 
 // A mutex: tasks passed to `exclusive` run one after another.
@@ -163,7 +189,7 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages ...] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	const only = flag( '--only' ) ? flag( '--only' ).split( ',' ) : null;
@@ -203,7 +229,7 @@ export async function main( argv ) {
 		}
 		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
 		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
-		if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
+		if ( wooPage && [ 'fill', 'build', 'apply', 'walk' ].includes( stage ) ) {
 			note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
 			return 'walk' !== stage;
 		}
@@ -355,6 +381,10 @@ export async function main( argv ) {
 		} ) ) ) {
 			return;
 		}
+		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
+		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
+			return;
+		}
 		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) || ( slug && entry.copy && null === ctx.address ) ) {
 			return note( key, 'walk', true, 0, 'pages' === entry.copy?.from ? `skipped: walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'skipped: no draft surface plays it' : `skipped: the ${ slug } template shows only at a WooCommerce endpoint` );
 		}
@@ -366,6 +396,23 @@ export async function main( argv ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
 			}
 			throw e;
+		} ) );
+	}
+
+	// The apply stage of one surface: apply.mjs --surfaces <key> --write. A template copy has no post of its own and a non-local
+	// target is not a mirror, so each is skipped with a note. Returns false when the stage failed.
+	async function applyStage( { ctx, entry, key, slug, step, exec } ) {
+		if ( ! stages.includes( 'apply' ) ) {
+			return true;
+		}
+		if ( slug || ! entry.target?.postId || ! /^local-/.test( site ) ) {
+			note( key, 'apply', true, 0, slug ? 'skipped: a template copy has no post of its own' : ! entry.target?.postId ? 'skipped: no post behind this surface' : `skipped: ${ site } is not a local mirror` );
+			return true;
+		}
+		return step( 'apply', () => exclusive( async () => {
+			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
+			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--write' ] );
+			return applyDetail( path.join( dir, `${ key }.apply.log` ), said );
 		} ) );
 	}
 

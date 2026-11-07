@@ -38,10 +38,18 @@ export function scaleOf( value ) {
 	return m ? Number( m[ 1 ] ) : null;
 }
 
-// A write only when the saved attribute differs; the item an op or equal row makes. writes: [ { attr, value } ].
+// Whether `whole` already holds everything `part` states: objects key by key, anything else equal.
+export function holds( whole, part ) {
+	if ( part && 'object' === typeof part && ! Array.isArray( part ) ) {
+		return Boolean( whole ) && 'object' === typeof whole && Object.keys( part ).every( ( k ) => holds( whole[ k ], part[ k ] ) );
+	}
+	return JSON.stringify( whole ) === JSON.stringify( part );
+}
+
+// A write only when the saved attribute differs; the item an op or equal row makes. writes: [ { attr, value, merge? } ]. A `deep`
+// write is a part of the saved document, so it is equal when the saved document holds that part.
 export function settle( { prop, why, saved, writes, record, state } ) {
-	const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
-	const todo = writes.filter( ( w ) => w.unset ? w.attr in saved : ! same( saved[ w.attr ], w.value ) );
+	const todo = writes.filter( ( w ) => w.unset ? w.attr in saved : ! ( 'deep' === w.merge ? holds( saved[ w.attr ], w.value ) : JSON.stringify( saved[ w.attr ] ) === JSON.stringify( w.value ) ) );
 	if ( ! todo.length ) {
 		return { status: 'equal', prop, why: `${ why }: already saved` };
 	}

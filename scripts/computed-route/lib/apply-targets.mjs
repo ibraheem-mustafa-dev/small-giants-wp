@@ -10,7 +10,12 @@ const readJson = ( f, fallback = null ) => ( fs.existsSync( f ) ? JSON.parse( fs
 
 // One { ref, tpl, via } per block a surface pairs: `cr-ref-about-3`, `Root/333#0`. Order: pair, origin; the skeleton adds the rest
 // once the post's blocks are known (withSkeleton).
-export function pairsOf( cfg, origin = {} ) {
+export const pairsOf = ( cfg, origin = {}, refreshed = null ) => pairsReport( cfg, origin, refreshed ).pairs;
+
+// { pairs, refused }. `refreshed` is `<surface>.pairs.json` (lib/refresh-pairs.mjs): its pairs replace the config's and origin's for
+// the same ref, and a ref it names unpaired is dropped with its reason. A draft element that several refs claim with different
+// content (their origin fingerprints' text differs) is refused for all of them: a write for one block would land on the others.
+export function pairsReport( cfg, origin = {}, refreshed = null ) {
 	const out = new Map();
 	for ( const p of cfg?.pairs || [] ) {
 		const ref = /^\.(cr-ref-[\w-]+)$/.exec( String( p.live ?? '' ) )?.[ 1 ];
@@ -23,7 +28,28 @@ export function pairsOf( cfg, origin = {} ) {
 			out.set( ref, { key: ref, ref, tpl: row.tpl, via: 'origin' } );
 		}
 	}
-	return [ ...out.values() ];
+	const refused = [];
+	for ( const [ ref, tpl ] of Object.entries( refreshed?.pairs || {} ) ) {
+		out.set( ref, { key: ref, ref, tpl: tpl.tpl, via: 'refresh' } );
+	}
+	for ( const [ ref, why ] of Object.entries( refreshed?.unpaired || {} ) ) {
+		out.delete( ref );
+		refused.push( { ref, why } );
+	}
+	const byTpl = new Map();
+	for ( const p of out.values() ) {
+		byTpl.set( p.tpl, [ ...( byTpl.get( p.tpl ) || [] ), p.ref ] );
+	}
+	for ( const [ tpl, refs ] of byTpl ) {
+		const content = new Set( refs.map( ( r ) => origin[ r ]?.fingerprint?.textHash ?? '' ).filter( Boolean ) );
+		if ( refs.length > 1 && content.size > 1 ) {
+			refs.forEach( ( ref ) => {
+				out.delete( ref );
+				refused.push( { ref, why: `draft element ${ tpl } is claimed by ${ refs.length } blocks with different content; refresh the pairs (refresh-pairs.mjs)` } );
+			} );
+		}
+	}
+	return { pairs: [ ...out.values() ], refused };
 }
 
 // The draft's address for a surface, on the origin the draft is served from now: a config records the port of its own run.
@@ -61,7 +87,8 @@ export async function loadSurfaces( { repo, client, only = null, draftOrigin } )
 		}
 		const cfg = ( await import( pathToFileURL( config ).href ) ).default;
 		const origin = readJson( path.join( build, `${ name }.origin.json` ), {} );
-		out.push( { name, postId: Number( postId ), shell: s.shell ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs: pairsOf( cfg, origin ) } );
+		const { pairs, refused } = pairsReport( cfg, origin, readJson( path.join( build, `${ name }.pairs.json` ) ) );
+		out.push( { name, postId: Number( postId ), shell: s.shell ?? null, site: s.site, cfg: { ...cfg, draft: { ...cfg.draft, url: draftUrl( cfg.draft.url, draftOrigin ) } }, pairs, refused } );
 	}
 	return { surfaces: out, skipped };
 }

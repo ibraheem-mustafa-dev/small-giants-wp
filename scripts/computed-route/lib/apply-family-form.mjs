@@ -6,6 +6,7 @@ import { CONSENT_PROPS, FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs
 import { partItems } from './apply-probe-items.mjs';
 import { fieldWidths } from './apply-form-width.mjs';
 import { matches } from './apply-ops.mjs';
+import { parseColour } from './normalise.mjs';
 
 const FOCUS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow' ];
 const col = ( fields, key, prop ) => fields.map( ( f ) => f[ key ]?.[ prop ] );
@@ -23,7 +24,9 @@ function focusRing( { saved, d, l } ) {
 		return [];
 	}
 	const held = saved.fieldFocusRingColour === ring.colour && Number( saved.fieldFocusRingWidth ) === ring.width;
-	if ( held || l.focus?.[ 'box-shadow' ]?.includes( `0px 0px 0px ${ ring.width }px` ) ) {
+	const live = ringOf( l.focus?.[ 'box-shadow' ] );
+	const sameColour = ( a, b ) => JSON.stringify( parseColour( a ) ) === JSON.stringify( parseColour( b ) );
+	if ( held || ( live && live.width === ring.width && sameColour( live.colour, ring.colour ) ) ) {
 		return [ { status: 'equal', prop: 'fieldFocusRingWidth', state: 'focus', why: 'the focus ring gives the draft ring' } ];
 	}
 	return [ { status: 'op', prop: 'fieldFocusRingWidth', state: 'focus', why: `focus ring ${ d.focus[ 'box-shadow' ] }`, writes: [ { attr: 'fieldFocusRingColour', value: ring.colour }, { attr: 'fieldFocusRingWidth', value: ring.width } ], checks: [] } ];
