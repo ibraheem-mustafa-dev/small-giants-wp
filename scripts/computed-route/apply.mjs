@@ -6,7 +6,8 @@
 //        [--draft http://127.0.0.1:5181] [--jobs 4] [--fresh] [--retry] [--write]
 // Output in sites/<client>/build/qa/apply/: <surface>.plan.json (every target's outcome), summary.md, and with --write
 // verify.json (read by delivery-map.mjs) and no-effect.json (writes rolled back after their re-read; --retry tries them again). Every instance ends written, unchecked (written, no automatic re-read), equal, ledger,
-// no-setting, unpaired or no-effect.
+// no-setting, unpaired or no-effect. A whole run fails while a no-setting row names something the block has a setting for
+// (lib/apply-gate.mjs; no-setting-review.json lists them).
 import { spawnSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -16,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch } from './lib/apply-ledger.mjs';
+import { gateRows } from './lib/apply-gate.mjs';
 import { foldOps, matches, patchesOf, restoreOf } from './lib/apply-ops.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
@@ -282,6 +284,7 @@ async function main() {
 	const browser = await chromium.launch();
 	const allRows = skipped.map( ( s ) => ( { surface: s.surface, family: '*', status: 'unpaired', why: s.why } ) );
 	const allOps = [];
+	let gate = { judged: [], unresolved: 0, unjudged: 0, confirmed: 0 };
 	try {
 		await pool( surfaces, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
 			const extras = extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } );
@@ -355,6 +358,9 @@ async function main() {
 			fs.mkdirSync( path.dirname( undonePath ), { recursive: true } );
 			fs.writeFileSync( undonePath, JSON.stringify( [ ...undone ].sort(), null, 1 ) );
 		}
+		// Before the DB closes: what the block's own settings say about every no-setting row (lib/apply-gate.mjs).
+		const settingsOf = ( block ) => ( block ? db.prepare( 'SELECT attr_name, css_property FROM block_attributes WHERE block_slug = ?' ).all( block ) : [] );
+		gate = gateRows( allRows, settingsOf );
 	} finally {
 		await browser.close();
 		db.close?.();
@@ -362,6 +368,13 @@ async function main() {
 	const text = `# Applier ${ write ? 'write' : 'dry run' }: ${ client }\n\n${ summary( allRows ) }\n`;
 	fs.writeFileSync( path.join( outDir, 'summary.md' ), text );
 	console.log( text );
+	fs.writeFileSync( path.join( outDir, 'no-setting-review.json' ), JSON.stringify( gate.judged, null, 1 ) );
+	console.log( `no-setting rows: ${ gate.confirmed } confirmed, ${ gate.unjudged } unjudged, ${ gate.unresolved } unresolved (no-setting-review.json)` );
+	// A part-run (--surfaces, --families) is work in progress; a whole run cannot end clean with a setting left unused.
+	if ( gate.unresolved && ! only && ! wanted ) {
+		console.error( `${ gate.unresolved } no-setting row(s) name something the block has a setting for: see no-setting-review.json` );
+		process.exitCode = 1;
+	}
 }
 
 if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( import.meta.url ) ) {
