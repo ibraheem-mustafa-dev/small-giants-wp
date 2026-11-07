@@ -144,6 +144,9 @@ function slotLive( db, calFor, block, target ) {
 	return home ? `.${ target.ref } ${ home }` : null;
 }
 
+// The properties a text block sharing its wrapper's element answers for (a CSS property, or a setting name about text).
+const TEXT_PROP = /^(color|font|letter-spacing|line-height|text|-webkit-text|word-spacing|white-space)|(Colour|Font|LetterSpacing|LineHeight|TextTransform|TextDecoration)/;
+
 // Each target's outcome per family: the ops to write and the rows to report.
 export function decideSurface( { surface, drafts, lives, blocks, families, ledger, db, records, recordsIndex, calFor, clientData = {}, closed = null, skeleton = [], snapshot = null, links = null, rawSnapshot = null } ) {
 	const rows = [];
@@ -168,7 +171,9 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 		// A layer target (lib/apply-layer-targets.mjs) goes to the layers family alone, and no other target does.
 		for ( const family of families.filter( ( f ) => ( target.layer ? f.layers : ! f.layers ) && ( ! target.slot || f.slots ) ) ) {
 			const items = family.decide( { target, surface, block: block?.block ?? null, saved: block?.attrs ?? {}, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
-			for ( const item of items ) {
+			// A text block sharing its wrapper's draft element (part 'text', lib/pair-wrappers.mjs) is held to the element's text
+			// properties only: its box belongs to the wrapper's own pair.
+			for ( const item of items.filter( ( i ) => 'text' !== target.part || TEXT_PROP.test( String( i.prop ?? '' ).trim().split( /\s+/ ).pop() ) ) ) {
 				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop, part: target.slot ?? null } );
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
@@ -184,9 +189,9 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 	// Coverage: every saved block no pair reaches is a row, with the reason a refresh or the pair guard named, so a gap is never silent.
 	if ( false !== surface.coverage ) {
 		const paired = new Set( surface.pairs.map( ( t ) => t.ref ) );
-		const refused = new Map( ( surface.refused || [] ).map( ( r ) => [ r.ref, r.why ] ) );
+		const refused = new Map( ( surface.refused || [] ).map( ( r ) => [ r.ref, r ] ) );
 		for ( const [ ref, b ] of Object.entries( saved ) ) {
-			paired.has( ref ) || dupes.has( ref ) || rows.push( { surface: surface.name, ref, key: ref, tpl: null, block: b.block, family: '*', status: 'unpaired', why: refused.get( ref ) ?? 'a saved block no pair reaches' } );
+			paired.has( ref ) || dupes.has( ref ) || rows.push( { surface: surface.name, ref, key: ref, tpl: null, block: b.block, family: '*', status: refused.get( ref )?.structural ? 'structural' : 'unpaired', why: refused.get( ref )?.why ?? 'a saved block no pair reaches' } );
 		}
 	}
 	return { rows, ops };
@@ -254,7 +259,7 @@ function summary( rows ) {
 		table[ r.family ] = table[ r.family ] || {};
 		table[ r.family ][ r.status ] = ( table[ r.family ][ r.status ] || 0 ) + 1;
 	}
-	const statuses = [ 'written', 'unchecked', 'equal', 'ledger', 'no-setting', 'unpaired', 'no-effect' ];
+	const statuses = [ 'written', 'unchecked', 'equal', 'ledger', 'no-setting', 'unpaired', 'structural', 'no-effect' ];
 	const lines = [ `| Family | ${ statuses.join( ' | ' ) } |`, `|---|${ statuses.map( () => '---' ).join( '|' ) }|` ];
 	for ( const [ f, c ] of Object.entries( table ) ) {
 		lines.push( `| ${ f } | ${ statuses.map( ( s ) => c[ s ] || 0 ).join( ' | ' ) } |` );
