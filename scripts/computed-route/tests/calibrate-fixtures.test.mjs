@@ -141,3 +141,18 @@ test( 'a fixture precondition puts the gating attribute on the setting\'s instan
 	assert.deepEqual( preconditionsFor( { attr_name: 'otherSetting', css_property: 'height' }, schema, {}, ctx ), {} );
 	assert.deepEqual( preconditionsFor( { attr_name: 'gatedSetting', css_property: 'width' }, schema, { gate: 'on' }, ctx ), {} );
 } );
+
+test( 'the icon list calibrates its link settings on linked items (render.php prints .sgs-icon-list__item-link only for an item with a url)', () => {
+	const fx = FX[ 'sgs/icon-list' ];
+	const schema = blockJson( 'icon-list' ).attributes;
+	const ctx = { settingPreconditions: fx.preconditions, familyPreconditions: fx.familyPreconditions };
+	const hover = preconditionsFor( { attr_name: 'linkUnderlineColourHover', css_property: 'text-decoration-color', css_state: 'hover' }, schema, {}, ctx );
+	assert.equal( hover.linkUnderline, 'always' );
+	assert.ok( hover.items.length > 1 && hover.items.every( ( i ) => i.url ), 'every item of the instance links' );
+	for ( const k of Object.keys( fx.familyPreconditions.linkUnderline ) ) {
+		assert.ok( schema[ k ], `icon-list family precondition sets undeclared attribute ${ k }` );
+	}
+	// Negative control: a setting outside the link family keeps the unlinked base items.
+	assert.deepEqual( preconditionsFor( { attr_name: 'textColour', css_property: 'color' }, schema, {}, ctx ).items, undefined );
+	assert.match( render( 'icon-list' ), /item-link/ );
+} );

@@ -6,7 +6,9 @@
 import { MOTION_LOOKS } from './apply-hover.mjs';
 import { recordsFor, stateLook } from './apply-records.mjs';
 import { cardCarriesColour } from './apply-card-group.mjs';
-import { differs, stateItem } from './apply-state-resolve.mjs';
+import { differs } from './apply-state-resolve.mjs';
+import { stateItemOrParts } from './apply-state-parts.mjs';
+import { partOfLive } from './apply-state-scope.mjs';
 import { timingItems } from './apply-state-timing.mjs';
 import { pressVariant } from './fill-state-tokens.mjs';
 import { pressTokens } from './snapshot-tokens.mjs';
@@ -39,9 +41,19 @@ export const state = {
 				if ( 'border-top-color' === prop && ! ( parseFloat( dHover[ 'border-top-width' ] ) > 0 ) ) {
 					continue;
 				}
+				// An element with no underline reports an underline colour that paints nothing.
+				if ( 'text-decoration-color' === prop && 'none' === dHover[ 'text-decoration-line' ] ) {
+					continue;
+				}
 				// A property the hover changes on neither side is a resting difference, reported as one so the gate judges it against the
-				// block's resting settings and no family's silence hides it.
+				// block's resting settings and no family's silence hides it. A draft element that is only a part of the live block (a
+				// group's first button) has a resting look that belongs to that part, never to the block.
 				if ( restsAs( draft[ 1440 ], dHover, prop ) && restsAs( live[ 1440 ], lHover, prop ) ) {
+					const part = partOfLive( draft[ 1440 ], live[ 1440 ] );
+					if ( part ) {
+						items.push( { status: 'unpaired', prop, why: `resting ${ prop } not compared: ${ part }` } );
+						continue;
+					}
 					items.push( { status: 'no-setting', prop, why: `resting difference the hover holds on both sides: draft ${ draft[ 1440 ].styles[ prop ] }, live ${ live[ 1440 ].styles[ prop ] }; no applier family writes a resting ${ prop }` } );
 					continue;
 				}
@@ -53,7 +65,7 @@ export const state = {
 					continue;
 				}
 				const record = records.find( ( r ) => stateLook( r )?.looks.some( ( l ) => named( l, prop ) ) )?.id ?? null;
-				items.push( stateItem( { ctx, prop, value: dHover[ prop ], state: 'hover', slot: '', record } ) );
+				items.push( stateItemOrParts( { ctx, prop, value: dHover[ prop ], state: 'hover', slot: '', record } ) );
 			}
 		} else if ( dHover?.unreached || lHover?.unreached ) {
 			items.push( { status: 'no-setting', prop: 'hover', state: 'hover', why: `no pointer can reach the ${ dHover?.unreached ? 'draft' : 'live' } element` } );

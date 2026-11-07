@@ -9,6 +9,7 @@ import { attrRow } from './db.mjs';
 import { draftId, recordsFor } from './apply-records.mjs';
 import { recordsOf } from './apply-motion-calls.mjs';
 import { settle } from './apply-chrome-records.mjs';
+import { animatedBackground } from './apply-svg-file.mjs';
 
 const EASING_SRC = new URL( '../../../plugins/sgs-blocks/includes/helpers-motion-easing.php', import.meta.url );
 const norm = ( s ) => String( s ?? '' ).replace( /\s+/g, '' ).replace( /(^|[(,])0?\./g, '$10.' ).toLowerCase();
@@ -49,13 +50,18 @@ export const svgRecordsOf = ( target, records, animate ) => {
 	return ( records || [] ).filter( ( r ) => svgIdOf( r ) && own.has( String( r.element?.nearest_tpl_id ) ) );
 };
 
-export function heroSvgParts( { target, block, saved, records, clientData, animate } ) {
+export function heroSvgParts( { target, block, saved, records, clientData, animate, readSvg } ) {
 	if ( 'sgs/hero' !== block ) {
 		return [];
 	}
 	const named = svgRecordsOf( target, records, animate );
 	if ( ! named.length ) {
 		return [];
+	}
+	// A hero whose background image is an SVG file that animates itself already plays that motion: nothing inline to animate.
+	const file = saved.bgSvgContent ? null : animatedBackground( saved, readSvg );
+	if ( file ) {
+		return [ { status: 'equal', prop: 'bgSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }); the hero's background is the animated SVG file ${ file[ 0 ].split( '/' ).pop() }, which plays it` } ];
 	}
 	if ( ! saved.bgSvgContent ) {
 		return [ { status: 'no-setting', prop: 'bgSvgParts', why: `${ target.tpl } draws an inline SVG part animation (${ named[ 0 ].id } to ${ named[ named.length - 1 ].id }) and the hero holds no bgSvgContent to animate` } ];

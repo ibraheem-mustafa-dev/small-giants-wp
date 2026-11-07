@@ -1510,6 +1510,16 @@
         "siblingDimOpacity": 0.4,
         "itemMotionDuration": 300
       }
+    },
+    "familyPreconditions": {
+      "linkUnderline": {
+        "linkUnderline": "always",
+        "items": [
+          { "text": "UV400 protection", "url": "/shop/" },
+          { "text": "Anti-scratch hard coat", "url": "/shop/" },
+          { "text": "Two-year guarantee on the lenses", "url": "/shop/" }
+        ]
+      }
     }
   },
   "sgs/label": {

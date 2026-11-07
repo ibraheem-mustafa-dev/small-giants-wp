@@ -38,6 +38,25 @@ test( 'hero svg parts: a missing id, a missing file or no SVG is a no-setting ro
 	assert.deepEqual( heroSvgParts( hero( { records: [ svgRec( 'A-24', 'snow', '77' ) ] } ) ), [] );
 } );
 
+const animated = ( u ) => ( /\.svg$/.test( u ) ? '<svg><animateTransform attributeName="transform" dur="4s"/></svg>' : null );
+const still = ( u ) => ( /\.svg$/.test( u ) ? '<svg><g id="snow"/></svg>' : null );
+const withBg = ( url, extra = {} ) => ( { saved: { backgroundImage: { id: 1, url }, ...extra } } );
+
+test( 'hero svg parts: a hero whose background is an animated SVG file is equal, with the file named', () => {
+	const [ item ] = heroSvgParts( hero( { ...withBg( 'http://x/hero-rays.svg', { backgroundImageMobile: { id: 2, url: 'http://x/hero-rays-m.svg' } } ), readSvg: animated } ) );
+	assert.equal( item.status, 'equal' );
+	assert.match( item.why, /animated SVG file hero-rays\.svg/ );
+} );
+
+test( 'hero svg parts: a still image, a still SVG, an unreadable file or one still device image keeps the no-setting row', () => {
+	const gap = ( o ) => heroSvgParts( hero( o ) )[ 0 ];
+	assert.equal( gap( { ...withBg( 'http://x/photo.jpg' ), readSvg: animated } ).status, 'no-setting' );
+	assert.equal( gap( { ...withBg( 'http://x/hero.svg' ), readSvg: still } ).status, 'no-setting' );
+	assert.equal( gap( { ...withBg( 'http://x/hero.svg' ), readSvg: () => null } ).status, 'no-setting' );
+	assert.equal( gap( { ...withBg( 'http://x/hero.svg', { backgroundImageTablet: { id: 3, url: 'http://x/tablet.png' } } ), readSvg: animated } ).status, 'no-setting' );
+	assert.equal( gap( { saved: {}, readSvg: animated } ).status, 'no-setting' );
+} );
+
 test( 'hero svg parts: saved values already equal give equal', () => {
 	assert.equal( heroSvgParts( hero( { saved: { bgSvgContent: FULL_SVG, bgSvgPartsTrigger: 'load', bgSvgParts: PARTS } } ) )[ 0 ].status, 'equal' );
 } );

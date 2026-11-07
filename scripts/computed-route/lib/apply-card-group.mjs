@@ -7,7 +7,8 @@
 import { MOTION_LOOKS, motionClose, motionOf } from './apply-hover.mjs';
 import { elementMotion } from './fill-motion-element.mjs';
 import { recordsFor } from './apply-records.mjs';
-import { differs, stateItem } from './apply-state-resolve.mjs';
+import { differs } from './apply-state-resolve.mjs';
+import { stateItemOrParts } from './apply-state-parts.mjs';
 
 const SKIP = [ ...MOTION_LOOKS, 'icon', 'unreached', 'transition-duration', 'transition-timing-function', 'border-top-width' ];
 const iou = ( a, b ) => {
@@ -106,7 +107,7 @@ export function cardGroup( ctx ) {
 		// An icon's own rotation is a setting of its glyph, so the hover layer carries only the turn the hover adds.
 		const pose = turn && attrs.iconRotate ? { ...turn, rotate: turn.rotate - attrs.iconRotate } : turn;
 		const own = Object.entries( looks ).filter( ( [ p, v ] ) => differs( v, l.hover?.[ p ] ) )
-			.map( ( [ prop, value ] ) => ( { ...base, ...stateItem( { ctx: child, prop, value, state: 'hover', slot: '', extra: { hoverHost: target.ref } } ) } ) );
+			.map( ( [ prop, value ] ) => ( { ...base, ...stateItemOrParts( { ctx: child, prop, value, state: 'hover', slot: '', extra: { hoverHost: target.ref } } ) } ) );
 		const poseWrong = Boolean( pose ) && ! motionClose( pose, motionOf( l.hover ) );
 		const reached = own.some( ( i ) => 'no-setting' !== i.status ) || poseWrong;
 		items.push( ...own.filter( ( i ) => 'equal' !== i.status || reached ) );
