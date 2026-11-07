@@ -12,6 +12,10 @@
  *   { "match": "cr-ref-home-96", "replace": "<!-- wp:sgs/multi-button {...} --> ... <!-- /wp:sgs/multi-button -->" }
  *   { "match": "cr-ref-home-74", "remove": true }
  *   { "match": "cr-ref-home-91", "append": "<!-- wp:sgs/text {...} /-->" }   (adds inner blocks at the end)
+ *   { "match": "cr-ref-home-74", "insert": { "block": "sgs/decorative-image", "attrs": { "className": "cr-ref-home-L12", ... } }, "position": "after" }
+ *       (inserts a new dynamic block: "before" or "after" puts it beside the matched block, "first-child" makes it the first inner block of
+ *       the matched block, which must already hold inner blocks. The insert's attrs must carry a className: a block already holding that
+ *       exact className makes the op a no-op, so a second run writes nothing. Its attributes are checked like `set`.)
  *   { "match": "*", "block": "woocommerce/cart", "set": { ... } }   (a block with no className, by type; it must be the only block of that type in the post)
  * `set` replaces each named top-level attribute whole (a box padding object is written whole, never merged). An empty
  * JSON object `{}` decodes to an empty array and serialises as `[]`, so unset an attribute rather than setting it to `{}`.
@@ -88,6 +92,7 @@ $sgs_pba_rebuild_inner_content = static function ( array $block ): array {
 // attributes too). lock and metadata are block-comment keys every block accepts. A name outside this set is stored
 // in the comment, never read by the block and silently does nothing, so a `set` of one is refused.
 $sgs_pba_undeclared = array();
+$sgs_pba_inserted   = array();
 $sgs_pba_declared   = static function ( string $block_name ): ?array {
 	$type = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
 	if ( ! $type ) {
@@ -96,11 +101,54 @@ $sgs_pba_declared   = static function ( string $block_name ): ?array {
 	return array_merge( array_keys( (array) $type->attributes ), array( 'lock', 'metadata' ) );
 };
 
-$sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba_ops, &$sgs_pba_hits, &$sgs_pba_undeclared, $sgs_pba_declared, $sgs_pba_matches, $sgs_pba_rebuild_inner_content ): array {
+// Every className in the post, so an insert whose block is already there writes nothing.
+$sgs_pba_classes = array();
+$sgs_pba_collect = static function ( array $blocks ) use ( &$sgs_pba_collect, &$sgs_pba_classes ): void {
+	foreach ( $blocks as $block ) {
+		if ( isset( $block['attrs']['className'] ) ) {
+			$sgs_pba_classes[ (string) $block['attrs']['className'] ] = true;
+		}
+		$sgs_pba_collect( $block['innerBlocks'] ?? array() );
+	}
+};
+$sgs_pba_collect( $sgs_pba_blocks );
+
+// An insert op is checked whole before anything is built: the position, a registered dynamic block, declared attributes and
+// a className to find it again by. `$sgs_pba_present[ $i ]` is set for a valid insert and is true when it is already in the post.
+$sgs_pba_present = array();
+foreach ( $sgs_pba_ops as $i => $op ) {
+	if ( ! isset( $op['insert'] ) ) {
+		continue;
+	}
+	$spec  = (array) $op['insert'];
+	$where = (string) ( $op['match'] ?? '' );
+	$name  = (string) ( $spec['block'] ?? '' );
+	$type  = '' !== $name ? WP_Block_Type_Registry::get_instance()->get_registered( $name ) : null;
+	if ( ! in_array( (string) ( $op['position'] ?? '' ), array( 'before', 'after', 'first-child' ), true ) ) {
+		$sgs_pba_undeclared[] = sprintf( '%s: insert needs "position" before, after or first-child', $where );
+	} elseif ( ! $type ) {
+		$sgs_pba_undeclared[] = sprintf( '%s: %s is not a registered block type', $where, $name );
+	} elseif ( null === $type->render_callback ) {
+		$sgs_pba_undeclared[] = sprintf( '%s: %s is not a dynamic block, so a bare comment cannot hold it', $where, $name );
+	} elseif ( '' === trim( (string) ( $spec['attrs']['className'] ?? '' ) ) ) {
+		$sgs_pba_undeclared[] = sprintf( '%s: the inserted %s needs a className to be found again by', $where, $name );
+	} else {
+		foreach ( array_keys( (array) ( $spec['attrs'] ?? array() ) ) as $key ) {
+			if ( ! in_array( (string) $key, array_merge( array_keys( (array) $type->attributes ), array( 'lock', 'metadata' ) ), true ) ) {
+				$sgs_pba_undeclared[] = sprintf( '%s: %s declares no attribute "%s"', $where, $name, (string) $key );
+			}
+		}
+		$sgs_pba_present[ $i ] = isset( $sgs_pba_classes[ (string) $spec['attrs']['className'] ] );
+	}
+}
+
+$sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba_ops, &$sgs_pba_hits, &$sgs_pba_undeclared, $sgs_pba_declared, $sgs_pba_matches, $sgs_pba_rebuild_inner_content, $sgs_pba_present, &$sgs_pba_inserted ): array {
 	$out = array();
 	foreach ( $blocks as $block ) {
-		$drop = false;
-		$swap = null;
+		$drop   = false;
+		$swap   = null;
+		$before = array();
+		$after  = array();
 		foreach ( $sgs_pba_ops as $i => $op ) {
 			if ( ! $sgs_pba_matches( $block, $op ) ) {
 				continue;
@@ -124,29 +172,53 @@ $sgs_pba_walk = static function ( array $blocks ) use ( &$sgs_pba_walk, $sgs_pba
 			foreach ( (array) ( $op['unset'] ?? array() ) as $key ) {
 				unset( $block['attrs'][ $key ] );
 			}
+			if ( isset( $op['insert'] ) && array_key_exists( $i, $sgs_pba_present ) && ! $sgs_pba_present[ $i ] ) {
+				$spec  = (array) $op['insert'];
+				$fresh = array(
+					'blockName'    => (string) $spec['block'],
+					'attrs'        => (array) ( $spec['attrs'] ?? array() ),
+					'innerBlocks'  => array(),
+					'innerHTML'    => '',
+					'innerContent' => array(),
+				);
+				if ( 'before' === $op['position'] ) {
+					$before[] = $fresh;
+				} elseif ( 'after' === $op['position'] ) {
+					$after[] = $fresh;
+				} elseif ( empty( $block['innerBlocks'] ) ) {
+					$sgs_pba_undeclared[] = sprintf( '%s: first-child needs a block that already holds inner blocks', (string) $op['match'] );
+				} else {
+					$block['innerBlocks'] = array_merge( array( $fresh ), $block['innerBlocks'] );
+					$block                = $sgs_pba_rebuild_inner_content( $block );
+				}
+				$sgs_pba_inserted[] = sprintf( '%s %s %s', (string) $op['position'], (string) $op['match'], serialize_block( $fresh ) );
+			}
 			if ( isset( $op['append'] ) ) {
 				$new                  = array_values( array_filter( parse_blocks( (string) $op['append'] ), static fn( $b ) => ! empty( $b['blockName'] ) ) );
 				$block['innerBlocks'] = array_merge( $block['innerBlocks'], $new );
 				$block                = $sgs_pba_rebuild_inner_content( $block );
 			}
 		}
+		foreach ( $before as $b ) {
+			$out[] = $b;
+		}
 		if ( $drop ) {
-			continue;
-		}
-		if ( null !== $swap ) {
-			foreach ( $swap as $s ) {
-				$out[] = $s;
+			$self = array();
+		} elseif ( null !== $swap ) {
+			$self = $swap;
+		} else {
+			if ( ! empty( $block['innerBlocks'] ) ) {
+				$count                = count( $block['innerBlocks'] );
+				$block['innerBlocks'] = $sgs_pba_walk( $block['innerBlocks'] );
+				if ( count( $block['innerBlocks'] ) !== $count ) {
+					$block = $sgs_pba_rebuild_inner_content( $block );
+				}
 			}
-			continue;
+			$self = array( $block );
 		}
-		if ( ! empty( $block['innerBlocks'] ) ) {
-			$before               = count( $block['innerBlocks'] );
-			$block['innerBlocks'] = $sgs_pba_walk( $block['innerBlocks'] );
-			if ( count( $block['innerBlocks'] ) !== $before ) {
-				$block = $sgs_pba_rebuild_inner_content( $block );
-			}
+		foreach ( array_merge( $self, $after ) as $s ) {
+			$out[] = $s;
 		}
-		$out[] = $block;
 	}
 	return $out;
 };
@@ -165,7 +237,15 @@ if ( $sgs_pba_bad ) {
 	WP_CLI::error( 'Nothing written. ' . implode( '; ', $sgs_pba_bad ) );
 }
 if ( $sgs_pba_undeclared ) {
-	WP_CLI::error( 'Nothing written (dry run included). Refused undeclared setting(s): ' . implode( '; ', array_unique( $sgs_pba_undeclared ) ) );
+	WP_CLI::error( 'Nothing written (dry run included). Refused: ' . implode( '; ', array_unique( $sgs_pba_undeclared ) ) );
+}
+foreach ( $sgs_pba_ops as $i => $op ) {
+	if ( ! empty( $sgs_pba_present[ $i ] ) ) {
+		WP_CLI::log( sprintf( '%s: insert already present (no change)', (string) $op['match'] ) );
+	}
+}
+foreach ( $sgs_pba_inserted as $line ) {
+	WP_CLI::log( 'Insert ' . $line );
 }
 
 $sgs_pba_content = serialize_blocks( $sgs_pba_new );

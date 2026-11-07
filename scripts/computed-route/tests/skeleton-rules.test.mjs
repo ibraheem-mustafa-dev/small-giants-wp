@@ -73,12 +73,29 @@ test( 'readingProgress: a fixed full-width 3px bar is removed (a Floating UI set
 	assert.notEqual( byTag( run( tree, { facts: facts( 'readingProgress' ) } ), 'div' ).rule, 'readingProgress' );
 } );
 
-test( 'decorationLayer and decorativeShape: a glow layer folds into the background, a ring is a decorative image; MUST FAIL without each', () => {
+test( 'decorationLayer and decorativeShape: a glow layer and a ring are both decorative images; MUST FAIL without each', () => {
 	const tree = section( [ E( 'span', { style: 'position:absolute;inset:0;background:radial-gradient(circle,#fff,transparent)', attrs: { 'aria-hidden': 'true' } } ), E( 'i', { style: 'position:absolute;width:80px;height:80px;border:2px solid #E7D768;border-radius:50%' } ), E( 'p', { words: 'Body' } ) ] );
-	assert.deepEqual( settled( byTag( run( tree ), 'span' ) ), { block: null, action: 'remove', rule: 'decorationLayer' } );
+	assert.deepEqual( settled( byTag( run( tree ), 'span' ) ), { block: 'sgs/decorative-image', action: null, rule: 'decorationLayer' } );
 	assert.deepEqual( settled( byTag( run( tree ), 'i' ) ), { block: 'sgs/decorative-image', action: null, rule: 'decorativeShape' } );
 	assert.notEqual( byTag( run( tree, { facts: facts( 'decorationLayer' ) } ), 'span' ).rule, 'decorationLayer' );
 	assert.notEqual( byTag( run( tree, { facts: facts( 'decorativeShape' ) } ), 'i' ).block, 'sgs/decorative-image' );
+} );
+
+test( 'decorationDelivered: a pointer glare, the hero animation and a drawn line are removed with a handover to their owner, never a block; MUST FAIL without the rule', () => {
+	const layer = ( attrs, style ) => E( 'span', { style, attrs: { 'aria-hidden': 'true' }, snippet: `<span ${ attrs } style="${ style }" data-dc-tpl="9"></span>` } );
+	const glare = layer( '', 'position:absolute;inset:0;background:radial-gradient(circle at var(--gx,100%) var(--gy,0%),rgba(255,255,255,.36),rgba(255,255,255,0) 55%)' );
+	const hero = layer( 'ref="{{ setHeroSvgEl }}" data-src="{{ hero.animSrc }}"', 'position:absolute;inset:0' );
+	const line = layer( 'data-draw=""', 'position:absolute;left:0;right:0;top:27px;height:2px;background:linear-gradient(90deg,#D8CA50,#2EADE2)' );
+	const glow = layer( '', 'position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%)' );
+	const verdicts = ( node, o ) => settled( byTag( run( section( [ node, E( 'p', { words: 'Body' } ) ] ), o ), 'span' ) );
+	for ( const node of [ glare, hero, line ] ) {
+		const r = byTag( run( section( [ node ] ) ), 'span' );
+		assert.deepEqual( settled( r ), { block: null, action: 'remove', rule: 'decorationDelivered' } );
+		assert.equal( r.handover?.owner, 'behaviour', 'the handover names its owner' );
+		assert.notEqual( verdicts( node, { facts: facts( 'decorationDelivered' ) } ).rule, 'decorationDelivered' );
+		assert.deepEqual( verdicts( node, { facts: facts( 'decorationDelivered' ) } ), { block: 'sgs/decorative-image', action: null, rule: 'decorationLayer' } );
+	}
+	assert.deepEqual( verdicts( glow ), { block: 'sgs/decorative-image', action: null, rule: 'decorationLayer' } );
 } );
 
 test( 'typedDivider: a typed "|" between items is removed (the separators setting); MUST FAIL without the rule', () => {

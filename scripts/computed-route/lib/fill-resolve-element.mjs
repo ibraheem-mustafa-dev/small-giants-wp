@@ -14,6 +14,7 @@ import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
+import { fillLayerBox } from './fill-layer-box.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
@@ -183,7 +184,12 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		allDrafts[ 'border-radius' ] = radius;
 		RADIUS_CORNERS.forEach( ( c ) => delete allDrafts[ c ] );
 	}
+	// A decorative layer's stacking, anchor and sides-drawn size are written from the code the applier shares (lib/layer-box.mjs).
+	const boxed = layer ? new Set() : fillLayerBox( { st, rec, ref, target, snaps, apply } );
 	for ( const prop of merged ? [ ...ids.filter( ( p ) => ! RADIUS_CORNERS.includes( p ) ), 'border-radius' ] : ids ) {
+		if ( boxed.has( prop ) ) {
+			continue;
+		}
 		let draft = allDrafts[ prop ];
 		let rendered = null;
 		let notPlain = [];

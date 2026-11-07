@@ -237,7 +237,37 @@
 			"handover": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
 		},
 		"decorationLayer": {
-			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
+			"block": "sgs/decorative-image",
+			"sectionAnchorBlocks": [ "sgs/hero" ],
+			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
+		},
+		"decorationDelivered": {
+			"kinds": [
+				{
+					"id": "pointerGlare",
+					"patterns": [ "var\\(\\s*--g[xy]\\b" ],
+					"flags": "",
+					"owner": "behaviour",
+					"reason": "a layer whose gradient follows the pointer (a --gx / --gy custom property) is the motion glare layer, not a block",
+					"detail": "pointer glare: the block's Glare effect (sgs-motion-layer, fx-glare.css) paints it; set the effect on the block this layer sits in"
+				},
+				{
+					"id": "heroAnimation",
+					"patterns": [ "\\sdata-src\\s*=" ],
+					"flags": "",
+					"owner": "behaviour",
+					"reason": "a layer the draft's code fills with a loaded animation file is the hero's animated SVG setting, not a block",
+					"detail": "hero animated SVG: the hero block draws it from its animated-background settings"
+				},
+				{
+					"id": "drawnLine",
+					"patterns": [ "\\sdata-draw\\b" ],
+					"flags": "",
+					"owner": "behaviour",
+					"reason": "a line the draft draws in as it enters is the owning block's connector setting, not a block",
+					"detail": "drawn line: the block that owns the steps or timeline draws its connector (its connector settings)"
+				}
+			]
 		},
 		"decorativeShape": {
 			"block": "sgs/decorative-image",

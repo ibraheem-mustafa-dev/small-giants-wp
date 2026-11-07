@@ -10,6 +10,7 @@
 import path from 'path';
 import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
+import { deliveredKind } from './decoration-layers.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
@@ -411,14 +412,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
 		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
-		// A layer that holds nothing: a ring is a decorative image; a fill, gradient or glow folds into the background of
-		// the block it sits in.
+		// A layer that holds nothing: a ring, glow, bar or blob is a decorative image at its own position, size, radius and fill
+		// (Bean, 2026-11-07), except a layer something else already delivers: the pointer glare (the motion layer), the hero's
+		// animated SVG and a line the owning block draws itself, each removed with a handover naming its owner.
 		( { e, st } ) => {
 			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) ) ) {
 				return null;
 			}
 			const ring = /\d/.test( st.border || st[ 'border-width' ] || '' ) && ! /^(?:0|none)/.test( st.border || '' );
-			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
+			if ( ring ) {
+				return v( 'decorativeShape', { block: R.decorativeShape?.block || null } );
+			}
+			const kind = deliveredKind( R.decorationDelivered?.kinds, e );
+			const delivered = kind ? v( 'decorationDelivered', { action: 'remove', reason: kind.reason, handover: { owner: kind.owner, kind: 'behaviour', detail: kind.detail } } ) : null;
+			return delivered || v( 'decorationLayer', { block: R.decorationLayer?.block || null } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
 		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root

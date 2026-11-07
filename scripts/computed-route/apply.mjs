@@ -2,6 +2,8 @@
 // The applier: sets existing block settings on an already-built client site from the draft, on the local mirror. It reads each
 // paired block's draft and live values, works out which settings differ, and patches them through patch-block-attrs.py. It
 // never rebuilds a post, and writes nothing without --write.
+// The one block it adds is a bare decorative layer the draft paints and the post lacks (the layers family, lib/apply-family-layers.mjs):
+// an `sgs/decorative-image` inserted beside its draft siblings by an insert op of patch-block-attrs.php, rolled back by removing it.
 //   node scripts/computed-route/apply.mjs <client> [--surfaces a,b] [--families x,y] [--widths 1440,768,375]
 //        [--draft http://127.0.0.1:5181] [--jobs 4] [--fresh] [--retry] [--write]
 // Output in sites/<client>/build/qa/apply/: <surface>.plan.json (every target's outcome), summary.md, and with --write
@@ -18,7 +20,7 @@ import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
-import { foldOps, matches, patchesOf, restoreOf } from './lib/apply-ops.mjs';
+import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
 import { numeric } from './lib/apply-motion-default.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
@@ -26,6 +28,8 @@ import { recordIndex } from './lib/apply-records.mjs';
 import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
 import { motionTools } from './lib/apply-drawer-core.mjs';
 import { loadSurfaces, withSkeleton } from './lib/apply-targets.mjs';
+import { layerTargets } from './lib/apply-layer-targets.mjs';
+import { DECISIONS_FILE } from './lib/skeleton-facts.mjs';
 import { loadClientData } from './lib/apply-chrome-data.mjs';
 import { positionTargets } from './lib/apply-position.mjs';
 import { attrsFor } from './lib/db.mjs';
@@ -154,19 +158,20 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 		const live = Object.fromEntries( widths.map( ( w ) => [ w, lives[ w ].facts[ key ] ] ) );
 		const aux = Object.fromEntries( ( target.aux || [] ).map( ( a ) => [ a.tpl, Object.fromEntries( widths.map( ( w ) => [ w, drafts[ w ].facts[ a.key ] ] ) ) ] ) );
 		const row = ( o ) => rows.push( { surface: surface.name, ref: target.ref, key, tpl: target.tpl, block: block?.block ?? null, ...o } );
-		if ( ! block || dupes.has( target.ref ) ) {
+		if ( ! target.layer && ( ! block || dupes.has( target.ref ) ) ) {
 			row( { family: '*', status: 'unpaired', why: block ? 'the ref is on two blocks of the post' : 'no block carries this ref in the post' } );
 			continue;
 		}
 		// A skeleton slot is a part of its owner, read for the families that ask for slots; no other family writes from it.
-		for ( const family of families.filter( ( f ) => ! target.slot || f.slots ) ) {
-			const items = family.decide( { target, surface, block: block.block, saved: block.attrs, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
+		// A layer target (lib/apply-layer-targets.mjs) goes to the layers family alone, and no other target does.
+		for ( const family of families.filter( ( f ) => ( target.layer ? f.layers : ! f.layers ) && ( ! target.slot || f.slots ) ) ) {
+			const items = family.decide( { target, surface, block: block?.block ?? null, saved: block?.attrs ?? {}, draft, live, aux, clientData, closed, skeleton, headers, animate, records, recordsIndex, calFor, db, snapshot, links, rawSnapshot, all: { blocks: saved, drafts, lives } } ) || [];
 			for ( const item of items ) {
-				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block.block, state: item.state, prop: item.prop } );
+				const hit = ledgerMatch( ledger, { ref: target.ref, surface: surface.name, block: block?.block ?? null, state: item.state, prop: item.prop } );
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
-					ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block.block, family: family.name, ...item } );
+					ops.push( { surface: surface.name, postId: surface.postId, ref: target.ref, key, block: block?.block ?? item.insert?.block ?? null, family: family.name, ...item } );
 					row( { family: family.name, status: 'written', prop: item.prop, why: item.why, ref: item.ref ?? target.ref } );
 				} else {
 					row( { family: family.name, status: item.status, prop: item.prop, why: item.why, ...( item.state ? { state: item.state } : {} ), ...( item.block ? { block: item.block } : {} ) } );
@@ -218,6 +223,11 @@ export function judge( ops, reads ) {
 			}
 			if ( c.fx ) {
 				return { ...c, got: facts?.fx ?? null, ok: String( facts?.fx ?? '' ).split( ' ' ).includes( c.fx ) };
+			}
+			if ( c.box ) {
+				// The layout box of an inserted layer, in whole pixels.
+				const got = facts?.layout?.[ c.box ] ?? null;
+				return { ...c, got, ok: null !== got && Math.abs( got - c.want ) <= 1 };
 			}
 			if ( c.motion ) {
 				const pose = motionOf( facts?.hover );
@@ -316,6 +326,11 @@ async function main() {
 			const reach = opensPanel ? { reach: [ ...new Set( [ ...( t.reach ?? [] ), ...panelIds( skeleton, surface.name ) ] ) ] } : {};
 			return { ...t, ...reach, ...( undefined === part ? {} : { live: part } ), ...( aux.length ? { aux } : {} ) };
 		} );
+		// Bare decorative layers the skeleton found and the post lacks (lib/apply-family-layers.mjs).
+		if ( families.some( ( f ) => f.layers ) ) {
+			const layered = layerTargets( { repo: REPO, client, surface: surface.name, pairs: surface.pairs, saved, decisions: JSON.parse( fs.readFileSync( DECISIONS_FILE, 'utf8' ) ) } );
+			surface.pairs.push( ...layered.targets );
+		}
 		joined.notes.forEach( ( n ) => console.log( `${ surface.name }: skeleton node ${ n.id } (${ n.block }) unpaired: ${ n.why }` ) );
 		surface.pairs.filter( ( t ) => t.via?.startsWith( 'skeleton' ) ).forEach( ( t ) => console.log( `${ surface.name }: skeleton ${ t.key } <- ${ t.tpl } (nearest ${ t.nearest_tpl })` ) );
 		Object.entries( joined.aliases ).forEach( ( [ id, ref ] ) => console.log( `${ surface.name }: skeleton wrapper ${ id } resolves to ${ ref }` ) );
@@ -358,7 +373,7 @@ async function main() {
 			// A read that cannot see a saved value (a grid on an inner element) proposes what is already saved: that is no change.
 			// A write the re-read rolled back stays out until --retry and keeps its no-effect row, so a run settles on zero ops.
 			const ops = decided.filter( ( op ) => {
-				const changes = patchesOf( foldOps( [ op ], blocks ) ).size > 0;
+				const changes = changesPost( op, blocks );
 				const row = rows.find( ( r ) => r.ref === ( op.ref ?? r.ref ) && r.family === op.family && r.prop === op.prop && 'written' === r.status );
 				if ( ! changes && row ) {
 					row.status = 'equal';
@@ -377,7 +392,7 @@ async function main() {
 			console.log( `${ surface.name }: ${ ops.length } ops, ${ rows.length } rows` );
 		} );
 
-		const patches = patchesOf( foldOps( allOps, blocks ) );
+		const patches = patchesFor( allOps, blocks );
 		for ( const [ postId, list ] of patches ) {
 			patch( site, postId, list, tmp, true );
 		}

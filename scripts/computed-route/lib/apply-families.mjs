@@ -15,7 +15,8 @@ import { width } from './apply-family-width.mjs';
 import { chrome } from './apply-family-chrome.mjs';
 import { link } from './apply-family-link.mjs';
 import { drawer } from './apply-family-drawer.mjs';
+import { layers, layerStack } from './apply-family-layers.mjs';
 
-export const FAMILIES = [ clip, pin, motion, state, statemotion, form, tiles, width, link, chrome, drawer ];
+export const FAMILIES = [ clip, pin, motion, state, statemotion, form, tiles, width, link, chrome, drawer, layers, layerStack ];
 
 export const familyProps = ( families ) => [ ...new Set( families.flatMap( ( f ) => f.props ) ) ].sort();

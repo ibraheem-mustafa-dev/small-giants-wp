@@ -24,6 +24,28 @@ export function foldOps( ops, blocks ) {
 	return posts;
 }
 
+// Whether an op changes the post: an insert always does; any other op does when its folded attributes differ from the saved ones.
+export const changesPost = ( op, blocks ) => !! op.insert || patchesOf( foldOps( [ op ], blocks ) ).size > 0;
+
+// The inserts of a run as patch-block-attrs.php operations, per post, in the order the ops were decided (the writer places several
+// inserts at one anchor in that order, which keeps the draft's child order).
+export function insertsOf( ops ) {
+	const out = new Map();
+	for ( const op of ops.filter( ( o ) => o.insert ) ) {
+		out.set( op.postId, [ ...( out.get( op.postId ) || [] ), { match: op.anchor.match, insert: op.insert, position: op.anchor.position } ] );
+	}
+	return out;
+}
+
+// Every patch of a run per post: the attribute patches of the folded ops, then the inserts.
+export function patchesFor( ops, blocks ) {
+	const out = patchesOf( foldOps( ops, blocks ) );
+	for ( const [ postId, list ] of insertsOf( ops ) ) {
+		out.set( postId, [ ...( out.get( postId ) || [] ), ...list ] );
+	}
+	return out;
+}
+
 // One patch-block-attrs.php operation per changed block.
 export function patchesOf( posts ) {
 	const out = new Map();
@@ -60,6 +82,10 @@ export function patchesOf( posts ) {
 // The patch that takes one failed op back out of a block. Each attribute it wrote returns to what the block's kept ops leave
 // there, so an op sharing the attribute (several families merge into sgsMotion) keeps its work; with none, to the saved value.
 export function restoreOf( op, blocks, kept = [] ) {
+	// An inserted block goes back by being removed: its className is its ref.
+	if ( op.insert ) {
+		return { match: op.ref, block: op.insert.block, remove: true };
+	}
 	const saved = blocks[ op.postId ]?.blocks?.[ op.ref ]?.attrs ?? {};
 	const others = kept.filter( ( o ) => o !== op && o.postId === op.postId && o.ref === op.ref );
 	const after = foldOps( others, blocks ).get( op.postId )?.get( op.ref )?.node.attributes ?? saved;
