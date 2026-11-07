@@ -120,6 +120,8 @@ require_once $sgs_blocks_dir . '/includes/helpers-link.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-stagger.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-emitter.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-delays.php';
+// The loop items' hover markers read the item part's sanitised motion document.
+require_once $sgs_blocks_dir . '/includes/motion/field-types/class-sgs-motion-document.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-loop-inherit.php';
 require_once $sgs_blocks_dir . '/includes/motion/class-sgs-motion-delegate.php';
 

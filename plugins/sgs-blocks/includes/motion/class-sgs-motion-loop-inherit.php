@@ -135,7 +135,7 @@ final class Sgs_Motion_Loop_Inherit {
 	 */
 	public static function hover_attrs( string $block_name, array $attributes, string $item_selector ): array {
 		$part = self::item_part( $block_name, $item_selector );
-		$raw  = $attributes[ Sgs_Motion_Renderer::ATTR ] ?? null;
+		$raw  = $attributes['sgsMotion'] ?? null;
 		if ( null === $part || empty( $raw ) ) {
 			return array();
 		}

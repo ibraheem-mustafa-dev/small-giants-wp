@@ -457,7 +457,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( { asideBorderWidth: next } )
 						}
 					/>
-
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<ShadowControl
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }

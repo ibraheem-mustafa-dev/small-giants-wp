@@ -301,7 +301,9 @@
 					"label": "Entry image",
 					"order": 4,
 					"clusters": [],
-					"_note": "The picture (or video or SVG) each entry prints opposite its text. A motion target only: the entry image takes entrance and hover from the Motion panel, and no block attribute styles it."
+					"_note": "The picture (or video or SVG) each entry prints opposite its text. A motion target only: the entry image takes entrance and hover from the Motion panel, and no block attribute styles it.",
+					"absentIn": [ "progress", "plain" ],
+					"absentWhy": "The entry image renders only for an entry that has an image; these paths render entries without one."
 				},
 				"dateActive": {
 					"motion": false,

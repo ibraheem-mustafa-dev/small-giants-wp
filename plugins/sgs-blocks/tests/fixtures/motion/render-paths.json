@@ -1665,6 +1665,10 @@
     "pagination": "none"
    },
    "paths": {
+    "filters": {
+    	"why": "showFilters on: the category filter buttons print above the grid", "unrendered": "the filter buttons are the category terms, which the harness cannot supply (no get_terms), so with filters on the block prints nothing here",
+    	"attrs": { "showFilters": true }
+    },
     "card-badge": {
      "why": "cardStyle card with a featured image and a category: the badge (sgs-post-grid__badge sgs-post-grid__category-badge) prints over the image, before the content wrapper",
      "attrs": {
@@ -2865,6 +2869,10 @@
      "attrs": {
       "connectorProgressFill": true
      }
+    },
+    "media": {
+    	"why": "an entry with media prints the image slot opposite its text: an inline SVG, which needs no attachment",
+    	"attrs": { "connectorProgressFill": true, "entries": [ { "date": "2020", "title": "Founded", "description": "The sample company began.", "mediaType": "svg", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 10\"><rect width=\"10\" height=\"10\"/></svg>" } ] }
     },
     "plain": {
      "why": "connectorProgressFill off: entries only, no progress li",

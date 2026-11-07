@@ -86,6 +86,8 @@
         },
         "filter": {
           "selector": ".sgs-post-grid__filter",
+          "absentIn": [ "card-badge", "overlay-badge", "flat-inline-category", "minimal-no-image", "card-placeholder" ],
+          "absentWhy": "The filter buttons print only with showFilters on; these paths render the grid without them.",
           "label": "Filter chip",
           "order": 10,
           "clusters": [ "text", "fill", "layout" ],
