@@ -609,5 +609,18 @@
     },
     "reason": "The draft darkens the text (#0A7EA8 to #075E80) and the clone also enlarged it; Bean ruled both stopped: the text colour stays the resting colour and the button does not scale on hover. The arrow gap nudge stays.",
     "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)"
+  },
+  {
+    "id": "D-42",
+    "block": "sgs/hero",
+    "scope": "every page with a split hero, tablet and mobile (stacked)",
+    "node": "stacked hero content and image",
+    "state": "rest",
+    "property": "width, side padding",
+    "expected": {
+      "rule": "draft"
+    },
+    "reason": "Bean's list item HP15 (stacked hero stuck left and squashed) measured equal to the draft at 375, 768 and 900 (same widths, 32px side padding). Bean: keep it as the draft; it was right from the start.",
+    "decided": "2026-11-07 Bean ruling (Indus round 8 board)"
   }
 ]
