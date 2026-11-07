@@ -171,7 +171,7 @@ Three 0-byte `sgs-framework.db` stubs exist on disk (repo root, `plugins/sgs-blo
 
 **`block_attributes.enum_values`** and **`block_source_gaps`**
 
-- `enum_values` is block.json's `enum` when it declares one; otherwise the allowed values the block's own source states: the option lists of its SelectControl, RadioControl and ToggleGroupControl (`block-source-choices.js`, parsed as code and followed through constants, barrels and shared components) and its PHP allow-lists (`block-source-php.php`, including helpers such as `sgs_list_marker_types`; the default is added to a PHP list). A list built at run time, or PHP allow-lists that disagree, is never guessed: it is a row in `block_source_gaps` (`block_slug`, `attr_name`, `kind`, `reason`), as is every select or toggle setting no readable list states.
+- `enum_values` is block.json's `enum` when it declares one; otherwise the allowed values the block's own source states: the option lists of its SelectControl, RadioControl and ToggleGroupControl (`block-source-choices.js`, parsed as code and followed through constants, barrels and shared components) and its PHP allow-lists (`block-source-php.php`, including helpers such as `sgs_list_marker_types`; the default is added to a PHP list). A list built at run time, or PHP allow-lists that disagree, is never guessed: it is a row in `block_source_gaps` (`block_slug`, `attr_name`, `kind`, `reason`), as is every select or toggle setting no readable list states. A per-breakpoint object stores the choices of one tier; on a size property those are presets beside a free length, which the resolver does not enforce (`lib/resolve.mjs::tierEnumDef`).
 
 **`design_tokens`**
 
