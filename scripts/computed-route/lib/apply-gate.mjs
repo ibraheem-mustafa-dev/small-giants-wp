@@ -18,6 +18,9 @@ const TIMING = /^transition-(duration|timing-function)$/;
 const STATES = /^(hover|focus|active|open|checked|current)$/;
 const stateOf = ( row ) => row.state ?? String( row.prop ?? '' ).trim().split( /\s+/ ).slice( 0, -1 ).find( ( w ) => STATES.test( w ) ) ?? '';
 
+// The part a row names before its property (`consent-text color` -> `consent`, `tile hover box-shadow` -> `tile`), or ''.
+const partOf = ( row ) => String( row.prop ?? '' ).trim().split( /\s+/ ).slice( 0, -1 ).find( ( w ) => ! STATES.test( w ) && /^[a-z]+(-[a-z]+)*$/.test( w ) )?.split( '-' )[ 0 ] ?? '';
+
 // A setting holds a state when the DB records it (block_attributes.css_state), or, unrecorded, when its name ends in the state.
 const holds = ( s, state ) => ( s.css_state ?? /(Hover|Focus|Active|Open|Checked|Current)$/.exec( s.attr_name )?.[ 1 ].toLowerCase() ?? '' ) === state;
 
@@ -30,8 +33,10 @@ export function judgeRow( row, settingsOf ) {
 	if ( all.some( ( s ) => s.attr_name === row.prop && /[A-Z]/.test( s.attr_name ) ) ) {
 		return 'unresolved';
 	}
-	// A resting setting cannot hold a hover value, nor a hover setting a resting one.
-	const settings = all.filter( ( s ) => holds( s, stateOf( row ) ) );
+	// A resting setting cannot hold a hover value, nor a hover setting a resting one; a row about a part (`consent-text color`)
+	// counts only the settings whose element or name names that part.
+	const part = partOf( row );
+	const settings = all.filter( ( s ) => holds( s, stateOf( row ) ) && ( ! part || `${ s.css_element ?? '' } ${ s.attr_name }`.toLowerCase().includes( part ) ) );
 	if ( settings.some( ( s ) => s.attr_name === row.prop ) ) {
 		return 'unresolved';
 	}

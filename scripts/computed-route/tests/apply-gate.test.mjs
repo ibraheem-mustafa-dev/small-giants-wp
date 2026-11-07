@@ -24,6 +24,15 @@ test( 'a setting counts only for its own state', () => {
 	assert.equal( judgeRow( { block: 'sgs/x', prop: 'box-shadow' }, settingsOf ), 'no-setting' );
 } );
 
+test( 'a row about a part counts only settings for that part', () => {
+	const parts = { 'sgs/f': [ { attr_name: 'labelColour', css_property: 'color', css_element: 'field-label' }, { attr_name: 'tileBorderColourHover', css_property: 'border-color', css_element: 'tile', css_state: 'hover' } ] };
+	const of = ( b ) => parts[ b ] ?? [];
+	assert.equal( judgeRow( { block: 'sgs/f', prop: 'consent-text color' }, of ), 'no-setting' );
+	assert.equal( judgeRow( { block: 'sgs/f', prop: 'field color' }, of ), 'unresolved' );
+	assert.equal( judgeRow( { block: 'sgs/f', prop: 'tile hover border-top-color' }, of ), 'unresolved' );
+	assert.equal( judgeRow( { block: 'sgs/f', prop: 'color' }, of ), 'unresolved' );
+} );
+
 test( 'negative controls: no such setting, the recorded timing gap, and rows the DB cannot judge', () => {
 	assert.equal( judgeRow( { block: 'sgs/x', prop: 'letter-spacing' }, settingsOf ), 'no-setting' );
 	assert.equal( judgeRow( { block: 'sgs/x', prop: 'hover transition-duration' }, settingsOf ), 'no-setting' );
