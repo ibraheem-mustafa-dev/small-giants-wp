@@ -1,12 +1,15 @@
 // The applier's element probes: parts of a block the pairing does not reach, read on both sides at 1440 into facts[ key ].probes.
 //   sgs/form: every field of every step (the draft's steps are reached through its component's setState, READING-DC-FILES section 1;
 //     the live form holds every step in its markup) with its label, and the first field under keyboard focus.
-//   sgs/form-field-tiles: the first tile at rest, selected (clicked, pointer moved away) with its check mark and label, and hovered.
+//   sgs/form: also the consent sentence's text (`consent`: the checkbox's label text) and the first floating label under focus (`focusLabel`), where the draft's moves up and shrinks.
+//   sgs/form-field-tiles: the first tile at rest, selected (clicked, pointer moved away) with its check mark and label, and hovered;
+//     `multi` says whether a second click leaves the first tile chosen, `tplId` and `dc` name the draft's tile element.
 export const FIELD_REST_PROPS = [ 'background-color', 'color', 'border-top-color', 'border-top-width', 'border-top-style', 'font-size', 'font-weight' ];
 export const FIELD_FOCUS_PROPS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'outline-color', 'outline-style', 'outline-width' ];
 export const LABEL_PROPS = [ 'color', 'font-size', 'font-weight', 'font-family', 'letter-spacing', 'text-transform', 'line-height' ];
-export const TILE_PROPS = [ 'background-color', 'color', 'border-top-color', 'border-top-width', 'box-shadow' ];
-export const CHECK_PROPS = [ 'position', 'top', 'width', 'height', 'color', 'background-color' ];
+export const TILE_PROPS = [ 'background-color', 'color', 'border-top-color', 'border-top-width', 'box-shadow', 'transform', 'translate', 'scale', 'rotate' ];
+export const CONSENT_PROPS = [ 'font-size', 'font-weight', 'font-family', 'line-height', 'color' ];
+export const CHECK_PROPS = [ 'position', 'display', 'top', 'width', 'height', 'color', 'background-color' ];
 
 const FIELD_SELECTOR = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=file]):not([type=button]), textarea, select';
 
@@ -44,6 +47,16 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector ] ) {
 	} );
 }
 
+// In page: the text of the first consent checkbox's label, as the visitor reads it.
+function consentFacts( [ finder, resolveSrc, props ] ) {
+	// eslint-disable-next-line no-new-func
+	const root = new Function( `return (${ resolveSrc });` )()( finder );
+	const box = root?.querySelector( 'input[type=checkbox]' );
+	const label = box && ( box.closest( 'label' ) || box.parentElement );
+	const text = label && ( label.querySelector( '.sgs-form-field__consent-text' ) || label );
+	return text ? Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( text ).getPropertyValue( p ).trim() ] ) ) : null;
+}
+
 async function focusRead( page, { finder, resolveSrc } ) {
 	return page.evaluate( ( [ f, src, props, selector ] ) => {
 		// eslint-disable-next-line no-new-func
@@ -55,9 +68,12 @@ async function focusRead( page, { finder, resolveSrc } ) {
 		}
 		field.scrollIntoView( { block: 'center' } );
 		field.focus( { focusVisible: true } );
+		const label = ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' );
 		return new Promise( ( done ) => setTimeout( () => {
 			const cs = getComputedStyle( field );
-			done( Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) ) );
+			const read = Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
+			const ls = label ? getComputedStyle( label ) : null;
+			done( { read, label: ls ? { 'font-size': ls.fontSize, color: ls.color } : null } );
 			field.blur();
 		}, 500 ) );
 	}, [ finder, resolveSrc, FIELD_FOCUS_PROPS, FIELD_SELECTOR ] );
@@ -109,7 +125,11 @@ async function formProbe( page, args ) {
 			fields = reached.flat();
 		}
 	}
-	return fields.length ? { fields, steps, focus: await focusRead( page, args ) } : null;
+	if ( ! fields.length ) {
+		return null;
+	}
+	const focused = await focusRead( page, args );
+	return { fields, steps, focus: focused?.read ?? null, focusLabel: focused?.label ?? null, consent: await page.evaluate( consentFacts, [ finder, resolveSrc, CONSENT_PROPS ] ) };
 }
 
 function tileFacts( [ finder, resolveSrc, props, checkProps, labelProps ] ) {
@@ -120,31 +140,79 @@ function tileFacts( [ finder, resolveSrc, props, checkProps, labelProps ] ) {
 		return null;
 	}
 	const read = ( el, p ) => Object.fromEntries( p.map( ( x ) => [ x, getComputedStyle( el ).getPropertyValue( x ).trim() ] ) );
-	const check = tile.querySelector( '.sgs-form-tile__check' ) || [ ...tile.querySelectorAll( '*' ) ].find( ( e ) => 'absolute' === getComputedStyle( e ).position && parseFloat( getComputedStyle( e ).width ) <= 48 );
+	// The tick: the block's own badge, else a small absolute badge, else an inline svg (a draft's tick before the label).
+	const check = tile.querySelector( '.sgs-form-tile__check' ) || [ ...tile.querySelectorAll( '*' ) ].find( ( e ) => 'absolute' === getComputedStyle( e ).position && parseFloat( getComputedStyle( e ).width ) <= 48 ) || tile.querySelector( 'svg' );
 	const label = tile.querySelector( '.sgs-form-tile__label' ) || tile.firstElementChild;
 	const r = tile.getBoundingClientRect();
-	return { tile: read( tile, props ), check: check ? read( check, checkProps ) : null, label: label ? read( label, labelProps ) : null, at: { x: r.left + r.width / 2, y: r.top + r.height / 2 } };
+	const host = tile.closest( '[data-sc-name]' );
+	return { tile: read( tile, props ), check: check ? read( check, checkProps ) : null, label: label ? read( label, labelProps ) : null, at: { x: r.left + r.width / 2, y: r.top + r.height / 2 }, hovered: tile.matches( ':hover' ), tplId: tile.getAttribute( 'data-dc-tpl' ), dc: host?.getAttribute( 'data-sc-name' ) ?? null };
+}
+
+// Puts the pointer on the element `pick` names (smooth scrolling can carry the page on after it lands, so the box is re-read until
+// it holds still and the landing confirmed by :hover) and returns where it stands.
+async function aimAt( page, { finder, resolveSrc, second = false } ) {
+	const where = () => page.evaluate( ( [ f, src, next ] ) => {
+		// eslint-disable-next-line no-new-func
+		const root = new Function( `return (${ src });` )()( f );
+		const first = root && ( root.matches( 'button, [role=radio], label' ) ? root : root.querySelector( '.sgs-form-tile, button' ) );
+		const group = [ ...( first?.parentElement?.children ?? [] ) ].filter( ( e ) => e.tagName === first.tagName );
+		const el = next ? group[ group.indexOf( first ) + 1 ] : first;
+		if ( ! el ) {
+			return null;
+		}
+		el.scrollIntoView( { block: 'center' } );
+		const r = el.getBoundingClientRect();
+		return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+	}, [ finder, resolveSrc, second ] );
+	let at = await where();
+	for ( let i = 0; at && i < 8; i++ ) {
+		await page.waitForTimeout( 300 );
+		const now = await where();
+		const still = now && Math.abs( now.x - at.x ) < 0.5 && Math.abs( now.y - at.y ) < 0.5;
+		at = now;
+		if ( still ) {
+			break;
+		}
+	}
+	return at;
+}
+
+// Whether a second click leaves the first tile chosen (several answers) or moves the choice (one): the first tile's ground after
+// the second tile is clicked, against its chosen ground. Null where the field has one tile or the chosen ground is not read.
+async function multiRead( page, { finder, resolveSrc, selected } ) {
+	const chosen = selected?.tile?.[ 'background-color' ];
+	const at = chosen ? await aimAt( page, { finder, resolveSrc, second: true } ) : null;
+	if ( ! at ) {
+		return null;
+	}
+	await page.mouse.click( at.x, at.y );
+	await page.mouse.move( 1, 1 );
+	await page.waitForTimeout( 700 );
+	await aimAt( page, { finder, resolveSrc } );
+	await page.mouse.move( 1, 1 );
+	await page.waitForTimeout( 400 );
+	const after = await page.evaluate( tileFacts, [ finder, resolveSrc, [ 'background-color' ], [], [] ] );
+	return after?.tile?.[ 'background-color' ] === chosen;
 }
 
 async function tileProbe( page, { finder, resolveSrc } ) {
 	const args = [ finder, resolveSrc, TILE_PROPS, CHECK_PROPS, LABEL_PROPS ];
-	await page.evaluate( ( [ f, src ] ) => {
-		// eslint-disable-next-line no-new-func
-		const root = new Function( `return (${ src });` )()( f );
-		( root?.matches( 'button, [role=radio], label' ) ? root : root?.querySelector( '.sgs-form-tile, button' ) )?.scrollIntoView( { block: 'center' } );
-	}, [ finder, resolveSrc ] );
-	const rest = await page.evaluate( tileFacts, args );
-	if ( ! rest ) {
+	const at = await aimAt( page, { finder, resolveSrc } );
+	if ( ! at || ! ( await page.evaluate( tileFacts, args ) ) ) {
 		return null;
 	}
-	await page.mouse.move( rest.at.x, rest.at.y );
-	await page.waitForTimeout( 700 );
-	const hover = await page.evaluate( tileFacts, args );
-	await page.mouse.click( rest.at.x, rest.at.y );
+	const rest = await page.evaluate( tileFacts, args );
+	let hover = null;
+	for ( let i = 0; i < 3 && ! hover?.hovered; i++ ) {
+		await page.mouse.move( at.x, at.y );
+		await page.waitForTimeout( 700 );
+		hover = await page.evaluate( tileFacts, args );
+	}
+	await page.mouse.click( at.x, at.y );
 	await page.mouse.move( 1, 1 );
 	await page.waitForTimeout( 700 );
 	const selected = await page.evaluate( tileFacts, args );
-	return { rest, hover, selected };
+	return { rest, hover: hover?.hovered ? hover : null, selected, multi: await multiRead( page, { finder, resolveSrc, selected } ) };
 }
 
 export async function probeRead( page, { keys, finderOf, resolveSrc, tpls, blocks, side } ) {

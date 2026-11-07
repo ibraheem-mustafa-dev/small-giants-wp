@@ -70,12 +70,57 @@ test( 'a marquee wrapper mask gives the edge fade width', () => {
 	assert.equal( fadeWidth( 'none' ), null );
 } );
 
-test( 'a hero descendant call becomes the split hero media part, the frame for the outer element and the image for the innermost', () => {
+test( 'a hero descendant call becomes the split hero media parts, the media column for the frame and the image for the innermost', () => {
 	const mk = ( tpl, frames, options ) => ( { key: target.ref, own: false, tpl, frames, options } );
 	const frame = mk( '216', [ { opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' } ], { duration: 1100, delay: 200, easing: 'ease' } );
 	const image = mk( '217', [ { transform: 'scale(1.18)' }, { transform: 'scale(1)' } ], { duration: 1600, delay: 200, easing: 'ease' } );
 	const items = motion.decide( { target, block: 'sgs/hero', saved: { variant: 'split' }, draft: at( { box: { y: 100 } } ), animate: at( [ frame, image ] ), recordsIndex: new Map(), records: [], db, rawSnapshot } );
 	const doc = items.find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
-	assert.deepEqual( Object.keys( doc.elements ).sort(), [ 'split-image', 'split-media' ] );
+	assert.deepEqual( Object.keys( doc.elements ).sort(), [ 'media', 'split-image' ] );
 	assert.equal( doc.elements[ 'split-image' ].entrance.base.values.duration, 1600 );
+	assert.equal( doc.elements.media.entrance.base.values.duration, 1100 );
+	// Negative control: a hero the draft animates nothing on gets no op.
+	const none = motion.decide( { target, block: 'sgs/hero', saved: { variant: 'split' }, draft: at( { box: { y: 100 } } ), animate: at( [] ), recordsIndex: new Map(), records: [], db, rawSnapshot } );
+	assert.deepEqual( none, [] );
+} );
+
+test( 'a frame entrance saved on the image element moves to the media column, and a second run is equal', () => {
+	const mk = ( tpl, frames, options ) => ( { key: target.ref, own: false, tpl, frames, options } );
+	const frame = mk( '216', [ { opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' } ], { duration: 1100, delay: 200, easing: 'ease' } );
+	const image = mk( '217', [ { transform: 'scale(1.18)' }, { transform: 'scale(1)' } ], { duration: 1600, delay: 200, easing: 'ease' } );
+	const args = ( saved ) => ( { target, block: 'sgs/hero', saved, draft: at( { box: { y: 100 } } ), animate: at( [ frame, image ] ), recordsIndex: new Map(), records: [], db, rawSnapshot } );
+	const first = motion.decide( args( { variant: 'split' } ) ).find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
+	const stale = structuredClone( first );
+	stale.elements[ 'split-media' ] = { entrance: structuredClone( first.elements.media.entrance ) };
+	delete stale.elements.media;
+	const moved = motion.decide( args( { variant: 'split', sgsMotion: stale } ) ).find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
+	assert.equal( moved.elements[ 'split-media' ]?.entrance, undefined );
+	assert.ok( moved.elements.media.entrance );
+	assert.equal( motion.decide( args( { variant: 'split', sgsMotion: first } ) ).some( ( i ) => 'op' === i.status ), false );
+} );
+
+test( 'a list of cards in a block that declares its items part becomes that part with the draft stagger; a lone or clipped call does not', () => {
+	const card = ( delay ) => ( { key: target.ref, own: false, tpl: '606', frames: [ { opacity: 0, transform: 'translateY(40px) scale(.96)' }, { opacity: 1, transform: 'none' } ], options: { duration: 800, delay, easing: 'ease' } } );
+	const calls = [ 0, 80, 160, 240 ].map( card );
+	const rec = { id: 'A-09', mechanism: 'waapi', name: 'Children of grids', element: { template_tpl_id: [ '606' ], description: 'Grid children' }, trigger: { type: 'scroll-into-view' }, stagger: { ms: 80, base_ms: 0, cap_ms: 560 } };
+	const tr = { id: 'TR-1', mechanism: 'css-transition', name: 'a p.title p.excerpt', element: { template_tpl_id: [ '606' ], description: 'a p.title p.excerpt' } };
+	const recordsIndex = new Map( [ [ 'Root/606', [ rec, tr ] ] ] );
+	const run = ( animate, block = 'sgs/post-grid' ) => motion.decide( { target, block, saved: {}, draft: at( { box: { y: 900 }, items: { n: 4 } } ), animate: at( animate ), recordsIndex, records: [ rec ], db, rawSnapshot, surface: { pairs: [ target ] }, all: { blocks: {}, drafts: {} } } );
+	const op = run( calls ).find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
+	assert.equal( op.elements.card.entrance.base.values.delay ?? 0, 0 );
+	assert.deepEqual( op.stagger, { apply: true, offset: 0, step: 80, cap: 560 } );
+	assert.deepEqual( run( [ card( 0 ) ] ).map( ( i ) => i.status ), [ 'no-setting' ] );
+	assert.deepEqual( run( calls, 'sgs/container' ).map( ( i ) => i.status ), [ 'no-setting' ] );
+	const clip = calls.map( ( c ) => ( { ...c, frames: [ { opacity: 0, clipPath: 'inset(10%)' }, { opacity: 1, clipPath: 'inset(0)' } ] } ) );
+	assert.deepEqual( run( clip ).map( ( i ) => i.status ), [ 'no-setting' ] );
+} );
+
+test( 'a call on an element a record describes as a part of the block is that part', () => {
+	const line = { key: target.ref, own: false, tpl: '297', frames: [ { transform: 'scaleX(0)' }, { transform: 'scaleX(1)' } ], options: { duration: 1400, delay: 200, easing: 'ease' } };
+	const rec = { id: 'A-06', mechanism: 'waapi', name: 'Horizontal line draw', element: { template_tpl_id: [ '297' ], description: 'the dashed connector between steps' }, trigger: { type: 'scroll-into-view' } };
+	const recordsIndex = new Map( [ [ 'Root/297', [ rec ] ] ] );
+	const run = ( block ) => motion.decide( { target, block, saved: {}, draft: at( { box: { y: 900 } } ), animate: at( [ line ] ), recordsIndex, records: [ rec ], db, rawSnapshot, surface: { pairs: [ target ] }, all: { blocks: {}, drafts: {} } } );
+	const op = run( 'sgs/process-steps' ).find( ( i ) => 'op' === i.status );
+	assert.ok( op?.writes[ 0 ].value.elements.connector.entrance );
+	assert.equal( run( 'sgs/container' ).some( ( i ) => 'op' === i.status ), false );
 } );

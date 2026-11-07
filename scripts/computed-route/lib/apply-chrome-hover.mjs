@@ -3,6 +3,7 @@
 // record's own `to`; a record that is absent leaves the setting alone.
 import { reachOf } from './apply-skeleton.mjs';
 import { hoverTo, recordsOf, rotation, scaleOf, settle, translate } from './apply-chrome-records.mjs';
+import { rowIndentOff } from './apply-chrome-rows.mjs';
 
 const GLOW = /^(.*?)\s+((?:rgba?|hsla?)\([^)]*\)|#[0-9a-f]{3,8})$/i;
 
@@ -53,6 +54,7 @@ function megaPanel( ctx ) {
 	};
 	const text = pick( group, /\.label/, 'X' );
 	text && add( 'drawerLinkTextShiftHover', translate( text.t.value ), text.r );
+	text && out.push( ...rowIndentOff( { all: ctx.all, shift: translate( text.t.value ), record: text.r.id } ) );
 	const lift = hasAside ? pick( aside, null, 'Y' ) : pick( group.filter( ( r ) => /^a\b/.test( r.element?.description ?? '' ) ), null, 'Y' );
 	lift && add( 'drawerCardHoverLift', Math.abs( translate( lift.t.value, 'Y' ) ), lift.r );
 	const tilt = hasAside ? null : pick( group.filter( ( r ) => /^a\b/.test( r.element?.description ?? '' ) ), null, 'rot' );
@@ -61,7 +63,13 @@ function megaPanel( ctx ) {
 	arrow && add( 'drawerCardLinkShiftHover', translate( arrow.t.value ), arrow.r );
 	const fade = group.find( ( r ) => describes( r, /arrowIcon/ ) && hoverTo( [ r ], 'opacity' ) );
 	if ( fade && ! hoverTo( [ fade ], 'color' ) ) {
-		out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only; its hover colour needs a pointer read inside the opened accordion, which the drawer config does not open for this surface` } );
+		// The record gives opacity only: the arrow keeps its own colour (the row's text colour, or the colour set for it) and reaches full opacity.
+		const keep = ctx.saved.drawerLinkTrailingColour || ctx.saved.drawerLinkLabelColour;
+		if ( 'arrow' === ctx.saved.drawerLinkTrailingIcon && keep ) {
+			out.push( settle( { prop: 'drawerLinkTrailingColourHover', why: `${ ctx.target.tpl } the row arrow goes from 40% to full opacity on hover (${ fade.id }) in its own colour ${ keep }`, saved: ctx.saved, writes: [ { attr: 'drawerLinkTrailingColourHover', value: keep } ], record: fade.id, state: 'hover' } ) );
+		} else {
+			out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only and the panel has no arrow icon or row colour to hold it at full opacity` } );
+		}
 	}
 	return out;
 }

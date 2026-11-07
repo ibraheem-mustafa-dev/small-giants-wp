@@ -37,10 +37,26 @@ export function writeOf( { saved, merge, schema, why, record, checks = [] } ) {
 	return { status: 'op', why, writes: [ { attr: 'sgsMotion', value: { v: 1, elements: { root: merge } }, merge: 'deep' } ], checks, ...( record ? { record } : {} ) };
 }
 
+const STILL = { scale: 1, x: 0, y: 0, rotate: 0 };
+
+// A draft element that does not move on hover, over a live block whose style lifts or enlarges it: the style's own hover
+// movement (builtInHoverLift) is switched off so the live pose is the draft's.
+export function stillHover( { block, saved, draft, live, db } ) {
+	const want = motionOf( draft[ 1440 ]?.hover );
+	const have = motionOf( live[ 1440 ]?.hover );
+	if ( ! want || ! have || ! motionClose( want, STILL ) || motionClose( have, STILL ) || ! declaredAttr( block, 'builtInHoverLift', db ) ) {
+		return [];
+	}
+	if ( false === saved.builtInHoverLift ) {
+		return [ { status: 'equal', prop: 'hover motion', state: 'hover', why: 'the block already drops its style hover movement' } ];
+	}
+	return [ { status: 'op', prop: 'hover motion', state: 'hover', why: `the draft does not move on hover; the live ${ block } moves ${ JSON.stringify( have ) }`, writes: [ { attr: 'builtInHoverLift', value: false } ], checks: [ { width: 1440, state: 'hover', prop: 'transform', motion: true, want: STILL } ] } ];
+}
+
 export function hoverMotion( { target, block, saved, draft, live, recordsIndex, db, rawSnapshot } ) {
 	const records = recordsFor( recordsIndex, target.tpl ).filter( ( r ) => 'hover' === r.trigger?.type );
 	if ( ! records.some( holdsMotion ) ) {
-		return [];
+		return stillHover( { block, saved, draft, live, db } );
 	}
 	const want = motionOf( draft[ 1440 ]?.hover );
 	if ( ! want ) {

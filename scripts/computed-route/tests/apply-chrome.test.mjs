@@ -151,3 +151,55 @@ test( 'skeleton panels: a menu reaches the mega panels other surfaces draw, neve
 	assert.deepEqual( panelIds( skeleton, 'header' ), [ 65 ] );
 	assert.deepEqual( panelIds( [], 'header' ), [] );
 } );
+
+const GRAD = 'radial-gradient(circle at 30% 107%, red 0%, blue 90%)';
+const anchorRec = ( id, tpl, props ) => ( { ...rec( id, tpl, 'hover', props ), element: { dc: 'D', template_tpl_id: String( tpl ), description: 'a' } } );
+const iconBlocks = ( extra = {} ) => ( {
+	'cr-ref-d-5': { block: 'sgs/social-icons', attrs: {} },
+	'cr-ref-d-6': { block: 'sgs/icon', attrs: { backgroundColour: '#0A66C2' } },
+	'cr-ref-d-7': { block: 'sgs/icon', attrs: { backgroundColourGradient: GRAD, ...extra } },
+	'cr-ref-d-8': { block: 'sgs/button', attrs: {} },
+} );
+const hoverProps = [ { property: 'transform', from: null, to: 'scale(1.15)' }, { property: 'box-shadow', from: null, to: '0 10px 20px -6px red' } ];
+
+test( 'chrome icons: child icons whose hover record names no background keep their ground on hover, paired in order with the records', () => {
+	const recordsIndex = recordIndex( [ anchorRec( 'R1', 181, hoverProps ), anchorRec( 'R2', 193, hoverProps ) ], 'D' );
+	const items = chrome.decide( ctx( { block: 'sgs/social-icons', recordsIndex, target: { ref: 'cr-ref-d-5', tpl: 'Root/180#0', reach: [ 180, 181, 193 ] }, all: { blocks: iconBlocks() } } ) );
+	const ops = items.filter( ( i ) => 'op' === i.status );
+	assert.deepEqual( ops.map( ( o ) => [ o.ref, o.block, o.writes ] ), [
+		[ 'cr-ref-d-6', 'sgs/icon', [ { attr: 'backgroundColourHover', value: '#0A66C2' } ] ],
+		[ 'cr-ref-d-7', 'sgs/icon', [ { attr: 'backgroundColourHoverGradient', value: GRAD } ] ],
+	] );
+	// Negative controls: already saved is equal; a record that names a background leaves the icon alone; a count mismatch is a no-setting row.
+	const saved = chrome.decide( ctx( { block: 'sgs/social-icons', recordsIndex, target: { ref: 'cr-ref-d-5', tpl: 'Root/180#0', reach: [ 180, 181, 193 ] }, all: { blocks: iconBlocks( { backgroundColourHoverGradient: GRAD } ) } } ) );
+	assert.equal( saved.find( ( i ) => 'cr-ref-d-7' === i.ref ).status, 'equal' );
+	const named = recordIndex( [ anchorRec( 'R1', 181, hoverProps ), anchorRec( 'R2', 193, [ ...hoverProps, { property: 'background-color', from: null, to: '#fff' } ] ) ], 'D' );
+	const none = chrome.decide( ctx( { block: 'sgs/social-icons', recordsIndex: named, target: { ref: 'cr-ref-d-5', tpl: 'Root/180#0', reach: [ 180, 181, 193 ] }, all: { blocks: iconBlocks() } } ) );
+	assert.ok( ! none.some( ( i ) => 'cr-ref-d-7' === i.ref ) );
+	const short = recordIndex( [ anchorRec( 'R1', 181, hoverProps ) ], 'D' );
+	const mismatch = chrome.decide( ctx( { block: 'sgs/social-icons', recordsIndex: short, target: { ref: 'cr-ref-d-5', tpl: 'Root/180#0', reach: [ 180, 181 ] }, all: { blocks: iconBlocks() } } ) );
+	assert.deepEqual( mismatch.map( ( i ) => i.status ), [ 'no-setting' ] );
+	assert.deepEqual( chrome.decide( ctx( { block: 'sgs/social-icons', recordsIndex, target: { ref: 'cr-ref-d-5', tpl: 'Root/180#0', reach: [ 180, 181, 193 ], slot: 'x' }, all: { blocks: iconBlocks() } } ) ), [] );
+} );
+
+test( 'chrome mega rows: the drawer text shift switches the row indent off for the tablet tier; no shift, no change; already off is equal; the arrow keeps its own colour', () => {
+	const skeleton = [ { id: 'drawer', nodes: flatten( [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/mega-group', t: '149' } ] }, { b: 'sgs/x', t: '178' } ] } ] ) } ];
+	const rowRec = ( id, tpl, desc, props ) => ( { ...rec( id, tpl, 'hover', props ), element: { dc: 'D', template_tpl_id: String( tpl ), description: desc } } );
+	const recs = [
+		rowRec( 'R-text', 153, 'span {{ link.label }}', [ { property: 'transform', from: null, to: 'translateX(4px)' } ] ),
+		rowRec( 'R-fade', 156, 'span {{ arrowIcon }}', [ { property: 'opacity', from: '0.4', to: '1' } ] ),
+	];
+	const row = ( devices ) => ( { block: 'sgs/container', attrs: { sgsMotion: { v: 1, elements: { root: { hover: { state: { values: { indent: 6 }, ...( devices ? { devices } : {} ) } } } } } } } );
+	const run = ( blocks, saved = {}, recordsIndex = recordIndex( recs, 'D' ) ) => chrome.decide( ctx( { block: 'sgs/mega-panel', skeleton, recordsIndex, saved, all: { blocks } } ) );
+	const [ off ] = run( { 'cr-ref-m-2': row(), 'cr-ref-m-3': { block: 'sgs/container', attrs: {} } } ).filter( ( i ) => 'cr-ref-m-2' === i.ref );
+	assert.equal( 'op', off.status );
+	assert.deepEqual( off.writes[ 0 ].value.elements.root.hover.state.devices, { tablet: { indent: 0 } } );
+	assert.equal( 'deep', off.writes[ 0 ].merge );
+	assert.ok( ! run( { 'cr-ref-m-3': { block: 'sgs/container', attrs: {} } } ).some( ( i ) => 'cr-ref-m-3' === i.ref ) );
+	assert.equal( run( { 'cr-ref-m-2': row( { tablet: { indent: 0 } } ) } ).find( ( i ) => 'cr-ref-m-2' === i.ref ).status, 'equal' );
+	const noShift = recordIndex( recs.slice( 1 ), 'D' );
+	assert.ok( ! run( { 'cr-ref-m-2': row() }, {}, noShift ).some( ( i ) => 'cr-ref-m-2' === i.ref ) );
+	const arrow = run( {}, { drawerLinkTrailingIcon: 'arrow', drawerLinkLabelColour: '#2C3E50' } ).find( ( i ) => 'drawerLinkTrailingColourHover' === i.prop );
+	assert.deepEqual( arrow.writes, [ { attr: 'drawerLinkTrailingColourHover', value: '#2C3E50' } ] );
+	assert.equal( run( {}, {} ).find( ( i ) => 'drawerLinkTrailingColourHover' === i.prop ).status, 'no-setting' );
+} );

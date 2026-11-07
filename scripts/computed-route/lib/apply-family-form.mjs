@@ -2,9 +2,10 @@
 // focus settings), so every field of every step is read (lib/apply-probes.mjs: the draft's steps through its component's
 // setState) and each property goes through the resolver at the field's part. Where the draft's fields differ among themselves
 // the item is a no-setting row naming the values. The first field is also read under keyboard focus.
-import { FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs';
+import { CONSENT_PROPS, FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs';
 import { partItems } from './apply-probe-items.mjs';
 import { fieldWidths } from './apply-form-width.mjs';
+import { matches } from './apply-ops.mjs';
 
 const FOCUS = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow' ];
 const col = ( fields, key, prop ) => fields.map( ( f ) => f[ key ]?.[ prop ] );
@@ -28,6 +29,22 @@ function focusRing( { saved, d, l } ) {
 	return [ { status: 'op', prop: 'fieldFocusRingWidth', state: 'focus', why: `focus ring ${ d.focus[ 'box-shadow' ] }`, writes: [ { attr: 'fieldFocusRingColour', value: ring.colour }, { attr: 'fieldFocusRingWidth', value: ring.width } ], checks: [] } ];
 }
 
+// A label that shrinks as it floats up in the draft (focus size below its resting size) takes the floated size setting, which holds the
+// floated state alone; the resting label size stays the label size setting's.
+export function floatedLabel( { saved, d, l } ) {
+	const want = d.focusLabel?.[ 'font-size' ];
+	const rest = d.fields?.find( ( f ) => f.label )?.label?.[ 'font-size' ];
+	const have = l.focusLabel?.[ 'font-size' ];
+	if ( ! want || ! rest || parseFloat( want ) >= parseFloat( rest ) || ! have || matches( have, want ) ) {
+		return [];
+	}
+	const value = `${ parseFloat( want ) }px`;
+	if ( saved.labelFloatedFontSize?.desktop === value ) {
+		return [ { status: 'no-setting', prop: 'labelFloatedFontSize', state: 'focus', why: `labelFloatedFontSize already holds ${ value }, yet the live floated label is ${ have }, not the draft's ${ want }: another rule wins` } ];
+	}
+	return [ { status: 'op', prop: 'labelFloatedFontSize', state: 'focus', why: `the draft's label shrinks from ${ rest } to ${ want } as it floats`, writes: [ { attr: 'labelFloatedFontSize', value: { ...( saved.labelFloatedFontSize ?? {} ), desktop: value } } ], checks: [ { width: 1440, prop: 'font-size', want, probe: [ 'focusLabel' ] } ] } ];
+}
+
 export const form = {
 	name: 'form',
 	// grid-column: the span each field reads (the draft's cells are grid items whose placement the field width settings decide).
@@ -47,10 +64,13 @@ export const form = {
 		for ( const prop of LABEL_PROPS ) {
 			items.push( ...partItems( { ctx, element: 'field-label', prop, drafts: col( d.fields, 'label', prop ), lives: col( l.fields, 'label', prop ), check: { all: 'label' }, why } ) );
 		}
+		for ( const prop of CONSENT_PROPS ) {
+			items.push( ...partItems( { ctx, element: 'consent-text', prop, drafts: [ d.consent?.[ prop ] ], lives: [ l.consent?.[ prop ] ], check: { probe: [ 'consent' ] } } ) );
+		}
 		items.push( ...focusRing( { saved: ctx.saved, d, l } ) );
 		for ( const prop of FOCUS.filter( ( p ) => 'box-shadow' !== p || ! ringOf( d.focus?.[ p ] ) ).filter( () => d.focus && l.focus ) ) {
 			items.push( ...partItems( { ctx, element: 'field-input', prop, state: 'focus', drafts: [ d.focus[ prop ] ], lives: [ l.focus[ prop ] ], check: { probe: [ 'focus' ] } } ) );
 		}
-		return [ ...items, ...fieldWidths( ctx ) ];
+		return [ ...items, ...floatedLabel( { saved: ctx.saved, d, l } ), ...fieldWidths( ctx ) ];
 	},
 };

@@ -1,9 +1,10 @@
 // Applier family: chrome. Header, footer and drawer settings the clone leaves at their defaults and the draft shows: the animated
 // logo, the header strip leaving with the page, burger bars, drawer row and card hovers, the open-status badge, the footer list
-// shift and the process steps' connector. Rules sit in apply-chrome-logo, -hover and -state; each reads the draft's records, a
+// shift and the process steps' connector. Rules sit in apply-chrome-logo, -hover and -state; each (and -icons, a row's child icons) reads the draft's records, a
 // computed read, or the client's data file, and returns nothing for a block it does not govern.
 import { logoRule } from './apply-chrome-logo.mjs';
 import { hoverRule } from './apply-chrome-hover.mjs';
+import { iconRule } from './apply-chrome-icons.mjs';
 import { burgerBars, connectorLine, pulseDot, rowWrapper, stateRule } from './apply-chrome-state.mjs';
 
 export const chrome = {
@@ -22,6 +23,6 @@ export const chrome = {
 		return { 'sgs/nav-bar-menu': burgerBars, 'sgs/process-steps': connectorLine, 'sgs/business-info': pulseDot }[ ctx.block ]?.( ctx ) ?? [];
 	},
 	decide( ctx ) {
-		return [ logoRule, hoverRule, stateRule ].flatMap( ( rule ) => rule( ctx ) );
+		return [ logoRule, hoverRule, iconRule, stateRule ].flatMap( ( rule ) => rule( ctx ) );
 	},
 };
