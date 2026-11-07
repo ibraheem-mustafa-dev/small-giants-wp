@@ -4,7 +4,14 @@
 import { focalPointToObjectPosition } from '../../../utils';
 import { isTileMode } from '../tile-preview';
 
-export default function GalleryCanvasItem( { item, attributes, captionStyle, tileStyle, tileFitContain } ) {
+export default function GalleryCanvasItem( {
+	item,
+	attributes,
+	captionStyle,
+	tileStyle,
+	tileFitContain,
+	hiddenOnDevice = false,
+} ) {
 	const { aspectRatio, showCaptions } = attributes;
 	const tile = isTileMode( attributes );
 	const isVideo =
@@ -25,7 +32,11 @@ export default function GalleryCanvasItem( { item, attributes, captionStyle, til
 	};
 	return (
 		<figure
-			className="sgs-gallery__item"
+			className={
+				hiddenOnDevice
+					? 'sgs-gallery__item sgs-gallery__item--hidden-on-device'
+					: 'sgs-gallery__item'
+			}
 			style={ {
 				...( aspectRatio ? { '--sgs-aspect-ratio': aspectRatio } : {} ),
 				...tileStyle,

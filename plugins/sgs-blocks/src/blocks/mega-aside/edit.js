@@ -19,6 +19,7 @@
  * @return {JSX.Element} The block editor UI.
  */
 
+import { resolveShadowPreviewComposed } from '../../utils/tokens';
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
@@ -121,6 +122,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	}
 	if ( isCssGradient( asideBgGradient ) ) {
 		previewStyle.backgroundImage = asideBgGradient;
+	}
+	if ( attributes.asideShadow ) {
+		previewStyle.boxShadow = resolveShadowPreviewComposed(
+			attributes.asideShadow,
+			attributes.asideShadowColour
+		);
 	}
 	Object.assign(
 		previewStyle,

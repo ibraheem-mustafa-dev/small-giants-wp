@@ -119,6 +119,16 @@ export default function Edit( { attributes, setAttributes } ) {
 	// preview would always show the desktop tier while the operator edits
 	// tablet/mobile.
 	const previewTier = usePreviewTier();
+
+	// The device's visible-item count (0 or unset shows all); a narrower tier inherits the wider one, as render.php does.
+	const hiddenFromTier = ( counts, tier ) => {
+		const tiers = [ 'desktop', 'tablet', 'mobile' ];
+		const order = tiers.slice( 0, tiers.indexOf( tier ) + 1 ).reverse();
+		const found = order
+			.map( ( t ) => Number( counts?.[ t ] ) )
+			.find( ( n ) => Number.isFinite( n ) && n >= 0 );
+		return found > 0 ? found : 0;
+	};
 	// The layout is per device: `tierLayout` is what the previewed device shows, `layoutTiers.desktop` the wrapper class
 	// (render.php's `sgs-gallery--<desktop layout after the carousel rewrite>`).
 	const layoutTiers = galleryLayoutTiers( layout );
@@ -474,6 +484,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				hasBandProps={ hasBandProps }
 				bandStyle={ bandStyle }
 				items={ items }
+				hiddenFrom={ hiddenFromTier(
+					attributes.visibleItems,
+					previewTier
+				) }
 				captionStyle={ captionStyle }
 				tileStyle={ tileStyle }
 				tileFitContain={ attributes.tileFitContain }

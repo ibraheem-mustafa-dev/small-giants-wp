@@ -72,8 +72,8 @@ final class Sgs_Motion_Reveal_Default {
 	public static function tokens(): array {
 		if ( null === self::$tokens ) {
 			$tokens = apply_filters( 'sgs_motion_reveal_tokens', null );
-			if ( null === $tokens && function_exists( 'wp_get_global_settings' ) ) {
-				$tokens = wp_get_global_settings( array( 'custom', 'entrance' ) );
+			if ( null === $tokens && function_exists( 'sgs_global_custom_setting' ) ) {
+				$tokens = sgs_global_custom_setting( 'entrance' );
 			}
 			self::$tokens = is_array( $tokens ) ? $tokens : array();
 		}

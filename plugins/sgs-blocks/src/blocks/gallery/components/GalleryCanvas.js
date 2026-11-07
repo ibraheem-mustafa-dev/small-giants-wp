@@ -8,6 +8,7 @@ import { resolveGalleryMedia } from '../resolve-gallery-media';
 
 export default function GalleryCanvas( {
 	attributes,
+	hiddenFrom = 0,
 	blockProps,
 	hasBandProps,
 	bandStyle,
@@ -172,6 +173,9 @@ export default function GalleryCanvas( {
 								captionStyle={ captionStyle }
 								tileStyle={ tileStyle }
 								tileFitContain={ tileFitContain }
+								hiddenOnDevice={
+									hiddenFrom > 0 && index >= hiddenFrom
+								}
 							/>
 						) ) }
 					</div>

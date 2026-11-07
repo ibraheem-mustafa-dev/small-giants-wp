@@ -1382,6 +1382,16 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
+   "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
+   "selector": "[data-sgs-hover-group]:hover .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
+   "reason": "fixed paint, no setting: the outline shape answering its card, as its own hover arm (2026-11-07)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/icon/style.css",
+   "selector": "[data-sgs-hover-group]:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon--follows-group.sgs-icon--outline .sgs-icon__shape",
+   "reason": "fixed paint, no setting: the outline shape answering its card, as its own hover arm (2026-11-07)"
+  },
+  {
    "file": "plugins/sgs-blocks/src/blocks/info-box/style.css",
    "selector": ".sgs-info-box.sgs-has-grayscale:hover img",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"

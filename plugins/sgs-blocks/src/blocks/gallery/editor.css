@@ -149,3 +149,8 @@
 	pointer-events: none;
 	background: var( --sgs-gallery-caption-fill, transparent );
 }
+
+/* Items the previewed device's visible-item count hides stay editable, dimmed (render.php hides them on the page). */
+.sgs-gallery__item--hidden-on-device {
+	opacity: 0.35;
+}
