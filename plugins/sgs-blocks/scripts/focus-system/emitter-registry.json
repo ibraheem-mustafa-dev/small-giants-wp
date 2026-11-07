@@ -64,6 +64,12 @@
 			"reason": "A runtime query (Element.matches(':focus-visible')) in actions.linkTriggerFocus: only keyboard focus on a parent link that is its panel's trigger opens the panel; it paints nothing."
 		},
 		{
+			"path": "plugins/sgs-blocks/src/shared/nav-interactivity/mega-disclosure.js",
+			"contains": "target.matches(",
+			"category": "not-css",
+			"reason": "A focus read: submenuOpenOnFocus opens a panel for keyboard-style focus only, so a mouse press or tap never does. It paints nothing."
+		},
+		{
 			"path": "plugins/sgs-blocks/includes/helpers-link-underline.php",
 			"contains": "$state_sel = ",
 			"category": "shared-state",
