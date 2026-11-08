@@ -39,9 +39,12 @@ final class MegaPanelDrawerArrowNudgeTest extends TestCase {
 
 	public function test_the_nudge_transitions_the_elements_it_moves(): void {
 		$css = $this->css( array( 'drawerCardLinkShiftHover' => 4 ) );
-		$this->assertStringContainsString( '.aside > .sgs-button:last-child,.aside > :last-child:not(.sgs-button) .sgs-button__icon', $css );
-		$this->assertMatchesRegularExpression( '/\.aside > \.sgs-button:last-child,[^{]*\{transition:transform 300ms/', $css );
-		$this->assertMatchesRegularExpression( '/\.aside:hover > \.sgs-button:last-child,[^{]*\{transform:translateX\(4px\)\}/', $css );
+		// "last" skips the whole-card link overlay the card appends after its slots
+		$this->assertStringContainsString( '.aside > .sgs-button:nth-last-child(1 of :not(.sgs-block-link-overlay))', $css );
+		$this->assertStringContainsString( ' > .sgs-container__inner > .sgs-button:last-child', $css );
+		$this->assertMatchesRegularExpression( '/\.aside > \.sgs-button:nth-last-child[^{]*\{transition:transform 300ms/', $css );
+		$this->assertMatchesRegularExpression( '/\.aside:hover > \.sgs-button:nth-last-child[^{]*\{transform:translateX\(4px\)\}/', $css );
+		$this->assertStringNotContainsString( '.aside > .sgs-button:last-child', $css, 'negative control: a bare :last-child never matches a card with a link overlay' );
 		$this->assertStringNotContainsString( ':nth-child(5)', $css, 'the transition no longer depends on the link being the fifth slot' );
 	}
 

@@ -315,7 +315,7 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 			$ratio = '2 / 1';
 		}
 		// Capped like the aside's image (mega-panel render.php caps it at 170px), so the box never leaves a gap below it.
-		return $aside_sel . ' .sgs-media-box--fill{height:auto;aspect-ratio:' . $ratio . ';max-height:170px;}';
+		return $aside_sel . ' .sgs-media-box--fill{width:100%;height:auto;aspect-ratio:' . $ratio . ';max-height:170px;}';
 	}
 }
 
@@ -471,12 +471,15 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_hover_css' ) ) {
 			$calm[] = $aside_sel;
 		}
 		if ( $nudge > 0 ) {
-			// A round link button in its own slot moves as a whole; a link inside a wrapper or with a label moves its icon.
-			// The transition rides on exactly the elements the hover moves.
+			// A link button that is the card's last slot (or the last item of its wrapper slot) moves as a whole; any other
+			// last slot moves the icon of the button it holds. "Last" skips the whole-card link overlay, which the card
+			// appends after its slots. The transition rides on exactly the elements the hover moves.
+			$last  = ':nth-last-child(1 of :not(.sgs-block-link-overlay))';
 			$icons = array(
-				' > .sgs-button:last-child',
-				' > :last-child:not(.sgs-button) .sgs-button__icon',
-				' > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon',
+				' > .sgs-button' . $last,
+				' > ' . $last . ':not(.sgs-button):not(.wp-block-sgs-container) .sgs-button__icon',
+				' > .wp-block-sgs-container:nth-child(2)' . $last . ' > .sgs-container__inner > .sgs-button:last-child',
+				' > .wp-block-sgs-container:nth-child(2)' . $last . ' > .sgs-container__inner > :last-child:not(.sgs-button) .sgs-button__icon',
 			);
 			$icon_sel = implode( ',', array_map( static fn( string $t ): string => $aside_sel . $t, $icons ) );
 			$css     .= $icon_sel . '{transition:transform ' . $time . ';}';
