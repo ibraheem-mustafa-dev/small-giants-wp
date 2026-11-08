@@ -181,7 +181,8 @@ $border = sgs_border_element_decls(
 			'gradient'       => 'borderColourGradient',
 			'hover_gradient' => 'borderColourHoverGradient',
 		),
-		'radius' => true,
+		'radius'       => true,
+		'hover_colour' => true,
 	)
 );
 // Only the square takes a radius (circle and pill draw theirs from style.css): drop any corner a stored value carries.
@@ -234,10 +235,8 @@ if ( $is_outline ) {
 // A box shape prints its saved hover border colour as --sgs-icon-border-colour-hover too, so an icon that follows a
 // hover group (no link of its own) shows it: style.css reads the property in the link-hover and group-hover rules.
 if ( ! $is_outline ) {
-	foreach ( (array) $border['hover'] as $border_hover_prop ) {
-		if ( preg_match( '/^\s*border-color\s*:\s*(.+?)\s*$/', (string) $border_hover_prop, $border_hover_var ) ) {
-			$outline_decls[] = '--sgs-icon-border-colour-hover:' . $border_hover_var[1];
-		}
+	if ( '' !== (string) ( $border['hover_colour'] ?? '' ) ) {
+		$outline_decls[] = '--sgs-icon-border-colour-hover:' . $border['hover_colour'];
 	}
 }
 
@@ -497,13 +496,11 @@ if ( $glyph_only && '' !== $brand_paint['ring'] && ! $is_outline ) {
 	if ( ! $border['hover'] ) {
 		$ring_decls[] = 'border-color:var(--sgs-si-border-colour-hover,' . sgs_colour_value( $brand_paint['border_hover'] ) . ')';
 	}
-	// The ring takes the icon's own border hover colour when it sets one (read from the border helper's hover
-	// declarations); otherwise the brand's.
+	// The ring takes the icon's own border hover colour when it sets one (the border helper's `hover_colour`);
+	// otherwise the brand's.
 	$ring_colour = sgs_colour_value( $brand_paint['ring'] );
-	foreach ( $border['hover'] as $border_hover_decl ) {
-		if ( preg_match( '/^\s*border-color\s*:\s*(.+?)\s*$/', (string) $border_hover_decl, $border_hover_match ) ) {
-			$ring_colour = $border_hover_match[1];
-		}
+	if ( '' !== (string) ( $border['hover_colour'] ?? '' ) ) {
+		$ring_colour = $border['hover_colour'];
 	}
 	// sgs-shadow-fallback: a 1px state ring on the border, not a drop shadow: it takes no lift and carries its own forced-colours outline.
 	$ring_decls[] = 'box-shadow:0 0 0 1px ' . $ring_colour;

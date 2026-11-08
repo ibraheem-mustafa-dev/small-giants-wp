@@ -284,6 +284,18 @@ final class BorderElementDeclsTest extends TestCase {
 	}
 
 	/**
+	 * `hover_colour` hands back the flat hover border colour without parsing the `hover` declarations.
+	 */
+	public function test_hover_colour_option_returns_the_flat_hover_colour(): void {
+		$colour = array( 'colour' => array( 'base' => 'borderColour', 'hover' => 'borderColourHover' ), 'hover_colour' => true );
+		$out    = $this->decls( array( 'borderColourHover' => '#B7410E' ), $colour );
+		$this->assertSame( '#B7410E', $out['hover_colour'] );
+		$this->assertSame( array( 'border-color:#B7410E' ), $out['hover'] );
+		$this->assertSame( '', $this->decls( array( 'borderColour' => '#111111' ), $colour )['hover_colour'], 'no hover colour set' );
+		$this->assertArrayNotHasKey( 'hover_colour', $this->decls( array( 'borderColourHover' => '#B7410E' ), array( 'colour' => $colour['colour'] ) ) );
+	}
+
+	/**
 	 * Without the `facts` option the result has no facts entry.
 	 */
 	public function test_facts_are_absent_unless_asked_for(): void {

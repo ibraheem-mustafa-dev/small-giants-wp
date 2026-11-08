@@ -142,15 +142,19 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 	 *                           `colour_as_paint` (true keeps the colour out of the
 	 *                           border: no border-color, ring or hover, for an
 	 *                           element that paints the colour itself from
-	 *                           `facts.paint`; default false).
-	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[], facts?: array{width_top: string, style: string, paint: string}}
+	 *                           `facts.paint`; default false); `hover_colour` (true
+	 *                           adds the `hover_colour` entry to the result, default
+	 *                           false).
+	 * @return array{base: string[], tablet: string[], mobile: string[], hover: string[], rules: string[], facts?: array{width_top: string, style: string, paint: string}, hover_colour?: string}
 	 *         Declarations without trailing semicolons; tablet and mobile are for
 	 *         the caller's max-width 1023px and 767px queries; hover is for the
 	 *         caller's guarded hover rule; rules are complete CSS rules. `facts`
 	 *         (only with the `facts` option) is the resolved top width as a CSS
 	 *         length or '', the style keyword, and the background-paint
 	 *         declaration for the colour map's `base` and `gradient` ('' when
-	 *         none or the style is none).
+	 *         none or the style is none). `hover_colour` (only with the
+	 *         `hover_colour` option) is the flat hover border colour as the
+	 *         `hover` declaration paints it, or '' when the hover paints none.
 	 */
 	function sgs_border_element_decls( array $attributes, string $prefix, string $selector, array $options = array() ): array {
 		$out = array(
@@ -161,7 +165,8 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			'rules'  => array(),
 		);
 
-		$width_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderWidth' ) ] ?? null;
+		$hover_colour = '';
+		$width_raw    = $attributes[ sgs_typography_attr( $prefix, 'BorderWidth' ) ] ?? null;
 		$style_raw = $attributes[ sgs_typography_attr( $prefix, 'BorderStyle' ) ] ?? '';
 		$style_kw  = sgs_border_style_keyword( $style_raw );
 		$is_none   = 'none' === $style_kw;
@@ -232,7 +237,8 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 						$out['rules'][] = sgs_border_gradient_css( $selector . ':has(:focus-visible)', $hover_grad, null, $ring_width );
 					}
 				} elseif ( '' !== $hover_flat ) {
-					$out['hover'][] = 'border-color:' . sgs_colour_value( $hover_flat );
+					$out['hover'][]  = 'border-color:' . sgs_colour_value( $hover_flat );
+					$hover_colour    = sgs_colour_value( $hover_flat );
 				}
 			}
 		}
@@ -261,6 +267,9 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 
 		if ( ! empty( $options['facts'] ) ) {
 			$out['facts'] = $facts;
+		}
+		if ( ! empty( $options['hover_colour'] ) ) {
+			$out['hover_colour'] = $hover_colour;
 		}
 
 		return $out;

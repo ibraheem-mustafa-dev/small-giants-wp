@@ -65,6 +65,8 @@ if ( 'same-side' === $content_layout && ! empty( $attributes['cardLayout'] ) && 
 			'display:grid',
 			'grid-template-columns:minmax(0,1fr)',
 			"grid-template-areas:'media' 'date' 'content'",
+			// the date's own margins space the rows; the list layout's entry gap is for its date-beside-text row
+			'row-gap:0',
 			'--sgs-tl-card-display:grid',
 			'--sgs-tl-card-cols:minmax(0,1fr)',
 			"--sgs-tl-card-areas:'media' 'date' 'content'",

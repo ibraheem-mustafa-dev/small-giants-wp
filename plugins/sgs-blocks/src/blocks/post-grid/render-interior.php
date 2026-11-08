@@ -50,7 +50,7 @@ if ( $show_filters ) :
 			$sgs_pg_chip_attrs                                    = $attributes;
 			$sgs_pg_chip_attrs['sgsMotion']['stagger']['perRow'] = false;
 			$sgs_pg_chip_tagged                                   = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_pg_chips, 'sgs-post-grid__filter' );
-			$sgs_pg_chip_style                                    = (string) \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/post-grid', $uid, $sgs_pg_chip_attrs, $sgs_pg_chip_tagged['count'], '.sgs-post-grid__filter' );
+			$sgs_pg_chip_style                                    = (string) \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/post-grid', $uid, $sgs_pg_chip_attrs, $sgs_pg_chip_tagged['count'], '.sgs-post-grid__filter', 'filter' );
 			$sgs_pg_chips                                         = $sgs_pg_chip_tagged['html'];
 		}
 		echo $sgs_pg_chip_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers by Sgs_Motion_Loop_Delays.

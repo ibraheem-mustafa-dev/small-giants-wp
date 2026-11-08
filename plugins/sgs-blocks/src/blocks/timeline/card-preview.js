@@ -77,6 +77,7 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 		style.display = 'grid';
 		style.gridTemplateColumns = 'minmax(0, 1fr)';
 		style.gridTemplateAreas = "'media' 'date' 'content'";
+		style.rowGap = 0;
 	}
 	const maxWidth = lengthOf( tierValueOf( attributes.cardMaxWidth, tier ) );
 	if ( maxWidth ) {

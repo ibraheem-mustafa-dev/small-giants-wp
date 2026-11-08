@@ -72,6 +72,13 @@ export function rulingFor( index, { ref, surface, block, attrs = {}, part = null
 	return { rows, attrs: next, writes };
 }
 
+// The ledger reason for a write that changes nothing: it names the rulings only when one of them governs a written setting (a
+// ruling sets or removes it, or the write carries motion the ruling strips); otherwise the stored value already matches.
+export function noopWhy( writes, rule ) {
+	const governed = writes.some( ( w ) => rule.rows.some( ( r ) => w.attr in ( r.apply.set ?? {} ) || ( r.apply.remove?.attrs ?? [] ).includes( w.attr ) || 'sgsMotion' === w.attr ) );
+	return governed ? `${ rule.rows.map( ( r ) => r.id ).join( ', ' ) } overrules the draft value` : 'already the stored value';
+}
+
 // A family's writes with the rulings taken out: a removed setting is dropped, a `set` setting takes the ruling's value, and the ruled
 // effect values and hover pose are removed from any motion document the write carries.
 export function finish( writes, rule ) {

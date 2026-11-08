@@ -75,9 +75,8 @@ test( 'MUST FAIL: a routed CSS property the global list lacks is read for its ow
 	}
 	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/text' ) ), [], 'negative control: a block routing only read properties reads no more' );
 	assert.deepEqual( longhands( 'left,rule' ), [ 'left' ], 'a setting already reached through one property adds none of its others' );
-	for ( const block of [ 'sgs/collapsible-text', 'sgs/timeline' ] ) {
-		assert.deepEqual( unreadProps( attrsFor( db, block ) ), [], `${ block } is reached through its read properties, so its map stays as it is` );
-	}
+	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/collapsible-text' ) ), [], 'sgs/collapsible-text is reached through its read properties, so its map stays as it is' );
+	assert.deepEqual( unreadProps( attrsFor( db, 'sgs/timeline' ) ), [ 'grid-template-areas' ], 'sgs/timeline cardLayout routes grid-template-areas, read for the timeline alone' );
 	assert.deepEqual( longhands( 'place-self' ).sort(), [ 'align-self', 'justify-self' ], 'an unread shorthand is read as its longhands' );
 	assert.equal( fullBecause( { prev: { fingerprints: {}, extraProps: [ 'align-self' ], readKey: 'k' }, extraProps: [ 'align-self', 'mask-image' ], readKey: 'k' } )?.includes( 'own read list' ), true, 'a changed list measures the block in full and says why' );
 	assert.equal( paintKeyOf( 'a', 'b', {}, [] ), paintKeyOf( 'a', 'b', {} ), 'an untouched block keeps its paint key' );

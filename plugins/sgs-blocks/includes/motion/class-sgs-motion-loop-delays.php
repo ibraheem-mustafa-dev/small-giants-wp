@@ -240,10 +240,13 @@ final class Sgs_Motion_Loop_Delays {
 	 * With the stagger's `apply` on, an item part with no entrance of its own also takes the container's entrance
 	 * (`Sgs_Motion_Loop_Inherit::item_entrance`); `apply` off leaves the delays exactly as they are.
 	 *
+	 * @param string              $id_suffix     Added to the editor `<style>` tag ids (`-<suffix>`) when one block prints two item sets
+	 *                                           under one uid (the post grid's filter chips), so each tag id is printed once.
+	 *
 	 * @return string|null Null when the block has no stagger (do not tag the items); otherwise the `<style>` tag to echo
 	 *                     before the block (an empty string when the rules went to the front-end collector).
 	 */
-	public static function item_array( string $block_name, string $uid, array $attributes, int $count, string $item_selector ): ?string {
+	public static function item_array( string $block_name, string $uid, array $attributes, int $count, string $item_selector, string $id_suffix = '' ): ?string {
 		$stagger = self::normalise( $attributes['sgsMotion']['stagger'] ?? null );
 		if ( null === $stagger || $count < 1 || '' === $uid || 1 !== preg_match( '/^(?:\.[A-Za-z][A-Za-z0-9_-]*)+$/', $item_selector ) ) {
 			return null;
@@ -252,12 +255,12 @@ final class Sgs_Motion_Loop_Delays {
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $device ) {
 			$columns[ $device ] = Sgs_Motion_Stagger::columns_for_block( $block_name, $attributes, $device );
 		}
-		$inherit = Sgs_Motion_Loop_Inherit::item_entrance( $block_name, $uid, $attributes, $item_selector );
+		$inherit = Sgs_Motion_Loop_Inherit::item_entrance( $block_name, $uid, $attributes, $item_selector, true, $id_suffix );
 		$delays  = self::device_delays( $stagger, $count, $columns );
 		if ( null === $delays ) {
 			return $inherit;
 		}
-		return (string) $inherit . self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' );
+		return (string) $inherit . self::collect( self::rules( '.' . $uid . ' ' . $item_selector, $delays, true, self::close_delays( $attributes, $stagger, $delays ) ), $uid . '-loop' . ( '' !== $id_suffix ? '-' . $id_suffix : '' ) );
 	}
 
 	/**

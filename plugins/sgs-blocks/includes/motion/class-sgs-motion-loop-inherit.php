@@ -84,10 +84,12 @@ final class Sgs_Motion_Loop_Inherit {
 	 * @param bool                $moves         Whether this render prints items that take the entrance, so the
 	 *                                           container's own entrance moves (false for a post grid's empty first
 	 *                                           page, whose rule serves only cards fetched later).
+	 * @param string              $id_suffix     Added to the editor `<style>` tag id (`-<suffix>`) so a block that prints
+	 *                                           two item sets under one uid prints one tag per id.
 	 * @return string|null Null when nothing is inherited; otherwise the `<style>` tag to echo (an empty string when the
 	 *                     rule went to the front-end collector).
 	 */
-	public static function item_entrance( string $block_name, string $uid, array $attributes, string $item_selector, bool $moves = true ): ?string {
+	public static function item_entrance( string $block_name, string $uid, array $attributes, string $item_selector, bool $moves = true, string $id_suffix = '' ): ?string {
 		if ( '' === $uid ) {
 			return null;
 		}
@@ -105,7 +107,7 @@ final class Sgs_Motion_Loop_Inherit {
 			'attrs' => $emitted['attrs'],
 		);
 		Sgs_Motion_Renderer::note_used( $emitted['attrs'] );
-		return self::collect( $emitted['css'], $uid . '-inherit' );
+		return self::collect( $emitted['css'], $uid . '-inherit' . ( '' !== $id_suffix ? '-' . $id_suffix : '' ) );
 	}
 
 	/**

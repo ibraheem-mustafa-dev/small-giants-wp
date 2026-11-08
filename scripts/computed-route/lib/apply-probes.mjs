@@ -85,7 +85,25 @@ function consentFacts( [ finder, resolveSrc, props ] ) {
 	return text ? Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( text ).getPropertyValue( p ).trim() ] ) ) : null;
 }
 
+// The vertical offset a CSS transform and the translate property add to a box, in px (the matrix's f, or a matrix3d's 14th value).
+export function translateY( { translate, transform } ) {
+	const ty = 'string' === typeof translate && 'none' !== translate ? parseFloat( translate.trim().split( /\s+/ )[ 1 ] ) || 0 : 0;
+	const m = /^matrix(3d)?\(([^)]*)\)$/.exec( String( transform ?? '' ).trim() );
+	const v = m ? m[ 2 ].split( ',' ).map( parseFloat ) : [];
+	return ty + ( m ? ( m[ 1 ] ? v[ 13 ] : v[ 5 ] ) || 0 : 0 );
+}
+
+// The CSS `top` a floated label holds, as a visitor sees it: its layout top plus the transform's vertical shift, to two decimals.
+export function floatedTop( label ) {
+	return null === label?.layoutTop || undefined === label?.layoutTop ? null : `${ Math.round( ( label.layoutTop + translateY( label ) ) * 100 ) / 100 }px`;
+}
+
 async function focusRead( page, { finder, resolveSrc } ) {
+	const read = await focusProbe( page, { finder, resolveSrc } );
+	return read?.label ? { ...read, label: { 'font-size': read.label[ 'font-size' ], color: read.label.color, top: floatedTop( read.label ) } } : read;
+}
+
+async function focusProbe( page, { finder, resolveSrc } ) {
 	return page.evaluate( ( [ f, src, props, selector, holderSrc ] ) => {
 		// eslint-disable-next-line no-new-func
 		const root = new Function( `return (${ src });` )()( f );
@@ -103,10 +121,19 @@ async function focusRead( page, { finder, resolveSrc } ) {
 			const cs = getComputedStyle( field );
 			const read = Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
 			const ls = label ? getComputedStyle( label ) : null;
-			// The label's top edge from its containing block (the field's box), as the CSS `top` a floated label holds.
+			// The label's layout top from its containing block (the field's box), read with the transform properties off, and the
+			// translation those properties add: a draft floats its label by `top` or by a translate, and `floatedTop` sums the two.
 			const box = label?.offsetParent ?? field.parentElement;
-			const top = label && box ? `${ Math.round( ( label.getBoundingClientRect().top - box.getBoundingClientRect().top ) * 100 ) / 100 }px` : null;
-			done( { read, label: ls ? { 'font-size': ls.fontSize, color: ls.color, top } : null } );
+			const seen = ls ? { 'font-size': ls.fontSize, color: ls.color, translate: ls.translate, transform: ls.transform } : null;
+			let layoutTop = null;
+			if ( label && box ) {
+				const held = [ 'transform', 'translate', 'scale', 'rotate', 'transition' ].map( ( p ) => [ p, label.style.getPropertyValue( p ), label.style.getPropertyPriority( p ) ] );
+				[ 'transform', 'translate', 'scale', 'rotate' ].forEach( ( p ) => label.style.setProperty( p, 'none', 'important' ) );
+				label.style.setProperty( 'transition', 'none', 'important' );
+				layoutTop = label.getBoundingClientRect().top - box.getBoundingClientRect().top;
+				held.forEach( ( [ p, v, pr ] ) => ( v ? label.style.setProperty( p, v, pr ) : label.style.removeProperty( p ) ) );
+			}
+			done( { read, label: seen ? { ...seen, layoutTop } : null } );
 			field.blur();
 		}, 500 ) );
 	}, [ finder, resolveSrc, FIELD_FOCUS_PROPS, FIELD_SELECTOR, textHolderSrc ] );

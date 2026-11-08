@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import { ledgerIndex } from '../lib/apply-ledger.mjs';
-import { finish, rulingFor, same } from '../lib/apply-rulings.mjs';
+import { finish, noopWhy, rulingFor, same } from '../lib/apply-rulings.mjs';
 
 const rows = JSON.parse( fs.readFileSync( new URL( '../../../sites/indus-foods/build/qa/divergences.json', import.meta.url ), 'utf8' ) );
 const index = ledgerIndex( rows, { surfaces: null } );
@@ -61,4 +61,11 @@ test( 'same: an empty list saved by PHP equals an empty object; a filled value s
 	assert.equal( same( { values: [] }, { values: {} } ), true );
 	assert.equal( same( { values: [ 1 ] }, { values: {} } ), false );
 	assert.equal( same( { values: { maxPullX: 10 } }, { values: [] } ), false );
+} );
+
+test( 'a no-op write names a ruling only when the ruling governs a written setting', () => {
+	const rule = rulingFor( index, { ...where, attrs: { sgsMotion } } );
+	assert.match( noopWhy( [ { attr: 'sgsMotion', value: {} } ], rule ), /D-40 overrules the draft value/ );
+	assert.equal( noopWhy( [ { attr: 'label', value: 'Apply' } ], rule ), 'already the stored value' );
+	assert.equal( noopWhy( [ { attr: 'label', value: 'Apply' } ], { rows: [], attrs: {}, writes: [] } ), 'already the stored value' );
 } );

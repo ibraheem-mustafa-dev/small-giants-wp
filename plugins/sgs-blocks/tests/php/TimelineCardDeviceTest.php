@@ -38,8 +38,10 @@ final class TimelineCardDeviceTest extends TestCase {
 
 	public function test_stacked_layout_prints_per_device_ranges_and_side_prints_nothing(): void {
 		$out = $this->block( array( 'cardLayout' => array( 'desktop' => 'side', 'tablet' => 'stacked', 'mobile' => 'stacked' ) ) );
-		$this->assertMatchesRegularExpression( "/@media ?\(min-width:768px\) and \(max-width:1023px\)\{[^{]*\.sgs-timeline__entry\{display:grid;grid-template-columns:minmax\(0,1fr\);grid-template-areas:'media' 'date' 'content';--sgs-tl-card-display:grid;/", $out['css'] );
+		$this->assertMatchesRegularExpression( "/@media ?\(min-width:768px\) and \(max-width:1023px\)\{[^{]*\.sgs-timeline__entry\{display:grid;grid-template-columns:minmax\(0,1fr\);grid-template-areas:'media' 'date' 'content';row-gap:0;--sgs-tl-card-display:grid;/", $out['css'] );
 		$this->assertMatchesRegularExpression( "/@media ?\(max-width:767px\)\{[^{]*\.sgs-timeline__entry\{display:grid;/", $out['css'] );
+		// the stacked card spaces its rows by the date's own margins: the list layout's entry gap must not add a row gap
+		$this->assertMatchesRegularExpression( "/@media ?\(max-width:767px\)\{[^{]*\.sgs-timeline__entry\{display:grid;[^}]*row-gap:0;/", $out['css'] );
 		$this->assertDoesNotMatchRegularExpression( "/@media ?\(min-width:1024px\)\{[^{]*\.sgs-timeline__entry\{display:grid/", $out['css'], 'negative control: desktop stays side by side' );
 
 		$not_same_side = $this->block( array( 'contentLayout' => 'alternating', 'cardLayout' => array( 'tablet' => 'stacked' ) ) );
