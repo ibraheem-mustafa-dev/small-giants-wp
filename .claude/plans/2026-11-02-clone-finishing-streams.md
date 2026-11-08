@@ -40,26 +40,16 @@ Rules:
 
 ## Indus (state 2026-11-08)
 
-- **Live:** framework `dfd27d227` deployed to indus-test, and local-indus pushed to it. sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `04b4a67ee57f`.
+- **Live:** framework `fe51b4e78` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `04b4a67ee57f`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
-- **Next:**
-  1. Check by sight on indus-test, the draft beside live, the items that so far were closed only by per-item script reads. Any that does not match goes back through "How an item is worked".
-     - DE2 and FQ1: accordion open and close speed.
-     - CN1: tile hover shadow.
-     - CN4: floating label.
-     - ND19: drawer tile border.
-     - AB7: timeline cards at 375, 768 and 900.
-     - BL1: blog filter pill stagger.
-     - ND11A and ND1A: drawer accordion entrances.
-     - HP11 and HP13: process steps connector.
-     - HP8 and AP1B: today's two fixes.
-  2. Bean's look and sign-off.
+- **Next:** Bean's look at indus-test and sign-off. The items closed only by script reads were checked by sight beside the draft on 2026-11-08 (framework `fe51b4e78`; fix catalogue, "By-sight check"): AB8, ND19, the drawer labels and heading line breaks were fixed on the way, and every other item matched.
 - **Noticed, not on Bean's list:**
   - The home page is 36px wider than the screen at exactly 1024px.
   - The footer paragraph `cr-ref-footer-24` is centred at 768 to 1000px where the draft is left-aligned.
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
+  - The draft's drawer Brands panel has an "OUR BRANDS" label above the tiles; live's has none.
 
 ## Mama's (after Indus sign-off)
 
