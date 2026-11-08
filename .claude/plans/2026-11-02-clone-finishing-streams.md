@@ -40,15 +40,13 @@ Rules:
 
 ## Indus (state 2026-11-08)
 
-- **Live:** framework `ba6e4644e` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `c9b6e97f9a6e`.
+- **Live:** framework `8372f42b0` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `7c850505b401`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
 - **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The darker drawer blue was the draft's top-right glow, added in round 9b.
 - **Bean's second review of 2026-11-08 (5 items): done, worked from the draft's source** (framework `ba6e4644e`, shared DB `c9b6e97f9a6e`; fix catalogue, "Round 9b").
-- **Next (Bean's look of 2026-11-08: everything else is good), then Indus is complete:**
-  1. The About and Trade drawer feature cards' round arrow still does not slide right on hover (the Sectors cards and the sticky button do). The overlay-safe nudge selector (`mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_hover_css`) measured +4px on the About card at 375; check by sight at 375 and 768 on both cards which element Bean sees and whether the button's own motion or the card's lift overrides it.
-  2. The logo sun's faster spin on hover must last for the whole hover or touch-hold (it currently stops early): read the logo's svg-parts hover replay (`src/shared/svg-parts/svg-parts.js`, the part's hoverReplay and its loop) and the draft's own sun hover code first.
-  3. The trade application form's step indicator must hide the step names and keep only the numbers when they do not fit: read the draft's exact condition (`sites/indus-foods/handoff/TradeApplication.dc.html`, the step header markup and its width or layout rule), check whether `sgs/form`'s step indicator already has that behaviour or a setting for it, and build it only if missing.
+- **Bean's last look of 2026-11-08 (4 items): done and checked by sight on indus-test** (framework `8372f42b0`, shared DB `7c850505b401`; fix catalogue, "Round 10").
+- **Next:** Bean signs Indus off; then mark it complete here and in the LEDGER.
 - **After Indus is complete:** the Eye Care stream (Bean's 15-item list) plus a side-by-side comparison of the Eye Care pages Bean has not checked (checkout, account after sign-in, order confirmation).
 - **After sign-off:** bring sandybrown and mamas-test up to the current framework (one site at a time).
 - **Noticed, not on Bean's list:**

@@ -556,3 +556,9 @@ Round 9b, Bean's second review of 2026-11-08 (framework `ba6e4644e`, shared DB `
 - Cut-offs: the drawer's Sectors grid and Brands wrapper carried a clone-added `overflow:hidden` the draft does not have; removed (posts 157, 159). Framework safety net: a container clip on a box with no radius and no fill leaves `--sgs-hover-room` (12px).
 - Drawer glow: the draft paints a top-right radial white glow over the panel gradient; added as the drawer's Custom CSS `::before` (post 203).
 - Footer Back to top: the group's own hover tint removed (the circle keeps it); the arrow turns gold on hover (post 205).
+
+Round 10, Bean's last look of 2026-11-08 (framework `8372f42b0`, shared DB `7c850505b401`; each checked on indus-test beside the draft):
+- Drawer feature card arrows (About, Trade): the two card buttons lacked the shared button icon hover the Sectors card buttons carry; set the same (translateX 4, card as the hover group; posts 155, 161) and unset the panels' `drawerCardLinkShiftHover`, so the arrow has one mechanism.
+- Logo sun: the fast spin was a fixed 900ms burst (the draft's own timing). Framework: an svg-parts `hoverRate` lasts while hovered or touch-held when `hoverRateDuration` is 0 or unset; the header, drawer and footer logos dropped their 900 (posts 201, 203, 205).
+- Trade form step names: the form only hid them below a 480px form width; the draft hides them below a 768px screen. New `sgs/form` setting `stepNamesHidden` (per device), set to mobile (form post 163).
+- About hero paragraph: Bean asked for the label's look behind it: fill `#FFFFFF80`, no border, 18px corners, 12px by 16px padding, glow removed (post 92). Heading left as it is (reads on the yellow).
