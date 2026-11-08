@@ -38,7 +38,7 @@ Rules:
 - Work, build and push from a clean worktree of origin/main with its own `node_modules`; run site-check there with `--repo C:/Users/Bean/Projects/small-giants-wp` (the secrets stay in the main checkout).
 - On indus-test, `wp db export` exits 255 silently; push-to-remote backs up with mysqldump itself.
 
-## Indus (state 2026-11-08)
+## Indus (complete: Bean signed it off 2026-11-08)
 
 - **Live:** framework `f579fdb33` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `7c850505b401`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
@@ -47,9 +47,7 @@ Rules:
 - **Bean's second review of 2026-11-08 (5 items): done, worked from the draft's source** (framework `ba6e4644e`, shared DB `c9b6e97f9a6e`; fix catalogue, "Round 9b").
 - **Bean's last look of 2026-11-08 (4 items): done and checked by sight on indus-test** (framework `8372f42b0`, shared DB `7c850505b401`; fix catalogue, "Round 10").
 - **Bean's follow-up of 2026-11-08 (6 items): done and checked by sight on indus-test** (framework `f579fdb33`; fix catalogue, "Round 11").
-- **Next:** Bean signs Indus off; then mark it complete here and in the LEDGER.
-- **After Indus is complete:** the Eye Care stream (Bean's 15-item list) plus a side-by-side comparison of the Eye Care pages Bean has not checked (checkout, account after sign-in, order confirmation).
-- **After sign-off:** bring sandybrown and mamas-test up to the current framework (one site at a time).
+- **Signed off by Bean 2026-11-08** after round 11. sandybrown and mamas-test are brought up to the same framework (one site at a time).
 - **Noticed, not on Bean's list:**
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
@@ -59,10 +57,10 @@ Rules:
 - **Live:** mamas-test, framework `08c04900a`. Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/2026-11-05-mamas-merged-round.md`).
 - **Next:** Bean's look at mamas-test and his issues list, worked as above. The merged round plan's "Open" list holds what earlier rounds left.
 
-## Eye Care (after Indus)
+## Eye Care (now)
 
-- **Live:** eye-care-test, edited directly. Rounds 1 to 10 and the clean first paint are live at `53d789aa5`. The decided differences are in `decided.md`, and the round history is in the fix register.
-- **Next:** Bean's list `.claude/prompts/Eye Care Bean list 2026-11-08.md` (15 items), worked as above, plus a side-by-side comparison with the draft of the pages Bean has not checked (checkout, account after sign-in, order confirmation), then Bean's approval.
+- **Live:** eye-care-test, edited directly. Rounds 1 to 10 and the clean first paint are live (eye-care-test runs `d78a2ef5e`). The decided differences are in `decided.md`, and the round history is in the fix register.
+- **Next:** first propose every item's issue and fix to Bean for critique (he checks for features already built and whether each fix is optimal and robust long term) and apply nothing before his go; then apply Bean's list `.claude/prompts/Eye Care Bean list 2026-11-08.md` (15 items). Every item is investigated (2026-11-08, read-only): its cause and fix (post, block and setting, or framework file) are under "Findings" in that file, with the entrance sweep in `sites/eye-care-ward-end/build/qa/r11/entrances-2026-11-08.md` and the comparison of the pages Bean has not checked (checkout, account after sign-in, order confirmation). Settings first, then the framework fixes (link-style button hover colour, form buttons' preset lift, focus return with `preventScroll`, modal close scroll, buybox photo swap, cart icon-mode hover, accordion icon close); deploy eye-care-test; check each by sight beside the draft (`node E:/sgs-tmp/ec-r11/serve-draft.mjs`, port 5182); then Bean's approval.
   - The draft's index is `Eye Care Birmingham.dc.html`; the product pair uses gucci-oversized-cat-eye with the draft set to `curId: 2`.
   - Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only: some backups hold public embed keys the secret scanner flags).
   - The next deploy to eye-care-test carries the touch-hover change; tap-check it at 375.
