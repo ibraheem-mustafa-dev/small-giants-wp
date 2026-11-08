@@ -91,6 +91,7 @@ final class Sgs_Motion_Editor_Canvas {
 			'clip-r' => '0%',
 			'clip-b' => '0%',
 			'clip-l' => '0%',
+			'clip-round' => '0px',
 		);
 		$rules   = '';
 		foreach ( $resting as $channel => $value ) {

@@ -188,4 +188,42 @@ final class MotionRendererEntranceTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css );
 		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css, 'movement still plays' );
 	}
+
+	private static function clip_reveal( array $from, array $to = array() ): array {
+		$values = array( 'from' => $from, 'duration' => 600 );
+		if ( array() !== $to ) {
+			$values['to'] = $to;
+		}
+		return array(
+			'v'        => 1,
+			'elements' => array( 'root' => array( 'entrance' => array( 'base' => array( 'trigger' => 'load', 'values' => $values ) ) ) ),
+		);
+	}
+
+	public function test_clip_round_emits_the_from_and_to_corner_radius_inputs(): void {
+		$this->render( self::clip_reveal( array( 'clip' => 8, 'clipRound' => 26 ), array( 'clip' => 0, 'clipRound' => '22px' ) ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-clip:8%;', $css );
+		$this->assertStringContainsString( '--sgs-me-from-clip-round:26px;', $css );
+		$this->assertStringContainsString( '--sgs-me-to-clip-round:22px;', $css );
+	}
+
+	public function test_clip_round_is_composed_in_the_shipped_clip_keyframes(): void {
+		foreach ( array( 'motion.css', 'motion-triggers.css' ) as $file ) {
+			$sheet = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/' . $file );
+			$this->assertStringNotContainsString( 'var(--sgs-me-clip-l));', $sheet, "{$file}: every inset() carries the corner radius" );
+			$this->assertStringContainsString( 'var(--sgs-me-clip-l) round var(--sgs-me-clip-round));', $sheet );
+		}
+		$sheet = (string) file_get_contents( dirname( __DIR__, 2 ) . '/assets/css/motion.css' );
+		$this->assertStringContainsString( "@property --sgs-me-clip-round { syntax: '<length>'; inherits: false; initial-value: 0px; }", $sheet );
+		$this->assertStringContainsString( '--sgs-me-clip-round: var(--sgs-me-from-clip-round, 0px);', $sheet );
+		$this->assertStringContainsString( '--sgs-me-clip-round: var(--sgs-me-to-clip-round, 0px);', $sheet );
+	}
+
+	public function test_clip_without_a_round_emits_no_round_input(): void {
+		$this->render( self::clip_reveal( array( 'clip' => 8 ), array( 'clip' => 0 ) ) );
+		$css = $this->css();
+		$this->assertStringContainsString( '--sgs-me-from-clip:8%;', $css );
+		$this->assertStringNotContainsString( 'clip-round', $css, 'an unset round writes nothing' );
+	}
 }

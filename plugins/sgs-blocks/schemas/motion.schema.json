@@ -1444,7 +1444,7 @@
 		{
 			"channel": "clip-path",
 			"composition": "single-owner",
-			"formula": "clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))",
+			"formula": "clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round))",
 			"owners": [
 				{
 					"owner": "entrance",
@@ -1472,6 +1472,11 @@
 							"syntax": "<length-percentage>",
 							"initial": "0%",
 							"edge": "left"
+						},
+						{
+							"name": "--sgs-me-clip-round",
+							"syntax": "<length>",
+							"initial": "0px"
 						}
 					]
 				}
@@ -1479,7 +1484,7 @@
 			"inputs": [
 				{
 					"name": "--sgs-me-clip",
-					"description": "The uniform clip amount a clip field names (clipEdge all). Never an owner of its own: the stylesheet gives it to all four edge owners through its from, to and close holders (--sgs-me-from-clip, --sgs-me-to-clip, --sgs-me-close-to-clip, registered non-inheriting like every per-element input, so a nested element never takes an ancestor's clip); a clipEdge other than all writes the four edge holders instead (--sgs-me-from-clip-t/-r/-b/-l, --sgs-me-to-clip-t/-r/-b/-l, and for an open entrance's close amount --sgs-me-close-to-clip-t/-r/-b/-l, on the entrance's edge with 0% on the others; Sgs_Motion_Clip_Edge)."
+					"description": "The uniform clip amount a clip field names (clipEdge all). Never an owner of its own: the stylesheet gives it to all four edge owners through its from, to and close holders (--sgs-me-from-clip, --sgs-me-to-clip, --sgs-me-close-to-clip, registered non-inheriting like every per-element input, so a nested element never takes an ancestor's clip); the corner radius `clipRound` is its own input pair (--sgs-me-from-clip-round, --sgs-me-to-clip-round, --sgs-me-close-to-clip-round) read by the one --sgs-me-clip-round owner, a registered length so it interpolates, 0px when unset; a clipEdge other than all writes the four edge holders instead (--sgs-me-from-clip-t/-r/-b/-l, --sgs-me-to-clip-t/-r/-b/-l, and for an open entrance's close amount --sgs-me-close-to-clip-t/-r/-b/-l, on the entrance's edge with 0% on the others; Sgs_Motion_Clip_Edge)."
 				}
 			]
 		},
@@ -3314,6 +3319,18 @@
 						"intensity": true
 					}
 				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000,
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-me-clip-round",
+						"state": "from",
+						"perDevice": true
+					}
+				},
 				"clipEdge": {
 					"$ref": "#/$defs/choice",
 					"enum": [
@@ -3463,6 +3480,18 @@
 					"x-sgs-field": {
 						"fieldType": "percentage",
 						"cssProperty": "--sgs-me-clip",
+						"state": "in-view",
+						"perDevice": true
+					}
+				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000,
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-me-clip-round",
 						"state": "in-view",
 						"perDevice": true
 					}
@@ -3768,6 +3797,18 @@
 						"state": "close",
 						"perDevice": true
 					}
+				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000,
+					"x-sgs-field": {
+						"fieldType": "distance",
+						"cssProperty": "--sgs-me-clip-round",
+						"state": "close",
+						"perDevice": true
+					}
 				}
 			},
 			"additionalProperties": false
@@ -3949,6 +3990,12 @@
 					"description": "The clip reveal's inset() amount.",
 					"minimum": 0,
 					"maximum": 100
+				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000
 				}
 			},
 			"additionalProperties": false
@@ -4025,6 +4072,12 @@
 					"minimum": 0,
 					"maximum": 100
 				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000
+				},
 				"clipEdge": {
 					"$ref": "#/$defs/choice",
 					"enum": [
@@ -4098,6 +4151,12 @@
 					"description": "The clip reveal's inset() amount.",
 					"minimum": 0,
 					"maximum": 100
+				},
+				"clipRound": {
+					"$ref": "#/$defs/distance",
+					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
+					"minimum": 0,
+					"maximum": 10000
 				},
 				"clipEdge": {
 					"$ref": "#/$defs/choice",

@@ -1427,6 +1427,35 @@
 			"context": {}
 		},
 		{
+			"name": "clip reveal with a corner radius",
+			"block": "sgs/hero",
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 8,
+										"clipRound": 26
+									},
+									"to": {
+										"clip": 0,
+										"clipRound": "22px"
+									},
+									"duration": 400
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789",
+			"context": {}
+		},
+		{
 			"name": "clip reveal, top edge per device",
 			"block": "sgs/hero",
 			"motion": {

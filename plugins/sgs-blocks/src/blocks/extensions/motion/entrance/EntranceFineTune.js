@@ -23,6 +23,7 @@ import { sameValue } from '../../../../components/motion/atom-utils';
 import { stampedValue, valueAtPath } from '../layers/stamp';
 import SchemaFields, { AllDevicesNote, labelFor } from './SchemaFields';
 import EntranceKeyframes from './EntranceKeyframes';
+import ClipRoundFields from './ClipRoundFields';
 import {
 	COLOUR_KEYS,
 	MOVE_KEYS,
@@ -152,6 +153,9 @@ function MoveRows( { layer, tier, editor } ) {
 					editor={ editor }
 				/>
 			) ) }
+			{ used.includes( 'clip' ) && (
+				<ClipRoundFields layer={ layer } tier={ tier } editor={ editor } />
+			) }
 			{ tier === 'desktop' && unused.length > 0 && (
 				<ChoiceAtom
 					label={ __( 'Add a value to animate', 'sgs-blocks' ) }

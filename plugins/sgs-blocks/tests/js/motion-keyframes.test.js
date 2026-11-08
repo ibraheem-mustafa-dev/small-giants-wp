@@ -102,7 +102,7 @@ describe( 'motion-keyframes', () => {
 
 	it( 'animates a uniform clip amount as all four edge owners, under the four-edge clip formula', () => {
 		const { play, CHANNEL_FORMULA } = load();
-		expect( CHANNEL_FORMULA[ 'clip-path' ] ).toEqual( [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))' ] );
+		expect( CHANNEL_FORMULA[ 'clip-path' ] ).toEqual( [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round))' ] );
 		play( target( { me: 'load clip-path', frames: [ { offset: 0, '--sgs-me-clip': '40%' }, { offset: 0.5, '--sgs-me-clip': '10%' }, { offset: 1, '--sgs-me-clip': '0%' } ] } ) );
 		const [ frames ] = animate.mock.calls[ 0 ];
 		[ 't', 'r', 'b', 'l' ].forEach( ( e ) => expect( frames.map( ( f ) => f[ `--sgs-me-clip-${ e }` ] ) ).toEqual( [ '40%', '10%', '0%' ] ) );

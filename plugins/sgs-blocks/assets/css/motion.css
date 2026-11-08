@@ -97,6 +97,7 @@
 @property --sgs-me-clip-r { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-b { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
 @property --sgs-me-clip-l { syntax: '<length-percentage>'; inherits: false; initial-value: 0%; }
+@property --sgs-me-clip-round { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-bg-x { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-plx-bg-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
 @property --sgs-scroll-progress { syntax: '<number>'; inherits: false; initial-value: 0; }
@@ -131,6 +132,7 @@
 @property --sgs-me-from-clip-r { syntax: '*'; inherits: false; }
 @property --sgs-me-from-clip-b { syntax: '*'; inherits: false; }
 @property --sgs-me-from-clip-l { syntax: '*'; inherits: false; }
+@property --sgs-me-from-clip-round { syntax: '*'; inherits: false; }
 @property --sgs-me-to-tx { syntax: '*'; inherits: false; }
 @property --sgs-me-to-ty { syntax: '*'; inherits: false; }
 @property --sgs-me-to-rot { syntax: '*'; inherits: false; }
@@ -146,6 +148,7 @@
 @property --sgs-me-to-clip-r { syntax: '*'; inherits: false; }
 @property --sgs-me-to-clip-b { syntax: '*'; inherits: false; }
 @property --sgs-me-to-clip-l { syntax: '*'; inherits: false; }
+@property --sgs-me-to-clip-round { syntax: '*'; inherits: false; }
 @property --sgs-me-dur { syntax: '*'; inherits: false; }
 @property --sgs-me-delay { syntax: '*'; inherits: false; }
 @property --sgs-me-ease { syntax: '*'; inherits: false; }
@@ -342,14 +345,16 @@
 		--sgs-me-clip-r: var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%));
 		--sgs-me-clip-b: var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%));
 		--sgs-me-clip-l: var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%));
-		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
+		--sgs-me-clip-round: var(--sgs-me-from-clip-round, 0px);
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round));
 	}
 	to {
 		--sgs-me-clip-t: var(--sgs-me-to-clip-t, var(--sgs-me-to-clip, 0%));
 		--sgs-me-clip-r: var(--sgs-me-to-clip-r, var(--sgs-me-to-clip, 0%));
 		--sgs-me-clip-b: var(--sgs-me-to-clip-b, var(--sgs-me-to-clip, 0%));
 		--sgs-me-clip-l: var(--sgs-me-to-clip-l, var(--sgs-me-to-clip, 0%));
-		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
+		--sgs-me-clip-round: var(--sgs-me-to-clip-round, 0px);
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round));
 	}
 }
 
@@ -439,7 +444,8 @@
 		--sgs-me-clip-r: var(--sgs-me-from-clip-r, var(--sgs-me-from-clip, 0%));
 		--sgs-me-clip-b: var(--sgs-me-from-clip-b, var(--sgs-me-from-clip, 0%));
 		--sgs-me-clip-l: var(--sgs-me-from-clip-l, var(--sgs-me-from-clip, 0%));
-		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l));
+		--sgs-me-clip-round: var(--sgs-me-from-clip-round, 0px);
+		clip-path: inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round));
 	}
 }
 

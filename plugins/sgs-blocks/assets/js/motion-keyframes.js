@@ -57,6 +57,7 @@
 		'--sgs-me-clip-r': 'clip-path',
 		'--sgs-me-clip-b': 'clip-path',
 		'--sgs-me-clip-l': 'clip-path',
+		'--sgs-me-clip-round': 'clip-path',
 	};
 
 	// Plain input -> the owner properties it stands for: a keyframe's uniform clip amount (the schema's clip-path
@@ -73,7 +74,7 @@
 		scale: [ 'scale', 'calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-x) * var(--sgs-me-sx)) calc(var(--sgs-me-s) * var(--sgs-mh-s) * var(--sgs-focus-s) * var(--sgs-kb-s) * var(--sgs-float-s) * var(--sgs-svl-s) * var(--sgs-sp-y) * var(--sgs-me-sy))' ],
 		opacity: [ 'opacity', 'calc(var(--sgs-me-op) * var(--sgs-mh-op) * var(--sgs-focus-op) * var(--sgs-svl-op))' ],
 		filter: [ 'filter', 'blur(calc(var(--sgs-me-blur) + var(--sgs-mh-blur))) grayscale(calc(var(--sgs-gray-rest) + var(--sgs-mh-gray))) brightness(var(--sgs-mh-bright))' ],
-		'clip-path': [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l))' ],
+		'clip-path': [ 'clip-path', 'inset(var(--sgs-me-clip-t) var(--sgs-me-clip-r) var(--sgs-me-clip-b) var(--sgs-me-clip-l) round var(--sgs-me-clip-round))' ],
 	};
 
 	/**

@@ -74,9 +74,14 @@ export const ENTRANCE_TRIGGER_LABELS = Object.freeze( {
 	state: __( 'State', 'sgs-blocks' ),
 } );
 
-/** The stored from and to properties, in schema order. */
+/**
+ * The stored from and to properties that are one row each, in schema order. `clipRound` is the clip row's corner
+ * radius, edited by its own fields under that row.
+ */
 export const MOVE_KEYS = Object.freeze(
-	Object.keys( DEFS.EntranceFrom.properties )
+	Object.keys( DEFS.EntranceFrom.properties ).filter(
+		( key ) => key !== 'clipRound'
+	)
 );
 
 // The property row each stored key edits (a row carries one of the `propertyRow` properties).

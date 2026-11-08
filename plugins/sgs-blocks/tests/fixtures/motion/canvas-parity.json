@@ -916,6 +916,23 @@
 		"losers": {}
 	},
 	{
+		"name": "clip reveal with a corner radius",
+		"css": ".sgs-m-0123456789{--sgs-me-from-clip:8%;--sgs-me-from-clip-round:26px;--sgs-me-to-clip:0%;--sgs-me-to-clip-round:22px;--sgs-me-dur:400ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
 		"name": "clip reveal, top edge per device",
 		"css": ".sgs-m-0123456789{--sgs-me-dur:400ms;--sgs-me-from-clip-t:100%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-clip-t:60%;--sgs-me-from-clip-r:0%;--sgs-me-from-clip-b:0%;--sgs-me-from-clip-l:0%;}}",
 		"plans": [

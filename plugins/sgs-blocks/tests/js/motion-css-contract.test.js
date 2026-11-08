@@ -215,11 +215,13 @@ function inputErrors( root, rules ) {
 	const errors = [];
 	const suffix = ( name ) => name.slice( '--sgs-me-'.length );
 	for ( const channel of channels().filter( ( c ) => ( c.inputs || [] ).length ) ) {
-		const owners = channel.owners.flatMap( ( o ) => ( o.properties || [] ).map( ( p ) => p.name ) );
+		const props = channel.owners.flatMap( ( o ) => o.properties || [] );
 		const holds = ( d, end, where ) => {
 			const fallback = channel.inputs.reduceRight( ( inner, input ) => `var(--sgs-me-${ end }-${ suffix( input.name ) }, ${ inner })`, '0%' );
-			for ( const name of owners ) {
-				const want = `var(--sgs-me-${ end }-${ suffix( name ) }, ${ fallback })`;
+			// An edge owner falls back to the uniform input; an owner with no edge (the corner radius) has no uniform
+			// input and falls back to its own initial value.
+			for ( const { name, edge, initial } of props ) {
+				const want = edge ? `var(--sgs-me-${ end }-${ suffix( name ) }, ${ fallback })` : `var(--sgs-me-${ end }-${ suffix( name ) }, ${ initial })`;
 				if ( d[ name ]?.value !== norm( want ) ) {
 					errors.push( `${ where } does not set ${ name } to ${ want }` );
 				}
@@ -320,7 +322,7 @@ describe( 'negative controls: each planted fault is caught', () => {
 		'a clip edge owner without its @property': [ /@property --sgs-me-clip-b \{[^}]*\}/, '' ],
 		'a per-axis scale owner without its @property': [ /@property --sgs-me-sy \{[^}]*\}/, '' ],
 		'a scale keyframe that drops the x axis owner': [ /(--sgs-me-sy: var\(--sgs-me-to-sy, 1\);\s*scale: [^;]*?) \* var\(--sgs-me-sx\)/, '$1' ],
-		'a clip keyframe that drops an edge from the formula': [ /(--sgs-me-clip-l: var\(--sgs-me-to-clip-l[^;]*;\s*)clip-path: [^;]*;/, '$1clip-path: inset(var(--sgs-me-clip-t));' ],
+		'a clip keyframe that drops an edge from the formula': [ /(--sgs-me-clip-round: var\(--sgs-me-to-clip-round[^;]*;\s*)clip-path: [^;]*;/, '$1clip-path: inset(var(--sgs-me-clip-t));' ],
 		'a clip edge that ignores the uniform amount': [ /--sgs-me-clip-r: var\(--sgs-me-from-clip-r, var\(--sgs-me-from-clip, 0%\)\);/, '--sgs-me-clip-r: var(--sgs-me-from-clip-r, 0%);' ],
 		'a clip hidden start without the left edge': [ /(:not\(\[data-sgs-in\]\)\[data-sgs-me~="clip-path"\] \{\n(?:\t\t--sgs-me-clip-[trb][^\n]*\n){3})\t\t--sgs-me-clip-l[^\n]*\n/, '$1' ],
 	};

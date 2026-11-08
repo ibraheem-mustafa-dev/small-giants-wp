@@ -254,7 +254,7 @@ foreach ( array( 'EntranceFrom', 'EntranceTo', 'EntranceFromDevice', 'EntranceTo
 	$check( array( 'all', 'top', 'right', 'bottom', 'left' ) === ( $defs[ $def ]['properties']['clipEdge']['enum'] ?? null ), "$def clipEdge lists all and the four edges" );
 }
 $clip_row = array_values( array_filter( Sgs_Motion_Field_Types::schema()['x-sgs-channels'], static fn( $r ) => 'clip-path' === $r['channel'] ) )[0];
-$check( array( '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l' ) === array_column( $clip_row['owners'][0]['properties'], 'name' ), 'the clip-path channel has the four edge owners in inset() order' );
+$check( array( '--sgs-me-clip-t', '--sgs-me-clip-r', '--sgs-me-clip-b', '--sgs-me-clip-l', '--sgs-me-clip-round' ) === array_column( $clip_row['owners'][0]['properties'], 'name' ), 'the clip-path channel has the four edge owners in inset() order, then the corner radius' );
 $check( 'clip-path' === ( Sgs_Motion_Emitter::property_channels()['--sgs-me-clip'] ?? null ), 'the uniform input still maps to the clip-path channel' );
 
 // 6. Curtain.
