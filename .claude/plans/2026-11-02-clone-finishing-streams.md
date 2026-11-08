@@ -22,15 +22,16 @@ governs: Spec 48 (cloning system) evidence; Front H and Front F
 
 ## How an item is worked
 
-1. Reproduce it on the live test site beside the draft at the widths and states Bean names, after reading the site's decided differences. The draft is served locally (`scripts/computed-route/lib/draft.mjs::serveDraft` on the handoff folder) and opened in a Playwright tab next to live.
-2. Find its cause from the saved block settings and the live computed styles: a setting not set, content, a framework bug, a missing capability, or a difference Bean ruled. Before calling anything a framework gap, read the whole block family's source and try its existing settings (extensions, element toggles, motion hover sources, floating layers). "All" or "every" in Bean's words means every element where live differs from the draft.
-3. Fix at the cause:
+1. Read the item's record first: what Bean said, its root cause and the solution built for it (Indus: `sites/indus-foods/build/qa/r8-root-causes.json`, the fix catalogue, and `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json`; Eye Care: the fix register). Any problem seen later is judged against that solution first: is it doing what it was built to do, did a later change undo it, did the record leave part of the cause untraced?
+2. Reproduce it on the live test site beside the draft at the widths and states Bean names, after reading the site's decided differences. The draft is served locally (`scripts/computed-route/lib/draft.mjs::serveDraft` on the handoff folder) and opened in a Playwright tab next to live.
+3. Find its cause from the saved block settings and the live computed styles: a setting not set, content, a framework bug, a missing capability, or a difference Bean ruled. Before calling anything a framework gap, read the whole block family's source and try its existing settings (extensions, element toggles, motion hover sources, floating layers). "All" or "every" in Bean's words means every element where live differs from the draft.
+4. Fix at the cause:
    - a setting: set it directly on the mirror with `scripts/local-wp/patch-block-attrs.py` (dry run first); on Eye Care, edit eye-care-test directly;
    - a framework bug or missing capability: fix the block through the shared helper, control or emitter (Specs 32 and 35; never per-instance CSS), with a test that fails first; a new attribute goes through the reseed flow (`.claude/dev-setup.md`, "Publishing a private reseed");
    - a one-off look with no setting: the block's Custom CSS.
-4. Ship: commit and push; deploy with `build-deploy.py --target <site>`, one site at a time (two uploads at once drop the SSH connection); sync the mirror's build (`scripts/local-wp/sync-build.sh`, run inside WSL); push the mirror with `scripts/local-wp/push-to-remote.sh local-<client> <client>-test` (dry run first); run `scripts/computed-route/site-check.mjs <client> --site <client>-test`.
-5. Check the item by sight on the live page beside the draft, then record it in the client's fix catalogue (`sites/<client>/build/qa/fix-catalogue.md`; Eye Care: the round section of `plans/2026-10-02-eye-care-fix-register.md`).
-6. Bean looks and signs the site off.
+5. Ship: commit and push; deploy with `build-deploy.py --target <site>`, one site at a time (two uploads at once drop the SSH connection); sync the mirror's build (`scripts/local-wp/sync-build.sh`, run inside WSL); push the mirror with `scripts/local-wp/push-to-remote.sh local-<client> <client>-test` (dry run first); run `scripts/computed-route/site-check.mjs <client> --site <client>-test`.
+6. Check the item by sight on the live page beside the draft, then record it in the client's fix catalogue (`sites/<client>/build/qa/fix-catalogue.md`; Eye Care: the round section of `plans/2026-10-02-eye-care-fix-register.md`).
+7. Bean looks and signs the site off.
 
 Rules:
 - Never run the clone route (`site-run.mjs`, `fill.mjs`, `intake.mjs`, `site-build.mjs --apply`) for these three clients: it rebuilds the posts and erases the fixes.
