@@ -2,7 +2,7 @@
 
 Bean's words, kept as written. Work this list in the Eye Care stream after Indus is signed off (plan `.claude/plans/2026-11-02-clone-finishing-streams.md`, "Eye Care stream"): measure each item on eye-care-test against the draft first (the detectors in `scripts/parity/detect.mjs` plus per-item probes, as the Indus board did), class it framework or content, then fix. Bean: "an exhaustive list that can be mostly patchwork fixes unless you find framework issues are causing some of these problems." Not yet reviewed by Bean: checkout, account (post sign-in), order confirmation / thank you.
 
-Earlier notes (2026-11-07): section widths on the homepage (maybe padding), some hover animations, every reveal and open animation missing or wrong.
+Bean's earlier notes (2026-11-07, his words): "I've had a look at the shop page and homepage as well as the header, mega menus and footer and the only issues I noticed so far were the width of the sections on the homepage, maybe padding, some hover animations, most of the reveal/open animation were missing/wrong."
 
 1. When switching images on the buybox the live site is missing the animation as the main image switches.
 2. The product FAQ accordions and normal accordions have lost the closing animation on the icon: it usually spins from a cross in the opposite direction of the opening animation, 45 degrees, going back to being a plus symbol. It also used to have a bounce effect which it has lost. This part is not in the draft but Bean really likes it (keep it).
