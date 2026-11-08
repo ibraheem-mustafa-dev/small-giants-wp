@@ -169,6 +169,36 @@ final class Sgs_Motion_Assets {
 	}
 
 	/**
+	 * Queue the ready gate and the pre-arm hide rule of an inline SVG whose parts have an entrance.
+	 *
+	 * Called by `sgs_svg_parts_data()`. Only the front end prints it: the block editor has no `wp_head` gate.
+	 *
+	 * @return void
+	 */
+	public static function queue_svg_parts_gate(): void {
+		if ( ! sgs_is_frontend_render() || did_action( 'wp_head' ) ) {
+			return;
+		}
+		add_action( 'wp_head', array( self::class, 'print_ready_gate' ), 1 );
+		add_action( 'wp_head', array( self::class, 'print_svg_parts_hide' ), 1 );
+	}
+
+	/**
+	 * Print the pre-arm hide rule of gated SVG parts inline, once per request (`wp_head`, priority 1).
+	 *
+	 * @return void
+	 */
+	public static function print_svg_parts_hide(): void {
+		static $printed = false;
+		if ( $printed || ! function_exists( 'sgs_svg_parts_hide_css' ) ) {
+			return;
+		}
+		$printed = true;
+		echo '<style id="sgs-svg-parts-hide">' . sgs_svg_parts_hide_css() . '</style>' . "
+"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a constant rule.
+	}
+
+	/**
 	 * Print the ready gate inline, once per request, without its doc comment (`wp_head`, priority 1).
 	 *
 	 * @return void

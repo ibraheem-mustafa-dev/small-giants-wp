@@ -39,6 +39,7 @@ import {
 
 const SELECTOR = '[data-sgs-svg-parts]';
 const BOOTED_ATTR = 'data-sgs-svg-parts-booted';
+const ARMED_ATTR = 'data-sgs-svg-armed';
 const ORIGINS = {
 	center: 'center',
 	top: 'center top',
@@ -154,6 +155,8 @@ function boot( root ) {
 	resolved.forEach( prepare );
 
 	const playEntrance = ( onlyHover ) => {
+		// The server holds a gated SVG hidden until this attribute is set, in the same tick the from-states apply.
+		root.setAttribute( ARMED_ATTR, '' );
 		resolved.forEach( ( { part, els } ) => {
 			if ( onlyHover && ! part.hoverReplay ) {
 				return;

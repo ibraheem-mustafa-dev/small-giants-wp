@@ -17,6 +17,8 @@
 	}
 	root.classList.add( 'sgs-motion-ready' );
 	w.addEventListener( 'load', () => {
+		// Releases an inline SVG held hidden until its parts arm (sgs_svg_parts_hide_css()), whatever the reveal state.
+		root.classList.add( 'sgs-svg-parts-released' );
 		if ( ! w.sgsMotionRevealArmed ) {
 			root.classList.remove( 'sgs-motion-ready' );
 		}
