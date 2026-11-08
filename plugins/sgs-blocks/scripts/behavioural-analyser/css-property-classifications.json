@@ -49064,9 +49064,25 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardShadowMobileColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "cardMobile"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "cardShadowTablet",
       "fields": {
         "css_property": "box-shadow",
+        "css_element": "cardTablet"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardShadowTabletColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "cardTablet"
       }
     },
