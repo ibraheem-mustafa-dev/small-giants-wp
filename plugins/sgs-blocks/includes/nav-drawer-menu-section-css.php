@@ -40,6 +40,8 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_row_layout_css' ) ) {
 			return '';
 		}
 		$css = $uid_sel . ' .sgs-nav-drawer-menu__link{justify-content:' . $justify . ';}';
+		// The whole-row toggle's caret takes the free space by default; a set spread replaces that.
+		$css .= $uid_sel . ' .sgs-nav-drawer-menu__accordion-summary--row > .sgs-nav-drawer-menu__caret{margin-inline-start:0;}';
 		if ( 'center' === $justify ) {
 			$css .= $uid_sel . ' .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__link{padding-inline-start:56px;}';
 		}

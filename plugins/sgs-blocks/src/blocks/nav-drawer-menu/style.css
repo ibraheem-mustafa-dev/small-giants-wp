@@ -456,11 +456,18 @@
 .sgs-nav-drawer-menu__accordion-summary--row {
 	align-items: center;
 	inset-inline-end: auto;
-	justify-content: space-between;
+	justify-content: flex-start;
 	min-height: 44px;
 	position: static;
 	top: auto;
 	width: 100%;
+}
+
+/* The caret takes the row's free space, as a link row's trailing icon does, so the label stays at the start beside
+   its number ornament (with space-between a three-child row centred the label). A set `justifyContent` cancels it
+   (includes/nav-drawer-menu-section-css.php::sgs_nav_drawer_menu_row_layout_css). */
+.sgs-nav-drawer-menu__accordion-summary--row > .sgs-nav-drawer-menu__caret {
+	margin-inline-start: auto;
 }
 
 /*

@@ -359,13 +359,10 @@ html {
  * EVERY client's headings and made clones drift from their reference sites
  * (caught via extract-css-diff.js) — reference
  * sites render headings at `normal`. Per-design tightening transfers from the
- * draft; it is not a framework default.
+ * draft; it is not a framework default. The same holds for line breaking:
+ * headings wrap the browser's normal way, as drafts and reference sites do,
+ * and a design that wants balanced lines sets the heading's own text wrap.
  */
-
-h1, h2, h3, h4, h5, h6,
-.wp-block-heading {
-	text-wrap: balance;
-}
 
 /*
  * H1 line-height on mobile — the default theme.json value produces ~1.1
