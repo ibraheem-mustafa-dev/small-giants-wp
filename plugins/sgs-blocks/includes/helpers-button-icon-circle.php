@@ -5,7 +5,8 @@
  * `iconBackground` (resting fill), `iconBackgroundHover` (hover and focus fill) and
  * `iconShapeSize` (the circle's diameter in px, per device) paint a round chip around the icon
  * glyph, which keeps its own size (`iconSize`). All three empty prints nothing. The circle is 1.8
- * times the icon size until a diameter is set. JS twin for the editor preview:
+ * times the icon size until a diameter is set. A hover slide on the icon moves the glyph inside the circle, not the
+ * circle. JS twin for the editor preview (resting look only):
  * src/blocks/button/icon-circle-preview.js.
  *
  * @package SGS\Blocks
@@ -64,6 +65,14 @@ if ( ! function_exists( 'sgs_button_icon_circle_css' ) ) {
 			)
 		);
 		$css[] = $root . ' .sgs-button__icon{' . implode( ';', $rule ) . ';}';
+		// A hover slide on the icon (motion's `--sgs-mh-tx` / `--sgs-mh-ty`) moves the glyph inside the circle and
+		// leaves the circle where it is: the circle's translate is the shared motion formula (assets/css/motion.css,
+		// `[data-sgs-mc~="translate"]`) without the hover channel, and the glyph reads the hover channel through an
+		// inheriting copy (the registered channel itself does not inherit).
+		$css[] = $root . ' .sgs-button__icon[data-sgs-mc~="translate"]{'
+			. 'translate:calc(var(--sgs-me-tx) + var(--sgs-mag-x) + var(--sgs-plx-x) + var(--sgs-float-x) + var(--sgs-kb-x)) calc(var(--sgs-me-ty) + var(--sgs-mag-y) + var(--sgs-plx-y) + var(--sgs-float-y) + var(--sgs-kb-y));'
+			. '--sgs-icon-glyph-x:var(--sgs-mh-tx);--sgs-icon-glyph-y:var(--sgs-mh-ty);}';
+		$css[] = $root . ' .sgs-button__icon[data-sgs-mc~="translate"] > svg{translate:var(--sgs-icon-glyph-x, 0px) var(--sgs-icon-glyph-y, 0px);}';
 		if ( '' !== $fill_hover ) {
 			$css[] = sgs_hover_state_rules( $root, 'background-color:' . sgs_colour_value( $fill_hover ), ':focus-visible', ' .sgs-button__icon' );
 		}

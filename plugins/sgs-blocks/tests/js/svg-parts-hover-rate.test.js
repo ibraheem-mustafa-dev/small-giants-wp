@@ -1,6 +1,7 @@
 /**
  * svg-parts.js: a part's loop speed-up on hover lasts while the element is hovered or a finger is held on it
- * (`hoverRateDuration` 0 or unset), or for a fixed burst when `hoverRateDuration` is above 0.
+ * (`hoverRateDuration` 0 or unset), or for a fixed burst when `hoverRateDuration` is above 0, then eases back to the
+ * normal speed over 1600ms instead of dropping to it.
  */
 import { bootSvgParts } from '../../src/shared/svg-parts/svg-parts';
 
@@ -24,10 +25,8 @@ describe( 'svg-parts hover speed-up', () => {
 	beforeEach( () => {
 		jest.useFakeTimers();
 		window.matchMedia = jest.fn( () => ( { matches: false } ) );
-		loop = { cancel: jest.fn(), updatePlaybackRate: jest.fn(), rate: 1 };
-		loop.updatePlaybackRate.mockImplementation( ( r ) => {
-			loop.rate = r;
-		} );
+		loop = { cancel: jest.fn(), playbackRate: 1 };
+		Object.defineProperty( loop, 'rate', { get: () => loop.playbackRate } );
 		Element.prototype.animate = jest.fn( ( frames, opts ) =>
 			opts && opts.iterations === Infinity ? loop : { cancel: jest.fn() }
 		);
@@ -42,7 +41,28 @@ describe( 'svg-parts hover speed-up', () => {
 		jest.advanceTimersByTime( 5000 );
 		expect( loop.rate ).toBe( 14 );
 		pointer( root, 'pointerleave', 'mouse' );
+		jest.advanceTimersByTime( 1700 );
 		expect( loop.rate ).toBe( 1 );
+	} );
+
+	it( 'eases back to the normal speed after the pointer leaves, never dropping straight to it', () => {
+		const root = mount( {} );
+		bootSvgParts();
+		pointer( root, 'pointerenter', 'mouse' );
+		pointer( root, 'pointerleave', 'mouse' );
+		jest.advanceTimersByTime( 100 );
+		const early = loop.rate;
+		jest.advanceTimersByTime( 700 );
+		const middle = loop.rate;
+		expect( early ).toBeGreaterThan( 10 );
+		expect( middle ).toBeGreaterThan( 2 );
+		expect( middle ).toBeLessThan( early );
+		jest.advanceTimersByTime( 900 );
+		expect( loop.rate ).toBe( 1 );
+		// a new hover during the ease picks the fast speed straight back up
+		pointer( root, 'pointerleave', 'mouse' );
+		pointer( root, 'pointerenter', 'mouse' );
+		expect( loop.rate ).toBe( 14 );
 	} );
 
 	it( 'holds the fast speed while a finger is held, and slows on release', () => {
@@ -52,6 +72,7 @@ describe( 'svg-parts hover speed-up', () => {
 		jest.advanceTimersByTime( 3000 );
 		expect( loop.rate ).toBe( 14 );
 		pointer( root, 'pointerleave', 'touch' );
+		jest.advanceTimersByTime( 1700 );
 		expect( loop.rate ).toBe( 1 );
 	} );
 
@@ -61,7 +82,7 @@ describe( 'svg-parts hover speed-up', () => {
 		pointer( root, 'pointerenter', 'mouse' );
 		pointer( root, 'pointerleave', 'mouse' );
 		expect( loop.rate ).toBe( 14 );
-		jest.advanceTimersByTime( 900 );
+		jest.advanceTimersByTime( 900 + 1700 );
 		expect( loop.rate ).toBe( 1 );
 	} );
 
@@ -70,6 +91,6 @@ describe( 'svg-parts hover speed-up', () => {
 		const root = mount( {} );
 		bootSvgParts();
 		pointer( root, 'pointerenter', 'mouse' );
-		expect( loop.updatePlaybackRate ).not.toHaveBeenCalled();
+		expect( loop.rate ).toBe( 1 );
 	} );
 } );

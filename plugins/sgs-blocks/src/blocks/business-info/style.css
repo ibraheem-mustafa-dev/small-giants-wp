@@ -168,9 +168,12 @@
 .sgs-business-attribution .sgs-business-info__link::after {
 	content: "";
 	position: absolute;
-	bottom: -2px;
-	left: 0;
-	width: 100%;
+	/* The line spans the words, not the tap area around them: it is inset by the link's inline padding and sits 2px
+	   under the text line, which is centred in a box the larger of the 44px floor and one line plus the 1em block
+	   padding (see `.sgs-business-info__link`). */
+	bottom: calc((max(var(--sgs-bi-link-min-h, 44px), 1lh + 1em) - 1lh) / 2 - 2px);
+	left: 0.6em;
+	right: 0.6em;
 	height: 1px;
 	background: var(--sgs-bi-link-hover-bg, #d4a73c);
 	transform: scaleX(0);

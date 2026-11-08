@@ -310,6 +310,9 @@ ok( false !== strpos( $circle['css'], 'background-color:#00aa00' ), '5. the rest
 ok( false !== strpos( $circle['css'], '--sgs-btn-icon-shape-size:40px' ) && false !== strpos( $circle['css'], '--sgs-btn-icon-shape-size:32px' ), '5. the diameter prints per device' );
 ok( 1 === preg_match( '/\.sgs-button:hover \.sgs-button__icon\{background-color:#ff0000\}/', $circle['css'] ), '5. the hover fill paints on button hover' );
 $default_size = render_block_child( 'sgs/button', $icon_attrs + array( 'iconBackground' => '#00aa00' ) );
+ok( 1 === preg_match( '/\.sgs-button__icon\[data-sgs-mc~="translate"\]\{translate:calc\(var\(--sgs-me-tx\) \+ var\(--sgs-mag-x\)[^;]*;--sgs-icon-glyph-x:var\(--sgs-mh-tx\);/', $circle['css'] ) && false === strpos( preg_replace( '/--sgs-icon-glyph-[xy]:var\(--sgs-mh-t[xy]\);/', '', $circle['css'] ), 'sgs-mh-t' ), '5. a hover slide leaves the circle in place: its translate has every channel but the hover one' );
+ok( false !== strpos( $circle['css'], '.sgs-button__icon[data-sgs-mc~="translate"] > svg{translate:var(--sgs-icon-glyph-x, 0px) var(--sgs-icon-glyph-y, 0px);}' ), '5. the glyph inside the circle takes the hover slide' );
+ok( false === strpos( $plain_icon['css'], 'sgs-icon-glyph' ), '5. NEGATIVE CONTROL: an icon without a circle keeps the shared formula (the whole icon slides)' );
 ok( false !== strpos( $default_size['css'], 'calc(var(--sgs-btn-icon-size,1em)*1.8)' ) && false === strpos( $default_size['css'], '--sgs-btn-icon-shape-size:' ), '5. no diameter = 1.8 times the icon size' );
 
 

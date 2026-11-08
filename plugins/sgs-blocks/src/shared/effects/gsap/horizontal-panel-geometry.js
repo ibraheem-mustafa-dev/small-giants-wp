@@ -67,6 +67,9 @@ export function layoutPanels( track ) {
  * row itself, not the host. It can travel less than the first-to-last distance (a wide last panel ends with its right
  * edge in from the host's edge, not its left edge at the start position), and never less than it takes to bring the
  * last panel's right edge onto the host.
+ *
+ * BOTH MODES: the row travels at least until the last panel's centre reaches the host's centre, so the pin holds until
+ * the last card is in the middle of the screen, never releasing the moment it is fully in view.
  * Layout boxes ignore the GSAP transform, so the value stays correct when GSAP re-measures on refresh.
  *
  * @param {HTMLElement} el        The pinned panel container.
@@ -88,13 +91,16 @@ export function travelDistance( el, track, travelEnd = 'first-start' ) {
 	}
 	const ideal = last.offsetLeft - first.offsetLeft;
 	const flushRight = last.offsetLeft + last.offsetWidth - el.clientWidth;
+	const hostLeft = layoutLeft( el );
+	// Every mode travels at least until the last panel's centre reaches the host's centre, so the pin holds until
+	// the last card sits in the middle of the screen rather than releasing as soon as it is fully in view.
+	const centred = layoutLeft( last ) - hostLeft + last.offsetWidth / 2 - el.clientWidth / 2;
 	if ( 'track-end' === travelEnd ) {
-		const hostLeft = layoutLeft( el );
 		const startInset = layoutLeft( first ) - hostLeft;
 		const lastRight = layoutLeft( last ) - hostLeft + last.offsetWidth;
-		return Math.max( 0, lastRight - ( el.clientWidth - Math.max( 0, startInset ) ) );
+		return Math.max( 0, lastRight - ( el.clientWidth - Math.max( 0, startInset ) ), centred );
 	}
-	return Math.max( 0, ideal, flushRight );
+	return Math.max( 0, ideal, flushRight, centred );
 }
 
 /**

@@ -14,7 +14,7 @@
  *   element that has none;
  * - a continuous loop: `loopRotate` turns the part by that many degrees every `loopDuration` ms;
  * - a hover: `hoverReplay` plays the entrance again, `hoverRate` runs the loop at that speed for `hoverRateDuration` ms
- *   (0 or unset: for as long as the element is hovered or a finger is held on it),
+ *   (0 or unset: for as long as the element is hovered or a finger is held on it), then eases back to the normal speed,
  *   and `hoverScale` / `hoverX` / `hoverY` / `hoverRotate` play one bob (out and back over `hoverDuration`, each match
  *   `hoverStagger` later than the last, with `hoverEasing` / `hoverEasingCustom`).
  *
@@ -41,6 +41,10 @@ import {
 const SELECTOR = '[data-sgs-svg-parts]';
 const BOOTED_ATTR = 'data-sgs-svg-parts-booted';
 const ARMED_ATTR = 'data-sgs-svg-armed';
+
+/** How long a hover speed-up takes to ease back to the loop's normal speed (ms). */
+const SPIN_DOWN_MS = 1600;
+
 const ORIGINS = {
 	center: 'center',
 	top: 'center top',
@@ -279,18 +283,44 @@ function boot( root ) {
 		return;
 	}
 	const rateTimers = new Map();
+	const ramps = new Map();
+	const stopRamp = ( animation ) => {
+		window.cancelAnimationFrame( ramps.get( animation ) );
+		ramps.delete( animation );
+	};
+	// The speed-up eases back to the normal speed over SPIN_DOWN_MS (quick at first, settling gently), so the loop
+	// coasts down instead of dropping from its fast speed straight to the slow one, which reads as a stop.
+	const spinDown = ( animation ) => {
+		stopRamp( animation );
+		const from = animation.playbackRate;
+		if ( ! ( from > 1 ) ) {
+			return;
+		}
+		const start = window.performance.now();
+		const step = ( now ) => {
+			const t = Math.min( 1, ( now - start ) / SPIN_DOWN_MS );
+			animation.playbackRate = 1 + ( from - 1 ) * ( 1 - t ) * ( 1 - t );
+			if ( t < 1 ) {
+				ramps.set( animation, window.requestAnimationFrame( step ) );
+			} else {
+				ramps.delete( animation );
+			}
+		};
+		ramps.set( animation, window.requestAnimationFrame( step ) );
+	};
 	root.addEventListener( 'pointerenter', ( event ) => {
 		if ( hoverOff( 'touch' === event.pointerType ) ) {
 			return;
 		}
 		rated.forEach( ( { part, animation } ) => {
-			animation.updatePlaybackRate( part.hoverRate );
+			stopRamp( animation );
+			animation.playbackRate = part.hoverRate;
 			window.clearTimeout( rateTimers.get( animation ) );
 			if ( part.hoverRateDuration > 0 ) {
 				rateTimers.set(
 					animation,
 					window.setTimeout(
-						() => animation.updatePlaybackRate( 1 ),
+						() => spinDown( animation ),
 						part.hoverRateDuration
 					)
 				);
@@ -300,7 +330,7 @@ function boot( root ) {
 	root.addEventListener( 'pointerleave', () => {
 		rated.forEach( ( { part, animation } ) => {
 			if ( ! ( part.hoverRateDuration > 0 ) ) {
-				animation.updatePlaybackRate( 1 );
+				spinDown( animation );
 			}
 		} );
 	} );
