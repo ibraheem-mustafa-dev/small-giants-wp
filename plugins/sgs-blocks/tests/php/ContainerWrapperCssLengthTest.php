@@ -186,11 +186,8 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 			'bare number'        => array( '640' ),
 			'auto'               => array( 'auto' ),
 			'zero'               => array( '0' ),
-			'calc is stripped'   => array( 'calc(100% - 2rem)' ),
-			'clamp is stripped'  => array( 'clamp(1rem, 2vw, 3rem)' ),
 			'declaration text'   => array( '12px;color:red' ),
 			'empty'              => array( '' ),
-			'unitless fit'       => array( 'fit-content(320)' ),
 		);
 	}
 
@@ -203,6 +200,19 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 			preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $raw ),
 			sgs_css_length_or_sizing_keyword( $raw )
 		);
+	}
+
+	/**
+	 * A CSS function value (calc(), clamp()) is kept whole through the shared hardened validator, so a container's
+	 * per-device min-height can follow the viewport; before, the character strip turned it into invalid text.
+	 */
+	public function test_a_css_function_is_kept_whole(): void {
+		$this->assertSame( 'calc((100vw - 81px) * .375)', sgs_css_length_or_sizing_keyword( 'calc((100vw - 81px) * .375)' ) );
+		$this->assertSame( 'clamp(1rem, 2vw, 3rem)', sgs_css_length_or_sizing_keyword( 'clamp(1rem, 2vw, 3rem)' ) );
+		// negative control: a hostile function is refused, not passed through
+		$this->assertSame( '', sgs_css_length_or_sizing_keyword( 'expression(alert(1))' ) );
+		// a unitless fit-content() is no valid length: nothing, where the strip printed the invalid 'fit-content320'
+		$this->assertSame( '', sgs_css_length_or_sizing_keyword( 'fit-content(320)' ) );
 	}
 
 	/**

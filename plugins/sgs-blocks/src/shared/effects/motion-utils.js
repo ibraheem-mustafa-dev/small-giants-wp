@@ -64,6 +64,17 @@ if (
 		},
 		{ capture: true, passive: true }
 	);
+	// A mouse or pen moving ends the touch state without a click (a hybrid device switching back, or a browser's
+	// device emulation turned off), so pointer-driven hover effects resume on the next move.
+	window.addEventListener(
+		'pointermove',
+		( event ) => {
+			if ( 'touch' === lastPointerType && event.pointerType && 'touch' !== event.pointerType ) {
+				lastPointerType = event.pointerType;
+			}
+		},
+		{ capture: true, passive: true }
+	);
 }
 
 /**

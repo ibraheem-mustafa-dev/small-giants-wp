@@ -672,6 +672,11 @@ function openDrawerFor( ctx, trigger ) {
 		sgsNdScrollDistance > 0 && ! isTouchInput();
 
 	reparentToBody( drawer, scrim );
+	// The drawer is open, so its sections' images are about to be seen: a lazy image inside a closed section would only
+	// start loading when that section opens and show an empty frame first. Load them now, still not on page load.
+	drawer.querySelectorAll( 'img[loading="lazy"]' ).forEach( ( img ) => {
+		img.loading = 'eager';
+	} );
 	if ( ! sgsNdSkipScrollLock ) {
 		lockScroll();
 	}

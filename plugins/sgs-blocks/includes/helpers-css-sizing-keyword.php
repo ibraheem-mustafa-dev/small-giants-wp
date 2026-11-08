@@ -88,7 +88,12 @@ if ( ! function_exists( 'sgs_css_length_or_sizing_keyword' ) ) {
 			return $keyword;
 		}
 
-		$raw      = trim( (string) $value );
+		$raw = trim( (string) $value );
+		// A CSS function (calc(), clamp(), min(), max(), var()) goes through the shared hardened validator, which keeps
+		// a safe expression whole; the character strip below would turn it into an invalid run of letters.
+		if ( false !== strpos( $raw, '(' ) ) {
+			return sgs_css_length_value( $raw );
+		}
 		$negative = '' !== $raw && '-' === $raw[0];
 		$stripped = (string) preg_replace( '/[^A-Za-z0-9.%]/', '', $raw );
 
