@@ -414,5 +414,11 @@ $check( 1 === preg_match( '/loop-i="2"[^>]*>B</', $host_tagged['html'] ), 'neste
 $flat_tagged = Sgs_Motion_Loop_Delays::tag_by_class( $drawer_html, 'sgs-nav-drawer-menu__item' );
 $check( 9 === $flat_tagged['count'], 'no host tag: the count runs across the whole markup (' . $flat_tagged['count'] . ')' );
 
+// A plain <details> (no motion state) inside a host must not end the host's run: items after it keep counting in the host.
+$nested_html = '<ul><li class="it">a</li><li><details data-sgs-motion-state=""><summary>s</summary><ul><li class="it">b</li><li><details><summary>x</summary><p>y</p></details></li><li class="it">c</li></ul></details></li><li class="it">d</li></ul>';
+$nested      = Sgs_Motion_Loop_Delays::tag_by_class( $nested_html, 'it', 'details' );
+preg_match_all( '/data-sgs-loop-i="(\d+)"[^>]*>(\w)</', $nested['html'], $nm );
+$check( '0,0,1,1' === implode( ',', $nm[1] ) && 'a,b,c,d' === implode( ',', $nm[2] ), 'host tag: a plain <details> inside a host leaves the host count running (' . implode( ',', $nm[2] ) . '=' . implode( ',', $nm[1] ) . ')' );
+
 echo $failures ? "FAILED: $failures of $checks checks\n" : "PASS: $checks checks\n";
 exit( $failures ? 1 : 0 );

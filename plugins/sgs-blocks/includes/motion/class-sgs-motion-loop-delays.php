@@ -287,15 +287,21 @@ final class Sgs_Motion_Loop_Delays {
 		$host_tag  = strtoupper( $host_tag );
 		$counts    = array( 0 );
 		$longest   = 0;
+		$opened    = array(); // One entry per open element of the host tag: whether it is a state host.
 		$query     = '' === $host_tag ? null : array( 'tag_closers' => 'visit' );
 		while ( $processor->next_tag( $query ) ) {
 			if ( '' !== $host_tag && $host_tag === $processor->get_tag() ) {
 				if ( $processor->is_tag_closer() ) {
-					if ( count( $counts ) > 1 ) {
+					// Only the closer of a state host ends its run; a plain element of the same tag leaves the count alone.
+					if ( array_pop( $opened ) && count( $counts ) > 1 ) {
 						$longest = max( $longest, (int) array_pop( $counts ) );
 					}
-				} elseif ( null !== $processor->get_attribute( 'data-sgs-motion-state' ) ) {
-					$counts[] = 0;
+				} else {
+					$is_host  = null !== $processor->get_attribute( 'data-sgs-motion-state' );
+					$opened[] = $is_host;
+					if ( $is_host ) {
+						$counts[] = 0;
+					}
 				}
 				continue;
 			}
