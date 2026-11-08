@@ -1,14 +1,14 @@
 ---
 doc_type: plan
-title: Finishing the three client sites to sellable quality (Indus, then Mama's, then Eye Care)
+title: Finishing the three client sites to sellable quality (Indus, then Eye Care, then Mama's)
 status: active
 created: 2026-11-02
 governs: Spec 48 (cloning system) evidence; Front H and Front F
 ---
 
-# Finishing the three client sites (Indus, then Mama's, then Eye Care)
+# Finishing the three client sites (Indus, then Eye Care, then Mama's)
 
-**Goal (Bean):** three sites good enough to present to prospective clients and sell, each matching its Claude Design draft at 375, 768 and 1440. Indus is finished and signed off first, then Mama's, then Eye Care (Bean 2026-11-07).
+**Goal (Bean):** three sites good enough to present to prospective clients and sell, each matching its Claude Design draft at 375, 768 and 1440. Indus is finished and signed off first, then Eye Care, then Mama's (Bean 2026-11-08).
 
 **Focus (Bean 2026-11-08):** the work is Bean's hand-checked issues list for each site. Every item is fixed at its root cause, shipped to the live test site, and checked by sight on the live page beside the draft (side by side at the item's widths and states: hover, open, mid-animation), never closed on a script reading alone. Tooling is used only to find or fix the cause of an item on the list; it does not add new checks or new findings. A difference that is not on the list gets one line under the site's "Noticed, not on Bean's list" and is not worked unless Bean asks.
 
@@ -43,23 +43,27 @@ Rules:
 - **Live:** framework `ba6e4644e` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `c9b6e97f9a6e`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
-- **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The drawer's darker blue did not reproduce (same gradient, pixels within one level): Bean to name the width and moment if he still sees it. About and Trade panels' extra edge padding is untraced.
+- **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The darker drawer blue was the draft's top-right glow, added in round 9b.
 - **Bean's second review of 2026-11-08 (5 items): done, worked from the draft's source** (framework `ba6e4644e`, shared DB `c9b6e97f9a6e`; fix catalogue, "Round 9b").
-- **Next:** Bean's look and sign-off.
+- **Next (Bean's look of 2026-11-08: everything else is good), then Indus is complete:**
+  1. The About and Trade drawer feature cards' round arrow still does not slide right on hover (the Sectors cards and the sticky button do). The overlay-safe nudge selector (`mega-panel-drawer-extras-css.php::sgs_mega_panel_drawer_hover_css`) measured +4px on the About card at 375; check by sight at 375 and 768 on both cards which element Bean sees and whether the button's own motion or the card's lift overrides it.
+  2. The logo sun's faster spin on hover must last for the whole hover or touch-hold (it currently stops early): read the logo's svg-parts hover replay (`src/shared/svg-parts/svg-parts.js`, the part's hoverReplay and its loop) and the draft's own sun hover code first.
+  3. The trade application form's step indicator must hide the step names and keep only the numbers when they do not fit: read the draft's exact condition (`sites/indus-foods/handoff/TradeApplication.dc.html`, the step header markup and its width or layout rule), check whether `sgs/form`'s step indicator already has that behaviour or a setting for it, and build it only if missing.
+- **After Indus is complete:** the Eye Care stream (Bean's 15-item list) plus a side-by-side comparison of the Eye Care pages Bean has not checked (checkout, account after sign-in, order confirmation).
 - **After sign-off:** bring sandybrown and mamas-test up to the current framework (one site at a time).
 - **Noticed, not on Bean's list:**
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
 
-## Mama's (after Indus sign-off)
+## Mama's (after Eye Care)
 
 - **Live:** mamas-test, framework `08c04900a`. Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/2026-11-05-mamas-merged-round.md`).
 - **Next:** Bean's look at mamas-test and his issues list, worked as above. The merged round plan's "Open" list holds what earlier rounds left.
 
-## Eye Care (after Mama's)
+## Eye Care (after Indus)
 
 - **Live:** eye-care-test, edited directly. Rounds 1 to 10 and the clean first paint are live at `53d789aa5`. The decided differences are in `decided.md`, and the round history is in the fix register.
-- **Next:** Bean's list `.claude/prompts/Eye Care Bean list 2026-11-08.md` (15 items), worked as above, then Bean's approval.
+- **Next:** Bean's list `.claude/prompts/Eye Care Bean list 2026-11-08.md` (15 items), worked as above, plus a side-by-side comparison with the draft of the pages Bean has not checked (checkout, account after sign-in, order confirmation), then Bean's approval.
   - The draft's index is `Eye Care Birmingham.dc.html`; the product pair uses gucci-oversized-cat-eye with the draft set to `curId: 2`.
   - Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only: some backups hold public embed keys the secret scanner flags).
   - The next deploy to eye-care-test carries the touch-hover change; tap-check it at 375.
