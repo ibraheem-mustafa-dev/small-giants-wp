@@ -562,3 +562,10 @@ Round 10, Bean's last look of 2026-11-08 (framework `8372f42b0`, shared DB `7c85
 - Logo sun: the fast spin was a fixed 900ms burst (the draft's own timing). Framework: an svg-parts `hoverRate` lasts while hovered or touch-held when `hoverRateDuration` is 0 or unset; the header, drawer and footer logos dropped their 900 (posts 201, 203, 205).
 - Trade form step names: the form only hid them below a 480px form width; the draft hides them below a 768px screen. New `sgs/form` setting `stepNamesHidden` (per device), set to mobile (form post 163).
 - About hero paragraph: Bean asked for the label's look behind it: fill `#FFFFFF80`, no border, 18px corners, 12px by 16px padding, glow removed (post 92). Heading left as it is (reads on the yellow).
+
+Round 11, Bean's follow-up of 2026-11-08 (framework `f579fdb33`, shared DB `7c850505b401`; each checked on indus-test beside the draft):
+- Drawer sticky CTA arrow: its icon is drawn in a filled circle, so the shared icon hover slid the circle with the arrow. Framework: a circled icon slides its glyph inside the circle (`sgs_button_icon_circle_css`). The preset's 1.05 hover grow (not in the draft) is cancelled by the button's own hover scale 1 (post 203).
+- Logo sun: the speed-up eases back to normal over 1.6s instead of dropping (framework, svg-parts).
+- Drawer logo: 141px to 176px wide (40px tall) where the top row has room, fluid on phones (`clamp(141px, calc(100vw - 226px), 176px)`; post 203).
+- Footer credit: the text block replaced by `sgs/business-info` attribution ("Website by Small Giants Studio"), hover sweep and underline in Indus gold `brand-gold-light` (post 205). Framework: the attribution underline spans the words, not the tap area.
+- Timeline pin: the row travelled only until the last card was fully in view (114 to 197px right of centre at release, every width; the draft does the same). Framework: the row travels until the last card is centred, in both travel modes; release now within 13px of centre at 768 to 1440.

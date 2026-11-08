@@ -40,12 +40,13 @@ Rules:
 
 ## Indus (state 2026-11-08)
 
-- **Live:** framework `8372f42b0` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `7c850505b401`.
+- **Live:** framework `f579fdb33` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `7c850505b401`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
 - **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The darker drawer blue was the draft's top-right glow, added in round 9b.
 - **Bean's second review of 2026-11-08 (5 items): done, worked from the draft's source** (framework `ba6e4644e`, shared DB `c9b6e97f9a6e`; fix catalogue, "Round 9b").
 - **Bean's last look of 2026-11-08 (4 items): done and checked by sight on indus-test** (framework `8372f42b0`, shared DB `7c850505b401`; fix catalogue, "Round 10").
+- **Bean's follow-up of 2026-11-08 (6 items): done and checked by sight on indus-test** (framework `f579fdb33`; fix catalogue, "Round 11").
 - **Next:** Bean signs Indus off; then mark it complete here and in the LEDGER.
 - **After Indus is complete:** the Eye Care stream (Bean's 15-item list) plus a side-by-side comparison of the Eye Care pages Bean has not checked (checkout, account after sign-in, order confirmation).
 - **After sign-off:** bring sandybrown and mamas-test up to the current framework (one site at a time).
