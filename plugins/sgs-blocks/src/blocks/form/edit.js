@@ -993,6 +993,13 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						setAttributes,
 					} ),
 					textRow( {
+						key: 'field-label-floated',
+						label: __( 'Floated label colour (focused)', 'sgs-blocks' ),
+						attrs: { base: 'labelFloatedColour' },
+						attributes,
+						setAttributes,
+					} ),
+					textRow( {
 						key: 'field-text',
 						label: __( 'Field text colour', 'sgs-blocks' ),
 						attrs: { base: 'fieldTextColour' },

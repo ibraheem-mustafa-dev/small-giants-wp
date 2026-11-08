@@ -63,6 +63,23 @@ test( 'tiles: a hover border differing from the draft is written to the form\'s 
 	assert.deepEqual( writes( tiles.decide( ctx( d, d ) ) ), [] );
 } );
 
+test( 'tiles: the draft hover drop shadow is written to tileHoverShadow and its colour; no draft shadow, a ring or a matching live shadow writes none', () => {
+	const mk = ( shadow ) => {
+		const r = read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)' } );
+		r.hover.tile[ 'box-shadow' ] = shadow;
+		return r;
+	};
+	const drop = 'rgba(10, 126, 168, 0.6) 0px 18px 30px -20px';
+	const w = writes( tiles.decide( ctx( mk( drop ), mk( 'none' ) ) ) );
+	assert.deepEqual( w.map( ( x ) => x[ 0 ] ), [ 'tileHoverShadow', 'tileHoverShadowColour' ] );
+	assert.equal( w[ 0 ][ 1 ], '0 18px 30px -20px' );
+	assert.match( w[ 1 ][ 1 ], /10|0a7ea8|126/i );
+	// Negative controls: the live tile already matches; the draft has no hover shadow; the draft's hover shadow is a ring (the hover layer's).
+	assert.deepEqual( writes( tiles.decide( ctx( mk( drop ), mk( drop ) ) ) ), [] );
+	assert.deepEqual( writes( tiles.decide( ctx( mk( 'none' ), mk( 'none' ) ) ) ), [] );
+	assert.deepEqual( writes( tiles.decide( ctx( mk( 'rgb(10, 126, 168) 0px 0px 0px 3px' ), mk( 'none' ) ) ) ), [] );
+} );
+
 test( 'tiles: a draft whose second click keeps the first tile chosen writes multiSelect over a one-answer live field', () => {
 	const mk = ( multi ) => read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)', multi } );
 	assert.deepEqual( writes( tiles.decide( ctx( mk( true ), mk( false ) ) ) ), [ [ 'multiSelect', true ] ] );
@@ -81,6 +98,24 @@ test( 'floated label: a label that shrinks as it floats writes the floated size 
 	assert.deepEqual( floatedLabel( { saved: {}, d: { fields, focusLabel: { 'font-size': '17px' } }, l } ), [] );
 	assert.deepEqual( floatedLabel( { saved: {}, d, l: { fields, focusLabel: { 'font-size': '13px' } } } ), [] );
 	assert.equal( floatedLabel( { saved: { labelFloatedFontSize: { desktop: '13px' } }, d, l } )[ 0 ].status, 'no-setting' );
+} );
+
+test( 'floated label: the focused colour and top offset are written where the live label differs; equal to the live default writes nothing', () => {
+	const fields = [ { label: { 'font-size': '13px' } } ];
+	const d = { fields, focusLabel: { 'font-size': '13px', color: 'rgb(10, 126, 168)', top: '9px' } };
+	const l = { fields, focusLabel: { 'font-size': '13px', color: 'rgb(7, 94, 128)', top: '8px' } };
+	const items = floatedLabel( { saved: {}, d, l, snapshot: { palette: [] } } );
+	assert.deepEqual( items.map( ( i ) => [ i.status, i.writes?.[ 0 ].attr, i.writes?.[ 0 ].value ] ), [
+		[ 'op', 'labelFloatedColour', '#0A7EA8' ],
+		[ 'op', 'labelFloatedOffset', '9px' ],
+	] );
+	// Negative control: a draft whose floated colour and offset equal the live defaults writes nothing.
+	assert.deepEqual( floatedLabel( { saved: {}, d, l: { fields, focusLabel: d.focusLabel }, snapshot: { palette: [] } } ), [] );
+	// A set value the live page still disagrees with is a no-setting row, not a second write.
+	const held = floatedLabel( { saved: { labelFloatedColour: '#0A7EA8', labelFloatedOffset: '9px' }, d, l, snapshot: { palette: [] } } );
+	assert.deepEqual( held.map( ( i ) => i.status ), [ 'no-setting', 'no-setting' ] );
+	// A draft with no focus read (no floating label) writes nothing.
+	assert.deepEqual( floatedLabel( { saved: {}, d: { fields }, l, snapshot: {} } ), [] );
 } );
 
 test( 'colourValue: transparent, an exact palette colour as its slug, anything else as hex', () => {

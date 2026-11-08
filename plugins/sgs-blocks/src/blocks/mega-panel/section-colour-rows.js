@@ -127,5 +127,12 @@ export default function sectionColourRows( { attributes, setAttributes, resolved
 			attributes,
 			setAttributes,
 		} ),
+		fillRow( {
+			key: 'drawerTileBorderColour',
+			label: __( 'Gallery tile border colour', 'sgs-blocks' ),
+			attrs: { base: 'drawerTileBorderColour', hover: 'drawerTileBorderColourHover' },
+			attributes,
+			setAttributes,
+		} ),
 	];
 }

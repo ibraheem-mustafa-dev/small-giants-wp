@@ -55,6 +55,12 @@ foreach ( array( 'itemBackgroundOpen', 'itemShadow', 'itemShadowColour', 'itemSh
 		unset( $hash_attrs[ $hash_key ] );
 	}
 }
+// The answer slide timing stays out of the hash while unset, for the same reason.
+foreach ( array( 'panelDuration', 'panelEasing', 'panelEasingCustom' ) as $hash_key ) {
+	if ( isset( $hash_attrs[ $hash_key ] ) && ( '' === $hash_attrs[ $hash_key ] || 0 === $hash_attrs[ $hash_key ] ) ) {
+		unset( $hash_attrs[ $hash_key ] );
+	}
+}
 $uid      = 'sgs-accordion-' . substr( md5( wp_json_encode( $hash_attrs ) . ( $block->parsed_block['attrs']['anchor'] ?? '' ) ), 0, 8 );
 $root_sel = '.' . $uid . '.wp-block-sgs-accordion';
 
@@ -118,6 +124,20 @@ if ( $border['mobile'] ) {
 // mechanism. Text indent follows core's convention: every paragraph that
 // follows another paragraph inside the accordion.
 $responsive_css .= sgs_typography_css_rule( $attributes, '', $root_sel, $root_sel . ' :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)', false, false, sgs_object_attr_keys( $block ) );
+
+// Answer slide timing: the same `::details-content` transition style.css declares, with the block's own speed and
+// curve; an unset one keeps the theme token. Reduced motion still wins (style.css forces 0.01ms with !important).
+$panel_ms   = sgs_flat_duration_ms( $attributes['panelDuration'] ?? null, 0 );
+$panel_ease = '' === (string) ( $attributes['panelEasing'] ?? '' )
+	? ''
+	: sgs_motion_easing_css( (string) $attributes['panelEasing'], (string) ( $attributes['panelEasingCustom'] ?? '' ), '' );
+if ( $panel_ms > 0 || '' !== $panel_ease ) {
+	$panel_time = ( $panel_ms > 0 ? $panel_ms . 'ms' : 'var(--wp--custom--duration--medium, 300ms)' );
+	$panel_ease = '' !== $panel_ease ? $panel_ease : 'var(--wp--custom--easing--default, cubic-bezier(0.4, 0, 0.2, 1))';
+	$responsive_css .= '@supports (interpolate-size: allow-keywords){@supports selector(::details-content){'
+		. $root_sel . ' .sgs-accordion-item::details-content{transition:block-size ' . $panel_time . ' ' . $panel_ease
+		. ',content-visibility ' . $panel_time . ' allow-discrete;}}}';
+}
 
 // ─── Inner HTML = $content (the accordion items) ────────────────────────────
 // The accordion wrapper classes travel via extra_classes; the toggle attrs

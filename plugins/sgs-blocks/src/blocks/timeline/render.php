@@ -883,6 +883,7 @@ if ( $media_clip ) {
 	$scoped_css[] = $media_sel . '{overflow:hidden;}';
 }
 
+require __DIR__ . '/card-device.php';
 require __DIR__ . '/horizontal-panel.php';
 $wrapper_args = array_merge( $wrapper_args, $hp_wrapper_args );
 

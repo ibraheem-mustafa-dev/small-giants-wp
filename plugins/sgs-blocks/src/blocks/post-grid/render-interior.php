@@ -38,13 +38,24 @@ if ( $show_filters ) :
 				static fn( $a, $b ) => ( $filter_rank[ $a->term_id ] ?? PHP_INT_MAX ) <=> ( $filter_rank[ $b->term_id ] ?? PHP_INT_MAX ) ?: strcasecmp( $a->name, $b->name )
 			);
 		}
-		echo '<div class="sgs-post-grid__filters" role="group" aria-label="' . esc_attr__( 'Filter posts', 'sgs-blocks' ) . '">';
-		echo '<button type="button" class="sgs-post-grid__filter sgs-post-grid__filter--active" data-filter-id="" aria-pressed="true">' . esc_html__( 'All', 'sgs-blocks' ) . '</button>';
+		$sgs_pg_chips = '<button type="button" class="sgs-post-grid__filter sgs-post-grid__filter--active" data-filter-id="" aria-pressed="true">' . esc_html__( 'All', 'sgs-blocks' ) . '</button>';
 
 		foreach ( $filter_terms as $term ) {
-			echo '<button type="button" class="sgs-post-grid__filter" data-filter-id="' . esc_attr( $term->term_id ) . '" data-filter-taxonomy="' . esc_attr( $filter_taxonomy ) . '" aria-pressed="false">' . esc_html( $term->name ) . '</button>';
+			$sgs_pg_chips .= '<button type="button" class="sgs-post-grid__filter" data-filter-id="' . esc_attr( $term->term_id ) . '" data-filter-taxonomy="' . esc_attr( $filter_taxonomy ) . '" aria-pressed="false">' . esc_html( $term->name ) . '</button>';
 		}
 
+		// A saved `filter` entrance staggers the chips as one row (the block's stagger step and offset, never the card grid's columns), each chip indexed by the shared loop attribute.
+		$sgs_pg_chip_style = '';
+		if ( is_array( $attributes['sgsMotion']['elements']['filter']['entrance']['base'] ?? null ) && is_array( $attributes['sgsMotion']['stagger'] ?? null ) ) {
+			$sgs_pg_chip_attrs                                    = $attributes;
+			$sgs_pg_chip_attrs['sgsMotion']['stagger']['perRow'] = false;
+			$sgs_pg_chip_tagged                                   = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $sgs_pg_chips, 'sgs-post-grid__filter' );
+			$sgs_pg_chip_style                                    = (string) \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/post-grid', $uid, $sgs_pg_chip_attrs, $sgs_pg_chip_tagged['count'], '.sgs-post-grid__filter' );
+			$sgs_pg_chips                                         = $sgs_pg_chip_tagged['html'];
+		}
+		echo $sgs_pg_chip_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from integers by Sgs_Motion_Loop_Delays.
+		echo '<div class="sgs-post-grid__filters" role="group" aria-label="' . esc_attr__( 'Filter posts', 'sgs-blocks' ) . '">';
+		echo $sgs_pg_chips; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every chip is built above from escaped parts; tag_by_class only adds an integer attribute.
 		echo '</div>';
 	endif;
 endif;

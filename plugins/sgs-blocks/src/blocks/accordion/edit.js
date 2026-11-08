@@ -31,6 +31,8 @@ import { usePreviewTier } from '../../utils';
 import { accordionWrapperPreview } from './preview-style';
 import { partHasEntranceLayer } from '../extensions/motion/part-layer';
 import FilterPanel from './FilterPanel';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import EasingAtom from '../../components/motion/EasingAtom';
 import FilterCanvasBar from './FilterCanvasBar';
 
 const STYLE_OPTIONS = [
@@ -120,7 +122,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...( scrollToOpened
 			? {
 					'data-scroll-to-opened': 'true',
-					...( scrollToOpenedGap ? { 'data-scroll-gap': String( scrollToOpenedGap ) } : {} ),
+					...( scrollToOpenedGap
+						? { 'data-scroll-gap': String( scrollToOpenedGap ) }
+						: {} ),
 			  }
 			: {} ),
 	} );
@@ -139,7 +143,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	// A static copy of the filter bar so the canvas shows what the front end adds above the items.
 	const filterBar = attributes.filterEnabled ? (
-		<FilterCanvasBar attributes={ attributes } clientId={ clientId } palette={ palette } tier={ previewTier } />
+		<FilterCanvasBar
+			attributes={ attributes }
+			clientId={ clientId }
+			palette={ palette }
+			tier={ previewTier }
+		/>
 	) : null;
 
 	return (
@@ -419,7 +428,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					{ scrollToOpened && (
 						<SgsLengthControl
 							presets
-							label={ __( 'Gap below the site header', 'sgs-blocks' ) }
+							label={ __(
+								'Gap below the site header',
+								'sgs-blocks'
+							) }
 							value={ scrollToOpenedGap ?? '' }
 							onChange={ ( val ) =>
 								setAttributes( { scrollToOpenedGap: val } )
@@ -428,7 +440,95 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					) }
 				</PanelBody>
 
-				<FilterPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<PanelBody
+					title={ __( 'Open and close motion', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ToolsPanel
+						label={ __( 'Answer slide', 'sgs-blocks' ) }
+						resetAll={ () =>
+							setAttributes( {
+								panelDuration: 0,
+								panelEasing: '',
+								panelEasingCustom: '',
+							} )
+						}
+					>
+						<ToolsPanelItem
+							label={ __(
+								'Slide speed (milliseconds)',
+								'sgs-blocks'
+							) }
+							isShownByDefault
+							hasValue={ () =>
+								0 !== ( attributes.panelDuration ?? 0 )
+							}
+							onDeselect={ () =>
+								setAttributes( { panelDuration: 0 } )
+							}
+						>
+							<RangeControl
+								label={ __(
+									'Slide speed (milliseconds)',
+									'sgs-blocks'
+								) }
+								help={ __(
+									'How long an answer takes to open and close. 0 keeps the theme speed.',
+									'sgs-blocks'
+								) }
+								value={ attributes.panelDuration ?? 0 }
+								min={ 0 }
+								max={ 3000 }
+								step={ 10 }
+								onChange={ ( value ) =>
+									setAttributes( {
+										panelDuration:
+											'number' === typeof value
+												? value
+												: 0,
+									} )
+								}
+								allowReset
+								resetFallbackValue={ 0 }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Slide curve', 'sgs-blocks' ) }
+							isShownByDefault
+							hasValue={ () =>
+								'' !== ( attributes.panelEasing ?? '' )
+							}
+							onDeselect={ () =>
+								setAttributes( {
+									panelEasing: '',
+									panelEasingCustom: '',
+								} )
+							}
+						>
+							<EasingAtom
+								vocab="nav"
+								label={ __( 'Slide curve', 'sgs-blocks' ) }
+								value={ attributes.panelEasing }
+								custom={ attributes.panelEasingCustom }
+								onChange={ ( value ) =>
+									setAttributes( { panelEasing: value } )
+								}
+								onCustomChange={ ( value ) =>
+									setAttributes( {
+										panelEasingCustom: value,
+									} )
+								}
+							/>
+						</ToolsPanelItem>
+					</ToolsPanel>
+				</PanelBody>
+
+				<FilterPanel
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+				/>
 
 				<PanelBody
 					title={ __(
@@ -734,7 +834,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						colourLinked={ true }
 					/>
 					<DesignTokenPicker
-						label={ __( 'Icon ring border colour (open)', 'sgs-blocks' ) }
+						label={ __(
+							'Icon ring border colour (open)',
+							'sgs-blocks'
+						) }
 						value={ attributes.iconCircleBorderColourOpen }
 						onChange={ ( val ) =>
 							setAttributes( {

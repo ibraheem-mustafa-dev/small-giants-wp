@@ -91,7 +91,10 @@ async function focusRead( page, { finder, resolveSrc } ) {
 			const cs = getComputedStyle( field );
 			const read = Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
 			const ls = label ? getComputedStyle( label ) : null;
-			done( { read, label: ls ? { 'font-size': ls.fontSize, color: ls.color } : null } );
+			// The label's top edge from its containing block (the field's box), as the CSS `top` a floated label holds.
+			const box = label?.offsetParent ?? field.parentElement;
+			const top = label && box ? `${ Math.round( ( label.getBoundingClientRect().top - box.getBoundingClientRect().top ) * 100 ) / 100 }px` : null;
+			done( { read, label: ls ? { 'font-size': ls.fontSize, color: ls.color, top } : null } );
 			field.blur();
 		}, 500 ) );
 	}, [ finder, resolveSrc, FIELD_FOCUS_PROPS, FIELD_SELECTOR, textHolderSrc ] );

@@ -323,6 +323,27 @@
 					},
 					"_note": "The aside's fifth slot (link button) in the drawer: size in the compact card; colours in every card layout."
 				},
+				"drawerTiles": {
+					"selector": ".sgs-gallery__item",
+					"motion": false,
+					"label": "Drawer gallery tiles",
+					"layer": "CONTENT",
+					"order": 5.95,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:border-color": "drawerTileBorderColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:border-color": "drawerTileBorderColourHover"
+							}
+						}
+					},
+					"_note": "The tiles of an sgs/gallery inside this panel's in-drawer copy (the brand gallery): their border colour at rest and on hover or keyboard focus, in the drawer only. The desktop panel keeps the gallery's own tileBorderColour settings."
+				},
 				"icon": {
 					"selector": ".sgs-icon-list__icon",
 					"motion": false,
@@ -858,6 +879,16 @@
 			"type": "string",
 			"default": "",
 			"description": "CSS gradient string painting the compact drawer card border through a masked ring. Non-empty wins over drawerCardBorderColour."
+		},
+		"drawerTileBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the resting border colour of the tiles of an sgs/gallery inside this panel (a palette slug or any CSS colour). Empty = the gallery's own tileBorderColour."
+		},
+		"drawerTileBorderColourHover": {
+			"type": "string",
+			"default": "",
+			"description": "In the drawer: the border colour of those gallery tiles on hover and keyboard focus (a palette slug or any CSS colour). Skipped on touch devices. Empty = the gallery's own tileBorderColourHover."
 		},
 		"drawerCardRadius": {
 			"type": "string",

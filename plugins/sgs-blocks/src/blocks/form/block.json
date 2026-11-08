@@ -533,8 +533,13 @@
 						},
 						"focus": {
 							"attrMap": {
-								"css:font-size": "labelFloatedFontSize"
-							}
+								"css:font-size": "labelFloatedFontSize",
+								"css:color": "labelFloatedColour",
+								"css:top": "labelFloatedOffset"
+							},
+							"noBaseByDesign": [
+								"css:top"
+							]
 						}
 					}
 				},
@@ -1581,6 +1586,16 @@
 			"type": "object",
 			"default": {},
 			"description": "Font size of a floating label once it has moved up (field focused or filled), per device: {desktop,tablet,mobile}, each a CSS length or a bare number of px. Empty = the Label font size, or the stylesheet's 0.8125rem when that is unset."
+		},
+		"labelFloatedColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of a floating label while its field is focused: a palette slug or a colour value. Empty = the stylesheet's primary-dark."
+		},
+		"labelFloatedOffset": {
+			"type": "string",
+			"default": "",
+			"description": "Distance from the top of the field to a floated label (CSS top): a CSS length such as 9px. Empty = the stylesheet's floated position (0)."
 		},
 		"fieldTextColour": {
 			"type": "string",

@@ -3,7 +3,7 @@
 // setState) and each property goes through the resolver at the field's part. Where the draft's fields differ among themselves
 // the item is a no-setting row naming the values. The first field is also read under keyboard focus.
 import { CONSENT_PROPS, FIELD_REST_PROPS, LABEL_PROPS } from './apply-probes.mjs';
-import { partItems } from './apply-probe-items.mjs';
+import { colourValue, partItems } from './apply-probe-items.mjs';
 import { fieldWidths } from './apply-form-width.mjs';
 import { matches } from './apply-ops.mjs';
 import { parseColour } from './normalise.mjs';
@@ -32,9 +32,14 @@ function focusRing( { saved, d, l } ) {
 	return [ { status: 'op', prop: 'fieldFocusRingWidth', state: 'focus', why: `focus ring ${ d.focus[ 'box-shadow' ] }`, writes: [ { attr: 'fieldFocusRingColour', value: ring.colour }, { attr: 'fieldFocusRingWidth', value: ring.width } ], checks: [] } ];
 }
 
-// A label that shrinks as it floats up in the draft (focus size below its resting size) takes the floated size setting, which holds the
-// floated state alone; the resting label size stays the label size setting's.
-export function floatedLabel( { saved, d, l } ) {
+// The floated label (the first floating label under focus) takes three settings, each written only where the live label differs from the
+// draft's: the size when the label shrinks as it floats up (the floated size holds the floated state alone; the resting size stays the
+// label size setting's), the focused colour, and the top offset.
+export function floatedLabel( { saved, d, l, snapshot } ) {
+	return [ ...floatedSize( { saved, d, l } ), ...floatedColour( { saved, d, l, snapshot } ), ...floatedOffset( { saved, d, l } ) ];
+}
+
+function floatedSize( { saved, d, l } ) {
 	const want = d.focusLabel?.[ 'font-size' ];
 	const rest = d.fields?.find( ( f ) => f.label )?.label?.[ 'font-size' ];
 	const have = l.focusLabel?.[ 'font-size' ];
@@ -46,6 +51,32 @@ export function floatedLabel( { saved, d, l } ) {
 		return [ { status: 'no-setting', prop: 'labelFloatedFontSize', state: 'focus', why: `labelFloatedFontSize already holds ${ value }, yet the live floated label is ${ have }, not the draft's ${ want }: another rule wins` } ];
 	}
 	return [ { status: 'op', prop: 'labelFloatedFontSize', state: 'focus', why: `the draft's label shrinks from ${ rest } to ${ want } as it floats`, writes: [ { attr: 'labelFloatedFontSize', value: { ...( saved.labelFloatedFontSize ?? {} ), desktop: value } } ], checks: [ { width: 1440, prop: 'font-size', want, probe: [ 'focusLabel' ] } ] } ];
+}
+
+function floatedColour( { saved, d, l, snapshot } ) {
+	const want = d.focusLabel?.color;
+	const have = l.focusLabel?.color;
+	const value = want && have ? colourValue( want, snapshot ) : null;
+	if ( ! value || JSON.stringify( parseColour( want ) ) === JSON.stringify( parseColour( have ) ) ) {
+		return [];
+	}
+	if ( saved.labelFloatedColour === value ) {
+		return [ { status: 'no-setting', prop: 'labelFloatedColour', state: 'focus', why: `labelFloatedColour already holds ${ value }, yet the live floated label is ${ have }, not the draft's ${ want }: another rule wins` } ];
+	}
+	return [ { status: 'op', prop: 'labelFloatedColour', state: 'focus', why: `the draft's floated label turns ${ want } on focus`, writes: [ { attr: 'labelFloatedColour', value } ], checks: [ { width: 1440, prop: 'color', want, probe: [ 'focusLabel' ] } ] } ];
+}
+
+function floatedOffset( { saved, d, l } ) {
+	const want = d.focusLabel?.top;
+	const have = l.focusLabel?.top;
+	if ( ! want || ! have || Math.abs( parseFloat( want ) - parseFloat( have ) ) < 0.5 ) {
+		return [];
+	}
+	const value = `${ Math.round( parseFloat( want ) * 100 ) / 100 }px`;
+	if ( saved.labelFloatedOffset === value ) {
+		return [ { status: 'no-setting', prop: 'labelFloatedOffset', state: 'focus', why: `labelFloatedOffset already holds ${ value }, yet the live floated label sits ${ have } from the field top, not the draft's ${ want }: another rule wins` } ];
+	}
+	return [ { status: 'op', prop: 'labelFloatedOffset', state: 'focus', why: `the draft's floated label sits ${ want } from the field top`, writes: [ { attr: 'labelFloatedOffset', value } ], checks: [ { width: 1440, prop: 'top', want, probe: [ 'focusLabel' ] } ] } ];
 }
 
 // sgs/form-field-consent: a tick box whose painted size differs from the draft's takes boxSize (width and height together).
@@ -95,6 +126,6 @@ export const form = {
 		for ( const prop of FOCUS.filter( ( p ) => 'box-shadow' !== p || ! ringOf( d.focus?.[ p ] ) ).filter( () => d.focus && l.focus ) ) {
 			items.push( ...partItems( { ctx, element: 'field-input', prop, state: 'focus', drafts: [ d.focus[ prop ] ], lives: [ l.focus[ prop ] ], check: { probe: [ 'focus' ] } } ) );
 		}
-		return [ ...items, ...floatedLabel( { saved: ctx.saved, d, l } ), ...fieldWidths( ctx ) ];
+		return [ ...items, ...floatedLabel( { saved: ctx.saved, d, l, snapshot: ctx.snapshot } ), ...fieldWidths( ctx ) ];
 	},
 };

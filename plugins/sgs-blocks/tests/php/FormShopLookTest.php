@@ -69,6 +69,24 @@ final class FormShopLookTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\.sgs-form-tile:has\(input:checked\)\{background-color:#f9cf6e;border-color:#3a2a22;box-shadow:3px 3px 0px 0px #3a2a22/', $out['css'] );
 	}
 
+	public function test_tile_hover_shadow_prints_a_guarded_hover_and_focus_rule_only_when_set(): void {
+		$out = $this->render_block(
+			'sgs/form-field-tiles',
+			$this->tiles(
+				array(
+					'tileHoverShadow'       => '0 18px 30px -20px',
+					'tileHoverShadowColour' => '#0a7ea8',
+				)
+			)
+		);
+		$this->assertMatchesRegularExpression( '/\.sgs-form-tile:hover[^{]*\{box-shadow:0px 18px 30px -20px #0a7ea8;}/', $out['css'] );
+		$this->assertStringContainsString( '.sgs-form-tile:has(input:focus-visible)', $out['css'] );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .sgs-ft-', $out['css'] );
+		// Negative control: an unset hover shadow prints no hover box-shadow.
+		$none = $this->render_block( 'sgs/form-field-tiles', $this->tiles( array( 'tileSelectedShadow' => '3px 3px 0 0' ) ) );
+		$this->assertDoesNotMatchRegularExpression( '/:hover[^{]*\{box-shadow/', $none['css'] );
+	}
+
 	public function test_default_value_starts_that_tile_chosen(): void {
 		$out = $this->render_block( 'sgs/form-field-tiles', $this->tiles( array( 'defaultValue' => 'order' ) ) );
 		$this->assertMatchesRegularExpression( '/<label class="sgs-form-tile sgs-form-tile--selected"[^>]*><input[^>]*value="order"[^>]* checked/', $out['html'] );

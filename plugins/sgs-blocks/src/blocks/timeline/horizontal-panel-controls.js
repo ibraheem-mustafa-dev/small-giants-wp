@@ -406,7 +406,7 @@ export default function HorizontalPanelControls( { attributes, setAttributes } )
 			/>
 			<ScrollLengthControl
 				label={ __( 'Content side space (px)', 'sgs-blocks' ) }
-				help={ __( 'Space at each side of the content column. Empty keeps the timeline padding (40px once a max width is set).', 'sgs-blocks' ) }
+				help={ __( 'Space at each side of the content column. Empty keeps the timeline padding (40px once a max width is set). A mobile value also pads the swipeable card row at each side.', 'sgs-blocks' ) }
 				value={ panelContentGutter }
 				max={ 600 }
 				onChange={ ( obj ) => setAttributes( { panelContentGutter: obj } ) }

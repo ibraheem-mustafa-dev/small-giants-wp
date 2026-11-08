@@ -79,7 +79,21 @@ function megaPanel( ctx ) {
 			out.push( { status: 'no-setting', prop: 'drawerLinkTrailingColourHover', why: `${ fade.id } gives the row arrow's opacity only and the saved panel holds no row text colour to keep it at` } );
 		}
 	}
+	out.push( ...tileBorder( ctx, nodes, own ) );
 	return out;
+}
+
+// A gallery's tile in the panel's drawer copy turns its border to the colour the draft's drawer tile hover names (the tile record
+// holds a scale and a border-colour), through the panel's drawer-only setting; the gallery's own hover colour stays the desktop's.
+function tileBorder( ctx, nodes, own ) {
+	if ( ! Object.values( ctx.all?.blocks ?? {} ).some( ( b ) => 'sgs/gallery' === b.block ) ) {
+		return [];
+	}
+	const panels = own ? [ own ] : nodes.filter( ( n ) => 'sgs/mega-panel' === n.b );
+	const owns = panels.flatMap( ( p ) => reachOf( nodes, p ) );
+	const tile = hovers( recordsOf( { target: { owns, tpl: ctx.target.tpl }, recordsIndex: ctx.recordsIndex } ) ).find( ( r ) => hoverTo( [ r ], 'border-color' ) && scaleOf( hoverTo( [ r ], 'transform' )?.value ) );
+	const colour = tile && hoverTo( [ tile ], 'border-color' ).value;
+	return colour ? [ settle( { prop: 'drawerTileBorderColourHover', why: `${ ctx.target.tpl } the gallery tile border turns ${ colour } on hover in the drawer (${ tile.id })`, saved: ctx.saved, writes: [ { attr: 'drawerTileBorderColourHover', value: colour } ], record: tile.id, state: 'hover' } ) ] : [];
 }
 
 // A brand tile's hover in the drawer: scale and shadow have gallery settings; the lift and border go through sgsMotion hover on

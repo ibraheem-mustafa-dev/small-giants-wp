@@ -8,7 +8,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl } from '@wordpress/components';
-import { ToolsPanel, ToolsPanelItem, NumberControl } from '../../components/primitives';
+import { ToolsPanel, ToolsPanelItem, NumberControl, UnitControl } from '../../components/primitives';
 import { ResponsiveLengthControl, SgsBoxControl, BOX_UNITS } from '../../components';
 
 const RING_STYLE_OPTIONS = [
@@ -20,7 +20,7 @@ const hasKeys = ( value ) => Object.keys( value ?? {} ).length > 0;
 
 /**
  * @param {Object}   props
- * @param {Object}   props.attributes    Form attributes (fieldFocus* and labelFloatedFontSize).
+ * @param {Object}   props.attributes    Form attributes (fieldFocus*, labelFloatedFontSize and labelFloatedOffset).
  * @param {Function} props.setAttributes Form attribute setter.
  * @return {JSX.Element} The panel.
  */
@@ -79,7 +79,7 @@ export default function FieldFocusPanel( { attributes, setAttributes } ) {
 			</ToolsPanel>
 			<ToolsPanel
 				label={ __( 'Floating label', 'sgs-blocks' ) }
-				resetAll={ () => setAttributes( { labelFloatedFontSize: {} } ) }
+				resetAll={ () => setAttributes( { labelFloatedFontSize: {}, labelFloatedOffset: '' } ) }
 			>
 				<ToolsPanelItem
 					label={ __( 'Floated label size', 'sgs-blocks' ) }
@@ -92,6 +92,21 @@ export default function FieldFocusPanel( { attributes, setAttributes } ) {
 						value={ attributes.labelFloatedFontSize }
 						scale="font-size"
 						onChange={ ( next ) => setAttributes( { labelFloatedFontSize: next } ) }
+					/>
+				</ToolsPanelItem>
+				<ToolsPanelItem
+					label={ __( 'Floated label offset', 'sgs-blocks' ) }
+					isShownByDefault
+					hasValue={ () => '' !== ( attributes.labelFloatedOffset ?? '' ) }
+					onDeselect={ () => setAttributes( { labelFloatedOffset: '' } ) }
+				>
+					<UnitControl
+						label={ __( 'Floated label offset', 'sgs-blocks' ) }
+						value={ attributes.labelFloatedOffset ?? '' }
+						units={ [ { value: 'px', label: 'px' }, { value: 'rem', label: 'rem' }, { value: 'em', label: 'em' } ] }
+						help={ __( 'Distance from the top of the field to the label once it has moved up. Empty keeps the default position.', 'sgs-blocks' ) }
+						__next40pxDefaultSize
+						onChange={ ( labelFloatedOffset ) => setAttributes( { labelFloatedOffset: labelFloatedOffset ?? '' } ) }
 					/>
 				</ToolsPanelItem>
 			</ToolsPanel>

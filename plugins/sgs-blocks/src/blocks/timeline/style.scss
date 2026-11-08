@@ -838,17 +838,13 @@
 	}
 
 	.sgs-timeline--horizontal.sgs-timeline--content-same-side .sgs-timeline__entry--has-media {
-		grid-template-columns: minmax(0, 1fr) minmax(0, var(--sgs-timeline-media-width, 0.9fr));
-		grid-template-areas:
-			'date media'
-			'content media';
+		grid-template-columns: var(--sgs-tl-card-cols, minmax(0, 1fr) minmax(0, var(--sgs-timeline-media-width, 0.9fr)));
+		grid-template-areas: var(--sgs-tl-card-areas, 'date media' 'content media');
 	}
 
 	.sgs-timeline--horizontal.sgs-timeline--content-same-side:not(.sgs-timeline--side-start) .sgs-timeline__entry--has-media {
-		grid-template-columns: minmax(0, var(--sgs-timeline-media-width, 0.9fr)) minmax(0, 1fr);
-		grid-template-areas:
-			'media date'
-			'media content';
+		grid-template-columns: var(--sgs-tl-card-cols, minmax(0, var(--sgs-timeline-media-width, 0.9fr)) minmax(0, 1fr));
+		grid-template-areas: var(--sgs-tl-card-areas, 'media date' 'media content');
 	}
 }
 
@@ -1676,8 +1672,9 @@
 			overflow-x: auto;
 			overflow-y: hidden;
 			scroll-snap-type: x mandatory;
-			gap: var(--wp--preset--spacing--20, 1rem);
-			padding: var(--wp--preset--spacing--30, 1.5rem) var(--wp--preset--spacing--20, 1rem);
+			// `cardGap` prints --sgs-tl-card-gap and the mobile `panelContentGutter` prints --sgs-tl-strip-pad.
+			gap: var(--sgs-tl-card-gap, var(--wp--preset--spacing--20, 1rem));
+			padding: var(--wp--preset--spacing--30, 1.5rem) var(--sgs-tl-strip-pad, var(--wp--preset--spacing--20, 1rem));
 		}
 
 		// No continuous rail — the rail pseudo-element is drawn on the ROOT
@@ -1696,7 +1693,10 @@
 		}
 
 		.sgs-timeline__entry {
-			display: block;
+			// `cardLayout` 'stacked' prints --sgs-tl-card-display: grid with the media, date, text areas below.
+			display: var(--sgs-tl-card-display, block);
+			grid-template-columns: var(--sgs-tl-card-cols, none);
+			grid-template-areas: var(--sgs-tl-card-areas, none);
 			// The conformance-required panel width (Sufficient Technique G225):
 			// 85% deliberately leaves a peek of the next card, which is the
 			// discoverability cue for the scroller — dot indicators are a weaker
@@ -1705,9 +1705,14 @@
 			scroll-snap-align: start;
 			margin-bottom: 0;
 			padding: var(--sgs-tl-card-pad-top, var(--wp--preset--spacing--20, 1rem)) var(--sgs-tl-card-pad-right, 0) var(--sgs-tl-card-pad-bottom, 0) var(--sgs-tl-card-pad-left, 0);
-			// The per-card connector indicator this mode replaces the rail
-			// with — filled in the connector colour, one border per card
-			// rather than one continuous scrubbing fill.
+		}
+
+		// The per-card connector indicator this mode replaces the rail
+		// with — filled in the connector colour, one border per card
+		// rather than one continuous scrubbing fill. A card that carries its own
+		// border (`cardBorder*`, class `sgs-timeline--card-bordered`) draws that
+		// border instead.
+		&:not(.sgs-timeline--card-bordered) .sgs-timeline__entry {
 			border-top: 3px solid var(--sgs-connector-colour);
 
 			// F1 — the horizontal analogue of `.sgs-timeline__node.is-reached`
@@ -1728,11 +1733,22 @@
 			display: none;
 		}
 
+		// The named areas place the parts when `cardLayout` makes the card a grid; a block card ignores them.
+		.sgs-timeline__date {
+			grid-area: date;
+		}
+
+		.sgs-timeline__media-slot {
+			grid-area: media;
+		}
+
+		.sgs-timeline__content {
+			grid-area: content;
+		}
+
 		.sgs-timeline__date,
 		.sgs-timeline__media-slot,
 		.sgs-timeline__content {
-			grid-column: auto;
-			grid-row: auto;
 			text-align: left;
 			--sgs-text-ms: 0;
 			--sgs-text-me: 0;

@@ -1,7 +1,12 @@
 {
-    "a_baseline": [],
+    "a_baseline": {
+        " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0"
+        ]
+    },
     "b_equal_sides": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
@@ -9,6 +14,7 @@
     },
     "c_unequal_dashed_raw": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-color:#ff0000",
             "border-style:dashed",
             "border-width:1px 0 0 4px"
@@ -16,23 +22,27 @@
     },
     "d_style_none": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-style:none",
             "border-width:0"
         ]
     },
     "e_widths_no_colour": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
         ]
     },
     "f_colour_no_widths": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-color:var(--wp--preset--color--primary,currentColor)"
         ]
     },
     "g_gradient": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "background-clip:padding-box",
             "border-color:transparent",
             "border-style:solid",
@@ -55,6 +65,7 @@
     },
     "h_hover_flat": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
             "border-width:2px 2px 2px 2px"
@@ -102,11 +113,13 @@
     },
     "j_radius_uniform": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-radius:8px"
         ]
     },
     "k_radius_tiers": {
         " || .sgs-proc-UID.sgs-process-steps": [
+            "--sgs-step-count:0",
             "border-bottom-left-radius:4px",
             "border-bottom-right-radius:4px",
             "border-top-left-radius:12px",

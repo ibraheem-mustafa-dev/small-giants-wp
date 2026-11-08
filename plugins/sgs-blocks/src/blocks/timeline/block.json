@@ -338,7 +338,8 @@
 						"css:border-color-gradient": "cardBorderColourGradient",
 						"css:border-style": "cardBorderStyle",
 						"css:box-shadow": "cardShadow",
-						"css:column-gap": "cardColumnGap"
+						"css:column-gap": "cardColumnGap",
+						"css:grid-template-areas": "cardLayout"
 					},
 					"_note": "The card box of each entry in a horizontal timeline (background, padding, border, radius, shadow), printed on the entry element only when orientation is horizontal. With contentLayout 'same-side' the entry also becomes a two-column card (text on one side, media on the other, contentSide choosing the text side) from 768px up.",
 					"absentIn": [ "vertical" ],
@@ -353,7 +354,8 @@
 					],
 					"attrMap": {
 						"css:aspect-ratio": "mediaAspectRatio",
-						"css:border-radius": "mediaBorderRadius"
+						"css:border-radius": "mediaBorderRadius",
+						"css:height": "mediaHeight"
 					},
 					"_note": "The picture (or video or SVG) each entry prints opposite its text. The entry image takes entrance and hover from the Motion panel; mediaAspectRatio crops the slot to a ratio per device and mediaBorderRadius rounds it.",
 					"absentIn": [ "progress", "plain" ],
@@ -388,6 +390,45 @@
 						"css:margin-bottom": "panelRowSpacing"
 					},
 					"_note": "Holds the counter, the progress bar and the hint above the pinned cards; printed only when panelProgressBar is on or panelHint is set."
+				},
+				"strip": {
+					"selector": ".sgs-timeline__list",
+					"motion": false,
+					"label": "Card row (horizontal)",
+					"order": 7,
+					"clusters": ["layout"],
+					"attrMap": {
+						"css:column-gap": "cardGap"
+					},
+					"_note": "The row of cards of a horizontal timeline. cardGap is the space between neighbouring cards per device; the swipeable layout reads it through --sgs-tl-card-gap.",
+					"absentIn": ["vertical"],
+					"absentWhy": "Only the horizontal orientation lays its entries out as a row of cards."
+				},
+				"cardTablet": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card, tablet shadow",
+					"order": 8,
+					"clusters": ["fill"],
+					"attrMap": {
+						"css:box-shadow": "cardShadowTablet"
+					},
+					"_note": "The card shadow at 1023px and below; cardShadowTabletColour is its colour.",
+					"absentIn": ["vertical"],
+					"absentWhy": "The card box prints only for the horizontal orientation."
+				},
+				"cardMobile": {
+					"selector": ".sgs-timeline__entry",
+					"motion": false,
+					"label": "Entry card, mobile shadow",
+					"order": 9,
+					"clusters": ["fill"],
+					"attrMap": {
+						"css:box-shadow": "cardShadowMobile"
+					},
+					"_note": "The card shadow at 767px and below; cardShadowMobileColour is its colour.",
+					"absentIn": ["vertical"],
+					"absentWhy": "The card box prints only for the horizontal orientation."
 				},
 				"panelContent": {
 					"selector": ".wp-block-sgs-timeline",
@@ -1423,6 +1464,41 @@
 			"type": "object",
 			"default": {},
 			"description": "Horizontal timeline, text-beside-image cards: the gap between the text column and the image column, per device ({desktop,tablet,mobile} tier object of CSS lengths). Empty keeps the theme spacing. The image column is as wide as milestoneMediaWidth."
+		},
+		"cardLayout": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline, Text beside image content layout: how each card is laid out per device ({desktop,tablet,mobile} tier object). 'side' puts the text beside the image; 'stacked' puts the image on top with the date and text below it. Empty keeps the text beside the image."
+		},
+		"cardGap": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: the space between neighbouring cards per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). Empty keeps no gap on the pinned row and the theme spacing on the swipeable cards."
+		},
+		"cardShadowTablet": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card at 1023px and below (the shared ShadowControl value). Empty keeps cardShadow."
+		},
+		"cardShadowTabletColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the tablet card shadow."
+		},
+		"cardShadowMobile": {
+			"type": "string",
+			"default": "",
+			"description": "Horizontal timeline: box-shadow shape of each entry card at 767px and below (the shared ShadowControl value). Empty keeps the tablet shadow, then cardShadow."
+		},
+		"cardShadowMobileColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the mobile card shadow."
+		},
+		"mediaHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Entry image slot height per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). The picture fills and crops to this height and the aspect ratio is ignored where a height is set. Empty keeps the aspect ratio or the picture's natural shape."
 		},
 		"cardMaxWidth": {
 			"type": "object",

@@ -26,11 +26,11 @@ export function fieldKey( layer, fieldPath ) {
 // One object over the four tables. `db` is a node:sqlite handle from lib/db.mjs::openDb.
 export function motionDb( db ) {
 	const targets = new Map();
-	for ( const r of db.prepare( 'SELECT block_slug, target, css_element, kind, is_wrapper, motion_support FROM motion_targets ORDER BY block_slug, target' ).all() ) {
+	for ( const r of db.prepare( 'SELECT block_slug, target, css_element, kind, is_wrapper, label, motion_support FROM motion_targets ORDER BY block_slug, target' ).all() ) {
 		if ( ! targets.has( r.block_slug ) ) {
 			targets.set( r.block_slug, [] );
 		}
-		targets.get( r.block_slug ).push( { target: r.target, cssElement: r.css_element, kind: r.kind, isWrapper: !! r.is_wrapper, support: parse( r.motion_support, null ) } );
+		targets.get( r.block_slug ).push( { target: r.target, cssElement: r.css_element, kind: r.kind, isWrapper: !! r.is_wrapper, label: r.label ?? '', support: parse( r.motion_support, null ) } );
 	}
 	const fields = new Map();
 	for ( const r of db.prepare( 'SELECT layer, field_path, field_type, per_device, unit FROM motion_fields' ).all() ) {

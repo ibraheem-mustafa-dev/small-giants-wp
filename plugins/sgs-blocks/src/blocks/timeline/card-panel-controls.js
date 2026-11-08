@@ -12,6 +12,7 @@ import {
 	ShadowControl,
 	TypographyControls,
 } from '../../components';
+import { CARD_DEVICE_ATTRS, CardDeviceShadowItems, CardLayoutItems, TierLengthItem } from './card-device-controls';
 
 /** The image-slot ratios offered per device; empty keeps the picture at its natural shape. */
 const MEDIA_RATIO_OPTIONS = [
@@ -38,6 +39,7 @@ const CARD_ATTRS = {
 	cardShadowColour: '',
 	cardMaxWidth: {},
 	cardColumnGap: {},
+	...CARD_DEVICE_ATTRS,
 };
 
 const hasKeys = ( value ) => !! value && 'object' === typeof value && Object.keys( value ).length > 0;
@@ -189,6 +191,8 @@ export function EntryCardControls( { attributes, setAttributes } ) {
 					attrNames={ { base: 'cardShadow', colour: 'cardShadowColour' } }
 				/>
 			</ToolsPanelItem>
+			<CardDeviceShadowItems attributes={ attributes } setAttributes={ setAttributes } />
+			<CardLayoutItems attributes={ attributes } setAttributes={ setAttributes } />
 			<ToolsPanelItem
 				label={ __( 'Gap between text and image', 'sgs-blocks' ) }
 				hasValue={ () => hasKeys( attributes.cardColumnGap ) }
@@ -248,7 +252,7 @@ export function EntryImageShapeControls( { attributes, setAttributes } ) {
 	return (
 		<ToolsPanel
 			label={ __( 'Entry image shape', 'sgs-blocks' ) }
-			resetAll={ () => setAttributes( { mediaAspectRatio: {}, mediaBorderRadius: {} } ) }
+			resetAll={ () => setAttributes( { mediaAspectRatio: {}, mediaHeight: {}, mediaBorderRadius: {} } ) }
 		>
 			<ToolsPanelItem
 				label={ __( 'Image aspect ratio', 'sgs-blocks' ) }
@@ -274,6 +278,13 @@ export function EntryImageShapeControls( { attributes, setAttributes } ) {
 					) }
 				</ResponsiveOverride>
 			</ToolsPanelItem>
+			<TierLengthItem
+				name="mediaHeight"
+				label={ __( 'Image height', 'sgs-blocks' ) }
+				help={ __( 'A fixed height for the picture band, for example 190px; the picture fills and crops to it and the aspect ratio is ignored where a height is set. Empty keeps the aspect ratio.', 'sgs-blocks' ) }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<ToolsPanelItem
 				label={ __( 'Image corner radius', 'sgs-blocks' ) }
 				hasValue={ () => hasKeys( radius ) }

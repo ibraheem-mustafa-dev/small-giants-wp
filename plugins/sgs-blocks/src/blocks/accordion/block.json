@@ -237,6 +237,18 @@
             "css:padding": "contentPadding"
           }
         },
+        "panel": {
+          "selector": ".sgs-accordion-item::details-content",
+          "motion": false,
+          "label": "Answer slide",
+          "order": 5.5,
+          "clusters": [],
+          "attrMap": {
+            "css:transition-duration": "panelDuration",
+            "css:transition-timing-function": "panelEasing"
+          },
+          "_note": "The browser-animated answer slot of every item. panelDuration and panelEasing time its open and close slide; empty keeps the theme tokens."
+        },
         "item": {
           "motion": false,
           "label": "Accordion item",
@@ -1065,6 +1077,22 @@
       "type": "string",
       "default": "",
       "description": "Ring background colour while the item is open. Empty keeps the closed background."
+    },
+    "panelDuration": {
+      "type": "number",
+      "default": 0,
+      "description": "Milliseconds (1 to 3000) the answer takes to slide open and shut. 0 keeps the theme's medium speed."
+    },
+    "panelEasing": {
+      "type": "string",
+      "default": "",
+      "enum": [ "", "ease", "ease-out", "ease-in-out", "default", "emphasised", "quart-out", "standard", "drafts", "ease-in", "spring", "linear", "custom" ],
+      "description": "Curve of the answer's open and close slide, from the shared motion easing list (includes/helpers-motion-easing.php). Empty keeps the theme's default curve."
+    },
+    "panelEasingCustom": {
+      "type": "string",
+      "default": "",
+      "description": "A hand-typed cubic-bezier(x1, y1, x2, y2) curve, read only when panelEasing is 'custom'."
     }
   },
   "providesContext": {

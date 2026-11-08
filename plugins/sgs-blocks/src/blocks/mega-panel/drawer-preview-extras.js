@@ -80,6 +80,21 @@ export function drawerShellPreviewCss( scope, row, v ) {
 }
 
 /**
+ * The border colour of an sgs/gallery's tiles inside the drawer copy, at rest and on hover or focus.
+ *
+ * @param {string} scope Panel scope selector.
+ * @param {Object} v     Enumerated drawer attributes.
+ * @return {string} CSS.
+ */
+export function drawerTilePreviewCss( scope, v ) {
+	const tile = `${ scope } .sgs-gallery__item`;
+	const paint = ( colour ) => ( colour ? `border-color:${ colourVar( colour ) || colour };` : '' );
+	const rest = paint( v.drawerTileBorderColour );
+	const hover = paint( v.drawerTileBorderColourHover );
+	return ( rest ? `${ tile }{${ rest }}` : '' ) + ( hover ? `${ tile }:hover,${ tile }:focus-within{${ hover }}` : '' );
+}
+
+/**
  * The aside card's radius and padding outside compact mode.
  *
  * @param {Object} v Enumerated drawer attributes.

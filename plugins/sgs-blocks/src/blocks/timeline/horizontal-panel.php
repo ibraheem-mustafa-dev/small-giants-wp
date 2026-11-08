@@ -134,6 +134,13 @@ if ( $hp_pad_value ) {
 		. '}';
 }
 
+// Swipeable layout (767px and below): an explicit mobile content side space also pads the card row at each side (the
+// row scrolls inside that padding, so a card never clips at the screen edge).
+if ( 'carousel' === ( $attributes['mobileLayout'] ?? '' ) && is_numeric( $hp_gutter_tiers['mobile'] ?? null ) ) {
+	$hp_strip_pad = max( 0.0, (float) $hp_gutter_tiers['mobile'] );
+	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . $root_sel . ' .sgs-timeline__list{scroll-padding-inline:' . $hp_strip_pad . 'px;--sgs-tl-strip-pad:' . $hp_strip_pad . 'px;}}';
+}
+
 // Counter and hint text: colour and typography (each helper call names its prefix as a literal).
 $hp_counter_decls = sgs_text_decls( $attributes, array( 'base' => 'counterColour' ) );
 if ( $hp_counter_decls['normal'] ) {

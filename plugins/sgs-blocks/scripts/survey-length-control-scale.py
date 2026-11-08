@@ -108,6 +108,7 @@ GENERIC_FILES = {
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
     'components/media/controls/MediaBoxShapeControls.js': ('spacing', "the box-shape atom's width, height, max width and max height: box lengths for its callers (sgs/hero, sgs/media)"),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
+    'blocks/timeline/card-device-controls.js': ('spacing', "the timeline's per-device card gap and image height (TierLengthItem): box lengths"),
 }
 EXTENSION_ATTRS =sorted(k.split('/', 1)[1] for k in ROLE_EXCEPTIONS if k.startswith('extension/'))
 

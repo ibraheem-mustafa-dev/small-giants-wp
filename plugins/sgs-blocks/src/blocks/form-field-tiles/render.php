@@ -360,6 +360,22 @@ if ( array() !== $sgs_ft_selected_decls ) {
 	$sgs_ft_supports_css .= '.' . $sgs_ft_uid . ' .sgs-form-tile--selected,.' . $sgs_ft_uid . ' .sgs-form-tile:has(input:checked){' . implode( ';', $sgs_ft_selected_decls ) . ';}';
 }
 
+// ── The tile's hover and keyboard-focus shadow, through the shared hover pair (touch-guarded hover plus :focus-visible).
+// The motion hover state's shadow timing rides on the tile's motion transition list; an unset shadow prints nothing.
+$sgs_ft_hover_shadow = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'tileHoverShadow',
+		'colour'       => 'tileHoverShadowColour',
+		'hover'        => 'tileHoverShadow',
+		'hover_colour' => 'tileHoverShadowColour',
+	),
+	'sgs/form-field-tiles'
+);
+if ( array() !== $sgs_ft_hover_shadow['hover'] ) {
+	$sgs_ft_supports_css .= sgs_hover_state_rules( $sgs_ft_tile_sel, implode( ';', $sgs_ft_hover_shadow['hover'] ) . ';', ':has(input:focus-visible)' );
+}
+
 // ── The chosen tile's tick: colour, circle fill, size and (corner badge) distance from the top and end edges. The
 // stylesheet draws the tick from the element's colour and size, so one rule on the check element is the whole look. ──
 $sgs_ft_check_position = in_array( $attributes['selectedCheckPosition'] ?? '', array( 'inline-start', 'corner' ), true ) ? $attributes['selectedCheckPosition'] : '';

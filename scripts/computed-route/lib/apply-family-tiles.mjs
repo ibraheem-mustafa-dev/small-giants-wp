@@ -1,8 +1,8 @@
 // Applier family: tiles. The first tile of an sgs/form-field-tiles block read at rest, hovered and selected (a click;
 // lib/apply-probes.mjs) in the draft and the live block: the selected look (ground, border, label colour), the check mark (colour,
 // ground, size, inset, corner or inline position, and whether it shows at all) and the resting look go through the resolver at the
-// tile's parts. A hover border is the form's tile hover border setting (the form holds it for every tile field), a hover lift or
-// shadow is the tile element's hover layer of sgsMotion, and a field whose second click keeps the first tile chosen is multiSelect.
+// tile's parts. A hover border is the form's tile hover border setting (the form holds it for every tile field), a hover drop shadow is the tile's tileHoverShadow setting, a hover lift
+// is the tile element's hover layer of sgsMotion, and a field whose second click keeps the first tile chosen is multiSelect.
 import { instanceKey } from './fact-key.mjs';
 import { colourValue, partItems } from './apply-probe-items.mjs';
 import { elementMotion } from './fill-motion-element.mjs';
@@ -11,11 +11,12 @@ import { MOTION_LOOKS, motionOf } from './apply-hover.mjs';
 import { recordsFor } from './apply-records.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { matches } from './apply-ops.mjs';
+import { shadowParts } from './motion-shadow.mjs';
 
 const SELECTED = [ 'background-color', 'border-top-color', 'border-top-width', 'box-shadow', 'color' ];
 const CHECK = [ 'color', 'background-color', 'width', 'top' ];
 const REST = [ 'background-color', 'border-top-color', 'border-top-width' ];
-const HOVERED = [ 'background-color', 'box-shadow' ];
+const HOVERED = [ 'background-color' ];
 
 // The tick as a visitor sees it: shown, and either a corner badge (absolute) or in line with the text.
 const shown = ( check ) => ( check && 'none' !== check.display ? ( 'absolute' === check.position ? 'corner' : 'inline-start' ) : null );
@@ -37,6 +38,21 @@ function hoverBorder( { ctx, d, l } ) {
 		return [ { status: 'no-setting', prop: attr.attr_name, state: 'hover', why: `${ attr.attr_name } already holds ${ value } on ${ form[ 0 ] }, yet the live hover border is ${ have }, not the draft's ${ want }: another rule wins` } ];
 	}
 	return [ { status: 'op', ref: form[ 0 ], block: 'sgs/form', prop: attr.attr_name, state: 'hover', why: `tile hover border ${ value } on the form (${ form[ 0 ] }), read on the tile`, writes: [ { attr: attr.attr_name, value } ], checks: [] } ];
+}
+
+// The draft's tile hover drop shadow as the tile's own hover shadow setting (tileHoverShadow: the offsets, blur and spread; tileHoverShadowColour:
+// the colour), the shadow settings the hover layer leaves alone. A ring or an accent line is the hover layer's; a draft with no hover shadow writes none.
+function hoverShadow( { ctx, d, l } ) {
+	const want = shadowParts( d.hover.tile[ 'box-shadow' ] );
+	if ( ! want || want.inset || ( 0 === want.x && 0 === want.blur && 0 !== want.spread ) || matches( l.hover.tile[ 'box-shadow' ], d.hover.tile[ 'box-shadow' ] ) ) {
+		return [];
+	}
+	const shape = [ want.x, want.y, want.blur, want.spread ].map( ( n ) => ( 0 === n ? '0' : `${ n }px` ) ).join( ' ' );
+	const colour = want.colour ? colourValue( want.colour, ctx.snapshot ) : '';
+	if ( String( ctx.saved.tileHoverShadow ?? '' ) === shape && String( ctx.saved.tileHoverShadowColour ?? '' ) === colour ) {
+		return [ { status: 'no-setting', prop: 'tileHoverShadow', state: 'hover', why: `tileHoverShadow already holds ${ shape } ${ colour }, yet the live hover shadow is ${ l.hover.tile[ 'box-shadow' ] }, not the draft's ${ d.hover.tile[ 'box-shadow' ] }: another rule wins` } ];
+	}
+	return [ { status: 'op', prop: 'tileHoverShadow', state: 'hover', why: `tile hover shadow ${ d.hover.tile[ 'box-shadow' ] } from the draft's hovered tile`, writes: [ { attr: 'tileHoverShadow', value: shape }, { attr: 'tileHoverShadowColour', value: colour } ], checks: [ { width: 1440, prop: 'box-shadow', want: d.hover.tile[ 'box-shadow' ], probe: [ 'hover', 'tile' ] } ] } ];
 }
 
 // Two poses within half a pixel: a lift of two pixels is the whole of a tile's hover, so the looser comparison the other families use would read it as still.
@@ -105,7 +121,7 @@ export const tiles = {
 		}
 		if ( d.hover && l.hover ) {
 			of( 'tile', 'hover', 'hover', 'tile', HOVERED );
-			items.push( ...hoverBorder( { ctx, d, l } ), ...hoverLayer( { ctx, d, l } ) );
+			items.push( ...hoverBorder( { ctx, d, l } ), ...hoverShadow( { ctx, d, l } ), ...hoverLayer( { ctx, d, l } ) );
 		}
 		return [ ...items, ...multiSelect( { ctx, d, l } ) ];
 	},

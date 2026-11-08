@@ -21,7 +21,7 @@
 
 import { colourVar, isCssGradient } from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { drawerShellPreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss, drawerHoverPreviewCss } from './drawer-preview-extras';
+import { drawerShellPreviewCss, drawerTilePreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss, drawerHoverPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -140,6 +140,7 @@ function drawerPreviewBaseCss( scope, v ) {
 
 	// Card shell and link-row hover (drawer-preview-extras.js).
 	css += drawerShellPreviewCss( scope, row, v );
+	css += drawerTilePreviewCss( scope, v );
 	css += drawerTrailingPreviewCss( row, v );
 	css += drawerHoverPreviewCss( row, aside, v );
 

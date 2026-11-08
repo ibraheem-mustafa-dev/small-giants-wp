@@ -11,9 +11,9 @@
  * state the focus system paints on, so a ring never shows on a mouse-opened select. An unset ring leaves the site
  * focus ring untouched; an unset attribute prints nothing.
  *
- * Floated label (labelFloatedFontSize): the size of a floating label once it has moved up (field focused or filled),
- * per device, on the floating field types only. The selectors carry the same state ancestor as the stylesheet's
- * floating rules, so the size outranks the Label font size in that state alone.
+ * Floated label (labelFloatedFontSize, labelFloatedOffset, labelFloatedColour): the size, top offset and focus colour of a
+ * floating label once it has moved up (field focused or filled), on the floating field types only; the size is per device. The selectors carry the same state ancestor as the stylesheet's
+ * floating rules, so each outranks the Label font size and the stylesheet's floating position in that state alone.
  *
  * @package SGS\Blocks\Forms
  */
@@ -66,27 +66,40 @@ function field_focus_css( array $attributes, string $uid ): string {
 }
 
 /**
- * The per-device size of a floated label, on the floating field types in their floated state.
+ * The size, colour and top offset of a floated label, on the floating field types in their floated state.
+ *
+ * The size is per device; the offset (labelFloatedOffset, a CSS length for `top`) holds the floated state (focused or
+ * filled); the colour (labelFloatedColour) holds the focused state alone, as the stylesheet's own floated colour does.
  *
  * @param array<string, mixed> $attributes Form block attributes.
  * @param string               $uid        The form's content-hash class, without the dot.
- * @return string Scoped rules; empty when no size is set.
+ * @return string Scoped rules; empty when nothing is set.
  */
 function floated_label_css( array $attributes, string $uid ): string {
-	$sizes = sgs_responsive_normalise_object( $attributes['labelFloatedFontSize'] ?? null );
-	if ( ! is_array( $sizes ) || array() === $sizes ) {
-		return '';
-	}
-	$types    = array( 'text', 'email', 'phone', 'number', 'textarea' );
-	$selector = '.' . $uid . ' :is(' . implode( ',', array_map( static fn( string $type ): string => '.sgs-form-field--' . $type, $types ) ) . '):where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:is(:focus,:not(:placeholder-shown))) .sgs-form-field__label';
-	return sgs_emit_responsive_css(
-		$selector,
-		array(
+	$fields  = '.' . $uid . ' :is(' . implode( ',', array_map( static fn( string $type ): string => '.sgs-form-field--' . $type, array( 'text', 'email', 'phone', 'number', 'textarea' ) ) ) . '):where(:not(.sgs-form-field--static-label))';
+	$floated = $fields . ':has(.sgs-form-field__input:is(:focus,:not(:placeholder-shown))) .sgs-form-field__label';
+	$focused = $fields . ':has(.sgs-form-field__input:focus) .sgs-form-field__label';
+	$css     = '';
+	$sizes   = sgs_responsive_normalise_object( $attributes['labelFloatedFontSize'] ?? null );
+	$offset  = sgs_css_single_length_value( $attributes['labelFloatedOffset'] ?? '', true );
+	$colour  = sgs_colour_value( (string) ( $attributes['labelFloatedColour'] ?? '' ) );
+	if ( is_array( $sizes ) && array() !== $sizes ) {
+		$css .= sgs_emit_responsive_css(
+			$floated,
 			array(
-				'value'     => $sizes,
-				'css'       => 'font-size',
-				'transform' => static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw ),
-			),
-		)
-	);
+				array(
+					'value'     => $sizes,
+					'css'       => 'font-size',
+					'transform' => static fn( $raw ): string => is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw ),
+				),
+			)
+		);
+	}
+	if ( '' !== $offset ) {
+		$css .= $floated . '{top:' . $offset . ';}';
+	}
+	if ( '' !== $colour ) {
+		$css .= $focused . '{color:' . $colour . ';}';
+	}
+	return $css;
 }

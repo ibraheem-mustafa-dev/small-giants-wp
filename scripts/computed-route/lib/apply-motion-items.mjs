@@ -105,3 +105,26 @@ export function claimedElsewhere( { target, surface, all, group, mdb, db, record
 
 // Whether a target owns the draft element of a group (its draft ids hold the element's template id).
 export const ownsGroup = ( target, group ) => ( target.owns || [] ).includes( Number( group.tpl ) );
+
+const stem = ( w ) => w.replace( /s$/, '' );
+
+// A group of calls keyed to one pair that the NEXT pair of the surface, in document order, holds as a part of its own block: a
+// row of chips the draft draws before a grid whose block prints them (a post grid's filter chips). The group's draft elements
+// are named by their records' descriptions; a part of the next block takes them when the part's label ends with a word the
+// description names (the head noun of "Filter chip" is "chip", the description's "chips") and no other part does. The block's
+// items part and its structural parts never take such a group. { ref, part } or null.
+export function siblingClaim( { group, surface, all, db, mdb, recordsIndex } ) {
+	const id = Number( group.tpl );
+	const key = WIDTHS.flatMap( ( w ) => group.calls[ w ] ).find( ( c ) => c.key )?.key;
+	const pairs = ( surface?.pairs || [] ).map( ( p ) => ( { ...p, id: idOf( p.tpl ) } ) ).filter( ( p ) => Number.isFinite( p.id ) );
+	const owner = pairs.find( ( p ) => ( p.key ?? p.ref ) === key );
+	const next = pairs.filter( ( p ) => p.id > id ).sort( ( a, b ) => a.id - b.id )[ 0 ];
+	const block = next ? all?.blocks?.[ next.ref ]?.block : null;
+	if ( ! owner || ! block || owner.id >= id ) {
+		return null;
+	}
+	const text = new Set( [ ...words( recordsFor( recordsIndex, `Root/${ group.tpl }#0` ).flatMap( ( r ) => [ r.name, r.element?.description ] ).join( ' ' ) ) ].map( stem ) );
+	const items = itemsPartOf( db, block );
+	const fits = mdb.targetsOf( block ).filter( ( t ) => ! STRUCTURAL.has( t.target ) && t.target !== items && 'part' === t.kind && text.has( stem( String( t.label ).toLowerCase().split( /\s+/ ).pop() ) ) );
+	return 1 === fits.length ? { ref: next.ref, part: fits[ 0 ].target } : null;
+}

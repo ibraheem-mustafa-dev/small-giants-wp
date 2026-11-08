@@ -215,7 +215,7 @@ $css = sgs_mega_panel_drawer_shell_css(
 	$row
 );
 ok( false !== strpos( $css, $panel . '{border-radius:22px;padding-top:14px;}' ), 'mega shell: radius and padding on the drawer copy' );
-ok( false !== strpos( $css, $row . '{border-radius:14px;}' ) && false !== strpos( $css, ':focus-within{background-color:#123456}' ), 'mega rows: radius, and the hover fill also on keyboard focus' );
+ok( false !== strpos( $css, $row . '{border-radius:14px;}' ) && false !== strpos( $css, ':has(:focus-visible){background-color:#123456}' ), 'mega rows: radius, and the hover fill also on keyboard focus' );
 ok( '' === sgs_mega_panel_drawer_card_box_decls( array() ), 'mega card box: unset emits nothing' );
 ok(
 	'border-radius:16px;padding:14px;' === sgs_mega_panel_drawer_card_box_decls(
@@ -227,8 +227,26 @@ ok(
 	'mega card box: radius and padding outside compact mode'
 );
 $css = sgs_mega_panel_drawer_stacked_css( array( 'drawerCardRadius' => '16px' ), $aside, '' );
-ok( false !== strpos( $css, $aside . ' > :nth-child(2){position:absolute;inset-block-start:12px;inset-inline-start:12px;' ), 'stacked-overlay: the tag sits over the image corner' );
+ok( false !== strpos( $css, $aside . ' > :nth-child(2):not(.sgs-block-link-overlay)' ), 'stacked-overlay: the tag sits over the image corner' );
 ok( false !== strpos( $css, ' .sgs-button{display:inline-flex;' ) && false !== strpos( $css, 'width:40px;height:40px;' ) && false !== strpos( $css, '.sgs-button__label{position:absolute;width:1px;' ), 'stacked-overlay: the link is a 40px circle whose label stays for screen readers' );
+
+// ── Mega panel drawer gallery tiles ──────────────────────────────────────────
+$drawer_root = $panel . '.sgs-mega-panel--in-drawer';
+$tile        = $drawer_root . ' .sgs-gallery__item';
+ok( '' === sgs_mega_panel_drawer_tile_css( array(), $drawer_root ), 'drawer tiles: nothing set emits nothing' );
+$css = sgs_mega_panel_drawer_tile_css(
+	array(
+		'drawerTileBorderColour'      => 'rgba(255,255,255,.75)',
+		'drawerTileBorderColourHover' => '#2C3E50',
+	),
+	$drawer_root
+);
+ok( false !== strpos( $css, $tile . '{border-color:#FFFFFFBF;}' ), 'drawer tiles: the resting border colour' );
+ok( false !== strpos( $css, $tile . ':hover{border-color:#2C3E50;}' ) && false !== strpos( $css, $tile . ':focus-visible,' . $tile . ':has(:focus-visible){border-color:#2C3E50;}' ), 'drawer tiles: the hover colour on hover and keyboard focus' );
+ok( false !== strpos( $css, ':where(:root:not(.sgs-touch-input)) ' . $tile . ':hover{' ), 'drawer tiles: the mouse hover is skipped on touch input' );
+$css = sgs_mega_panel_drawer_tile_css( array( 'drawerTileBorderColourHover' => '#2C3E50' ), $drawer_root );
+ok( false === strpos( $css, $tile . '{border-color' ), 'drawer tiles: hover only emits no resting rule' );
+ok( '' === sgs_mega_panel_drawer_tile_css( array( 'tileBorderColourHover' => '#D8CA50' ), $drawer_root ), 'drawer tiles: the gallery own hover attribute does not leak into the drawer rule' );
 
 echo "\n==== $pass passed, $fail failed ====\n";
 exit( $fail > 0 ? 1 : 0 );

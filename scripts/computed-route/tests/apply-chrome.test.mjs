@@ -212,3 +212,14 @@ test( 'skeleton: two pairs of one block inside one node each own their own span,
 	const one = skeletonTargets( { nodes: hours, pairs: [ { ref: 'cr-ref-y-0', tpl: 'Root/12#0' } ], saved: { 'cr-ref-y-0': { block: 'sgs/info' } } } );
 	assert.equal( one.owners.get( 'cr-ref-y-0' ).reach.length, 10 );
 } );
+
+test( 'chrome mega tiles: the drawer tile hover record sets the panel drawer-only tile border colour; no gallery, no tile record or an equal save changes nothing', () => {
+	const skeleton = [ { id: 'drawer', nodes: flatten( [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/gallery', t: '171' } ] } ] } ] ) } ];
+	const tileRec = ( props ) => ( { ...rec( 'TR-037', 171, 'hover', props ), element: { dc: 'D', template_tpl_id: '171', description: 'a' } } );
+	const full = [ { property: 'transform', from: null, to: 'scale(1.05) translateY(-2px)' }, { property: 'border-color', from: null, to: '#2C3E50' } ];
+	const run = ( recs, saved = {}, blocks = { g: { block: 'sgs/gallery' } } ) => chrome.decide( ctx( { block: 'sgs/mega-panel', skeleton, recordsIndex: recordIndex( recs, 'D' ), saved, all: { blocks } } ) ).filter( ( i ) => 'drawerTileBorderColourHover' === i.prop );
+	assert.deepEqual( run( [ tileRec( full ) ] )[ 0 ].writes, [ { attr: 'drawerTileBorderColourHover', value: '#2C3E50' } ] );
+	assert.equal( run( [ tileRec( full ) ], { drawerTileBorderColourHover: '#2C3E50' } )[ 0 ].status, 'equal' );
+	assert.deepEqual( run( [ tileRec( full ) ], {}, {} ), [] );
+	assert.deepEqual( run( [ tileRec( full.slice( 1 ) ) ] ), [] );
+} );

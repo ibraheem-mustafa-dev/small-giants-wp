@@ -1055,6 +1055,8 @@ if ( $sgs_mm_in_drawer ) {
 	$css .= sgs_mega_panel_drawer_card_link_css( $attributes, $sgs_dv_aside );
 	// The drawer's own hover: row text slide, trailing arrow colour, card lift, tilt and link nudge.
 	$css .= sgs_mega_panel_drawer_hover_css( $attributes, $sgs_dv_row, $sgs_dv_aside );
+	// The gallery tiles' border colour (rest, hover, keyboard focus) in the drawer copy.
+	$css .= sgs_mega_panel_drawer_tile_css( $attributes, $root_sel . '.sgs-mega-panel--in-drawer' );
 	// The description's colour, in the layouts that show the description.
 	if ( empty( $attributes['drawerCardCompact'] ) || 'stacked-overlay' === ( $attributes['drawerCardLayout'] ?? '' ) ) {
 		$css .= sgs_mega_panel_drawer_card_desc_css( $attributes, $sgs_dv_aside );

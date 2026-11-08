@@ -386,6 +386,21 @@ $pg_open['sgsMotion'] = array(
 Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-open1', $pg_open, 3 );
 $check( array( 160, 80, 0 ) === $close_of( $collected() ), 'post-grid with an `open` entrance: close delays reversed across its first row' );
 
+// post-grid filter chips: one row (perRow off, however many columns the grid has), found by class, 80ms apart; the card item part's inherited entrance never lands on them.
+$reset();
+$chips_html = '<button class="sgs-post-grid__filter sgs-post-grid__filter--active">All</button><button class="sgs-post-grid__filter">A</button><button class="sgs-post-grid__filter">B</button><button class="sgs-post-grid__filter">C</button>';
+$chips_tagged = Sgs_Motion_Loop_Delays::tag_by_class( $chips_html, 'sgs-post-grid__filter' );
+$check( 4 === $chips_tagged['count'] && 4 === preg_match_all( '/<button [^>]*data-sgs-loop-i="\d"/', $chips_tagged['html'] ), 'filter chips: each of four chips carries an index' );
+$chip_attrs = $grid_attrs;
+$chip_attrs['sgsMotion'] = array(
+	'elements' => array( 'filter' => array( 'entrance' => array( 'base' => array( 'trigger' => 'scroll', 'values' => array( 'duration' => 800 ) ) ) ) ),
+	'stagger'  => array( 'apply' => true, 'step' => 80, 'offset' => 0, 'perRow' => false ),
+);
+Sgs_Motion_Loop_Delays::item_array( 'sgs/post-grid', 'sgs-post-grid-chip1', $chip_attrs, $chips_tagged['count'], '.sgs-post-grid__filter' );
+list( $chip_rows ) = $parse( $collected() );
+$check( array( 0, 80, 160, 240 ) === $column( $chip_rows, 'desktop' ), 'filter chips desktop: one row, 80ms apart: ' . json_encode( $column( $chip_rows, 'desktop' ) ) );
+$check( false === strpos( $collected(), '.sgs-post-grid-chip1 .sgs-post-grid__filter[data-sgs-motion' ), 'filter chips: no card entrance is inherited onto the chips' );
+
 // A nested state host (the drawer's accordion <details>) restarts the index at 0 for the items inside it.
 $drawer_html = '<ul><li class="sgs-nav-drawer-menu__item">A</li>'
 	. '<li class="sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--has-submenu"><details data-sgs-motion-state=""><summary>S</summary><ul>'

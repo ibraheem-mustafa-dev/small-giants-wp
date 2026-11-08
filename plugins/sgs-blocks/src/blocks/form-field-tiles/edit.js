@@ -372,6 +372,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								defaultValue: '',
 								tileSelectedShadow: '',
 								tileSelectedShadowColour: '',
+								tileHoverShadow: '',
+								tileHoverShadowColour: '',
 								tileSelectedBorderWidth: '',
 								tileSelectedOffset: {},
 								selectedCheckPosition: '',
@@ -605,6 +607,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								attributes={ attributes }
 								setAttributes={ setAttributes }
 								attrNames={ { base: 'tileSelectedShadow', colour: 'tileSelectedShadowColour' } }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Tile hover shadow', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.tileHoverShadow }
+							onDeselect={ () => setAttributes( { tileHoverShadow: '', tileHoverShadowColour: '' } ) }
+						>
+							<ShadowControl
+								label={ __( 'Tile hover shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ { base: 'tileHoverShadow', colour: 'tileHoverShadowColour' } }
 							/>
 						</ToolsPanelItem>
 					</ToolsPanel>

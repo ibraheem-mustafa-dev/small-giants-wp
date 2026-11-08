@@ -25,6 +25,9 @@
  *   `drawerCardTagLetterSpacing`), wherever `drawerCardTagSize` applies
  *   (stacked and compact).
  *
+ * - The border colour of an sgs/gallery's tiles in the drawer copy
+ *   (`drawerTileBorderColour`, `drawerTileBorderColourHover`).
+ *
  * - The drawer's own hover (`drawerLinkTextShiftHover`, `drawerLinkTrailingColourHover`,
  *   `drawerCardHoverLift`, `drawerCardHoverRotate`, `drawerCardLinkShiftHover`,
  *   timed by `drawerHoverDuration` / `drawerHoverEasing`): in the drawer the
@@ -371,6 +374,30 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_trailing_css' ) ) {
 		return $row_sel . ' > .sgs-container__inner::after{content:"";flex:none;align-self:center;margin-inline-start:auto;width:16px;height:16px;'
 			. 'background-color:' . ( '' !== $colour ? $colour : 'currentColor' ) . ';' . ( '' !== $colour ? '' : 'opacity:.6;' )
 			. '-webkit-mask:' . $mask . ' center/contain no-repeat;mask:' . $mask . ' center/contain no-repeat;}';
+	}
+}
+
+if ( ! function_exists( 'sgs_mega_panel_drawer_tile_css' ) ) {
+	/**
+	 * The border colour of an sgs/gallery's tiles inside the drawer copy
+	 * (`drawerTileBorderColour` at rest, `drawerTileBorderColourHover` on hover,
+	 * touch-guarded, and on keyboard focus). The rule is rooted on the in-drawer
+	 * panel, so it out-specifies the gallery's own scoped tile rule; an unset
+	 * attribute emits nothing.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $drawer_sel The panel's scoped in-drawer root selector.
+	 * @return string CSS, or ''.
+	 */
+	function sgs_mega_panel_drawer_tile_css( array $attributes, string $drawer_sel ): string {
+		return sgs_border_states_css(
+			$drawer_sel . ' .sgs-gallery__item',
+			$attributes,
+			array(
+				'base'  => 'drawerTileBorderColour',
+				'hover' => 'drawerTileBorderColourHover',
+			)
+		);
 	}
 }
 

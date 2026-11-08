@@ -22,7 +22,7 @@ import { draftEntrance, sameEntrance } from './apply-motion-entrance.mjs';
 import { ENTRANCE_PROPS, reconcileDefault } from './apply-motion-default.mjs';
 import { loopOp, ringScale } from './apply-motion-loops.mjs';
 import { splitParts } from './apply-motion-parts.mjs';
-import { claimedElsewhere, groupsOf, ownsGroup, placeGroup, staggerFor } from './apply-motion-items.mjs';
+import { claimedElsewhere, groupsOf, ownsGroup, placeGroup, siblingClaim, staggerFor } from './apply-motion-items.mjs';
 import { changeAnimation, heroSvgParts, svgRecordsOf } from './apply-motion-rules.mjs';
 import { innerIdsOf, isOpenRecord, recordsIn } from './apply-drawer-core.mjs';
 import { descendantRows } from './apply-owned.mjs';
@@ -106,11 +106,15 @@ export const motion = {
 		if ( ! heroParts ) {
 			const auxKeys = new Set( ( target.aux || [] ).map( ( a ) => a.key ) );
 			const groups = groupsOf( animate, ( c ) => c.key === key || auxKeys.has( c.key ) || ( c.key !== key && null !== c.tpl && ownsGroup( target, { tpl: c.tpl } ) ), auxKeys );
-			for ( const group of groups ) {
-				const place = placeGroup( { block, group, mdb, db, recordsIndex, items: draft[ 1440 ]?.items?.n ?? null } );
+			// A row the draft draws before this target's element, keyed to the pair above, that this block's own part holds (filter chips).
+			const sibling = ( g ) => siblingClaim( { group: g, surface: input.surface, all: input.all, db, mdb, recordsIndex } );
+			const taken = groupsOf( animate, ( c ) => c.key !== key && ! c.own && null !== c.tpl, auxKeys ).map( ( g ) => ( { g, claim: sibling( g ) } ) ).filter( ( x ) => x.claim?.ref === target.ref );
+			for ( const group of [ ...groups, ...taken.map( ( x ) => x.g ) ] ) {
+				const claim = taken.find( ( x ) => x.g === group )?.claim;
+				const place = claim ? { part: claim.part, kind: 'items', recs: recordsFor( recordsIndex, `Root/${ group.tpl }#0` ), sibling: true } : placeGroup( { block, group, mdb, db, recordsIndex, items: draft[ 1440 ]?.items?.n ?? null } );
 				const mine = group.calls[ 1440 ].concat( group.calls[ 768 ], group.calls[ 375 ] ).some( ( c ) => c.key === key );
 				if ( ! place ) {
-					mine && claimedElsewhere( { target, surface: input.surface, all: input.all, group, mdb, db, recordsIndex } ) && handedOver.add( group.tpl );
+					mine && ( claimedElsewhere( { target, surface: input.surface, all: input.all, group, mdb, db, recordsIndex } ) || sibling( group ) ) && handedOver.add( group.tpl );
 					continue;
 				}
 				const pc = { calls: Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, { one: [], loops: [], inner: [] } ] ) ), tpls: new Set( [ group.tpl ] ), recs: place.recs, entranceOnly: true };
@@ -123,7 +127,15 @@ export const motion = {
 					const first = 'items' === place.kind ? list.reduce( ( a, b ) => ( ( b.options?.delay ?? 0 ) < ( a.options?.delay ?? 0 ) ? b : a ) ) : list[ 0 ];
 					pc.calls[ w ].one.push( 'items' === place.kind ? { ...first, options: { ...( 'object' === typeof first.options ? first.options : { duration: first.options } ), delay: 0 } } : first );
 				}
-				'items' === place.kind && ( stagger[ place.part ] = staggerFor( { recs: place.recs, calls: group.calls } ) );
+				// A sibling row shares the block's one stagger: its offset and step must match the grid's, else it is reported.
+				const rows = 'items' === place.kind ? staggerFor( { recs: place.recs, calls: group.calls } ) : null;
+				if ( place.sibling ) {
+					const held = Object.values( stagger ).find( Boolean );
+					held && rows && ( held.offset !== rows.offset || held.step !== rows.step ) && items.push( { status: 'no-setting', prop: `${ place.part } stagger`, why: `the draft staggers the ${ place.part } row at offset ${ rows.offset }ms, step ${ rows.step }ms, but the block has one stagger (offset ${ held.offset }ms, step ${ held.step }ms)` } );
+					! held && ( stagger[ place.part ] = rows );
+				} else {
+					'items' === place.kind && ( stagger[ place.part ] = rows );
+				}
 				parts[ place.part ] = pc;
 				placed.add( group.tpl );
 			}

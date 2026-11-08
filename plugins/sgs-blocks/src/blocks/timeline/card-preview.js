@@ -24,6 +24,27 @@ function lengthOf( raw ) {
 }
 
 /**
+ * The card shadow of a tablet or mobile preview: the mobile pair, then the tablet pair, as render.php prints them.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       'tablet' | 'mobile'.
+ * @return {string} The box-shadow value, or '' when neither pair is set.
+ */
+function tierShadowOf( attributes, tier ) {
+	const pairs = [
+		[ attributes.cardShadowTablet, attributes.cardShadowTabletColour ],
+		[ attributes.cardShadowMobile, attributes.cardShadowMobileColour ],
+	];
+	const order = 'mobile' === tier ? [ pairs[ 1 ], pairs[ 0 ] ] : [ pairs[ 0 ] ];
+	for ( const [ shape, colour ] of order ) {
+		if ( shape ) {
+			return resolveShadowPreviewComposed( shape, colourVar( colour ) ) || '';
+		}
+	}
+	return '';
+}
+
+/**
  * The inline style a horizontal timeline entry card gets beyond its background colour and padding.
  *
  * @param {Object} attributes Block attributes.
@@ -48,6 +69,15 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 	if ( boxShadow ) {
 		style.boxShadow = boxShadow;
 	}
+	const tierShadow = 'desktop' === tier ? null : tierShadowOf( attributes, tier );
+	if ( tierShadow ) {
+		style.boxShadow = tierShadow;
+	}
+	if ( 'stacked' === tierValueOf( attributes.cardLayout, tier ) && 'same-side' === attributes.contentLayout ) {
+		style.display = 'grid';
+		style.gridTemplateColumns = 'minmax(0, 1fr)';
+		style.gridTemplateAreas = "'media' 'date' 'content'";
+	}
 	const maxWidth = lengthOf( tierValueOf( attributes.cardMaxWidth, tier ) );
 	if ( maxWidth ) {
 		style.maxWidth = maxWidth;
@@ -71,6 +101,11 @@ export function timelineMediaPreviewStyle( attributes, tier ) {
 	const ratio = RATIO_RE.exec( String( tierValueOf( attributes.mediaAspectRatio, tier ) ?? '' ) );
 	if ( ratio && Number( ratio[ 1 ] ) > 0 && Number( ratio[ 2 ] ?? 1 ) > 0 ) {
 		style.aspectRatio = ratio[ 2 ] ? `${ ratio[ 1 ] } / ${ ratio[ 2 ] }` : ratio[ 1 ];
+	}
+	const height = lengthOf( tierValueOf( attributes.mediaHeight, tier ) );
+	if ( height ) {
+		style.height = height;
+		style.aspectRatio = 'auto';
 	}
 	if ( style.aspectRatio || Object.keys( style ).length ) {
 		style.overflow = 'hidden';
