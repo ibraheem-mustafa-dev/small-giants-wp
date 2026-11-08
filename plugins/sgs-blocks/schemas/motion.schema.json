@@ -3324,6 +3324,7 @@
 					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
 					"minimum": 0,
 					"maximum": 10000,
+					"x-sgs-range": { "min": 0, "max": 10000, "unit": "px" },
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-clip-round",
@@ -3489,6 +3490,7 @@
 					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
 					"minimum": 0,
 					"maximum": 10000,
+					"x-sgs-range": { "min": 0, "max": 10000, "unit": "px" },
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-clip-round",
@@ -3803,6 +3805,7 @@
 					"description": "The clip reveal's corner radius (a length, px by default), so a rounded element keeps its rounded corners while it is revealed.",
 					"minimum": 0,
 					"maximum": 10000,
+					"x-sgs-range": { "min": 0, "max": 10000, "unit": "px" },
 					"x-sgs-field": {
 						"fieldType": "distance",
 						"cssProperty": "--sgs-me-clip-round",
