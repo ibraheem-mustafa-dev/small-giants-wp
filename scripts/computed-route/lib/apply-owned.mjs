@@ -20,7 +20,12 @@ const ids = ( r ) => [].concat( r.element?.template_tpl_id ?? [] ).map( Number )
 
 // Rows for the script behaviours on draft elements the target reaches but does not own and no other pair holds:
 // [ { status: 'no-setting', prop: record id, why } ].
-export function descendantRows( { target, block, recordsIndex, surface, allRecords } ) {
+// `parts`: the block's declared motion targets; a block that declares a part besides the root draws its descendants itself (the hero's
+// photo frame is its split-media part), so those are its parts, not strays.
+export function descendantRows( { target, block, recordsIndex, surface, allRecords, parts = null } ) {
+	if ( [ ...( parts || [] ) ].some( ( p ) => 'root' !== p ) ) {
+		return [];
+	}
 	const own = new Set( [ ...( target.owns || [] ), idOfTpl( target.tpl ) ] );
 	const held = new Set( ( surface?.pairs || [] ).filter( ( p ) => p.ref !== target.ref ).flatMap( ( p ) => [ idOfTpl( p.tpl ), ...( p.owns || [] ) ] ) );
 	const rows = new Map();

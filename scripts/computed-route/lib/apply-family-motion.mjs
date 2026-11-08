@@ -26,7 +26,7 @@ import { claimedElsewhere, groupsOf, ownsGroup, placeGroup, staggerFor } from '.
 import { changeAnimation, heroSvgParts, svgRecordsOf } from './apply-motion-rules.mjs';
 import { innerIdsOf, isOpenRecord, recordsIn } from './apply-drawer-core.mjs';
 import { descendantRows } from './apply-owned.mjs';
-import { strayRemovals } from './apply-stray.mjs';
+import { foreignEffects, strayRemovals } from './apply-stray.mjs';
 
 const shared = new Map();
 function toolsFor( db, rawSnapshot ) {
@@ -189,8 +189,13 @@ export const motion = {
 			}
 			const b = behaviourWrites( { recs, allRecords: records, block, part: name, doc, saved, mdb, schema, ctx, db, facts: Object.values( draft ).find( Boolean ) } );
 			items.push( ...b.items );
-			// An effect the draft gives no record of this element is another element's: removed.
-			draft[ 1440 ] && whys.push( ...strayRemovals( { doc, part: name, wanted: b.wanted, recs: recs.filter( ( r ) => carriesHook( r, Object.values( draft ).find( Boolean ) ) ), records } ) );
+			// An effect whose draft record is found and belongs to another element is removed; one with no record found is reported.
+			if ( draft[ 1440 ] ) {
+				const facts = Object.values( draft ).find( Boolean );
+				const stray = strayRemovals( { doc, part: name, wanted: b.wanted, recs: recs.filter( ( r ) => carriesHook( r, facts ) ), records, foreign: foreignEffects( { target, surface: input.surface, recordsIndex, records, facts } ) } );
+				whys.push( ...stray.whys );
+				items.push( ...stray.unchecked );
+			}
 			whys.push( ...b.whys );
 			ids.push( ...b.ids );
 			settings.push( ...b.settings );
@@ -202,7 +207,7 @@ export const motion = {
 		if ( ! ownCalls && ! reached && ! heroParts && left.length ) {
 			items.push( { status: 'no-setting', prop: 'motion', why: `the draft animates descendants of ${ target.tpl } (${ left.map( ( g ) => g.tpl ).join( ', ' ) }), which ${ block } draws with no motion part of its own to hold them` } );
 		}
-		items.push( ...descendantRows( { target, block, recordsIndex, surface: input.surface, allRecords: records } ) );
+		items.push( ...descendantRows( { target, block, recordsIndex, surface: input.surface, allRecords: records, parts: names } ) );
 		marqueeFade( { doc, draft, recs: own, mdb, items, whys, ids } );
 		for ( const [ k, v ] of Object.entries( doc.elements ) ) {
 			Object.keys( v ).length || delete doc.elements[ k ];

@@ -608,7 +608,7 @@
     "id": "D-41",
     "block": "sgs/button",
     "scope": "every page, all widths",
-    "node": "naked text buttons with an underline and an arrow (e.g. Read our story)",
+    "node": "naked text buttons with an underline and an arrow: cr-ref-home-72 (Read our story), cr-ref-our-story-57 (See our certifications), cr-ref-retail-34 (Talk to us about white label), cr-ref-brands-79 (Explore Sanam)",
     "state": "hover",
     "property": "color, scale",
     "expected": {
@@ -617,7 +617,6 @@
     "reason": "The draft darkens the text (#0A7EA8 to #075E80) and the clone also enlarged it; Bean ruled both stopped: the text colour stays the resting colour and the button does not scale on hover. The arrow gap nudge stays.",
     "decided": "2026-11-07 Bean ruling (Indus round 8, homepage review item 6)",
     "apply": {
-      "when": { "attrs": { "inheritStyle": "link" } },
       "remove": { "hoverPose": true },
       "set": { "colourTextHover": "@colourText" }
     }

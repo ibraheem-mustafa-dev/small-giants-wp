@@ -33,7 +33,7 @@ test( 'D-40 negative controls: another block, or a button with no magnet, is unt
 
 test( 'D-41: a link-style button keeps its resting text colour on hover and does not scale', () => {
 	const attrs = { inheritStyle: 'link', colourText: 'primary', colourTextHover: '#075E80', sgsMotion };
-	const rule = rulingFor( index, { ...where, attrs } );
+	const rule = rulingFor( index, { ...where, ref: 'cr-ref-home-72', attrs } );
 	assert.ok( rule.rows.some( ( r ) => 'D-41' === r.id ) );
 	assert.equal( rule.attrs.colourTextHover, 'primary' );
 	assert.equal( rule.attrs.sgsMotion.elements.root.hover.state.values.scale, undefined );
@@ -41,11 +41,11 @@ test( 'D-41: a link-style button keeps its resting text colour on hover and does
 	// The draft's darker hover colour is never written back; the ruling's value is.
 	assert.deepEqual( finish( [ { attr: 'colourTextHover', value: '#075E80' } ], rule ), [ { attr: 'colourTextHover', value: 'primary' } ] );
 	// No resting colour set: the hover colour is removed.
-	const bare = rulingFor( index, { ...where, attrs: { inheritStyle: 'link', colourTextHover: '#075E80' } } );
+	const bare = rulingFor( index, { ...where, ref: 'cr-ref-home-72', attrs: { inheritStyle: 'link', colourTextHover: '#075E80' } } );
 	assert.ok( bare.writes.some( ( w ) => 'colourTextHover' === w.attr && w.unset ) );
 } );
 
-test( 'D-41 negative control: a button that is not link style keeps its own hover colour and pose', () => {
+test( 'D-41 negative control: a button no D-41 node names keeps its own hover colour and pose', () => {
 	const rule = rulingFor( index, { ...where, attrs: { inheritStyle: 'primary', colourText: 'primary', colourTextHover: '#075E80', sgsMotion } } );
 	assert.ok( ! rule.rows.some( ( r ) => 'D-41' === r.id ) );
 	assert.equal( rule.attrs.colourTextHover, '#075E80' );
