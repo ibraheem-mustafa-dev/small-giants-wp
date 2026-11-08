@@ -44,7 +44,13 @@ Rules:
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
 - **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The drawer's darker blue did not reproduce (same gradient, pixels within one level): Bean to name the width and moment if he still sees it. About and Trade panels' extra edge padding is untraced.
-- **Next:** Bean's look and sign-off. Then bring sandybrown and mamas-test up to the current framework (one site at a time).
+- **Next: Bean's second review of 2026-11-08 (5 items), then sign-off.**
+  1. The About and Trade drawer feature panels' images do not fill the card's width.
+  2. Every arrow in the drawer (row arrows, section cards, feature card, View All Brands, the sticky button) should slide right on hover.
+  3. Framework: an element growing on hover, focus or touch must never be cut off (brand tiles at the edges when they enlarge, the drawer's Sectors cards tilting); the shadow room covered shadows only.
+  4. The drawer's gradient is much lighter on its right side in the draft.
+  5. Footer Back to top: the hover's semi-transparent gold belongs on the arrow's circle, not a rectangle over the whole group; the arrow's border should turn gold, not blue.
+- **After sign-off:** bring sandybrown and mamas-test up to the current framework (one site at a time).
 - **Noticed, not on Bean's list:**
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
