@@ -174,17 +174,17 @@ function drawerPreviewBaseCss( scope, v ) {
 		`border-style:solid;border-width:${ hasBorder ? '1px' : '0' };` +
 		`border-radius:${ v.drawerCardRadius || '0' };padding:${ v.drawerCardPadding || '0' };` +
 		`${ cardDecls }${ borderPaint( v.drawerCardBorderColour, v.drawerCardBorderColourGradient ) }}`;
-	css += `${ aside } > :nth-child(1){grid-column:1;grid-row:1 / span 3;width:${ thumb };height:${ thumb };min-height:0;margin:0;overflow:hidden;}`;
-	css += `${ aside } > :nth-child(2){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;${ boxSideDecls( v.drawerCardTagMargin, 'margin' ) }}`;
-	css += `${ aside } > :nth-child(3){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${ v.drawerCardTitleLineHeight || 'normal' };}`;
-	css += `${ aside } > :nth-child(4){display:none;}`;
-	css += `${ aside } > :nth-child(5){grid-column:2;grid-row:3;margin:6px 0 0;}`;
+	css += `${ aside } > :nth-child(1):not(.sgs-block-link-overlay){grid-column:1;grid-row:1 / span 3;width:${ thumb };height:${ thumb };min-height:0;margin:0;overflow:hidden;}`;
+	css += `${ aside } > :nth-child(2):not(.sgs-block-link-overlay){grid-column:2;grid-row:1;justify-self:start;margin:0 0 6px;${ boxSideDecls( v.drawerCardTagMargin, 'margin' ) }}`;
+	css += `${ aside } > :nth-child(3):not(.sgs-block-link-overlay){grid-column:2;grid-row:2;margin:0;letter-spacing:normal;line-height:${ v.drawerCardTitleLineHeight || 'normal' };}`;
+	css += `${ aside } > :nth-child(4):not(.sgs-block-link-overlay){display:none;}`;
+	css += `${ aside } > :nth-child(5):not(.sgs-block-link-overlay){grid-column:2;grid-row:3;margin:6px 0 0;}`;
 
 	if ( v.drawerCardTitleSize ) {
-		css += `${ aside } > :nth-child(3){font-size:${ v.drawerCardTitleSize };}`;
+		css += `${ aside } > :nth-child(3):not(.sgs-block-link-overlay){font-size:${ v.drawerCardTitleSize };}`;
 	}
 	if ( v.drawerCardLinkSize ) {
-		css += `${ aside } > :nth-child(5) .sgs-button{font-size:${ v.drawerCardLinkSize };line-height:1.5;}`;
+		css += `${ aside } > :nth-child(5):not(.sgs-block-link-overlay) .sgs-button{font-size:${ v.drawerCardLinkSize };line-height:1.5;}`;
 	}
 	return css;
 }

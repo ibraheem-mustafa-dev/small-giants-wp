@@ -231,6 +231,16 @@ if ( $is_outline ) {
 	);
 }
 
+// A box shape prints its saved hover border colour as --sgs-icon-border-colour-hover too, so an icon that follows a
+// hover group (no link of its own) shows it: style.css reads the property in the link-hover and group-hover rules.
+if ( ! $is_outline ) {
+	foreach ( (array) $border['hover'] as $border_hover_prop ) {
+		if ( preg_match( '/^\s*border-color\s*:\s*(.+?)\s*$/', (string) $border_hover_prop, $border_hover_var ) ) {
+			$outline_decls[] = '--sgs-icon-border-colour-hover:' . $border_hover_var[1];
+		}
+	}
+}
+
 $icon_align = (string) ( $attributes['iconAlign'] ?? 'start' );
 $icon_align = in_array( $icon_align, array( 'start', 'center', 'end' ), true ) ? $icon_align : 'start';
 $classes    = array( 'sgs-icon', 'sgs-icon--source-' . $icon_source, 'sgs-icon--shape-' . $shape, $uid );

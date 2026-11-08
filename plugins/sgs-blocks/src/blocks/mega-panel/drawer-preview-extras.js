@@ -44,8 +44,10 @@ export const cardSlotSel = ( aside, n, tail = '' ) => {
 	if ( 1 === n ) {
 		return `${ aside } > :nth-child(1)${ tail }`;
 	}
-	const guard = 2 === n ? ':not(.wp-block-sgs-container:last-child)' : '';
-	return `${ aside } > :nth-child(${ n })${ guard }${ tail },${ aside } > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :nth-child(${ n - 1 })${ tail }`;
+	// The card's link overlay is never a slot and does not count as the last child.
+	const last = ':nth-last-child(1 of :not(.sgs-block-link-overlay))';
+	const guard = 2 === n ? `:not(.wp-block-sgs-container${ last })` : '';
+	return `${ aside } > :nth-child(${ n }):not(.sgs-block-link-overlay)${ guard }${ tail },${ aside } > .wp-block-sgs-container:nth-child(2)${ last } > .sgs-container__inner > :nth-child(${ n - 1 })${ tail }`;
 };
 
 /**
