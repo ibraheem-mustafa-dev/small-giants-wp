@@ -53,7 +53,8 @@
 
 .sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:focus) .sgs-form-field__label,
 .sgs-form-field.sgs-form-field--label-inside.sgs-form-field--label-inside.sgs-form-field--label-inside:has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
-	top: 0.5rem;
+	/* The form's floated label offset (labelFloatedOffset) when set, else the inside variant's own lift. */
+	top: var(--sgs-form-label-floated-top, 0.5rem);
 	left: 1rem;
 }
 

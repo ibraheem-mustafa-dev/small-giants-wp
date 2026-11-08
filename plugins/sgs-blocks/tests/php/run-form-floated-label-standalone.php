@@ -83,14 +83,14 @@ function check( string $label, bool $ok ): void {
 $uid = '\.sgs-form-[0-9a-f]{8}';
 
 $base = render_block_case( 'sgs/form', array( 'formId' => 'f1' ) );
-check( 'unset: no floated colour or top rule', false === strpos( $base['css'], 'sgs-form-field__label{top' ) && false === strpos( $base['css'], ':focus) .sgs-form-field__label{color' ) && false === strpos( $base['css'], '.sgs-form-field__input:focus) .sgs-form-field__label' ) );
+check( 'unset: no floated colour or top rule', false === strpos( $base['css'], '--sgs-form-label-floated-top' ) && false === strpos( $base['css'], ':focus) .sgs-form-field__label{color' ) && false === strpos( $base['css'], '.sgs-form-field__input:focus) .sgs-form-field__label' ) );
 
 $colour = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'labelFloatedColour' => '#0A7EA8' ) );
 check( 'colour: prints on the focused state alone', 1 === preg_match( '/' . $uid . ' :is\([^{]*\):where\(:not\(\.sgs-form-field--static-label\)\):has\(\.sgs-form-field__input:focus\) \.sgs-form-field__label\{color:#0A7EA8;\}/i', $colour['css'] ) );
 check( 'colour: no top rule', false === strpos( $colour['css'], '{top:' ) );
 
 $offset = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'labelFloatedOffset' => '9px' ) );
-check( 'offset: top on the floated state (focused or filled)', 1 === preg_match( '/' . $uid . ' :is\([^{]*\):where\(:not\(\.sgs-form-field--static-label\)\):has\(\.sgs-form-field__input:is\(:focus,:not\(:placeholder-shown\)\)\) \.sgs-form-field__label\{top:9px;\}/', $offset['css'] ) );
+check( 'offset: the form prints the floated top for every floating variant', 1 === preg_match( '/' . $uid . '\{--sgs-form-label-floated-top:9px;\}/', $offset['css'] ) );
 check( 'offset: no colour rule', false === strpos( $offset['css'], '{color:' ) || false === strpos( $offset['css'], 'sgs-form-field__label{color:' ) );
 
 $bad = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'labelFloatedOffset' => '9px;} body{display:none' ) );

@@ -1531,7 +1531,8 @@ select.sgs-form-field__input {
 .sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label,
 .sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label,
 .sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:not(:placeholder-shown)) .sgs-form-field__label {
-	top: 0;
+	/* The form's floated label offset (labelFloatedOffset) when set, else the top edge. */
+	top: var(--sgs-form-label-floated-top, 0);
 	left: 0;
 	color: var(--wp--preset--color--text, #1e1e1e);
 }

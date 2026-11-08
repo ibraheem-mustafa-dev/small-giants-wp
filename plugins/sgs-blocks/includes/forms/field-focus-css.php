@@ -99,7 +99,8 @@ function floated_label_css( array $attributes, string $uid, array $floated_colou
 		);
 	}
 	if ( '' !== $offset ) {
-		$css .= $floated . '{top:' . $offset . ';}';
+		// The stylesheet's floated rules (default and label-inside) read the offset, so it holds for every variant.
+		$css .= '.' . $uid . '{--sgs-form-label-floated-top:' . $offset . ';}';
 	}
 	if ( array() !== $colour ) {
 		$css .= $focused . '{' . implode( ';', $colour ) . ';}';
