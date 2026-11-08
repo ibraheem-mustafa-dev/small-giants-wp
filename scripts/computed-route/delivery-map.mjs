@@ -57,10 +57,14 @@ const verify = readVerify( vi >= 0 && rest[ vi + 1 ] ? path.resolve( rest[ vi + 
 const treeOk = ( k ) => animationEvidence( records.get( k ), facts, walkRows );
 const evidenceFor = ( k ) => ( k.startsWith( 'state:' ) ? stateEvidence( k )( reports ) : records.has( k ) ? ( verify ? ( ( l ) => ( { ok: 'done' === l.state, why: l.why } ) )( liveStatus( k, verify ) ) : treeOk( k ) ) : { ok: false, why: 'the handoff animations.json has no record of it' } );
 const liveLines = () => {
-	for ( const k of Object.keys( keys ).filter( ( x ) => x.startsWith( 'animation:' ) ).sort() ) {
+	const tally = { delivered: 0, partial: 0, missing: 0 };
+	const animKeys = Object.keys( keys ).filter( ( x ) => x.startsWith( 'animation:' ) ).sort();
+	for ( const k of animKeys ) {
 		const l = liveStatus( k, verify );
-		console.log( `${ k }: ${ l.state } (tree evidence: ${ records.has( k ) && treeOk( k ).ok ? 'yes' : 'no' })` );
+		l.delivery && tally[ l.delivery ]++;
+		console.log( `${ k }: ${ l.state }${ l.delivery ? ` [${ l.delivery }]` : '' } (tree evidence: ${ records.has( k ) && treeOk( k ).ok ? 'yes' : 'no' })${ l.delivery && 'delivered' !== l.delivery ? ` ${ l.why }` : '' }` );
 	}
+	verify && console.log( `live delivery: delivered ${ tally.delivered }, partial ${ tally.partial }, missing ${ tally.missing } of ${ animKeys.length } animation records` );
 };
 const problems = mapProblems( { raw, expected: expectedKeys( client ), units, coverage: loadCoverage(), hasCommit: ( h ) => commitExists( h ), evidenceFor, touches: ( k, c ) => stateCommitEvidence( k, c, { filesOf: ( id ) => surfaceFiles( client, id ), changedIn: commitFiles } ) } );
 for ( const p of problems ) {

@@ -53,6 +53,25 @@ export function rowsState( rows ) {
 	return { state: 'done', why: `${ rows.length } verify row(s) ok` };
 }
 
+// { delivery: 'delivered' | 'partial' | 'missing', why } for one record's live rows. delivered: every row ok and read live
+// (rowsState done). partial: at least one row ok on the live site (done or sampled) and the rest not; why names the first
+// row that differs. missing: no row, or no row ok on the live site (a built-not-pushed row is not on the live site).
+export function deliveryOf( rows ) {
+	const list = Array.isArray( rows ) ? rows : [];
+	if ( ! list.length ) {
+		return { delivery: 'missing', why: 'no live row' };
+	}
+	const st = rowsState( list );
+	if ( 'done' === st.state ) {
+		return { delivery: 'delivered', why: st.why };
+	}
+	const eff = ( r ) => r.status ?? ( true === r.ok ? 'done' : 'failed' );
+	const liveOk = list.filter( ( r ) => true === r.ok && [ 'done', 'sampled' ].includes( eff( r ) ) );
+	const bad = list.find( ( r ) => ! liveOk.includes( r ) );
+	const what = bad ? `${ bad.target ?? '?' } ${ bad.state ?? '' }: measured ${ JSON.stringify( bad.measured ) }, want ${ JSON.stringify( bad.want ) }` : st.why;
+	return { delivery: liveOk.length ? 'partial' : 'missing', why: `${ liveOk.length } of ${ list.length } row(s) ok live; differs: ${ what }` };
+}
+
 // Detector findings (scripts/parity/detect.mjs detect.json: { <detector>: { findings: [...] } }) as measurement rows.
 // A finding names its animation record in `record` or `animation`; a finding with neither is not a per-record read and is
 // counted in `skipped`. severity 'fail' is not ok.

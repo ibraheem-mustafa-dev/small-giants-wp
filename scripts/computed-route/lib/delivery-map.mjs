@@ -22,7 +22,7 @@ import { classify } from './motion-layers.mjs';
 import { walk as walkTree } from './tree.mjs';
 import { openRows } from './solve-rows.mjs';
 import { boundNodes, nodeElementKeys } from './delivery-bind.mjs';
-import { rowsState } from './verify-live.mjs';
+import { deliveryOf, rowsState } from './verify-live.mjs';
 
 export const PRIOR = 'prior';
 
@@ -39,14 +39,14 @@ export function readVerify( file ) {
 // { state: 'not read live' | 'done' | 'sampled' | 'built-not-pushed' | 'not done', why } for one `animation:<id>` key, from the parsed verify.json (null when absent).
 export function liveStatus( key, verify ) {
 	if ( ! verify ) {
-		return { state: 'not read live', why: 'no verify.json' };
+		return { state: 'not read live', why: 'no verify.json', delivery: null };
 	}
 	const id = String( key ).replace( /^animation:/, '' );
 	const rows = ( Array.isArray( verify.rows ) ? verify.rows : [] ).filter( ( r ) => r && ( r.record === id || r.record === key ) );
 	if ( ! rows.length ) {
-		return { state: 'not done', why: 'verify.json has no row for it' };
+		return { state: 'not done', why: 'verify.json has no row for it', ...deliveryOf( [] ) };
 	}
-	return rowsState( rows );
+	return { ...rowsState( rows ), ...deliveryOf( rows ), why: rowsState( rows ).why };
 }
 
 // The map file's path for a client.
