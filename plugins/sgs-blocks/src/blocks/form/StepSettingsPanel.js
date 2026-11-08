@@ -35,7 +35,7 @@ const STEP_LAYOUT_OPTIONS = [
  * @return {JSX.Element} The panel.
  */
 export default function StepSettingsPanel( { attributes, setAttributes } ) {
-	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, actionsTopMargin, actionsBorderTopWidth, actionsBorderTopStyle, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
+	const { stepLayout, stepCounter, stepCounterLabel, stepCounterNameSuffix, stepCounterNameHidden, stepNamesHidden, progressTrackHeight, statusRowWrap, statusRowGap, actionsTopPadding, actionsTopMargin, actionsBorderTopWidth, actionsBorderTopStyle, statusRowMarginBottom, progressFill, stepCompletedIcon, actionsSticky, actionsStickyPadding, actionsStickyBleed } = attributes;
 	const item = ( label, keys, children, isShownByDefault = false ) => (
 		<ToolsPanelItem
 			label={ label }
@@ -59,6 +59,7 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 				stepCounterLabel: undefined,
 				stepCounterNameSuffix: undefined,
 				stepCounterNameHidden: undefined,
+				stepNamesHidden: undefined,
 				statusRowWrap: undefined,
 				statusRowGap: undefined,
 				actionsTopPadding: undefined,
@@ -89,6 +90,22 @@ export default function StepSettingsPanel( { attributes, setAttributes } ) {
 					__next40pxDefaultSize
 				/>
 			), true ) }
+			{ item( __( 'Hide the step names', 'sgs-blocks' ), [ 'stepNamesHidden' ], (
+				<ResponsiveOverride
+					label={ __( 'Hide the step names', 'sgs-blocks' ) }
+					value={ stepNamesHidden }
+					onChange={ ( obj ) => setAttributes( { stepNamesHidden: obj } ) }
+				>
+					{ ( { tier, ownValue, effectiveValue, setOwnValue } ) => (
+						<ToggleControl
+							label={ __( 'Show only the step numbers on this device', 'sgs-blocks' ) }
+							checked={ true === ( '' === ownValue ? effectiveValue : ownValue ) }
+							onChange={ ( value ) => setOwnValue( value ? true : ( 'desktop' === tier ? undefined : false ) ) }
+							__nextHasNoMarginBottom
+						/>
+					) }
+				</ResponsiveOverride>
+			) ) }
 			{ item( __( 'Step counter', 'sgs-blocks' ), [ 'stepCounter' ], (
 				<ToggleControl
 					label={ __( 'Show a step counter', 'sgs-blocks' ) }

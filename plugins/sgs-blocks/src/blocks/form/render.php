@@ -691,6 +691,7 @@ if ( '' !== $sgs_done_bg || '' !== $sgs_done_colour ) {
 }
 foreach ( array(
 	'stepCounterNameHidden' => '.sgs-form__step-counter-name',
+	'stepNamesHidden'       => '.sgs-form__progress-step-label',
 	'actionsNoteHidden'     => '.sgs-form__actions-note',
 	'requiredMarkHidden'    => '.sgs-form-field__required',
 ) as $sgs_hide_attr => $sgs_hide_sel ) {

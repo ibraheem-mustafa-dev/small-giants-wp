@@ -889,6 +889,7 @@
 					"clusters": [ "text" ],
 					"prefix": "stepLabel",
 					"attrMap": {
+						"css:display": "stepNamesHidden",
 						"css:font-size": "stepLabelFontSize",
 						"css:font-weight": "stepLabelFontWeight",
 						"css:font-style": "stepLabelFontStyle",
@@ -4068,6 +4069,11 @@
 			"type": "object",
 			"default": {},
 			"description": "Hides the step name beside the counter, per device: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere."
+		},
+		"stepNamesHidden": {
+			"type": "object",
+			"default": {},
+			"description": "Hides the step names in the progress steps, per device, leaving the step numbers: {desktop,tablet,mobile}, each true (hidden) or false (shown). A blank device follows the one above it. Empty = shown everywhere (a form narrower than 480px still hides them)."
 		},
 		"requiredMarkHidden": {
 			"type": "object",

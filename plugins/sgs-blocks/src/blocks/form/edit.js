@@ -672,6 +672,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		statusGapValue && `.${ formPreviewScope } .sgs-form__status-row{row-gap:${ statusGapValue };}`,
 		attributes.statusRowMarginBottom && `.${ formPreviewScope } .sgs-form__status-row{margin-bottom:${ attributes.statusRowMarginBottom };}`,
 		tierValueOf( attributes.stepCounterNameHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__step-counter-name{display:none;}`,
+		tierValueOf( attributes.stepNamesHidden, previewTier ) && `.${ formPreviewScope } .sgs-form__progress-step-label{display:none;}`,
 		attributes.statusRowWrap && `.${ formPreviewScope } .sgs-form__status-row{flex-wrap:${ attributes.statusRowWrap };}`,
 		resolveColourToken( attributes.stepLabelColour, palette ) && `.${ formPreviewScope } .sgs-form__progress-step:not(.sgs-form__progress-step--active) .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColour, palette ) };}`,
 		resolveColourToken( attributes.stepLabelColourActive, palette ) && `.${ formPreviewScope } .sgs-form__progress-step--active .sgs-form__progress-step-label{color:${ resolveColourToken( attributes.stepLabelColourActive, palette ) };}`,

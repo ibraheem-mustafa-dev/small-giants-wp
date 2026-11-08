@@ -124,6 +124,12 @@ check( 'stepper: inactive number background', 1 === preg_match( '/' . $uid . ' \
 $hide = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'actionsNote' => 'Hi', 'actionsNoteHidden' => array( 'desktop' => false, 'mobile' => true ) ), '', true );
 check( 'note: shown on desktop and tablet, hidden on mobile', 1 === preg_match( '/' . $uid . ' \.sgs-form__actions-note\{display:revert;\}/', $hide['css'] ) && 1 === preg_match( '/@media[^{]*\{' . $uid . ' \.sgs-form__actions-note\{display:none;\}\}/', $hide['css'] ) );
 
+// --- Step names hidden per device (the draft keeps only the numbers below 768px).
+$names = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'stepNamesHidden' => array( 'mobile' => true ) ), '', true );
+check( 'step names: hidden on mobile only', 1 === preg_match( '/@media\(max-width:767px\)\{' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}\}/', $names['css'] ) && 0 === preg_match( '/(^|\})' . $uid . ' \.sgs-form__progress-step-label\{display:none;\}/', $names['css'] ) );
+$names_off = render_block_case( 'sgs/form', array( 'formId' => 'f1' ), '', true );
+check( 'step names: unset prints no display rule', false === strpos( $names_off['css'], 'progress-step-label{display' ) );
+
 // --- Counter row wrap and gap.
 $row = render_block_case( 'sgs/form', array( 'formId' => 'f1', 'stepCounter' => true, 'statusRowWrap' => 'wrap', 'statusRowGap' => array( 'desktop' => 12 ) ), '', true );
 check( 'row: wrap', 1 === preg_match( '/' . $uid . ' \.sgs-form__status-row\{flex-wrap:wrap;\}/', $row['css'] ) );

@@ -13,7 +13,8 @@
  *   and is applied at once under reduced motion; `copyShapeFrom` copies the path data of another element into a matching
  *   element that has none;
  * - a continuous loop: `loopRotate` turns the part by that many degrees every `loopDuration` ms;
- * - a hover: `hoverReplay` plays the entrance again, `hoverRate` runs the loop at that speed for `hoverRateDuration` ms,
+ * - a hover: `hoverReplay` plays the entrance again, `hoverRate` runs the loop at that speed for `hoverRateDuration` ms
+ *   (0 or unset: for as long as the element is hovered or a finger is held on it),
  *   and `hoverScale` / `hoverX` / `hoverY` / `hoverRotate` play one bob (out and back over `hoverDuration`, each match
  *   `hoverStagger` later than the last, with `hoverEasing` / `hoverEasingCustom`).
  *
@@ -250,18 +251,15 @@ function boot( root ) {
 		? cfg.hoverCooldown
 		: 1400;
 	let lastHover = -Infinity;
-	const rateTimers = new Map();
+	// "Desktop only" (`data-sgs-touch-hover="desktop"` on <html>) turns hover effects off while the last pointer was
+	// a touch, so a tap's emulated mouseenter does not replay; reduced motion is read live.
+	const hoverOff = ( touch ) =>
+		prefersReducedMotion() ||
+		( touch &&
+			'desktop' ===
+				document.documentElement.getAttribute( 'data-sgs-touch-hover' ) );
 	root.addEventListener( 'mouseenter', () => {
-		// "Desktop only" (`data-sgs-touch-hover="desktop"` on <html>) turns hover effects off while the last
-		// pointer was a touch, so a tap's emulated mouseenter does not replay; reduced motion is read live.
-		if (
-			prefersReducedMotion() ||
-			( isTouchInput() &&
-				'desktop' ===
-					document.documentElement.getAttribute(
-						'data-sgs-touch-hover'
-					) )
-		) {
+		if ( hoverOff( isTouchInput() ) ) {
 			return;
 		}
 		const now = window.performance.now();
@@ -271,19 +269,39 @@ function boot( root ) {
 		lastHover = now;
 		playEntrance( true );
 		playHover();
-		loops.forEach( ( { part, animation } ) => {
-			if ( ! ( part.hoverRate > 1 ) ) {
-				return;
-			}
+	} );
+
+	// The loop speed-up: `hoverRateDuration` above 0 is a burst of that many ms; 0 or unset holds the speed for as
+	// long as the pointer is over the element or a finger is held on it (a touch fires pointerleave on release, and
+	// on pointercancel when the gesture turns into a scroll or the long-press menu).
+	const rated = loops.filter( ( { part } ) => part.hoverRate > 1 );
+	if ( ! rated.length ) {
+		return;
+	}
+	const rateTimers = new Map();
+	root.addEventListener( 'pointerenter', ( event ) => {
+		if ( hoverOff( 'touch' === event.pointerType ) ) {
+			return;
+		}
+		rated.forEach( ( { part, animation } ) => {
 			animation.updatePlaybackRate( part.hoverRate );
 			window.clearTimeout( rateTimers.get( animation ) );
-			rateTimers.set(
-				animation,
-				window.setTimeout(
-					() => animation.updatePlaybackRate( 1 ),
-					part.hoverRateDuration || 900
-				)
-			);
+			if ( part.hoverRateDuration > 0 ) {
+				rateTimers.set(
+					animation,
+					window.setTimeout(
+						() => animation.updatePlaybackRate( 1 ),
+						part.hoverRateDuration
+					)
+				);
+			}
+		} );
+	} );
+	root.addEventListener( 'pointerleave', () => {
+		rated.forEach( ( { part, animation } ) => {
+			if ( ! ( part.hoverRateDuration > 0 ) ) {
+				animation.updatePlaybackRate( 1 );
+			}
 		} );
 	} );
 }
