@@ -39123,6 +39123,14 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "stepNamesHidden",
+      "fields": {
+        "css_property": "display",
+        "css_element": "step-label"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "submitBackgroundGradient",
       "fields": {
         "css_property": "background-image",

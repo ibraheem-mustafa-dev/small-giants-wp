@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11701,
+    "row_count": 11702,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4787,6 +4787,7 @@
     "sgs/form::stepLabelTextWrap": "typography",
     "sgs/form::stepLabelWritingMode": "select-from-enum",
     "sgs/form::stepLayout": "layout",
+    "sgs/form::stepNamesHidden": null,
     "sgs/form::stepNumberCompletedBackground": "color",
     "sgs/form::stepNumberCompletedColour": "color",
     "sgs/form::stepNumberFontFamily": "typography",
