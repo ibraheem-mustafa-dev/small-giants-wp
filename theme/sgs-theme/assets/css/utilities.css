@@ -22,6 +22,8 @@
 	--sgs-header-height: 80px;
 	/* Room a clipping container reserves so the shadows of what it holds are not cut; the largest framework shadow reaches about 80px. Override per client. */
 	--sgs-shadow-bleed: 80px;
+	/* Room a clip with no rounded corners and no fill leaves around its edges, so content growing on hover, focus or touch (a lift, scale or tilt) is never cut. Override per client. */
+	--sgs-hover-room: 12px;
 }
 
 /* ─── Controls and dialogs take the page's font and text colour ───

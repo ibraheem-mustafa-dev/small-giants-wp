@@ -230,7 +230,42 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 		 * @param string         $attribute Attribute name.
 		 * @return bool
 		 */
-		public static function declares_attribute( $block, string $attribute ): bool {
+		/**
+	 * Whether a container paints its own box: a rounded corner or a fill (colour, gradient or image). Such a box's
+	 * overflow clip crops what it holds on purpose; a box that paints neither only hides its children's overflow.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @return bool
+	 */
+	private static function paints_own_box( array $attributes ): bool {
+		$radius = $attributes['borderRadius'] ?? null;
+		if ( is_array( $radius ) ) {
+			$has = false;
+			array_walk_recursive(
+				$radius,
+				static function ( $v ) use ( &$has ) {
+					$has = $has || ( '' !== trim( (string) $v ) && 0.0 !== (float) $v );
+				}
+			);
+			if ( $has ) {
+				return true;
+			}
+		} elseif ( is_string( $radius ) && '' !== trim( $radius ) && 0.0 !== (float) $radius ) {
+			return true;
+		}
+		foreach ( $attributes as $key => $value ) {
+			if ( ! is_string( $key ) || ! preg_match( '/^(background|bg)/i', $key ) || false !== stripos( $key, 'hover' ) ) {
+				continue;
+			}
+			if ( ( is_string( $value ) && '' !== trim( $value ) ) || ( is_array( $value ) && array() !== array_filter( $value ) ) || ( is_numeric( $value ) && 0 != $value ) ) {
+				return true;
+			}
+		}
+		$style_colour = $attributes['style']['color'] ?? array();
+		return ! empty( $style_colour['background'] ) || ! empty( $style_colour['gradient'] );
+	}
+
+	public static function declares_attribute( $block, string $attribute ): bool {
 			$attributes = null;
 			if ( $block instanceof \WP_Block && isset( $block->block_type->attributes ) && is_array( $block->block_type->attributes ) ) {
 				$attributes = $block->block_type->attributes;
@@ -1204,6 +1239,13 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 			if ( '' !== $overflow_choice ) {
 				$base_outer_decls[] = 'overflow:' . $overflow_choice;
+				// A clip on a box with no rounded corners and no fill crops nothing anyone sees: it only cuts off its
+				// children. Children that grow on hover, focus or touch (a lift, a scale, a tilt) keep a margin of
+				// room, --sgs-hover-room; a rounded or filled box keeps its true crop (it rounds or frames what it holds).
+				if ( ! self::paints_own_box( $attributes ) ) {
+					$base_outer_decls[] = 'overflow:clip';
+					$base_outer_decls[] = 'overflow-clip-margin:var(--sgs-hover-room, 12px)';
+				}
 			}
 
 			// Surface ground: backdrop blur and saturate, for the blocks that declare
