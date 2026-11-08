@@ -108,11 +108,27 @@ export const ownsGroup = ( target, group ) => ( target.owns || [] ).includes( Nu
 
 const stem = ( w ) => w.replace( /s$/, '' );
 
+// The words that name one group's own draft element, or null when its records only list element kinds. A record's description
+// that is a single phrase names its element (its last word is the head noun); a comma list with one item per template id the
+// record names gives the item at this template's position; any other list names no one element. Only a record of a Web Animation
+// counts: a transition record's text is the element's markup ("button {{ label }}"), not what the group's element is.
+function ownNouns( recs, tpl ) {
+	const out = [];
+	for ( const r of recs.filter( ( x ) => 'waapi' === x.mechanism ) ) {
+		const items = String( r.element?.description ?? '' ).split( ',' ).map( ( i ) => i.trim() ).filter( Boolean );
+		const ids = [ r.element?.template_tpl_id ].flat().map( String ).sort( ( a, b ) => Number( a ) - Number( b ) );
+		const own = 1 === items.length ? items[ 0 ] : items.length === ids.length ? items[ ids.indexOf( String( tpl ) ) ] : null;
+		own && out.push( ...[ ...words( own ) ].map( stem ) );
+	}
+	return out.length ? new Set( out ) : null;
+}
+
 // A group of calls keyed to one pair that the NEXT pair of the surface, in document order, holds as a part of its own block: a
-// row of chips the draft draws before a grid whose block prints them (a post grid's filter chips). The group's draft elements
-// are named by their records' descriptions; a part of the next block takes them when the part's label ends with a word the
-// description names (the head noun of "Filter chip" is "chip", the description's "chips") and no other part does. The block's
-// items part and its structural parts never take such a group. { ref, part } or null.
+// row of chips the draft draws before a grid whose block prints them (a post grid's filter chips). A part of the next block takes
+// the group when its label ends with a word naming the group's own element (the head noun of "Filter chip" is "chip") and no other
+// part does. Where the records only list element kinds ("Cards, stats, chips"), a word in the list is not evidence of the group's
+// element, so the part must instead be a printed element with its own class selector (not an internal part such as a bare
+// `stat`). The block's items part and its structural parts never take such a group. { ref, part } or null.
 export function siblingClaim( { group, surface, all, db, mdb, recordsIndex } ) {
 	const id = Number( group.tpl );
 	const key = WIDTHS.flatMap( ( w ) => group.calls[ w ] ).find( ( c ) => c.key )?.key;
@@ -123,8 +139,11 @@ export function siblingClaim( { group, surface, all, db, mdb, recordsIndex } ) {
 	if ( ! owner || ! block || owner.id >= id ) {
 		return null;
 	}
-	const text = new Set( [ ...words( recordsFor( recordsIndex, `Root/${ group.tpl }#0` ).flatMap( ( r ) => [ r.name, r.element?.description ] ).join( ' ' ) ) ].map( stem ) );
+	const recs = recordsFor( recordsIndex, `Root/${ group.tpl }#0` );
+	const own = ownNouns( recs, group.tpl );
+	const text = own ?? new Set( [ ...words( recs.flatMap( ( r ) => [ r.name, r.element?.description ] ).join( ' ' ) ) ].map( stem ) );
 	const items = itemsPartOf( db, block );
-	const fits = mdb.targetsOf( block ).filter( ( t ) => ! STRUCTURAL.has( t.target ) && t.target !== items && 'part' === t.kind && text.has( stem( String( t.label ).toLowerCase().split( /\s+/ ).pop() ) ) );
+	const printed = ( t ) => own || /^\./.test( String( t.cssElement ?? '' ) );
+	const fits = mdb.targetsOf( block ).filter( ( t ) => ! STRUCTURAL.has( t.target ) && t.target !== items && 'part' === t.kind && printed( t ) && text.has( stem( String( t.label ).toLowerCase().split( /\s+/ ).pop() ) ) );
 	return 1 === fits.length ? { ref: next.ref, part: fits[ 0 ].target } : null;
 }

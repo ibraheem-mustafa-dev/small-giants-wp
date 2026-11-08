@@ -41,9 +41,13 @@ function hoverBorder( { ctx, d, l } ) {
 }
 
 // The draft's tile hover drop shadow as the tile's own hover shadow setting (tileHoverShadow: the offsets, blur and spread; tileHoverShadowColour:
-// the colour), the shadow settings the hover layer leaves alone. A ring or an accent line is the hover layer's; a draft with no hover shadow writes none.
+// the colour), the shadow settings the hover layer leaves alone. A ring or an accent line is the hover layer's; a draft with no hover shadow writes none; a shadow that is not one drop shadow is reported as no-setting.
 function hoverShadow( { ctx, d, l } ) {
-	const want = shadowParts( d.hover.tile[ 'box-shadow' ] );
+	const raw = String( d.hover.tile[ 'box-shadow' ] ?? '' ).trim();
+	const want = shadowParts( raw );
+	if ( raw && 'none' !== raw && ! want && ! matches( l.hover.tile[ 'box-shadow' ], raw ) ) {
+		return [ { status: 'no-setting', prop: 'tileHoverShadow', state: 'hover', why: `the draft's tile hover shadow ${ raw } is not one drop shadow (a list of layers or a value that does not parse), so tileHoverShadow cannot hold it` } ];
+	}
 	if ( ! want || want.inset || ( 0 === want.x && 0 === want.blur && 0 !== want.spread ) || matches( l.hover.tile[ 'box-shadow' ], d.hover.tile[ 'box-shadow' ] ) ) {
 		return [];
 	}

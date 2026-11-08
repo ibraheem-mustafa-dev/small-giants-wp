@@ -223,3 +223,16 @@ test( 'chrome mega tiles: the drawer tile hover record sets the panel drawer-onl
 	assert.deepEqual( run( [ tileRec( full ) ], {}, {} ), [] );
 	assert.deepEqual( run( [ tileRec( full.slice( 1 ) ) ] ), [] );
 } );
+
+test( 'chrome mega tiles: the tile border is read only from a gallery inside the panel, on a tile of that gallery', () => {
+	const tileRec = ( tpl ) => ( { ...rec( `TR-${ tpl }`, tpl, 'hover', [ { property: 'transform', from: null, to: 'scale(1.05)' }, { property: 'border-color', from: null, to: '#2C3E50' } ] ), element: { dc: 'D', template_tpl_id: String( tpl ), description: 'a' } } );
+	const run = ( tree, tpl ) => chrome.decide( ctx( { block: 'sgs/mega-panel', skeleton: [ { id: 'drawer', nodes: flatten( tree ) } ], recordsIndex: recordIndex( [ tileRec( tpl ) ], 'D' ), saved: {}, all: { blocks: { g: { block: 'sgs/gallery' } } } } ) ).filter( ( i ) => 'drawerTileBorderColourHover' === i.prop );
+	const inPanel = [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/gallery', t: '171' } ] } ] } ];
+	assert.equal( run( inPanel, 171 ).length, 1 );
+	// A gallery outside the panel (another node of the drawer): no write.
+	const elsewhere = [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/mega-group', t: '149' } ] }, { b: 'sgs/gallery', t: '171' } ] } ];
+	assert.deepEqual( run( elsewhere, 171 ), [] );
+	// A scaled, bordered card in the panel that is not the gallery's tile: no write.
+	const card = [ { b: 'sgs/nav-drawer', t: '108', c: [ { b: 'sgs/mega-panel', t: '134', c: [ { b: 'sgs/mega-group', t: '149' }, { b: 'sgs/gallery', t: '171' } ] } ] } ];
+	assert.deepEqual( run( card, 150 ), [] );
+} );

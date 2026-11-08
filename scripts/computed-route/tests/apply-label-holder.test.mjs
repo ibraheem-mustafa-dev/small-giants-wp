@@ -11,6 +11,10 @@ const HTML = `<style>body{font-size:19px;font-weight:400}.t{font-size:13.5px;fon
 	<label id="wrap"><span class="t">Name *</span><input id="a"></label>
 	<label for="b" id="for" class="t">Email</label><input id="b">
 	<label id="own">Phone <input id="c"></label>
+	<label id="mark1"><span class="req">*</span><span class="t">Name</span><input id="d"></label>
+	<label id="mark2">* <span class="t">Name</span><input id="e"></label>
+	<label id="mark3"><span class="req">(required)</span><span class="t">Name</span><input id="f"></label>
+	<label id="mark4"><span class="req">*</span><input id="g"></label>
 </form>`;
 
 test( 'wrapping, for= and own-text labels resolve to the element painting the words', async () => {
@@ -24,15 +28,20 @@ test( 'wrapping, for= and own-text labels resolve to the element painting the wo
 			const pick = ( labelId, fieldId ) => {
 				const el = holder( document.getElementById( labelId ), document.getElementById( fieldId ) );
 				const cs = getComputedStyle( el );
-				return { tag: el.tagName, size: cs.fontSize, weight: cs.fontWeight };
+				return { tag: el.tagName, cls: el.className, size: cs.fontSize, weight: cs.fontWeight };
 			};
-			return { wrap: pick( 'wrap', 'a' ), forLabel: pick( 'for', 'b' ), own: pick( 'own', 'c' ) };
+			return { wrap: pick( 'wrap', 'a' ), forLabel: pick( 'for', 'b' ), own: pick( 'own', 'c' ), m1: pick( 'mark1', 'd' ), m2: pick( 'mark2', 'e' ), m3: pick( 'mark3', 'f' ), m4: pick( 'mark4', 'g' ) };
 		}, labelTextHolder.toString() );
 		// The fault: the wrapper reads 19px / 400; its span holds the label look.
-		assert.deepEqual( got.wrap, { tag: 'SPAN', size: '13.5px', weight: '700' } );
+		assert.deepEqual( got.wrap, { tag: 'SPAN', cls: 't', size: '13.5px', weight: '700' } );
 		// Negative controls: a for= label and a label with its own words stay the label itself.
-		assert.deepEqual( got.forLabel, { tag: 'LABEL', size: '13.5px', weight: '700' } );
+		assert.deepEqual( got.forLabel, { tag: 'LABEL', cls: 't', size: '13.5px', weight: '700' } );
 		assert.equal( got.own.tag, 'LABEL' );
+		// A required marker or icon is skipped, whether it is a span before the words or loose text in the label; a label holding only a marker stays itself.
+		for ( const k of [ 'm1', 'm2', 'm3' ] ) {
+			assert.equal( got[ k ].cls, 't', k );
+		}
+		assert.equal( got.m4.tag, 'LABEL' );
 	} finally {
 		await browser.close();
 	}

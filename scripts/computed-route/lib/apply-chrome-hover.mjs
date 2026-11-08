@@ -90,8 +90,9 @@ function tileBorder( ctx, nodes, own ) {
 		return [];
 	}
 	const panels = own ? [ own ] : nodes.filter( ( n ) => 'sgs/mega-panel' === n.b );
-	const owns = panels.flatMap( ( p ) => reachOf( nodes, p ) );
-	const tile = hovers( recordsOf( { target: { owns, tpl: ctx.target.tpl }, recordsIndex: ctx.recordsIndex } ) ).find( ( r ) => hoverTo( [ r ], 'border-color' ) && scaleOf( hoverTo( [ r ], 'transform' )?.value ) );
+	// Only a gallery drawn inside the panel has tiles the panel's setting governs; its tile is a record on that gallery's own draft ids.
+	const owns = panels.flatMap( ( p ) => nodes.slice( p.index + 1, p.last + 1 ).filter( ( n ) => 'sgs/gallery' === n.b ).flatMap( ( g ) => reachOf( nodes, g ) ) );
+	const tile = owns.length && hovers( recordsOf( { target: { owns, tpl: ctx.target.tpl }, recordsIndex: ctx.recordsIndex } ) ).find( ( r ) => hoverTo( [ r ], 'border-color' ) && scaleOf( hoverTo( [ r ], 'transform' )?.value ) );
 	const colour = tile && hoverTo( [ tile ], 'border-color' ).value;
 	return colour ? [ settle( { prop: 'drawerTileBorderColourHover', why: `${ ctx.target.tpl } the gallery tile border turns ${ colour } on hover in the drawer (${ tile.id })`, saved: ctx.saved, writes: [ { attr: 'drawerTileBorderColourHover', value: colour } ], record: tile.id, state: 'hover' } ) ] : [];
 }

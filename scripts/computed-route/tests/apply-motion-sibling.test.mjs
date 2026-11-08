@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import fs from 'node:fs';
 import { motion } from '../lib/apply-family-motion.mjs';
+import { siblingClaim } from '../lib/apply-motion-items.mjs';
 import { recordIndex } from '../lib/apply-records.mjs';
 import { openDb } from '../lib/db.mjs';
 
@@ -38,4 +39,35 @@ test( 'negative control: a description that names no chips leaves the row unplac
 	const grid = run( 'grid', 'Root/604#0', 'sgs/post-grid', 'Cards and steps' ).find( ( i ) => 'op' === i.status );
 	assert.equal( grid.writes[ 0 ].value.elements.filter, undefined );
 	assert.equal( run( 'wrap', 'Root/345#0', 'sgs/container', 'Cards and steps' ).filter( ( i ) => 'no-setting' === i.status ).length, 1 );
+} );
+
+// A generic list of element kinds is not evidence of the group's own element: a bare internal part ("Stat") never claims from it.
+const stubMdb = ( parts ) => ( { targetsOf: () => parts } );
+const claim = ( description, parts, ids = [ '603', '606' ] ) => siblingClaim( {
+	group: { tpl: '603', calls: { 1440: chips, 768: [], 375: [] } }, surface, all: { blocks: { wrap: { block: 'sgs/container' }, grid: { block: 'x/unknown' } } }, db,
+	mdb: stubMdb( parts ), recordsIndex: recordIndex( [ { ...record( description ), element: { dc: 'D', template_tpl_id: ids, description } } ], 'D' ),
+} );
+const stat = { target: 'stat', cssElement: 'stat', kind: 'part', label: 'Stat' };
+const chip = { target: 'filter', cssElement: '.sgs-x__filter', kind: 'part', label: 'Filter chip' };
+
+test( 'a generic list description does not hand the row to a bare "Stat" part', () => {
+	assert.equal( claim( 'Cards, stats, logo tiles, steps, chips, form fields', [ stat ] ), null );
+	assert.deepEqual( claim( 'Cards, stats, logo tiles, steps, chips, form fields', [ stat, chip ] ), { ref: 'grid', part: 'filter' } );
+} );
+
+test( 'a description naming the group\'s own element gives the claim to the matching part, and only that one', () => {
+	assert.deepEqual( claim( 'Filter chip', [ stat, chip ] ), { ref: 'grid', part: 'filter' } );
+	assert.deepEqual( claim( 'Stat tile', [ stat, chip ] ), { ref: 'grid', part: 'stat' } );
+	assert.equal( claim( 'Step card', [ stat ] ), null );
+	assert.deepEqual( claim( 'Cards, chips', [ stat, chip ] , [ '600', '603' ] ), { ref: 'grid', part: 'filter' } );
+} );
+
+// The real records of the blog's chip row (A-09 names 42 templates under one generic list; TR-090 is a transition on a button): the row still reaches the post grid's `filter` part.
+test( 'the real A-09 and TR-090 record shapes still hand the chip row to the post grid filter part', () => {
+	const ids = [ '231', '243', '250', '255', '287', '270', '300', '309', '312', '360', '481', '516', '517', '518', '519', '524', '394', '380', '399', '408', '542', '572', '367', '501', '589', '592', '643', '647', '603', '606', '529', '537', '619', '620', '621', '622', '623', '624', '637', '639', '348', '356' ];
+	const a09 = { id: 'A-09', mechanism: 'waapi', status: 'active', name: 'Grid / wrap item reveal', element: { dc: 'D', template_tpl_id: ids, description: 'Cards, stats, logo tiles, steps, chips, form fields and other grid children' }, trigger: { type: 'scroll-into-view' }, properties: [] };
+	const tr090 = { id: 'TR-090', mechanism: 'css-transition', status: 'active', name: 'Transition: button {{ ch.label }}', element: { dc: 'D', template_tpl_id: [ '603' ], description: 'button {{ ch.label }}' }, trigger: { type: 'hover' }, properties: [] };
+	const real = ( parts ) => siblingClaim( { group: { tpl: '603', calls: { 1440: chips, 768: [], 375: [] } }, surface, all: { blocks: { wrap: { block: 'sgs/container' }, grid: { block: 'x/unknown' } } }, db, mdb: stubMdb( parts ), recordsIndex: recordIndex( [ a09, tr090 ], 'D' ) } );
+	assert.deepEqual( real( [ chip ] ), { ref: 'grid', part: 'filter' } );
+	assert.equal( real( [ stat ] ), null );
 } );

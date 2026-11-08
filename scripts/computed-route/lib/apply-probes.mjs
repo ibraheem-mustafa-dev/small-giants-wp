@@ -13,17 +13,29 @@ export const CHECK_PROPS = [ 'position', 'display', 'top', 'width', 'height', 'c
 
 const FIELD_SELECTOR = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=file]):not([type=button]), textarea, select';
 
-// In page: the element that paints a field's label text. A label that wraps its field (`<label><span>Name</span><input></label>`)
-// carries only inherited styles; its words sit in the first descendant with its own text that does not hold the field.
+// In page: the element that paints a field's label text. A label's own words win when they are words; a required marker or an
+// icon (text of only '*', a bullet, '(required)', or no letters or digits) is skipped, so a label that wraps its field
+// (`<label><span>Name</span><input></label>`, `<label><span>*</span><span>Name</span>...`) reads at the descendant whose own text
+// holds the most letters and digits (the first on a tie).
 export function labelTextHolder( label, field ) {
 	if ( ! label || ! label.contains( field ) ) {
 		return label;
 	}
-	const ownText = ( el ) => [ ...el.childNodes ].some( ( n ) => 3 === n.nodeType && n.textContent.trim() );
-	if ( ownText( label ) ) {
+	const own = ( el ) => [ ...el.childNodes ].filter( ( n ) => 3 === n.nodeType ).map( ( n ) => n.textContent ).join( ' ' ).trim();
+	const weight = ( el ) => {
+		const t = own( el ).replace( /\(\s*required\s*\)/gi, '' );
+		return ( t.match( /[\p{L}\p{N}]/gu ) || [] ).length;
+	};
+	if ( weight( label ) ) {
 		return label;
 	}
-	return [ ...label.querySelectorAll( '*' ) ].find( ( el ) => ! el.contains( field ) && ownText( el ) ) || label;
+	let best = null;
+	for ( const el of label.querySelectorAll( '*' ) ) {
+		if ( ! el.contains( field ) && weight( el ) > ( best ? weight( best ) : 0 ) ) {
+			best = el;
+		}
+	}
+	return best || label;
 }
 const textHolderSrc = labelTextHolder.toString();
 

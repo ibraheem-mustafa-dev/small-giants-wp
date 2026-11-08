@@ -73,11 +73,27 @@ test( 'tiles: the draft hover drop shadow is written to tileHoverShadow and its 
 	const w = writes( tiles.decide( ctx( mk( drop ), mk( 'none' ) ) ) );
 	assert.deepEqual( w.map( ( x ) => x[ 0 ] ), [ 'tileHoverShadow', 'tileHoverShadowColour' ] );
 	assert.equal( w[ 0 ][ 1 ], '0 18px 30px -20px' );
-	assert.match( w[ 1 ][ 1 ], /10|0a7ea8|126/i );
+	assert.equal( w[ 1 ][ 1 ], '#0A7EA899' );
 	// Negative controls: the live tile already matches; the draft has no hover shadow; the draft's hover shadow is a ring (the hover layer's).
 	assert.deepEqual( writes( tiles.decide( ctx( mk( drop ), mk( drop ) ) ) ), [] );
 	assert.deepEqual( writes( tiles.decide( ctx( mk( 'none' ), mk( 'none' ) ) ) ), [] );
 	assert.deepEqual( writes( tiles.decide( ctx( mk( 'rgb(10, 126, 168) 0px 0px 0px 3px' ), mk( 'none' ) ) ) ), [] );
+} );
+
+test( 'tiles: a hover shadow that is not one drop shadow is reported as no-setting naming the value; a matching live shadow reports nothing', () => {
+	const mk = ( shadow ) => {
+		const r = read( { selectedBg: 'rgb(10, 126, 168)', check: tick, hoverBorder: 'rgba(0, 0, 0, 0)' } );
+		r.hover.tile[ 'box-shadow' ] = shadow;
+		return r;
+	};
+	const layers = 'rgba(0, 0, 0, 0.2) 0px 4px 8px 0px, rgba(0, 0, 0, 0.1) 0px 12px 24px 0px';
+	const rows = tiles.decide( ctx( mk( layers ), mk( 'none' ) ) ).filter( ( i ) => 'tileHoverShadow' === i.prop );
+	assert.equal( rows.length, 1 );
+	assert.equal( rows[ 0 ].status, 'no-setting' );
+	assert.ok( rows[ 0 ].why.includes( layers ) );
+	// Negative controls: the live tile already shows it; the draft has none.
+	assert.deepEqual( tiles.decide( ctx( mk( layers ), mk( layers ) ) ).filter( ( i ) => 'tileHoverShadow' === i.prop ), [] );
+	assert.deepEqual( tiles.decide( ctx( mk( 'none' ), mk( 'none' ) ) ).filter( ( i ) => 'tileHoverShadow' === i.prop ), [] );
 } );
 
 test( 'tiles: a draft whose second click keeps the first tile chosen writes multiSelect over a one-answer live field', () => {
