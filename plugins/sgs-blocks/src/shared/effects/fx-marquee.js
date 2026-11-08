@@ -5,8 +5,8 @@
  * motion registry enqueues when a page renders a block carrying `data-sgs-fx` with `marquee` in its token list.
  *
  * Markup contract (printed by the block's render.php): inside the block root, one element marked
- * `data-sgs-marquee-set` holds the items. This module clones that set, appends the copies after it (aria-hidden and
- * inert, so a linked logo never takes focus), and runs the same Web Animations loop on every copy through the shared
+ * `data-sgs-marquee-set` holds the items. This module clones that set, appends the copies after it (aria-hidden, their
+ * links and buttons at tabindex=-1 so a linked logo never takes focus, still live to the pointer), and runs the same Web Animations loop on every copy through the shared
  * loop control (`@sgs/loop-control`): the registered channel owner `--sgs-marquee-x` (or `-y` for a vertical
  * marquee) runs from 0 to minus one set pitch, and `assets/css/fx-marquee.css` composes it into `translate`.
  * One pitch is the distance between a set and its copy, so the loop is seamless at any item count or width.
@@ -127,9 +127,9 @@ function makeClone( set ) {
 	clone.removeAttribute( 'data-sgs-marquee-set' );
 	clone.setAttribute( CLONE_ATTR, '' );
 	clone.setAttribute( 'aria-hidden', 'true' );
-	// aria-hidden alone leaves a focusable item in the tab order of hidden content; `inert` removes the copy from the
-	// tab order and the accessibility tree, tabindex=-1 covers engines without it.
-	clone.setAttribute( 'inert', '' );
+	// The copies are what a visitor sees for most of the loop, so they stay live to the pointer (an item's hover look
+	// and a logo's link work on every copy); aria-hidden keeps them out of the accessibility tree and tabindex=-1
+	// below keeps their links and buttons out of the tab order. `inert` would also block the pointer.
 	clone
 		.querySelectorAll( '[id]' )
 		.forEach( ( el ) => el.removeAttribute( 'id' ) );

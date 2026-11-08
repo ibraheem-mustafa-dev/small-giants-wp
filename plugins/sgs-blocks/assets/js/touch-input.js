@@ -3,7 +3,7 @@
  *
  * The site setting (Customiser, SGS Interaction) is printed as `data-sgs-touch-hover` on <html>. With "Desktop only"
  * (`desktop`) this file sets `.sgs-touch-input` on <html> whenever the most recent pointer interaction was a touch,
- * and removes it again the moment a mouse or pen is used. `includes/helpers-hover-state.php` scopes every emitted
+ * and removes it again the moment a mouse or pen is used (pressed or moved). `includes/helpers-hover-state.php` scopes every emitted
  * `:hover` rule inside `:where(:root:not(.sgs-touch-input))`, so a hover style simply stops applying while the page is
  * being touched. With the default "Show on tap" the class is never set: a tap shows the hover look and the browser
  * clears it when the visitor taps elsewhere.
@@ -37,6 +37,18 @@
 				return;
 			}
 			root.classList.toggle( 'sgs-touch-input', 'touch' === event.pointerType );
+		},
+		{ capture: true, passive: true }
+	);
+
+	// A mouse or pen moving over the page clears the touch state at once, without waiting for a click: a hybrid
+	// device switching back, or a browser's device emulation turned off, gets its hover looks back on the next move.
+	window.addEventListener(
+		'pointermove',
+		function ( event ) {
+			if ( 'touch' !== event.pointerType && root.classList.contains( 'sgs-touch-input' ) ) {
+				root.classList.remove( 'sgs-touch-input' );
+			}
 		},
 		{ capture: true, passive: true }
 	);

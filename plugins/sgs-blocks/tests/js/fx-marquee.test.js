@@ -657,14 +657,15 @@ describe( 'marquee pause button', () => {
 } );
 
 describe( 'marquee copies', () => {
-	test( 'are inert and hidden from assistive technology, with no duplicate ids or tab stops', async () => {
+	test( 'are hidden from assistive technology and the tab order but live to the pointer, with no duplicate ids', async () => {
 		const { root } = mount();
 		await boot();
 		const clones = root.querySelectorAll( '[data-sgs-marquee-clone]' );
 		expect( clones.length ).toBeGreaterThan( 0 );
 		clones.forEach( ( clone ) => {
 			expect( clone.getAttribute( 'aria-hidden' ) ).toBe( 'true' );
-			expect( clone.hasAttribute( 'inert' ) ).toBe( true );
+			// negative control: inert would also block the pointer, so a copy's hover look could never play
+			expect( clone.hasAttribute( 'inert' ) ).toBe( false );
 			expect( clone.querySelector( '[id]' ) ).toBeNull();
 			clone
 				.querySelectorAll( 'a' )
