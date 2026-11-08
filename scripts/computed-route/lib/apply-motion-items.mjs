@@ -34,12 +34,13 @@ export function itemsPartOf( db, block ) {
 }
 
 // Groups of descendant calls by the draft element animated: [ { tpl, calls: { width: [ call ] } } ]. `keep( call )` says whether
-// a call is this target's to place.
-export function groupsOf( animate, keep ) {
+// a call is this target's to place. `auxKeys`: the keys of the extra draft elements the target's families read beside its own (a
+// described connector line); a call on one is a descendant call although the element was read.
+export function groupsOf( animate, keep, auxKeys = new Set() ) {
 	const groups = new Map();
 	for ( const w of WIDTHS ) {
 		for ( const c of animate[ w ] || [] ) {
-			if ( c.own || ! keep( c ) ) {
+			if ( ( c.own && ! auxKeys.has( c.key ) ) || ! keep( c ) ) {
 				continue;
 			}
 			const id = c.tpl ?? '';

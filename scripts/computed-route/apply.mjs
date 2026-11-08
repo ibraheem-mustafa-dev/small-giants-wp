@@ -20,7 +20,7 @@ import { chromium } from 'playwright';
 import { FAMILIES, familyProps } from './lib/apply-families.mjs';
 import { ledgerIndex, ledgerMatch, surfaceNames } from './lib/apply-ledger.mjs';
 import { gateRows } from './lib/apply-gate.mjs';
-import { finish, rulingFor } from './lib/apply-rulings.mjs';
+import { finish, rulingFor, same } from './lib/apply-rulings.mjs';
 import { changesPost, matches, patchesFor, restoreOf } from './lib/apply-ops.mjs';
 import { applyOptions } from './apply-options.mjs';
 import { loadDraftSource } from './lib/apply-intent.mjs';
@@ -187,7 +187,8 @@ export function decideSurface( { surface, drafts, lives, blocks, families, ledge
 				if ( hit ) {
 					row( { family: family.name, status: 'ledger', prop: item.prop, why: hit } );
 				} else if ( 'op' === item.status ) {
-					const ruled = item.writes ? { writes: finish( item.writes, rule ) } : {};
+					// A write the ruling has reduced to the block's ruled settings changes nothing, so it is the ruling's row, not an op.
+					const ruled = item.writes ? { writes: finish( item.writes, rule ).filter( ( w ) => ! rule.rows.length || w.unset || ! same( w.value, rule.attrs[ w.attr ] ) ) } : {};
 					if ( item.writes && ! ruled.writes.length ) {
 						row( { family: family.name, status: 'ledger', prop: item.prop, why: `${ rule.rows.map( ( r ) => r.id ).join( ', ' ) } overrules the draft value` } );
 						continue;

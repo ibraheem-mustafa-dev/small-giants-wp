@@ -288,7 +288,7 @@ if ( ! function_exists( 'sgs_nav_drawer_menu_accordion_html' ) ) {
 		return sprintf(
 			'<li class="%1$s sgs-nav-drawer-menu__item--has-submenu%9$s">'
 			. '<div class="sgs-nav-drawer-menu__accordion-row">%2$s'
-			. '<details class="sgs-nav-drawer-menu__accordion"%3$s id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
+			. '<details class="sgs-nav-drawer-menu__accordion" data-sgs-motion-state=""%3$s id="%4$s" data-sgs-nav-parent-label="%5$s" data-sgs-nav-back-label="%6$s">'
 			. '%7$s'
 			. '<ul class="sgs-nav-drawer-menu__submenu" data-sgs-drill-panel>%8$s</ul>'
 			. '</details></div></li>',

@@ -273,22 +273,41 @@ final class Sgs_Motion_Loop_Delays {
 	/**
 	 * Give every element that carries a class its position as the loop index, in document order.
 	 *
+	 * With `$host_tag` set, every element of that tag that carries `data-sgs-motion-state` is a nested motion state host
+	 * (the drawer's accordion `<details>`): the items inside it count from 0 within it, so each host staggers its own items
+	 * when it opens, and the returned count is the longest run, which is what the delay rules are written for.
+	 *
 	 * @param string $html       The rendered items.
 	 * @param string $item_class One class name (no dot) every item carries.
-	 * @return array{html:string,count:int} The HTML and how many items were tagged.
+	 * @param string $host_tag   Optional tag name of nested state hosts whose items restart at 0.
+	 * @return array{html:string,count:int} The HTML and how many items the longest run holds.
 	 */
-	public static function tag_by_class( string $html, string $item_class ): array {
+	public static function tag_by_class( string $html, string $item_class, string $host_tag = '' ): array {
 		$processor = new \WP_HTML_Tag_Processor( $html );
-		$count     = 0;
-		while ( $processor->next_tag() ) {
-			if ( $processor->has_class( $item_class ) ) {
-				$processor->set_attribute( self::ITEM_ATTR, (string) $count );
-				++$count;
+		$host_tag  = strtoupper( $host_tag );
+		$counts    = array( 0 );
+		$longest   = 0;
+		$query     = '' === $host_tag ? null : array( 'tag_closers' => 'visit' );
+		while ( $processor->next_tag( $query ) ) {
+			if ( '' !== $host_tag && $host_tag === $processor->get_tag() ) {
+				if ( $processor->is_tag_closer() ) {
+					if ( count( $counts ) > 1 ) {
+						$longest = max( $longest, (int) array_pop( $counts ) );
+					}
+				} elseif ( null !== $processor->get_attribute( 'data-sgs-motion-state' ) ) {
+					$counts[] = 0;
+				}
+				continue;
+			}
+			if ( ! $processor->is_tag_closer() && $processor->has_class( $item_class ) ) {
+				$last = count( $counts ) - 1;
+				$processor->set_attribute( self::ITEM_ATTR, (string) $counts[ $last ] );
+				++$counts[ $last ];
 			}
 		}
 		return array(
 			'html'  => $processor->get_updated_html(),
-			'count' => $count,
+			'count' => max( $longest, ...$counts ),
 		);
 	}
 

@@ -185,15 +185,28 @@ function timelineRail( { saved, draft, aux, target } ) {
 	return writes.length ? [ settle( { prop: 'connectorLineStyle', why: `${ target.tpl } draws a ${ lineStyleOf( line ) || 'solid' } rail`, saved, writes } ) ] : [];
 }
 
+// The draft states its inset as a round percentage (16%), a few px off the exact centre at the narrower widths.
+const CENTRE_TOLERANCE = 3;
+
 // The connector's width and its offset from the top of the steps, read at every width where the line shows: the width relative to
 // the steps' own width (or per device), the offset as px only where every width agrees. { writes, gaps }.
 export function connectorLengths( { saved, draft, aux, block, db } ) {
 	const lines = Object.values( aux )[ 0 ];
 	const widths = TIER_WIDTHS.filter( ( w ) => shown( lines?.[ w ] ) && draft[ w ]?.box );
 	const sample = ( of ) => Object.fromEntries( widths.map( ( w ) => [ w, of( w ) ] ) );
-	const width = relativeLength( { db, block: block ?? 'sgs/process-steps', attr: 'connectorWidth', samples: sample( ( w ) => ( { px: lines[ w ].box.w, of: draft[ w ].box.w } ) ) } );
+	// The framework's default line runs from the first step's centre to the last step's centre: an inset of half a column from each
+	// edge, (row width - (steps - 1) * gap) / (2 * steps). A line that does so at every width needs no connectorWidth.
+	const stepCount = Array.isArray( saved.steps ) ? saved.steps.length : 0;
+	const onCentres = stepCount > 1 && widths.length > 0 && widths.every( ( w ) => {
+		const gap = parseFloat( draft[ w ].styles?.[ 'column-gap' ] );
+		const row = draft[ w ].box;
+		const inset = ( row.w - ( stepCount - 1 ) * ( Number.isNaN( gap ) ? 0 : gap ) ) / ( 2 * stepCount );
+		return 'column-gap' in ( draft[ w ].styles || {} ) && Math.abs( lines[ w ].box.x - row.x - inset ) <= CENTRE_TOLERANCE && Math.abs( row.x + row.w - lines[ w ].box.x - lines[ w ].box.w - inset ) <= CENTRE_TOLERANCE;
+	} );
+	const width = onCentres ? { value: null } : relativeLength( { db, block: block ?? 'sgs/process-steps', attr: 'connectorWidth', samples: sample( ( w ) => ( { px: lines[ w ].box.w, of: draft[ w ].box.w } ) ) } );
 	const offset = constantLength( { db, block: block ?? 'sgs/process-steps', attr: 'connectorOffset', samples: sample( ( w ) => ( { px: lines[ w ].box.y + parseFloat( lines[ w ].styles.height ) / 2 - draft[ w ].box.y } ) ) } );
 	const writes = [ [ 'connectorWidth', width ], [ 'connectorOffset', offset ] ].filter( ( [ , r ] ) => r.value ).map( ( [ attr, r ] ) => ( { attr, value: r.value } ) );
+	onCentres && saved.connectorWidth && writes.push( { attr: 'connectorWidth', unset: true } );
 	return { writes, gaps: [ width, offset ].filter( ( r ) => r.reason ).map( ( r ) => ( { status: 'no-setting', prop: 'connectorLine', why: r.reason } ) ), saved };
 }
 

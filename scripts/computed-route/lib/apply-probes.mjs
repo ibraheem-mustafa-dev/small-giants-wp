@@ -13,14 +13,30 @@ export const CHECK_PROPS = [ 'position', 'display', 'top', 'width', 'height', 'c
 
 const FIELD_SELECTOR = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=file]):not([type=button]), textarea, select';
 
+// In page: the element that paints a field's label text. A label that wraps its field (`<label><span>Name</span><input></label>`)
+// carries only inherited styles; its words sit in the first descendant with its own text that does not hold the field.
+export function labelTextHolder( label, field ) {
+	if ( ! label || ! label.contains( field ) ) {
+		return label;
+	}
+	const ownText = ( el ) => [ ...el.childNodes ].some( ( n ) => 3 === n.nodeType && n.textContent.trim() );
+	if ( ownText( label ) ) {
+		return label;
+	}
+	return [ ...label.querySelectorAll( '*' ) ].find( ( el ) => ! el.contains( field ) && ownText( el ) ) || label;
+}
+const textHolderSrc = labelTextHolder.toString();
+
 // In page: every field under `root` with its label's styles.
-function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector ] ) {
+function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector, textHolderSrc ] ) {
 	// eslint-disable-next-line no-new-func
 	const root = new Function( `return (${ resolveSrc });` )()( finder );
 	if ( ! root ) {
 		return [];
 	}
 	const read = ( el, props ) => Object.fromEntries( props.map( ( p ) => [ p, getComputedStyle( el ).getPropertyValue( p ).trim() ] ) );
+	// eslint-disable-next-line no-new-func
+	const textHolder = new Function( `return (${ textHolderSrc });` )();
 	// The field's grid cell (its nearest ancestor that is a grid item) and the grid that places it: the cell's width against the grid's
 	// content width and track count say whether the field sits in a column or spans the row. `form` is the form's own grid.
 	const layoutOf = ( field ) => {
@@ -42,7 +58,7 @@ function fieldsOf( [ finder, resolveSrc, restProps, labelProps, selector ] ) {
 		};
 	};
 	return [ ...root.querySelectorAll( selector ) ].map( ( field ) => {
-		const label = ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' );
+		const label = textHolder( ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' ), field );
 		return { field: read( field, restProps ), label: label ? read( label, labelProps ) : null, type: field.type || field.tagName.toLowerCase(), layout: layoutOf( field ), honeypot: Boolean( field.closest( '.sgs-form__honeypot' ) ) };
 	} );
 }
@@ -58,9 +74,11 @@ function consentFacts( [ finder, resolveSrc, props ] ) {
 }
 
 async function focusRead( page, { finder, resolveSrc } ) {
-	return page.evaluate( ( [ f, src, props, selector ] ) => {
+	return page.evaluate( ( [ f, src, props, selector, holderSrc ] ) => {
 		// eslint-disable-next-line no-new-func
 		const root = new Function( `return (${ src });` )()( f );
+		// eslint-disable-next-line no-new-func
+		const textHolder = new Function( `return (${ holderSrc });` )();
 		// A visitor never reaches the honeypot, so the focus look is read on the first real field.
 		const field = [ ...( root?.querySelectorAll( selector ) ?? [] ) ].find( ( el ) => ! el.closest( '.sgs-form__honeypot' ) );
 		if ( ! field ) {
@@ -68,7 +86,7 @@ async function focusRead( page, { finder, resolveSrc } ) {
 		}
 		field.scrollIntoView( { block: 'center' } );
 		field.focus( { focusVisible: true } );
-		const label = ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' );
+		const label = textHolder( ( field.id && root.querySelector( `label[for="${ CSS.escape( field.id ) }"]` ) ) || field.closest( 'label' ) || field.parentElement?.querySelector( 'label' ), field );
 		return new Promise( ( done ) => setTimeout( () => {
 			const cs = getComputedStyle( field );
 			const read = Object.fromEntries( props.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
@@ -76,7 +94,7 @@ async function focusRead( page, { finder, resolveSrc } ) {
 			done( { read, label: ls ? { 'font-size': ls.fontSize, color: ls.color } : null } );
 			field.blur();
 		}, 500 ) );
-	}, [ finder, resolveSrc, FIELD_FOCUS_PROPS, FIELD_SELECTOR ] );
+	}, [ finder, resolveSrc, FIELD_FOCUS_PROPS, FIELD_SELECTOR, textHolderSrc ] );
 }
 
 // Draft only: the component's step key and the steps its form shows, read by setting each step.
@@ -107,7 +125,7 @@ async function stepsRead( page, { finder, resolveSrc, tpl } ) {
 		if ( ! key ) {
 			break;
 		}
-		steps.push( await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR ] ) );
+		steps.push( await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc ] ) );
 	}
 	key && ( await reach( 0 ) );
 	return key ? steps : null;
@@ -115,7 +133,7 @@ async function stepsRead( page, { finder, resolveSrc, tpl } ) {
 
 async function formProbe( page, args ) {
 	const { finder, resolveSrc, side } = args;
-	const first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR ] );
+	const first = await page.evaluate( fieldsOf, [ finder, resolveSrc, FIELD_REST_PROPS, LABEL_PROPS, FIELD_SELECTOR, textHolderSrc ] );
 	let fields = first;
 	let steps = 1;
 	if ( 'draft' === side ) {
@@ -240,11 +258,24 @@ async function tileProbe( page, { finder, resolveSrc } ) {
 	return { rest, hover: hover?.hovered ? hover : null, selected, multi: await multiRead( page, { finder, resolveSrc, selected } ) };
 }
 
+// sgs/form-field-consent: the painted size of its tick box (the checkbox itself, as the draft and the block both draw it).
+async function consentBoxProbe( page, { finder, resolveSrc } ) {
+	return page.evaluate( ( [ f, src ] ) => {
+		// eslint-disable-next-line no-new-func
+		const root = new Function( `return (${ src });` )()( f );
+		const box = root && ( root.matches( 'input[type=checkbox]' ) ? root : root.querySelector( 'input[type=checkbox]' ) );
+		const r = box?.getBoundingClientRect();
+		const px = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
+		return r && r.width > 0 ? { box: { width: px( r.width ), height: px( r.height ) } } : null;
+	}, [ finder, resolveSrc ] );
+}
+
 export async function probeRead( page, { keys, finderOf, resolveSrc, tpls, blocks, side } ) {
 	const out = {};
+	const probeOf = { 'sgs/form-field-tiles': tileProbe, 'sgs/form-field-consent': consentBoxProbe };
 	for ( const key of keys ) {
 		const args = { finder: finderOf( key ), resolveSrc, tpl: tpls[ key ], side };
-		const facts = 'sgs/form-field-tiles' === blocks[ key ] ? await tileProbe( page, args ) : await formProbe( page, args );
+		const facts = await ( probeOf[ blocks[ key ] ] ?? formProbe )( page, args );
 		facts && ( out[ key ] = facts );
 	}
 	return out;

@@ -5,7 +5,8 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
-	gap: var(--wp--preset--spacing--30);
+	--sgs-step-gap: var(--wp--preset--spacing--30);
+	gap: var(--sgs-step-gap);
 	padding: var(--wp--preset--spacing--40, 1.5rem) 0;
 }
 
@@ -177,7 +178,10 @@
    the flex row is the top of the steps; the margin drops it to the badge centre
    and the translate centres its thickness on that point. Defaults sit in
    :where() so connectorColour / connectorThickness / connectorOffset /
-   connectorInset always win. */
+   connectorWidth always win. By default the line runs from the first step's
+   centre to the last step's centre: the steps are equal flex columns, so each
+   end is inset by half a column, (100% - (n-1) * gap) / (2n), from
+   --sgs-step-count and --sgs-step-gap (render.php and the editor set both). */
 .sgs-process-steps--connector-rail {
 	position: relative;
 }
@@ -190,8 +194,9 @@
 }
 
 :where(.sgs-process-steps__connector) {
-	left: 0;
-	right: 0;
+	--sgs-connector-inset: calc((100% - (var(--sgs-step-count, 1) - 1) * var(--sgs-step-gap)) / (2 * var(--sgs-step-count, 1)));
+	left: var(--sgs-connector-inset);
+	right: var(--sgs-connector-inset);
 	height: 2px;
 	margin-top: calc(var(--sgs-step-number-size) / 2);
 	background-color: var(--wp--preset--color--border, #D4DBE5);

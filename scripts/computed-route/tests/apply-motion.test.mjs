@@ -127,6 +127,16 @@ test( 'a call on an element a record describes as a part of the block is that pa
 	assert.equal( run( 'sgs/container' ).some( ( i ) => 'op' === i.status ), false );
 } );
 
+test( 'a connector line another family read (an aux element) is still the block connector part; the same call without the aux key is not', () => {
+	const auxKey = `${ target.ref }~297`;
+	const line = { key: auxKey, own: true, tpl: '297', frames: [ { transform: 'scaleX(0)' }, { transform: 'scaleX(1)' } ], options: { duration: 1400, delay: 200, easing: 'ease' } };
+	const rec = { id: 'A-06', mechanism: 'waapi', name: 'Horizontal line draw', element: { template_tpl_id: [ '297' ], description: 'the dashed connector between steps' }, trigger: { type: 'scroll-into-view' } };
+	const run = ( t ) => motion.decide( { target: t, block: 'sgs/process-steps', saved: {}, draft: at( { box: { y: 900 } } ), animate: at( [ line ] ), recordsIndex: new Map( [ [ 'Root/297', [ rec ] ] ] ), records: [ rec ], db, rawSnapshot, surface: { pairs: [ t ] }, all: { blocks: {}, drafts: {} } } );
+	const op = run( { ...target, owns: [ 297 ], aux: [ { key: auxKey, tpl: 'Root/297#0' } ] } ).find( ( i ) => 'op' === i.status );
+	assert.ok( op?.writes[ 0 ].value.elements.connector.entrance );
+	assert.equal( run( { ...target, owns: [ 297 ] } ).some( ( i ) => 'op' === i.status ), false );
+} );
+
 // FR-38A-64: a block stores only what differs from the site reveal default.
 const itemLayer = { trigger: 'scroll', values: { from: { opacity: 0, translateY: 'token:entrance.distance', scale: 0.96 }, to: { opacity: 1, translateY: 0, scale: 1 }, duration: 'token:entrance.duration', easing: 'token:entrance.easing', start: 4 } };
 const scrollCall = { key: target.ref, own: true, frames: [ { opacity: 0, transform: 'translateY(40px) scale(.96)' }, { opacity: 1, transform: 'none' } ], options: { duration: 800, easing: 'cubic-bezier(.16,.84,.32,1)' } };

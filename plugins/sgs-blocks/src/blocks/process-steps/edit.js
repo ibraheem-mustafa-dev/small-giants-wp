@@ -331,6 +331,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		} ),
 		marginTop: cssLengthValue( connectorOffset, spacingSlugs ) || undefined,
 		width: cssLengthValue( connectorWidth, spacingSlugs ) || undefined,
+		left: connectorWidth ? 0 : undefined,
 	};
 	const wrapperPreviewStyle = {
 		...boxPreview( attributes, previewTier, palette ),
@@ -356,6 +357,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
 			gap: stepGap || undefined,
+			'--sgs-step-gap': stepGap || undefined,
+			'--sgs-step-count': steps.length,
 			rowGap: tierValue( stepRowGap, previewTier ),
 			'--sgs-step-number-size': tierValue( numberSize, previewTier ),
 			flexWrap: attributes.flexWrap || undefined,

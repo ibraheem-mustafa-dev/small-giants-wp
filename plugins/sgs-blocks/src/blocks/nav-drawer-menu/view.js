@@ -37,6 +37,7 @@ import { initLabelMagnet } from '../../shared/effects/label-magnet';
 import { initDrillDown } from '../../shared/effects/nav-drilldown';
 import { initSeparators } from '../../shared/separators';
 import { initAccordionScroll } from './accordion-scroll';
+import { initAccordionMotionState } from './accordion-motion-state';
 
 /**
  * Normalise a path the same way render.php's items do: no trailing slash,
@@ -141,6 +142,9 @@ function initBarEffects( root ) {
 			}
 		);
 	}
+
+	// Each accordion row is a nested motion state host: opening it plays the entrances inside it.
+	activeCleanups.push( initAccordionMotionState( bar ) );
 
 	// Drill-down (FR-36-6): only when the operator picked "Drill-down" over
 	// the default "Accordion" — an accordion drawer needs no JS at all

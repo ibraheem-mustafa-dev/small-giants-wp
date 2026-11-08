@@ -14,7 +14,9 @@
 import { placeHit } from './apply-ledger.mjs';
 
 const POSE = /^(?:scale|translate[XYZ]?|rotate[XYZ]?|skew[XY]?)$/;
-const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
+// Saved block settings come back from PHP with an empty object as an empty list (`{}` saves as `[]`), so both count as empty.
+const canon = ( v ) => ( Array.isArray( v ) ? ( v.length ? v.map( canon ) : {} ) : v && 'object' === typeof v ? Object.fromEntries( Object.entries( v ).map( ( [ k, x ] ) => [ k, canon( x ) ] ) ) : v );
+export const same = ( a, b ) => JSON.stringify( canon( a ) ) === JSON.stringify( canon( b ) );
 
 // Every layer list of a motion document: [ { list, where } ] for each element's `effects` and `hover.effects`.
 const layerLists = ( doc ) => Object.values( doc?.elements ?? {} ).flatMap( ( el ) => [ el?.effects, el?.hover?.effects ] ).filter( Array.isArray );

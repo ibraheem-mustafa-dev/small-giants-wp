@@ -409,7 +409,7 @@
 		"connectorWidth": {
 			"type": "string",
 			"default": "",
-			"description": "Width of the continuous connector line (a CSS length), drawn from the left edge. Empty runs it edge to edge."
+			"description": "Width of the continuous connector line (a CSS length), measured from the left edge of the row (100% is the full row). Empty runs it from the first step's centre to the last step's centre."
 		},
 		"connectorHidden": {
 			"type": "object",

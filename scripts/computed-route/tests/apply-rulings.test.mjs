@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import { ledgerIndex } from '../lib/apply-ledger.mjs';
-import { finish, rulingFor } from '../lib/apply-rulings.mjs';
+import { finish, rulingFor, same } from '../lib/apply-rulings.mjs';
 
 const rows = JSON.parse( fs.readFileSync( new URL( '../../../sites/indus-foods/build/qa/divergences.json', import.meta.url ), 'utf8' ) );
 const index = ledgerIndex( rows, { surfaces: null } );
@@ -55,4 +55,10 @@ test( 'D-41 negative control: a button no D-41 node names keeps its own hover co
 test( 'an apply field that would change every block, or holds an unknown key, is refused', () => {
 	assert.throws( () => ledgerIndex( [ { id: 'X', scope: 'every page', property: 'color', apply: { remove: { attrs: [ 'a' ] } } } ] ), /apply/ );
 	assert.throws( () => ledgerIndex( [ { id: 'Y', block: 'sgs/button', scope: 'every page', property: 'color', apply: { delete: [ 'a' ] } } ] ), /when, remove and set/ );
+} );
+
+test( 'same: an empty list saved by PHP equals an empty object; a filled value still differs', () => {
+	assert.equal( same( { values: [] }, { values: {} } ), true );
+	assert.equal( same( { values: [ 1 ] }, { values: {} } ), false );
+	assert.equal( same( { values: { maxPullX: 10 } }, { values: [] } ), false );
 } );

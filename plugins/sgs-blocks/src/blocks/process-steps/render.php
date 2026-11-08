@@ -430,6 +430,7 @@ if ( $connector_line ) {
 	}
 	$connector_width = sgs_css_length_value( (string) ( $attributes['connectorWidth'] ?? '' ) );
 	if ( '' !== $connector_width ) {
+		$connector_decls[] = 'left:0';
 		$connector_decls[] = 'width:' . $connector_width;
 	}
 	if ( $connector_decls ) {
@@ -457,9 +458,13 @@ if ( is_array( $sgs_connector_hidden ) && array() !== $sgs_connector_hidden && '
 	);
 }
 
-// Space between the steps (stepGap); unset keeps style.css's gap.
+// Step count: the continuous connector's default inset (first to last step centre) reads it.
+$scoped_css[] = $root_sel . '{--sgs-step-count:' . count( $steps ) . ';}';
+
+// Space between the steps (stepGap); unset keeps style.css's gap. --sgs-step-gap carries the same value to the connector maths.
 if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
-	$scoped_css[] = $root_sel . '{gap:' . sgs_css_length_value( (string) $attributes['stepGap'] ) . ';}';
+	$sgs_step_gap = sgs_css_length_value( (string) $attributes['stepGap'] );
+	$scoped_css[] = $root_sel . '{--sgs-step-gap:' . $sgs_step_gap . ';gap:' . $sgs_step_gap . ';}';
 }
 
 // Per-device badge size (numberSize): sets the size custom property that the

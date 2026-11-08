@@ -25,7 +25,7 @@ export function extrasOf( { surface, saved, recordsIndex, db = null } ) {
 		if ( recordsFor( recordsIndex, target.tpl ).some( ( r ) => 'hover' === stateLook( r )?.state ) ) {
 			hover.push( target.key ?? target.ref );
 		}
-		if ( [ 'sgs/form', 'sgs/form-field-tiles' ].includes( saved?.[ target.ref ]?.block ) ) {
+		if ( [ 'sgs/form', 'sgs/form-field-tiles', 'sgs/form-field-consent' ].includes( saved?.[ target.ref ]?.block ) ) {
 			probes.push( target.ref );
 			blocks[ target.ref ] = saved[ target.ref ].block;
 			tpls[ target.ref ] = target.tpl;

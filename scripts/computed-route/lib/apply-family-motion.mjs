@@ -104,7 +104,8 @@ export const motion = {
 		const handedOver = new Set();
 		const stagger = {};
 		if ( ! heroParts ) {
-			const groups = groupsOf( animate, ( c ) => c.key === key || ( c.key !== key && null !== c.tpl && ownsGroup( target, { tpl: c.tpl } ) ) );
+			const auxKeys = new Set( ( target.aux || [] ).map( ( a ) => a.key ) );
+			const groups = groupsOf( animate, ( c ) => c.key === key || auxKeys.has( c.key ) || ( c.key !== key && null !== c.tpl && ownsGroup( target, { tpl: c.tpl } ) ), auxKeys );
 			for ( const group of groups ) {
 				const place = placeGroup( { block, group, mdb, db, recordsIndex, items: draft[ 1440 ]?.items?.n ?? null } );
 				const mine = group.calls[ 1440 ].concat( group.calls[ 768 ], group.calls[ 375 ] ).some( ( c ) => c.key === key );

@@ -48,6 +48,22 @@ export function floatedLabel( { saved, d, l } ) {
 	return [ { status: 'op', prop: 'labelFloatedFontSize', state: 'focus', why: `the draft's label shrinks from ${ rest } to ${ want } as it floats`, writes: [ { attr: 'labelFloatedFontSize', value: { ...( saved.labelFloatedFontSize ?? {} ), desktop: value } } ], checks: [ { width: 1440, prop: 'font-size', want, probe: [ 'focusLabel' ] } ] } ];
 }
 
+// sgs/form-field-consent: a tick box whose painted size differs from the draft's takes boxSize (width and height together).
+export function consentBox( { block, draft, live, saved } ) {
+	const d = draft[ 1440 ]?.probes?.box;
+	const l = live[ 1440 ]?.probes?.box;
+	if ( 'sgs/form-field-consent' !== block || ! d || ! l ) {
+		return [];
+	}
+	if ( matches( l.width, d.width ) ) {
+		return [ { status: 'equal', prop: 'boxSize', why: `the tick box is ${ l.width }, as in the draft` } ];
+	}
+	if ( saved?.boxSize === d.width ) {
+		return [ { status: 'no-setting', prop: 'boxSize', why: `boxSize already holds ${ d.width }, yet the live box is ${ l.width }: another rule wins` } ];
+	}
+	return [ { status: 'op', prop: 'boxSize', why: `the draft's tick box is ${ d.width } square; live is ${ l.width }`, writes: [ { attr: 'boxSize', value: d.width } ], checks: [ { width: 1440, prop: 'width', want: d.width, probe: [ 'box' ] } ] } ];
+}
+
 export const form = {
 	name: 'form',
 	// grid-column: the span each field reads (the draft's cells are grid items whose placement the field width settings decide).
@@ -56,6 +72,9 @@ export const form = {
 		const { draft, live, block } = ctx;
 		const d = draft[ 1440 ]?.probes;
 		const l = live[ 1440 ]?.probes;
+		if ( 'sgs/form-field-consent' === block ) {
+			return consentBox( ctx );
+		}
 		if ( 'sgs/form' !== block || ! d?.fields || ! l?.fields ) {
 			return [];
 		}

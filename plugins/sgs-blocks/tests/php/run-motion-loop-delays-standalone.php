@@ -386,5 +386,18 @@ $pg_open['sgsMotion'] = array(
 Sgs_Motion_Loop_Delays::post_grid( 'sgs-post-grid-open1', $pg_open, 3 );
 $check( array( 160, 80, 0 ) === $close_of( $collected() ), 'post-grid with an `open` entrance: close delays reversed across its first row' );
 
+// A nested state host (the drawer's accordion <details>) restarts the index at 0 for the items inside it.
+$drawer_html = '<ul><li class="sgs-nav-drawer-menu__item">A</li>'
+	. '<li class="sgs-nav-drawer-menu__item sgs-nav-drawer-menu__item--has-submenu"><details data-sgs-motion-state=""><summary>S</summary><ul>'
+	. '<li class="sgs-nav-drawer-menu__item">a1</li><li class="sgs-nav-drawer-menu__item">a2</li><li class="sgs-nav-drawer-menu__item">a3</li></ul></details></li>'
+	. '<li class="sgs-nav-drawer-menu__item">B</li>'
+	. '<li class="sgs-nav-drawer-menu__item"><details data-sgs-motion-state=""><ul><li class="sgs-nav-drawer-menu__item">b1</li><li class="sgs-nav-drawer-menu__item">b2</li></ul></details></li></ul>';
+$host_tagged = Sgs_Motion_Loop_Delays::tag_by_class( $drawer_html, 'sgs-nav-drawer-menu__item', 'details' );
+$check( 4 === $host_tagged['count'], 'nested hosts: the count is the longest run (' . $host_tagged['count'] . ')' );
+$check( 1 === preg_match( '/loop-i="0"[^>]*>a1.*loop-i="1"[^>]*>a2.*loop-i="2"[^>]*>a3/', $host_tagged['html'] ) && 1 === preg_match( '/loop-i="0"[^>]*>b1.*loop-i="1"[^>]*>b2/', $host_tagged['html'] ), 'nested hosts: the items in each host count from 0' );
+$check( 1 === preg_match( '/loop-i="2"[^>]*>B</', $host_tagged['html'] ), 'nested hosts: the outer items count on past the host rows ' );
+$flat_tagged = Sgs_Motion_Loop_Delays::tag_by_class( $drawer_html, 'sgs-nav-drawer-menu__item' );
+$check( 9 === $flat_tagged['count'], 'no host tag: the count runs across the whole markup (' . $flat_tagged['count'] . ')' );
+
 echo $failures ? "FAILED: $failures of $checks checks\n" : "PASS: $checks checks\n";
 exit( $failures ? 1 : 0 );

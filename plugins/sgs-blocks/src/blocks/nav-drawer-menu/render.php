@@ -526,11 +526,12 @@ if ( '' === $items_html ) {
 // Item stagger on the Entrance model (Spec 38A §8, FR-38A-51): the top-level
 // items come from the menu, not from inner blocks, so the menu's stored
 // `sgsMotion.stagger` settings become one scoped delay rule per item, found by
-// its `data-sgs-loop-i` index (never `:nth-child`). The item part's `open`
+// its `data-sgs-loop-i` index (never `:nth-child`; the items in each accordion `<details>`, a nested
+// motion state host, count from 0 within it). The item part's `open`
 // entrance (supports.sgs.motion.opens) reads the delay and plays when the
 // drawer opens. Null (no stagger) leaves the items untagged; the string is only
 // non-empty where the collector never flushes (the editor preview).
-$sgs_nm_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $items_html, 'sgs-nav-drawer-menu__item' );
+$sgs_nm_loop_tagged = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::tag_by_class( $items_html, 'sgs-nav-drawer-menu__item', 'details' );
 $sgs_nm_loop_style  = \SGS\Blocks\Motion\Sgs_Motion_Loop_Delays::item_array( 'sgs/nav-drawer-menu', $uid, $attributes, $sgs_nm_loop_tagged['count'], '.sgs-nav-drawer-menu__item' );
 if ( null !== $sgs_nm_loop_style ) {
 	$items_html = $sgs_nm_loop_tagged['html'];
