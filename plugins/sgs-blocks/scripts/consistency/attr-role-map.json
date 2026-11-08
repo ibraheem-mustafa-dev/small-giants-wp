@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11700,
+    "row_count": 11701,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -6763,6 +6763,7 @@
     "sgs/mega-panel::drawerCardLinkColour": "color",
     "sgs/mega-panel::drawerCardLinkShiftHover": "styling",
     "sgs/mega-panel::drawerCardLinkSize": "select-from-enum",
+    "sgs/mega-panel::drawerCardMediaHeight": "layout",
     "sgs/mega-panel::drawerCardMediaRatio": "styling",
     "sgs/mega-panel::drawerCardPadding": "layout",
     "sgs/mega-panel::drawerCardRadius": "visual",

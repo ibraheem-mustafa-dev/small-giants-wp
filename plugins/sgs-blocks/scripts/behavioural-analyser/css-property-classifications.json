@@ -20136,6 +20136,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardMediaHeight",
+      "fields": {
+        "css_property": "height",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardSpacing",
       "fields": {
         "css_property": "margin-block",
@@ -42621,15 +42630,6 @@
       "attr": "drawerCardMediaRatio",
       "fields": {
         "css_property": "aspect-ratio",
-        "css_layer": "CONTENT",
-        "css_element": "drawerCard"
-      }
-    },
-    {
-      "slug": "sgs/mega-panel",
-      "attr": "drawerCardMediaHeight",
-      "fields": {
-        "css_property": "height",
         "css_layer": "CONTENT",
         "css_element": "drawerCard"
       }
