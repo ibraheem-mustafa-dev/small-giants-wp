@@ -364,3 +364,12 @@
 :where(.sgs-button__note) {
 	font-weight: 400;
 }
+
+/* The label may shrink inside its button: a one-line label that does not fit ends in an ellipsis and the icon keeps
+   its place (an icon spread to the far end stays inside the button at narrow widths). The clip is horizontal only,
+   so underlines, descenders and text effects still paint; a wrapping label is unaffected. */
+.sgs-button__label {
+	min-width: 0;
+	overflow-x: clip;
+	text-overflow: ellipsis;
+}
