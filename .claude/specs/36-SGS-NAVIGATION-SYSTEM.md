@@ -173,6 +173,7 @@ A set of blocks + a CPT that render a WordPress menu as a best-in-class navigati
 
 **Drawer copy of a mega panel, added settings** (`plugins/sgs-blocks/includes/mega-panel-drawer-extras-css.php`, `plugins/sgs-blocks/includes/nav-drawer-menu-caret-box-css.php`):
 - `sgs/mega-panel::drawerCardMediaRatio` (default blank = `2 / 1`): a fill photo in the drawer aside card takes its width times this ratio, because a fill box is `height:100%` of a parent that has only an auto height in the drawer and would measure 0.
+- `sgs/mega-panel::drawerCardMediaHeight` (`{desktop,tablet,mobile}` lengths, default empty): a fixed height for the drawer aside card's fill photo at full width, the photo cropping to it; a tier that is set prints `height`, `aspect-ratio:auto` and `max-height:none`, an unset tier keeps the `drawerCardMediaRatio` rule.
 - `sgs/mega-panel::drawerCardTagRadius` (default blank): the corner radius of the tag over the photo in the `stacked-overlay` layout, so the drawer tag can be a pill while the header tag keeps its own radius.
 - `sgs/mega-panel::drawerLinkTrailingIcon` (`""` or `arrow`, default `""`) and `drawerLinkTrailingColour` (default blank = row text colour at 60% opacity): a small arrow at the inline end of every link row.
 - `stacked-overlay` finds its five slots as the aside's direct children, or, when the aside holds an image container and one text container, the first container is the media slot and the second container dissolves (`display:contents`) so its tag, title, description and link fill slots 2 to 5.

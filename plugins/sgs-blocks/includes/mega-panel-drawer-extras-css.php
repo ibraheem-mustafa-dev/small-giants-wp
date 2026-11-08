@@ -47,6 +47,7 @@ require_once __DIR__ . '/helpers-tokens.php';
 require_once __DIR__ . '/helpers-typography.php';
 require_once __DIR__ . '/helpers-colour-variants.php';
 require_once __DIR__ . '/helpers-box.php';
+require_once __DIR__ . '/helpers-responsive.php';
 require_once __DIR__ . '/helpers-hover-state.php';
 require_once __DIR__ . '/helpers-css-safety.php';
 require_once __DIR__ . '/helpers-motion-easing.php';
@@ -304,6 +305,8 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 	 * `height:100%` of its parent, which is 0 when the parent's own height is
 	 * only auto (the drawer stacks the aside as a column), so the box takes its
 	 * width and `drawerCardMediaRatio` instead, never taller than the aside image's 170px cap.
+	 * A tier set in `drawerCardMediaHeight` ({desktop,tablet,mobile}) swaps that ratio rule for a fixed
+	 * height at that tier (ratio auto, cap lifted), and the photo crops to it; an unset tier keeps the ratio rule.
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $aside_sel  The in-drawer aside selector.
@@ -315,7 +318,33 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 			$ratio = '2 / 1';
 		}
 		// Capped like the aside's image (mega-panel render.php caps it at 170px), so the box never leaves a gap below it.
-		return $aside_sel . ' .sgs-media-box--fill{width:100%;height:auto;aspect-ratio:' . $ratio . ';max-height:170px;}';
+		$sel = $aside_sel . ' .sgs-media-box--fill';
+		$css = $sel . '{width:100%;height:auto;aspect-ratio:' . $ratio . ';max-height:170px;}';
+		$obj = $attributes['drawerCardMediaHeight'] ?? null;
+		if ( is_array( $obj ) && $obj ) {
+			$valid = static fn( $raw ): string => ( is_numeric( $raw ) || '' !== sgs_responsive_sanitise_css_value( (string) $raw ) ) ? 'set' : '';
+			$css  .= sgs_emit_responsive_css(
+				$sel,
+				array(
+					array(
+						'value'        => $obj,
+						'css'          => 'height',
+						'unit_default' => 'px',
+					),
+					array(
+						'value'     => $obj,
+						'css'       => 'aspect-ratio',
+						'transform' => static fn( $raw ): string => '' !== $valid( $raw ) ? 'auto' : '',
+					),
+					array(
+						'value'     => $obj,
+						'css'       => 'max-height',
+						'transform' => static fn( $raw ): string => '' !== $valid( $raw ) ? 'none' : '',
+					),
+				)
+			);
+		}
+		return $css;
 	}
 }
 

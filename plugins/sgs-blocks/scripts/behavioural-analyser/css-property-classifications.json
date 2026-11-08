@@ -42627,6 +42627,15 @@
     },
     {
       "slug": "sgs/mega-panel",
+      "attr": "drawerCardMediaHeight",
+      "fields": {
+        "css_property": "height",
+        "css_layer": "CONTENT",
+        "css_element": "drawerCard"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
       "attr": "drawerCardPadding",
       "fields": {
         "css_property": "padding",

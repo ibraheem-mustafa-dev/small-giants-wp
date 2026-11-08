@@ -11,7 +11,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { SelectControl, TextControl } from '@wordpress/components';
-import { SgsBoxControl, SgsLengthControl, ShadowControl, DesignTokenPicker } from '../../components';
+import { ResponsiveControl, SgsBoxControl, SgsLengthControl, ShadowControl, DesignTokenPicker } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 const LAYOUT_OPTIONS = [
@@ -26,7 +26,7 @@ const LAYOUT_OPTIONS = [
  * @return {Element} The controls.
  */
 export default function DrawerShellControls( { attributes, setAttributes } ) {
-	const { drawerShellRadius, drawerShellPadding, drawerLinkRadius, drawerCardLayout, drawerCardMediaRatio, drawerCardTagRadius, drawerLinkTrailingIcon, drawerLinkTrailingColour } = attributes;
+	const { drawerShellRadius, drawerShellPadding, drawerLinkRadius, drawerCardLayout, drawerCardMediaRatio, drawerCardMediaHeight, drawerCardTagRadius, drawerLinkTrailingIcon, drawerLinkTrailingColour } = attributes;
 
 	return (
 		<>
@@ -75,6 +75,21 @@ export default function DrawerShellControls( { attributes, setAttributes } ) {
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
+			<ResponsiveControl label={ __( 'Side card photo height', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<SgsLengthControl
+						label={ __( 'Photo height', 'sgs-blocks' ) }
+						hideLabelFromVision
+						value={ drawerCardMediaHeight?.[ breakpoint ] || '' }
+						onChange={ ( value ) =>
+							setAttributes( {
+								drawerCardMediaHeight: { ...drawerCardMediaHeight, [ breakpoint ]: value || undefined },
+							} )
+						}
+						presets={ false }
+					/>
+				) }
+			</ResponsiveControl>
 			<SgsLengthControl
 				label={ __( 'Side card tag corner radius (stacked)', 'sgs-blocks' ) }
 				value={ drawerCardTagRadius || '' }

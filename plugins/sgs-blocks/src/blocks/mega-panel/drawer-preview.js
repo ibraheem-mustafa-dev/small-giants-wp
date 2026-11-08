@@ -21,7 +21,7 @@
 
 import { colourVar, isCssGradient } from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
-import { drawerShellPreviewCss, drawerTilePreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss, drawerHoverPreviewCss } from './drawer-preview-extras';
+import { drawerShellPreviewCss, drawerTilePreviewCss, drawerCardBoxPreviewDecls, drawerStackedPreviewCss, drawerMediaHeightPreviewCss, drawerTrailingPreviewCss, drawerCardLinkPreviewCss, drawerCardTagPreviewCss, drawerCardDescPreviewCss, drawerHoverPreviewCss } from './drawer-preview-extras';
 
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
@@ -164,6 +164,7 @@ function drawerPreviewBaseCss( scope, v ) {
 	}
 	if ( ! v.drawerCardCompact ) {
 		cardDecls += drawerCardBoxPreviewDecls( v );
+		css += drawerMediaHeightPreviewCss( aside, v );
 		return cardDecls ? `${ css }${ aside }{${ cardDecls }}` : css;
 	}
 

@@ -225,6 +225,7 @@
 						"css:padding": "drawerCardPadding",
 						"css:gap": "drawerCardGap",
 						"css:aspect-ratio": "drawerCardMediaRatio",
+						"css:height": "drawerCardMediaHeight",
 						"css:margin-block": "drawerCardSpacing"
 					},
 					"states": {
@@ -803,6 +804,11 @@
 			"type": "string",
 			"default": "",
 			"description": "In the drawer: the aspect ratio ('2 / 1', '16 / 9') of a fill photo in the aside card, which has no definite height to fill there. '' uses 2 / 1. Not read in compact card mode, where drawerCardThumbSize sizes the thumbnail."
+		},
+		"drawerCardMediaHeight": {
+			"type": "object",
+			"default": {},
+			"description": "In the drawer: a fixed height per device ({desktop,tablet,mobile}, a CSS length, px when a bare number) of a fill photo in the aside card, at full width, the photo cropping to it. An unset device keeps the ratio rule of drawerCardMediaRatio. Not read in compact card mode."
 		},
 		"drawerCardTagRadius": {
 			"type": "string",

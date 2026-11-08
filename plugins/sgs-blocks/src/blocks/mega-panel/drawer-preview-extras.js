@@ -11,6 +11,7 @@
 
 import { colourVar, isCssGradient, resolveShadowPreviewComposed } from '../../utils';
 import { fontFamilyCssValue } from '../../utils/typography-preview';
+import { MEDIA_TABLET, MEDIA_MOBILE } from '../../utils/breakpoints';
 
 const BOX_SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const SAFE_LENGTH_RE = /^[-\w.\s%(),+*/]+$/;
@@ -105,6 +106,42 @@ export function drawerCardBoxPreviewDecls( v ) {
 }
 
 /**
+ * One tier's `drawerCardMediaHeight` as a CSS length: a bare number takes px, '' when unset or unsafe.
+ *
+ * @param {*} raw The stored tier value.
+ * @return {string} A CSS length, or ''.
+ */
+function mediaHeightValue( raw ) {
+	const text = String( raw ?? '' ).trim();
+	if ( '' === text || /[;{}<>\\]|\/\*/.test( text ) ) {
+		return '';
+	}
+	return /^-?\d+(\.\d+)?$/.test( text ) ? `${ text }px` : text;
+}
+
+/**
+ * Twin of the per-device part of `sgs_mega_panel_drawer_media_css()`: a tier set in `drawerCardMediaHeight` gives the
+ * aside card's fill photo a fixed height (ratio auto, cap lifted) from that tier down; a tier unset inherits the tier
+ * above, and a tier equal to the one above prints nothing.
+ *
+ * @param {string} aside Aside selector.
+ * @param {Object} v     Enumerated drawer attributes.
+ * @return {string} CSS, or ''.
+ */
+export function drawerMediaHeightPreviewCss( aside, v ) {
+	const obj = v.drawerCardMediaHeight && 'object' === typeof v.drawerCardMediaHeight ? v.drawerCardMediaHeight : {};
+	const desktop = mediaHeightValue( obj.desktop );
+	const tablet = mediaHeightValue( obj.tablet ) || desktop;
+	const mobile = mediaHeightValue( obj.mobile ) || tablet;
+	const sel = `${ aside } .sgs-media-box--fill`;
+	const rule = ( value ) => `${ sel }{height:${ value };aspect-ratio:auto;max-height:none;}`;
+	let css = desktop ? rule( desktop ) : '';
+	css += tablet && tablet !== desktop ? `${ MEDIA_TABLET }{${ rule( tablet ) }}` : '';
+	css += mobile && mobile !== tablet ? `${ MEDIA_MOBILE }{${ rule( mobile ) }}` : '';
+	return css;
+}
+
+/**
  * The `stacked-overlay` aside card.
  *
  * @param {string} aside     Aside selector.
@@ -128,6 +165,7 @@ export function drawerStackedPreviewCss( aside, cardDecls, v ) {
 	// A fill photo in the stacked card has no definite height: it takes its width and the chosen ratio (render.php: sgs_mega_panel_drawer_media_css()).
 	const ratio = String( v.drawerCardMediaRatio || '' ).trim();
 	css += `${ aside } .sgs-media-box--fill{height:auto;aspect-ratio:${ /^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/.test( ratio ) ? ratio : '2 / 1' };}`;
+	css += drawerMediaHeightPreviewCss( aside, v );
 	if ( v.drawerCardTitleSize || v.drawerCardTitleLineHeight ) {
 		css += `${ cardSlotSel( aside, 3 ) }{${ v.drawerCardTitleSize ? `font-size:${ v.drawerCardTitleSize };` : '' }${ v.drawerCardTitleLineHeight ? `line-height:${ v.drawerCardTitleLineHeight };` : '' }}`;
 	}
