@@ -409,9 +409,9 @@
 					"motion": false,
 					"label": "Entry card, tablet shadow",
 					"order": 8,
-					"clusters": ["fill"],
+					"clusters": ["fill", "layout"],
 					"attrMap": {
-						"css:box-shadow": "cardShadowTablet"
+						"css:box-shadow": "cardShadowTablet", "css:box-shadow-color": "cardShadowTabletColour"
 					},
 					"_note": "The card shadow at 1023px and below; cardShadowTabletColour is its colour.",
 					"absentIn": ["vertical"],
@@ -422,9 +422,9 @@
 					"motion": false,
 					"label": "Entry card, mobile shadow",
 					"order": 9,
-					"clusters": ["fill"],
+					"clusters": ["fill", "layout"],
 					"attrMap": {
-						"css:box-shadow": "cardShadowMobile"
+						"css:box-shadow": "cardShadowMobile", "css:box-shadow-color": "cardShadowMobileColour"
 					},
 					"_note": "The card shadow at 767px and below; cardShadowMobileColour is its colour.",
 					"absentIn": ["vertical"],

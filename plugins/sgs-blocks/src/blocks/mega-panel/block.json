@@ -330,7 +330,7 @@
 					"layer": "CONTENT",
 					"order": 5.95,
 					"clusters": [
-						"fill"
+						"fill", "layout"
 					],
 					"attrMap": {
 						"css:border-color": "drawerTileBorderColour"

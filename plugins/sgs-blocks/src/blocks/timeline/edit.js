@@ -42,7 +42,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
-import { timelineCardPreviewStyle, timelineMediaPreviewStyle } from './card-preview';
+import { timelineCardPreviewStyle, timelineMediaPreviewStyle, timelineStripPreviewStyle } from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 import { cardColourRows, EntryCardControls, EntryImageShapeControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
@@ -314,6 +314,10 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
 	const marginLonghands = tierBoxLonghands( margin, previewTier, 'margin' );
 	Object.assign( previewStyle, marginLonghands );
 
+	// The horizontal card strip's gap between cards (the editor's list is the block root).
+	if ( 'horizontal' === attributes.orientation ) {
+		Object.assign( previewStyle, timelineStripPreviewStyle( attributes, previewTier ) );
+	}
 	return previewStyle;
 }
 

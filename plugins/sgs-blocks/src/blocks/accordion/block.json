@@ -242,7 +242,7 @@
           "motion": false,
           "label": "Answer slide",
           "order": 5.5,
-          "clusters": [],
+          "clusters": [ "motion" ],
           "attrMap": {
             "css:transition-duration": "panelDuration",
             "css:transition-timing-function": "panelEasing"

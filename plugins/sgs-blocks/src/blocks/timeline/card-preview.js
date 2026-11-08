@@ -90,6 +90,19 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 }
 
 /**
+ * The card strip's preview style: the space between neighbouring cards for the previewed device (cardGap), as
+ * card-device.php prints it on the list.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed device tier.
+ * @return {Object} React style fragment.
+ */
+export function timelineStripPreviewStyle( attributes, tier ) {
+	const gap = lengthOf( tierValueOf( attributes.cardGap, tier ) );
+	return gap ? { columnGap: gap } : {};
+}
+
+/**
  * The inline style of an entry's milestone picture slot: its aspect ratio and corner radius.
  *
  * @param {Object} attributes Block attributes.
