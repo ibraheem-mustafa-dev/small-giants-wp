@@ -73,6 +73,18 @@
 	   identical there), which keeps a tile's box-shadow and hover growth visible; the root's overflow still bounds it. */
 	-webkit-mask-clip: no-clip;
 	mask-clip: no-clip;
+	/* The lane's own box also reaches past its items on the cross axis (a padding cancelled by a negative margin, so the
+	   layout does not move), so a tile's shadow sits inside the mask's box and paints even where no-clip is not honoured. */
+	padding-block: var(--sgs-marquee-bleed, 32px);
+	margin-block: calc(-1 * var(--sgs-marquee-bleed, 32px));
+}
+
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="up"] [data-sgs-marquee-lane="on"],
+[data-sgs-fx~="marquee"][data-sgs-marquee="on"][data-sgs-fx-marquee-edge-fade="true"][data-sgs-fx-marquee-direction="down"] [data-sgs-marquee-lane="on"] {
+	padding-block: 0;
+	margin-block: 0;
+	padding-inline: var(--sgs-marquee-bleed, 32px);
+	margin-inline: calc(-1 * var(--sgs-marquee-bleed, 32px));
 }
 
 /* The pause button floats over the bottom end of the root, above the lane, so on a tall strip of logos it sits in the
