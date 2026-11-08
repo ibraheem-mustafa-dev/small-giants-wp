@@ -500,14 +500,15 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_hover_css' ) ) {
 			$calm[] = $aside_sel;
 		}
 		if ( $nudge > 0 ) {
-			// The icon of the link in the card's last slot (or in the last item of its wrapper slot) slides; the button
-			// around it stays put, so a round arrow button's circle holds still while its arrow moves inside it. "Last"
-			// skips the whole-card link overlay, which the card appends after its slots. The transition rides on exactly
-			// the elements the hover moves.
+			// A link button that is the card's last slot (or the last item of its wrapper slot) moves as a whole; any other
+			// last slot moves the icon of the button it holds. "Last" skips the whole-card link overlay, which the card
+			// appends after its slots. The transition rides on exactly the elements the hover moves.
 			$last  = ':nth-last-child(1 of :not(.sgs-block-link-overlay))';
 			$icons = array(
-				' > ' . $last . ':not(.wp-block-sgs-container) .sgs-button__icon',
-				' > .wp-block-sgs-container:nth-child(2)' . $last . ' > .sgs-container__inner > :last-child .sgs-button__icon',
+				' > .sgs-button' . $last,
+				' > ' . $last . ':not(.sgs-button):not(.wp-block-sgs-container) .sgs-button__icon',
+				' > .wp-block-sgs-container:nth-child(2)' . $last . ' > .sgs-container__inner > .sgs-button:last-child',
+				' > .wp-block-sgs-container:nth-child(2)' . $last . ' > .sgs-container__inner > :last-child:not(.sgs-button) .sgs-button__icon',
 			);
 			$icon_sel = implode( ',', array_map( static fn( string $t ): string => $aside_sel . $t, $icons ) );
 			$css     .= $icon_sel . '{transition:transform ' . $time . ';}';

@@ -82,6 +82,7 @@ The wrapper block that handles the entire form lifecycle.
 | `navIcon` / `navIconSize` / `navIconGap` | string / number / string | A Lucide icon after the Next and Submit labels and mirrored before Previous (default none, 18px, 10px); the buttons carry `sgs-form__button--has-icon` |
 | `actionsNote` / `actionsNoteFirstStepOnly` | string / boolean | A short note at the start of the actions row (help-text typography), hidden after step 1 by default; `submitAlign` takes `space-between` to put it opposite the buttons |
 | `stepCounterNameSuffix` / `stepCounterNameHidden` | string / per-device boolean | A pattern after the step counter (`%3$s` is the current step's name, e.g. " · %3$s"), updated by view.js on step change; hidden per device (`sgs-form__step-counter-name`) |
+| `stepNamesHidden` | per-device boolean | Hides the step names in the progress steps and keeps the numbers, per device (`display:none` on `sgs-form__progress-step-label`); unset shows them, and a form narrower than 480px still hides them |
 | `progressTrackColour` / `progressTrackHeight` | string / per-device length | The progress track under the fill (pill-clipped once either is set) |
 | `stepLabelColourActive` / `stepLabelColour` / `stepNumberInactiveBackground` | string | The current step's label, the other steps' labels, and the number background of steps not yet reached |
 | `actionsNoteHidden` | per-device boolean | Hides the actions note per device |
