@@ -11390,6 +11390,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "labelFloatedOffset",
+      "fields": {
+        "css_property": "top",
+        "css_element": "field-label",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "labelFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -25349,6 +25358,15 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "steps",
+      "fields": {
+        "css_property": "left,right",
+        "css_layer": "OUTER",
+        "css_element": "connector"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -32359,15 +32377,6 @@
     },
     {
       "slug": "sgs/timeline",
-      "attr": "cardColumnGap",
-      "fields": {
-        "css_property": "column-gap",
-        "css_layer": "GRID",
-        "css_element": "card"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
       "attr": "cardMaxWidth",
       "fields": {
         "css_property": "max-width",
@@ -32751,6 +32760,14 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "mediaHeight",
+      "fields": {
+        "css_property": "height",
+        "css_element": "image"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "milestoneMediaWidth",
       "fields": {
         "css_property": "grid-template-columns,left,max-width,rule",
@@ -32788,6 +32805,14 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "panelTrack"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "panelContentGutter",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "panelContent"
       }
     },
     {
@@ -34985,6 +35010,22 @@
         "css_property": "box-shadow-color",
         "css_element": "item",
         "css_state": "open"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "panelDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "panel"
+      }
+    },
+    {
+      "slug": "sgs/accordion",
+      "attr": "panelEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "panel"
       }
     },
     {
@@ -38903,6 +38944,16 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "labelFloatedColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-label",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "labelFloatedFontSize",
       "fields": {
         "css_property": "font-size",
@@ -39636,6 +39687,24 @@
       "fields": {
         "css_property": "-webkit-text-stroke-width",
         "css_element": "tile-description"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileHoverShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "tile-hover"
+      }
+    },
+    {
+      "slug": "sgs/form-field-tiles",
+      "attr": "tileHoverShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "CONTENT",
+        "css_element": "tile-hover"
       }
     },
     {
@@ -42879,6 +42948,27 @@
         "css_property": "box-shadow-color",
         "css_layer": "GRID",
         "css_element": "drawer"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerTileBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerTiles"
+      }
+    },
+    {
+      "slug": "sgs/mega-panel",
+      "attr": "drawerTileBorderColourHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "drawerTiles",
+        "css_state": "hover"
       }
     },
     {
@@ -48921,6 +49011,33 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardColumnGap",
+      "fields": {
+        "css_property": "column-gap",
+        "css_layer": "GRID",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardGap",
+      "fields": {
+        "css_property": "column-gap",
+        "css_layer": "GRID",
+        "css_element": "strip"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardLayout",
+      "fields": {
+        "css_property": "grid-template-areas",
+        "css_layer": "GRID",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "cardPadding",
       "fields": {
         "css_property": "padding",
@@ -48935,6 +49052,22 @@
         "css_property": "box-shadow",
         "css_layer": "GRID",
         "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardShadowMobile",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "cardMobile"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardShadowTablet",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "cardTablet"
       }
     },
     {
@@ -49168,14 +49301,6 @@
       "fields": {
         "css_property": "background-image",
         "css_element": "panelFill"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "panelContentGutter",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "panelContent"
       }
     },
     {
