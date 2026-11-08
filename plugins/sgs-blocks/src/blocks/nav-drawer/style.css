@@ -29,6 +29,9 @@
 	padding-block-start: var(--sgs-nd-hb-row, 0px);
 	border: 0;
 	overflow-y: auto;
+	/* A vertical scroller also scrolls sideways unless told not to: items sliding in from the side and decorative
+	   layers past the edge would otherwise let a swipe drag the drawer's content off screen. */
+	overflow-x: hidden;
 	overscroll-behavior: contain;
 	-webkit-overflow-scrolling: touch;
 	/* Explicit z-index scale. A native `showModal()` dialog is promoted

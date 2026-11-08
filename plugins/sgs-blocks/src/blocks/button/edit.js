@@ -1080,6 +1080,13 @@ export default function Edit( {
 										label: __( 'End', 'sgs-blocks' ),
 										value: 'flex-end',
 									},
+									{
+										label: __(
+											'Spread (icon at the far end)',
+											'sgs-blocks'
+										),
+										value: 'space-between',
+									},
 								] }
 								onChange={ ( val ) => setOwnValue( val ) }
 								__nextHasNoMarginBottom

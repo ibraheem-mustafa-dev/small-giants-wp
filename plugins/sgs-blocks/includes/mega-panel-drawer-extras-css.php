@@ -268,6 +268,8 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_stacked_css' ) ) {
 		$css .= $slot( 5 ) . '{grid-column:2;grid-row:2 / span 2;margin:0;padding-inline-end:' . $pad . ';}';
 		// The slot is the button itself, or a wrapper holding it.
 		$css .= $slot( 5, '.sgs-button' ) . ',' . $slot( 5, ' .sgs-button' ) . '{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;}';
+		// When the slot is the round button itself its own padding is 0 (above), so the inset from the card's edge is a margin.
+		$css .= $slot( 5, '.sgs-button' ) . '{margin-inline-end:' . $pad . ';}';
 		$css .= $slot( 5, ' .sgs-button__label' ) . '{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}';
 
 		$title_size = sgs_mega_panel_drawer_len( $attributes, 'drawerCardTitleSize' );
@@ -301,7 +303,7 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 	 * Gives a fill media box in the drawer's aside card a height. A fill box is
 	 * `height:100%` of its parent, which is 0 when the parent's own height is
 	 * only auto (the drawer stacks the aside as a column), so the box takes its
-	 * width and `drawerCardMediaRatio` instead.
+	 * width and `drawerCardMediaRatio` instead, never taller than the aside image's 170px cap.
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $aside_sel  The in-drawer aside selector.
@@ -312,7 +314,8 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_media_css' ) ) {
 		if ( 1 !== preg_match( '/^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/', $ratio ) ) {
 			$ratio = '2 / 1';
 		}
-		return $aside_sel . ' .sgs-media-box--fill{height:auto;aspect-ratio:' . $ratio . ';}';
+		// Capped like the aside's image (mega-panel render.php caps it at 170px), so the box never leaves a gap below it.
+		return $aside_sel . ' .sgs-media-box--fill{height:auto;aspect-ratio:' . $ratio . ';max-height:170px;}';
 	}
 }
 
@@ -468,16 +471,17 @@ if ( ! function_exists( 'sgs_mega_panel_drawer_hover_css' ) ) {
 			$calm[] = $aside_sel;
 		}
 		if ( $nudge > 0 ) {
-			$css  .= sgs_mega_panel_drawer_card_slot_sel( $aside_sel, 5, ' .sgs-button__icon' ) . '{transition:transform ' . $time . ';}';
-			$state(
-				$aside_sel,
-				array(
-					' > :last-child .sgs-button__icon',
-					' > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon',
-				),
-				'transform:translateX(' . $nudge . 'px)'
+			// A round link button in its own slot moves as a whole; a link inside a wrapper or with a label moves its icon.
+			// The transition rides on exactly the elements the hover moves.
+			$icons = array(
+				' > .sgs-button:last-child',
+				' > :last-child:not(.sgs-button) .sgs-button__icon',
+				' > .wp-block-sgs-container:nth-child(2):last-child > .sgs-container__inner > :last-child .sgs-button__icon',
 			);
-			$calm[] = sgs_mega_panel_drawer_card_slot_sel( $aside_sel, 5, ' .sgs-button__icon' );
+			$icon_sel = implode( ',', array_map( static fn( string $t ): string => $aside_sel . $t, $icons ) );
+			$css     .= $icon_sel . '{transition:transform ' . $time . ';}';
+			$state( $aside_sel, $icons, 'transform:translateX(' . $nudge . 'px)' );
+			$calm[] = $icon_sel;
 		}
 		$css .= '@media (prefers-reduced-motion: reduce){' . implode( ',', $calm ) . '{transition:none;}}';
 		return $css;

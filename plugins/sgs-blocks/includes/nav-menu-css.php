@@ -481,7 +481,12 @@ if ( ! function_exists( 'sgs_nav_shared_item_state_css' ) ) {
 	 * returns '', which the `'' !== …` gate turns into no rule at all.
 	 */
 	$item_padding_shift = sgs_css_single_length_value( $attributes['itemPaddingShiftHover'] ?? '' );
-	if ( '' !== $item_padding_shift ) {
+	if ( '' !== $item_padding_shift && 'sgs-nav-drawer-menu' === $bem_root ) {
+		// A drawer row keeps its number ornament in its own column: the label alone moves, so the shift is a
+		// translate on the label text, not a padding change that would carry the ornament with it.
+		$css .= $link_sel . ' .' . $bem_root . '__link-text{transition:translate var(--sgs-ndm-motion-duration, 350ms) var(--wp--custom--easing--emphasised, ease);}';
+		$css .= sgs_hover_state_rules( $link_sel, 'translate:' . $item_padding_shift . ' 0', ':focus-visible', ' .' . $bem_root . '__link-text' );
+	} elseif ( '' !== $item_padding_shift ) {
 		$css .= sgs_hover_state_rules( $link_sel, 'padding-inline-start:calc(var(--sgs-nav-link-pad-start, 12px) + ' . $item_padding_shift . ')', ':focus-visible' );
 	}
 

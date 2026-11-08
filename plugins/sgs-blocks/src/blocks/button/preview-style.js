@@ -117,7 +117,7 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 
 	// Content alignment + label-to-icon gap at the tier (render.php's sgs_emit_responsive_css).
 	const align = tierValueOf( contentAlign, tier );
-	if ( [ 'flex-start', 'center', 'flex-end' ].includes( align ) ) {
+	if ( [ 'flex-start', 'center', 'flex-end', 'space-between' ].includes( align ) ) {
 		style.justifyContent = align;
 	}
 	const selfAlign = tierValueOf( alignSelf, tier );

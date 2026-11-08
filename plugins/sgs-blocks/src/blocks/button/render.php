@@ -438,7 +438,7 @@ if ( $base_decls ) {
 // device. The first two are flex properties of the button root; align-self
 // positions the root as a flex item in its parent. Unset attrs emit nothing (the centred, gapless default
 // stands).
-$content_align_allowed = array( 'flex-start', 'center', 'flex-end' );
+$content_align_allowed = array( 'flex-start', 'center', 'flex-end', 'space-between' );
 $align_self_allowed    = array( 'auto', 'flex-start', 'center', 'flex-end', 'stretch', 'baseline' );
 $content_align_props   = array(
 	array(

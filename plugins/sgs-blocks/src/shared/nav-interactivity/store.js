@@ -259,24 +259,23 @@ function reparentToBody( dialog, scrim ) {
  */
 function lockScroll() {
 	const y = window.scrollY;
-	// Fixing the body collapses the document scroll, so the CLASSIC scrollbar
-	// (~15px, desktop Windows/Linux) vanishes MID-ANIMATION — the viewport
-	// widens by its width and the right-anchored drawer's anchor jumps right
-	// partway through the slide-in. The eye reads it as a bounce: the panel
-	// overshoots into the page by exactly the scrollbar width, then steps back
-	// (a frame capture shows the anchor moving 753→768 at
-	// 768px). Forcing the root's scrollbar track to stay while locked keeps the
-	// geometry constant; overlay-scrollbar platforms (iOS/Android, width 0)
-	// take the no-op branch.
-	if ( window.innerWidth - document.documentElement.clientWidth > 0 ) {
-		document.documentElement.style.overflowY = 'scroll';
+	// A CLASSIC scrollbar (~15px, desktop Windows/Linux) is hidden here, in the
+	// same task as the open and before its first frame, so the right-anchored
+	// drawer starts at its final edge (no mid-slide jump) and no scrollbar shows
+	// beside it, as on the draft; the body ends where the track began, so the
+	// page behind keeps its width. Overlay-scrollbar platforms (width 0) take
+	// the plain branch.
+	const gutter = window.innerWidth - document.documentElement.clientWidth;
+	if ( gutter > 0 ) {
+		document.documentElement.style.overflow = 'hidden';
 	}
 	document.body.setAttribute( SCROLL_LOCK_ATTR, String( y ) );
 	document.body.style.position = 'fixed';
 	document.body.style.top = `-${ y }px`;
 	document.body.style.left = '0';
-	document.body.style.right = '0';
-	document.body.style.width = '100%';
+	// The page keeps its width: the body ends where the scrollbar's track began.
+	document.body.style.right = gutter > 0 ? `${ gutter }px` : '0';
+	document.body.style.width = gutter > 0 ? 'auto' : '100%';
 }
 
 /**
@@ -297,7 +296,7 @@ function lockScroll() {
 function unlockScroll() {
 	const stored = document.body.getAttribute( SCROLL_LOCK_ATTR );
 	document.body.removeAttribute( SCROLL_LOCK_ATTR );
-	document.documentElement.style.overflowY = '';
+	document.documentElement.style.overflow = '';
 	document.body.style.position = '';
 	document.body.style.top = '';
 	document.body.style.left = '';
@@ -571,7 +570,7 @@ function resolveScrim( drawerRef ) {
  * @param {HTMLElement}      drawer The drawer dialog element.
  * @param {HTMLElement|null} scrim  The scrim element, if any.
  */
-function runClose( drawer, scrim ) {
+function runClose( drawer, scrim, ctx = null ) {
 	// The opener-live flag is NOT cleared here: it keeps the × hidden and its
 	// top row released, and clearing it before the exit animation made the ×
 	// reappear mid-close and push the menu down (Bean, 2026-09-24). It is
@@ -601,6 +600,11 @@ function runClose( drawer, scrim ) {
 	 */
 	drawer.classList.add( 'is-closing' );
 	announceDrawer( drawer, 'close' );
+	// The opener (the burger's X) reverses as the exit starts, in step with the panel, not after the last item's exit.
+	if ( ctx ) {
+		ctx.isOpen = false;
+		setOpenByRef( ctx.drawerRef, false );
+	}
 
 	// `.is-closing` is removed by the native `close` handler, which is the
 	// single teardown point for aria/scroll/freeze/focus.
@@ -801,7 +805,7 @@ function openDrawerFor( ctx, trigger ) {
 		 */
 		const onCancel = ( e ) => {
 			e.preventDefault();
-			runClose( drawer, scrim );
+			runClose( drawer, scrim, ctx );
 		};
 		drawer.addEventListener( 'cancel', onCancel );
 		bookkeeping.cleanup.push( () =>
@@ -832,7 +836,7 @@ function openDrawerFor( ctx, trigger ) {
 				rect.left <= e.clientX &&
 				e.clientX <= rect.left + rect.width;
 			if ( ! inDialog ) {
-				runClose( drawer, scrim );
+				runClose( drawer, scrim, ctx );
 			}
 		};
 		drawer.addEventListener( 'click', onBackdropClick );
@@ -875,7 +879,7 @@ function openDrawerFor( ctx, trigger ) {
 				// element-scoped `data-wp-on--keydown` ESC handling if a mega
 				// panel happened to be open at the same time.
 				e.stopPropagation();
-				runClose( drawer, scrim );
+				runClose( drawer, scrim, ctx );
 			}
 		};
 		document.addEventListener( 'keydown', onEsc );
@@ -888,12 +892,65 @@ function openDrawerFor( ctx, trigger ) {
 	// `data-wp-on--click` directive de-hydrates once the drawer leaves its region.
 	const closeEl = drawer.querySelector( '[data-sgs-nav-close]' );
 	if ( closeEl ) {
-		const onCloseClick = () => runClose( drawer, scrim );
+		const onCloseClick = () => runClose( drawer, scrim, ctx );
 		closeEl.addEventListener( 'click', onCloseClick );
 		bookkeeping.cleanup.push( () =>
 			closeEl.removeEventListener( 'click', onCloseClick )
 		);
 	}
+
+	/*
+	 * A link inside the drawer closes it with its exit animation before the page changes, as the
+	 * close button does. A plain left click on a link to another page waits for the dialog's `close`
+	 * event (the exit has run), then navigates; a cap navigates anyway if the exit never settles.
+	 * A same-page `#` link closes the drawer and keeps its own default jump. New-tab, modifier,
+	 * download, and non-web links (tel:, mailto:) are left to the browser.
+	 */
+	const onLinkClick = ( e ) => {
+		if ( e.defaultPrevented || 0 !== e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey ) {
+			return;
+		}
+		const link = e.target && e.target.closest ? e.target.closest( 'a[href]' ) : null;
+		if ( ! link || ! drawer.contains( link ) || link.hasAttribute( 'download' ) ) {
+			return;
+		}
+		if ( link.target && '_self' !== link.target ) {
+			return;
+		}
+		let url;
+		try {
+			url = new URL( link.href, window.location.href );
+		} catch ( err ) {
+			return;
+		}
+		if ( ! /^https?:$/.test( url.protocol ) ) {
+			return;
+		}
+		const samePage =
+			url.origin === window.location.origin &&
+			url.pathname === window.location.pathname &&
+			url.search === window.location.search;
+		if ( samePage && url.hash ) {
+			runClose( drawer, scrim, ctx );
+			return;
+		}
+		e.preventDefault();
+		let gone = false;
+		const go = () => {
+			if ( gone ) {
+				return;
+			}
+			gone = true;
+			window.location.assign( url.href );
+		};
+		drawer.addEventListener( 'close', go, { once: true } );
+		window.setTimeout( go, 1500 );
+		runClose( drawer, scrim, ctx );
+	};
+	drawer.addEventListener( 'click', onLinkClick );
+	bookkeeping.cleanup.push( () =>
+		drawer.removeEventListener( 'click', onLinkClick )
+	);
 
 	// The shared scrim's own click listener (click-to-close). Its VISIBILITY is
 	// CSS-driven (`:root:has(.{uid}[open])`, includes/helpers-scrim.php), not
@@ -902,7 +959,7 @@ function openDrawerFor( ctx, trigger ) {
 	// real element is still needed for the non-modal path (and works the same
 	// way for modal).
 	if ( scrim ) {
-		const onScrimClick = () => runClose( drawer, scrim );
+		const onScrimClick = () => runClose( drawer, scrim, ctx );
 		scrim.addEventListener( 'click', onScrimClick );
 		bookkeeping.cleanup.push( () =>
 			scrim.removeEventListener( 'click', onScrimClick )
@@ -1029,7 +1086,7 @@ function openDrawerFor( ctx, trigger ) {
 		const onCollapseChange = () => {
 			const live = updateOpenerLiveness();
 			if ( ! live ) {
-				runClose( drawer, scrim );
+				runClose( drawer, scrim, ctx );
 			}
 		};
 		if ( typeof collapseMql.addEventListener === 'function' ) {
@@ -1076,7 +1133,7 @@ function openDrawerFor( ctx, trigger ) {
 			const currentY = Math.max( 0, window.scrollY );
 			const distance = Math.abs( currentY - sgsNdStartScrollY );
 			if ( crossedScrollDistance( distance, sgsNdScrollDistance ) ) {
-				runClose( drawer, scrim );
+				runClose( drawer, scrim, ctx );
 			}
 		};
 		window.addEventListener( 'wheel', markIntent, { passive: true } );
