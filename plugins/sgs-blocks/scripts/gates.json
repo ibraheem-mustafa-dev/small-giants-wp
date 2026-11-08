@@ -2186,5 +2186,23 @@
     "added_commit": null,
     "budget_ms": 1000,
     "order": 249
+  },
+  {
+    "id": "check-shadow-clip-selftest",
+    "cmd": "python scripts/check-shadow-clip.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 250
+  },
+  {
+    "id": "check-shadow-clip",
+    "cmd": "python scripts/check-shadow-clip.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1000,
+    "order": 251
   }
 ]

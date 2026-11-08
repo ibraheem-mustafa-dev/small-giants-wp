@@ -99,6 +99,9 @@
 	scroll-snap-type:       x mandatory;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width:        none; /* Firefox */
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
+	padding-block: var( --sgs-shadow-bleed, 80px );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 }
 
 .sgs-gallery--carousel .sgs-gallery__grid::-webkit-scrollbar {
@@ -125,6 +128,9 @@
 	scroll-snap-type:       x mandatory;
 	-webkit-overflow-scrolling: touch;
 	scrollbar-width:        none;
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
+	padding-block: var( --sgs-shadow-bleed, 80px );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 }
 
 .sgs-gallery--scroll .sgs-gallery__grid::-webkit-scrollbar {

@@ -76,6 +76,14 @@
 	touch-action: pan-y;
 }
 
+/* Hides the off-screen slides sideways only, so a slide's shadow paints above and below the track. */
+@supports (overflow: clip) {
+	.sgs-testimonial-slider__track {
+		overflow-x: clip;
+		overflow-y: visible;
+	}
+}
+
 /* Pointer-drag state — toggled by view.js pointerdown/endDrag (class only,
  * no inline style). */
 .sgs-testimonial-slider__track.is-dragging {

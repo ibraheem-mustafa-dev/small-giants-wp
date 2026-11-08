@@ -254,7 +254,9 @@
 	gap: var(--sgs-wishlist-panel-gap);
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
-	padding-bottom: 0.25rem;
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
+	padding-block: var( --sgs-shadow-bleed, 80px );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 }
 
 .sgs-wishlist-panel--strip .sgs-wishlist-panel__row {

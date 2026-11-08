@@ -696,6 +696,9 @@ a.sgs-google-reviews__author:hover {
 	display: flex;
 	overflow-x: auto;
 	scroll-snap-type: x mandatory;
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
+	padding-block: var( --sgs-shadow-bleed, 80px );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 }
 
 /* The rail's scrollbar is the default progress indicator (`pagination: scrollbar`), thin by default;

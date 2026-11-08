@@ -136,7 +136,9 @@
 	scroll-snap-type: x mandatory;
 	scroll-behavior: smooth;
 	gap: var( --sgs-gap );
-	padding-bottom: 4px; /* prevent scrollbar clipping card shadow */
+	/* Room for the tiles' shadows above and below the scrolling row, cancelled by the negative margin so layout does not move. */
+	padding-block: var( --sgs-shadow-bleed, 80px );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 	/* Hide scrollbar visually; keep functional for a11y */
 	scrollbar-width: none;
 }

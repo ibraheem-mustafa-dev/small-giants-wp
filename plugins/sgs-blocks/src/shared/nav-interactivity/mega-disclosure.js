@@ -374,6 +374,21 @@ function publishWrapFill( wrap, full ) {
 }
 
 /**
+ * The shadow bleed a panel reserves inside its clip (padding cancelled by a negative margin, nav-menu-submenu-css.php), so the
+ * placement maths can work on the panel's own content box.
+ *
+ * @param {HTMLElement} panel The panel element.
+ * @return {{left: number, right: number}} The sideways padding in px.
+ */
+function panelBleed( panel ) {
+	const cs = window.getComputedStyle( panel );
+	return {
+		left: parseFloat( cs.paddingLeft ) || 0,
+		right: parseFloat( cs.paddingRight ) || 0,
+	};
+}
+
+/**
  * Reposition a panel that overflows the right viewport edge — expressed purely
  * as CSS custom-property VALUES (`--sgs-mm-overflow-left/-right`), never a
  * direct `.style.left/.style.right` assignment (Spec 32 no-inline). style.css
@@ -431,6 +446,8 @@ function repositionPanel( root ) {
 		 */
 		panel.style.removeProperty( '--sgs-mm-panel-width' );
 		const rect = panel.getBoundingClientRect();
+		const bleed = panelBleed( panel );
+		const boxWidth = rect.width - bleed.left - bleed.right;
 		const isDropdown = root.dataset.sgsNavDisclosure === 'dropdown';
 		// Safe-triangle (FR-36-4): reuse this existing measurement as the
 		// snapshot other triggers check their pointer trajectory against —
@@ -538,13 +555,13 @@ function repositionPanel( root ) {
 		 * width to centre/align at, when that is narrower than the box.
 		 */
 		const scale = liveScale( panel );
-		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, rect.width / scale, scale );
+		const contentWidth = isDropdown ? null : measurePanelContentWidth( panel, boxWidth / scale, scale );
 		const placed = placePanel( {
 			align: PANEL_ALIGNS.includes( align ) ? align : ( isDropdown ? 'start' : 'page-centred' ),
 			isDropdown,
 			anchorLeft: anchor.left,
 			anchorWidth: anchor.width,
-			width: rect.width / scale,
+			width: boxWidth / scale,
 			bounds,
 			gutter: 28,
 			contentWidth,
@@ -824,7 +841,7 @@ function reparentPanelIfNeeded( root, panel, megaId ) {
 	// `[data-sgs-nav-fixed]` rule reads these two and switches the panel to
 	// `position:fixed`.
 	panel.style.setProperty( '--sgs-mm-fixed-top', `${ rect.top.toFixed( 2 ) }px` );
-	panel.style.setProperty( '--sgs-mm-fixed-left', `${ rect.left.toFixed( 2 ) }px` );
+	panel.style.setProperty( '--sgs-mm-fixed-left', `${ ( rect.left + panelBleed( panel ).left ).toFixed( 2 ) }px` );
 	panel.setAttribute( 'data-sgs-nav-fixed', '' );
 	document.body.appendChild( panel );
 	syncFixedScrollWatcher();

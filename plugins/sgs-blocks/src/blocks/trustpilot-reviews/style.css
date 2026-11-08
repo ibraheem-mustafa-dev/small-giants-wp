@@ -180,7 +180,8 @@
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	gap: var(--sgs-tp-card-gap);
-	padding: 0 0 0.5rem;
+	padding-block: var( --sgs-shadow-bleed, 80px ) calc( var( --sgs-shadow-bleed, 80px ) + 0.5rem );
+	margin-block: calc( -1 * var( --sgs-shadow-bleed, 80px ) ) calc( -1 * var( --sgs-shadow-bleed, 80px ) );
 	align-items: flex-start;
 }
 
