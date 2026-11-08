@@ -633,5 +633,27 @@
     },
     "reason": "Bean's list item HP15 (stacked hero stuck left and squashed) measured equal to the draft at 375, 768 and 900 (same widths, 32px side padding). Bean: keep it as the draft; it was right from the start.",
     "decided": "2026-11-07 Bean ruling (Indus round 8 board)"
+  },
+  {
+    "id": "D-43",
+    "block": "sgs/mega-panel",
+    "scope": "Brands mega panel, desktop and drawer",
+    "node": "the \"OUR BRANDS\" label above the brand tiles",
+    "state": "*",
+    "property": "presence",
+    "expected": { "rule": "bean-ruling" },
+    "reason": "The draft's label above the brand tiles looked ugly, so Bean had it deleted; live has no label on purpose.",
+    "decided": "2026-11-08 Bean ruling (Indus round 8 review)"
+  },
+  {
+    "id": "D-44",
+    "block": "sgs/text",
+    "scope": "footer, 768 to 1000px",
+    "node": "footer paragraph cr-ref-footer-24",
+    "state": "rest",
+    "property": "text-align",
+    "expected": { "rule": "bean-ruling" },
+    "reason": "The draft's left-aligned paragraph looked ugly at these widths; live centres it on purpose.",
+    "decided": "2026-11-08 Bean ruling (Indus round 8 review)"
   }
 ]
