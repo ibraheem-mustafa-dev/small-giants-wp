@@ -43,7 +43,19 @@ Rules:
 - **Live:** framework `fe51b4e78` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `04b4a67ee57f`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
-- **Next:** Bean's look at indus-test and sign-off. The items closed only by script reads were checked by sight beside the draft on 2026-11-08 (framework `fe51b4e78`; fix catalogue, "By-sight check"): AB8, ND19, the drawer labels and heading line breaks were fixed on the way, and every other item matched.
+- **Next: Bean's review of 2026-11-08 (12 items, his words summarised), then sign-off.** Each is worked from "How an item is worked".
+  1. Home "Our Brands" strip: hovering a tile should enlarge that tile; live only slows the marquee.
+  2. Why Choose cards: the heading and text keep their own hover colour, so hovering the text turns it back to the resting colour, invisible on the hovered card.
+  3. Heritage timeline circles: the enlarge and the colour change play one after the other instead of together.
+  4. The desktop Brands mega menu shows 4 of the 9 logos.
+  5. The nav drawer escapes the screen: its content can be dragged left and right off screen.
+  6. The drawer is a darker blue than the draft; the close X is thinner; the sticky "Become A Trade Customer" arrow sits a fixed distance from the text instead of at the button's end.
+  7. Drawer sections open but their inner items do not stagger in.
+  8. Opening the drawer shows a scrollbar on the right, then the content shifts right when it disappears.
+  9. Drawer sections: the Sectors cards are too short; the About and Trade top panels have different edge padding, a large gap under the image, an arrow touching the right edge and no arrow nudge on hover (Brands is close).
+  10. Menu item hover should nudge only the text right; live shifts the whole row.
+  11. Brands mega: items enlarge too much; the OWN BRANDS panel lifts (it should have no hover); View all brands should lift, and its arrow teleports instead of animating.
+  12. Burger: after closing the drawer it shows a broken white resting look and stutters before returning to normal.
 - **Noticed, not on Bean's list:**
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
