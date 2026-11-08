@@ -560,7 +560,9 @@ foreach ( $sgs_field_tier_specs as $sgs_field_spec ) {
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'field', '.' . $sgs_form_uid . ' .sgs-form-field__input', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_field_css .= sgs_typography_css_rule( $attributes, 'label', '.' . $sgs_form_uid . ' .sgs-form-field__label', '', false, false, sgs_object_attr_keys( $block ) );
 // The focused-field look (ground, border, ring) and the size of a floated label, from includes/forms/field-focus-css.php.
-$sgs_field_css .= \SGS\Blocks\Forms\field_focus_css( $attributes, $sgs_form_uid );
+// The floated label's focus colour resolves through the same text helper as the resting label colour.
+$sgs_label_floated = sgs_text_decls( $attributes, array( 'base' => 'labelFloatedColour' ) );
+$sgs_field_css    .= \SGS\Blocks\Forms\field_focus_css( $attributes, $sgs_form_uid, $sgs_label_floated['normal'] );
 // The remaining surfaces sit on elements emitted by child blocks (tile icon and
 // label, consent text), by view.js (review term) or by this file (the submit
 // button). The uid class is an ancestor of every one, and the stylesheet's own

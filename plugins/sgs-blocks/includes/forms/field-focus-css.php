@@ -27,11 +27,13 @@ require_once dirname( __DIR__ ) . '/render-helpers.php';
 /**
  * The CSS for a form's focused-field look and floated-label size.
  *
- * @param array<string, mixed> $attributes Form block attributes.
- * @param string               $uid        The form's content-hash class, without the dot.
+ * @param array<string, mixed> $attributes     Form block attributes.
+ * @param string               $uid            The form's content-hash class, without the dot.
+ * @param string[]             $floated_colour The floated label's focus colour declarations, resolved by render.php through
+ *                                             sgs_text_decls() beside the resting label colour.
  * @return string Scoped rules; empty when nothing is set.
  */
-function field_focus_css( array $attributes, string $uid ): string {
+function field_focus_css( array $attributes, string $uid, array $floated_colour = array() ): string {
 	$css      = '';
 	$field    = '.' . $uid . ' .sgs-form-field__input';
 	$fill     = sgs_colour_value( (string) ( $attributes['fieldFocusBackground'] ?? '' ) );
@@ -62,7 +64,7 @@ function field_focus_css( array $attributes, string $uid ): string {
 		$css .= $field . ':focus-visible{--sgs-focus-halo:0 0 #0000;--sgs-focus-under:' . ( $inset ? 'inset ' : '' ) . '0 0 0 ' . rtrim( rtrim( number_format( $ring_px, 2, '.', '' ), '0' ), '.' ) . 'px ' . $ring . ',var(--sgs-field-shadow,0 0 #0000);--sgs-focus-ring:transparent;}';
 	}
 
-	return $css . floated_label_css( $attributes, $uid );
+	return $css . floated_label_css( $attributes, $uid, $floated_colour );
 }
 
 /**
@@ -71,18 +73,19 @@ function field_focus_css( array $attributes, string $uid ): string {
  * The size is per device; the offset (labelFloatedOffset, a CSS length for `top`) holds the floated state (focused or
  * filled); the colour (labelFloatedColour) holds the focused state alone, as the stylesheet's own floated colour does.
  *
- * @param array<string, mixed> $attributes Form block attributes.
- * @param string               $uid        The form's content-hash class, without the dot.
+ * @param array<string, mixed> $attributes     Form block attributes.
+ * @param string               $uid            The form's content-hash class, without the dot.
+ * @param string[]             $floated_colour The focus colour declarations (sgs_text_decls() 'normal' for labelFloatedColour).
  * @return string Scoped rules; empty when nothing is set.
  */
-function floated_label_css( array $attributes, string $uid ): string {
+function floated_label_css( array $attributes, string $uid, array $floated_colour = array() ): string {
 	$fields  = '.' . $uid . ' :is(' . implode( ',', array_map( static fn( string $type ): string => '.sgs-form-field--' . $type, array( 'text', 'email', 'phone', 'number', 'textarea' ) ) ) . '):where(:not(.sgs-form-field--static-label))';
 	$floated = $fields . ':has(.sgs-form-field__input:is(:focus,:not(:placeholder-shown))) .sgs-form-field__label';
 	$focused = $fields . ':has(.sgs-form-field__input:focus) .sgs-form-field__label';
 	$css     = '';
 	$sizes   = sgs_responsive_normalise_object( $attributes['labelFloatedFontSize'] ?? null );
 	$offset  = sgs_css_single_length_value( $attributes['labelFloatedOffset'] ?? '', true );
-	$colour  = sgs_colour_value( (string) ( $attributes['labelFloatedColour'] ?? '' ) );
+	$colour  = $floated_colour;
 	if ( is_array( $sizes ) && array() !== $sizes ) {
 		$css .= sgs_emit_responsive_css(
 			$floated,
@@ -98,8 +101,8 @@ function floated_label_css( array $attributes, string $uid ): string {
 	if ( '' !== $offset ) {
 		$css .= $floated . '{top:' . $offset . ';}';
 	}
-	if ( '' !== $colour ) {
-		$css .= $focused . '{color:' . $colour . ';}';
+	if ( array() !== $colour ) {
+		$css .= $focused . '{' . implode( ';', $colour ) . ';}';
 	}
 	return $css;
 }
