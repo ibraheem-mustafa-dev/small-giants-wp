@@ -62,6 +62,7 @@ ALLOW: dict[tuple[str, str], str] = {
     (r"src/blocks/accordion/style\.css", r"."): REVEAL,
     (r"src/blocks/collapsible-text/style\.css", r"."): REVEAL,
     (r"src/blocks/before-after/style\.css", r"."): "comparison slider: the clip is the reveal itself",
+    (r"src/blocks/google-reviews/style\.css", r"sgs-google-reviews--slider \.sgs-google-reviews__list"): "the slider row's block padding is the railPadding setting (supports.sgs.spacingDefaults); a bleed would overwrite it, so the setting is the room",
     (r"src/blocks/business-info/style\.css", r"sgs-business-map"): "map embed cropped to its rounded frame",
     (r"src/blocks/card-grid/style\.css", r"__(?:item|image-wrap)"): CROP,
     (r"src/blocks/gallery/style\.css", r"__(?:item|img-wrap)"): CROP,
