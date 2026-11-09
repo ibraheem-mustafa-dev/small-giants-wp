@@ -58,7 +58,7 @@ if ( class_exists( 'SGS_Media_Element' ) ) {
 ?>
 <?php // ── Main image (mirrors product-card L684-717 exactly, minus the optional permalink wrap). ?>
 <div
-	class="product-card__media"
+	class="product-card__media sgs-buybox__main-photo-frame"
 >
 <?php if ( '' !== $buybox_img_src ) : ?>
 	<?php

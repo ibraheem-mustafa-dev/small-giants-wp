@@ -67,6 +67,8 @@
 .sgs-cart__badge {
 	display: none;
 	position: absolute;
+	/* Its ::after circle stays above the trigger's own z-index:-1 hover fill. */
+	isolation: isolate;
 	top: 2px;
 	right: 2px;
 	min-width: var(--sgs-cart-badge-size, 18px);

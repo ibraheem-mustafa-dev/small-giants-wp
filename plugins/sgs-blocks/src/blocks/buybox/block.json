@@ -1109,7 +1109,7 @@
 					}
 				},
 				"main-photo-frame": {
-					"selector": ".sgs-buybox .product-card__media",
+					"selector": ".sgs-buybox__main-photo-frame",
 					"label": "Main photo",
 					"order": 19,
 					"clusters": [

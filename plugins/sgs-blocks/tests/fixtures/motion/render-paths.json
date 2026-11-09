@@ -13,6 +13,7 @@
      "attrs": {},
      "content": "<details class=\"wp-block-sgs-accordion-item sgs-accordion-item\"><summary class=\"sgs-accordion-item__header\"><span class=\"sgs-accordion-item__title\">Question</span></summary><div class=\"sgs-accordion-item__answer\"><p>Answer</p></div></details>",
      "unexercised": {
+      "answer": "the element is printed by the sgs/accordion-item child render.php, and sgs/accordion only echoes $content, so the harness has no real child render to supply it",
       "turning-icon": "the element is printed by the sgs/accordion-item child render.php (iconRotation above 0 or a turning-icon layer), and sgs/accordion only echoes $content, so the harness has no real child render to supply it"
      }
     }
