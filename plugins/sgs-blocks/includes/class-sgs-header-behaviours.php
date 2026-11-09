@@ -32,6 +32,78 @@ final class Sgs_Header_Behaviours {
 	public static function register(): void {
 		\add_filter( 'body_class', array( __CLASS__, 'add_body_classes' ) );
 		\add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
+		\add_action( 'wp_head', array( __CLASS__, 'print_scroll_restore_script' ), 1 );
+	}
+
+	/**
+	 * The pre-paint scroll-restore script, with the project's tier queries filled in.
+	 *
+	 * On a reload or a back/forward visit with no hash it takes scroll restoration from the browser, pre-shrinks the header
+	 * row the saved position would shrink, and scrolls to the saved position once the page has settled, so the content does
+	 * not move while the page grows. Every other visit keeps the browser's behaviour.
+	 *
+	 * @return string The script body, without the script tags.
+	 */
+	public static function scroll_restore_script(): string {
+		return str_replace(
+			array( '__SGS_MOBILE_QUERY__', '__SGS_TABLET_QUERY__' ),
+			array( SGS_Breakpoints::query( 'mobile' ), SGS_Breakpoints::query( 'tablet' ) ),
+			<<<'JS'
+(function(){
+var d=document,h=d.documentElement,KEY='sgs-scroll:'+location.pathname+location.search,store=null;
+try{store=window.sessionStorage;}catch(e){}
+if(!store){return;}
+window.addEventListener('pagehide',function(){try{store.setItem(KEY,String(Math.round(window.scrollY)));}catch(e){}});
+var nav=window.performance&&performance.getEntriesByType?performance.getEntriesByType('navigation')[0]:null;
+var type=nav?nav.type:'';
+if((type!=='reload'&&type!=='back_forward')||location.hash){return;}
+if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
+var saved=parseInt(store.getItem(KEY),10);
+if(!(saved>0)){return;}
+try{history.scrollRestoration='manual';}catch(e){return;}
+var tier='desktop';
+if(matchMedia('__SGS_MOBILE_QUERY__').matches){tier='mobile';}else if(matchMedia('__SGS_TABLET_QUERY__').matches){tier='tablet';}
+var shrink=saved>50;
+h.setAttribute('data-sgs-scroll-restore',shrink?'shrunk':'1');
+var hold=d.createElement('style');
+hold.textContent='html[data-sgs-scroll-restore] .sgs-row-behaviour,html[data-sgs-scroll-restore] .sgs-row-behaviour>.sgs-container__inner{transition:none!important}';
+(d.head||h).appendChild(hold);
+function apply(){
+var rows=d.querySelectorAll('.sgs-site-header-row--middle.sgs-row-behaviour'),n=0;
+for(var i=0;i<rows.length;i++){
+var tiers=(rows[i].getAttribute('data-sgs-row-shrink')||'').split(' ');
+if(tiers.indexOf(tier)!==-1){rows[i].classList.add('is-row-shrink-active','is-row-shrunk');n++;}
+}
+return n;
+}
+if(shrink){apply();
+var mo=new MutationObserver(function(){if(apply()){mo.disconnect();}});
+mo.observe(h,{childList:true,subtree:true});
+d.addEventListener('DOMContentLoaded',function(){apply();mo.disconnect();});
+}
+function restore(){
+window.scrollTo(0,saved);
+requestAnimationFrame(function(){requestAnimationFrame(function(){h.removeAttribute('data-sgs-scroll-restore');if(hold.parentNode){hold.parentNode.removeChild(hold);}});});
+}
+function afterLayout(){
+requestAnimationFrame(function(){
+if(d.fonts&&d.fonts.ready){d.fonts.ready.then(restore,restore);}else{restore();}
+});
+}
+if(d.readyState==='complete'){afterLayout();}else{window.addEventListener('load',afterLayout);}
+})();
+JS
+		);
+	}
+
+	/**
+	 * Print the scroll-restore script at the very start of the head.
+	 */
+	public static function print_scroll_restore_script(): void {
+		if ( \is_admin() ) {
+			return;
+		}
+		echo '<script id="sgs-scroll-restore">' . self::scroll_restore_script() . "</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static script, no user input.
 	}
 
 	/**

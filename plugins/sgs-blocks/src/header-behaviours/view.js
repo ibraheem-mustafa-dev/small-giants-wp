@@ -925,7 +925,12 @@ function isPageScrollLocked() {
 				// display:none rule emitted by render.php.
 				if ( row.shrinkTiers.indexOf( tier ) !== -1 ) {
 					row.el.classList.add( 'is-row-shrink-active' );
-					row.el.classList.toggle( 'is-row-shrunk', scrollY > 50 );
+					row.el.classList.toggle(
+						'is-row-shrunk',
+						scrollY > 50 ||
+							'shrunk' ===
+								document.documentElement.getAttribute( 'data-sgs-scroll-restore' )
+					);
 				} else {
 					row.el.classList.remove( 'is-row-shrink-active' );
 					row.el.classList.remove( 'is-row-shrunk' );
