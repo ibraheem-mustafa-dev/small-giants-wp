@@ -67,6 +67,7 @@
 /* global ResizeObserver */
 
 import { decideSectionTone } from './header-ink-tone.js';
+import { createHeightPublisher, createLiveHeight } from './live-header-height.js';
 import {
 	initDirectionScrollState,
 	nextDirectionScrollState,
@@ -270,124 +271,6 @@ function isPageScrollLocked() {
 	}
 
 	/**
-	 * Publish the RESTING `--sgs-header-height` (integer px) to :root. Every
-	 * element inherits it, so each write restyles the whole page: it changes
-	 * only when the resting value does (see initHeightPublisher()).
-	 *
-	 * @param {number} bottomEdge Px from the viewport top to the pinned header's
-	 *                            lowest point, or 0 when it is not pinned.
-	 */
-	function publishHeight( bottomEdge ) {
-		document.documentElement.style.setProperty( '--sgs-header-height', Math.round( bottomEdge ) + 'px' );
-	}
-
-	/**
-	 * Live bottom edge of the header, as it shrinks and returns.
-	 *
-	 * Two writes, neither of which restyles the page:
-	 *   - `--sgs-header-height-live` on :root. The stylesheets register it
-	 *     non-inheriting (`@property`, `inherits:false`), so only :root restyles;
-	 *     `scroll-padding-top` and `chromeOffsetPx()` read it.
-	 *   - `--sgs-header-height` on each element a stylesheet rule positions from
-	 *     it (sticky offsets, panels). The element's own subtree inherits the live
-	 *     value; nothing else restyles. The elements are found from the CSSOM
-	 *     (every rule whose declarations use `var( --sgs-header-height )`), so a
-	 *     consumer added by any block, theme or later stylesheet is covered with
-	 *     no marker, and elements added later are picked up on DOM change.
-	 *
-	 * @return {{ set: function( number ): void }}
-	 */
-	function createLiveHeight() {
-		const USE = /var\(\s*--sgs-header-height\s*[,)]/;
-		const written = new WeakMap();
-		let selectors = [];
-		let sheetCount = -1;
-		let nodes = [];
-		let value = null;
-		let scheduled = false;
-
-		function collect( rules, found ) {
-			for ( const rule of rules ) {
-				if ( rule.selectorText && rule.style && USE.test( rule.style.cssText ) ) {
-					found.add( rule.selectorText );
-				}
-				if ( rule.cssRules ) {
-					collect( rule.cssRules, found );
-				}
-			}
-		}
-
-		function rebuildSelectors() {
-			const found = new Set();
-			for ( const sheet of Array.prototype.slice.call( document.styleSheets ) ) {
-				try {
-					collect( sheet.cssRules, found );
-				} catch ( e ) {
-					// Cross-origin sheet: not ours, unreadable.
-				}
-			}
-			selectors = [];
-			found.forEach( function ( sel ) {
-				try {
-					document.querySelector( sel );
-					selectors.push( sel );
-				} catch ( e ) {
-					// A selector this browser cannot parse never matches.
-				}
-			} );
-			sheetCount = document.styleSheets.length;
-		}
-
-		function apply() {
-			if ( null === value ) {
-				return;
-			}
-			if ( document.styleSheets.length !== sheetCount ) {
-				rebuildSelectors();
-			}
-			nodes = [];
-			selectors.forEach( function ( sel ) {
-				document.querySelectorAll( sel ).forEach( function ( el ) {
-					if ( el !== document.documentElement && el !== document.body ) {
-						nodes.push( el );
-					}
-				} );
-			} );
-			nodes.forEach( function ( el ) {
-				if ( written.get( el ) !== value ) {
-					written.set( el, value );
-					el.style.setProperty( '--sgs-header-height', value );
-				}
-			} );
-		}
-
-		function schedule() {
-			if ( ! scheduled ) {
-				scheduled = true;
-				window.requestAnimationFrame( function () {
-					scheduled = false;
-					apply();
-				} );
-			}
-		}
-
-		if ( typeof window.MutationObserver !== 'undefined' ) {
-			new window.MutationObserver( schedule ).observe( document.documentElement, {
-				childList: true,
-				subtree: true,
-			} );
-		}
-		window.addEventListener( 'load', schedule );
-
-		return {
-			set: function ( px ) {
-				value = px;
-				apply();
-			},
-		};
-	}
-
-	/**
 	 * Is the header ACTUALLY pinned to the viewport right now?
 	 *
 	 * MEASURED from the computed `position`, never inferred from the header's
@@ -539,44 +422,30 @@ function isPageScrollLocked() {
 			);
 		}
 
-		// Last value written. The property is inherited, so a write restyles
-		// the whole page; a value that does not change is never written.
-		let published = null;
-
+		// The live edge reaches :root's non-inheriting property and every
+		// consumer element; the inherited resting value is written only when
+		// it rises, flips to 0 or the viewport resizes (live-header-height.js).
 		const liveHeight = createLiveHeight();
-		let live = null;
+		const publish = createHeightPublisher( {
+			live: function ( px ) {
+				document.documentElement.style.setProperty( '--sgs-header-height-live', px );
+				liveHeight.set( px );
+			},
+			resting: function ( px ) {
+				document.documentElement.style.setProperty( '--sgs-header-height', px );
+			},
+		} );
 
 		/**
 		 * @param {boolean} [exact] Publish a lower resting value too (a resize
 		 *                          can genuinely shrink the header).
 		 */
 		function publishGated( exact ) {
-			const edge = isHeaderPinned( header ) ? pinnedBottomOffset() : 0;
-			if ( edge !== live ) {
-				live = edge;
-				const px = Math.round( edge ) + 'px';
-				document.documentElement.style.setProperty( '--sgs-header-height-live', px );
-				liveHeight.set( px );
-			}
-			// The inherited resting value ignores the LOWER edge while the
-			// page is scrolled (the header shrinking or a row scrolling away):
-			// the live value above already reaches every consumer, and this
-			// write would restyle the whole page. A pinned-to-unpinned flip (0)
-			// and any increase are always published.
-			if (
-				true !== exact &&
-				null !== published &&
-				edge > 0 &&
-				edge < published &&
+			publish(
+				isHeaderPinned( header ) ? pinnedBottomOffset() : 0,
+				true === exact,
 				window.scrollY > 0
-			) {
-				return;
-			}
-			if ( edge === published ) {
-				return;
-			}
-			published = edge;
-			publishHeight( edge );
+			);
 		}
 
 		if ( typeof ResizeObserver === 'undefined' ) {
