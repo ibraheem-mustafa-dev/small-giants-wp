@@ -18,6 +18,12 @@
  * html body uses the admin-bar-aware calc when the toolbar is visible.
  */
 
+/* Live bottom edge of the pinned header, written by header-behaviours/view.js. Non-inheriting, so a change restyles only the root. */
+@property --sgs-header-height-live {
+	syntax: '*';
+	inherits: false;
+}
+
 :root {
 	--sgs-header-height: 80px;
 	/* Room a clipping container reserves so the shadows of what it holds are not cut; the largest framework shadow reaches about 80px. Override per client. */
@@ -44,16 +50,16 @@
 }
 
 html {
-	scroll-padding-top: var(--sgs-header-height);
+	scroll-padding-top: var(--sgs-header-height-live, var(--sgs-header-height));
 }
 
 body.admin-bar html {
-	scroll-padding-top: calc( var(--sgs-header-height) + var(--wp-admin--admin-bar--height, 32px) );
+	scroll-padding-top: calc( var(--sgs-header-height-live, var(--sgs-header-height)) + var(--wp-admin--admin-bar--height, 32px) );
 }
 
 @media (max-width: 782px) {
 	body.admin-bar html {
-		scroll-padding-top: calc( var(--sgs-header-height) + var(--wp-admin--admin-bar--height, 46px) );
+		scroll-padding-top: calc( var(--sgs-header-height-live, var(--sgs-header-height)) + var(--wp-admin--admin-bar--height, 46px) );
 	}
 }
 

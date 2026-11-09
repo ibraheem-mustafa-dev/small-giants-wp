@@ -252,9 +252,11 @@ export function rafThrottle( fn ) {
 export function chromeOffsetPx() {
 	let offset = 0;
 
-	const published = getComputedStyle( document.documentElement )
-		.getPropertyValue( '--sgs-header-height' )
-		.trim();
+	const rootStyle = getComputedStyle( document.documentElement );
+	const published = (
+		rootStyle.getPropertyValue( '--sgs-header-height-live' ) ||
+		rootStyle.getPropertyValue( '--sgs-header-height' )
+	).trim();
 	const parsed = parseFloat( published );
 
 	if ( Number.isFinite( parsed ) ) {

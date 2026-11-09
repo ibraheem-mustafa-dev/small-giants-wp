@@ -48,8 +48,13 @@
  * F1 — Scroll-padding-top fix for anchor links (WCAG 2.4.11)
  * ---------------------------------------------------------------------- */
 
+@property --sgs-header-height-live {
+	syntax: '*';
+	inherits: false;
+}
+
 :root {
-	scroll-padding-top: var( --sgs-header-height, 0px );
+	scroll-padding-top: var( --sgs-header-height-live, var( --sgs-header-height, 0px ) );
 }
 
 /* -------------------------------------------------------------------------
