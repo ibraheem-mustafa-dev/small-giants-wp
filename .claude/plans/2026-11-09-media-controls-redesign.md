@@ -1,6 +1,6 @@
 # Media controls redesign: Bean's issue register
 
-Status: design proposed and council-checked; awaiting Bean's approval. Nothing is built until then. Raised by Bean on 2026-11-09 after checking the editor.
+Status: superseded by the ground-up design in `.claude/specs/49-SGS-MEDIA-SYSTEM.md` (Bean 2026-11-09: design from the ground up, media-first, one shared cutover). The register below stays the list of what Bean raised; the Design and Sequence sections are replaced by the spec. Spec 49 awaits Bean's approval; nothing is built until then. Raised by Bean on 2026-11-09 after checking the editor.
 
 ## Order of work (Bean)
 

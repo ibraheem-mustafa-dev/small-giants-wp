@@ -63,6 +63,8 @@ const named = {
 	// and destructure the first element, so return an array whose first entry is
 	// an empty list (safe for .map()).
 	useSettings: jest.fn( () => [ [] ] ),
+	// The block a control renders inside: its name and client id.
+	useBlockEditContext: jest.fn( () => ( { name: 'sgs/test', clientId: 'test-client' } ) ),
 	store: { name: 'core/block-editor' },
 };
 // Compound members the plugin's source renders as `<Parent.Member>`; core ships each as a static property.
