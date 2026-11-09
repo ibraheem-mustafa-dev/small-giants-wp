@@ -589,6 +589,36 @@ describe( 'marquee below a breakpoint', () => {
 	} );
 } );
 
+describe( 'marquee only when the items overflow', () => {
+	const ATTRS = 'data-sgs-fx-marquee-below-breakpoint="overflow"';
+
+	test( 'items that fit the block: no animation, no copies, static layout', async () => {
+		layout.set = 400;
+		layout.root = 600;
+		const { root } = mount( { attrs: ATTRS } );
+		await boot();
+		expect( Element.prototype.animate ).not.toHaveBeenCalled();
+		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
+		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
+	} );
+
+	test( 'items wider than the block run, and widening the block stops them without looping on the copies', async () => {
+		layout.set = 400;
+		layout.root = 300;
+		const { root } = mount( { attrs: ATTRS } );
+		await boot();
+		expect( live() ).toHaveLength( 2 );
+		layout.root = 500;
+		resizeObservers.forEach( ( o ) => o.fire() );
+		expect( live() ).toHaveLength( 0 );
+		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
+		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
+		layout.root = 300;
+		resizeObservers.forEach( ( o ) => o.fire() );
+		expect( live() ).toHaveLength( 2 );
+	} );
+} );
+
 describe( 'marquee under reduced motion', () => {
 	test( 'no animation and no copies, every item still visible', async () => {
 		reduced = true;

@@ -316,7 +316,7 @@
 	text-wrap: wrap;
 }
 
-@container sgs-choice-flow-showcase ( min-width: 600px ) {
+@container sgs-choice-flow-showcase ( min-width: 768px ) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__title {
 		font-size: 38px;
 	}
@@ -594,4 +594,49 @@
 
 .sgs-choice-flow-question__limit-message:empty {
 	display: none;
+}
+
+/* ----- Height fit (showcase, two columns, definite height) -----
+   A pictured step shares the pane's height with its option cards: the title
+   and intro keep their size, the options grid shrinks to the room left, and
+   each card's picture row shrinks to a 56px floor. The picture row's ceiling
+   is its 16:9 shape, so cards never grow past it. Shrinking is flex-shrink and
+   `minmax( 0, auto )` tracks, which do nothing without a definite height, so
+   an inline flow keeps 16:9 cards. When even the floors do not fit, the pane
+   scrolls. A text-only step is untouched. */
+@container sgs-choice-flow-showcase ( min-width: 768px ) {
+	.sgs-choice-flow--layout-showcase .sgs-form-step > .sgs-choice-flow-question:has( .sgs-choice-flow-question__option-media ) {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question:has( .sgs-choice-flow-question__option-media ) > :not( .sgs-choice-flow-question__options ) {
+		flex: none;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid:has( .sgs-choice-flow-question__option-media ) {
+		flex: 0 1 auto;
+		min-height: 0;
+		grid-auto-rows: minmax( 0, auto );
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid > .sgs-choice-flow-question__option {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__options--grid > .sgs-choice-flow-question__option > .sgs-choice-flow-question__option-button {
+		flex: 1 1 auto;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-button:has(> .sgs-choice-flow-question__option-media) {
+		grid-template-rows: minmax( 56px, auto );
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media {
+		align-self: stretch;
+		min-height: 0;
+	}
 }

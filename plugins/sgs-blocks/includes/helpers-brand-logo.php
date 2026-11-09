@@ -186,8 +186,10 @@ if ( ! function_exists( 'sgs_brand_logo_img_markup' ) ) {
 			$dimensions = sgs_image_size_attrs( $url );
 		}
 
+		$loading = sgs_image_loading_attrs( false );
 		return '<img class="' . esc_attr( $class_name ) . '" src="' . esc_url( $url ) . '"'
 			. ' alt="' . esc_attr( $name ) . '"' . $dimensions
-			. ' loading="lazy" decoding="async" />';
+			. ' loading="' . esc_attr( $loading['loading'] ) . '" fetchpriority="' . esc_attr( $loading['fetchpriority'] ) . '"'
+			. ' decoding="' . esc_attr( $loading['decoding'] ) . '" />';
 	}
 }

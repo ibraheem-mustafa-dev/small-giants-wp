@@ -591,14 +591,24 @@ if ( 'image' === $media_type ) {
 		$base_class .= ' sgs-media__img--desktop';
 	}
 
+	// One image is visible per width: the first tier takes the page's loading hints, the others stay lazy.
+	$tier_loading = sgs_image_loading_attrs();
 	foreach ( $tier_imgs as $tier_key => $tier_url ) {
 		$image_html .= sprintf(
-			'<img src="%s" alt="%s"%s%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="lazy" decoding="async" />',
+			'<img src="%s" alt="%s"%s%s class="sgs-media__img sgs-media-el sgs-media__img--%s" loading="%s" fetchpriority="%s" decoding="%s" />',
 			esc_url( $tier_url ),
 			esc_attr( $image_alt ),
 			sgs_image_size_attrs( (string) $tier_url ),
 			$img_aria_hidden,
-			esc_attr( $tier_key )
+			esc_attr( $tier_key ),
+			esc_attr( $tier_loading['loading'] ),
+			esc_attr( $tier_loading['fetchpriority'] ),
+			esc_attr( $tier_loading['decoding'] )
+		);
+		$tier_loading = array(
+			'loading'       => 'lazy',
+			'fetchpriority' => 'auto',
+			'decoding'      => 'async',
 		);
 	}
 	// Tier visibility via the SHARED cascade helper (§8) — the same one the SVG
@@ -614,8 +624,9 @@ if ( 'image' === $media_type ) {
 	// the TABLET value that `sgs_resolve_tier()` resolves to.
 	$responsive_css .= $sgs_tier_visibility_css( 'sgs-media__img', array_keys( $tier_imgs ) );
 
-	$image_html .= sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
+	$main_loading = sgs_image_loading_attrs();
+	$image_html  .= sprintf(
+		'<img src="%s" alt="%s"%s%s%s%s%s class="%s" loading="%s" fetchpriority="%s" decoding="%s" />',
 		esc_url( $resolved_url ),
 		esc_attr( $image_alt ),
 		$img_width_part,
@@ -623,7 +634,10 @@ if ( 'image' === $media_type ) {
 		$img_srcset,
 		$img_sizes,
 		$img_aria_hidden,
-		esc_attr( $base_class )
+		esc_attr( $base_class ),
+		esc_attr( $main_loading['loading'] ),
+		esc_attr( $main_loading['fetchpriority'] ),
+		esc_attr( $main_loading['decoding'] )
 	);
 }
 
@@ -1289,8 +1303,9 @@ if ( $naked_mode && '' !== $image_html ) {
 	$naked_height_part = $image_height_attr ? ' height="' . esc_attr( $image_height_attr ) . '"' : '';
 	$naked_aria_hidden = $image_is_decorative ? ' aria-hidden="true"' : '';
 
-	$image_html = sprintf(
-		'<img src="%s" alt="%s"%s%s%s%s%s%s class="%s" loading="lazy" decoding="async" />',
+	$naked_loading = sgs_image_loading_attrs();
+	$image_html    = sprintf(
+		'<img src="%s" alt="%s"%s%s%s%s%s%s class="%s" loading="%s" fetchpriority="%s" decoding="%s" />',
 		esc_url( $naked_resolved_url ),
 		esc_attr( $image_alt_attr ),
 		$naked_width_part,
@@ -1299,7 +1314,10 @@ if ( $naked_mode && '' !== $image_html ) {
 		$naked_sizes,
 		$id_attr,
 		$naked_aria_hidden,
-		esc_attr( $merged_classes )
+		esc_attr( $merged_classes ),
+		esc_attr( $naked_loading['loading'] ),
+		esc_attr( $naked_loading['fetchpriority'] ),
+		esc_attr( $naked_loading['decoding'] )
 	);
 }
 

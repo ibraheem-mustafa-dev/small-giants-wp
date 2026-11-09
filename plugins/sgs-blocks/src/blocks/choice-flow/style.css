@@ -971,7 +971,7 @@
  * -lines/-total/-note elements) beside the step pane (the existing __inner)
  * — and the footer bar. Container queries (not viewport media queries)
  * drive every tier, named on this wrapper (`sgs-choice-flow-showcase`), so
- * the flow's tier follows its own width. Below 600px the stage collapses to
+ * the flow's tier follows its own width. Below 768px the stage collapses to
  * a slim row above the steps.
  *
  * Surfaces: the bars sit on the raised background (surface-alt), the body
@@ -1017,7 +1017,7 @@
 	flex-shrink: 0;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__chrome-header {
 		padding: 16px 28px;
 	}
@@ -1100,7 +1100,7 @@
 	gap: 0;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
 		grid-template-columns: minmax(250px, .7fr) minmax(0, 1.6fr);
 		align-content: stretch;
@@ -1171,7 +1171,7 @@
 	gap: 4px;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary {
 		position: sticky;
 		top: 0;
@@ -1352,7 +1352,7 @@
 	white-space: nowrap;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-total-value {
 		font-size: 34px;
 	}
@@ -1435,7 +1435,7 @@
 	margin-top: 28px;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-note--pane {
 		display: none;
 	}
@@ -1448,7 +1448,7 @@
 	padding: 24px 20px 40px;
 }
 
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner {
 		padding: 40px 44px 56px;
 	}
@@ -1477,7 +1477,7 @@
 /* 8px above and below the footer's buttons: with a 52px button preset the
    footer stays about as short as a text-only one, so a stage that fills
    the column keeps its total above the footer on a 900px-tall screen. */
-@container sgs-choice-flow-showcase (min-width: 600px) {
+@container sgs-choice-flow-showcase (min-width: 768px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__footer {
 		padding: 8px 28px calc(8px + env(safe-area-inset-bottom, 0px));
 	}
@@ -1554,7 +1554,7 @@
 	cursor: pointer;
 }
 
-@container sgs-choice-flow-showcase (max-width: 599px) {
+@container sgs-choice-flow-showcase (max-width: 767px) {
 	.sgs-choice-flow--layout-showcase .sgs-choice-flow__skip {
 		display: none;
 	}
@@ -1585,4 +1585,57 @@
 	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
 	border: 0;
+}
+
+/* ----- Height fit (showcase, two columns, definite height) -----
+   When the flow has a definite height (full-screen, in a modal) the body row
+   is exactly that tall, and the stage photo gives up height before the stage
+   scrolls: it shrinks down to a 56px floor and never grows past its square.
+   Shrinking is flex-shrink, which does nothing without a definite height, so
+   an inline flow keeps its square photo. Under 700px tall the stage tightens
+   its padding and gaps so its note stays on screen. */
+@container sgs-choice-flow-showcase (min-width: 768px) {
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
+		grid-template-rows: minmax(0, 1fr);
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner {
+		align-self: start;
+		min-height: 100%;
+	}
+
+	/* A step with pictured options passes the row's height down to them. */
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner:has(> .sgs-form-step:not([hidden]) .sgs-choice-flow-question__option-media) {
+		display: flex;
+		flex-direction: column;
+		align-self: stretch;
+		min-height: 0;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
+		flex: 1 1 auto;
+		min-height: 0;
+		grid-template-rows: minmax(0, 1fr);
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media {
+		flex: 0 1 auto;
+		min-height: 56px;
+	}
+
+	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
+		height: 100%;
+	}
+}
+
+@media (max-height: 700px) {
+	@container sgs-choice-flow-showcase (min-width: 768px) {
+		.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-toggle {
+			padding-block: 12px;
+		}
+
+		.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-body {
+			gap: 10px;
+		}
+	}
 }

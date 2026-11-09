@@ -19,7 +19,8 @@
  *   hoverRate      playback rate while a mouse or pen is over the block: 1 no change, 0 pauses.
  *   touchPause     off or tap (a tap pauses, the next tap resumes; the default).
  *   edgeFade       fade the two ends; edgeFadeWidth is the fade's size as a percentage of the root.
- *   belowBreakpoint always, tablet (1023px and below) or mobile (767px and below); static outside the range.
+ *   belowBreakpoint always, tablet (1023px and below), mobile (767px and below) or overflow; static outside the range.
+ *                  `overflow` runs at every width, but only while one un-duplicated set is wider (or taller) than the root.
  *   pauseControl   the pause button; off by default. Hover and keyboard-focus pause do not depend on it.
  *
  * When the marquee cannot run (reduced motion, off at this device tier, outside the range, no Web Animations) nothing is cloned or animated and
@@ -94,7 +95,9 @@ export function readMarquee( root ) {
 		edgeFade: attr( 'edge-fade' ) === 'true',
 		edgeFadeWidth:
 			fade !== null && fade >= 0 && fade <= 50 ? fade : DEFAULT_FADE,
-		below: below === 'tablet' || below === 'mobile' ? below : 'always',
+		below: [ 'tablet', 'mobile', 'overflow' ].includes( below )
+			? below
+			: 'always',
 		pauseControl: attr( 'pause-control' ) === 'true',
 	};
 }
@@ -295,6 +298,12 @@ export function createMarquee( root ) {
 			if ( 0 === loops.length ) {
 				unmark();
 			}
+			return;
+		}
+		if ( 'overflow' === settings.below && size <= view ) {
+			// The un-duplicated set fits the root: nothing to scroll. The copies are never measured, so the resize
+			// observer's callback cannot loop on them.
+			teardown();
 			return;
 		}
 		if (

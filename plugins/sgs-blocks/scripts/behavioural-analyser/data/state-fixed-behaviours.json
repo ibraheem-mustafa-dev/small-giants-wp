@@ -2975,6 +2975,11 @@
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
    "selector": ".sgs-form__button:where(:not(:disabled)):focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "reason": "the site's button-preset lift token; a form's own submitLiftHover setting resets it"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/google-rating-badge/style.css",
+   "selector": ":where(a.sgs-google-rating-badge__link:hover)",
+   "reason": "Google's brand blue as the default hover border; zero specificity, so a block's borderColourHover setting wins"
   }
  ]
 }

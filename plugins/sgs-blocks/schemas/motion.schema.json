@@ -9062,11 +9062,12 @@
 				},
 				"belowBreakpoint": {
 					"$ref": "#/$defs/choice",
-					"description": "Run only at this tier and below; static above.",
+					"description": "Run only at this tier and below (static above), or only when the items do not fit the block.",
 					"enum": [
 						"always",
 						"tablet",
-						"mobile"
+						"mobile",
+						"overflow"
 					],
 					"x-sgs-field": {
 						"fieldType": "choice",

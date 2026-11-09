@@ -370,14 +370,17 @@ preg_match( '/id="([^"]*)"/', $sgs_di_wrapper_attrs, $sgs_di_id_match );
 $sgs_di_extra_class = trim( wp_specialchars_decode( $sgs_di_class_match[1] ?? '', ENT_QUOTES ) );
 $sgs_di_anchor      = wp_specialchars_decode( $sgs_di_id_match[1] ?? '', ENT_QUOTES );
 
+// Loading hints: an ornament may load eagerly above the fold but never takes the page's priority slot.
+$sgs_di_loading = sgs_image_loading_attrs( false );
+
 // Build data attributes — passed directly through $img_attrs for proper escaping.
 $img_attrs = array(
 	// `sgs-media-el` is the shared atom layer's marker for the REPLACED
 	// element (object-fit/focal-point read it) — added Wave 6, 2026-09-02.
 	'class'    => trim( 'sgs-decorative-image sgs-media-el ' . $uid . ' ' . $sgs_di_extra_class ),
 	'alt'      => $rendered_alt,
-	'loading'  => 'lazy',
-	'decoding' => 'async',
+	'loading'  => $sgs_di_loading['loading'],
+	'decoding' => $sgs_di_loading['decoding'],
 );
 if ( $image_decorative ) {
 	$img_attrs['aria-hidden'] = 'true';
@@ -646,8 +649,8 @@ if ( $sgs_di_wants_wrapper ) {
 	$media_attrs = array(
 		'class'    => empty( $tier_imgs ) ? $sgs_media_class . ' sgs-media-el' : $img_attrs['class'],
 		'alt'      => $rendered_alt,
-		'loading'  => 'lazy',
-		'decoding' => 'async',
+		'loading'  => $sgs_di_loading['loading'],
+		'decoding' => $sgs_di_loading['decoding'],
 	);
 	// With content the wrapper stays readable, so a decorative <img> hides itself.
 	if ( $has_content && $image_decorative ) {

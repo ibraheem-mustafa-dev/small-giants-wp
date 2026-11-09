@@ -271,6 +271,11 @@ a.sgs-google-rating-badge__link:hover {
 	filter: brightness(1.04);
 }
 
+/* Google blue hover border for every site; zero specificity, so an author's borderColourHover rule wins. */
+:where(a.sgs-google-rating-badge__link:hover) {
+	border-color: #4285F4;
+}
+
 @media (forced-colors: active) {
 	.sgs-google-rating-badge__link {
 		border: 1px solid CanvasText;

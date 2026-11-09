@@ -1207,7 +1207,7 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) && ! \SGS\
 	<?php if ( '' !== $sgs_resolved_img ) : ?>
 		<?php // F7: media-wrap = positioning context for the featured overlay badge. ?>
 		<div class="sgs-product-card__media-wrap">
-			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"<?php echo sgs_image_size_attrs( (string) $sgs_resolved_img ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric attributes. ?> loading="lazy" decoding="async">
+			<img class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>" src="<?php echo esc_url( $sgs_resolved_img ); ?>" alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"<?php echo sgs_image_size_attrs( (string) $sgs_resolved_img ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric attributes. ?> <?php $sgs_pc_load_o = sgs_image_loading_attrs(); ?>loading="<?php echo esc_attr( $sgs_pc_load_o['loading'] ); ?>" fetchpriority="<?php echo esc_attr( $sgs_pc_load_o['fetchpriority'] ); ?>" decoding="<?php echo esc_attr( $sgs_pc_load_o['decoding'] ); ?>">
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped internally.
 			echo sgs_product_card_brand_markup( $attributes );
@@ -1623,16 +1623,16 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 				<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 				<?php endif; ?>
 				<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
-				<?php $sgs_pc_img_priority = sgs_content_image_claims_priority(); ?>
+				<?php $sgs_pc_load = sgs_image_loading_attrs(); ?>
 				<img
 					class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 					src="<?php echo esc_url( $image_src ); ?>"
 					alt="<?php echo esc_attr( $sgs_img_override ? $sgs_resolved_img_alt : $data['image_alt'] ); ?>"
 					<?php echo $def_img_w > 0 ? 'width="' . esc_attr( (string) $def_img_w ) . '"' : ''; ?>
 					<?php echo $def_img_h > 0 ? 'height="' . esc_attr( (string) $def_img_h ) . '"' : ''; ?>
-					loading="<?php echo $sgs_pc_img_priority ? 'eager' : 'lazy'; ?>"
-					fetchpriority="<?php echo $sgs_pc_img_priority ? 'high' : 'auto'; ?>"
-					decoding="async"
+					loading="<?php echo esc_attr( $sgs_pc_load['loading'] ); ?>"
+					fetchpriority="<?php echo esc_attr( $sgs_pc_load['fetchpriority'] ); ?>"
+					decoding="<?php echo esc_attr( $sgs_pc_load['decoding'] ); ?>"
 					<?php // FP-H FINAL-FORM: binds stay under an image override — the override is the DEFAULT image; variation photos still swap in. ?>
 					data-wp-bind--src="context.imageSrc"
 					data-wp-bind--alt="context.imageAlt"
@@ -2057,14 +2057,14 @@ ob_start();
 	<a class="product-card__img-link" href="<?php echo $card_permalink; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd above. ?>" tabindex="-1" aria-hidden="true">
 	<?php endif; ?>
 	<?php // Only the page's likely LCP image loads eagerly at high priority (helpers-media.php). ?>
-	<?php $sgs_pc_img_priority = sgs_content_image_claims_priority(); ?>
+	<?php $sgs_pc_load = sgs_image_loading_attrs(); ?>
 	<img
 		class="<?php echo esc_attr( $sgs_pc_main_img_class ); ?>"
 		src="<?php echo esc_url( $sgs_resolved_img ); ?>"
 		alt="<?php echo esc_attr( $sgs_resolved_img_alt ); ?>"
-		loading="<?php echo $sgs_pc_img_priority ? 'eager' : 'lazy'; ?>"
-		fetchpriority="<?php echo $sgs_pc_img_priority ? 'high' : 'auto'; ?>"
-		decoding="async"
+		loading="<?php echo esc_attr( $sgs_pc_load['loading'] ); ?>"
+		fetchpriority="<?php echo esc_attr( $sgs_pc_load['fetchpriority'] ); ?>"
+		decoding="<?php echo esc_attr( $sgs_pc_load['decoding'] ); ?>"
 		<?php if ( ! $sgs_img_override ) : // FP-H: a typed override image is STATIC — no reactive swap binds. ?>
 		data-wp-bind--src="context.imageSrc"
 		data-wp-bind--alt="context.imageAlt"

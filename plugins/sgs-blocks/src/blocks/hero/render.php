@@ -195,10 +195,14 @@ $sgs_hero_resolve_split_poster = static function ( array $attributes, string $su
 	if ( '' === $poster_url ) {
 		return '';
 	}
+	$poster_loading = sgs_image_loading_attrs();
 	return sprintf(
-		'<img src="%s" alt="" aria-hidden="true"%s class="sgs-media-el" loading="lazy" decoding="async" />',
+		'<img src="%s" alt="" aria-hidden="true"%s class="sgs-media-el" loading="%s" fetchpriority="%s" decoding="%s" />',
 		esc_url( $poster_url ),
-		sgs_image_size_attrs( $poster_url )
+		sgs_image_size_attrs( $poster_url ),
+		esc_attr( $poster_loading['loading'] ),
+		esc_attr( $poster_loading['fetchpriority'] ),
+		esc_attr( $poster_loading['decoding'] )
 	);
 };
 $split_image                   = $sgs_hero_resolve_split_image( $attributes, '' );

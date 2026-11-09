@@ -107,6 +107,7 @@ $badge_image_shadow_colour_hover = isset( $attributes['badgeImageShadowColourHov
 $tb_marquee_track = sgs_motion_root_has_effect( $attributes, 'marquee' );
 
 // The layer's range: a layer with no `belowBreakpoint` (or `always`) runs at every width.
+// `overflow` also counts as every width: the runtime decides by measuring, so the drop mode stays off and no badge is hidden before the ticker can start.
 $tb_marquee_always = false;
 if ( $tb_marquee_track ) {
 	foreach ( (array) ( $attributes['sgsMotion']['elements']['root']['effects'] ?? array() ) as $tb_layer ) {

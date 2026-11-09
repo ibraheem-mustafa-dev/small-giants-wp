@@ -74,6 +74,100 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
 }
 
 /**
+ * Open (+1), close (-1) or read (0) the hidden-render depth for this request.
+ *
+ * @param int $delta +1 on entering a hidden surface, -1 on leaving it, 0 to read.
+ * @return int Current depth; never below 0.
+ */
+function sgs_hidden_render_depth( int $delta = 0 ): int {
+	static $depth = 0;
+	$depth        = max( 0, $depth + $delta );
+	return $depth;
+}
+
+/**
+ * Whether markup is being rendered for a surface that is not visible on load (a header's mega panel, the nav drawer,
+ * a modal, the wishlist panel). Images printed there take no eager slot and no page-wide priority.
+ *
+ * @return bool True while inside one of those blocks.
+ */
+function sgs_in_hidden_render_context(): bool {
+	return sgs_hidden_render_depth() > 0;
+}
+
+/**
+ * Block names whose rendered content is hidden until the visitor opens it.
+ *
+ * @return string[] Block names.
+ */
+function sgs_hidden_render_blocks(): array {
+	return array( 'sgs/mega-panel', 'sgs/nav-drawer', 'sgs/modal', 'sgs/wishlist-panel', 'sgs/cart' );
+}
+
+/**
+ * `pre_render_block` callback: entering a hidden-surface block opens the hidden context. Runs last, and a block
+ * another filter has short-circuited opens nothing, because core then skips the `render_block` filter that closes it.
+ *
+ * @param mixed $pre_render   Short-circuit value, returned unchanged.
+ * @param array $parsed_block Parsed block.
+ * @return mixed The unchanged `$pre_render`.
+ */
+function sgs_hidden_render_enter( $pre_render, array $parsed_block ) {
+	if ( null === $pre_render && in_array( $parsed_block['blockName'] ?? '', sgs_hidden_render_blocks(), true ) ) {
+		sgs_hidden_render_depth( 1 );
+	}
+	return $pre_render;
+}
+
+/**
+ * `render_block` callback: leaving a hidden-surface block closes the hidden context.
+ *
+ * @param mixed $block_content Rendered HTML, returned unchanged.
+ * @param array $parsed_block  Parsed block.
+ * @return mixed The unchanged `$block_content`.
+ */
+function sgs_hidden_render_leave( $block_content, array $parsed_block ) {
+	if ( in_array( $parsed_block['blockName'] ?? '', sgs_hidden_render_blocks(), true ) ) {
+		sgs_hidden_render_depth( -1 );
+	}
+	return $block_content;
+}
+
+if ( function_exists( 'add_filter' ) ) {
+	add_filter( 'pre_render_block', 'sgs_hidden_render_enter', PHP_INT_MAX, 2 );
+	add_filter( 'render_block', 'sgs_hidden_render_leave', 10, 2 );
+}
+
+/**
+ * Loading hints for an image that may sit above the fold: the first few visible images on the page load eagerly and
+ * exactly one of them, page-wide, takes `fetchpriority="high"` (the slot shared with sgs_next_background_image_index()).
+ * Every later image, and any image inside a hidden surface, loads lazily. Call once per image that will print.
+ *
+ * An ornament (`$can_lead` false) may load eagerly within the count but never takes the priority slot.
+ *
+ * @param bool $can_lead Whether this image may take the page's one `fetchpriority="high"`.
+ * @return array{loading:string,fetchpriority:string,decoding:string} Attribute values.
+ */
+function sgs_image_loading_attrs( bool $can_lead = true ): array {
+	static $eager_count = 0;
+	$limit              = (int) apply_filters( 'sgs_eager_image_limit', 4 );
+	if ( sgs_in_hidden_render_context() || $eager_count >= $limit ) {
+		return array(
+			'loading'       => 'lazy',
+			'fetchpriority' => 'auto',
+			'decoding'      => 'async',
+		);
+	}
+	++$eager_count;
+	$is_lead = $can_lead && 1 === sgs_next_background_image_index();
+	return array(
+		'loading'       => 'eager',
+		'fetchpriority' => $is_lead ? 'high' : 'auto',
+		'decoding'      => $is_lead ? 'sync' : 'async',
+	);
+}
+
+/**
  * Return the next 1-based index in the PAGE-WIDE background-image render order.
  *
  * LCP (Largest Contentful Paint) priority is a PAGE-level property, not a
@@ -93,10 +187,16 @@ function sgs_responsive_image( int $id, string $url, string $alt = '', string $s
  * needed: "first background image THIS PAGE LOAD rendered." Content images
  * claim the same slot through sgs_content_image_claims_priority().
  *
- * @return int 1 on the first call in this request, 2 on the second, etc.
+ * Markup rendered inside a hidden surface (sgs_in_hidden_render_context()) is never the page's lead image: it
+ * returns 0 and leaves the counter where it was.
+ *
+ * @return int 1 on the first call in this request, 2 on the second, etc.; 0 inside a hidden surface.
  */
 function sgs_next_background_image_index(): int {
 	static $sgs_bg_image_index = 0;
+	if ( sgs_in_hidden_render_context() ) {
+		return 0;
+	}
 	++$sgs_bg_image_index;
 	return $sgs_bg_image_index;
 }
