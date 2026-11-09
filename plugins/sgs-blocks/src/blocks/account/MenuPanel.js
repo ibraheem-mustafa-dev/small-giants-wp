@@ -68,6 +68,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					menuOrdersCount: undefined,
 					menuOrder: undefined,
 					tabHeadings: undefined,
+					headingMarginBottom: undefined,
 				} )
 			}
 		>
@@ -165,6 +166,27 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				name="tabHeadings"
 				label={ __( 'Heading on each tab', 'sgs-blocks' ) }
 			/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Space under headings', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.headingMarginBottom && Object.keys( attributes.headingMarginBottom ).length > 0 }
+				onDeselect={ () => setAttributes( { headingMarginBottom: undefined } ) }
+			>
+			<ResponsiveControl label={ __( 'Space under headings', 'sgs-blocks' ) }>
+				{ ( breakpoint ) => (
+					<SgsLengthControl
+						presets
+						hideLabelFromVision
+						label={ __( 'Space under headings', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps 0.5rem.', 'sgs-blocks' ) }
+						value={ attributes.headingMarginBottom?.[ breakpoint ] ?? '' }
+						onChange={ ( value ) =>
+							patchTier( attributes, setAttributes, 'headingMarginBottom', breakpoint, value )
+						}
+					/>
+				) }
+			</ResponsiveControl>
 			</ToolsPanelItem>
 
 			<ToolsPanelItem

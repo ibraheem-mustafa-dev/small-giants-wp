@@ -164,5 +164,19 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	ok( '<div>cart</div>' === $out, 'the cart block is unchanged' );
 }
 
+// 7) Heading bottom margin.
+foreach ( array( 'helpers-responsive.php', 'helpers-border-style.php', 'account/helpers-account-look-css.php', 'account/helpers-account-render-css.php' ) as $dep ) {
+	if ( is_file( $base . '/includes/' . $dep ) ) {
+		require_once $base . '/includes/' . $dep;
+	}
+}
+if ( function_exists( 'sgs_account_heading_spacing_css' ) ) {
+	ok( '' === sgs_account_heading_spacing_css( array(), '.r' ), 'headingMarginBottom unset prints nothing, so 0.5rem stays' );
+	$css = sgs_account_heading_spacing_css( array( 'headingMarginBottom' => array( 'desktop' => '20px' ) ), '.r' );
+	ok( false !== strpos( $css, '.r .sgs-account__heading' ) && false !== strpos( $css, 'margin-bottom:20px' ), 'headingMarginBottom prints a real margin-bottom on the heading' );
+} else {
+	ok( false, 'sgs_account_heading_spacing_css exists' );
+}
+
 echo "\n$passes passed, $failures failed\n";
 exit( $failures > 0 ? 1 : 0 );

@@ -1451,6 +1451,10 @@
 			"type": "string",
 			"default": "solid"
 		},
+		"headingMarginBottom": {
+			"type": "object",
+			"description": "Space under each heading per device: {desktop,tablet,mobile}, each a CSS length or a spacing preset. Unset = 0.5rem."
+		},
 		"headingColour": {
 			"type": "string",
 			"default": ""

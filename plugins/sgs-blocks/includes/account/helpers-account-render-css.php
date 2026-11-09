@@ -15,6 +15,33 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 
+if ( ! function_exists( 'sgs_account_heading_spacing_css' ) ) {
+	/**
+	 * Space under the headings (`headingMarginBottom`, per device): a real margin-bottom on `.sgs-account__heading`.
+	 * Unset prints nothing, so the stylesheet's 0.5rem stays.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   Scoped root selector.
+	 * @return string CSS text (may be '').
+	 */
+	function sgs_account_heading_spacing_css( array $attributes, string $root_sel ): string {
+		$value = $attributes['headingMarginBottom'] ?? null;
+		if ( ! is_array( $value ) || array() === $value ) {
+			return '';
+		}
+		return sgs_emit_responsive_css(
+			$root_sel . ' .sgs-account__heading',
+			array(
+				array(
+					'value'     => $value,
+					'css'       => 'margin-bottom',
+					'transform' => 'sgs_account_length_transform',
+				),
+			)
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_account_menu_icon_css' ) ) {
 	/**
 	 * Build the `::before` mask-image CSS that paints one Lucide icon per
@@ -232,6 +259,7 @@ if ( ! function_exists( 'sgs_account_scoped_css' ) ) {
 			)
 		);
 		$css[] = sgs_typography_css_rule( $attributes, 'heading', $root_sel . ' .sgs-account__heading', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
+		$css[] = sgs_account_heading_spacing_css( $attributes, $root_sel );
 		$css[] = sgs_typography_css_rule( $attributes, 'cardTitle', $root_sel . ' .sgs-account__card-title', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
 		$css[] = sgs_typography_css_rule( $attributes, 'cardDesc', $root_sel . ' .sgs-account__card-desc', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
 		$css[] = sgs_typography_css_rule( $attributes, 'chip', $root_sel . ' .sgs-account__chip', '', false, false, sgs_object_attr_keys( 'sgs/account' ) );
