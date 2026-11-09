@@ -318,7 +318,7 @@ Flows pass after the deploy.
 
 **Editor:** 16 targets 0 invalid in a full run (`E:/sgs-tmp/r10/editor-full.log`); archive-product's warnings appeared only in runs made while the walks loaded the site, with one SGS block fewer each time (an editor preview fetch failing under load), never in a quiet run.
 
-**Next deploy to eye-care-test (open):** eye-care-test runs `53d789aa5`; main now carries Indus's framework-wide touch change (`de16441ea`..`743df200c`): hover is no longer suppressed on touch screens (Customiser, SGS Interaction, "Hover effects on touch screens" defaults to "Show on tap"; "Desktop only" restores the old behaviour), `:focus-within` paints are now keyboard focus only, and magnet defaults are gentler. After the next deploy, tap through the header, shop cards, bag and size guide at 375 and compare with the draft; if tapped hovers stick where the draft shows none, set "Desktop only" on eye-care-test.
+**Touch-hover change (deployed with round 12, tap-check open):** eye-care-test now runs the framework through `24095ea4f`, which carries Indus's framework-wide touch change (`de16441ea`..`743df200c`): hover is no longer suppressed on touch screens (Customiser, SGS Interaction, "Hover effects on touch screens" defaults to "Show on tap"; "Desktop only" restores the old behaviour), `:focus-within` paints are now keyboard focus only, and magnet defaults are gentler. Tap through the header, shop cards, bag and size guide at 375 and compare with the draft; if tapped hovers stick where the draft shows none, set "Desktop only" on eye-care-test.
 
 ## Four build rules for every item
 
@@ -730,7 +730,23 @@ Causes proven on the live page or in code, proposed to Bean and council-checked 
 | 14 | One combined logo, truly centred; reverses R4-9 | media + setting |
 | 15 | Entrances set on Home, Shop, Product and Help; hero text fades on load; Ken Burns prints its first frame; shop loop staggers 70ms; accordion answers accept motion | settings + framework |
 
-Open: reload offset (about 25px) not traced; express checkout and the unchecked-pages list are the next step.
+## Round 12 (Bean's second list, 2026-11-09; live 2026-11-09)
+
+Applied on eye-care-test and checked live in real Chrome at the widths named; backups `sites/eye-care-ward-end/build/backups/2026-11-09-r12/` (local only). Framework commits `f791e433b`, `4b3c5d95d`, `17f2b7115`, `cc6f5ca3a`, `b74c498fb`, `24095ea4f` (plus the generated-file and gate chores `ecb9f697e`, `ca528a403`, `ff4c89175`, `7f108546d`); eye-care-test runs the framework through `24095ea4f`.
+
+| Surface | Fix | Layer |
+|---|---|---|
+| Header, post 199 | Row shrink padding keeps its side gutters when sticky; Google pill padding 4px 10px; call button black with a taupe pill border on hover; logo is attachment 1657 (BIRMINGHAM in brand taupe) | settings + media |
+| Header, post 199 | Trust bar marquee `belowBreakpoint: overflow`: the ticker runs when the badges do not fit and stays still at 1440 and 1920 | framework (Spec 38A FR-38A-44) + setting |
+| Contact, post 190 | Right column layout stack, map fills its column (`sgsChildSizing`); Clinic/Hours and Google/Instagram boxes end level at 713px at 1440 | settings + framework (Spec 02 FR-2-20) |
+| Home, post 208 | Four reasons and Google reviews `contentWidth` 1544px; brand slider full width; hero parallax on the Background part (speed ratio 0.18, page basis, `background: true`) moves the real image; hero h1 `fontSize.desktop` is the stylesheet `hero` size; photo hover zoom clips automatically | settings + framework (Spec 38A FR-38A-43, Spec 02 FR-2-20) |
+| Lens flow, post 463 | Q2's black outline replaced by a taupe outline on the recommended option only; "Most people pick this" tag top left of the image in the darker taupe; fit-to-screen and four across only from a 2200px container; summary photo with no white bars | settings + framework (Spec 43 FR-43-24a) |
+| Global styles, post 48 | Presets `x-large` 22px, `xx-large` 28px and `hero` clamp(42px, 4.4vw, 72px) | settings + framework (Spec 32, Spec 01) |
+| Whole site | The first sixteen visible images load eagerly and hidden menus take no image slot; a draft's `clamp()` or `vw` font size is used as written | framework (Spec 02 FR-2-20, Spec 32) |
+
+Custom CSS kept until Spec 49 gives it a control: the hero focal points on post 208, and the tag and outline on post 463.
+
+Open for Eye Care (next session): the reload offset of about 25px is not traced; six entrance rows are unmeasured (filter chip, filter drawer, thank-you message, phone menu rise, size modal, lens steps); the side-by-side beside the draft at 375, 768 and 1440 (768 mostly unchecked); the checkout, account and thank-you differences in `.claude/reports/2026-11-09-eye-care-unchecked-pages.md` (about 17, read-only, nothing fixed); non-admin customer sessions need a test customer login (only the admin exists), and Stripe and the wallets are untested. Bean's original wording of 8 November: `.claude/reports/2026-11-09-bean-eye-care-list-wording.md`.
 
 ## Closed (checked; no change)
 

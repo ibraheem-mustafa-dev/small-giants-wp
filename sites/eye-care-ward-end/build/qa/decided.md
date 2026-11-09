@@ -158,3 +158,12 @@ Decided in round 11 (Bean, 2026-11-09). Do not report:
 - Contact details: phone, email, clinic and hours sit in the same bordered white boxes as Google and Instagram, 14px text, 10px apart; all four hovers are the tight underline, and phone and email keep their 44px tap areas.
 - The accordion icon's close spins back with a spring (not in the draft; Bean keeps it).
 - The register form's privacy line is one short line with a link.
+
+Decided in round 12 (Bean, 2026-11-09). Do not report:
+- The header's side gutters do not change when it turns sticky (reverses the draft).
+- The drawer call button's hover border is taupe: measured as the `accent` taupe. Bean reported black; ask whether he still sees black before changing it.
+- The white line under Four reasons on the home page was a page-load artefact, not a bug.
+- A draft's font sizes are copied verbatim, including `vw` clamps (Specs 01, 32, 35A and 48 say so); the hero h1 uses the `hero` size, clamp(42px, 4.4vw, 72px).
+- The trust bar is a still row when its badges fit and a ticker only when they do not (`belowBreakpoint: overflow`); it stays still at 1440 and 1920.
+- The hero parallax moves the Background part's real image (speed ratio 0.18, page basis); the lens flow fits the screen and shows four columns only from a 2200px container.
+- The hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until Spec 49.

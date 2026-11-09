@@ -40,31 +40,39 @@ Rules:
 
 ## Indus (complete: Bean signed it off 2026-11-08)
 
-- **Live:** framework `f579fdb33` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run `08c04900a`. The shared framework DB is sha `7c850505b401`.
+- **Live:** framework `f579fdb33` deployed to indus-test, and local-indus pushed to it (site-check 0 failed). sandybrown and mamas-test run the same framework code (deploy marker `e2c227b79`, a docs-only commit after `f579fdb33`; deployed 2026-11-09). The shared framework DB is sha `7c850505b401`.
 - **Bean's list:** `sites/indus-foods/build/qa/bean-r8-issues-list.txt`, 117 items. Per-item records are in `E:/sgs-tmp/indus-r8/bean-list/items-v2/<group>/<id>.json` (recount with `E:/sgs-tmp/indus-r8/bean-list/board/aggregate.py`). The board's 118th row, TABLE-records, is a tooling item and not on Bean's list. Bean's rulings are D-29, D-35, D-36, D-40, D-41 and D-42 in `divergences.json`.
 - **Status:** 111 fixed, 4 ruled, 2 not faults. HP8 (Why Choose icon hover), AP1B (option pill lift timing) and AB7 (timeline card row gap and tablet width) were fixed again on 2026-11-08 after targeted reads found residuals.
 - **Bean's review of 2026-11-08 (12 items plus 8 he added): done and checked by sight on indus-test at framework `075c83652`** (shared DB `249cbaa57941`; fix catalogue, "Round 9"). The darker drawer blue was the draft's top-right glow, added in round 9b.
 - **Bean's second review of 2026-11-08 (5 items): done, worked from the draft's source** (framework `ba6e4644e`, shared DB `c9b6e97f9a6e`; fix catalogue, "Round 9b").
 - **Bean's last look of 2026-11-08 (4 items): done and checked by sight on indus-test** (framework `8372f42b0`, shared DB `7c850505b401`; fix catalogue, "Round 10").
 - **Bean's follow-up of 2026-11-08 (6 items): done and checked by sight on indus-test** (framework `f579fdb33`; fix catalogue, "Round 11").
-- **Signed off by Bean 2026-11-08** after round 11. sandybrown and mamas-test are brought up to the same framework (one site at a time).
+- **Signed off by Bean 2026-11-08** after round 11. sandybrown and mamas-test run the same framework (deployed 2026-11-09).
 - **Noticed, not on Bean's list:**
   - The drawer sectors card hover shadow (ND16) uses the desktop card's value: alpha .40 against .45. Not visible; Bean dropped a per-device shadow redesign for it.
   - The trade-account button hides at 1199px and below.
 
 ## Mama's (after Eye Care)
 
-- **Live:** mamas-test, framework `08c04900a`. Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/2026-11-05-mamas-merged-round.md`).
+- **Live:** mamas-test, framework code `f579fdb33` (marker `e2c227b79`); it does not have Eye Care round 12's framework commits (`f791e433b` to `24095ea4f`). Its content was pushed on 2026-11-05 (site-check 0 failed). Rounds P0 and R4 to R6 and the merged round are done (fix catalogue; `plans/2026-11-05-mamas-merged-round.md`).
 - **Next:** Bean's look at mamas-test and his issues list, worked as above. The merged round plan's "Open" list holds what earlier rounds left.
+- **Waiting on Spec 49:** Mama's media work (images, backgrounds, effects on them) waits for the media system's cutover (`specs/49-SGS-MEDIA-SYSTEM.md`; plan register `plans/2026-11-09-media-controls-redesign.md`), so it is built once on the new controls.
 
 ## Eye Care (now)
 
-- **Live:** eye-care-test, edited directly. Rounds 1 to 10 and the clean first paint are live (eye-care-test runs `d78a2ef5e`). The decided differences are in `decided.md`, and the round history is in the fix register.
-- **Next:** first propose every item's issue and fix to Bean for critique (he checks for features already built and whether each fix is optimal and robust long term) and apply nothing before his go; then apply Bean's list `.claude/prompts/Eye Care Bean list 2026-11-08.md` (15 items). Every item is investigated (2026-11-08, read-only): its cause and fix (post, block and setting, or framework file) are under "Findings" in that file, with the entrance sweep in `sites/eye-care-ward-end/build/qa/r11/entrances-2026-11-08.md` and the comparison of the pages Bean has not checked (checkout, account after sign-in, order confirmation). Settings first, then the framework fixes (link-style button hover colour, form buttons' preset lift, focus return with `preventScroll`, modal close scroll, buybox photo swap, cart icon-mode hover, accordion icon close); deploy eye-care-test; check each by sight beside the draft (`node E:/sgs-tmp/ec-r11/serve-draft.mjs`, port 5182); then Bean's approval.
-  - The draft's index is `Eye Care Birmingham.dc.html`; the product pair uses gucci-oversized-cat-eye with the draft set to `curId: 2`.
-  - Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only: some backups hold public embed keys the secret scanner flags).
-  - The next deploy to eye-care-test carries the touch-hover change; tap-check it at 375.
+- **Live:** eye-care-test, edited directly, framework through `24095ea4f` (marker, 2026-11-09). Rounds 1 to 12 and the clean first paint are live: round 11 is Bean's 15-item list of 2026-11-08 and round 12 his second list of 2026-11-09, both in the fix register (`plans/2026-10-02-eye-care-fix-register.md`, "Round 11" and "Round 12"), verified live in real Chrome. The decided differences, including Bean's round 12 rulings, are in `decided.md`.
+- **Next, in order:**
+  1. Run `/qc-council` on round 12's framework code (`f791e433b` to `24095ea4f`, Spec 02 FR-2-20, Spec 38A FR-38A-43 and FR-38A-44, Spec 43 FR-43-24a, Spec 32): it has not been run.
+  2. Compare the pages Bean has not checked: the 17 or so differences on checkout, account and thank-you are in `.claude/reports/2026-11-09-eye-care-unchecked-pages.md` (read-only, nothing fixed); fix each at its root cause, then check beside the draft (`node E:/sgs-tmp/ec-r11/serve-draft.mjs`, port 5182; the draft's index is `Eye Care Birmingham.dc.html`, the product pair uses gucci-oversized-cat-eye with `curId: 2`).
+  3. Side-by-side of every page beside the draft at 375, 768 and 1440 (768 is mostly unchecked), including a tap-through of the header, shop cards, bag and size guide at 375 for the touch-hover change that deployed with round 12.
+  4. Trace the reload offset (about 25px).
+  5. Measure the six entrance rows not yet measured: filter chip, filter drawer, thank-you message, phone menu rise, size modal and lens steps (the 2026-11-08 sweep is `sites/eye-care-ward-end/build/qa/r11/entrances-2026-11-08.md`; parallax is checked).
+  6. Non-admin customer sessions need a test customer login (only the admin exists); Stripe and the wallets are untested.
+  7. Then Bean's approval.
+- **Waiting on Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until the media system (`specs/49-SGS-MEDIA-SYSTEM.md`, v0.4 draft, awaiting Bean's approval, nothing built) gives them controls. Bean's original wording of 8 November: `.claude/reports/2026-11-09-bean-eye-care-list-wording.md`.
+- Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only: some backups hold public embed keys the secret scanner flags).
 - **Noticed, not on Bean's list:**
+  - `plugins/sgs-blocks/tests/php/run-header-ink-standalone.php` fails 2 of 29, identically on unmodified code; unrelated to round 12, found 2026-11-09.
   - Every page is over the weight budget (R3-23, `plans/2026-11-03-page-weight-budget.md`).
   - The plugin has about 6,500 lint-js formatting errors (R3-25), which needs a quiet window across sessions.
   - eye-care-clone-test (not the presented site) holds 213 blocks in the old single-value shape. Migrate them with `plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py` before its next deploy.
