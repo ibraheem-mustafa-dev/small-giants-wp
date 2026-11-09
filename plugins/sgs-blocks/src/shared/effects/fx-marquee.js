@@ -225,6 +225,8 @@ export function createMarquee( root ) {
 		}
 	}
 
+	let resting = { gaps: 0, padding: 0 };
+
 	// The elements from the lane up to the root: their padding and gaps shape the items' resting layout.
 	function restingChain() {
 		const chain = [];
@@ -312,6 +314,10 @@ export function createMarquee( root ) {
 			return;
 		}
 		const vertical = VERTICAL.includes( settings.direction );
+		// Read while the static layout still applies: the running layout has its own gap.
+		if ( 0 === loops.length && ! root.hasAttribute( 'data-sgs-marquee' ) ) {
+			resting = { gaps: restingGaps( vertical ), padding: restingPadding( vertical ) };
+		}
 		// The set is measured in the running layout: a block can keep the set out of its static layout until the
 		// marquee runs (the trust bar's track is `display: contents` until then), so the marks go on first.
 		root.setAttribute( 'data-sgs-marquee', 'on' );
@@ -326,7 +332,7 @@ export function createMarquee( root ) {
 			}
 			return;
 		}
-		if ( 'overflow' === settings.below && size + restingGaps( vertical ) <= view - restingPadding( vertical ) ) {
+		if ( 'overflow' === settings.below && size + resting.gaps <= view - resting.padding ) {
 			// The un-duplicated set fits the root: nothing to scroll. The copies are never measured, so the resize
 			// observer's callback cannot loop on them.
 			teardown();
