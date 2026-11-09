@@ -52,6 +52,11 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/class-card-grid-items-rest.php';
 		Card_Grid_Items_Rest::register();
 
+		// The measured above-the-fold section count a saved page stores (POST /sgs/v1/fold-scan/<id>, Spec 38A §9).
+		require_once SGS_BLOCKS_PATH . 'includes/motion/class-sgs-fold-scan-rest.php';
+		\SGS\Blocks\Motion\Sgs_Fold_Scan::register();
+		\SGS\Blocks\Motion\Sgs_Fold_Scan_Rest::register();
+
 		// Global Block Defaults — REST API, editor injection, admin settings page.
 		require_once SGS_BLOCKS_PATH . 'includes/class-shipped-block-defaults.php';
 		require_once SGS_BLOCKS_PATH . 'includes/class-block-defaults.php';

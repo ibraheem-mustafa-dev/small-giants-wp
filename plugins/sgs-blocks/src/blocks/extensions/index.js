@@ -71,6 +71,8 @@ import './product-collection-card-min';
 import './post-content-lists';
 import './post-time-to-read-short';
 import './motion';
+// Measures the saved page's real first screen and stores its above-the-fold section count (Spec 38A §9).
+import './fold-scan';
 // The "Highlight" and "Inline photo" rich-text formats, offered by every SGS RichText whose `allowedFormats` lists them (Spec 02 FR-2-4, FR-2-5).
 import './inline-formats';
 
