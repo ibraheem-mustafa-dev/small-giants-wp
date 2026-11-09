@@ -2,7 +2,9 @@
  * Behaviour of the live header height (src/header-behaviours/live-header-height.js) in jsdom: a stylesheet, consumers, a publisher.
  * Each test pairs the behaviour with a negative control: the element or call that must NOT be affected.
  */
+import { chromeOffsetPx } from '../../src/shared/effects/motion-utils';
 import {
+	createHeaderHeightWriter,
 	createHeightPublisher,
 	createLiveHeight,
 	hostSelector,
@@ -91,6 +93,37 @@ describe( 'consumers receive the live value', () => {
 } );
 
 describe( 'the cache follows the page', () => {
+	test( 'continuous additions defer the rebuild until the page is quiet, then run it', async () => {
+		addStyle( '.busy{top:var(--sgs-header-height,0px)}' );
+		const live = createLiveHeight( { delay: DELAY } );
+		live.set( '65px' );
+		const late = addEl( 'busy' );
+		for ( let i = 0; i < 6; i++ ) {
+			await Promise.resolve();
+			jest.advanceTimersByTime( DELAY - 20 );
+			addEl( 'x' );
+			expect( read( late ) ).toBe( '' );
+		}
+		await settle();
+		jest.advanceTimersByTime( DELAY );
+		expect( read( late ) ).toBe( '65px' );
+	} );
+
+	test( 'the rebuild runs on an idle callback when the browser has one', async () => {
+		const idle = jest.fn( ( fn ) => {
+			fn();
+			return 1;
+		} );
+		window.requestIdleCallback = idle;
+		addStyle( '.idl{top:var(--sgs-header-height,0px)}' );
+		createLiveHeight( { delay: DELAY } ).set( '65px' );
+		const el = addEl( 'idl' );
+		await settle();
+		delete window.requestIdleCallback;
+		expect( idle ).toHaveBeenCalled();
+		expect( read( el ) ).toBe( '65px' );
+	} );
+
 	test( 'an element added later receives the current value after the delay, not before', async () => {
 		addStyle( '.stick{top:var(--sgs-header-height,0px)}' );
 		const live = createLiveHeight( { delay: DELAY } );
@@ -161,37 +194,84 @@ describe( 'the resting value', () => {
 		return { live: jest.fn(), resting: jest.fn() };
 	}
 
-	test( 'is not rewritten when the header shrinks while scrolled, and the live value still is', () => {
+	test( 'is not rewritten when the header shrinks or grows back, and the live value always is', () => {
 		const s = sinks();
 		const publish = createHeightPublisher( s );
-		publish( 85, true, false );
-		publish( 65, false, true );
+		publish( 85, true );
+		publish( 65, false );
+		publish( 72, false );
+		publish( 80, false );
 		expect( s.resting ).toHaveBeenCalledTimes( 1 );
 		expect( s.resting ).toHaveBeenCalledWith( '85px' );
-		expect( s.live ).toHaveBeenLastCalledWith( '65px' );
+		expect( s.live.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [ '85px', '65px', '72px', '80px' ] );
 	} );
 
-	test( 'is rewritten on a rise, on an exact publish, at the top of the page and on an unpin', () => {
+	test( 'is rewritten on a rise and on an exact publish, a lower value included', () => {
 		const s = sinks();
 		const publish = createHeightPublisher( s );
-		publish( 65, true, false );
-		publish( 85, false, true );
+		publish( 65, true );
+		publish( 85, false );
 		expect( s.resting ).toHaveBeenLastCalledWith( '85px' );
-		publish( 60, true, true );
+		publish( 60, false );
+		expect( s.resting ).toHaveBeenCalledTimes( 2 );
+		publish( 60, true );
 		expect( s.resting ).toHaveBeenLastCalledWith( '60px' );
-		publish( 50, false, false );
-		expect( s.resting ).toHaveBeenLastCalledWith( '50px' );
-		publish( 0, false, true );
+	} );
+
+	test( 'a 0px publish on unpin reaches both sinks, and a root that then pins again gets the new value', () => {
+		const s = sinks();
+		const publish = createHeightPublisher( s );
+		publish( 85, true );
+		publish( 0, false );
+		expect( s.live ).toHaveBeenLastCalledWith( '0px' );
 		expect( s.resting ).toHaveBeenLastCalledWith( '0px' );
+		publish( 70, false );
+		expect( s.resting ).toHaveBeenLastCalledWith( '70px' );
+	} );
+
+	test( 'the writer puts the resting value on the root property and the live value on the live property', () => {
+		const consumers = { set: jest.fn() };
+		const root = document.documentElement;
+		root.style.removeProperty( '--sgs-header-height' );
+		root.style.removeProperty( '--sgs-header-height-live' );
+		const publish = createHeightPublisher( createHeaderHeightWriter( document, consumers ) );
+		publish( 85, true );
+		publish( 65, false );
+		expect( root.style.getPropertyValue( '--sgs-header-height' ) ).toBe( '85px' );
+		expect( root.style.getPropertyValue( '--sgs-header-height-live' ) ).toBe( '65px' );
+		expect( consumers.set ).toHaveBeenLastCalledWith( '65px' );
+		publish( 0, false );
+		expect( root.style.getPropertyValue( '--sgs-header-height' ) ).toBe( '0px' );
+		expect( root.style.getPropertyValue( '--sgs-header-height-live' ) ).toBe( '0px' );
+		expect( consumers.set ).toHaveBeenLastCalledWith( '0px' );
 	} );
 
 	test( 'an unchanged edge writes nothing', () => {
 		const s = sinks();
 		const publish = createHeightPublisher( s );
-		publish( 85, true, false );
-		publish( 85, false, false );
+		publish( 85, true );
+		publish( 85, false );
 		expect( s.resting ).toHaveBeenCalledTimes( 1 );
 		expect( s.live ).toHaveBeenCalledTimes( 1 );
+	} );
+} );
+
+describe( 'chromeOffsetPx', () => {
+	const root = document.documentElement;
+	afterEach( () => {
+		root.style.removeProperty( '--sgs-header-height' );
+		root.style.removeProperty( '--sgs-header-height-live' );
+	} );
+
+	test( 'reads the live value when it differs from the resting one', () => {
+		root.style.setProperty( '--sgs-header-height', '85px' );
+		root.style.setProperty( '--sgs-header-height-live', '65px' );
+		expect( chromeOffsetPx() ).toBe( 65 );
+	} );
+
+	test( 'reads the resting value when only that is set', () => {
+		root.style.setProperty( '--sgs-header-height', '85px' );
+		expect( chromeOffsetPx() ).toBe( 85 );
 	} );
 } );
 

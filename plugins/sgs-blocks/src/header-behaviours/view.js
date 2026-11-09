@@ -67,7 +67,7 @@
 /* global ResizeObserver */
 
 import { decideSectionTone } from './header-ink-tone.js';
-import { createHeightPublisher, createLiveHeight } from './live-header-height.js';
+import { createHeightPublisher, createHeaderHeightWriter } from './live-header-height.js';
 import {
 	initDirectionScrollState,
 	nextDirectionScrollState,
@@ -425,27 +425,14 @@ function isPageScrollLocked() {
 		// The live edge reaches :root's non-inheriting property and every
 		// consumer element; the inherited resting value is written only when
 		// it rises, flips to 0 or the viewport resizes (live-header-height.js).
-		const liveHeight = createLiveHeight();
-		const publish = createHeightPublisher( {
-			live: function ( px ) {
-				document.documentElement.style.setProperty( '--sgs-header-height-live', px );
-				liveHeight.set( px );
-			},
-			resting: function ( px ) {
-				document.documentElement.style.setProperty( '--sgs-header-height', px );
-			},
-		} );
+		const publish = createHeightPublisher( createHeaderHeightWriter( document ) );
 
 		/**
 		 * @param {boolean} [exact] Publish a lower resting value too (a resize
 		 *                          can genuinely shrink the header).
 		 */
 		function publishGated( exact ) {
-			publish(
-				isHeaderPinned( header ) ? pinnedBottomOffset() : 0,
-				true === exact,
-				window.scrollY > 0
-			);
+			publish( isHeaderPinned( header ) ? pinnedBottomOffset() : 0, true === exact );
 		}
 
 		if ( typeof ResizeObserver === 'undefined' ) {

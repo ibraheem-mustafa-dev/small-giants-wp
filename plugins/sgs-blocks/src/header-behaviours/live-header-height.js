@@ -18,6 +18,13 @@
  *   elements are added or removed, after a stylesheet is added or a `<link>`
  *   loads. An element that stops matching loses its inline property.
  *
+ * Limits. These consumers get the RESTING value while the header is shrunk,
+ * not the live one: a consumer whose rule depends on a class or state
+ * (`.is-open`, `[open]`, `:hover`), a pseudo-element selector that strips to a
+ * dangling combinator, a rule in an `@import`ed sheet, an element inside a
+ * shadow root, and a `var( --sgs-header-height )` inside an inline `style`
+ * attribute. Nothing in the repository does any of these.
+ *
  * @package SGS\Blocks
  */
 
@@ -73,35 +80,29 @@ export function hostSelector( selector ) {
  * Decide which header-height writes happen.
  *
  * @param {{ live: function( string ): void, resting: function( string ): void }} sinks Receivers of each write, as px strings.
- * @return {function( number, boolean, boolean ): void} publish( edge, exact, scrolled )
+ * @return {function( number, boolean ): void} publish( edge, exact )
  */
 export function createHeightPublisher( sinks ) {
 	let live = null;
 	let resting = null;
 	const px = ( edge ) => Math.round( edge ) + 'px';
 
-	return function publish( edge, exact, scrolled ) {
+	return function publish( edge, exact ) {
 		if ( edge !== live ) {
 			live = edge;
 			sinks.live( px( edge ) );
 		}
-		// A lower edge while scrolled is the header shrinking or a row
-		// scrolling away: the live sink already carries it, and a resting
-		// write would restyle the whole page.
-		if (
-			true !== exact &&
-			null !== resting &&
-			edge > 0 &&
-			edge < resting &&
-			scrolled
-		) {
-			return;
-		}
 		if ( edge === resting ) {
 			return;
 		}
-		resting = edge;
-		sinks.resting( px( edge ) );
+		// The inherited resting value restyles the whole page. Without an exact
+		// publish (a resize) it is written only when it first appears, rises
+		// or drops to 0: a header shrinking or growing back passes every
+		// lower value to the live sink alone.
+		if ( true === exact || null === resting || edge > resting || 0 === edge ) {
+			resting = edge;
+			sinks.resting( px( edge ) );
+		}
 	};
 }
 
@@ -113,6 +114,7 @@ export function createLiveHeight( options = {} ) {
 	const doc = options.doc || document;
 	const win = options.win || window;
 	const delay = Number.isFinite( options.delay ) ? options.delay : 200;
+	const maxWait = 8 * delay;
 
 	const valid = new Map();
 	const written = new Map();
@@ -121,6 +123,9 @@ export function createLiveHeight( options = {} ) {
 	let sheetCount = -1;
 	let value = null;
 	let timer = 0;
+	let idle = 0;
+	let firstPending = 0;
+	let lastChange = 0;
 
 	function isValid( selector ) {
 		if ( ! valid.has( selector ) ) {
@@ -195,12 +200,32 @@ export function createLiveHeight( options = {} ) {
 		}
 	}
 
+	// Runs once the page has been quiet for `delay` (or has waited `maxWait`
+	// under continuous changes), then on an idle callback.
+	function onQuiet() {
+		timer = 0;
+		const now = Date.now();
+		const quiet = now - lastChange;
+		if ( quiet < delay && now - firstPending < maxWait ) {
+			timer = win.setTimeout( onQuiet, delay - quiet );
+			return;
+		}
+		firstPending = 0;
+		const run = function () {
+			idle = 0;
+			requery();
+		};
+		idle =
+			typeof win.requestIdleCallback === 'function'
+				? win.requestIdleCallback( run, { timeout: 1000 } )
+				: win.setTimeout( run, 0 );
+	}
+
 	function schedule() {
-		if ( ! timer ) {
-			timer = win.setTimeout( function () {
-				timer = 0;
-				requery();
-			}, delay );
+		lastChange = Date.now();
+		if ( ! timer && ! idle ) {
+			firstPending = lastChange;
+			timer = win.setTimeout( onQuiet, delay );
 		}
 	}
 
@@ -247,5 +272,24 @@ export function createLiveHeight( options = {} ) {
 		},
 		/** Rebuild the cache now. */
 		refresh: requery,
+	};
+}
+
+/**
+ * The receivers of every header-height write.
+ *
+ * @param {Document} [doc]        Document whose root carries the properties.
+ * @param {{ set: function( string ): void }} [liveHeight] Consumer writer.
+ * @return {{ live: function( string ): void, resting: function( string ): void }} Sinks for createHeightPublisher().
+ */
+export function createHeaderHeightWriter( doc = document, liveHeight = createLiveHeight( { doc } ) ) {
+	return {
+		live( px ) {
+			doc.documentElement.style.setProperty( '--sgs-header-height-live', px );
+			liveHeight.set( px );
+		},
+		resting( px ) {
+			doc.documentElement.style.setProperty( PROP, px );
+		},
 	};
 }
