@@ -7,6 +7,8 @@
  * @package SGS\Blocks
  */
 
+import { announceModalOpen } from './modal-motion-state';
+
 /**
  * Open a modal using native dialog.showModal().
  *
@@ -39,6 +41,7 @@
  */
 export function openModal( dialog, closeButton, opener ) {
 	dialog.showModal();
+	announceModalOpen( dialog );
 
 	// Lock body scroll — save current position to restore on close.
 	// Real properties (overflow / position / top / width) live in style.css

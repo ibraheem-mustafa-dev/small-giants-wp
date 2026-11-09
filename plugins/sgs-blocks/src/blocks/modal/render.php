@@ -171,7 +171,37 @@ $dialog_rules = array_merge( $dialog_rules, $border['base'] );
 // real top-layer modal (`:modal`, not `[open]` — a plain `[open]` would also
 // match a no-JS server-rendered fallback state this block doesn't have, but
 // `:modal` is the correct native-dialog selector per the shared design doc).
-$scrim_css = sgs_scrim_render( $attributes, $uid, array( 'open' => '.' . $uid . '.sgs-modal__dialog:modal' ) );
+$scrim_fade_ms = sgs_flat_duration_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+$scrim_args    = array( 'open' => '.' . $uid . '.sgs-modal__dialog:modal' );
+if ( $scrim_fade_ms > 0 ) {
+	$scrim_args['enter_ms'] = $scrim_fade_ms;
+	$scrim_args['exit_ms']  = $scrim_fade_ms;
+}
+$scrim_css = sgs_scrim_render( $attributes, $uid, $scrim_args );
+
+// Open animation: the panel's duration, easing and start scale. An unset value keeps style.css's own medium duration,
+// spring easing and 0.95 start scale. The dialog carries the uid class itself, so these out-specify the stylesheet.
+$dialog_sel       = '.' . $uid . '.sgs-modal__dialog';
+$open_duration_ms = sgs_flat_duration_ms( $attributes['openDuration'] ?? 0, 0 );
+$open_easing_name = trim( (string) ( $attributes['openEasing'] ?? '' ) );
+$open_scale_raw   = $attributes['openStartScale'] ?? 0;
+$open_scale       = is_numeric( $open_scale_raw ) ? max( 0.5, min( 1, (float) $open_scale_raw ) ) : 0.0;
+$open_decls       = array();
+if ( $open_duration_ms > 0 ) {
+	$open_decls[] = 'transition-duration:' . $open_duration_ms . 'ms';
+}
+if ( '' !== $open_easing_name ) {
+	$open_decls[] = 'transition-timing-function:' . sgs_motion_easing_css( $open_easing_name, (string) ( $attributes['openEasingCustom'] ?? '' ), 'ease' );
+}
+$open_css = '';
+if ( ! empty( $open_decls ) ) {
+	$open_css .= $dialog_sel . '{' . implode( ';', $open_decls ) . '}';
+}
+if ( $open_scale > 0 && ! $is_fullscreen ) {
+	$open_scale_decl = 'transform:scale(' . rtrim( rtrim( number_format( $open_scale, 3, '.', '' ), '0' ), '.' ) . ')';
+	$open_css       .= $dialog_sel . ':not([open]){' . $open_scale_decl . '}';
+	$open_css       .= '@starting-style{' . $dialog_sel . '[open]{' . $open_scale_decl . '}}';
+}
 
 $wrapper_args = array(
 	'class' => 'sgs-modal ' . $uid . ( 'none' === $trigger_style ? ' sgs-modal--no-trigger' : '' ),
@@ -277,6 +307,9 @@ if ( $close_button_css ) {
 if ( $scrim_css ) {
 	$scoped_css_rules[] = $scrim_css;
 }
+if ( '' !== $open_css ) {
+	$scoped_css_rules[] = $open_css;
+}
 $scoped_css = implode( '', $scoped_css_rules );
 
 // Render.
@@ -306,6 +339,7 @@ $scoped_css = implode( '', $scoped_css_rules );
 	<dialog
 		id="<?php echo esc_attr( $modal_id ); ?>"
 		class="sgs-modal__dialog <?php echo esc_attr( $dialog_size_class ); ?> <?php echo esc_attr( $uid ); ?>"
+		data-sgs-motion-state=""
 		data-close-on-overlay="<?php echo $close_on_overlay ? 'true' : 'false'; ?>"
 		data-open-on-hash-load="<?php echo $open_on_hash_load ? 'true' : 'false'; ?>"
 		aria-label="<?php echo esc_attr( wp_strip_all_tags( $dialog_label ) ); ?>"

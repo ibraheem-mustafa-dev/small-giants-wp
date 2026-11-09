@@ -201,6 +201,41 @@ export function hideContinueHint( flowRoot ) {
 }
 
 /**
+ * Start a step's rise-in: compute the `.is-entering` start state now, then drop the class a frame later, which is what
+ * runs the CSS transition. The forced style computation is what makes the start state exist; a path that happens to
+ * compute style anyway (forward steps call `scrollIntoView`) rose, and Back, which does not, showed the step at rest.
+ *
+ * @param {HTMLElement} stepEl A shown step carrying `.is-entering`.
+ */
+function releaseEntering( stepEl ) {
+	void stepEl.offsetWidth; // Compute the start state.
+	requestAnimationFrame( () => {
+		stepEl.classList.remove( 'is-entering' );
+	} );
+}
+
+/**
+ * Replay the shown step's rise-in, for a flow that was revealed while its pop-up was closed and unseen. A flow with a
+ * `state` entrance plays its own `step-changed` motion, and reduced motion shows the step at rest, so both are left alone.
+ *
+ * @param {HTMLElement} flowRoot Flow wrapper element.
+ */
+export function replayStepEntrance( flowRoot ) {
+	if ( hasStateMotion( flowRoot ) ) {
+		return;
+	}
+	if ( window.matchMedia && window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches ) {
+		return;
+	}
+	const stepEl = getSteps( flowRoot ).find( ( el ) => ! el.hidden );
+	if ( ! stepEl ) {
+		return;
+	}
+	stepEl.classList.add( 'is-entering' );
+	releaseEntering( stepEl );
+}
+
+/**
  * Show exactly one step (by index), hide all others, and update every piece
  * of chrome that depends on the current step (progress, step text, Back
  * visibility, footer actions, the skip link) and the stage, which lists a
@@ -230,9 +265,7 @@ export function showStepByIndex( flowRoot, targetIndex ) {
 	} );
 
 	if ( classic && targetStepEl ) {
-		requestAnimationFrame( () => {
-			targetStepEl.classList.remove( 'is-entering' );
-		} );
+		releaseEntering( targetStepEl );
 	}
 
 	if ( steps.length > 0 ) {

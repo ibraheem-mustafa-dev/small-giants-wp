@@ -17,6 +17,7 @@
 
 import { openModal, closeModal } from './modal-core';
 import { initGenericOpeners, initHashOnLoad } from './open-anywhere';
+import initModalMotionState from './modal-motion-state';
 
 /**
  * Wire up a single dialog's own close button, overlay-click and close-cleanup
@@ -114,6 +115,7 @@ function initTrigger( trigger ) {
 function initModals() {
 	document.querySelectorAll( '.sgs-modal__dialog' ).forEach( initDialog );
 	document.querySelectorAll( '.sgs-modal__trigger' ).forEach( initTrigger );
+	initModalMotionState();
 	initGenericOpeners();
 	initHashOnLoad();
 }

@@ -18,6 +18,8 @@
  * @package SGS\Blocks
  */
 
+import { replayStepEntrance } from './flow-steps.js';
+
 const EYEBROW_SELECTOR         = '.sgs-choice-flow__chrome-eyebrow';
 const HEADER_SELECTOR          = '.sgs-choice-flow__chrome-header';
 const SOURCE_STEP_COUNT_SELECTOR = '.sgs-choice-flow__step-count';
@@ -135,6 +137,8 @@ function wireClose( flowEl ) {
 	new MutationObserver( () => {
 		if ( dialog.open ) {
 			flowEl.focus( { preventScroll: true } );
+			// The first question was revealed while the dialog was closed; rise it in now it can be seen.
+			replayStepEntrance( flowEl );
 			flowEl.querySelectorAll( '.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value' ).forEach( ( totalEl ) => {
 				totalEl.classList.remove( 'is-updated' );
 				void totalEl.offsetWidth; // Restart the animation.

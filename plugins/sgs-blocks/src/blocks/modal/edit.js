@@ -13,6 +13,7 @@ import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../
 import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, backgroundPaintPreview, isCssGradient, usePreviewTier } from '../../utils';
 import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
 import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
+import { DialogOpenMotionControls } from './open-motion-controls';
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -506,6 +507,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   box-shadow (style.css) unchanged. */ }
 				<PanelBody title={ __( 'Dialog shadow', 'sgs-blocks' ) } initialOpen={ false }>
 					<DialogShadowControl attributes={ attributes } setAttributes={ setAttributes } />
+				</PanelBody>
+				{ /* Open animation: duration, easing and start scale of the panel, and the backdrop's fade time. Unset keeps the stylesheet's own values. */ }
+				<PanelBody title={ __( 'Open animation', 'sgs-blocks' ) } initialOpen={ false }>
+					<DialogOpenMotionControls attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 			</InspectorControls>
 
