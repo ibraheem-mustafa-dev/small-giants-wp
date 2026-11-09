@@ -2,7 +2,7 @@
  * Header Behaviours — frontend view script (F1 + F2, Spec 37 FR-37-13; per-row Phase 1).
  *
  * Responsibilities:
- *   1. Publishes `--sgs-header-height` CSS custom property on :root and body
+ *   1. Publishes `--sgs-header-height` CSS custom property on :root
  *      via ResizeObserver so sticky headers don't obscure anchor targets
  *      (WCAG 2.4.11 — scroll-padding-top picks this up via CSS).
  *      The published number is the header's pinned BOTTOM EDGE: its `top`
@@ -270,7 +270,9 @@ function isPageScrollLocked() {
 	}
 
 	/**
-	 * Publish `--sgs-header-height` (integer px) to :root and body.
+	 * Publish `--sgs-header-height` (integer px) to :root. Every element inherits
+	 * it, so each write restyles the whole page: callers publish only when a
+	 * consumer needs the new value (see initHeightPublisher()).
 	 *
 	 * @param {number} bottomEdge Px from the viewport top to the pinned header's
 	 *                            lowest point, or 0 when it is not pinned.
@@ -278,7 +280,6 @@ function isPageScrollLocked() {
 	function publishHeight( bottomEdge ) {
 		const value = Math.round( bottomEdge ) + 'px';
 		document.documentElement.style.setProperty( '--sgs-header-height', value );
-		document.body.style.setProperty( '--sgs-header-height', value );
 	}
 
 	/**
@@ -433,13 +434,41 @@ function isPageScrollLocked() {
 			);
 		}
 
-		function publishGated() {
-			publishHeight( isHeaderPinned( header ) ? pinnedBottomOffset() : 0 );
+		// Last value written. The property is inherited, so a write restyles
+		// the whole page; a value that does not change is never written.
+		let published = null;
+
+		/**
+		 * @param {boolean} [exact] Publish a lower value too (a resize can
+		 *                          genuinely shrink the header).
+		 */
+		function publishGated( exact ) {
+			const edge = isHeaderPinned( header ) ? pinnedBottomOffset() : 0;
+			// While the page is scrolled, the header shrinking or a row
+			// scrolling away only LOWERS the bottom edge. Anchor scroll-padding
+			// and sticky offsets keep the resting value: nothing is ever
+			// covered by the header, and the page is not restyled on every
+			// shrink and hide step. A pinned-to-unpinned flip (0) and any
+			// increase are always published.
+			if (
+				true !== exact &&
+				null !== published &&
+				edge > 0 &&
+				edge < published &&
+				window.scrollY > 0
+			) {
+				return;
+			}
+			if ( edge === published ) {
+				return;
+			}
+			published = edge;
+			publishHeight( edge );
 		}
 
 		if ( typeof ResizeObserver === 'undefined' ) {
 			// Graceful degradation: publish once, still gated.
-			publishGated();
+			publishGated( true );
 			return;
 		}
 
@@ -477,7 +506,7 @@ function isPageScrollLocked() {
 					window.requestAnimationFrame( function () {
 						rafScheduled = false;
 						measuredHeight = header.getBoundingClientRect().height;
-						publishGated();
+						publishGated( true );
 					} );
 				}
 			},
