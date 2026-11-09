@@ -101,7 +101,7 @@ Storage: an object attr `{x,y}`, matching this plugin's established box-family o
 | Native duotone / aspect-ratio / lightbox / sticky | hand-rolled filter/box/JS/position | **HIGH** — check before building any of these |
 | Block style variations w/ inner-element styles ("Section Styles", 6.6) | bespoke variant switching where it's "same structure, different look" | Not adopted: Spec 32 rejects WordPress block style variations; `variant_slots` covers "same structure, different look" |
 | Spacing presets (theme.json) | hand-written spacing values | Med — spacing presets are unaffected by the typography rule below |
-| — (fluid typography: NOT adopted) | — | ⛔ SGS uses EXPLICIT per-device typography values via the tier system + `assets/css/type-scale.css`. `clamp()` on `vw` can fail WCAG 1.4.4 because viewport units ignore browser zoom (GOV.UK never adopted `clamp()`; Designsystemet Norway shipped and reversed it). |
+| — (fluid typography: NOT adopted) | — | ⛔ SGS's own sizes are EXPLICIT per-device values via the tier system + `assets/css/type-scale.css`; WordPress's fluid engine stays off. A client draft's font-size `clamp()` is copied verbatim into the preset `size` (Spec 32 FR-32-16). |
 | `register_block_pattern` + categories/blockTypes | uncategorised patterns | Med — audit existing `patterns/*.php` |
 | Interactivity API (`@wordpress/interactivity`) | hand-rolled view.js DOM code | Med — real rewrite cost |
 | Copy/paste styles (WP 6.2, free) | — | works IF styling is in native `supports` attrs (Spec 32 direction) |

@@ -44,10 +44,10 @@
  * client with a materially different ladder currently inherits this curve. Named as
  * remaining work in D1007, not silently assumed away.
  *
- * ⛔ Do not add `clamp()` here or reintroduce `fluid` in theme.json. Fluid typography was
- * rejected on evidence (D1007): GOV.UK never adopted it, Designsystemet Norway shipped and
- * then reversed it in production, and `clamp()` built on `vw` can fail WCAG 1.4.4 because
- * viewport units ignore browser zoom.
+ * ⛔ Do not add `clamp()` here or reintroduce `fluid` in theme.json. The framework ladder
+ * steps down per tier instead (D1007: GOV.UK never adopted fluid type, and Designsystemet
+ * Norway shipped it and then reversed it in production). A client preset whose size is
+ * already a `clamp()` is left alone: the step-downs below do not apply to it.
  */
 
 /* Tablet — up to 1023px. Matches helpers-responsive.php's tablet tier exactly. */

@@ -20,6 +20,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 
 // Shared SGS PHP helpers.
 require_once __DIR__ . '/inc/colour-helpers.php';
+require_once __DIR__ . '/inc/type-scale-ranges.php';
 require_once __DIR__ . '/inc/shop-filters-settings.php';
 require_once __DIR__ . '/inc/shop-filters-sorting.php';
 require_once __DIR__ . '/inc/shop-toolbar-settings.php';
@@ -464,6 +465,7 @@ function enqueue_styles(): void {
 		array(),
 		asset_version( 'assets/css/type-scale.css', $theme_version )
 	);
+	wp_add_inline_style( 'sgs-type-scale', type_scale_ranges_css() );
 
 	// Per-tier section padding and side gutter (Spec 32 FR-32-15): the only reader of
 	// the snapshot's settings.custom.section.padding.* and settings.custom.gutter.* tokens.

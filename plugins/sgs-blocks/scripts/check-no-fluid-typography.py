@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """check-no-fluid-typography.py — "WordPress's fluid type engine stays off".
 
-THE RULE (D1007, Spec 01 "Binding decision: zoom-safe type", Bean 2026-11-03):
+THE RULE (D1007, Spec 01 "Binding decision: draft type is copied as written", Bean 2026-11-03):
 font sizes change per device through the SGS tier system (helpers-responsive.php)
 and theme/sgs-theme/assets/css/type-scale.css, never through WordPress's fluid
 engine. While `settings.typography.fluid` is on, WordPress rewrites every literal
 px font size into clamp(14px, ..., 16px) and every preset without `fluid: false`
 into a viewport curve, so body text shrinks on phones where the draft holds it.
-A size meant to scale is written into the preset `size` itself as a zoom-safe
-clamp() (Spec 32 FR-32-16), which needs no engine.
+A size meant to scale is written into the preset `size` itself as the draft's own
+clamp(), verbatim (Spec 32 FR-32-16), which needs no engine.
 
 WHAT IT FLAGS, in the framework theme.json, every deployed sites/<client>/theme-snapshot*.json
 (not the extractor's scratch *.generated.json) and the extractor's expected and fixture snapshots:
@@ -52,7 +52,7 @@ def problems(doc: dict) -> list[str]:
         out.append(f"settings.typography.fluid is {json.dumps(typo['fluid'])}; set it to false")
     for entry in typo.get("fontSizes") or []:
         if isinstance(entry, dict) and isinstance(entry.get("fluid"), dict):
-            out.append(f"fontSizes '{entry.get('slug')}' carries a fluid min/max curve; write a zoom-safe clamp() into its size instead")
+            out.append(f"fontSizes '{entry.get('slug')}' carries a fluid min/max curve; write the draft's clamp() into its size instead")
     return out
 
 
