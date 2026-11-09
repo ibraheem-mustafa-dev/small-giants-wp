@@ -7909,6 +7909,14 @@
     },
     {
       "slug": "sgs/choice-flow",
+      "attr": "optionColumnsWide",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
       "attr": "optionMediaSize",
       "fields": {
         "css_property": "width"

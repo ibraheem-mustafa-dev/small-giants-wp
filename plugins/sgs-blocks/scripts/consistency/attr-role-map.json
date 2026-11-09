@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 11702,
+    "row_count": 11706,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1707,6 +1707,8 @@
     "sgs/business-info::openStatusShowPill": "boolean-visibility",
     "sgs/business-info::padding": "layout",
     "sgs/business-info::separators": "visual",
+    "sgs/business-info::sgsChildSizing": "layout",
+    "sgs/business-info::sgsChildWidth": "layout",
     "sgs/business-info::sgsCollapseVisibility": "behaviour",
     "sgs/business-info::sgsConditionCollectionQueryId": "behaviour",
     "sgs/business-info::sgsConditionDateEnd": "behaviour",
@@ -2873,6 +2875,7 @@
     "sgs/choice-flow::closeLabel": "text-content",
     "sgs/choice-flow::closeStyle": "behaviour",
     "sgs/choice-flow::continueLabel": "text-content",
+    "sgs/choice-flow::fitToScreen": "boolean-visibility",
     "sgs/choice-flow::flexWrap": "layout",
     "sgs/choice-flow::flowId": "enum-class-probe",
     "sgs/choice-flow::flowIsLinked": "boolean-visibility",
@@ -2885,6 +2888,7 @@
     "sgs/choice-flow::infoToggleColour": "color",
     "sgs/choice-flow::maxWidth": "layout",
     "sgs/choice-flow::openerLabel": null,
+    "sgs/choice-flow::optionColumnsWide": null,
     "sgs/choice-flow::optionMediaSize": "select-from-enum",
     "sgs/choice-flow::padding": "layout",
     "sgs/choice-flow::pricePanelTitle": "text-content",
