@@ -4787,7 +4787,7 @@
     "sgs/form::stepLabelTextWrap": "typography",
     "sgs/form::stepLabelWritingMode": "select-from-enum",
     "sgs/form::stepLayout": "layout",
-    "sgs/form::stepNamesHidden": null,
+    "sgs/form::stepNamesHidden": "styling",
     "sgs/form::stepNumberCompletedBackground": "color",
     "sgs/form::stepNumberCompletedColour": "color",
     "sgs/form::stepNumberFontFamily": "typography",
