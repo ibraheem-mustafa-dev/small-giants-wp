@@ -60,7 +60,7 @@
 	 * .sgs-text-link opts in through its own selector above. */
 	.wp-block-navigation-item__content,
 	.sgs-text-link,
-	.entry-content p a,
+	.entry-content p a:not([class*="sgs-"]),
 	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]) {
 		position: relative;
 		text-decoration: none;
@@ -68,7 +68,7 @@
 
 	.wp-block-navigation-item__content::after,
 	.sgs-text-link::after,
-	.entry-content p a::after,
+	.entry-content p a:not([class*="sgs-"])::after,
 	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"])::after {
 		content: '';
 		position: absolute;
@@ -84,7 +84,7 @@
 
 	.wp-block-navigation-item__content:hover::after,
 	.sgs-text-link:hover::after,
-	.entry-content p a:hover::after,
+	.entry-content p a:not([class*="sgs-"]):hover::after,
 	.entry-content li a:not(.wp-block-button__link):not([class*="sgs-"]):hover::after {
 		transform: scaleX(1);
 		transform-origin: bottom left;

@@ -38,7 +38,7 @@
   },
   {
    "file": "plugins/sgs-blocks/assets/css/extensions.css",
-   "selector": ".entry-content p a:hover::after",
+   "selector": ".entry-content p a:not([class*=\"sgs-\"]):hover::after",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
