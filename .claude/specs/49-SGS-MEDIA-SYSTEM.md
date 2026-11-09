@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 49
-spec_version: "0.3"
+spec_version: "0.4"
 title: SGS Media System
 project: small-giants-wp
 status: draft
@@ -12,6 +12,7 @@ status_history:
   - 2026-11-09: v0.1, first full draft
   - 2026-11-09: v0.2, rewritten after five independent reviews and live proofs
   - 2026-11-09: v0.3, Bean's answers: sizing is independent settings with no modes, circle is a shape, duotone and Lottie left out, videos play on phones, no CSS budget target; awaiting Bean's approval
+  - 2026-11-09: v0.4, CSS sizing research applied; awaiting Bean's approval
 references:
   - .claude/plans/2026-11-09-media-controls-redesign.md
   - .claude/reports/2026-11-09-media-controls/
@@ -112,7 +113,7 @@ Tests are in §12; FR-to-test mapping is in §16.
 - **FR-49-15** Loading MUST use §7.7's single resolver. The theme's own preload emitters in `functions.php` and `inc/font-preloading.php` MUST be removed. Test: AC-10.
 - **FR-49-16** Typed `attr()` MUST NOT be used. Real width and height MUST always be printed. A source with no id MUST carry width and height (the picker and cloner fill them); without them nothing prints and the editor says "Image size unknown". No attachment lookup at render. Test: AC-11.
 - **FR-49-17** Embeds MUST carry the media element marker, and only YouTube (`youtube-nocookie.com`) and Vimeo (`player.vimeo.com`) URLs are accepted, normalised, with `loading="lazy"`, a strict referrer policy and a title from Alt. Test: AC-6, AC-8.
-- **FR-49-38** Fill MUST fill a stretched flex or grid row, a definite-height parent and a container whose height comes from its own ratio or min-height, and MUST fall back to 3:2, never 0, in a parent with no height (§7.2). Test: AC-27.
+- **FR-49-38** Fill MUST fill a stretched flex or grid row, a definite-height parent and a container whose height comes from its own ratio or min-height (through a grid or flex-column content band), and MUST fall back to 3:2, never 0, in a parent with no height (§7.2). Test: AC-27.
 
 ### Editor
 
@@ -206,7 +207,7 @@ Core code lands dormant on main: new files, adopted by nothing. Adoption, conten
 
 ### 7.1 Markup
 
-Nesting is always `figure > a > helper > mask > media element`, omitting levels not needed. One source: `<img class="sgs-media-el" …>`. Different images per device: `<picture class="sgs-media-picture">` around `<source>`s and the `<img>`, with `display:contents`. Header and footer row rules targeting direct children are extended to reach the image.
+Nesting is always `figure > a > helper > mask > media element`, omitting levels not needed. One source: `<img class="sgs-media-el" …>`. Different images per device: `<picture class="sgs-media-picture">` around `<source>`s and the `<img>`, with `display:contents`. The `<picture>` generates no box: every setting that paints, moves or is observed (opacity, filter, transform, motion, observers) targets the `<img>`, never the picture. Header and footer row rules targeting direct children are extended to reach the image.
 
 The layout box carries `{uid}`, block classes, the anchor, motion attributes, Order, Alignment, Width and Max width. The surface carries Height, Ratio, Min height, Max height, Border, Radius, Shadow, Padding and Background. Base CSS sets `box-sizing:border-box`.
 
@@ -218,23 +219,23 @@ Mixed kinds across devices: one sibling per kind, switched by breakpoint. Every 
 
 ### 7.2 Sizing
 
-Each setting prints its own CSS property; the browser combines them. The base stylesheet sets `height:auto` on the media element first, because a printed `height` attribute otherwise acts as a fixed CSS height (proved in real Chrome: all 12 combinations of Ratio, Width, Height and limits, with Cover and Contain, resolve as this table says). Ratio, Width, Height, Min width, Max width, Min height and Max height can all be set, per device, in any combination. Three rules fill the gaps CSS leaves:
+Each setting prints its own CSS property; the browser combines them. The base stylesheet sets `height:auto` on the media element first, because a printed `height` attribute otherwise acts as a fixed CSS height (proved in real Chrome, Firefox and WebKit, for img, video and inline svg (iframe: Width 100% only, per the embed rule): all 12 combinations of Ratio, Width, Height and limits, with Cover and Contain, resolve as this table says; WebKit video `object-fit` was not tested because the run timed out, so PS-2 and AC-3 prove it). Ratio, Width, Height, Min width, Max width, Min height and Max height can all be set, per device, in any combination. Three rules fill the gaps CSS leaves. The layout box and the media element are flex and grid items in many rows, where the browser's `min-width:auto` stops them shrinking below their natural size and overflows the row (proved in Chrome, Firefox and WebKit). The base stylesheet therefore sets `min-width:0` on the layout box and the media element; a Min width the user sets replaces it.
 
 | What is set | Result |
 |---|---|
 | Nothing | The file's own size, `width:auto; max-width:100%`, so a 300px file draws at 300px and shrinks with its container |
-| Ratio only, or Height only | Width defaults to 100% of the space, and the height follows from the ratio, or is as set |
-| Ratio and Height | Width follows from the two, so 1:1 and 300px tall is 300 by 300 |
+| Ratio only, or Height only | Width defaults to 100% of the space; the height follows from the Ratio, or is as set |
+| Ratio and Height | Width defaults to `auto`, so it follows from the two: 1:1 and 300px tall is 300 by 300. It never exceeds the space (`max-width:100%` stays), and a taller-than-wide Ratio crops |
 | Ratio and Width | Height follows from the two |
 | Ratio, Width and Height | Width and Height win. Ratio is kept and named in the hidden-value note |
 
-`Width: auto` keeps the file's proportions with a Height. Limits apply on top in every case: with Ratio 16:9 at 100% width and Max height 300px, the box stops at 300px and the picture crops into it. A value of `auto` or `natural` cancels an inherited one.
+The default width is resolved per device from the resolved values: `auto` when both Ratio and Height are set at that device, otherwise 100%. A Width the user sets always wins. Width `auto` with a Height and no Ratio keeps the file's proportions. Width `auto` with a Max height narrows the box rather than cropping it, so any control that sets Width auto says so. Limits apply on top in every case: with Ratio 16:9 at 100% width and Max height 300px, the box stops at 300px and the picture crops into it. A value of `auto` or `natural` cancels an inherited one.
 
 Height has one extra choice, **Fill**, meaning the height the surrounding layout gives it. Ratio does not apply while Height is Fill.
 
-An embed with nothing set is 16:9 at 100% width. An SVG with nothing set uses its viewBox.
+An embed with nothing set is `width:100%; aspect-ratio:16/9`, printed as CSS on every embed. The renderer prints no `width` or `height` attribute on an iframe (an attribute acts as a CSS width). An embed never prints `width:auto` unless both Ratio and Height are set, because only Chrome transfers a ratio through an auto width on an iframe. An SVG with nothing set uses its viewBox.
 
-Fill uses `height:100%` on the helper, the media absolutely positioned, and a `::before` carrying a 3:2 `padding-top`. It stretches in a flex or grid row, takes a definite parent's height, and in an indefinite parent is 3:2. Min height is its floor. Containers' content bands MUST pass height to children when the container's height comes from a min-height, a ratio or a stretched row. PS-2 proves this across the 13 tested layouts.
+Fill means the height the surrounding layout gives the media. The helper prints `height:auto; min-height:100%; flex:1 1 auto; align-self:stretch`, the media is absolutely positioned inside it, and a `::before` with `padding-top:66.667%` gives it a 3:2 height when nothing supplies one. An explicit `height:100%` is never printed on the helper: on a flex item it switches off stretch (measured 367 against a 700 row). Fill takes the height of a definite parent, a stretched flex or grid row, an aspect-ratio parent, and a flex-column or grid parent with a min-height; with no height anywhere it is 3:2. A percentage cannot see a min-height, so a content band whose height comes from a min-height, a Ratio or a stretched row MUST be `display:grid` (one column) or a flex column; the container emitter prints that automatically when any child is Fill. Min height on the media is its floor. Proved in Chrome, Firefox and WebKit for all of these parents; PS-2 repeats it on the 13 layouts. `height:stretch` and `-webkit-fill-available` are not used (Firefox and WebKit do not support them consistently).
 
 The editor uses the same CSS.
 
@@ -537,7 +538,7 @@ Editor on a local mirror; front end in real Chrome at 375, 768 and 1440, Firefox
 
 - **AC-1** After `sgs-update`, every setting has a DB row with its property, `tier_object`, and `paint_node`; the drift gate fails on an edited block.json (negative control).
 - **AC-2** Detector over `block.json`s: no flat media tiers, one Focal shape, no tiered Alt.
-- **AC-3** Fixture of Ratio, Width, Height and each limit in combination, per device, matches §7.2 in editor and front end, including ratio with a height, a width, or a maximum; all three browsers.
+- **AC-3** Fixture of Ratio, Width, Height and each limit in combination, per device, matches §7.2 in editor and front end, including ratio with a height, a width, or a maximum; all three browsers (Chrome, Firefox and WebKit), including WebKit video `object-fit` and `object-position`, which the research run could not test.
 - **AC-4** Three-source picture: one image request per width. `none` and a Hide toggle: none. Image on desktop with video on mobile: zero image requests at 375. `wp_filter_content_tags` leaves the markup correct.
 - **AC-5** Each §8.2 name greps empty.
 - **AC-6** Helper present for each trigger, including at one device only and hover colour only; absent for caption only, link only, both, or none. The Circle shape with shadow, overlay and hover zoom is a true circle on image and embed. Focus rings not clipped.
@@ -561,7 +562,7 @@ Editor on a local mirror; front end in real Chrome at 375, 768 and 1440, Firefox
 - **AC-24** Fixture per §11 row; absorption controls; schema refuses unknown shapes; `wp-build-page` accepts slots.
 - **AC-25** Detector survey zero old attributes on every site, pattern and tree; computed width, height and object-fit within 1px before and after except the listed allowed changes; Bean checks the five sites by eye (FP-13).
 - **AC-26** Each §10.4 row passes; the Eye Care hero parallax and focal point on settings alone.
-- **AC-27** Fill in a bare parent, fixed parent, stretched flex item, grid cell, min-height section and ratio container; never 0.
+- **AC-27** Fill in a bare parent, fixed parent, stretched flex item, grid cell, min-height section (grid or flex-column content band) and ratio container; never 0; in Chrome, Firefox and WebKit.
 - **AC-28** Keyboard only: walkthroughs 1 to 13 below complete; axe finds no serious issue in any panel; 44px targets; visible focus.
 - **AC-29** Each walkthrough completes: replace a photo; circle; different mobile crop; arch with shadow and border; fill in a card; overlay lightening on hover; video with poster; embed with radius; phone-only image; hero parallax from Background; hover zoom; working on Mobile; Reset.
 
@@ -621,7 +622,7 @@ Eye Care's remaining checks carry on alongside Stage A. Mama's work that touches
 
 ### 14.2 Proofs (run first, independent)
 
-PS-1 DB and gates accept §8 (`SGS_FRAMEWORK_DB` on a private copy, proven by sha). PS-2 §7.2 Fill design, in standards mode, 13 layouts. PS-3 SVG stroke with the layer outside the clip. PS-4 Pinned on WebKit. PS-5 lead pre-pass on REST and cached fragments. PS-6 reseed time and block.json size with every slot added. PS-7 five sample rows produce byte-identical CSS in PHP and JS. PS-8, at cutover, compares old and new computed styles on real pages. Outcomes: PS-2 fails: Fill requires a parent height and shows "Needs a tall container". PS-3 fails: Border is omitted with a mask. PS-4 fails: §10.3. PS-5 fails: no high priority on fragments. Only PS-1 and PS-7 gate WP-1.
+PS-1 DB and gates accept §8 (`SGS_FRAMEWORK_DB` on a private copy, proven by sha). PS-2 §7.2 Fill design, in standards mode, 13 layouts, in Chrome, Firefox and WebKit, plus WebKit video `object-fit` (untested in the research run, which timed out). PS-3 SVG stroke with the layer outside the clip. PS-4 Pinned on WebKit. PS-5 lead pre-pass on REST and cached fragments. PS-6 reseed time and block.json size with every slot added. PS-7 five sample rows produce byte-identical CSS in PHP and JS. PS-8, at cutover, compares old and new computed styles on real pages. Outcomes: PS-2 fails: Fill requires a parent height and shows "Needs a tall container". PS-3 fails: Border is omitted with a mask. PS-4 fails: §10.3. PS-5 fails: no high priority on fragments. Only PS-1 and PS-7 gate WP-1.
 
 ### 14.3 Contracts (frozen before WP-1)
 
