@@ -791,7 +791,7 @@ C0 ships these signatures as documentation and the shared fixture files, not stu
 |---|---|---|---|
 | C0 Contracts | §14.3 signatures, fixture files, file layout (Integrator) | | A |
 | Proofs | proof scripts, reports | C0 | A |
-| WP-H Header (ahead of Stage A) | Stop the header's shrink restyling the page; every sticky and anchor consumer unchanged | | Done first |
+| WP-H Header (ahead of Stage A) | Stop the header's shrink restyling the page; every sticky and anchor consumer unchanged | | Done (`89b3531b5` to `91d955343`) |
 | WP-0b Wrapper split | Background code of `class-sgs-container-wrapper.php` into `includes/class-sgs-background-layer.php`, no behaviour change | | A |
 | WP-1 Core | Atom registry fields (units, ranges, hover forms, effects by kind), the extended generator writing `block.json`, schema generated from attribute `properties`, Spec 32 and 35 amendments; `theme.json` `settings.viewport` at `767px` and `1023px` so WordPress's editor device switching and core blocks match SGS's tiers; attribute `role: content` on Source, Alt, Decorative and Caption after a spike on object attributes | PS-1 | A |
 | WP-15a Gates | New gates; `gate-disposition.json` classifying every gate and test naming removed code as reused, changed or deleted (starting list: `T3` §2.5, `T4` §5) | WP-1 | A |

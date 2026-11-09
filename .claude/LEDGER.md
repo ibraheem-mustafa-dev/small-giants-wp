@@ -67,11 +67,15 @@ Governing documents: the fix register `plans/2026-10-02-eye-care-fix-register.md
 
 **State:** `specs/49-SGS-MEDIA-SYSTEM.md` (v0.5, draft) redesigns media from the ground up and extends the 15 media atoms (9 extend, 5 keep, 2 fold; none broken). Register and evidence: `plans/2026-11-09-media-controls-redesign.md`, `.claude/reports/2026-11-09-media-controls/`; no spec edit before Bean decides. Stage C holds the native parallax driver and Pinned.
 
+**Motion findings (2026-11-09):** the live effects run (`reports/2026-11-09-media-controls/T10-effects-run.md`) found 28 effects working; the marquee hover and 375 title, ripple under reduced motion, cursor-field reveal, rotted fixtures, missing smoothness probe, duplicate systems and the unenqueued theme `smooth-scroll.js` are recorded in Spec 38A (FR-38A-27, 34, 44, 45 and §17).
+
 **Open:** Bean's decisions on the sweep, then his approval; it blocks the build, Eye Care's Custom CSS controls and Mama's media work. Until the rebuild replaces `sgs_image_loading_attrs` (Spec 02 FR-2-20), `DecorativeImageLayerTest` stays red by design and `includes/media/atoms/source.php::sgs_media_atom_source_css` is not patched.
 
 ### Front N: Nav / header / footer (Specs 36 and 37)
 
 **State:** Waves 1 to 3C are built and live on sandybrown; Gate 3C items 1, 2, 3 and 5 pass; item 4's last mile is deferred by you. Wave 4 (reference clones) has not started; Wave 5 is header and footer cloning through Spec 48. Proof: `verify/merged-spec36-37-track.md`.
+
+**Header behaviour change (2026-11-09, `89b3531b5` to `91d955343`):** the header's shrink no longer restyles the page; `plugins/sgs-blocks/src/header-behaviours/live-header-height.js` carries the live height to its consumers. Live on sandybrown, mamas-test, indus-test and eye-care-test. Proof: `reports/2026-11-09-media-controls/T11-parallax-smoothness.md`.
 
 **Resume from:** `plans/2026-10-01-header-nav-thread-plan.md` §2.4 to close Gate 3C, or §4 to prepare Wave 4.
 
@@ -101,6 +105,8 @@ Governing documents: the fix register `plans/2026-10-02-eye-care-fix-register.md
 
 ## Known failing tests
 
+- Jest suites `configurator-schema-compat` and `cursor-field-reveal-open` fail on main.
+- Reloading with the page scrolled shifts content on shop (46px at 1440) and product (about 20px), measured by the Eye Care session (`E:/sgs-tmp/ec-check/reload-recheck.cjs`); it is on that session's round 13 list.
 - `icon-brand`/`icon-custom` roles: Bean's call, only if Spec 48 cloning must place them (`plans/archive/2026-11-05-icon-source-detector.md`).
 - `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): the fixtures predate the `slot_value` column (2026-09-05) and one assert expects 2-tuples where the code returns 3-tuples. Small fix in the tests.
 - `tests/php/DecorativeImageLayerTest.php` (plugin `sgs-blocks`): red by design since `f791e433b` until Spec 49 replaces the image helper (Front P).

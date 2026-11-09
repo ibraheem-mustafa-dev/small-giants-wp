@@ -97,6 +97,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_button_icon_circle_css` | `function sgs_button_icon_circle_css( string $uid, array $attributes ): array` | The scoped CSS rules for the circle behind a button's icon. | no markup |
 
+#### `includes/helpers-button-icon-gap-hover.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_button_icon_gap_hover_values` | `function sgs_button_icon_gap_hover_values( $tiers ): array` | The effective hover gap per tier, sanitised; a tier that equals the one above it is dropped. | no markup |
+| `sgs_button_icon_gap_hover_css` | `function sgs_button_icon_gap_hover_css( string $selector, $tiers ): string` | The hover gap rules for one button. | no markup |
+
 #### `includes/helpers-button-inner-kses.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -194,6 +201,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_configurator_mode_regular` | `function sgs_configurator_mode_regular( array $combo, string $mode, int $decimals ): string` | The struck-through regular-price display string for a combo under a tax mode. | calls wc_price |
 | `sgs_configurator_per_unit_display` | `function sgs_configurator_per_unit_display( array $combo, string $mode, int $decimals, string $template )…` | Per-unit price display string for a combo under a tax mode, e.g. "£1.04 per bar". | calls wc_price |
 
+#### `includes/helpers-connector-line.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_connector_line_style` | `function sgs_connector_line_style( $raw ): string` | Resolve a stored connectorLineStyle to solid, dashed or dotted. | no markup |
+| `sgs_connector_line_decls` | `function sgs_connector_line_decls( $line_style, string $axis, string $colour, string $gradient, string…` | Declarations that draw a connector line in the chosen style. | no markup |
+
 #### `includes/helpers-container-separators.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -216,14 +230,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_container_tier_min_column_width` | `function sgs_container_tier_min_column_width( array $attributes, string $tier ): ?string` | Resolve the effective intrinsic-columns BASIS (minimum column width) for one device tier, from `sgs/container`'s client-configurable… | no markup |
 | `sgs_block_wants_intrinsic_columns` | `function sgs_block_wants_intrinsic_columns( $block ): bool` | Does this block type opt in to content-aware column collapse? | no markup |
 
-#### `includes/helpers-css-safety.php` — 5 function(s)
+#### `includes/helpers-css-safety.php` — 7 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_css_length_value_preset_slugs` | `function sgs_css_length_value_preset_slugs(): array` | Return the currently-registered WP spacing-preset slugs (e.g. ['10','20', '30','40','50','60']), read live from theme.json via… | no markup |
 | `sgs_css_length_value` | `function sgs_css_length_value( $value )` | Validate and normalise a CSS length-shaped value for safe inline emission. | no markup |
+| `sgs_resolved_css_value` | `function sgs_resolved_css_value( $value ): string` | The one predicate for "this stored value is already a resolved CSS value". | no markup |
 | `sgs_font_weight_value` | `function sgs_font_weight_value( $value ): string` | A font weight, safe to print after `font-weight:`. | no markup |
 | `sgs_css_single_length_value` | `function sgs_css_single_length_value( $raw, bool $allow_negative = false ): string` | A SINGLE CSS length, safe to place inside `max()` and `blur()`. | no markup |
+| `sgs_css_negated_length_value` | `function sgs_css_negated_length_value( $raw ): string` | The opposite of a single CSS length (`calc(-1 * <length>)`), for the negative margin that pairs with a padding of the same length, so the… | no markup |
 | `sgs_css_length_value_self_test` | `function sgs_css_length_value_self_test()` | Run every accept/reject/backward-compat case and report an honest count. | tags script |
 
 #### `includes/helpers-css-sizing-keyword.php` — 2 function(s)
@@ -281,8 +297,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_form_submit_shadow_map` | `function sgs_form_submit_shadow_map(): array` | The submit button's shadow attribute names for sgs_shadow_decls(). | no markup |
-| `sgs_form_submit_motion_css` | `function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '' ): string` | The scoped CSS for the submit button's shadow and lift. | no markup |
+| `sgs_form_submit_shadow_map` | `function sgs_form_submit_shadow_map( string $prefix = 'submit' ): array` | A form button's shadow attribute names for sgs_shadow_decls(). | no markup |
+| `sgs_form_submit_motion_css` | `function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '', string…` | The scoped CSS for a form button's shadow and lift (submit, or the Next and Previous buttons). | no markup |
 
 #### `includes/helpers-free-delivery.php` — 1 function(s)
 
@@ -346,16 +362,23 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_hover_guarded_rule` | `function sgs_hover_guarded_rule( string $hover_selector, string $decls ): string` | Wrap a hover-only rule in both guards. | no markup |
+| `sgs_hover_guarded_rule` | `function sgs_hover_guarded_rule( string $hover_selector, string $decls ): string` | Wrap a hover-only rule in the touch-class guard. | no markup |
 | `sgs_focus_rests_active` | `function sgs_focus_rests_active(): bool` | Whether the block rendering now keeps its resting look on keyboard focus (`sgsFocusRests`). | no markup |
-| `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a touch-safe PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. | no markup |
-| `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Wrap an ALREADY-BUILT hover rule in the layer-1 media query. | no markup |
+| `sgs_hover_state_rules` | `function sgs_hover_state_rules( string $selector, string $decls, string $focus = ':focus-visible', string…` | Emit a hover state as a PAIR: a guarded hover rule plus an unguarded focus rule carrying the identical declarations. | no markup |
+| `sgs_hover_media_wrap` | `function sgs_hover_media_wrap( string $rule ): string` | Pass an ALREADY-BUILT hover rule through the one declared hover wrapper. | no markup |
 
 #### `includes/helpers-icon-shadow.php` — 1 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_icon_shadow_vars` | `function sgs_icon_shadow_vars( array $attributes, array $map, string $prefix, bool $pin_hover = false ): array` | The resting and hover shadow as custom properties. | no markup |
+
+#### `includes/helpers-icon-signed-in-dot.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_icon_signed_in_dot_html` | `function sgs_icon_signed_in_dot_html( array $attributes ): string` | The dot element, or '' when the setting is off. | tags span; aria aria-hidden |
+| `sgs_icon_signed_in_dot_css` | `function sgs_icon_signed_in_dot_css( array $attributes, string $shape_sel ): string` | Scoped CSS for the dot: fill, size, offsets and ring. | no markup |
 
 #### `includes/helpers-icon.php` — 18 function(s)
 
@@ -380,6 +403,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_icon_outline_from_border` | `function sgs_icon_outline_from_border( array $border ): array` | An outline shape's stroke, read from the declarations `sgs_border_element_decls()` built for the icon's own border, so the border… | no markup |
 | `sgs_icon_css_value_tokens` | `function sgs_icon_css_value_tokens( string $value ): array` | A CSS value split on top-level spaces, so `calc(1px + 1px) 0 0 0` gives four tokens. | no markup |
 
+#### `includes/helpers-image-dimensions.php` — 6 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_image_intrinsic_size` | `function sgs_image_intrinsic_size( string $url ): ?array` | The intrinsic size of the image a URL points at. | no markup |
+| `sgs_image_intrinsic_size_lookup` | `function sgs_image_intrinsic_size_lookup( string $url ): ?array` | Uncached lookup behind sgs_image_intrinsic_size(). | no markup |
+| `sgs_image_url_to_path` | `function sgs_image_url_to_path( string $url ): ?string` | The file path of a URL under this site's wp-content folder (uploads, plugins, themes). | no markup |
+| `sgs_image_svg_size` | `function sgs_image_svg_size( string $path ): ?array` | An SVG file's size from its viewBox, else its root width and height in plain pixels. | no markup |
+| `sgs_image_svg_rounded_pair` | `function sgs_image_svg_rounded_pair( float $width, float $height ): ?array` | A width and height rounded to whole pixels, or null when either rounds below 1 (a 0.2px SVG has no usable box). | no markup |
+| `sgs_image_size_attrs` | `function sgs_image_size_attrs( string $url ): string` | The ` width="N" height="M"` attribute string for an image URL, or '' when no real size is known. | no markup |
+
 #### `includes/helpers-info-toggle.php` — 1 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -398,6 +432,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_basket_count_enqueue` | `function sgs_basket_count_enqueue(): void` | Load the basket-count view module, once per request; called only for markup holding a `sgs-basket-count` span. | no markup |
 | `sgs_basket_count_print` | `function sgs_basket_count_print( string $html ): string` | Empty each basket-count span, or fill it with the basket's item count on cart and checkout. | no markup |
 | `sgs_inline_formats_maybe_enqueue` | `function sgs_inline_formats_maybe_enqueue( $block_content, $block = array() )` | `render_block` filter: load the inline-format assets the block's markup needs. A highlight or a photo loads the stylesheet; a basket count… | no markup |
+
+#### `includes/helpers-instance-scope-hash.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_instance_scope_hash` | `function sgs_instance_scope_hash( array $attributes, $block, string $extra = '' ): string` | Hash of the attributes that differ from their block.json default, plus any extra string (such as block context). | no markup |
 
 #### `includes/helpers-item-effects.php` — 6 function(s)
 
@@ -465,7 +505,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_diagram_dimension_text_kses` | `function sgs_diagram_dimension_text_kses(): array` | The markup a label's caption or value may carry: simple inline emphasis, plus the bound-value span the `sgs-product/field` binding wraps a… | no markup |
 | `sgs_diagram_dimension_empty_marker` | `function sgs_diagram_dimension_empty_marker( array $attributes, $block ): string` | The empty bound-value container a size change can fill later. | tags span |
 
-#### `includes/helpers-media-element.php` — 5 function(s)
+#### `includes/helpers-media-element.php` — 6 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -473,6 +513,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_media_element_stored_attr` | `function sgs_media_element_stored_attr( $block_slug, $prefix, $base )` | Resolve the attribute name a SURFACE actually stores. | no markup |
 | `sgs_media_element_value` | `function sgs_media_element_value( array $attributes, $name, $want = 'raw' )` | Read a media attribute's value, tolerating every storage SHAPE. | no markup |
 | `sgs_media_element_scope_class` | `function sgs_media_element_scope_class( $uid, $prefix )` | The per-ELEMENT scope class for one media element on a block. | no markup |
+| `sgs_media_hover_zoom_clips` | `function sgs_media_hover_zoom_clips( array $attributes, string $block_slug ): bool` | Whether a sgs/media frame must clip: its image part (`sgsMotion.elements.media`) has a hover scale above 1 on any device, and a scaled… | no markup |
 | `sgs_media_element_style` | `function sgs_media_element_style( array $attributes, $prefix, $block_slug, $scope_class, array $atoms )` | Every declared atom's custom-property VALUES for one media element, as one scoped CSS rule. | no markup |
 
 #### `includes/helpers-media-position.php` — 2 function(s)
@@ -482,11 +523,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_media_position_focal_to_css` | `function sgs_media_position_focal_to_css( $focal_point )` | FocalPointPicker {x,y} (floats 0-1) -> CSS "X% Y%" object-position value. Clamped 0-1, rounded 2dp. Returns '' when unset or at the CSS… | no markup |
 | `sgs_media_position_css` | `function sgs_media_position_css( array $attributes, $prefix, $selector )` | Build a scoped object-fit/object-position CSS rule for one media element. The caller passes its OWN, already-safe selector — this function… | no markup |
 
-#### `includes/helpers-media.php` — 10 function(s)
+#### `includes/helpers-media.php` — 16 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_responsive_image` | `function sgs_responsive_image( int $id, string $url, string $alt = '', string $size = 'large', array $attrs =…` | Output a responsive image tag with srcset when a valid attachment ID is available. | tags img; calls wp_get_attachment_image |
+| `sgs_hidden_render_depth` | `function sgs_hidden_render_depth( int $delta = 0 ): int` | Open (+1), close (-1) or read (0) the hidden-render depth for this request. | no markup |
+| `sgs_in_hidden_render_context` | `function sgs_in_hidden_render_context(): bool` | Whether markup is being rendered for a surface that is not visible on load (a header's mega panel, the nav drawer, a modal, the wishlist… | no markup |
+| `sgs_hidden_render_blocks` | `function sgs_hidden_render_blocks(): array` | Block names whose rendered content is hidden until the visitor opens it. | no markup |
+| `sgs_hidden_render_enter` | `function sgs_hidden_render_enter( $pre_render, array $parsed_block )` | `pre_render_block` callback: entering a hidden-surface block opens the hidden context. Runs last, and a block another filter has… | no markup |
+| `sgs_hidden_render_leave` | `function sgs_hidden_render_leave( $block_content, array $parsed_block )` | `render_block` callback: leaving a hidden-surface block closes the hidden context. | no markup |
+| `sgs_image_loading_attrs` | `function sgs_image_loading_attrs( bool $can_lead = true ): array` | Loading hints for an image that may sit above the fold: the first few visible images on the page load eagerly and exactly one of them… | no markup |
 | `sgs_next_background_image_index` | `function sgs_next_background_image_index(): int` | Return the next 1-based index in the PAGE-WIDE background-image render order. | no markup |
 | `sgs_content_image_claims_priority` | `function sgs_content_image_claims_priority( bool $leads_page = false ): bool` | Whether the content image about to print is the page's likely LCP image, so it takes `loading="eager"` and `fetchpriority="high"`; every… | no markup |
 | `sgs_render_stars` | `function sgs_render_stars( float $rating, int $best_rating = 5, int $size = 20, string $colour_css =…` | Render inline SVG star icons for a given rating value. | tags defs, linearGradient, polygon, span, stop, svg; aria aria-hidden |
@@ -603,13 +650,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_resolve_row_shrink_hide_target` | `function sgs_resolve_row_shrink_hide_target( $block, $raw_target )` | Validate the stored shrink-hide target against this row's actual children. | no markup |
 | `sgs_row_shrink_settings_css` | `function sgs_row_shrink_settings_css( $root_sel, array $attributes, array $moves )` | The row's own scroll-animation settings, printed only for the behaviours the row has. | no markup |
 
-#### `includes/helpers-scoped-instance-vars.php` — 3 function(s)
+#### `includes/helpers-scoped-instance-vars.php` — 5 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
-| `sgs_scope_class_for_root` | `function sgs_scope_class_for_root( string $root_tag_html, string $prefix ): string` | Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern every migrated render.php already emits as its scoping selector… | no markup |
+| `sgs_scope_class_is_minted` | `function sgs_scope_class_is_minted( string $class_name ): bool` | Whether a class is one an injector minted (prefix plus eight hex digits), not a block's own uid class. | no markup |
+| `sgs_scope_class_for_root` | `function sgs_scope_class_for_root( string $root_tag_html, string $prefix, ?callable $rules_for_scope = null…` | Find an existing SGS uid-pattern class (`sgs-<slug>-<8hex>`, the pattern every migrated render.php already emits as its scoping selector… | no markup |
 | `sgs_append_scoped_var_style` | `function sgs_append_scoped_var_style( string $block_content, string $scope_class, array $declarations )…` | Append a scoped `<style>` rule declaring CSS custom properties on the given scope class, to a block's rendered HTML. No-op when there are… | tags style |
 | `sgs_extract_root_opening_tag` | `function sgs_extract_root_opening_tag( string $root_and_beyond ): string` | Extract just the root element's OPENING tag from a block-content substring that starts at the real root (i.e. past any leading… | no markup |
+| `sgs_inject_scoped_rules` | `function sgs_inject_scoped_rules( string $block_content, string $marker, callable $css_for ): string` | Add a marker class and a scope class to a block's root element and append the scoped rules as the block's own `<style>` tag (never a… | tags style |
 
 #### `includes/helpers-scrim.php` — 7 function(s)
 
@@ -831,6 +880,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_svg_kses_allowed_tags` | `function sgs_svg_kses_allowed_tags(): array` | Returns the wp_kses allowed-tags array for sanitising inline SVG markup. | aria aria-hidden, aria-label |
 
+#### `includes/helpers-svg-parts.php` — 3 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_svg_part_has_entrance` | `function sgs_svg_part_has_entrance( array $item ): bool` | Whether a cleaned part has an entrance (a from-state, a drawn stroke or a staged end look), as opposed to only a loop or a hover. | no markup |
+| `sgs_svg_parts_hide_css` | `function sgs_svg_parts_hide_css(): string` | The pre-arm rule: the inline SVG of a gated parts document is hidden from first paint until src/shared/svg-parts/ svg-parts.js sets… | no markup |
+| `sgs_svg_parts_data` | `function sgs_svg_parts_data( $parts, string $trigger = 'visible', $cooldown = 1400 ): string` | The `data-sgs-svg-parts` JSON for a block's stored parts. | tags style |
+
 #### `includes/helpers-svg-scope-css-reader.php` — 5 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -955,7 +1012,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**95 files, 465 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**101 files, 492 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1022,13 +1079,14 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `starter-look-owned-keys.js` | `deepClone`, `parseExplicitBlocks`, `findExplicitRoot`, `collectOwnedKeys`… | Owned-key derivation for the Starter Look preset control (FR-37-47). |
 | `StarterLookPresetControl.js` | `StarterLookPresetControl (default)` | SGS Starter Look preset control (FR-37-47). |
 | `SurfaceGroundControls.js` | `SurfaceGroundControls (default)` | SurfaceGroundControls: the shared inspector controls for a frosted surface |
+| `SvgPartsControls.js` | `SvgPartsControls (default)` | Editor controls for SVG part animation (the `svgParts`, trigger and hover-cooldown attributes of a block that prints an inline… |
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TextAlignTierControl.js` | `TextAlignTierControl (default)`, `SGS_TEXT_ALIGN_OPTIONS` | TextAlignTierControl - the per-breakpoint text alignment row (FW-F). |
 | `TierBorderControl.js` | `TierBorderControl (default)` | TierBorderControl: one border (width, style, colour) per device, stored as `{desktop\|tablet\|mobile: {width, style, colour}}`.… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**64 files.**
+**65 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
