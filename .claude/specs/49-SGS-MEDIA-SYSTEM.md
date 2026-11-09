@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 49
-spec_version: "0.2"
+spec_version: "0.3"
 title: SGS Media System
 project: small-giants-wp
 status: draft
@@ -10,7 +10,8 @@ session_date: 2026-11-09
 last_verified: 2026-11-09
 status_history:
   - 2026-11-09: v0.1, first full draft
-  - 2026-11-09: v0.2, rewritten after five independent reviews and live proofs; awaiting Bean's approval
+  - 2026-11-09: v0.2, rewritten after five independent reviews and live proofs
+  - 2026-11-09: v0.3, Bean's answers: sizing is independent settings with no modes, circle is a shape, duotone and Lottie left out, videos play on phones, no CSS budget target; awaiting Bean's approval
 references:
   - .claude/plans/2026-11-09-media-controls-redesign.md
   - .claude/reports/2026-11-09-media-controls/
@@ -50,7 +51,7 @@ Nothing here is patched. This spec replaces the system so it never needs re-inve
 
 Goals: G1 one model for all media. G2 no setting is visible while inert. G3 editor and front end match. G4 every draft CSS pattern has one target. G5 a real element and a working motion target in every state. G6 best-in-class controls: per-device focal point, art direction, masks, visible inheritance. G7 migration leaves no legacy reader.
 
-Non-goals: image editing or generation; replacing the WordPress media library; hotspots; a lightbox; saved style presets across slots; multi-layer stacked backgrounds; drag-and-drop upload; new image formats (WordPress's generated sizes are used); a typed Sizes override or image-size dropdown (sizes are derived); a per-device border width (Bean-locked off). `core/image`, `core/cover`, and WooCommerce's own product images stay on WordPress's logic.
+Non-goals: image editing or generation; replacing the WordPress media library; hotspots; a lightbox; saved style presets across slots; multi-layer stacked backgrounds; drag-and-drop upload; duotone; Lottie as a media kind (the Lottie effect in the motion system is untouched); CSS size targets (delivery follows §6.7 and no limit is set or gated here); new image formats (WordPress's generated sizes are used); a typed Sizes override or image-size dropdown (sizes are derived); a per-device border width (Bean-locked off). `core/image`, `core/cover`, and WooCommerce's own product images stay on WordPress's logic.
 
 ## 3. Hard constraints
 
@@ -61,11 +62,12 @@ Non-goals: image editing or generation; replacing the WordPress media library; h
 | No legacy render fallbacks or `deprecated.js`; one batch migration | FP-14 | Yes |
 | Every customisable property has an inspector control | CLAUDE.md | Yes |
 | DB-first; a setting prints a real CSS property and is claimed | FP-1, FP-8 | Yes |
-| Under 100 KB CSS and 50 KB JS per page | CLAUDE.md; counting rule OQ-1 | Yes, pending OQ-1 |
 | Per-device border width stays off | Bean | Yes |
 | No client names in code | CLAUDE.md | Yes |
 | A draft's values and font sizes are copied exactly | Bean 2026-11-09 | Yes |
 | Shared code cuts over in one release, by scripts | Bean 2026-11-09 | Yes |
+
+CLAUDE.md's page budget still applies to the framework. Bean's ruling for this work: it is not a target, and no gate or number is added for it.
 
 Amendments this spec makes to others, in WP-1's commit: Spec 32 FR-32-4 (media slots emit real properties in the collector); Spec 35 D5 (per-device media sources use the responsive value object, and alt stays untiered); Spec 35 §12 (the reworked `ResponsiveOverride`); Spec 35 option-count bands (visual chip grids for ratio, fit and mask); Spec 35 A5 (`PanelBody` here, because the rule table removes the need for `ToolsPanel`).
 
@@ -75,13 +77,13 @@ Amendments this spec makes to others, in WP-1's commit: Spec 32 FR-32-4 (media s
 - **Prefix:** the attribute name start for a slot: `media` on `sgs/media`, `background` on backgrounds.
 - **Device:** desktop, tablet or mobile, from `SGS_Breakpoints`.
 - **Responsive value:** an object `{desktop?, tablet?, mobile?}`. A missing key, `''` or null inherits, through `resolveTier` and `sgs_resolve_tier`, the only inheritance mechanism (Spec 35).
-- **Kind:** image, video, embed, svg, lottie, none. **Resolved kind:** the one at a device after inheritance.
+- **Kind:** image, video, embed, svg, none. **Resolved kind:** the one at a device after inheritance.
 - **Context:** content, background, item or layer.
 - **Media element:** the `<img>`, `<video>`, `<iframe>`, `<svg>` or animation host.
 - **Surface:** the helper if printed, otherwise the media element.
 - **Helper:** `.sgs-media-box`, printed only under §7.3. Never named in the editor.
 - **Layout box:** the outermost printed element: `<figure>`, else `<a>`, else the surface.
-- **Crops:** at a device, the box crops when Height is `fill`, or Height is a length and Width is not `auto`, or Ratio is a ratio, or Max height or Min height is set. Natural with none of those does not crop.
+- **Crops:** the box shape differs from the file's shape at a device, which can be from Ratio, Height, Width, or any minimum or maximum. It is what Fit and Focal act on.
 - **Lead image:** the single image taking high fetch priority (§7.7).
 
 ## 5. Functional requirements
@@ -94,7 +96,7 @@ Tests are in §12; FR-to-test mapping is in §16.
 - **FR-49-2** All media per-device values MUST use the responsive value object. Flat `xTablet`/`xMobile` media attributes MUST NOT exist. This is media-only; other blocks keep their current shapes. Test: AC-2.
 - **FR-49-3** Alt and Decorative MUST be one value per slot. Test: AC-2.
 - **FR-49-4** Focal point MUST be `{x,y}` in 0 to 1, on every element. Test: AC-2.
-- **FR-49-5** Sizing MUST resolve through Height and Ratio under §7.2, with no mode attribute. Test: AC-3.
+- **FR-49-5** Sizing MUST be independent settings that all work together (Ratio, Width, Height, and minimum and maximum width and height), resolved by §7.2, with no mode attribute or mode control. Test: AC-3.
 - **FR-49-6** The universal `sgsHideOnMobile`, `sgsHideOnTablet` and `sgsHideOnDesktop` toggles apply to whole blocks only. When a block is hidden on a device, the renderer MUST print no file for that device. Slots inside a block cannot use them: `{kind:"none"}` is offered on background and split slots, labelled "No background from this device down", and applies from that device down unless a narrower device has its own source. Test: AC-4.
 
 ### Rendering
@@ -134,7 +136,7 @@ Tests are in §12; FR-to-test mapping is in §16.
 
 ### Shape
 
-- **FR-49-32** The media `shape` attribute, `photoShape`, sticker shape and clip-path presets MUST be removed. `sgs/icon.shape` is unrelated and stays. Test: AC-22.
+- **FR-49-32** The old media `shape` attribute, `photoShape`, sticker shape and clip-path presets MUST be removed; Circle is a shape in the Shape grid. `sgs/icon.shape` is unrelated and stays. Test: AC-22.
 - **FR-49-33** Masks MUST come from one registry (§7.5), per device, with uploads, keeping shadow and border. Test: AC-23.
 
 ### Cloner and migration
@@ -160,9 +162,9 @@ Rows name an emitter kind: `plain`, `sides`, `corners`, `shadow`, `colour-states
 
 Without §7.3's triggers there is no wrapper: the `<img>` is the block.
 
-### 6.4 Sizing has no mode
+### 6.4 Sizing has no modes
 
-The cloner's biggest recurring failure was a mode attribute with no CSS property. Height and Ratio are real properties; `fill` is a value of Height.
+Bean's ruling. Ratio, Width, Height and the limits are separate settings that work together, as CSS itself does: pick a ratio and say how tall it should be, or that it must never go under or over a size. Fit and Focal then decide how the file sits in that shape, so a ratio acts like a crop. The earlier mode chips were rejected for keeping the separation that caused the old problems. It is also what the cloner needs: a draft's properties copy across one to one.
 
 ### 6.5 Backgrounds are media
 
@@ -216,24 +218,29 @@ Mixed kinds across devices: one sibling per kind, switched by breakpoint. Every 
 
 ### 7.2 Sizing
 
-Resolved per device, first match wins:
+Each setting prints its own CSS property; the browser combines them. The base stylesheet sets `height:auto` on the media element first, because a printed `height` attribute otherwise acts as a fixed CSS height (proved in real Chrome: all 12 combinations of Ratio, Width, Height and limits, with Cover and Contain, resolve as this table says). Ratio, Width, Height, Min width, Max width, Min height and Max height can all be set, per device, in any combination. Three rules fill the gaps CSS leaves:
 
-| Height | Ratio | Result |
-|---|---|---|
-| `fill` | ignored | Fills its layout box, needs the helper |
-| length | ignored | That height. Width 100% of available, unless Width is set. `Width: auto` keeps the file's proportions |
-| empty or `auto` | ratio | Box of that ratio; `natural` cancels an inherited ratio |
-| empty or `auto` | empty or `natural` | Natural |
+| What is set | Result |
+|---|---|
+| Nothing | The file's own size, `width:auto; max-width:100%`, so a 300px file draws at 300px and shrinks with its container |
+| Ratio only, or Height only | Width defaults to 100% of the space, and the height follows from the ratio, or is as set |
+| Ratio and Height | Width follows from the two, so 1:1 and 300px tall is 300 by 300 |
+| Ratio and Width | Height follows from the two |
+| Ratio, Width and Height | Width and Height win. Ratio is kept and named in the hidden-value note |
 
-Natural: `width:auto; max-width:100%`, so a 300px file draws at 300px and shrinks with its container. For an embed, 16:9 at 100% width. SVG: its viewBox. Lottie: `Source.width` and `height`. Every row has `max-width:100%` unless Max width is set. Width and Height together both apply, and Ratio does not. Max and Min height always apply.
+`Width: auto` keeps the file's proportions with a Height. Limits apply on top in every case: with Ratio 16:9 at 100% width and Max height 300px, the box stops at 300px and the picture crops into it. A value of `auto` or `natural` cancels an inherited one.
 
-Fill uses `height:100%` on the helper, the media absolutely positioned, and a `::before` carrying a 3:2 `padding-top`. It stretches in a flex or grid row, takes a definite parent's height, and in an indefinite parent is 3:2. Min height is its floor. Containers' content bands MUST pass height to children when the container's height comes from a min-height, a ratio or a stretched row. PS-2 proves this design across the 13 tested layouts.
+Height has one extra choice, **Fill**, meaning the height the surrounding layout gives it. Ratio does not apply while Height is Fill.
 
-The editor uses the same CSS, so Fill is never invisible.
+An embed with nothing set is 16:9 at 100% width. An SVG with nothing set uses its viewBox.
+
+Fill uses `height:100%` on the helper, the media absolutely positioned, and a `::before` carrying a 3:2 `padding-top`. It stretches in a flex or grid row, takes a definite parent's height, and in an indefinite parent is 3:2. Min height is its floor. Containers' content bands MUST pass height to children when the container's height comes from a min-height, a ratio or a stretched row. PS-2 proves this across the 13 tested layouts.
+
+The editor uses the same CSS.
 
 ### 7.3 When the helper is printed
 
-The helper is printed if, at any device, on resolved values, any of these hold: Height is `fill`; `OverlayColour`, `OverlayGradient` or a hover form is set; Mask is not none; the media part has hover scale above 1, Parallax, Ken Burns, Pinned or a clip entrance. A caption or link never causes it. Once printed, it is printed for all devices and takes box paint at all devices.
+The helper is printed if, at any device, on resolved values, any of these hold: Height is `fill`; `OverlayColour`, `OverlayGradient` or a hover form is set; Shape is a mask shape (not none, circle, ellipse or pill); the media part has hover scale above 1, Parallax, Ken Burns, Pinned or a clip entrance. A caption or link never causes it. Once printed, it is printed for all devices and takes box paint at all devices.
 
 ### 7.4 What paints where
 
@@ -249,15 +256,17 @@ With the helper and no mask, it has `overflow:hidden`. With a mask, the mask lay
 
 Spacing around a slot belongs to the parent's gap or Alignment. The cloner never writes a margin onto a slot.
 
-### 7.5 Masks
+### 7.5 Shapes
 
-Registry: `includes/data/media-shapes.json`, entries `{slug, label, viewBox, path, fit}`, one closed path each, `fit` being `stretch` or `keep-proportions`. Seeded with ellipse, squircle, pill, arch, hexagon, diamond, octagon, star, tag, speech bubble, ticket and several blobs. The shape-divider, `icon-shapes.json` and buybox sticker geometries live here and their renderers read it, so the repo has one library. A plain circle is the Circle chip, not a mask.
+Registry: `includes/data/media-shapes.json`, entries `{slug, label, viewBox, path, fit, paint, ratio}`, one closed path each. `fit` is `stretch` or `keep-proportions`. `paint` is `radius` or `mask`. Seeded with circle, ellipse, pill, squircle, arch, hexagon, diamond, octagon, star, tag, speech bubble, ticket and several blobs. The shape-divider, `icon-shapes.json` and buybox sticker geometries live here and their renderers read it, so the repo has one library.
 
-Uploads: one `.svg` of at most 20 KB with a viewBox, sanitised, printed as a data URI, its alpha only. Failure shows "This shape could not be used" and the reason. Keep-proportions masks use `mask-size:contain` and an SVG encoding without `preserveAspectRatio="none"`.
+A person looks in one grid and picks a shape; how it is drawn is hidden. Circle, ellipse and pill are drawn with `border-radius` on the surface, needing no helper and keeping ordinary borders and shadows. Picking Circle also sets Ratio 1:1 at that device, when no Ratio is set, as one undo step. Everything else is a mask.
 
-Structure: helper (shadow as `filter:drop-shadow`, through `helpers-shadow-filter.php`) > `.sgs-media-box__mask` (the mask, the media, overlay and zoom) with an SVG stroke layer beside the mask layer, outside its clip.
+Uploads: one `.svg` of at most 20 KB with a viewBox, sanitised, printed as a data URI, alpha only. Failure shows "This shape could not be used" and the reason. Keep-proportions masks use `mask-size:contain` and an encoding without `preserveAspectRatio="none"`.
 
-With a mask on: Radius is omitted and any stored radius kept and noted. Shadow's Spread, Inset and Raw CSS are omitted with "Shadows follow the mask shape". Padding sits on the helper. Border follows through one renderer-authored inline SVG `<path>` with non-scaling stroke (proved on stretch and keep-proportions at 1x and 2x): uniform width only; dashed and dotted through `stroke-dasharray`; per-side widths omitted. Masks are per device; `none` at a device clears all of this there. Embeds cannot be masked.
+Mask structure: helper (shadow as `filter:drop-shadow`, through `helpers-shadow-filter.php`) > `.sgs-media-box__mask` (the mask, the media, overlay and zoom), with an SVG stroke layer beside the mask layer, outside its clip.
+
+While a mask shape is on: Corners is omitted, and any stored radius kept and noted. Shadow's Spread, Inset and Raw CSS are omitted with "Shadows follow the shape". Padding sits on the helper. Border follows through one renderer-authored inline SVG `<path>` with non-scaling stroke (proved on stretch and keep-proportions at 1x and 2x): uniform width only, dashed and dotted through `stroke-dasharray`, per-side widths omitted. Shape is per device; `none` at a device clears it. Embeds cannot be shaped except by circle, ellipse and pill.
 
 ### 7.6 Sizes attribute
 
@@ -289,9 +298,26 @@ The lead is the first eager candidate that is not `logo`, `layer` or a brand str
 
 `.sgs-bg-media` replaces today's `.sgs-container__image-bg` and root `::before` paths, keeping stacking of media, overlay, content and shape dividers. Tile: `background-image` on the element, with Repeat and TileSize. Actual size: `object-fit:none`. Backgrounds default to Decorative, which a content photograph can switch off. A background has no alt requirement.
 
-### 7.9 CSS budget
+### 7.9 What each kind needs
 
-`assets/css/media-base.css` under 10 KB uncompressed; optional parts under 4 KB each, checked by gate `check-media-css-budget.py`. Whole-page accounting is OQ-1.
+The same setting needs different code per kind. The emitter and renderer follow this table.
+
+| Setting | Image | Video file | Embed | SVG |
+|---|---|---|---|---|
+| Printed as | `<img>`, `<picture>` | `<video>` | `<iframe>` | inline `<svg>`, viewBox kept |
+| Ratio, Width, Height, limits | CSS | CSS | CSS | CSS |
+| Fit | `object-fit`, all five | `object-fit`, all five | Not offered; the player scales itself | `preserveAspectRatio`: Cover is `xMidYMid slice`, Contain is `xMidYMid meet`; only those two offered |
+| Focal | `object-position` | `object-position` | Not offered | Not offered |
+| Border, Corners, Shadow, Background | CSS | CSS | CSS | CSS |
+| Opacity, Greyscale, Blur | CSS | CSS | Not offered | CSS |
+| Blend | `mix-blend-mode` | `mix-blend-mode` | Not offered | Not offered |
+| Overlay | Helper layer | Helper layer, `pointer-events:none` | Helper layer, `pointer-events:none` | Helper layer |
+| Mask shapes | Yes | Yes | No | Yes |
+| Hover zoom, Parallax, Ken Burns | Transform | Transform | Not offered | Transform |
+| Loading | Priority, per §7.7 | Poster is the candidate; `preload` | `loading="lazy"` | Not applicable |
+| Alt | `alt` | `aria-label` | `title`, required | `role="img"`, `aria-label` |
+| Playback | n/a | Element attributes | URL parameters (autoplay, mute, loop, controls, start) | n/a |
+| Per-device sources | `<source media>` | Sibling, `preload="none"` until shown | Sibling | Sibling |
 
 ## 8. Data model
 
@@ -302,11 +328,12 @@ Names are `{prefix}{Base}`. R = responsive value.
 | `Source` | R object | `{kind,id,url,width,height,mime,poster:{id,url,width,height},markup}`; plus `featured` kind | empty | none | n/a | none | |
 | `Alt` | string | | `""` | none | n/a | none | |
 | `Decorative` | boolean | | false; backgrounds true | none | n/a | none | |
-| `Fit` | R string | `cover`, `contain`, `fill`, `none`, `scale-down`; image backgrounds add `tile`, `actual` | `cover` | `object-fit` | media | plain | |
+| `Fit` | R string | `cover`, `contain`, `fill`, `none`, `scale-down`; image backgrounds add `tile`, `actual`; SVG `cover`, `contain` only | `cover` | `object-fit` | media | plain | |
 | `Focal` | R object | `{x,y}` | centre | `object-position` | media | plain | |
-| `Height` | R string | length, `fill`, `auto` | empty | `height` | surface | plain | |
-| `Ratio` | R string | `w / h`, `natural` | empty | `aspect-ratio` | surface | plain | |
+| `Height` | R string | length, `fill` (labelled Fill), `auto` | empty | `height` | surface | plain | |
+| `Ratio` | R string | `w / h`, `natural` (labelled Photo's own) | empty | `aspect-ratio` | surface | plain | |
 | `Width`, `MaxWidth` | R string | length; Width `auto` | empty | matching | layout | plain | |
+| `MinWidth` | R string | length | empty | `min-width` | layout | plain | |
 | `MaxHeight`, `MinHeight` | R string | length | empty | matching | surface | plain | |
 | `Alignment` | R string | `start`, `center`, `end` | empty | `margin-inline-*` | layout | plain | |
 | `Order` | R number | -20 to 20 | empty | `order` | layout | plain | |
@@ -318,26 +345,24 @@ Names are `{prefix}{Base}`. R = responsive value.
 | `Background` | string | token, hex | empty | `background-color` | surface | plain | |
 | `BoxShadow`, `BoxShadowColour`, `ShadowLiftOnHover` | per `ShadowControl`; lift off by default | | | `box-shadow` | surface | shadow | yes |
 | `Opacity` | R number | 0 to 100 | 100 | `opacity` | media | plain | |
-| `Mask` | R object | `{shape,customId,fit}` | none | `mask-image` | mask | plain | |
+| `Shape` | R object | `{shape,customId,fit}` | none | `mask-image` | mask | plain | |
 | `OverlayColour`, `OverlayGradient` | string | token, hex | empty | colour | overlay | colour-states | yes |
-| `OverlayOpacity` | R number | 0 to 100; 0 at a device clears it | 100 | `opacity` | overlay | plain | yes, `OverlayOpacityHover` |
+| `OverlayOpacity` | R number | 0 to 100; 0 at a device clears it | 100 | `opacity` | overlay | plain | |
 | `OverlayBlend`, `Blend` | string | CSS blends | empty | `mix-blend-mode` | overlay, media | plain | |
-| `Duotone` | object | `{dark,light}` | empty | `filter` | media | plain | |
 | `Greyscale`, `Blur` | R number | 0 to 100; 0 to 100px | 0 | `filter` | media | plain | |
 | `Repeat` | R string | `repeat`, `repeat-x`, `repeat-y`, `no-repeat`, `space`, `round` | `no-repeat` | `background-repeat` | media | plain | |
 | `TileSize` | R string | length, `auto` | `auto` | `background-size` | media | plain | |
 | `Loading` | string | `auto`, `first`, `later` | `auto` | none | n/a | none | |
 | `Playback` | object | `{autoplay,muted,inline,loop,controls,lazy,start}` | per kind | none | n/a | none | |
-| `PosterOnly` | R boolean | | backgrounds: mobile true | none | n/a | none | |
 | `Captions` | object | `.vtt` id, label, language | empty | none | n/a | none | |
 
-Filters combine in fixed order (duotone, greyscale, blur). Hover rules sit inside `@media (hover:hover)` with a 200ms transition, removed under reduced motion. All other hover behaviour (zoom, brighten, grey-to-colour) is the Hover panel's.
+Filters combine in fixed order (greyscale, blur). Hover rules sit inside `@media (hover:hover)` with a 200ms transition, removed under reduced motion. Overlay hover is a second colour in the overlay's control, which is all a darker-to-lighter hover needs. All other hover behaviour (zoom, brighten, grey-to-colour) is the Hover panel's.
 
-Defaults: Fit is applied only where the box crops. An unset Focal displays as "Centre (default)" and writes nothing. Playback: block video controls on, autoplay off, loop off, inline on, lazy on; background video autoplay, muted, loop, inline on, controls off, poster while loading and under reduced motion.
+Defaults: Fit is applied only where the box crops. An unset Focal displays as "Centre (default)" and writes nothing. Playback: block video controls on, autoplay off, loop off, inline on, lazy on; background video autoplay, muted, loop, inline on, controls off, on every device, with its poster while loading and under reduced motion.
 
 `sgs/media` also has `caption`, `captionTag`, link fields, the `caption*` typography and colour family and the player's `videoTime*`. SVG slots add `SvgLayer` ("Layer order": Behind content, In front of content), `SvgAnimation`, `SvgAnimationSpeed`, `SvgTextShadow`.
 
-Source: embed per FR-49-17. `svg` is pasted or uploaded markup, printed inline; an `.svg` chosen as a photo is an `<img>`. `lottie` is a picked `.json` or `.lottie` file, previewing its first frame. `featured` uses the post's featured image, on card, product and post slots.
+Source: embed per FR-49-17. `svg` is pasted or uploaded markup, printed inline; an `.svg` chosen as a photo is an `<img>`. `featured` uses the post's featured image, on card, product and post slots.
 
 ### 8.1 DB and gates
 
@@ -359,16 +384,16 @@ Item-set blocks declare block-level settings with the item prefix (Ratio, Fit, R
 
 ### 9.1 Global
 
-Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and crop open by default. Every panel has Reset in its header menu. Multi-write actions (Circle, Size chips, Replace, Reset) are one undo step.
+Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and crop open by default. Every panel has Reset in its header menu. Multi-write actions (Circle, Replace, Reset) are one undo step.
 
 ### 9.2 Shared components (`src/components/media/`, plus `ResponsiveOverride`)
 
 - **`ResponsiveOverride` (reworked):** the only per-device wrapper for media. Off desktop, an inherited field shows the inherited value in normal text, with "Mobile: using Tablet" naming the true source, or "Mobile: default". Dots mark Tablet and Mobile when they hold their own value, and a closed panel shows one when anything inside does. The dot is a shape with an accessible name. Reset reads "Reset to Tablet" off desktop, "Reset to default" on desktop. Global controls (Alt, Caption, Border width, Load priority, Playback) show "Applies to all devices" when not on Desktop. The device name is part of each accessible label. `lint-responsive-controls.py` is updated in the same commit.
 - **`MediaSlotField`:** kind tabs for the slot's kinds, Media Library first, preview, Replace, Remove, and an inherited-media display per device. On Replace, Focal resets to centre unless "Keep focal point" is ticked, and if Alt is non-empty the panel says "Alt text still describes the previous photo. Update it." with focus on Alt. Picking a device-specific file never writes Alt. Empty Alt on first pick copies the library alt. Video preview has pause.
 - **`FocalField`:** shows the resolved media and point. Drag or click; X and Y percent 0 to 100; quick picks Top, Centre, Bottom, Left, Right; Reset. On a device with its own image inheriting Focal: "Using Desktop's focal point on this image." Help: "Choose the part of the photo that must stay in view when it is cropped." Keyboard: the percent inputs and arrow keys, announced in a live region.
-- **`SizeField`:** chips **Natural size, Set height, Set ratio, Fill the space**. The chip shown is Fill the space if Height resolves to `fill`; Set height if a length; Set ratio if Ratio is a ratio and Height empty or `auto`; otherwise Natural size. Choosing one at device D writes: Natural size: Height `auto` and Ratio `natural`, or deletes both on Desktop. Set height: the length. Set ratio: the ratio and Height `auto`, or deletes Height on Desktop. Fill: Height `fill`. Nothing else changes. A value §7.2 ignores stays and appears in the hidden-value note. Ratio chips: Photo's own, 1:1, 4:3, 3:2, 16:9, 3:4, 9:16, 21:9, Custom. Fill the space help: "Fills the space the surrounding block gives it."
-- **`FitField`:** icon chips: Crop to fill (`cover`), Show all (`contain`), Stretch (`fill`), Actual size (`none`), Never enlarge (`scale-down`), and on image backgrounds Tile.
-- **`MaskField`:** grid drawing the client's own photo in each shape, Upload shape, None, and Keep proportions.
+- **Sizing fields:** separate, always-available controls. **Aspect ratio** chips: Photo's own, 1:1, 4:3, 3:2, 16:9, 3:4, 9:16, 21:9, Custom. **Width** and **Height** as lengths, with Auto, and Fill on Height (help: "Uses the height the surrounding layout gives it"). **Min width, Max width, Min height, Max height** as lengths. Nothing clears anything else. A value §7.2 does not use stays and appears in the hidden-value note.
+- **`FitField`:** icon chips with each kind's options from §7.9: Cover (crop to fill), Contain (show all), Stretch, Actual size, Never enlarge, and on image backgrounds Tile.
+- **`ShapeField`:** one grid, labelled Shape, drawing the client's own photo in each shape: None, Circle, Ellipse, Pill, the mask shapes, Upload shape; Keep proportions where a shape allows it.
 - **`Chips`:** the shared contract for ratio, fit and mask grids: `role="radiogroup"`, arrow-key roving focus, 44px targets, selected not by colour alone, visible focus, hover brightens.
 - **`MediaPanelHost`:** mounts §9.4 from the rule table.
 
@@ -376,36 +401,36 @@ Lengths use `SgsLengthControl` with `presets={false}` in `ResponsiveOverride`. R
 
 ### 9.3 Rule table
 
-In `media-settings.json`, evaluated at the active device against resolved values. Kinds: I image, V video file, E embed, S SVG, L Lottie. Context B background.
+In `media-settings.json`, evaluated at the active device against resolved values. Kinds: I image, V video file, E embed, S SVG. Context B background.
 
 | Control | Kinds | Condition |
 |---|---|---|
-| Alt / Title | I V E S L | Omitted when Decorative. Label "Alt text" on I; "Title (for screen readers)" on V, E (E warns when empty); S, L aria-label |
-| Decorative | I V S L | Not with a link |
-| Poster | V, L, E | |
+| Alt / Title | I V E S | Omitted when Decorative. Label "Alt text" on I; "Title (for screen readers)" on V, E (E warns when empty); S aria-label |
+| Decorative | I V S | Not with a link |
+| Poster | V, E | |
 | Load priority | I, poster | |
 | Caption | I V | |
 | Caption tag | I V | Caption text exists |
 | Link | I | |
-| Playback | V L E | Muted and Inline lock with Autoplay. Embed has autoplay, mute, loop, controls, start at |
+| Playback | V E | Muted and Inline lock with Autoplay. Embed has autoplay, mute, loop, controls, start at |
 | Captions file | V | |
-| Size, Height, Ratio fields | I V E S L | By chip |
-| Width | I V E S L | Omitted under Fill |
-| Max width, Max height, Min height | I V E S L | |
-| Fit | I V | The box crops |
+| Aspect ratio | I V E S | Not when Height is Fill |
+| Width, Height | I V E S | |
+| Min width | I V E S | |
+| Max width, Max height, Min height | I V E S | |
+| Fit | I V S | The box crops |
 | Focal | I V | The box crops and Fit is not `fill` |
-| Alignment, Order | I V E S L | |
-| Radius and Circle | I V E S L | Omitted with a mask |
-| Border width | I V E S L | |
+| Alignment, Order | I V E S | |
+| Corners | I V E S | Omitted with a mask shape, circle, ellipse or pill |
+| Border width | I V E S | |
 | Border style, colour | same | A width is set |
-| Mask | I V S | |
-| Shadow | I V E S L | With a mask, per §7.5 |
+| Shape | I V E S | Embed: circle, ellipse, pill only |
+| Shadow | I V E S | With a mask, per §7.5 |
 | Padding | I V S | |
-| Background | I S L | Fit is `contain`, or any S or L |
+| Background | I S | Fit is `contain`, or S |
 | Overlay | I V E S | Strength and blend after a colour is set |
 | Photo opacity, Greyscale, Blur | I V S | |
 | Blend | I V | |
-| Duotone | I V S | |
 | Typography: Caption and colour | I V | Caption exists |
 | Typography: Video time | V | Player showing |
 | SVG panel | S | |
@@ -413,23 +438,21 @@ In `media-settings.json`, evaluated at the active device against resolved values
 
 Backgrounds show Media, Fit, Focal, Tile options, Overlay, Loading and the motion line, and never Size, Width, Alignment, Order, Border, Radius, Shadow, Padding, Mask, Caption or Link. Mixed kinds use the resolved kind at the active device, and Alt shows if any device resolves to a kind that uses it.
 
-Hidden-value note, panel foot: "Focal point (Mobile) is saved but unused: Fit is Stretch." with Reset.
+Hidden-value note, panel foot, for example: "Aspect ratio (Mobile) is saved but unused: Width and Height are both set." or "Focal point (Mobile) is saved but unused: Fit is Stretch.", with Reset.
 
 ### 9.4 Panels
 
 `sgs/media`, Settings: **Media** (kind and source, Poster, Alt or Title, Decorative, Load priority); **Caption and link**; **Video** (Playback, Captions).
 
-Styles: **Size and crop** (Size, Width, Max width, Max height, Min height, Fit, Focal); **Position in the layout** (Alignment, Order in the row); **Border and shape** (Corners with Square, Rounded, Pill and a Circle toggle; Mask; Border; Padding; Background colour); **Shadow**; **Overlay and filters** (Overlay colour and gradient, Overlay strength, Blend, Photo opacity, Greyscale, Blur, Duotone last); **Typography**; **SVG**; **Hover**; **Entrance and reveal**; **Scroll and ambient effects**.
+Styles: **Size and crop** (Aspect ratio, Width, Height, Min width, Max width, Min height, Max height, Fit, Focal); **Position in the layout** (Alignment, Order in the row); **Border and shape** (Shape, Corners, Border, Padding, Background colour); **Shadow**; **Overlay and filters** (Overlay colour and gradient, Overlay strength, Blend, Photo opacity, Greyscale, Blur); **Typography**; **SVG**; **Hover**; **Entrance and reveal**; **Scroll and ambient effects**.
 
-Circle toggles Radius 50%, Ratio 1:1, Height `auto`, Fit `cover` at the current device, restoring prior values when switched off, and shows active when those resolve.
-
-Caption colour sits in Typography as a declared `colourExemption`. Duotone's colours are swatch rows. Caption typography offers size, family, weight, style, line height, letter spacing, transform, alignment. Video time offers size, family, weight.
+Caption colour sits in Typography as a declared `colourExemption`. Caption typography offers size, family, weight, style, line height, letter spacing, transform, alignment. Video time offers size, family, weight.
 
 Background panel: Media, How it fills, Focal, Tile options, Overlay, motion line. On the toolbar: Replace and Alignment. Hover panel subtitle: "Overlay, border and shadow changes on hover are set in their own panels."
 
 Each motion panel carries a one-line subtitle, and Hover says "Hover has no effect on touch screens" on Tablet and Mobile.
 
-Catalogue of ranges: Width, Max width: `px`, `%`, `rem`, `em`, `vw`, `ch`, 0 to 5000. Heights: `px`, `%`, `rem`, `em`, `vh`, `svh`, `dvh`, `vw`. Radius: `px`, `%`, `rem`, `em`, 0 to 9999. Padding: `px`, `rem`, `em`, `%`. Opacity, strength, greyscale: percent, step 1. Blur: `px`, 0 to 100. Parallax strength: chips Gentle (0.1), Medium (0.2), Strong (0.4), and a custom 0 to 1 in Fine-tune. All in `media-settings.json`.
+Catalogue of ranges: Width, Min width, Max width: `px`, `%`, `rem`, `em`, `vw`, `ch`, 0 to 5000. Heights: `px`, `%`, `rem`, `em`, `vh`, `svh`, `dvh`, `vw`. Radius: `px`, `%`, `rem`, `em`, 0 to 9999. Padding: `px`, `rem`, `em`, `%`. Opacity, strength, greyscale: percent, step 1. Blur: `px`, 0 to 100. Parallax strength: chips Gentle (0.1), Medium (0.2), Strong (0.4), and a custom 0 to 1 in Fine-tune. All in `media-settings.json`.
 
 ### 9.5 States
 
@@ -478,9 +501,9 @@ A separate effect: the media holds still in its block while the page moves, by t
 | Element | Prefix | Context | Kinds | Settings | Specialised |
 |---|---|---|---|---|---|
 | `sgs/media` | `media` | content | all | all | Caption, Link |
-| Container, trust bar, site header, site footer, multi-button, physics canvas, nav drawer | `background` | background | I V S L | Source, Fit, Focal, Repeat, TileSize, Overlay, Loading | Tile |
-| Hero background | `background` | background | I V S L | same | |
-| Hero split | `split` | content | I V S L | all but Caption | Column placement |
+| Container, trust bar, site header, site footer, multi-button, physics canvas, nav drawer | `background` | background | I V S | Source, Fit, Focal, Repeat, TileSize, Overlay, Loading | Tile |
+| Hero background | `background` | background | I V S | same | |
+| Hero split | `split` | content | I V S | all but Caption | Column placement |
 | Decorative image | `layer` | layer | I S | all but Caption, Link | Position, rotation |
 | Gallery | `item` | item | I V | Source, Fit, Focal, Ratio, Radius, Mask, Loading | Grid, caption reveal |
 | Card grid, post grid | `image` | item | I, featured | same | Grid |
@@ -492,7 +515,7 @@ A separate effect: the media holds still in its block while the page moves, by t
 | Responsive logo | `logo` | content | I S | Source, Width, Loading | Light and dark source |
 | Choice-flow option | `option` | item | I | Source, Fit, Focal | Set by flow fit |
 | Trust-bar badge | `badge` | item | I | Source, Fit, Radius | |
-| Brand strip, image sequence, cart thumbnails, product search, swatches, info box, Lottie | as declared | item or content | I (L) | Source, Fit | Context |
+| Brand strip, image sequence, cart thumbnails, product search, swatches, info box | as declared | item or content | I | Source, Fit | Context |
 
 ## 11. Cloner and agent contract
 
@@ -500,29 +523,11 @@ Schema: `schemas/media-slot.schema.json`, refusing unknown keys and shapes. `wp-
 
 | Draft pattern | Target |
 |---|---|
-| Frame height set by a parent, or `height:100%` of a definite parent | Height `fill`; also Ratio when the parent height is not definite |
-| `height:100%` of an indefinite parent | Natural |
-| Explicit height, box keeps the image's proportions at every width | Width `auto`, Max height |
-| Explicit height | Height; Width as drawn |
-| Explicit `aspect-ratio`, or cropped to one | Ratio |
-| Width and height both | Both |
-| Width only | Width |
-| Neither | Natural |
-| Computed `object-fit` where the box crops, including `fill` | Fit; no crop writes neither Fit nor Focal |
-| `object-position` in `{x,y}` terms | Focal; otherwise Custom CSS, reported |
-| `border-radius`, circle, pill | Radius |
-| `clip-path`: `circle(50%)`, `ellipse(50% 50%)` | Radius 50%; `inset(… round R)`: Radius R; polygon within 1% of a registry shape: Mask; else Custom CSS, reported |
-| Border, shadow, padding, opacity, order, min and max sizes | As named |
-| `filter` blur or grayscale | Blur, Greyscale; other filters Custom CSS, reported |
-| `mix-blend-mode` | Blend |
-| Margin or offsets | Not written |
-| Overlay child | Overlay |
-| `:hover` scale on image or wrapper | Hover Zoom on the media part |
-| `<image-slot>` no shape | Radius 12px; with shape rect, rounded, circle, pill: Radius |
-| `<picture>` | Per-device Source |
-| `<figure><figcaption>`, `<a>`, `<iframe>`, `<svg>`, `<video>` | Caption, Link, embed, svg, Playback |
-| `background-image` with children | Background slot; size cover or contain to Fit, auto with repeat to Tile, position to Focal, attachment fixed to Pinned |
-| `background-image`, no children | `sgs/media` |
+| Frame height set by a parent, or `height:100%` of a definite parent | Height Fill |
+| `height:100%` of an indefinite parent | No Height |
+| `aspect-ratio`, `width`, `height`, `min-width`, `max-width`, `min-height`, `max-height` | The setting of the same name, as declared |
+
+| Computed `object-fit` where the box crops, including `fill` | Fit; no crop writes neither Fit nor Focal | | `object-position` in `{x,y}` terms | Focal; otherwise Custom CSS, reported | | `border-radius` of 50% on all corners | Shape Circle if square, else Ellipse | | Fully rounded ends | Shape Pill | | Any other `border-radius` | Corners | | `clip-path`: `circle(50%)`, `ellipse(50% 50%)` | Shape Circle or Ellipse; `inset(… round R)`: Corners R; polygon within 1% of a registry shape: that Shape; else Custom CSS, reported | | Border, shadow, padding, opacity, order, min and max sizes | As named | | `filter` blur or grayscale | Blur, Greyscale; other filters Custom CSS, reported | | `mix-blend-mode` | Blend | | Margin or offsets | Not written | | Overlay child | Overlay | | `:hover` scale on image or wrapper | Hover Zoom on the media part | | `<image-slot>` no shape | Corners 12px; with shape rect: none; rounded: Corners; circle, pill: that Shape | | `<picture>` | Per-device Source | | `<figure><figcaption>`, `<a>`, `<iframe>`, `<svg>`, `<video>` | Caption, Link, embed, svg, Playback | | `background-image` with children | Background slot; size cover or contain to Fit, auto with repeat to Tile, position to Focal, attachment fixed to Pinned | | `background-image`, no children | `sgs/media` |
 
 **Absorption:** an element is merged into the media when it has exactly one image, video or picture child, plus at most one absolutely-positioned overlay with no text or one figcaption; it has no text of its own; and its overflow is hidden or clip, or it declares ratio, radius, border, shadow or background colour the image does not repeat. Controls, positive: radius only, ratio only, overflow only, overlay, figcaption, background colour. Negative: text, two images, badge.
 
@@ -532,15 +537,15 @@ Editor on a local mirror; front end in real Chrome at 375, 768 and 1440, Firefox
 
 - **AC-1** After `sgs-update`, every setting has a DB row with its property, `tier_object`, and `paint_node`; the drift gate fails on an edited block.json (negative control).
 - **AC-2** Detector over `block.json`s: no flat media tiers, one Focal shape, no tiered Alt.
-- **AC-3** Fixture of every Height and Ratio combination per device matches §7.2, editor and front end; all three browsers.
+- **AC-3** Fixture of Ratio, Width, Height and each limit in combination, per device, matches §7.2 in editor and front end, including ratio with a height, a width, or a maximum; all three browsers.
 - **AC-4** Three-source picture: one image request per width. `none` and a Hide toggle: none. Image on desktop with video on mobile: zero image requests at 375. `wp_filter_content_tags` leaves the markup correct.
 - **AC-5** Each §8.2 name greps empty.
-- **AC-6** Helper present for each trigger, including at one device only and hover colour only; absent for caption only, link only, both, or none. Circle with shadow, overlay and hover zoom is a true circle on image and embed. Focus rings not clipped.
+- **AC-6** Helper present for each trigger, including at one device only and hover colour only; absent for caption only, link only, both, or none. The Circle shape with shadow, overlay and hover zoom is a true circle on image and embed. Focus rings not clipped.
 - **AC-7** Every background state prints `.sgs-bg-media`; parallax moves it; with a divider and overlay, stacking holds at three widths.
 - **AC-8** Shared fixture of breakouts, run through PHP and JS, neutralised; SVG script and handlers removed on the front end; a non-allowlisted embed refused; every emitter output validates.
 - **AC-9** No per-block style tags; two identical blocks make one rule; scope class stable across two loads; CSS order per §6.2.
 - **AC-10** On home, shop, product, post and contact at 375x667 and 1440x900: no in-view image lazy; exactly one high; none from hidden surfaces; REST or cached fragments are never high.
-- **AC-11** Firefox and WebKit reserve the same space as Chrome; no typed `attr()`; `check-media-css-budget.py` passes.
+- **AC-11** Firefox and WebKit reserve the same space as Chrome; no typed `attr()`.
 - **AC-12** Panels, order and labels per kind match §9.4 (DOM check).
 - **AC-13** Each rule-table row visible and omitted at each device; no empty panel; no duplicate labels; rule evaluation under 16ms for a container with three slots.
 - **AC-14** On Tablet a change writes only tablet; Mobile says "using Tablet"; dots and Reset work; undo restores in one step; hidden note and its Reset work; global controls say so.
@@ -551,8 +556,8 @@ Editor on a local mirror; front end in real Chrome at 375, 768 and 1440, Firefox
 - **AC-19** Effects listed as §10.1; targets match availability.
 - **AC-20** Parallax per §10.2, no gap, measured, including a block at 3000px and a shrunken mobile toolbar. Pinned on WebKit. No Attachment.
 - **AC-21** The motion line opens Effects targeted at Background, repeatedly, and moves focus.
-- **AC-22** No media shape attribute or clip-path preset; `sgs/icon` shape unaffected.
-- **AC-23** Each registry shape on a photo with shadow, under 2% pixel difference at a 4-level tolerance, all three browsers; border follows; per-device mask.
+- **AC-22** No old media shape attribute or clip-path preset; `sgs/icon` shape unaffected; Circle sits in the Shape grid.
+- **AC-23** Each mask shape on a photo with shadow, under 2% pixel difference at a 4-level tolerance, all three browsers; border follows; per-device mask.
 - **AC-24** Fixture per §11 row; absorption controls; schema refuses unknown shapes; `wp-build-page` accepts slots.
 - **AC-25** Detector survey zero old attributes on every site, pattern and tree; computed width, height and object-fit within 1px before and after except the listed allowed changes; Bean checks the five sites by eye (FP-13).
 - **AC-26** Each §10.4 row passes; the Eye Care hero parallax and focal point on settings alone.
@@ -566,7 +571,8 @@ Tool: `plugins/sgs-blocks/scripts/migrate-media-system/` (survey, fix, check, se
 
 | Old | New |
 |---|---|
-| `mediaType`, `videoSource`, `imageId/Url`, `videoUrl/Id`, `svgContent`, Lottie fields, tiers | `mediaSource` |
+| `mediaType`, `videoSource`, `imageId/Url`, `videoUrl/Id`, `svgContent`, tiers | `mediaSource` |
+| Saved Lottie media (one block across all sites) | Reported and resolved by hand |
 | `thumbnailId` and tiers | `Source.poster` |
 | `imageAlt`, per-tier alts | `mediaAlt` (desktop, else first non-empty) |
 | `imageDecorative` | `mediaDecorative` |
@@ -581,10 +587,10 @@ Tool: `plugins/sgs-blocks/scripts/migrate-media-system/` (survey, fix, check, se
 | `opacity` × SVG opacity | Opacity |
 | `imageBlendMode` | Blend |
 | `displayWidth` | deleted |
-| `style.color.duotone`, `supports.filter` | deleted (no presets exist) |
-| `shape` rounded | Radius 12px |
-| `shape` circle | Radius 50%, Ratio 1:1, Fit cover |
-| `photoShape`, `galleryStickerShape`, `splitMediaShape`, decorative `shape` | Radius or Mask |
+| `style.color.duotone`, `supports.filter` | deleted |
+| `shape` rounded | Corners 12px |
+| `shape` circle | Shape Circle |
+| `photoShape`, `galleryStickerShape`, `splitMediaShape`, decorative `shape` | Shape or Corners |
 | `backgroundImage*`, `bgVideo*`, `bgSvg*` | `backgroundSource` |
 | `backgroundSize`, `backgroundPosition`, `backgroundRepeat` | Fit, Focal, Repeat, TileSize |
 | `backgroundAttachment: fixed` | Pinned effect |
@@ -659,7 +665,7 @@ Stubs with these signatures ship in C0, so dependants build before the real code
 | WP-3 Loading | `includes/media/class-sgs-media-priority.php` | WP-1, PS-5 | A |
 | WP-4 Fields | `src/components/media/fields/*`, `emitter/mediaPreview.js`, reworked `ResponsiveOverride` | WP-1 | A |
 | WP-5 Rules and host | `src/components/media/rules/*`, `MediaPanelHost.js` | WP-1 | A |
-| WP-6 Masks | `media-shapes.json`, `media-mask.css`, `MaskField`, divider and icon renderers reading it | WP-1, PS-3 | A |
+| WP-6 Masks | `media-shapes.json`, `media-mask.css`, `ShapeField`, divider and icon renderers reading it | WP-1, PS-3 | A |
 | WP-10a Effects UI | Motion targets and fields, store, `render-paths.json` | WP-1 | A |
 | WP-13 Cloner | `scripts/computed-route/*`, parity, skeleton rules, `wp-build-page`, Spec 48 | WP-1 | A |
 | WP-14 Detector | Migration tool, mapping rows | WP-1 | A |
@@ -668,7 +674,7 @@ Stubs with these signatures ship in C0, so dependants build before the real code
 | WP-10b Motion runtime | Overscan, pinned | WP-2, 8 | B |
 | WP-9 Hero | `src/blocks/hero/*` | WP-8 | B |
 | Wave 3 | Card grid, post grid, product card, buybox, brand strip, logo | Wave 1 | B |
-| Wave 4 | Team member, testimonial, before-after, timeline, choice flow, image sequence, Lottie, cart, product search, swatches, info box, trust-bar badge | Wave 1 | B |
+| Wave 4 | Team member, testimonial, before-after, timeline, choice flow, image sequence, cart, product search, swatches, info box, trust-bar badge | Wave 1 | B |
 | WP-15b Docs, removal | Specs 02, 35A, 36, 48, rules, CLAUDE files; §8.2 | all | B |
 
 Parallel: WP-0b, WP-2, 3, 4, 5, 6, 10a, 13, 14 after WP-1. Waves within Stage B after their needs. Generated files and baselines change only through the Integrator.
@@ -685,8 +691,4 @@ FR to AC: FR-1 AC-1; FR-2 to 4 AC-2; FR-5 AC-3; FR-6, 8, 9 AC-4; FR-7 AC-5; FR-1
 
 ## 17. Open questions
 
-| ID | Question | Options | Recommendation | Owner |
-|---|---|---|---|---|
-| OQ-1 | What does the 100 KB CSS budget count? No spec defines it | A: compressed, every sheet on the page. B: uncompressed. C: SGS-owned only | Bean decides; §7.9 limits media's own weight meanwhile | Bean |
-| OQ-2 | Duotone colours, as the theme has no presets | A: two colours per slot. B: site-level presets | A | Bean |
-| OQ-3 | Background video on phones | A: poster only by default. B: play as desktop | A | Bean |
+None. Bean's rulings on 2026-11-09: no CSS size target for this work; duotone left out; videos play on phones.
