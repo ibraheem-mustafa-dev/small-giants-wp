@@ -17,6 +17,7 @@ require_once dirname( __DIR__ ) . '/helpers-responsive.php';
 require_once dirname( __DIR__ ) . '/helpers-typography.php';
 require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
+require_once dirname( __DIR__ ) . '/helpers-button-preset.php';
 require_once __DIR__ . '/helpers-account-header.php';
 
 if ( ! function_exists( 'sgs_account_box_shape_css' ) ) {
@@ -316,21 +317,18 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 			$buttons[] = $form . '.woocommerce-EditAccountForm button[type="submit"]';
 			$buttons[] = $form . ' button[name="save_address"]';
 		}
-		$preset = (string) ( $attributes['loginButtonPreset'] ?? '' );
-		$pre    = '';
-		if ( in_array( $preset, array( 'primary', 'secondary' ), true ) ) {
-			$v   = '--wp--custom--button-presets--' . $preset . '--';
-			$pre = 'background:var(' . $v . 'background);color:var(' . $v . 'text);border-style:solid;border-width:var(' . $v . 'border-width,1px);'
-				. 'border-color:var(' . $v . 'border,transparent);border-radius:var(' . $v . 'border-radius,0);font-weight:var(' . $v . 'font-weight,inherit);'
-				. 'text-transform:var(' . $v . 'text-transform,none);letter-spacing:var(' . $v . 'letter-spacing,normal);';
+		$preset   = (string) ( $attributes['loginButtonPreset'] ?? '' );
+		$reg_pre  = (string) ( $attributes['registerButtonPreset'] ?? '' );
+		$register = $form . ' .woocommerce-form-register__submit';
+		foreach ( $buttons as $btn ) {
+			$css[] = sgs_button_preset_css( $btn, $btn === $register && '' !== $reg_pre ? $reg_pre : $preset );
+		}
+		if ( ! in_array( $register, $buttons, true ) ) {
+			// Create account takes its own preset even when the login scope stops at the sign-in button.
+			$css[] = sgs_button_preset_css( $register, $reg_pre );
 		}
 		$height = $attributes['loginButtonMinHeight'] ?? array();
 		foreach ( $buttons as $btn ) {
-			if ( '' !== $pre ) {
-				$css[] = $btn . '{' . $pre . '}';
-				$v     = '--wp--custom--button-presets--' . $preset . '--';
-				$css[] = $btn . ':hover{background:var(' . $v . 'hover-background,var(' . $v . 'background));color:var(' . $v . 'hover-text,var(' . $v . 'text));}';
-			}
 			$border = sgs_border_element_decls(
 				$attributes,
 				'loginButton',
@@ -396,6 +394,10 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 
 		$link  = $form . ' .lost_password a';
 		$css[] = sgs_typography_css_rule( $attributes, 'loginLink', $link, '', false, false, $tiered );
+		if ( '' !== (string) ( $attributes['loginLinkTextDecoration'] ?? '' ) ) {
+			// The block's own decoration wins over the global hover underline sweep (extensions.css).
+			$css[] = $link . '::after{content:none;}' . $form . ' .woocommerce-privacy-policy-text a::after{content:none;}';
+		}
 		$css[] = sgs_text_states_css(
 			$link,
 			$attributes,

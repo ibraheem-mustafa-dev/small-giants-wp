@@ -15,6 +15,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/selectors.php';
 require_once __DIR__ . '/cards.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-button-preset.php';
 
 /**
  * The button rules for one block.
@@ -22,14 +23,14 @@ require_once __DIR__ . '/cards.php';
  * @param array<string, mixed> $attrs Set attributes.
  * @param string               $block 'cart' or 'checkout'.
  * @param string               $root  Scope selector.
- * @return string CSS text; '' when no button setting is set.
+ * @return string CSS text: the button's preset motion and the set edge, height and padding; '' when no `sgsButton*` setting is set.
  */
 function sgs_commerce_look_button_css( array $attrs, string $block, string $root ): string {
 	$button = sgs_commerce_look_selector( 'button_primary', $block, $root );
-	if ( '' === $button ) {
+	if ( '' === $button || ! sgs_commerce_look_has_any( $attrs, array( 'sgsButton' ) ) ) {
 		return '';
 	}
-	return sgs_commerce_look_button_edge_css( $attrs, $button ) . sgs_emit_responsive_css(
+	return sgs_button_preset_css( $button, 'primary', false ) . sgs_commerce_look_button_edge_css( $attrs, $button ) . sgs_emit_responsive_css(
 		$button,
 		array(
 			array(
