@@ -327,7 +327,7 @@ function buildRootPreviewStyle( attributes, previewTier = 'desktop' ) {
  * @return {string} CSS value for the stripe custom property.
  */
 function stripeColourVar( slug ) {
-	return slug ? `var(--wp--preset--color--${ slug })` : 'transparent';
+	return slug ? colourVar( slug ) : 'transparent';
 }
 
 // ── Entry editor sub-component ──────────────────────────────────────────────
@@ -730,7 +730,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		className: previewClasses,
 		style: {
 			'--sgs-connector-colour': connectorColour
-				? `var(--wp--preset--color--${ connectorColour })`
+				? colourVar( connectorColour )
 				: undefined,
 			// connectorColourGradient sibling (2026-09-06, colour-conformance
 			// closeout) — a raw CSS gradient string, mirrored unwrapped like
@@ -747,7 +747,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// specificity conflict — adding the hover siblings here is the
 			// whole fix.
 			'--sgs-connector-colour-hover': connectorColourHover
-				? `var(--wp--preset--color--${ connectorColourHover })`
+				? colourVar( connectorColourHover )
 				: undefined,
 			'--sgs-connector-colour-hover-gradient':
 				connectorColourHoverGradient || undefined,
@@ -769,10 +769,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				? rowStripeColourBGradient || undefined
 				: undefined,
 			'--sgs-date-colour': dateColour
-				? `var(--wp--preset--color--${ dateColour })`
+				? colourVar( dateColour )
 				: undefined,
 			'--sgs-timeline-fill-colour': connectorFillColour
-				? `var(--wp--preset--color--${ connectorFillColour })`
+				? colourVar( connectorFillColour )
 				: undefined,
 			'--sgs-timeline-fill-colour-gradient':
 				connectorFillColourGradient || undefined,
@@ -783,7 +783,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			// custom properties render.php emits. Same no-conflict reasoning
 			// as connectorColourHover above.
 			'--sgs-timeline-fill-colour-hover': connectorFillColourHover
-				? `var(--wp--preset--color--${ connectorFillColourHover })`
+				? colourVar( connectorFillColourHover )
 				: undefined,
 			'--sgs-timeline-fill-colour-hover-gradient':
 				connectorFillColourHoverGradient || undefined,

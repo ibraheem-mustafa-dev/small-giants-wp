@@ -37,6 +37,7 @@
  */
 
 import { colourVar } from './tokens';
+import { resolvedCssValue } from './resolved-css-value';
 import { splitTop, parseLayer, resolveColour, formatLength, MAX_BYTES, MAX_LAYERS } from './shadow-layers';
 
 const TIER_CHAIN = {
@@ -120,7 +121,7 @@ const isNumericLike = ( v ) =>
 	'number' === typeof v || ( 'string' === typeof v && '' !== v.trim() && ! isNaN( Number( v ) ) );
 
 // A length already carrying its unit ("1.2rem", "clamp(...)", "var(...)") passes through.
-const hasOwnUnit = ( v ) => 'string' === typeof v && /^(-?\d*\.?\d+[a-z%]+|clamp\(.*\)|var\(.*\)|calc\(.*\))$/i.test( v.trim() );
+const hasOwnUnit = ( v ) => 'string' === typeof v && ( /^-?\d*\.?\d+[a-z%]+$/i.test( v.trim() ) || '' !== resolvedCssValue( v ) );
 
 // A theme font-family preset slug: lowercase letters, digits and hyphens, the
 // shape helpers-typography.php::sgs_font_family_sanitise() turns into the

@@ -41,8 +41,9 @@ if ( ! function_exists( 'sgs_icon_length_value' ) ) {
 		if ( '' === $value ) {
 			return '';
 		}
-		if ( preg_match( '/^var\(--wp--preset--(?:spacing|font-size)--([a-z0-9-]+)\)$/', $value ) ) {
-			return $value;
+		$resolved = sgs_resolved_css_value( $value );
+		if ( '' !== $resolved ) {
+			return $resolved;
 		}
 		if ( preg_match( '/^\d+$/', $value ) && in_array( $value, sgs_css_length_value_preset_slugs(), true ) ) {
 			return 'var(--wp--preset--spacing--' . $value . ')';

@@ -221,6 +221,35 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_resolved_css_value' ) ) {
+	/**
+	 * The one predicate for "this stored value is already a resolved CSS value".
+	 *
+	 * A value that is exactly one `var()`, `calc()`, `min()`, `max()` or `clamp()` call
+	 * is a finished CSS value, not a theme slug, so a token helper must print it as it
+	 * is instead of wrapping it in a preset custom property. Every helper that turns a
+	 * slug into a preset reference asks this first (JS twin: src/utils/resolved-css-value.js).
+	 *
+	 * The value is validated by sgs_css_length_value(), which refuses `;`, `{`, `}`,
+	 * `<`, `>`, `=`, a backslash, a comment opener, `url(`, `expression(`, `@import`
+	 * and unbalanced parentheses; this function also refuses text before or after the
+	 * single call.
+	 *
+	 * @param mixed $value Stored value.
+	 * @return string The trimmed, safe value; '' when the value is not a single safe CSS function call.
+	 */
+	function sgs_resolved_css_value( $value ): string {
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+		$value = trim( $value );
+		if ( 1 !== preg_match( '/^(?:var|calc|min|max|clamp)(\((?:[^()]|(?1))*\))$/i', $value ) ) {
+			return '';
+		}
+		return sgs_css_length_value( $value );
+	}
+}
+
 if ( ! function_exists( 'sgs_font_weight_value' ) ) {
 	/**
 	 * A font weight, safe to print after `font-weight:`.

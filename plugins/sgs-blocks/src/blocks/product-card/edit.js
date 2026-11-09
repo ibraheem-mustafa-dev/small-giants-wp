@@ -887,7 +887,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			return undefined;
 		}
 		const v = String( value ).trim();
-		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
+		return colourVar( v );
 	};
 	const cardTier = usePreviewTier();
 	const typedParts = typedCardPreview( attributes, cardTier );
@@ -948,7 +948,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 			return undefined;
 		}
 		const v = String( value ).trim();
-		return /^(var\(|#|rgb|hsl)/i.test( v ) ? v : `var(--wp--preset--color--${ v })`;
+		return colourVar( v );
 	};
 	const titlePreviewStyle = typedParts.title;
 	const pricePreviewStyle = typedParts.price;

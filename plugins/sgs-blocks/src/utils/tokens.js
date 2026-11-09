@@ -7,6 +7,26 @@
  */
 
 import { composeShadow } from './shadow-layers.js';
+import { CSS_FUNCTION_START, resolvedCssValue } from './resolved-css-value.js';
+
+/**
+ * Wrap a preset slug in its custom property. A value already written as a CSS function (`var()`, `calc()`, `min()`,
+ * `max()`, `clamp()`) passes through unchanged when safe and resolves to nothing when not, so it is never read as a slug.
+ * Mirrors the PHP helpers that share `sgs_resolved_css_value()`.
+ *
+ * @param {string} prefix Custom property prefix, up to and including the trailing `--`.
+ * @param {string} slug   A preset slug or a resolved CSS value.
+ * @return {string|undefined} CSS value, or undefined when empty or unsafe.
+ */
+function presetVar( prefix, slug ) {
+	if ( ! slug ) {
+		return undefined;
+	}
+	if ( 'string' === typeof slug && CSS_FUNCTION_START.test( slug ) ) {
+		return resolvedCssValue( slug ) || undefined;
+	}
+	return `var(${ prefix }${ slug })`;
+}
 
 /**
  * Resolve a colour attribute value for an editor-canvas preview — the JS mirror
@@ -62,6 +82,11 @@ export function colourVar( slug ) {
 		return undefined;
 	}
 
+	const resolved = resolvedCssValue( value );
+	if ( resolved ) {
+		return resolved;
+	}
+
 	if (
 		typeof CSS !== 'undefined' &&
 		typeof CSS.supports === 'function' &&
@@ -74,10 +99,7 @@ export function colourVar( slug ) {
 }
 
 export function spacingVar( slug ) {
-	if ( ! slug ) {
-		return undefined;
-	}
-	return `var(--wp--preset--spacing--${ slug })`;
+	return presetVar( '--wp--preset--spacing--', slug );
 }
 
 /**
@@ -97,31 +119,19 @@ export function gapVar( value ) {
 }
 
 export function shadowVar( slug ) {
-	if ( ! slug ) {
-		return undefined;
-	}
-	return `var(--wp--preset--shadow--${ slug })`;
+	return presetVar( '--wp--preset--shadow--', slug );
 }
 
 export function fontSizeVar( slug ) {
-	if ( ! slug ) {
-		return undefined;
-	}
-	return `var(--wp--preset--font-size--${ slug })`;
+	return presetVar( '--wp--preset--font-size--', slug );
 }
 
 export function borderRadiusVar( slug ) {
-	if ( ! slug ) {
-		return undefined;
-	}
-	return `var(--wp--custom--border-radius--${ slug })`;
+	return presetVar( '--wp--custom--border-radius--', slug );
 }
 
 export function transitionVar( slug ) {
-	if ( ! slug ) {
-		return undefined;
-	}
-	return `var(--wp--custom--transition--${ slug })`;
+	return presetVar( '--wp--custom--transition--', slug );
 }
 
 /**

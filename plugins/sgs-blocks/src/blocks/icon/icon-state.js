@@ -17,6 +17,7 @@ import {
 import { borderBoxPreview, resolveBorderStyle } from '../../utils/border-style';
 import { SHAPE_SLUGS, isOutlineShape } from '../../utils/icon-shapes';
 import { colourVar } from '../../utils/tokens';
+import { resolvedCssValue } from '../../utils/resolved-css-value';
 import { cssLengthValue, cssSingleLengthValue, cssValueTokens } from '../../utils/css-length';
 import { isCssGradient } from '../../utils/background-preview';
 
@@ -231,8 +232,9 @@ export function iconLengthValue( raw, maxPx = 512, presetSlugs = [] ) {
 	if ( ! value ) {
 		return '';
 	}
-	if ( /^var\(--wp--preset--(?:spacing|font-size)--[a-z0-9-]+\)$/.test( value ) ) {
-		return value;
+	const resolved = resolvedCssValue( value );
+	if ( resolved ) {
+		return resolved;
 	}
 	if ( /^\d+$/.test( value ) && presetSlugs.includes( value ) ) {
 		return `var(--wp--preset--spacing--${ value })`;

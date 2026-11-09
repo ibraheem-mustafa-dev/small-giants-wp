@@ -1491,8 +1491,9 @@ function sgs_emit_state_colour_css( string $selector, array $decls_normal, array
 /**
  * Resolve a font-size attribute value to a CSS font-size string.
  *
- * If the value starts with a digit (e.g. "16px", "1.5em") or with "clamp(",
- * it is treated as a raw CSS value and returned escaped. Otherwise it is
+ * A number with a unit (e.g. "16px", "1.5em") or a single CSS function call
+ * (var(), calc(), min(), max(), clamp(), see sgs_resolved_css_value()) is
+ * already a CSS value and is returned as it is. Otherwise it is
  * treated as a design token slug: var(--wp--preset--font-size--{slug}).
  *
  * @param string|null $slug_or_value A CSS font-size string or a design token slug.
@@ -1509,9 +1510,9 @@ function sgs_font_size_value( ?string $slug_or_value ): string {
 	if ( preg_match( '/^\d+(\.\d+)?(px|em|rem|vh|vw|vmin|vmax|ch|ex|%)$/', $value ) ) {
 		return $value;
 	}
-	if ( 0 === strpos( $value, 'clamp(' ) ) {
-		$sanitised = safecss_filter_attr( 'font-size:' . $value );
-		return $sanitised ? $value : '';
+	// A CSS function (var(), calc(), min(), max(), clamp()) is already resolved: print it as it is, never as a slug.
+	if ( 1 === preg_match( '/^(?:var|calc|min|max|clamp)\(/i', $value ) ) {
+		return sgs_resolved_css_value( $value );
 	}
 
 	// Sanitise slug to valid WordPress preset characters only.

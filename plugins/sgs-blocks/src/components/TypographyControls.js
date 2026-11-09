@@ -108,6 +108,10 @@ import {
 } from './primitives';
 import { makeResponsive } from '../utils/responsive';
 import { flattenPresetSetting } from '../utils/presetSettings';
+import { CSS_FUNCTION_START } from '../utils/resolved-css-value';
+
+// A font-size preset written as its custom property.
+const FONT_SIZE_PRESET_VAR = /^var\(--wp--preset--font-size--([a-z0-9-]+)\)$/;
 import { fontFamilyPickerValue, fontFamilyStoredValue } from '../utils/typography-preview';
 // `flattenPresetSetting` + `useSettings` ARE imported, for `FontFamilyControl`
 // only — see the note at the top of TypographyControlsFields. `FontSizePicker`
@@ -577,25 +581,21 @@ function TypographyControlsFields( {
 	const letterSpacingIsTiered = isTieredValue( letterSpacingRaw );
 
 	/**
-	 * onChange for the preset-size dropdown. A preset is global (no device
-	 * tiers), so selecting one stores the slug string on the base attr and
-	 * clears the tablet/mobile numeric tiers; '— none —' clears back to unset.
-	 * Typing a numeric size afterwards overwrites the slug (mutual exclusion).
+	 * onChange for the preset-size choice on ONE device. A preset is stored as its slug on that device's own value
+	 * (the tier object's key, or the flat per-device attribute), so the other devices keep what they hold;
+	 * choosing '' clears that device back to inherited.
 	 *
-	 * @param {string} slug Preset slug or '' to clear.
+	 * @param {string} slug       Preset slug or '' to clear.
+	 * @param {string} breakpoint 'desktop'|'tablet'|'mobile'.
 	 */
-	function onFontSizePresetChange( slug ) {
+	function onFontSizePresetChange( slug, breakpoint = 'desktop' ) {
 		if ( fontSizeIsTiered ) {
 			setAttributes( {
-				[ k.fontSize ]: slug ? makeResponsive( { desktop: slug } ) : makeResponsive( {} ),
+				[ k.fontSize ]: makeResponsive( { ...( fontSizeRaw || {} ), [ breakpoint ]: slug || undefined } ),
 			} );
 			return;
 		}
-		setAttributes( {
-			[ k.fontSize ]: slug || undefined,
-			[ k.fontSizeTablet ]: undefined,
-			[ k.fontSizeMobile ]: undefined,
-		} );
+		setAttributes( { [ fontSizeAttrMap[ breakpoint ] ]: slug || undefined } );
 	}
 
 	const currentLetterSpacingUnit = attributes[ k.letterSpacingUnit ] || 'px';
@@ -782,10 +782,13 @@ function TypographyControlsFields( {
 	 * @return {JSX.Element} The picker.
 	 */
 	function renderFontSizeRow( { value, onChange, onPreset } ) {
-		const isSlug = typeof value === 'string' && '' !== value;
+		// A stored `var(--wp--preset--font-size--{slug})` selects that preset; any other CSS function is a custom size.
+		const presetSlug = 'string' === typeof value ? FONT_SIZE_PRESET_VAR.exec( value.trim() )?.[ 1 ] : undefined;
+		const pickerValue = presetSlug || value;
+		const isSlug = typeof pickerValue === 'string' && '' !== pickerValue && ! CSS_FUNCTION_START.test( pickerValue );
 		return (
 			<FontSizePicker
-				value={ isSlug ? value : composeUnitValue( value, currentFontSizeUnit ) }
+				value={ isSlug ? pickerValue : ( 'string' === typeof pickerValue && CSS_FUNCTION_START.test( pickerValue ) ? pickerValue : composeUnitValue( value, currentFontSizeUnit ) ) }
 				valueMode={ isSlug ? 'slug' : 'literal' }
 				withSlider
 				withReset={ false }
@@ -827,7 +830,7 @@ function TypographyControlsFields( {
 					renderFontSizeRow( {
 						value: inherited ? undefined : ownValue,
 						onChange: ( val ) => onFontSizeChangeTiered( setOwnValue, val ),
-						onPreset: onFontSizePresetChange,
+						onPreset: ( slug ) => setOwnValue( slug || undefined ),
 					} )
 				}
 			</ResponsiveOverride>
@@ -841,7 +844,7 @@ function TypographyControlsFields( {
 					renderFontSizeRow( {
 						value: attributes[ fontSizeAttrMap[ breakpoint ] ],
 						onChange: ( val ) => onFontSizeChange( breakpoint, val ),
-						onPreset: onFontSizePresetChange,
+						onPreset: ( slug ) => onFontSizePresetChange( slug, breakpoint ),
 					} )
 				}
 			</ResponsiveControl>
