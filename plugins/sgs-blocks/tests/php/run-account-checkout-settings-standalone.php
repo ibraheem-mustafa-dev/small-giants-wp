@@ -78,7 +78,7 @@ if ( class_exists( Account_Endpoints::class ) ) {
 	ob_start();
 	do_action_sim( 'woocommerce_account_orders_endpoint', '' );
 	$html = ob_get_clean();
-	ok( '<h2 class="sgs-account__tab-heading">Orders</h2>' === $html, 'the H2 renders on the orders endpoint when set' );
+	ok( '<h2 class="sgs-account__heading sgs-account__tab-heading">Orders</h2>' === $html, 'the H2 renders on the orders endpoint when set' );
 	ob_start();
 	do_action_sim( 'woocommerce_account_edit-address_endpoint', '' );
 	$html = ob_get_clean();

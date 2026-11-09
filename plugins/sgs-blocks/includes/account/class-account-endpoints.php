@@ -84,7 +84,7 @@ final class Account_Endpoints {
 		if ( ! is_array( self::$active ) || empty( self::$active['tabHeadings'] ) ) {
 			return;
 		}
-		echo '<h2 class="sgs-account__tab-heading">' . \esc_html( $label ) . '</h2>';
+		echo '<h2 class="sgs-account__heading sgs-account__tab-heading">' . \esc_html( $label ) . '</h2>';
 	}
 
 	/**
