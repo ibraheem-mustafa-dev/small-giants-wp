@@ -87,8 +87,8 @@ Live since the round 4 deploy (expect these): the bag line separator ("Colour Iv
 Fixed in round 5 (2026-11-03, live at 301cee05e). Expect these values and report only if live now differs:
 - Trust bar 40.8px tall (labels line-height 1.5); its four icons are the draft's own drawings, 15px, tan.
 - Footer copyright #77716A.
-- Phone menu: the bottom block (rating, phone, social tiles) runs full width (327px at x24 at 375, 720 at 768); the social tiles have black icons and a mint WhatsApp tile with a green icon; secondary links 36.5px apart; close glyph 20px inside a 44px tap area.
-- Contact: the form sits under the details in the left column at 1440 (map on the right), and before the map at 768 and 375. This replaces the older "form its own full-width row below" note.
+- Phone menu: the bottom block (rating, phone, social tiles) runs full width (327px at x24 at 375, 720 at 768); the two social tiles match the footer's (brand colours, normal and hover); the Google tile is removed (round 11); secondary links 36.5px apart; close glyph 20px inside a 44px tap area.
+- Contact: the form is its own full-width row below the details and map at every width (Bean, round 11).
 - Product: code line "GG1566S · 001" #6B655E; "Need advice?" card body 13px #2F5C3F.
 - Buy box: stock line to Colour 47px; labels to tiles 31 / 29.5px; colour tiles to Size 24px; size tiles to "Add my prescription" 28px; the two buttons 10px apart; struck RRP #77716A at full opacity; size letters weight 400 with an 11px measurement line; colour tile ground #F3F0EB.
 - Lens pop-up: the prescription step's bottom bar is 85px from 600px wide (Back 17px from its top); "Add to bag £348" 187px wide.
@@ -151,3 +151,10 @@ Settled in the round 10 wrap-up walk (2026-11-06). Do not report:
 - Size guide pop-up (round 10, closed): transparent close, sticky title bar with divider, 24px body, 32px from the screen edges from 768px, height 88% of the padded screen. Report only if live differs from these.
 - Thank-you page entrances (round 10): tick pop 600ms, heading, note and button rise 600/700/800ms.
 - Checkout walker rows for express payment, delivery cards and section headings come from stale finders (round 9's paired review is the comparison); not findings until the checkout config is re-paired.
+
+Decided in round 11 (Bean, 2026-11-09). Do not report:
+- Header logo: one combined transparent image (mark and wordmark, 6px apart), 164px wide, 150px on phones, truly centred on phones. This replaces the draft's position and the two-image logo (R4-9).
+- The phone menu: no small review pill; big items take no lift, their full-width separator sweeps to black left to right; the review strip's hover border is Google blue; the call button's hover border is the taupe `accent`, with no lift.
+- Contact details: phone, email, clinic and hours sit in the same bordered white boxes as Google and Instagram, 14px text, 10px apart; all four hovers are the tight underline, and phone and email keep their 44px tap areas.
+- The accordion icon's close spins back with a spring (not in the draft; Bean keeps it).
+- The register form's privacy line is one short line with a link.

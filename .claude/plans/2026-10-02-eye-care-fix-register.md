@@ -710,6 +710,28 @@ The comparison tool missed several things you found. Each gap becomes a check, w
 - **Also built 2026-10-05:** pages are read once their animations finish (no row read mid-entrance), the draft's declared widths are read (Contact's 168px address), transition and animation timings are compared, and a list's spacing between its lines (Contact's hours).
 - **Shopping flows as scripted end-to-end tests**, not comparisons: two products in the bag, a second pair, choosing then clearing a filter (N11, N25).
 
+## Round 11 (Bean's 15-item list, 2026-11-08; live 2026-11-09)
+
+Causes proven on the live page or in code, proposed to Bean and council-checked before anything was applied. Framework `db037c7aa`, `50b8302d1`, `b22ba90a7`, `1f4575bd1`; shared DB `b4f6f742821a`. Each item was checked on eye-care-test at the widths named.
+
+| # | Fix | Layer |
+|---|---|---|
+| 1 | Buybox `image-changed` state pulses on a thumbnail or colour swap; the main photo zooms in, the photo frame plays it on load | framework + template 423 |
+| 2 | Accordion icon: spring turn with a `close` back to 0 (Help and product FAQ) | setting |
+| 3 | Help links use Custom style like Home's, so they keep the underline and lift | setting |
+| 4 | Link-style button no longer resets its hover colour to the parent's | framework |
+| 5 | Contact form moved out of the grid; reverses R5-8 | setting |
+| 6, 7, 8 | Contact boxes, link hover colour, one tight underline; the far line was the page-wide paragraph link rule, which now skips SGS-classed links | settings + framework |
+| 9 | Form buttons take the preset lift; a form's own lift resets it | framework |
+| 10 | Account sign-in rhythm in its Custom CSS; both forms are 14px grids; privacy text shortened | Custom CSS, option |
+| 11 | Focus returns without scrolling; modals restore instantly; the header holds still during any scroll lock (the 20px jump) | framework |
+| 12 | Nav drawer settings; separator sweep in Custom CSS; underline utility keeps its line through a button hover | settings + framework |
+| 13 | Bag icon hover colours; the badge keeps its circle above the fill | setting + framework |
+| 14 | One combined logo, truly centred; reverses R4-9 | media + setting |
+| 15 | Entrances set on Home, Shop, Product and Help; hero text fades on load; Ken Burns prints its first frame; shop loop staggers 70ms; accordion answers accept motion | settings + framework |
+
+Open: reload offset (about 25px) not traced; express checkout and the unchecked-pages list are the next step.
+
 ## Closed (checked; no change)
 
 Each was proposed, then dropped by you or by the evidence. Kept so you can compare lists.
