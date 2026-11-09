@@ -1,0 +1,68 @@
+# C3 Spec-Lawyer review of Spec 49 v0.5
+
+## STRENGTHS
+
+- Sizing is now one model: seven independent settings, a resolution table in §7.2 and a cloner row that copies a draft's properties across one to one. §6.4, §7.2 and §11 agree on this.
+- Every FR (1 to 38) appears in the §16 FR-to-AC map, with no orphan FR and no AC that has no FR.
+- §7.3 gives the helper trigger as a closed list, and §7.4 gives one paint table. Both are checkable.
+- The `none`, `natural` and `auto` cancel tokens, the hidden-control rule (FR-49-21) and the one-undo-step rule are stated.
+
+## MUST-FIX
+
+1. **FR-49-14 vs §2 non-goals.** FR-49-14 requires sanitising "uploaded mask SVGs". §2 lists "uploaded mask shapes" as a non-goal, and §7.5 has one registry only. Fix: delete "and uploaded mask SVGs" from FR-49-14. Keep the inline SVG source, which §8 allows as pasted or uploaded markup.
+2. **FR-49-16 vs §7.2.** FR-49-16 says real width and height "MUST always be printed". §7.2 says the renderer prints no `width` or `height` attribute on an iframe. Inline SVG uses its viewBox, and `<video>` is not covered. Fix: add "except iframe (sized by CSS) and inline SVG (viewBox)" to FR-49-16, and name video's rule (poster dimensions).
+3. **AC-10 vs §7.7 rule 3.** AC-10 asserts "no in-view image lazy" at 1440x900. Rule 3 makes only the first top-level section eager, and rule 5 makes everything else lazy. A tall viewport shows the second section's image, and the test fails by design. AC-10 also demands "exactly one high" on pages that may have no eligible image. Fix: scope the AC to "in view inside the header or first top-level section". Say "at most one high; exactly one when an eligible candidate exists". Alternatively, add a rule that makes the second section eager.
+4. **AC-6 vs §7.9 and §10.1.** AC-6 requires the Circle shape with "hover zoom" to be a true circle "on image and embed". §7.9 says hover zoom is "Not offered" on embeds, and §10.1 gives embeds Lift only. The test cannot be run as written. Fix: change it to "Circle with shadow and overlay on an embed; with hover zoom on an image".
+5. **§7.9 vs §10.1, Ken Burns.** §7.9 lists "Hover zoom, Parallax, Ken Burns: Transform" for Video and SVG. §10.1 offers Ken Burns on Image and Background image only. Fix: make the §7.9 row read Ken Burns "Image only" and "Not offered" under Video and SVG.
+6. **§13 maps `imageHeight` twice.** One row sends `imageHeight, imageWidth` to "Source width and height". Another sends `imageHeight` on card and post grids to Height. The tool "refuses any attribute with no mapping" and has no rule for an attribute mapped twice. Fix: key both rows by block. Say which blocks use the intrinsic-size meaning and which use the display-height meaning.
+7. **§7.8 vs §9.3 and §9.4, Decorative on backgrounds.** §7.8 says a background defaults to Decorative "which a content photograph can switch off". The §9.3 background list and the §9.4 Background panel carry no Decorative or Alt control. A switched-off Decorative has nowhere to take alt text. Fix: add Decorative and Alt text to the Background panel and to the §9.3 background list. Alternatively, state that a content photograph is a `sgs/media` and delete the claim.
+8. **§14.2 and §14.4, PS-7 gates WP-1 but needs later work.** "Only PS-1 and PS-7 gate WP-1". PS-7 compares the dispatcher's CSS with the editor preview, and those are WP-2's emitter and WP-4's `mediaPreview`. Both come after WP-1. Fix: PS-7 gates WP-2 and WP-4 only (WP-1 needs PS-1 alone). Alternatively, make PS-7 run against C0 prototypes and say so.
+9. **§13 site order vs FR-49-36 and §14.1.** `eye-care-test` migrates "last, only with Bean's agreement". Old code is removed "in the same release" and FP-14 bars fallbacks, so an unmigrated presented site breaks. FR-49-36 demands zero old attributes on "every target". Fix: state that removal is blocked until `eye-care-test` is migrated or Bean decides otherwise. Alternatively, define it as outside "every target" and say what protects it.
+10. **§9.2 and §8, the global-controls list.** §9.2 lists the "Applies to all devices" controls as Alt, Caption, Border width, Load priority and Playback. §8 has more non-responsive settings: BorderStyle, BorderColour, Background, BoxShadow, Blend, OverlayColour, OverlayBlend, Greyscale, Blur, Captions. FR-49-20 says "every per-device media control" uses ResponsiveOverride. AC-14 cannot check what counts as per-device. Fix: add a column to §8 (or a list in §9.2) marking every setting Device or Global, and derive the global-note rule from it.
+11. **§9.3 Border vs §7.5.** §7.5 says Border is omitted with a mask shape, but the Border width row has no condition. AC-13 tests visibility per row, so it cannot pass. Fix: add the condition "Omitted with a mask shape" to the Border width, style and colour rows.
+12. **§14.4 Stage A vs §14.1 "new files only, adopted by nothing".** Four packages touch live shared code on main. WP-4 reworks `ResponsiveOverride`, which has 135 importers. WP-6 edits `icon-shapes.json`, which `sgs/icon` reads. WP-10a changes the `media` part's `isWrapper` and `render-paths.json`. WP-15a's new gates (MediaUpload refusal, second focal shape, drift) fail on today's pickers. Fix: list these as named exceptions in §14.1 with their risk checks. Give each new gate an "active from cutover" switch.
+
+## SHOULD-FIX
+
+- **Label drift for Fit.** §9.4 Size and crop says "Fit". C1 and the Background panel say "How it fills". FR-49-18 demands exact labels, and "labels print once". Fix: pick one label and use it in C1, §9.3 and §9.4. Do the same for Loading ("Load priority") in §9.3's background list, and for "Focal" against the `FocalField` label.
+- **Two enum values for one behaviour.** §8 Fit has `none` and, on image backgrounds, `actual`. §7.8 maps "Actual size" to `object-fit:none`, and §9.2 labels both "Actual size". Fix: drop `actual` and use `none`. Add the `backgroundSize` mapping to §13.
+- **`Shape` object field `fit`.** The key in `{shape, fit}` collides with the `Fit` setting. Fix: rename it `proportions` (`stretch` or `keep`).
+- **§7.5 registry `ratio` field is never used.** Only Circle sets Ratio 1:1. Fix: say what `ratio` does, or remove it.
+- **No cancel token for Min and Max.** §7.2 says only `auto` and `natural` cancel an inherited value. MinWidth, MaxWidth, MinHeight and MaxHeight accept only a length, so Mobile cannot undo an inherited Max height. Fix: add `none` to those four Valid sets and describe it in the Limits group.
+- **"Crops" for Fit and Focal visibility is undefined for Fill, backgrounds and embeds.** Fill's crop is unknown at edit time. Backgrounds always crop. Fix: add to the glossary "Fill and backgrounds always count as cropping; Photo's own never does".
+- **§7.2 intro says "Three rules fill the gaps"** and then describes one, `min-width:0`. The other two are the helper ratio and Fill, in later paragraphs. Fix: number them, or say "three rules, below".
+- **§7.2 "iframe: Width 100% only"** conflicts with "never prints `width:auto` unless both Ratio and Height are set". Fix: use one sentence.
+- **§7.2 "Min height on the media is its floor"** is wrong when the helper is printed. Fill always prints it, and §7.4 puts Min height on the helper. Fix: say "on the surface".
+- **Padding with Fill.** The media is absolutely positioned inside the helper, so it ignores the helper's padding, and the Fill and Padding combination is undefined. Fix: put the padding on an inner positioned layer, or say Padding is omitted while Height is Fill.
+- **§7.9 gives Background CSS for embeds, but §9.3 omits Background for embeds.** Fix: make §7.9 say "Not offered".
+- **§9.3 Decorative "Not with a link" vs §7.1.** §7.1 says a link on a Decorative image is refused with a message. If Decorative is already on and a link is added, the rule is undefined. Fix: state the order. For example, adding a link clears Decorative and shows the message.
+- **FR-49-6 and `none`.** `none` is a Kind in the glossary but appears in no slot's `kinds` list (§10.4) or in `MediaSlotField`'s tabs. §8 also adds the `featured` kind, which the glossary and §9.3's kind letters lack. Fix: add `none` and `featured` to the glossary and say how the editor offers each.
+- **FR-49-9 vs the `Source` shape.** Source is a per-device object with its own `kind`, so nothing stops two devices holding different kinds. Fix: add "kind is stored once, on desktop" or validate it.
+- **§10.2 "layer" collides with Context "layer".** "A layer targets the part" and §13 "Layer on the background part" use the motion-layer meaning. Fix: rename the motion term to "motion entry".
+- **Parallax and Pinned are both offered on backgrounds and both write `translate`.** §10.1 and §10.3 give no exclusion. Fix: schema-refuse the pair, or define Pinned as strength 1 replacing Parallax.
+- **§9.6 and C6.** §9.6's `open` carries `requestId`, which the C6 signature lacks. The Background target is also ambiguous when the background is a video (`background-video`) or an SVG (`svg-bg`). Fix: add `requestId` to C6. Say the target is the part matching the resolved kind.
+- **Hover lift appears twice.** `ShadowLiftOnHover` (§8) and the Hover panel's Lift (§10.1) are two controls for one effect, which §6.6 rejects. Fix: keep only the Hover panel's Lift.
+- **Background video has no pause path.** WCAG 2.2.2 applies to autoplaying video over 5 seconds. `Playback.pause` exists, but the Background panel has no Playback or Poster control. Fix: add "Pause button" and "Cover image before play" to the Background panel for video.
+- **§8.3 "Mask" is not a §8 base.** It is called Shape elsewhere. Also "size" and "flow fit" in the §10.4 Settings column (cart, avatars, choice-flow) are not settings. Fix: use Width and Height, and name the flow-fit setting.
+- **"Reset to Tablet" off desktop (§9.2)** is wrong on Mobile when Tablet is empty, because the inherited source is Desktop. Fix: the reset text names the actual source.
+- **§11 cloner rows overlap.** Row 3 maps min and max sizes, and the "Border, shadow, padding..." row maps them again. The "Margin or offsets: not written" row loses a draft's `margin-inline:auto` centring, yet Alignment prints `margin-inline-*`. Fix: delete the duplicate. Add a row mapping auto side margins to Alignment.
+- **§13 gaps.** The old loading, priority and `fetchPriority` attributes have no row (they map to `Loading`). `displayWidth` is "deleted" although AC-25 requires computed widths to stay within 1px. Fix: add the Loading row. Map `displayWidth` to Width unless proven inert.
+- **AC-25 "the listed allowed changes"** has no list. Fix: add the list (hero images whose Size and Position are inert) or the query that produces it.
+- **PS-2 "the 13 layouts"** has no definition, and AC-27 lists six. Fix: list all 13 in §14.2 and have AC-27 point to them.
+- **§14.4 ownership.** The slot schema belongs to both C0 ("schemas") and WP-1 ("schema generated from properties"). The container emitter that prints `display:grid` when a child is Fill (§7.2) has no owner. Wave 1 does not need WP-10a, so `sgs/media`'s `motionSurface` (FR-49-27) is unowned at cutover. No Stage B package runs WP-14's migration on the mirrors. Fix: assign each to a package and add the missing "Needs" entries.
+- **§7.7 and C2.** The position pre-pass records the lead slot by scope hash, but C2's `$context` has the caller supply `area` and `section_index`. Fix: say the pre-pass is the only source and the caller passes a block identifier.
+- **C1 cannot express §8, §9.4 or §10.1.** It has no fields for units and ranges (§9.4 says "All in `media-settings.json`"), the Hover form, per-kind visibility, or the per-kind effect list. Fix: add `units`, `min`, `max`, `hover` and `effectsByKind` to C1.
+- **§16 stale and vague.** "R3: ... WP-15" names a package that is now WP-15a and WP-15b. The "register items" (H1, Q1 and the rest) cite no file. The README roster line still says "animation". Fix: cite the register file, fix the package names, and update the README line.
+- **AC-26 "Each §10.4 row passes"** and **AC-29's "working on Mobile", "Reset" and "hover zoom"** have no start or end condition. They cannot be checked. Fix: state the observable result for each (for example "the Mobile value changes and Desktop is unchanged").
+- **AC-28 "walkthroughs 1 to 13 below".** AC-29 lists them unnumbered, and FR-49-18 says "§12 walkthrough". Fix: number AC-29's items.
+- **The captions `.vtt` picker (§8 `Captions`) is not allow-listed in FR-49-26** alongside `sgs/audio`, so the raw-`MediaUpload` gate refuses it. Fix: allow-list it.
+- **PS-6, PS-8 and PS-3.** PS-6 and PS-8 have no failure outcome, and the numbering skips PS-3. Fix: add outcomes, and renumber or note the gap.
+
+## MISSING
+
+- **No FR or AC for §7.6.** Sizes derivation (px, vw, rem, column division, crop widening) has no requirement and no assertion beyond AC-4's `wp_filter_content_tags`. Add FR-49-39 and AC-31, a fixture of sizes strings per rule.
+- **No AC for FR-49-16's "Image size unknown" state, or for the FR-49-17 `sgs/business-info` map moving its width and height to CSS.** Add both to AC-11 and AC-6.
+- **No AC for FR-49-21's "hidden control keeps its value".** Add it to AC-14.
+- **No FR for §7.8's Actual size and Tile behaviours, or for §7.5's keep-proportions masks.** AC-23 covers pixels only. Add the keep-proportions case to AC-23.
+- **The glossary lacks "item-set block", "hidden surface", "brand strip", "motion entry", "Surface tone" and "flow fit".** All are used as if defined.
+- **No screen-reader name check for the per-device dot (§9.2).** AC-28 checks axe only. Add one to AC-14.
