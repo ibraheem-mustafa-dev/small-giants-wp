@@ -616,6 +616,25 @@ describe( 'marquee only when the items overflow', () => {
 		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 	} );
 
+	test( 'the gaps the items need at rest count towards what has to fit', async () => {
+		layout.set = 500;
+		layout.root = 600;
+		layout.gap = 120;
+		const { root } = mount( { attrs: ATTRS } );
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+	} );
+
+	test( 'padding on the band between the block and its items counts', async () => {
+		layout.set = 580;
+		layout.root = 600;
+		const { root, track } = mount( { attrs: ATTRS } );
+		track.parentElement.style.paddingLeft = '24px';
+		track.parentElement.style.paddingRight = '24px';
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
+	} );
+
 	test( 'items wider than the block run, and widening the block stops them without looping on the copies', async () => {
 		layout.set = 400;
 		layout.root = 300;

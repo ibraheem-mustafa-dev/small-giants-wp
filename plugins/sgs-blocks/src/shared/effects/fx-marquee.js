@@ -225,6 +225,32 @@ export function createMarquee( root ) {
 		}
 	}
 
+	// The elements from the lane up to the root: their padding and gaps shape the items' resting layout.
+	function restingChain() {
+		const chain = [];
+		for ( let el = lane; el; el = el.parentElement ) {
+			chain.push( window.getComputedStyle( el ) );
+			if ( el === root ) {
+				break;
+			}
+		}
+		return chain;
+	}
+
+	function restingPadding( vertical ) {
+		return restingChain().reduce( ( sum, style ) => {
+			const start = parseFloat( vertical ? style.paddingTop : style.paddingLeft ) || 0;
+			const end = parseFloat( vertical ? style.paddingBottom : style.paddingRight ) || 0;
+			return sum + start + end;
+		}, 0 );
+	}
+
+	// The running layout drops the gaps between items, so the widest gap in the chain stands in for the resting one.
+	function restingGaps( vertical ) {
+		const gap = Math.max( 0, ...restingChain().map( ( style ) => parseFloat( vertical ? style.rowGap : style.columnGap ) || 0 ) );
+		return gap * Math.max( 0, original.children.length - 1 );
+	}
+
 	function measure( vertical ) {
 		const first = layoutBox( original );
 		const size = vertical ? first.height : first.width;
@@ -300,11 +326,7 @@ export function createMarquee( root ) {
 			}
 			return;
 		}
-		const inset = window.getComputedStyle( root );
-		const padding = vertical
-			? parseFloat( inset.paddingTop ) + parseFloat( inset.paddingBottom )
-			: parseFloat( inset.paddingLeft ) + parseFloat( inset.paddingRight );
-		if ( 'overflow' === settings.below && size <= view - ( padding || 0 ) ) {
+		if ( 'overflow' === settings.below && size + restingGaps( vertical ) <= view - restingPadding( vertical ) ) {
 			// The un-duplicated set fits the root: nothing to scroll. The copies are never measured, so the resize
 			// observer's callback cannot loop on them.
 			teardown();
