@@ -117,7 +117,7 @@ export function initFlyout( root ) {
 		document.removeEventListener( 'click', onDocumentClick, true );
 		document.removeEventListener( 'keydown', onDocumentKeydown );
 		if ( returnFocus ) {
-			trigger.focus();
+			trigger.focus( { preventScroll: true } );
 		}
 	}
 

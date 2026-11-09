@@ -43,10 +43,11 @@ export function hoverLiftDecls( raw, resetTransform = false ) {
  *
  * @param {string} selector Selector for the element (no `:hover` suffix).
  * @param {*}      raw      Stored attribute value.
+ * @param {boolean} [resetTransform=false] Also print transform:none, over a preset lift.
  * @return {string} The rule, or '' when there is no lift.
  */
-export function hoverLiftPreviewRule( selector, raw ) {
-	const decls = hoverLiftDecls( raw );
+export function hoverLiftPreviewRule( selector, raw, resetTransform = false ) {
+	const decls = hoverLiftDecls( raw, resetTransform );
 	return decls
 		? `@media (prefers-reduced-motion:no-preference){${ selector }:hover{${ decls }}}`
 		: '';

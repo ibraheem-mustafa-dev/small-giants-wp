@@ -39,7 +39,11 @@
 					"left": "12px"
 				}
 			},
-			"motion": true,
+			"motion": {
+				"states": [
+					"image-changed"
+				]
+			},
 			"_comment_mediaElements": "Two independently-scoped media elements: 'main' is the gallery-col.php .product-card__media .product-card-img (the large PDP display image); 'thumb' is the .product-card__thumb img thumbnail-rail image (a distinct role — a small selectable preview, not the same image rendered twice). Mirrors sgs/before-after's before/after prefix pattern so a client can set a different fit for each.",
 			"mediaElements": [
 				{
@@ -1108,7 +1112,6 @@
 					"selector": ".sgs-buybox .product-card__media",
 					"label": "Main photo",
 					"order": 19,
-					"motion": false,
 					"clusters": [
 						"fill",
 						"layout"

@@ -82,7 +82,7 @@ describe( 'form submit button preview', () => {
 	it( 'previews the resting shadow and the lift', () => {
 		const attrs = { submitShadow: '0 4px 14px -6px', submitShadowColour: '#0a7ea880', submitLiftHover: 2 };
 		expect( submitShadowPreviewStyle( attrs, PALETTE ).boxShadow ).toContain( '#0a7ea880' );
-		expect( submitLiftPreviewRule( '.f .b', attrs ) ).toBe( '@media (prefers-reduced-motion:no-preference){.f .b:hover{translate:0 -2px}}' );
+		expect( submitLiftPreviewRule( '.f .b', attrs ) ).toBe( '@media (prefers-reduced-motion:no-preference){.f .b:hover{translate:0 -2px;transform:none}}' );
 	} );
 	it( 'NEGATIVE CONTROL: defaults preview nothing', () => {
 		expect( submitShadowPreviewStyle( { submitShadow: '', submitShadowColour: '' }, PALETTE ) ).toEqual( {} );

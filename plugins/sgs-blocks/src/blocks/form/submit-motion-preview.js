@@ -36,5 +36,5 @@ export function submitShadowPreviewStyle( attributes, palette ) {
  * @return {string} The rule, or '' when there is no lift.
  */
 export function submitLiftPreviewRule( selector, attributes ) {
-	return hoverLiftPreviewRule( selector, attributes.submitLiftHover );
+	return hoverLiftPreviewRule( selector, attributes.submitLiftHover, true );
 }

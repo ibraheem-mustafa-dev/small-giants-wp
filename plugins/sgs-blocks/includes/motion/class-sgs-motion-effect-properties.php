@@ -33,16 +33,35 @@ final class Sgs_Motion_Effect_Properties {
 	 */
 	public static function css( array $element, string $selector ): string {
 		$decls = array_fill_keys( Sgs_Motion_Emitter::TIERS, array() );
+		$first = '';
 		foreach ( Sgs_Motion_Fx_Emitter::LISTS as $list ) {
 			$parts = explode( '.', $list );
 			$node  = 2 === count( $parts ) ? ( $element[ $parts[0] ][ $parts[1] ] ?? array() ) : ( $element[ $list ] ?? array() );
 			foreach ( is_array( $node ) ? $node : array() as $layer ) {
 				if ( is_array( $layer ) && is_string( $layer['effect'] ?? null ) ) {
 					self::layer( $layer, $decls );
+					$first .= self::ken_burns_first_frame( $layer, $selector );
 				}
 			}
 		}
-		return Sgs_Motion_Emitter::rules( $selector, $decls );
+		return Sgs_Motion_Emitter::rules( $selector, $decls ) . $first;
+	}
+
+	/**
+	 * A zoom-out-once Ken Burns starts at its start zoom from the first paint; the script takes over the same value.
+	 *
+	 * @param array<string,mixed> $layer    An effect layer.
+	 * @param string              $selector The target's scoped selector.
+	 * @return string The rule, or '' for any other effect or mode.
+	 */
+	private static function ken_burns_first_frame( array $layer, string $selector ): string {
+		$values = is_array( $layer['values'] ?? null ) ? $layer['values'] : array();
+		$zoom   = $values['zoomStart'] ?? null;
+		if ( 'ken-burns' !== $layer['effect'] || 'zoom-out-once' !== ( $values['mode'] ?? '' ) || ! is_numeric( $zoom ) ) {
+			return '';
+		}
+		$zoom = max( 100, min( 200, (float) $zoom ) ) / 100;
+		return '@media (prefers-reduced-motion:no-preference){' . $selector . '{--sgs-kb-s:' . $zoom . ';}}';
 	}
 
 	/**

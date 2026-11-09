@@ -71,7 +71,12 @@ function initDialog( dialog ) {
 		const scrollY = Number.parseInt( dialog.dataset.scrollY || '0', 10 );
 		document.body.classList.remove( 'sgs-modal-scroll-locked' );
 		document.body.style.removeProperty( '--sgs-modal-scroll-y' );
+		// The site's smooth scrolling would otherwise animate the page up from the top.
+		const root = document.documentElement;
+		const previousBehaviour = root.style.scrollBehavior;
+		root.style.scrollBehavior = 'auto';
 		window.scrollTo( 0, scrollY );
+		root.style.scrollBehavior = previousBehaviour;
 
 		if ( dialog.__sgsOpener && 'BUTTON' === dialog.__sgsOpener.tagName ) {
 			dialog.__sgsOpener.setAttribute( 'aria-expanded', 'false' );

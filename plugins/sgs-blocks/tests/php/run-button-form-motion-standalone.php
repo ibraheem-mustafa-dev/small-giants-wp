@@ -244,8 +244,8 @@ $draft = render_block_child(
 );
 ok( 1 === preg_match( '/\.sgs-form-[0-9a-f]+ \.sgs-form__button--submit\{box-shadow:0px 4px 14px -6px #0a7ea880;/', $draft['css'] ), '3. the resting submit shadow paints' );
 ok( 1 === preg_match( '/\.sgs-form__button--submit:hover\{box-shadow:0px 12px 26px -8px #0a7ea899\}/', $draft['css'] ), '3. the hover submit shadow paints' );
-ok( 1 === preg_match( '/\.sgs-form__button--submit:hover\{translate:0 -2px\}/', $draft['css'] ), '3. the hover lift paints translate:0 -2px' );
-ok( false !== strpos( $draft['css'], 'translate .2s,box-shadow .2s' ), '3. the lift and shadow animate' );
+ok( 1 === preg_match( '/\.sgs-form__button--submit:hover\{translate:0 -2px;transform:none\}/', $draft['css'] ), '3. the hover lift paints translate:0 -2px' );
+ok( false !== strpos( $draft['css'], 'translate .2s,transform .2s,box-shadow .2s' ), '3. the lift and shadow animate' );
 
 $auto = render_block_child( 'sgs/form', $form_default_attrs + array( 'submitShadow' => '0 4px 14px -6px', 'submitShadowColour' => '#0a7ea880' ) );
 ok( 1 === preg_match( '/\.sgs-form__button--submit:hover\{box-shadow:0px 5px 18px -6px #0a7ea880\}/', $auto['css'] ), '3. a resting shadow alone lifts automatically on hover' );

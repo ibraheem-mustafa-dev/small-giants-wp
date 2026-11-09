@@ -2965,6 +2965,16 @@
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-form__button:where(:not(:disabled)):hover",
+   "reason": "the site's button-preset lift token; a form's own submitLiftHover setting resets it"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "selector": ".sgs-form__button:where(:not(:disabled)):focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "reason": "the site's button-preset lift token; a form's own submitLiftHover setting resets it"
   }
  ]
 }

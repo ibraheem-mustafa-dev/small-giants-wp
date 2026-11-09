@@ -227,7 +227,7 @@
           "_note": "The single toggle icon an item prints when it turns instead of cross-fading (`.sgs-accordion-item__icon-open--rotates`, printed by sgs/accordion-item when iconRotation is above 0 or this part holds an Entrance layer). A motion target only (Spec 38A FR-38A-53): an `entrance.base` with trigger State and state `expanded` turns it while the item is open; the item publishes `expanded` on its `<details>`. Colour and size stay on `icon`."
         },
         "answer": {
-          "motion": false,
+          "selector": ".sgs-accordion-item__content",
           "label": "Item answer",
           "order": 5,
           "clusters": [

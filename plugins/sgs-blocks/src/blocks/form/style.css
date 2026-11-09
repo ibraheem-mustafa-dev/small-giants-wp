@@ -1205,7 +1205,15 @@ select.sgs-form-field__input {
 	cursor: pointer;
 	min-height: 44px;
 	min-width: 44px;
-	transition: background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), opacity var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
+	transition: background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), opacity var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), transform var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
+}
+
+/* Every form button takes the site's button-preset lift; a form's own lift setting prints transform:none over it. */
+@media (prefers-reduced-motion: no-preference) {
+	:where(:root:not(.sgs-touch-input)) .sgs-form__button:where(:not(:disabled)):hover,
+	.sgs-form__button:where(:not(:disabled)):focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
+		transform: var(--wp--custom--button-presets--default--hover-lift,);
+	}
 }
 
 /* Button typography is a zero-specificity default read from the site's button

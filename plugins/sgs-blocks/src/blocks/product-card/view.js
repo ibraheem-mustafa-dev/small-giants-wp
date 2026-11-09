@@ -60,6 +60,18 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 import '../../shared/wishlist-store';
 import { toastActions } from '../../shared/toast/store.js';
 import { renderThumbStrip } from './thumb-strip';
+import { pulseState } from '../../shared/motion-state-publish';
+
+/**
+ * Replay the main photo's entrance after its image changes, when the photo has a State entrance to replay.
+ *
+ * @param {Element|undefined} card The card or buybox root.
+ */
+function replayPhoto( card ) {
+	if ( card?.querySelector( '.sgs-buybox__main-photo[data-sgs-me~="state"]' ) ) {
+		pulseState( card, 'image-changed' );
+	}
+}
 
 /**
  * Module-level WeakMap: ctx → card ref.
@@ -597,10 +609,14 @@ function applyPillSelection( ctx, detail ) {
 		ctx.selectedThumb = 0;
 		// Update main image from gallery[0] if present, else fall back to imageUrl.
 		// M-C7 parity: leave current image if the variation has none at all.
+		const previousImage = ctx.imageSrc;
 		if ( newGallery.length > 0 && newGallery[ 0 ].url ) {
 			ctx.imageSrc = newGallery[ 0 ].url;
 		} else if ( combo.imageUrl ) {
 			ctx.imageSrc = combo.imageUrl;
+		}
+		if ( ctx.imageSrc !== previousImage ) {
+			replayPhoto( cardRefByCtx.get( ctx ) );
 		}
 
 		// A4: rebuild the thumbnail strip for the new variation's gallery. The
@@ -685,8 +701,12 @@ function selectThumbByIndex( ctx, card, idx ) {
 	if ( ! Array.isArray( ctx.gallery ) || ! ctx.gallery[ idx ] || ! ctx.gallery[ idx ].url ) {
 		return;
 	}
+	const imageChanged = ctx.imageSrc !== ctx.gallery[ idx ].url;
 	ctx.imageSrc = ctx.gallery[ idx ].url;
 	ctx.selectedThumb = idx;
+	if ( imageChanged ) {
+		replayPhoto( card );
+	}
 	card.querySelectorAll( '.product-card__thumb' ).forEach( ( btn ) => {
 		btn.setAttribute(
 			'aria-current',

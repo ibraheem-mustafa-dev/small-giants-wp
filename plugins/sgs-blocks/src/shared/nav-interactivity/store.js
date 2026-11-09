@@ -1053,7 +1053,7 @@ function openDrawerFor( ctx, trigger ) {
 				document.activeElement === closeEl &&
 				trigger
 			) {
-				trigger.focus();
+				trigger.focus( { preventScroll: true } );
 			}
 			updateSameSlotVars();
 			publishContainerInsets( drawer, trigger );
@@ -1199,7 +1199,7 @@ function openDrawerFor( ctx, trigger ) {
 					: undefined,
 		} );
 		if ( trigger && triggerLive ) {
-			trigger.focus();
+			trigger.focus( { preventScroll: true } );
 			return;
 		}
 		const headerRegion = document.querySelector( HEADER_REGION_SELECTOR );
@@ -1207,9 +1207,9 @@ function openDrawerFor( ctx, trigger ) {
 			? getFocusable( headerRegion )[ 0 ]
 			: null;
 		if ( headerFallback ) {
-			headerFallback.focus();
+			headerFallback.focus( { preventScroll: true } );
 		} else if ( trigger ) {
-			trigger.focus();
+			trigger.focus( { preventScroll: true } );
 		}
 	};
 	drawer.addEventListener( 'close', onNativeClose, { once: true } );

@@ -253,6 +253,10 @@ body.admin-bar html {
 	--sgs-sweep-thickness: var(--wp--custom--link-sweep--thickness, 1px);
 	text-decoration: none;
 }
+/* Outranks .sgs-button:hover, which clears background-image; a button's own hover gradient still wins. */
+:is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible) {
+	background-image: var(--sgs-btn-bg-hover-image, linear-gradient(var(--sgs-link-hover-color, currentColor), var(--sgs-link-hover-color, currentColor)));
+}
 :is(a, button).sgs-hover-underline-slide:is(:hover, :focus-visible),
 .sgs-hover-underline-slide:not(a, button) a:is(:hover, :focus-visible),
 :where(.sgs-icon-list__item-link:is(:hover, :focus-visible)),

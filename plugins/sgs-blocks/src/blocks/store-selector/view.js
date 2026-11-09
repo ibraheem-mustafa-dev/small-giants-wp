@@ -43,7 +43,7 @@ function initInstance( root ) {
 		list.hidden = true;
 		trigger.setAttribute( 'aria-expanded', 'false' );
 		if ( returnFocus ) {
-			trigger.focus();
+			trigger.focus( { preventScroll: true } );
 		}
 	};
 

@@ -81,7 +81,7 @@ if ( ! function_exists( 'sgs_form_submit_motion_css' ) ) {
 		// The stylesheet's own transition covers colour and opacity only; add the two properties
 		// this motion paints, and drop the transition for visitors who ask for reduced motion (the
 		// lift rule itself only prints for visitors who have not).
-		$css  = $selector . '{transition:background-color .2s,opacity .2s,translate .2s,box-shadow .2s; /* sgs-motion: exact */}';
+		$css  = $selector . '{transition:background-color .2s,opacity .2s,translate .2s,transform .2s,box-shadow .2s; /* sgs-motion: exact */}';
 		$css .= '@media (prefers-reduced-motion:reduce){' . $selector . '{transition:none;}}';
 		if ( $shadow['normal'] ) {
 			$css .= $selector . '{' . implode( ';', $shadow['normal'] ) . ';}';
@@ -89,6 +89,6 @@ if ( ! function_exists( 'sgs_form_submit_motion_css' ) ) {
 		if ( $shadow['hover'] ) {
 			$css .= sgs_hover_state_rules( $selector, implode( ';', $shadow['hover'] ) );
 		}
-		return $css . sgs_hover_lift_rule( $selector, $lift );
+		return $css . sgs_hover_lift_rule( $selector, $lift, true );
 	}
 }

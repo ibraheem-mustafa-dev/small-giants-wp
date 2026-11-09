@@ -1032,7 +1032,7 @@ function focusTrigger( root ) {
 	if ( trigger ) {
 		refocusingTrigger = true;
 		try {
-			trigger.focus( { preventScroll: prefersReducedMotion() } );
+			trigger.focus( { preventScroll: true } );
 		} finally {
 			refocusingTrigger = false;
 		}
