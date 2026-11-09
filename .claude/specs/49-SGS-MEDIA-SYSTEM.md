@@ -55,7 +55,7 @@ The goal limits the scope: unlock what SGS should already do, so it can clone an
 
 Goals: G1 one model for all media. G2 no setting is visible while inert. G3 editor and front end match. G4 every draft CSS pattern has one target. G5 a real element and a working motion target in every state. G6 best-in-class controls: per-device focal point, art direction, masks, visible inheritance. G7 migration leaves no legacy reader.
 
-Non-goals: image editing or generation; replacing the WordPress media library; hotspots; a new lightbox (the gallery's existing lightbox stays); uploaded mask shapes; a different kind of media per device; a separate video or embed file per device; saved style presets across slots; multi-layer stacked backgrounds; drag-and-drop upload; duotone; Lottie as a media kind (the Lottie effect in the motion system is untouched); CSS size targets (delivery follows §6.7 and no limit is set or gated here); new image formats (WordPress's generated sizes are used); a typed Sizes override or image-size dropdown (sizes are derived); a per-device border width (Bean-locked off). `core/image`, `core/cover`, and WooCommerce's own product images stay on WordPress's logic.
+Non-goals: image editing or generation; replacing the WordPress media library; hotspots; a new lightbox (the gallery's existing lightbox stays); uploaded mask shapes; a different kind of media per device; saved style presets across slots; multi-layer stacked backgrounds; drag-and-drop upload; duotone; Lottie as a media kind (the Lottie effect in the motion system is untouched); CSS size targets (delivery follows §6.7 and no limit is set or gated here); new image formats (WordPress's generated sizes are used); a typed Sizes override or image-size dropdown (sizes are derived); a per-device border width (Bean-locked off). `core/image`, `core/cover`, and WooCommerce's own product images stay on WordPress's logic.
 
 ## 3. Hard constraints
 
@@ -96,7 +96,7 @@ Tests are in §12; FR-to-test mapping is in §16.
 
 ### Data
 
-- **FR-49-1** All slots MUST use §8's attributes with the slot's prefix, committed in `block.json` by a generator that reads `media-settings.json`. Gates and the seeder keep reading `block.json`; a drift gate fails when generated output differs. Test: AC-1.
+- **FR-49-1** All slots MUST use §8's attributes with the slot's prefix, committed in `block.json` by `generate-media-attributes.mjs` from the atom registry. Gates and the seeder keep reading `block.json`; a drift gate fails when generated output differs. Test: AC-1.
 - **FR-49-2** All media per-device values MUST use the responsive value object. Flat `xTablet`/`xMobile` media attributes MUST NOT exist. This is media-only; other blocks keep their current shapes. Test: AC-2.
 - **FR-49-3** Alt and Decorative MUST be one value per slot. Test: AC-2.
 - **FR-49-4** Focal point MUST be `{x,y}` in 0 to 1, on every element. Test: AC-2.
@@ -105,9 +105,9 @@ Tests are in §12; FR-to-test mapping is in §16.
 
 ### Rendering
 
-- **FR-49-7** `SGS_Media_Renderer` MUST print all slots. Everything in §8.2 MUST be removed. Test: AC-5.
+- **FR-49-7** One renderer, `SGS_Media_Element` extended, MUST print all slots. Everything in §8.2 MUST be removed. Test: AC-5.
 - **FR-49-8** Different images per device MUST use `<picture>` with one `<source media>` per differing device, queries from `SGS_Breakpoints` and viewport-only. Each source carries its own srcset, sizes, width and height. A `none` device is an empty source. Test: AC-4.
-- **FR-49-9** Only the matching file MUST download. A slot holds one kind; each device can have its own image or SVG file, or none. Test: AC-4.
+- **FR-49-9** Only the matching file MUST download. A slot holds one kind; each device can have its own file of that kind (image, video, embed or SVG), or none. Test: AC-4.
 - **FR-49-10** The helper MUST be printed if and only if §7.3 says so, and paint MUST follow §7.4. Test: AC-6.
 - **FR-49-11** Every background MUST print one real element in every state (§7.8). Root-`::before` background painting MUST be removed. Test: AC-7.
 - **FR-49-12** Every stored string reaching CSS MUST pass `sgs_css_value( $type, $value )`, whose grammar in `includes/data/css-value-grammar.json` is keyed by type, read by PHP and generated into JS. It refuses `"`, `'`, `;`, `{`, `}`, `<`, `>`, `\`, newlines and unbalanced brackets. Lengths allow brackets only in `calc()`, `min()`, `max()`, `clamp()` and `var()`; colour, gradient and shadow types also allow `rgb()`, `rgba()`, `hsl()`, `hsla()` and the gradient functions, because drafts use them. URLs go only through `sgs_css_url()`. A gate runs every emitter output through the validator. Test: AC-8.
@@ -153,15 +153,34 @@ Tests are in §12; FR-to-test mapping is in §16.
 
 ## 6. Architecture and decisions
 
-### 6.1 Generated from one table
+### 6.1 The atoms are the one table
 
-`includes/data/media-settings.json` declares each setting once. A generator writes the committed attributes into each block's `block.json`, plus PHP and JS tables and classification entries. Each table entry carries a `since` version, as Stackable's attribute definitions do. Everything else reads those. A drift gate keeps them equal.
+The existing media atoms are extended, not replaced. Each atom is one setting group with a data-only registry entry (`src/components/media/atoms/registry.js`: id, bases, types, scope, attaches-to, requires, reads, disclosure, css), a pure JS logic module, a control, and a PHP twin (`includes/media/atoms/*.php`). Blocks adopt atoms through `supports.sgs.mediaElements`, which stays the slot declaration (§8.3). Their gates pass today (`test-media-atom-parity`, `test-media-attr-parity`, `test-media-enum-vocabulary`, `test-media-injection-parity`, `check-media-atom-purity`), and no atom fails on any block that declares it (`AT-atom-block-matrix.md`: 20 blocks, 51 element-and-atom rows, run in code and on live pages).
 
-Rejected: gates reading the table directly (over 200 gates read `block.json`). Rejected: one object attribute per slot (it breaks the one-attribute, one-property rule the resolver depends on).
+What changes in the system as a whole: each registry entry gains `responsive`, `paintNode`, `emitter`, `control`, `effects` and `since` fields. `scripts/generate-media-attributes.mjs` writes the attributes into each adopting block's committed `block.json` (a drift gate keeps them equal), because over 200 gates and the seeder read `block.json`; the registration-time injector `includes/media-element-attrs-register.php` is then deleted, which ends the gap where the database held a different attribute set from `block.json`. Each atom's PHP twin prints real CSS properties through the shared helpers, so the resolver can route every setting, instead of custom-property values painted by a shared stylesheet.
 
-### 6.2 Emitters reuse what works
+### 6.2 What happens to each atom
 
-A table row names an emitter kind: `plain`, `sides`, `corners`, `shadow`, `colour-states`, `sizing`, `focal`, `filter`, `shape`. The first five call a helper that already works: `helpers-responsive.php::sgs_emit_tier_decls` and `sgs_emit_responsive_css`, `helpers-box.php`, `helpers-border-style.php`, `helpers-shadow-layers.php` and `helpers-shadow-hover.php`, `helpers-hover-state.php`. `SGS_Media_Emitter` is a dispatcher over them. `sizing` is one resolver per device for §7.2's cross-setting logic (default Width, the helper's file ratio, the caption rule), `focal` converts `{x,y}`, `filter` merges greyscale and blur, `shape` draws radius or mask. The editor reuses `src/utils/border-preview.js`, `radius-preview.js` and `spacing-preview.js`; `background-preview.js` is split so `borderPaintPreview` survives. Editor previews for the four new kinds are written once. A shared `sizing-cases.json` (§7.2's 12 combinations with and without a helper) must pass in PHP and JS, compared as parsed declarations per property and device, not bytes. Order is by property, then device (desktop, tablet, mobile), with hover last.
+| Atom | Verdict | Change |
+|---|---|---|
+| source | Extend | Sibling Tablet and Mobile id and url keys become the `Source` responsive object; its URL is escaped (FR-49-12) |
+| media-type | Fold | Into `Source.kind`, read from the chosen file |
+| intrinsic | Fold | `Source` carries width and height |
+| meaning | Extend | `Alt` and `Decorative`, never tiered; multi-line Alt |
+| object-fit | Extend | Becomes `Fit`; `tile` added on backgrounds; the controls on image sequence, trust bar, brand strip, card grid, gallery and team member move onto the atom |
+| focal-point | Extend | Stores `{x,y}`; keeps its disclosure rule; shows the inherited point on an inherited device |
+| box-shape | Extend, split | Becomes the `sizing` atom (Ratio, Width, Height, Limits, the §7.2 resolver, every device) and the `shape` atom (§7.5); its clip-path presets are deleted |
+| media-padding | Keep | Renamed `Padding` |
+| overlay | Extend | Hover form and the 40 starting strength; mounted on the hero |
+| shadow | Keep | Hosts `ShadowControl`; the helper fixes clipping (§7.4) |
+| opacity | Extend | Per device; Reset |
+| svg-presentation | Extend | Keeps animation, speed and text shadow; gains Layer order and SVG parts; its duplicate opacity goes |
+| video-behaviour | Extend | Becomes `Playback`, adding the pause button; keeps its lock rules |
+| caption | Keep | |
+| link | Keep | |
+| New: filter | New | Greyscale and blur in one `filter` |
+
+The emitter kinds of §8 map to the atoms' PHP twins: `plain`, `sides`, `corners`, `shadow` and `colour-states` twins call `helpers-responsive.php::sgs_emit_tier_decls` and `sgs_emit_responsive_css`, `helpers-box.php`, `helpers-border-style.php`, `helpers-shadow-layers.php`, `helpers-shadow-hover.php` and `helpers-hover-state.php`; `sizing`, `focal`, `filter` and `shape` are the twins of those atoms. The editor uses each atom's JS module, plus `src/utils/border-preview.js`, `radius-preview.js` and `spacing-preview.js`; `background-preview.js` is split so `borderPaintPreview` survives. The existing parity gates check PHP against JS; `sizing-cases.json` (§7.2's 12 combinations with and without a helper) is the sizing atom's fixture, compared as parsed declarations per property and device. Order is by property, then device (desktop, tablet, mobile), with hover last.
 
 A `plain` setting prints one property per device and nothing else.
 
@@ -195,6 +214,9 @@ Core code lands on main in two parts: A1 is new files adopted by nothing; A2 is 
 |---|---|---|
 | Motion channels, Ken Burns, parallax runtime | Keep | Plus §10.2 |
 | `helpers-instance-scope-hash.php::sgs_instance_scope_hash`, `ShadowControl`, `SgsBorderControl`, `SgsBoxControl`, `SgsLengthControl`, link and caption fields | Keep | Rehosted |
+| The media atoms, their registry, generator and parity gates | Extend | §6.1, §6.2 |
+| `SGS_Media_Element` | Extend | The one renderer (§7) |
+| `MediaElementPanel` | Rework | Its dispatch and "no rows, no panel" stay; it mounts §9.4's panels instead of one flat list |
 | `class-sgs-css-registry.php::sgs_collect_css`, `helpers-image-dimensions.php`, SVG sanitising (`helpers-svg-kses.php`, `helpers-svg-document.php`, `svg-upload.php`) | Keep | Renderer calls them |
 | `sgs_hidden_render_*`, `sgs_allowed_svg_tags` | Keep | Move out of the files §8.2 deletes first |
 | `sgs_end_shape_url` encoder | Keep | Mask data-URIs |
@@ -207,8 +229,7 @@ Core code lands on main in two parts: A1 is new files adopted by nothing; A2 is 
 | Shape dividers | Keep | Unrelated to media; untouched |
 | `sgs_responsive_image` | Rework | Absorbed into the renderer |
 | Overlay | Rework | Layer inside the helper |
-| Atom registry and twin atoms | Replace | §6.1, §6.2 |
-| `helpers-media-element.php`, box-shape vocabulary, loading trio, `sgs_tier_media_render`, `sgs_render_media`, flat shapes | Replace | §7, §8 |
+| Box-shape's clip-path vocabulary, loading trio, `sgs_tier_media_render`, `sgs_render_media`, flat per-device keys | Replace | §7, §8 |
 | BackgroundPanel position dropdown, art-direction attributes, Attachment, nav-drawer copy, raw `FocalPointPicker`, `sgsObjectPosition` | Replace | §9.4 |
 
 ## 7. Rendering contract
@@ -223,7 +244,7 @@ The layout box carries `{uid}`, block classes, the anchor, motion attributes, Or
 
 Caption width follows the media, not the space around it. When Width resolves to `auto`, the `<figure>` prints `display:table` and the `<figcaption>` prints `display:table-caption; caption-side:bottom`, Gutenberg's own pattern (`packages/block-library/src/image/style.scss`), so a long caption wraps to the media's width, with `overflow-wrap:anywhere` so one long word cannot overflow. PS-2 proves it in all three browsers, including inside a 200px parent, before WP-2 starts.
 
-Per-device SVG files are siblings of one kind, switched by breakpoint, with element ids prefixed per sibling so parts and animations reach the one showing. Video and embeds have one source.
+Per-device video, embed and SVG files are siblings of one kind, switched by breakpoint. Each is lazy with no fetch priority and video `preload="none"`, so nothing downloads for a device that does not show it. SVG element ids are prefixed per sibling so parts and animations reach the one showing.
 
 ### 7.2 Sizing
 
@@ -330,7 +351,7 @@ The same setting needs different code per kind. The emitter and renderer follow 
 | Loading | Priority, per §7.7 | Poster is the candidate; `preload` | `loading="lazy"` | Not applicable |
 | Alt | `alt` | `aria-label` | `title`, required | `role="img"`, `aria-label` |
 | Playback | n/a | Element attributes, optional pause button | URL parameters (autoplay, mute, loop, controls, start) | n/a |
-| Per-device sources | `<source media>` | One source | One source | Sibling |
+| Per-device sources | `<source media>` | Sibling, `preload="none"` until shown | Sibling | Sibling |
 
 ## 8. Data model
 
@@ -381,19 +402,19 @@ Source: embed per FR-49-17. `svg` is pasted or uploaded markup, printed inline; 
 
 ### 8.1 DB and gates
 
-The paint node is a field in `media-settings.json`, read by the emitter; no new DB column. `css_element` carries the node names (`media`, `surface`, `layout`, `overlay`, `mask`) so the resolver can route. The generator supplies classification entries (`attr-classification-overrides.json`), so `tier_shape` is declared `tier_object` for every R value rather than guessed from render code. PS-1 proves this, plus the resolver, `check_value_identity`, the inline-styling gates, and `check-wiring-fingerprint`.
+The paint node is a field in each atom's registry entry, read by its twin; no new DB column. `css_element` carries the node names (`media`, `surface`, `layout`, `overlay`, `mask`) so the resolver can route. The generator supplies classification entries (`attr-classification-overrides.json`), so `tier_shape` is declared `tier_object` for every R value rather than guessed from render code. PS-1 proves this, plus the resolver, `check_value_identity`, the inline-styling gates, and `check-wiring-fingerprint`.
 
 ### 8.2 Removed
 
 Attributes: per-block maps in §13. Code, each with a grep in AC-5:
 
-`sgs_tier_media_render`, `sgs_tier_media_toggle_css`, `sgs_render_media`, `sgs_responsive_image`, `sgs_image_loading_attrs`, `sgs_next_background_image_index`, `sgs_content_image_claims_priority`, `sgs_media_hover_zoom_clips`, all `sgs_media_element_*`, `SGS_Media_Element`, `includes/media/atoms/*`, `includes/media-element-attrs-register.php`, `media-element-attributes.generated.php`, `helpers-media-position.php`, `includes/image-controls.php`, `assets/css/media-atoms/*`, `assets/css/media-element.css`, the stub in `scripts/qa/lib/wp-stubs.php`; JS `src/components/media/atoms/*`, `src/components/media/controls/*`, `src/components/media/canvasStyle.js`, the three `*PanelLayout.js`, `MediaElementControls`, `MediaElementPanel`, `src/blocks/media/components/MediaStylingPanel.js`, `MediaSizingPanel`, `FocalPositionField`, `MediaPicker`, `src/blocks/extensions/image-controls.js`, `src/blocks/extensions/media-elements.js`, `src/utils/background-preview.js`, `src/utils/objectPosition.js`; scripts `generate-media-attributes.mjs`, `generate-media-stylesheet.mjs`, `check-media-atom-purity.js`, `check-media-disclosure-coverage.js`, `check-media-breakpoints.js`, `surveys/check-image-controls-support.py`, `test-media-atom-parity.mjs`, `test-media-attr-parity.mjs`, `test-media-enum-vocabulary.mjs`, `test-media-injection-parity.mjs`; their `gates.json` and `package.json` entries; flags `supports.sgs.imageControls`, `supports.sgs.mediaElements`; the `img[data-sgs-mc~="background-position"]` overscan rule.
+`sgs_tier_media_render`, `sgs_tier_media_toggle_css`, `sgs_render_media`, `sgs_responsive_image`, `sgs_image_loading_attrs`, `sgs_next_background_image_index`, `sgs_content_image_claims_priority`, the atoms `media-type` and `intrinsic` (folded into `source`), box-shape's clip-path presets, `includes/media-element-attrs-register.php` and `media-element-attributes.generated.php` (attributes are committed instead), `helpers-media-position.php`, `includes/image-controls.php`, the stub in `scripts/qa/lib/wp-stubs.php`; JS `src/components/media/canvasStyle.js`, the four `*PanelLayout.js`, `src/blocks/media/components/MediaStylingPanel.js`, `MediaSizingPanel`, `FocalPositionField`, `MediaPicker`, `src/blocks/extensions/image-controls.js`, `src/utils/objectPosition.js`; script `surveys/check-image-controls-support.py`; their `gates.json` and `package.json` entries; the flag `supports.sgs.imageControls`; the `img[data-sgs-mc~="background-position"]` overscan rule. The atom gates stay and are extended.
 
 Before anything is deleted, `sgs_hidden_render_*` and `sgs_allowed_svg_tags` move to a file that stays. Other gates, inspector rules 37 to 40, `wf_media.py`, `check-dead-controls.js` and the 22 tests naming removed code are dispositioned by WP-15a's list.
 
 ### 8.3 Slot declaration
 
-`supports.sgs.mediaSlots` is an array of `{prefix, context, kinds, settings, panel}`. `settings` is `"all"` or a list of §8 bases. The generator refuses unknown names. A block with no slots has no media controls.
+`supports.sgs.mediaElements`, which 20 blocks already declare, is the slot declaration: each entry names a prefix and its atoms, and gains `context` and `kinds`. The generator refuses unknown names. A block with no entry has no media controls.
 
 Item-set blocks declare block-level settings with the item prefix (Ratio, Fit, Radius, Shape, Loading, hover zoom) as ordinary attributes, and per-item values inside each item object under `source`, `alt`, `decorative`, `fit`, `focal`, using §8's value shapes. Items inherit the block-level Fit. `tier_shape` is `slot-array`. Per-item CSS uses scope `{uid}-i{index}`.
 
@@ -416,13 +437,13 @@ Labels print once. Each panel is a collapsible `PanelBody`; Media and Size and c
 - **`FitField`:** icon chips, each with a plain caption and each kind's options from §7.9: Crop to fill, Show all, Stretch, Actual size, Never enlarge, and on image backgrounds Tile.
 - **`ShapeField`:** one grid, labelled Shape, drawing the client's own photo in each shape: None, Circle, Ellipse, Pill, the mask shapes; Keep proportions where a shape allows it.
 - **`Chips`:** the shared contract for ratio, fit and mask grids: `role="radiogroup"`, arrow-key roving focus, 44px targets, selected not by colour alone, visible focus, hover brightens.
-- **`MediaPanelHost`:** mounts §9.4 from the rule table.
+- **`MediaElementPanel` (reworked):** mounts §9.4's panels from the atoms' disclosure rules.
 
 Lengths use `SgsLengthControl` with `presets={false}` in `ResponsiveOverride`.
 
 ### 9.3 Rule table
 
-In `src/components/media/rules.js`, one plain visibility function per control, run at the active device against resolved values. Kinds: I image, V video file, E embed, S SVG. Context B background.
+Each atom's existing `disclosure` rule, run at the active device against resolved values. Kinds: I image, V video file, E embed, S SVG. Context B background.
 
 | Control | Kinds | Condition |
 |---|---|---|
@@ -470,7 +491,7 @@ Background panel: Media, Decorative and Alt, How it fills, Focal, Tile options, 
 
 Each motion panel carries a one-line subtitle, and Hover says "Hover has no effect on touch screens" on Tablet and Mobile.
 
-Catalogue of ranges: Width, Min width, Max width: `px`, `%`, `rem`, `em`, `vw`, `ch`, 0 to 5000. Heights: `px`, `%`, `rem`, `em`, `vh`, `svh`, `dvh`, `vw`. Radius: `px`, `%`, `rem`, `em`, 0 to 9999. Padding: `px`, `rem`, `em`, `%`. Opacity, strength, greyscale: percent, step 1. Blur: `px`, 0 to 100. Parallax strength: chips Gentle (0.1), Medium (0.2), Strong (0.4), and a custom 0 to 1 in Fine-tune. All in `media-settings.json`.
+Catalogue of ranges: Width, Min width, Max width: `px`, `%`, `rem`, `em`, `vw`, `ch`, 0 to 5000. Heights: `px`, `%`, `rem`, `em`, `vh`, `svh`, `dvh`, `vw`. Radius: `px`, `%`, `rem`, `em`, 0 to 9999. Padding: `px`, `rem`, `em`, `%`. Opacity, strength, greyscale: percent, step 1. Blur: `px`, 0 to 100. Parallax strength: chips Gentle (0.1), Medium (0.2), Strong (0.4), and a custom 0 to 1 in Fine-tune. All in the atom registry.
 
 ### 9.5 States
 
@@ -490,19 +511,19 @@ The editor uses the emitter's CSS. Video shows its poster or a live element; an 
 
 Parts in `supports.sgs.elements`. `media` on `sgs/media` loses `isWrapper`; the manifest gate is updated with it. Backgrounds: `background` (selector `.sgs-bg-media`), `background-video` (declared), `svg-bg` (name kept). A part carries `availableWhen: {slot, kinds}`, which the target picker evaluates. `absentIn` remains QA-only.
 
-Effects are generated (`generated-fx-qualifying-blocks.json`) with `motionSurface` on `sgs/media`, limited by a per-kind list in `media-settings.json`:
+Media uses the motion system's existing libraries, each with Fine-tune (Spec 38A), filtered only by what the element can carry:
 
-| Kind | Hover | Entrance and reveal | Effects |
-|---|---|---|---|
-| Image | Zoom, Lift, Black and white to colour, Brighten | Fade, Rise, Scale, Clip reveal | Parallax, Ken Burns, Float |
-| Video file | Zoom, Lift | Fade, Rise, Scale | Parallax |
-| Embed | Lift | Fade, Rise | None |
-| SVG | Zoom, Lift | Fade, Rise, Scale, Draw | Parallax, Float, SVG loop |
-| Background image | None | Fade | Parallax, Ken Burns |
-| Background video | None | Fade | Parallax |
-| Background SVG | None | Fade | Parallax, SVG loop, SVG parts |
+| Panel | What media gets |
+|---|---|
+| Hover | The whole library (31 presets today): lift, scale, rotate, translate, image zoom, grey to colour, magnet, follow pointer, border accent, each at three intensities, plus Fine-tune values such as brightness and blur |
+| Entrance and reveal | The whole library (80 presets today): fades, slides, scale, rotate, blur and bounce entrances, reveals, keyframe entrances, at three intensities, plus Fine-tune including the clip reveal. Split reveal, scramble and nav-panel items need text, so they are not listed on media; draw needs SVG |
+| Effects, image | Parallax, Ken Burns, float, scrub |
+| Effects, video file | Parallax, float, scrub |
+| Effects, embed | Float |
+| Effects, SVG | Parallax, float, scrub, SVG loop, draw, morph, motion path |
+| Effects, backgrounds | Parallax; Ken Burns on images; SVG loop and named parts on SVG |
 
-Everything else in the motion system stays on the blocks that have it. Sheen, ripple and glare need a wrapper and do not reach bare media; Follow pointer, magnet and cursor effects belong on cards. Brighten and Clip reveal are new presets; Ken Burns's host gating is extended to the listed kinds. A transform that runs once on load or scroll is Entrance Scale; Ken Burns is a continuous drift.
+The filter is the registry's own (`motion_presets.target_level`, `fx_effects.requires` and `scope`), extended so Ken Burns and parallax accept the media part and the background part; no media-only list is kept. Sheen, ripple and glare paint on a pseudo-element or injected layer that a bare `<img>` or `<video>` cannot hold, so they stay on blocks with a box, as do cursor effects. A transform that runs once on load or scroll is an entrance; Ken Burns is a continuous drift.
 
 How the panels fit: **Hover** answers the pointer. **Entrance and reveal** plays once, on load or on scroll. **Effects** runs continuously or with the scroll. The Background panel holds no motion controls: its motion line shows what is set and opens Effects on the Background target (§9.6). Overlay hover is a second colour in the overlay's control. Per-device behaviour follows Spec 38A.
 
@@ -560,9 +581,7 @@ Built status from running each effect in real Chrome (`T10-effects-run.md`); tar
 
 | Effect | Status | Decision |
 |---|---|---|
-| Entrance fade, rise, scale, stagger, scroll reveal | Built, works | Keep |
-| Clip reveal | Built, works | Offer on images |
-| Hover lift, scale | Built, works | Keep |
+| Hover library (31 presets) and Entrance library (80 presets), with Fine-tune | Built, works on `sgs/media` today | Offer whole, filtered by what the element can carry |
 | Image hover zoom | Built, works; three private copies in gallery, card grid, post grid | One route; delete the copies; add a fixture |
 | Grey to colour | Four systems; untested | One route through Hover's filter; add a fixture |
 | Parallax | Built; position correct; lag caused by the header | Fix the header; native driver in Stage C (§10.2) |
@@ -612,7 +631,7 @@ Schema: `schemas/media-slot.schema.json`, refusing unknown keys and shapes. `wp-
 | Gradient `background-image` | The block's own background gradient setting |
 | `clip-path` on a text element | Custom CSS, reported |
 
-WP-13 adds Fill's new image route as new files and switches over in Stage B. The route picks the slot by `supports.sgs.mediaSlots` prefix and context, merges per device, reads at 375, 768 and 1440, writes width, height and mime (FR-49-16), and writes Decorative for `alt=""`. It replaces `fill-media.mjs::imageSlots` (which finds images only by the old `Url`, `Id`, `Alt` names), `scalar-media-roles.json` and its detector, `apply-svg-file.mjs`, `calibrate-instances.mjs`, and the `property_equivalents` row that turns an image's height into max-height.
+WP-13 adds Fill's new image route as new files and switches over in Stage B. The route picks the slot by `supports.sgs.mediaElements` prefix and context, merges per device, reads at 375, 768 and 1440, writes width, height and mime (FR-49-16), and writes Decorative for `alt=""`. It replaces `fill-media.mjs::imageSlots` (which finds images only by the old `Url`, `Id`, `Alt` names), `scalar-media-roles.json` and its detector, `apply-svg-file.mjs`, `calibrate-instances.mjs`, and the `property_equivalents` row that turns an image's height into max-height.
 
 **Absorption:** an element is merged into the media when it has exactly one image, video or picture child, plus at most one absolutely-positioned overlay with no text or one figcaption; it has no text of its own; and its overflow is hidden or clip, or it declares ratio, radius, border, shadow or background colour the image does not repeat. Controls, positive: radius only, ratio only, overflow only, overlay, figcaption, background colour. Negative: text, two images, badge.
 
@@ -740,7 +759,7 @@ PS-1 DB and gates accept §8, including one item-set block's `slot-array` shape,
 
 ### 14.3 Contracts (frozen before WP-1)
 
-**C1 Table entry:**
+**C1 Atom registry entry** (the fields an atom gains):
 
 ```json
 { "base": "Fit", "type": "string", "enum": ["cover","contain","fill","none","scale-down"],
@@ -750,11 +769,11 @@ PS-1 DB and gates accept §8, including one item-set block's `slot-array` shape,
   "slots": "all" }
 ```
 
-**C2 Renderer:** `SGS_Media_Renderer::render( array $slot, array $attrs, array $context = [] ): array` returning `{html, css, needs_helper, lead_candidate}`. `$slot`: `{prefix, kinds, context}`. `$context`: `{uid, block, area, section_index, item_set:{index,columns}, in_editor, extra_class, anchor}`. Empty or deleted source returns empty `html`. The caller prints `html` and passes `css` to the collector.
+**C2 Renderer:** `SGS_Media_Element::render( array $slot, array $attrs, array $context = [] ): array` returning `{html, css, needs_helper, lead_candidate}`. `$slot`: `{prefix, kinds, context}`. `$context`: `{uid, block, area, section_index, item_set:{index,columns}, in_editor, extra_class, anchor}`. Empty or deleted source returns empty `html`. The caller prints `html` and passes `css` to the collector.
 
-**C3 Emitter:** `SGS_Media_Emitter::css( array $slot, array $attrs, string $uid, bool $helper ): string`. Selectors: layout `.{uid}`; surface `.{uid}` or the helper; media `.{uid} .sgs-media-el` with a helper or a wrapper, else `.{uid}`; overlay `::after`; mask `.sgs-media-box__mask`. Keys sorted before hashing. JS twin: `mediaPreview( slot, attrs, uid ) -> { css, className }`. Fixture: `tests/fixtures/media/matrix.json`.
+**C3 Emitters:** each atom's PHP twin, `sgs_media_atom_<id>_css( array $slot, array $attrs, string $uid, bool $helper ): string`, collected by the renderer. Selectors: layout `.{uid}`; surface `.{uid}` or the helper; media `.{uid} .sgs-media-el` with a helper or a wrapper, else `.{uid}`; overlay `::after`; mask `.sgs-media-box__mask`. Keys sorted before hashing. JS twin: each atom's logic module, collected by `mediaPreview( slot, attrs, uid ) -> { css, className }`. Fixture: `tests/fixtures/media/matrix.json`.
 
-**C4 Rules:** `isVisible( control, attrs, device, prefix ) -> boolean`, one plain function per control in `src/components/media/rules.js`.
+**C4 Rules:** each atom's `disclosure( attrs, device, prefix )`, keeping its two legal return shapes.
 
 **C5 Priority:** `SGS_Media_Priority::resolve( array $context, array $facts ): array` returning `{loading, fetchpriority, claims}`.
 
@@ -762,7 +781,7 @@ PS-1 DB and gates accept §8, including one item-set block's `slot-array` shape,
 
 **C7 Shapes:** `icon-shapes.json`, per §7.5.
 
-**C8 Generator:** `scripts/generate-media-slots.mjs` reads the table and each `supports.sgs.mediaSlots`, writes attributes marked `_generated: "media-slots"`, `--check`, `--block <slug>`.
+**C8 Generator:** `scripts/generate-media-attributes.mjs`, extended, reads the registry and each `supports.sgs.mediaElements`, writes attributes marked `_generated: "media-atoms"` into `block.json`, `--check`, `--block <slug>`.
 
 C0 ships these signatures as documentation and the shared fixture files, not stub code. They stay open to correction until the Slice gate passes.
 
@@ -774,15 +793,15 @@ C0 ships these signatures as documentation and the shared fixture files, not stu
 | Proofs | proof scripts, reports | C0 | A |
 | WP-H Header (ahead of Stage A) | Stop the header's shrink restyling the page; every sticky and anchor consumer unchanged | | Done first |
 | WP-0b Wrapper split | Background code of `class-sgs-container-wrapper.php` into `includes/class-sgs-background-layer.php`, no behaviour change | | A |
-| WP-1 Core | Table (with units, ranges, hover forms, effects by kind), generator, schema generated from attribute `properties`, Spec 32 and 35 amendments; `theme.json` `settings.viewport` at `767px` and `1023px` so WordPress's editor device switching and core blocks match SGS's tiers; attribute `role: content` on Source, Alt, Decorative and Caption after a spike on object attributes | PS-1 | A |
+| WP-1 Core | Atom registry fields (units, ranges, hover forms, effects by kind), the extended generator writing `block.json`, schema generated from attribute `properties`, Spec 32 and 35 amendments; `theme.json` `settings.viewport` at `767px` and `1023px` so WordPress's editor device switching and core blocks match SGS's tiers; attribute `role: content` on Source, Alt, Decorative and Caption after a spike on object attributes | PS-1 | A |
 | WP-15a Gates | New gates; `gate-disposition.json` classifying every gate and test naming removed code as reused, changed or deleted (starting list: `T3` §2.5, `T4` §5) | WP-1 | A |
-| WP-2a Markup | `includes/media/*` renderer, §7.1, §7.3, §7.9; `media-base`, `-overlay`, `-video.css` | WP-1, PS-2 | A |
-| WP-2b Emitter | Dispatcher and four new kinds, typed validator | WP-1, PS-7 | A |
+| WP-2a Markup | `SGS_Media_Element` extended into the renderer, §7.1, §7.3, §7.9; `media-base`, `-overlay`, `-video.css` | WP-1, PS-2 | A |
+| WP-2b Atoms | Each atom's PHP twin printing real properties; the new `sizing`, `shape` and `filter` atoms; folding `media-type` and `intrinsic`; the typed validator | WP-1, PS-7 | A |
 | WP-3 Loading | `includes/media/class-sgs-media-priority.php` | WP-1, PS-5 | A |
-| WP-4 Fields | `src/components/media/fields/*`, `emitter/mediaPreview.js`, reworked `ResponsiveOverride` | WP-1 | A |
-| WP-5 Rules and host | `src/components/media/rules.js`, `MediaPanelHost.js` | WP-1 | A |
+| WP-4 Controls | The atoms' controls per §9.2, `mediaPreview.js`, reworked `ResponsiveOverride` | WP-1 | A |
+| WP-5 Disclosure and panels | The atoms' disclosure rules per §9.3, `MediaElementPanel` reworked into §9.4's panels | WP-1 | A |
 | WP-6 Masks | `icon-shapes.json` additions with `surfaces`, `media-mask.css`, `ShapeField` | WP-1, Slice gate | A |
-| WP-10a Effects UI | Motion targets and fields, store, `render-paths.json`, `motionSurface` on `sgs/media`, Brighten and Clip reveal presets | WP-1, Slice gate | A |
+| WP-10a Effects UI | Motion targets and fields, store, `render-paths.json`, `motionSurface` on `sgs/media`, registry filters accepting the media and background parts | WP-1, Slice gate | A |
 | WP-13 Cloner | New files for Fill's image route (§11), parity, skeleton rules, `wp-build-page` descending into object attributes, Spec 48; the switch-over commit is in Stage B | WP-1, Slice gate | A |
 | WP-14 Detector | Migration tool, mapping rows, run on mirrors in Stage B | WP-1, Slice gate | A |
 | Wave 1 | `sgs/media`, decorative-image, gallery | WP-2 to 6 | B |
