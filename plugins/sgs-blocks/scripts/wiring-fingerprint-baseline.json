@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 157,
+  "L3": 159,
   "L5": 27,
   "C1": 3,
   "L2": 2,
@@ -18,7 +18,9 @@
   "sgs/cart::hideOnCartCheckoutPages::L3",
   "sgs/cart::hideWhenEmpty::L3",
   "sgs/choice-flow::advanceMode::L3",
+  "sgs/choice-flow::fitToScreen::L3",
   "sgs/choice-flow::flexWrap::L3",
+  "sgs/choice-flow::optionColumnsWide::L3",
   "sgs/choice-flow::skipAddsToBag::L3",
   "sgs/choice-flow::stickyFooter::L3",
   "sgs/choice-flow::summaryPosition::L3",
