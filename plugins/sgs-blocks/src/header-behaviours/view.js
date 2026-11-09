@@ -74,6 +74,18 @@ import {
 } from './direction-scroll-state.js';
 import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 
+/**
+ * Whether a drawer or modal has locked the page. The locked page reads as scrolled to the top, which is not a scroll.
+ *
+ * @return {boolean} True while either scroll lock is on.
+ */
+function isPageScrollLocked() {
+	return (
+		document.body.hasAttribute( 'data-sgs-nav-scroll-y' ) ||
+		document.body.classList.contains( 'sgs-modal-scroll-locked' )
+	);
+}
+
 ( function () {
 	'use strict';
 
@@ -519,7 +531,7 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 
 			// A drawer grown out of this header (nav-drawer anchor `header-box`)
 			// holds the header still until it closes, so the card never drifts.
-			if ( header.hasAttribute( 'data-sgs-drawer-grown' ) ) {
+			if ( header.hasAttribute( 'data-sgs-drawer-grown' ) || isPageScrollLocked() ) {
 				prevScrollY = scrollY;
 				return;
 			}
@@ -834,7 +846,7 @@ import { QUERY_MOBILE, QUERY_TABLET } from '../utils/breakpoints';
 			const now = window.performance.now();
 			const scrollY = window.scrollY;
 			// Rows hold still while a drawer grown out of their header is open.
-			if ( document.querySelector( '[data-sgs-drawer-grown]' ) ) {
+			if ( document.querySelector( '[data-sgs-drawer-grown]' ) || isPageScrollLocked() ) {
 				prevScrollY = scrollY;
 				return;
 			}
