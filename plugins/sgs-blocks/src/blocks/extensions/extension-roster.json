@@ -472,7 +472,10 @@
 				"sgsSummaryWrapsButton": { "type": "boolean", "role": "visual", "css_property": "background-color", "css_element": "summary-sidebar" },
 				"sgsButtonBorderWidth": { "type": "object", "tier_shape": "tier_object", "is_responsive": 1, "role": "visual", "css_property": "border-width", "css_element": "primary-button" },
 				"sgsButtonBorderStyle": { "type": "string", "role": "visual", "css_property": "border-style", "css_element": "primary-button" },
-				"sgsButtonBorderColour": { "type": "string", "role": "visual", "css_property": "border-color", "css_element": "primary-button" }
+				"sgsButtonBorderColour": { "type": "string", "role": "visual", "css_property": "border-color", "css_element": "primary-button" },
+				"sgsItemShowBrand": { "type": "boolean", "role": "boolean-visibility" },
+				"sgsSummaryEditLinkLabel": { "type": "string", "role": "text-content" },
+				"sgsCheckoutStrings": { "type": "object", "role": "text-content" }
 			}
 		},
 		{

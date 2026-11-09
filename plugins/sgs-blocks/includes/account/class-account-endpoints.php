@@ -39,6 +39,82 @@ final class Account_Endpoints {
 		\add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'filter_menu_items' ), 20 );
 		\add_filter( 'woocommerce_endpoint_saved-items_title', array( __CLASS__, 'saved_items_title' ) );
 		\add_action( 'woocommerce_account_saved-items_endpoint', array( __CLASS__, 'render_saved_items_endpoint' ) );
+		\add_action( 'woocommerce_account_orders_endpoint', array( __CLASS__, 'render_orders_heading' ), 1 );
+		\add_action( 'woocommerce_account_edit-address_endpoint', array( __CLASS__, 'render_addresses_heading' ), 1 );
+		\add_action( 'woocommerce_account_edit-account_endpoint', array( __CLASS__, 'render_account_details_heading' ), 1 );
+	}
+
+	/**
+	 * Tab heading on the Orders endpoint (WooCommerce prints none). Prints only while `sgs/account` renders with
+	 * `tabHeadings` on.
+	 *
+	 * @param mixed $value The endpoint's query var value (unused).
+	 */
+	public static function render_orders_heading( $value = '' ) {
+		self::print_tab_heading( Account_Strings::text( 'orders', __( 'Orders', 'sgs-blocks' ) ) );
+	}
+
+	/**
+	 * Tab heading on the Addresses endpoint's list view; a single-address form (billing, shipping) keeps its own title.
+	 *
+	 * @param mixed $value The endpoint's query var value: '' for the list, 'billing' or 'shipping' for a form.
+	 */
+	public static function render_addresses_heading( $value = '' ) {
+		if ( is_string( $value ) && '' !== $value ) {
+			return;
+		}
+		self::print_tab_heading( Account_Strings::text( 'addresses', __( 'Addresses', 'sgs-blocks' ) ) );
+	}
+
+	/**
+	 * Tab heading on the Account details endpoint.
+	 *
+	 * @param mixed $value The endpoint's query var value (unused).
+	 */
+	public static function render_account_details_heading( $value = '' ) {
+		self::print_tab_heading( Account_Strings::text( 'accountDetails', __( 'Account details', 'sgs-blocks' ) ) );
+	}
+
+	/**
+	 * Print the H2 when the active block has `tabHeadings` on.
+	 *
+	 * @param string $label Menu label of the endpoint.
+	 */
+	private static function print_tab_heading( string $label ): void {
+		if ( ! is_array( self::$active ) || empty( self::$active['tabHeadings'] ) ) {
+			return;
+		}
+		echo '<h2 class="sgs-account__tab-heading">' . \esc_html( $label ) . '</h2>';
+	}
+
+	/**
+	 * Reorder the menu to the `menuOrder` list: listed endpoints first in that order, the rest after in their own
+	 * order, Log out always last. An unknown or duplicate key is ignored.
+	 *
+	 * @param array $items Endpoint => label.
+	 * @param mixed $order The `menuOrder` attribute.
+	 * @return array
+	 */
+	private static function apply_menu_order( array $items, $order ): array {
+		if ( ! is_array( $order ) || array() === $order ) {
+			return $items;
+		}
+		$ordered = array();
+		foreach ( $order as $endpoint ) {
+			$endpoint = is_string( $endpoint ) ? \sanitize_key( $endpoint ) : '';
+			if ( '' !== $endpoint && 'customer-logout' !== $endpoint && isset( $items[ $endpoint ] ) ) {
+				$ordered[ $endpoint ] = $items[ $endpoint ];
+			}
+		}
+		foreach ( $items as $endpoint => $label ) {
+			if ( 'customer-logout' !== $endpoint && ! isset( $ordered[ $endpoint ] ) ) {
+				$ordered[ $endpoint ] = $label;
+			}
+		}
+		if ( isset( $items['customer-logout'] ) ) {
+			$ordered['customer-logout'] = $items['customer-logout'];
+		}
+		return $ordered;
 	}
 
 	/**
@@ -115,6 +191,7 @@ final class Account_Endpoints {
 			foreach ( $hidden as $endpoint ) {
 				unset( $items[ $endpoint ] );
 			}
+			$items = self::apply_menu_order( $items, self::$active['menuOrder'] ?? array() );
 		}
 
 		return $items;

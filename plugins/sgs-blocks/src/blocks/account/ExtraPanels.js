@@ -19,6 +19,10 @@ const WORDING = [
 	[ 'lostPassword', __( 'Lost password link', 'sgs-blocks' ), 'Lost your password?' ],
 	[ 'resetPassword', __( 'Reset password button', 'sgs-blocks' ), 'Reset password' ],
 	[ 'register', __( 'Register button', 'sgs-blocks' ), 'Register' ],
+	[ 'registerEmailLabel', __( 'Email field label (register form and account details)', 'sgs-blocks' ), 'Email address' ],
+	[ 'newPasswordLabel', __( 'New password field label', 'sgs-blocks' ), 'New password (leave blank to leave unchanged)' ],
+	[ 'confirmPasswordLabel', __( 'Confirm new password field label', 'sgs-blocks' ), 'Confirm new password' ],
+	[ 'currentPasswordLabel', __( 'Current password field label', 'sgs-blocks' ), 'Current password (leave blank to leave unchanged)' ],
 	[ 'signOut', __( 'Sign out (menu)', 'sgs-blocks' ), 'Log out' ],
 	[ 'orders', __( 'Orders (menu)', 'sgs-blocks' ), 'Orders' ],
 	[ 'addresses', __( 'Addresses (menu)', 'sgs-blocks' ), 'Addresses' ],
@@ -262,6 +266,16 @@ export function SignInButtonPanel( { attributes, setAttributes } ) {
 				{ ...p }
 				name="loginButtonPreset"
 				label={ __( 'Start from the site’s button style', 'sgs-blocks' ) }
+				options={ [
+					{ label: __( 'WooCommerce button', 'sgs-blocks' ), value: '' },
+					{ label: __( 'Primary button', 'sgs-blocks' ), value: 'primary' },
+					{ label: __( 'Secondary button', 'sgs-blocks' ), value: 'secondary' },
+				] }
+			/>
+			<Choice
+				{ ...p }
+				name="registerButtonPreset"
+				label={ __( 'Register button: start from the site’s button style', 'sgs-blocks' ) }
 				options={ [
 					{ label: __( 'WooCommerce button', 'sgs-blocks' ), value: '' },
 					{ label: __( 'Primary button', 'sgs-blocks' ), value: 'primary' },

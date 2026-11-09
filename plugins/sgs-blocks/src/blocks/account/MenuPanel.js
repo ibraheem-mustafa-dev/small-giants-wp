@@ -8,7 +8,7 @@
  * `sgs_account_never_hide()` (PHP) refuses it, so a checkbox would pretend to work.
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody, ToggleControl, CheckboxControl } from '@wordpress/components';
+import { PanelBody, ToggleControl, CheckboxControl, TextControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
 import { Toggle } from './extraControls';
@@ -66,6 +66,8 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					navIcons: undefined,
 					menuActiveIndicatorWidth: undefined,
 					menuOrdersCount: undefined,
+					menuOrder: undefined,
+					tabHeadings: undefined,
 				} )
 			}
 		>
@@ -131,6 +133,37 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				setAttributes={ setAttributes }
 				name="menuOrdersCount"
 				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+			/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Menu order', 'sgs-blocks' ) }
+				hasValue={ () => Array.isArray( attributes.menuOrder ) && attributes.menuOrder.length > 0 }
+				onDeselect={ () => setAttributes( { menuOrder: undefined } ) }
+			>
+			<TextControl
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+				label={ __( 'Menu order', 'sgs-blocks' ) }
+				help={ __( 'Endpoint keys separated by commas, for example orders, edit-address, saved-items, edit-account. Unlisted items follow; Log out stays last. Empty keeps the default order.', 'sgs-blocks' ) }
+				value={ Array.isArray( attributes.menuOrder ) ? attributes.menuOrder.join( ', ' ) : '' }
+				onChange={ ( value ) => {
+					const keys = String( value ).split( ',' ).map( ( key ) => key.trim() ).filter( Boolean );
+					setAttributes( { menuOrder: keys.length ? keys : undefined } );
+				} }
+			/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Heading on each tab', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.tabHeadings }
+				onDeselect={ () => setAttributes( { tabHeadings: undefined } ) }
+			>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="tabHeadings"
+				label={ __( 'Heading on each tab', 'sgs-blocks' ) }
 			/>
 			</ToolsPanelItem>
 

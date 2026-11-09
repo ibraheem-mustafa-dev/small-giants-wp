@@ -109,3 +109,51 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 	$cols = 'auto minmax(0,1fr) auto';
 	return $wide . '{display:grid;grid-template-columns:' . $cols . ';align-items:center;column-gap:16px;}';
 }
+
+add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_inject', 13, 2 );
+
+/**
+ * The checkout order summary extras that are set: an Edit link (label and the bag's address) and the brand under
+ * each line's name. Both are Checkout-only; Cart has its own summary.
+ *
+ * @param array<string, mixed> $attrs Stored block attributes.
+ * @param string               $bag   Address of the bag page.
+ * @return array{editLabel:string,editUrl:string,brand:bool}|array{} Empty when neither is set.
+ */
+function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
+	$label = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
+	$brand = true === ( $attrs['sgsItemShowBrand'] ?? false );
+	if ( '' === $label && ! $brand ) {
+		return array();
+	}
+	return array(
+		'editLabel' => '' !== $bag ? $label : '',
+		'editUrl'   => esc_url_raw( $bag ),
+		'brand'     => $brand,
+	);
+}
+
+/**
+ * Render-block filter: the script that adds the summary extras to the Checkout block's page.
+ *
+ * @param mixed $block_content Rendered block HTML.
+ * @param mixed $block         Parsed block.
+ * @return mixed
+ */
+function sgs_commerce_look_summary_extras_inject( $block_content, $block ) {
+	if ( ! is_string( $block_content ) || ! is_array( $block ) || 'woocommerce/checkout' !== ( $block['blockName'] ?? '' ) ) {
+		return $block_content;
+	}
+	$attrs  = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+	$bag    = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
+	$config = sgs_commerce_look_summary_extras( $attrs, $bag );
+	if ( array() === $config ) {
+		return $block_content;
+	}
+	$script = file_get_contents( __DIR__ . '/summary-extras.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file shipped with the plugin.
+	if ( false === $script ) {
+		return $block_content;
+	}
+	$json = wp_json_encode( $config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE );
+	return $block_content . '<script>window.sgsCheckoutSummaryExtrasConfig=' . $json . ';' . $script . '</script>';
+}

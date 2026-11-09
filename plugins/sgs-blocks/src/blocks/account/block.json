@@ -2225,6 +2225,17 @@
 			"menuOrdersCount": {
 				"type": "boolean"
 			},
+			"menuOrder": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				},
+				"description": "Endpoint keys in the order the menu shows them; endpoints not listed follow in their own order and Log out stays last. Unset = WooCommerce's order with Saved items after Orders."
+			},
+			"tabHeadings": {
+				"type": "boolean",
+				"description": "Print an H2 with the menu label at the top of the Orders, Addresses and Account details tabs. Unset = none."
+			},
 			"menuCountFontSize": {
 				"type": "object"
 			},
@@ -2997,6 +3008,15 @@
 					"secondary"
 				],
 				"description": "Takes the site's button preset for the form submit button. Unset = WooCommerce's button."
+			},
+			"registerButtonPreset": {
+				"type": "string",
+				"enum": [
+					"",
+					"primary",
+					"secondary"
+				],
+				"description": "Takes the site's button preset for the register form's submit button. Unset = WooCommerce's button."
 			},
 			"loginButtonScope": {
 				"type": "string",

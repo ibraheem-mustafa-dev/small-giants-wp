@@ -171,6 +171,9 @@ final class SGS_Blocks {
 		// One writer for the front end (render_block) and the editor canvas (GET sgs/v1/commerce-look/css).
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/writer.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/rest.php';
+		// Checkout wording (client-side gettext filter) and the optional mobile field under Contact.
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-strings.php';
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-mobile-field.php';
 
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
 		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.

@@ -275,4 +275,7 @@ export const COMMERCE_LOOK_ATTRIBUTES = {
 	sgsButtonBorderStyle: { type: 'string' },
 	sgsButtonBorderColour: { type: 'string' },
 	sgsItemCellPadding: { type: 'object' },
+	sgsItemShowBrand: { type: 'boolean' },
+	sgsSummaryEditLinkLabel: { type: 'string' },
+	sgsCheckoutStrings: { type: 'object' },
 };
