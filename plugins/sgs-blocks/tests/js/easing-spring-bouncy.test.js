@@ -23,10 +23,10 @@ describe( 'easing.spring-bouncy', () => {
 		expect( stops[ stops.length - 1 ] ).toBe( 1 );
 	} );
 
-	test( 'overshoots by about a quarter of the distance', () => {
+	test( 'overshoots by about a fifth of the distance, the top of the Spec 38A band', () => {
 		const peak = Math.max( ...stops );
-		expect( peak ).toBeGreaterThanOrEqual( 1.2 );
-		expect( peak ).toBeLessThanOrEqual( 1.3 );
+		expect( peak ).toBeGreaterThanOrEqual( 1.18 );
+		expect( peak ).toBeLessThanOrEqual( 1.2 );
 	} );
 
 	test( 'swings back below the end point once, by less than it overshot', () => {
