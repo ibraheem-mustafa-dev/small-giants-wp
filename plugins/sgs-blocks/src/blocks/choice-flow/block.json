@@ -109,6 +109,30 @@
 						"css:background-color": "progressColour",
 						"css:background-image": "progressColourGradient"
 					}
+				},
+				"summary-photo": {
+					"selector": ".sgs-choice-flow__summary-image",
+					"label": "Summary photo",
+					"layer": "CONTENT",
+					"order": 5,
+					"clusters": [],
+					"_note": "A motion-only part: the photo's finish transition (the dim, deepen, soften and brighten effects of a lens-style option) reads this part's motion duration, falling back to the site's slow duration."
+				},
+				"summary-total": {
+					"selector": ".sgs-choice-flow__summary-total-value",
+					"label": "Summary total",
+					"layer": "CONTENT",
+					"order": 6,
+					"clusters": [],
+					"_note": "A motion-only part: the total's pop when its value changes reads this part's motion duration, falling back to the site's medium duration."
+				},
+				"summary-pane-total": {
+					"selector": ".sgs-choice-flow__summary-summary-total-value",
+					"label": "Summary total (narrow screens)",
+					"layer": "CONTENT",
+					"order": 7,
+					"clusters": [],
+					"_note": "A motion-only part: the pop of the total in the summary that sits after the options on narrow screens reads this part's motion duration, falling back to the site's medium duration."
 				}
 			}
 		}

@@ -337,7 +337,7 @@
 	   only when the progressColour or progressColourGradient attribute is set. */
 	background-color: var(--sgs-choice-flow-progress-colour, var(--wp--preset--color--primary, #1F7A7A));
 	background-image: var(--sgs-choice-flow-progress-colour-gradient, none);
-	transition: width var(--wp--custom--duration--fast, 250ms) var(--wp--custom--easing--emphasised, ease-out);
+	transition: width var(--sgs-me-dur, var(--wp--custom--duration--fast, 250ms)) var(--wp--custom--easing--emphasised, ease-out);
 }
 
 /* ===== Root chrome: optional header =====
@@ -1052,7 +1052,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__progress-fill {
-	transition: width var(--wp--custom--duration--slow, 0.5s) var(--sgs-choice-flow-ease);
+	transition: width var(--sgs-me-dur, var(--wp--custom--duration--slow, 0.5s)) var(--sgs-choice-flow-ease);
 }
 
 /* ----- The position line above each question ("Question 1 of 3") -----
@@ -1220,7 +1220,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
-	transition: filter var(--wp--custom--duration--slow, 0.6s) var(--sgs-choice-flow-ease);
+	transition: filter var(--sgs-me-dur, var(--wp--custom--duration--slow, 0.6s)) var(--sgs-choice-flow-ease);
 }
 
 /* An option's photo treatment (its `stageEffect`, e.g. a lens finish),
@@ -1376,7 +1376,7 @@
 }
 
 .sgs-choice-flow--layout-showcase .is-updated:is(.sgs-choice-flow__summary-total-value, .sgs-choice-flow__summary-summary-total-value) {
-	animation: sgs-choice-flow-total-pop var(--wp--custom--duration--medium, 0.35s) var(--wp--custom--easing--default, ease) both;
+	animation: sgs-choice-flow-total-pop var(--sgs-me-dur, var(--wp--custom--duration--medium, 0.35s)) var(--wp--custom--easing--default, ease) both;
 }
 
 /* The help note: a bordered card; with a link the whole card is the link,
@@ -1595,37 +1595,38 @@
    an inline flow keeps its square photo. Under 700px tall the stage tightens
    its padding and gaps so its note stays on screen. The fit applies while the flow's Fit to screen setting is on (class
    `sgs-choice-flow--fit-screen`); off, cards keep their 16:9 pictures and the
-   stage its square photo. */
+   stage its square photo. Once `fit-guard.js` finds a card's padding or gaps being eaten it adds `sgs-choice-flow--fit-guarded`, which
+   switches every rule below off and lets the step scroll. */
 @container sgs-choice-flow-showcase (min-width: 768px) {
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__body--with-panel {
 		grid-template-rows: minmax(0, 1fr);
 	}
 
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner {
 		align-self: start;
 		min-height: 100%;
 	}
 
 	/* A step with pictured options passes the row's height down to them. */
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner:has(> .sgs-form-step:not([hidden]) .sgs-choice-flow-question__option-media) {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner:has(> .sgs-form-step:not([hidden]) .sgs-choice-flow-question__option-media) {
 		display: flex;
 		flex-direction: column;
 		align-self: stretch;
 		min-height: 0;
 	}
 
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
 		flex: 1 1 auto;
 		min-height: 0;
 		grid-template-rows: minmax(0, 1fr);
 	}
 
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__summary-media {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__summary-media {
 		flex: 0 1 auto;
 		min-height: 56px;
 	}
 
-	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
 		height: 100%;
 	}
 }

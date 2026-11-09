@@ -43,6 +43,7 @@ import { handleAddToBasketClick, handleBuyNowClick } from './add-to-bag.js';
 import { uploadFlowFile } from './flow-fields.js';
 import { initChrome } from './chrome.js';
 import { initEmailResults } from './email.js';
+import { initFitGuard } from './fit-guard.js';
 import { handleSkipClick } from './flow-skip.js';
 import { SKIP_BUTTON_SELECTOR, STEP_CHANGE_EVENT } from './flow-constants.js';
 import {
@@ -86,6 +87,7 @@ function initAllFlows() {
 		flowRoot.addEventListener( STEP_CHANGE_EVENT, onStepChange );
 		initFlow( flowRoot );
 		initChrome( flowRoot );
+		initFitGuard( flowRoot );
 		initEmailResults( flowRoot, () => getFlowTags( flowRoot ) );
 	} );
 }
