@@ -955,6 +955,14 @@
 						}
 					}
 				},
+				"success-message": {
+					"selector": ".sgs-form__message--success",
+					"label": "Sent message",
+					"order": 31.5,
+					"clusters": [],
+					"prefix": "",
+					"_note": "The message that replaces the form after a successful send (the Success message field). A motion part: the motion panel gives it an entrance."
+				},
 				"saved-notice": {
 					"text": true,
 					"selector": ".sgs-form__saved-notice",

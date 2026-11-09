@@ -371,10 +371,7 @@
 	line-height: 1.5;
 }
 
-/* The focus indicator is drawn by the focus system; the field only recolours its own border. */
-.sgs-form-field__input:focus-visible {
-	border-color: var(--sgs-focus-ring, var(--wp--preset--color--accent));
-}
+/* The focus indicator is drawn by the focus system (the inset look for inputs); the field keeps its border colour. */
 
 .sgs-form-field__input::placeholder {
 	color: var(--sgs-field-placeholder-colour, var(--wp--preset--color--text-muted, #555));
@@ -565,7 +562,7 @@ select.sgs-form-field__input {
 
 /* Hover border-colour is client-controllable (tileBorderColour/Hover) via
    sgs_emit_state_colour_css() in render.php, emitted at real specificity so
-   it wins once a client sets a value. The rule below is the DEFAULT look,
+   it wins once a client sets a value. The file input covers the label, so the hover keys on the zone. The rule below is the DEFAULT look,
    kept at zero specificity via :where() so an unset attribute still shows
    today's look unchanged. */
 :where(.sgs-form-tile:hover) {
@@ -826,10 +823,10 @@ select.sgs-form-field__input {
 /* Hover border/background colours are client-controllable
    (fileLabelBorderColour/Hover, fileLabelBackgroundColour/Hover) via
    sgs_emit_state_colour_css() in render.php, emitted at real specificity so
-   it wins once a client sets a value. The rule below is the DEFAULT look,
+   it wins once a client sets a value. The file input covers the label, so the hover keys on the zone. The rule below is the DEFAULT look,
    kept at zero specificity via :where() so an unset attribute still shows
    today's look unchanged. */
-:where(.sgs-form-field__file-label:hover) {
+:where(.sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label) {
 	border-color: var(--wp--preset--color--primary, #0f7e80);
 	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
 }

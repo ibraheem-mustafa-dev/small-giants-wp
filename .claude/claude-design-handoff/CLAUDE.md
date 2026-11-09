@@ -16,8 +16,9 @@ handoff itself is run by a prompt the user pastes; these are the standing facts 
   before fixing. After any fix, the whole handoff prompt runs again, so `animations.json`, `surfaces.json` and
   `MANIFEST.json` always match the drafts.
 - Meaningful elements (a section, a drawer, a menu, a form, a call to action) may carry a stable `data-part="<id>"` that names what the element is in the design (`hero-cta`, `filter-rail`). Keep an id unchanged between exports. Never name a WordPress or SGS block in it, in a state or anywhere else in the handoff: block choice is made later by Claude Code.
-- `tokens/` holds the brand palette, type and spacing only. A colour used once or twice in a draft stays a hex value in
+- `tokens/` holds the brand palette, type, spacing and focus only. A colour used once or twice in a draft stays a hex value in
   the draft; never add a token for it.
+- Focus: declare exactly three tokens with these names, `--focus-color`, `--focus-width` and `--focus-offset`, in `tokens/spacing.css`. Draw focus once for the whole site from them and never style focus per element; input boxes (text fields, selects, textareas) take the inset look automatically, so give them no focus rule of their own.
 - Inventories follow `handoff-schema/METHOD.md` and validate against its schemas; fix the records, never the schema.
 
 ## The finished handoff folder

@@ -296,12 +296,6 @@ h2.wc-block-mini-cart__title {
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.wc-block-components-text-input input:focus,
-.wc-block-components-text-input select:focus,
-.wc-block-components-select select:focus {
-	border-color: var(--sgs-focus-ring, var(--wp--preset--color--accent));
-}
-
 /* Checkout step headings */
 .wc-block-components-checkout-step__heading {
 	font-family: var(--wp--preset--font-family--heading, inherit);

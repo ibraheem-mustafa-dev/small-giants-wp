@@ -29,4 +29,9 @@
   --ease-out:cubic-bezier(.2,.7,.2,1);
   --dur-200:.2s; --dur-250:.25s; --dur-300:.3s; --dur-350:.35s; --dur-400:.4s; --dur-500:.5s; --dur-600:.6s; --dur-900:.9s;
   --lift-button:translateY(-3px); --lift-card:translateY(-4px);
+
+  /* Focus */
+  --focus-color:var(--acc);
+  --focus-width:2px;
+  --focus-offset:2px;
 }

@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 48A
-spec_version: "1.1"
+spec_version: "1.2"
 title: The Claude Design handoff folder
 project: small-giants-wp
 status: active
@@ -104,6 +104,12 @@ Status: schema, method, prompt and `CLAUDE.md` updated 2026-10-29. The route rea
 - Lists, tabs, accordions and breadcrumbs are read by their meaning (ARIA roles, states and behaviour such as `role="tablist"`, `aria-expanded`, `<nav aria-label>` with an ordered list), not by tag names or class names. Give each widget its correct ARIA role and state attributes; a class called `tabs` on a plain `div` is not a tab set.
 - Per-pattern block tags in a draft (`data-sgs-block`) are not used. The draft's natural names (`data-part` ids, class names, headings) serve as guidance only; tags may come later (Bean, 2026-10-30).
 
+### FR-48A-15 -- Focus tokens
+- A handoff declares three tokens in its `tokens/*.css` (by convention `tokens/spacing.css`): `--focus-color` (the ring colour), `--focus-width` (the ring thickness) and `--focus-offset` (the gap between the ring and the element). The draft draws focus once, for the whole site, from them, and never per element.
+- They map to the client snapshot's `settings.custom.focus` keys: `--focus-color` to `focus.ring`, `--focus-width` to `focus.width`, `--focus-offset` to `focus.offset`. Input boxes take the framework's inset look automatically (Spec 32 §14.5), so a draft gives them no focus rule.
+- `checkHandoff` warns, never fails, for each token no `tokens/*.css` declares: `FR-48A-15 tokens/*.css: focus token <name> is not declared`.
+- Status: the reader is built (`lib/handoff.mjs::checkHandoff`). The step that writes the snapshot's focus values from these tokens is not built: the values are copied by hand when a client is set up.
+
 ## 3. Readers
 
 Every kind of data in the folder has a named reader, and every stage takes a fact from the reader of the file that states it; the render confirms (Spec 48 R-47-4). The readers join into one fact record per draft element (Spec 48 FR-48-7). The full register, with each kind's values on the three exports, the stages that could use it and its use by agents, is `.claude/reports/2026-10-21-handoff-data-register.md`. "Built" means the reader exists today.
@@ -121,6 +127,7 @@ Every kind of data in the folder has a named reader, and every stage takes a fac
 | `surfaces.json` | per surface: kind, root, parent, route, page key, states (state keys, `sc-if` ids, animation ids, how to reach), page block lists, breakpoints, time dependence, unresolved | `checkHandoff` schema and currency; `lib/intake-skeletons.mjs::surfaceRoots`, `::openers`; `lib/manifest-build.mjs`; `lib/state-map.mjs` (from intake's re-derived inventory); `lib/read-surfaces.mjs` (each element's surfaces, part roots and states) | check, roots, openers, manifest and `read-surfaces.mjs` yes (each element's surfaces, part roots, states with `state_keys`, `animation_ids` and whether the element is in the state's `sc_if_tpl_ids`, `closed_by`, `time_dependent`, `unresolved`, and each page's `blocks`, in `facts.json`) |
 | `animations.json` | per effect: target, source, trigger, properties and timings, stagger, reduced motion, breakpoints, routes, status, trace | `checkHandoff` schema and currency; `lib/intake-inventory.mjs::readTheirs` and `lib/intake-inventory-diff.mjs::diffAnimations` (a cross-check of intake's re-derived inventory, which is the source); `trace-check.mjs`; `lib/read-animations.mjs` (effects per element in the fact record; `group`, `routes` and `breakpoints` as evidence) | check, diff and trace yes; `read-animations.mjs` built, no stage reads the record's `effects` yet |
 | `README.md` | the guide's sections: platform intent, judgement calls, open items, business details; block hints | `checkHandoff` heading warning; `lib/intake-flags.mjs::readmePlaceholderLines`; `lib/intake-prose.mjs`; `lib/read-readme.mjs` (sections as review and agent evidence, never a block decision; headings worded differently from the template map by `data/readme-heading-synonyms.json`) | heading check, placeholder lines and prose screen yes; `read-readme.mjs` built, no stage reads the record's `readme` yet |
+| `tokens/*.css` focus tokens | `--focus-color`, `--focus-width`, `--focus-offset` | `checkHandoff` (a missing token is a warning); the snapshot's `settings.custom.focus` is copied by hand | warning only |
 | `READING-DC-FILES.md`, `handoff-schema/*` | the reading contract the readers implement (READING §1 to §7, METHOD §2 to §8), the schemas, the README template | the readers above implement it; `checkHandoff` compares each schema file with the master copy | yes |
 
 ## 4. Open questions for Claude Design

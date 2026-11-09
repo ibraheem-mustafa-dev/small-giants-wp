@@ -5,7 +5,7 @@
  * The fill, border, corner radius and shadow come from the form's own helper
  * (`includes/forms/field-own-style.php::field_own_style_css`) with WooCommerce's controls as the field selector, so
  * the same code paints a form field and a checkout field. This file adds what that helper does not own: padding,
- * minimum height, text colour and typography, the focus edge, and the label above the field.
+ * minimum height, text colour and typography, and the label above the field.
  *
  * @package SGS\Blocks
  */
@@ -102,12 +102,6 @@ function sgs_commerce_look_fields_css( array $attrs, string $block, string $root
 	$edge = sgs_colour_value( (string) ( $attrs['sgsFieldBorderColour'] ?? '' ) );
 	if ( '' !== $edge ) {
 		$css .= $controls . '{border-color:' . $edge . ';}';
-	}
-
-	// A set resting edge must not hide the focus edge: the focus state keeps the theme's focus colour.
-	if ( isset( $attrs['sgsFieldBorderColour'] ) ) {
-		$css .= sgs_commerce_look_field_controls( $block, $root, ':focus' )
-			. '{border-color:var(--sgs-focus-ring,var(--wp--preset--color--accent));}';
 	}
 
 	$css .= sgs_commerce_look_label_position_css( $attrs, $block, $root );

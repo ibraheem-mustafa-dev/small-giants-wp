@@ -33,6 +33,8 @@ export const REQUIRED_FILES = [
 ];
 
 // FR-48A-10: the largest file a folder may hold.
+// The three focus tokens a handoff declares (FR-48A-15).
+export const FOCUS_TOKENS = [ '--focus-color', '--focus-width', '--focus-offset' ];
 export const MAX_BYTES = 20 * 1024 * 1024;
 
 export const sha256 = ( buf ) => crypto.createHash( 'sha256' ).update( buf ).digest( 'hex' );
@@ -358,6 +360,14 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 	if ( has.has( 'README.md' ) ) {
 		for ( const h of blockMappingHeadings( read( 'README.md' ).toString( 'utf8' ) ) ) {
 			warnings.push( `FR-48A-8 README.md: heading "${ h }" maps the design to SGS blocks; block choice is ours, not the export's` );
+		}
+	}
+
+	// FR-48A-15
+	const tokenText = files.filter( ( f ) => /^tokens\/[^/]+\.css$/.test( f ) ).map( ( f ) => read( f ).toString( 'utf8' ) ).join( '\n' );
+	for ( const name of FOCUS_TOKENS ) {
+		if ( ! new RegExp( `(^|[\\s;{])${ name }\\s*:` ).test( tokenText ) ) {
+			warnings.push( `FR-48A-15 tokens/*.css: focus token ${ name } is not declared; the snapshot's focus values are copied by hand` );
 		}
 	}
 

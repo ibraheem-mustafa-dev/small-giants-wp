@@ -1060,6 +1060,12 @@ $sgs_form_file_fill_css = function_exists( 'sgs_fill_states_css' )
 	)
 	: '';
 
+// The file input covers the label, so the label's own :hover never fires: its hover colours key on the zone's
+// :hover instead (the native zone has no label and is handled below).
+$sgs_form_file_zone_hover = '.' . $sgs_form_uid . ' .sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label';
+$sgs_form_file_border_css = str_replace( $sgs_form_file_label_sel . ':hover', $sgs_form_file_zone_hover, $sgs_form_file_border_css );
+$sgs_form_file_fill_css   = str_replace( $sgs_form_file_label_sel . ':hover', $sgs_form_file_zone_hover, $sgs_form_file_fill_css );
+
 // A native-look file field (zoneStyle 'native') has no label element: the file-label colours paint the
 // input itself. Each emitter is called on its own selector so the hover suffix lands on it, and no
 // gradient is passed (an input has no pseudo-element to carry a ring). Printed only when a native field

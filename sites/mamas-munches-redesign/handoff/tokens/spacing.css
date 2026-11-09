@@ -76,4 +76,9 @@
   --mm-dur-logo: .6s;
   --mm-reveal-distance: 28px;   /* Home uses 32px */
   --mm-reveal-duration: 750ms;  /* Home uses 800ms with a 90ms stagger, capped at 4 */
+
+  /* Focus */
+  --focus-color:#3A2A22;
+  --focus-width:3px;
+  --focus-offset:3px;
 }

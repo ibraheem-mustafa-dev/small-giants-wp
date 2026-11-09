@@ -119,8 +119,8 @@
     },
     {
       "path": "tokens/spacing.css",
-      "bytes": 1879,
-      "sha256": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa"
+      "bytes": 1965,
+      "sha256": "19292f9488f8b5f36a3d370db327fed73ba00d58752c07ec8af97b6a579d31ac"
     },
     {
       "path": "tokens/typography.css",

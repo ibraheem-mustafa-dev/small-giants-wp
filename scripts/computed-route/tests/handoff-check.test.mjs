@@ -1,7 +1,7 @@
 // Spec 48A handoff folder check (lib/handoff.mjs::checkHandoff, handoff-check.mjs): FR-48A-2 required files, FR-48A-3
 // allowed files and reachability (dc-import names with spaces, one file per page linked by href), FR-48A-4 the manifest
 // in both directions with sizes, hashes and runtime_sha256, FR-48A-5 an unknown runtime, FR-48A-6 a differing schema copy
-// (warning), FR-48A-7 a stale inventory, FR-48A-8 a block-mapping README heading (warning), FR-48A-10 an unsafe SVG.
+// (warning), FR-48A-15 a missing focus token (warning), FR-48A-7 a stale inventory, FR-48A-8 a block-mapping README heading (warning), FR-48A-10 an unsafe SVG.
 // Every MUST FAIL case breaks one rule of an otherwise valid synthetic folder built in the temp folder.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -41,7 +41,7 @@ function folder( { drafts = { 'Home.dc.html': page( '<div><dc-import name="Frame
 	roots.push( root );
 	const files = {
 		'README.md': '# Test project\n\n## Pages\n\nHome.\n', 'support.js': SUPPORT, 'store.js': 'window.store = {};\n',
-		'tokens/colors.css': ':root{--ink:#111}\n', 'tokens/typography.css': ':root{--f:serif}\n', 'tokens/spacing.css': ':root{--s:8px}\n',
+		'tokens/colors.css': ':root{--ink:#111}\n', 'tokens/typography.css': ':root{--f:serif}\n', 'tokens/spacing.css': ':root{--s:8px;--focus-color:#111;--focus-width:2px;--focus-offset:2px}\n',
 		'READING-DC-FILES.md': '# Reading\n', 'assets/logo.svg': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1"/></svg>\n',
 		...drafts, ...extra,
 	};
@@ -211,6 +211,29 @@ test( 'FR-48A-10: a same-document #fragment link, a data:image link and an xmlns
 	} } );
 	const r = check( root );
 	assert.ok( ! r.errors.some( ( e ) => e.includes( 'assets/h.svg' ) ), r.errors.join( '\n' ) );
+} );
+
+test( 'FR-48A-15: a folder that declares no focus token passes with one warning per missing token', () => {
+	const root = folder( { extra: { 'tokens/spacing.css': ':root{--s:8px}\n' } } );
+	const r = check( root );
+	assert.deepEqual( r.errors, [] );
+	for ( const name of [ '--focus-color', '--focus-width', '--focus-offset' ] ) {
+		assert.ok( r.warnings.some( ( w ) => w.startsWith( 'FR-48A-15 tokens/' ) && w.includes( name ) ), `no warning naming ${ name }:\n${ r.warnings.join( '\n' ) }` );
+	}
+	assert.equal( r.warnings.filter( ( w ) => w.startsWith( 'FR-48A-15' ) ).length, 3 );
+} );
+
+test( 'FR-48A-15: a folder that declares all three focus tokens (in any tokens file) has no focus warning', () => {
+	const root = folder( { extra: { 'tokens/spacing.css': ':root{--s:8px}\n', 'tokens/colors.css': ':root {\n  --focus-color: #111;\n  --focus-width:2px;\n  --focus-offset : 2px;\n}\n' } } );
+	const r = check( root );
+	assert.deepEqual( r.errors, [] );
+	assert.deepEqual( r.warnings.filter( ( w ) => w.startsWith( 'FR-48A-15' ) ), [] );
+} );
+
+test( 'FR-48A-15: one missing token is named alone', () => {
+	const root = folder( { extra: { 'tokens/spacing.css': ':root{--focus-color:#111;--focus-width:2px}\n' } } );
+	const r = check( root );
+	assert.deepEqual( r.warnings.filter( ( w ) => w.startsWith( 'FR-48A-15' ) ).map( ( w ) => /--focus-[a-z]+/.exec( w )[ 0 ] ), [ '--focus-offset' ] );
 } );
 
 test( 'FR-48A-8: a README heading that maps the design to SGS blocks passes with a warning', () => {

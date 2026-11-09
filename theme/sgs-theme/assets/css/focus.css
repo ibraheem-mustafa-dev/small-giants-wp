@@ -74,8 +74,12 @@
 	--sgs-focus-near: var(--sgs-focus-inner);
 	--sgs-focus-far: var(--sgs-focus-ink);
 }
-/* Inside a clipping or full-bleed container: the ring sits on the element's edge, the hairline inside it. */
+/* Inside a clipping or full-bleed container: the ring sits on the element's edge, the hairline inside it.
+   Text-entry inputs, selects and textareas always take this look: one ring drawn inside the border, no gap. */
 .sgs-focus--inset,
+input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"], [type="image"], [type="hidden"]),
+select,
+textarea,
 .sgs-focus--inset.sgs-focus-card > .sgs-block-link-overlay {
 	--sgs-focus-offset: calc(var(--sgs-focus-width) * -1);
 	--sgs-focus-halo: inset 0 0 0 calc(var(--sgs-focus-width) * 2 * var(--sgs-focus-keep, 1)) var(--sgs-focus-hairline);

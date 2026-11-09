@@ -134,8 +134,8 @@
     },
     {
       "path": "tokens/spacing.css",
-      "bytes": 710,
-      "sha256": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb"
+      "bytes": 793,
+      "sha256": "c0cfd3066854f7649bd32b1867e99aa498dd6de9eb895a5b514d0a6f3ff2b702"
     },
     {
       "path": "tokens/typography.css",
