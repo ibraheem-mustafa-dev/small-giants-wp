@@ -143,8 +143,10 @@ if ( ! function_exists( 'sgs_card_grid_glyph_image_html' ) ) {
 		}
 		$alt = isset( $glyph_image['alt'] ) ? (string) $glyph_image['alt'] : '';
 
+		$load = sgs_image_loading_attrs( false );
+
 		return '<span class="sgs-card-grid__glyph sgs-card-grid__glyph--image" aria-hidden="true">'
-			. '<img src="' . $url . '" alt="' . esc_attr( $alt ) . '"' . sgs_image_size_attrs( $url ) . ' loading="lazy">'
+			. '<img src="' . $url . '" alt="' . esc_attr( $alt ) . '"' . sgs_image_size_attrs( $url ) . ' loading="' . esc_attr( $load['loading'] ) . '" decoding="' . esc_attr( $load['decoding'] ) . '">'
 			. '</span>';
 	}
 }

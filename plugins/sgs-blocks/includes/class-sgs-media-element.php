@@ -146,6 +146,10 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 			if ( self::fills_box( $attributes, $prefix, $block_slug, $atoms ) ) {
 				return true;
 			}
+			// A hover zoom on the picture needs the frame that clips it (sgs_media_element_style()).
+			if ( sgs_media_hover_zoom_clips( $attributes, (string) $block_slug ) ) {
+				return true;
+			}
 			foreach ( array_intersect( $atoms, self::$box_atoms ) as $atom_id ) {
 				$fn = 'sgs_media_atom_' . str_replace( '-', '_', (string) $atom_id ) . '_css';
 				if ( ! function_exists( $fn ) ) {

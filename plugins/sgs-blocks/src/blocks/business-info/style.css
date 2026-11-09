@@ -417,7 +417,19 @@
 
 /* ── Map Embed ───────────────────────────────────────────────────────────── */
 
+/* A map block that grows in a flex parent (Child sizing: fill) passes the height down: wrapper, frame, iframe. */
+.sgs-business-info-wrap--map {
+	display: flex;
+	flex-direction: column;
+}
+
+.sgs-business-info-wrap--map > .sgs-business-map {
+	flex: 1 1 auto;
+}
+
 .sgs-business-map {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	overflow: hidden;
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
@@ -425,6 +437,7 @@
 
 .sgs-business-map iframe {
 	display: block;
+	flex: 1 1 auto;
 	width: 100%;
 	border: 0;
 }

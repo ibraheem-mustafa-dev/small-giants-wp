@@ -190,7 +190,40 @@ if ( ! function_exists( 'sgs_choice_flow_showcase_css' ) ) {
 			$decls[] = "--sgs-choice-flow-logo-height:{$logo_height}px";
 		}
 		$css = $decls ? $root_sel . '{' . implode( ';', $decls ) . ';}' : '';
-		return $css . sgs_choice_flow_media_size_css( $attributes, $root_sel );
+		return $css . sgs_choice_flow_media_size_css( $attributes, $root_sel ) . sgs_choice_flow_wide_columns_css( $attributes, $root_sel );
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_fit_class' ) ) {
+	/**
+	 * The modifier class that lets a showcase flow share its screen height between the stage photo and the option
+	 * pictures (`fitToScreen`, default on; style.css "Height fit"). Compact flows never carry it.
+	 *
+	 * @param array $attributes Root block attributes.
+	 * @return string The class name, or ''.
+	 */
+	function sgs_choice_flow_fit_class( array $attributes ): string {
+		$is_showcase = 'showcase' === ( $attributes['flowLayout'] ?? 'compact' );
+		return $is_showcase && false !== ( $attributes['fitToScreen'] ?? true ) ? 'sgs-choice-flow--fit-screen' : '';
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_wide_columns_css' ) ) {
+	/**
+	 * `optionColumnsWide` (2 to 4): the pictured option grid's column count once the flow container is 2200px wide.
+	 * Two is what the grid already runs, so only 3 and 4 print a rule.
+	 *
+	 * @param array  $attributes Root block attributes.
+	 * @param string $root_sel   The instance's scoped root selector.
+	 * @return string Scoped rule, or ''.
+	 */
+	function sgs_choice_flow_wide_columns_css( array $attributes, string $root_sel ): string {
+		$columns = isset( $attributes['optionColumnsWide'] ) ? (int) $attributes['optionColumnsWide'] : 2;
+		if ( $columns < 3 || $columns > 4 ) {
+			return '';
+		}
+		return '@container sgs-choice-flow-showcase (min-width: 2200px){' . $root_sel
+			. ' .sgs-choice-flow-question__options--grid:has(.sgs-choice-flow-question__option-media){grid-template-columns:repeat(' . $columns . ',minmax(0,1fr));}}';
 	}
 }
 

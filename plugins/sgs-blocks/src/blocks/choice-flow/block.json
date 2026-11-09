@@ -144,6 +144,16 @@
 			"default": "compact",
 			"description": "FR-43-24 (v1.8.0): 'compact' (default) is the single column for a flow inline on a page. 'showcase' spends a full screen: a header bar, a full-width progress line, a sticky stage (the finished product, running lines, a big total) beside large image-led option cards. Set on the saved flow, never per placement (FR-43-25)."
 		},
+		"fitToScreen": {
+			"type": "boolean",
+			"default": true,
+			"description": "Showcase layout: on, a full-screen step shares the screen height between the stage photo and the option pictures (they shrink before anything scrolls). Off, option cards keep their 16:9 pictures and the stage photo its square. Class sgs-choice-flow--fit-screen."
+		},
+		"optionColumnsWide": {
+			"type": "number",
+			"default": 2,
+			"description": "Showcase layout: how many columns (2 to 4) the pictured option cards use once the flow is 2200px wide or more."
+		},
 		"maxWidth": {
 			"type": "string",
 			"default": "800px"

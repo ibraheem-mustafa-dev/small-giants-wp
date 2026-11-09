@@ -208,7 +208,7 @@ $scoped_css[] = sgs_flex_wrap_css( $attributes, $root_sel, array( 'flexWrap' => 
 $inner_parsed = isset( $block->parsed_block['innerBlocks'] ) && is_array( $block->parsed_block['innerBlocks'] ) ? $block->parsed_block['innerBlocks'] : array();
 
 $wrapper_args = array(
-	'class'                 => trim( 'sgs-choice-flow sgs-choice-flow--layout-' . $layout . ' ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $chrome_attrs ) ),
+	'class'                 => trim( 'sgs-choice-flow sgs-choice-flow--layout-' . $layout . ' ' . $uid . ' ' . sgs_choice_flow_chrome_classes( $chrome_attrs ) . ' ' . sgs_choice_flow_fit_class( $attributes ) ),
 	'data-wp-interactive'   => 'sgs/choice-flow',
 	'data-flow-id'          => get_the_ID() . '-' . $uid, // Session-state key: unique per page and flow.
 	// FR-43-19/20: the flow's first-paint product/price, read by view.js's

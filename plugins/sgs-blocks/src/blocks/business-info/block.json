@@ -867,6 +867,9 @@
 		},
 		"sgs": {
 			"motion": true,
+			"enabledExtensions": [
+				"childSizing"
+			],
 			"separators": {
 				"separators": {
 					"axes": [

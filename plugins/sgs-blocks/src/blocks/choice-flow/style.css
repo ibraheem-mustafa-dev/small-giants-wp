@@ -1593,37 +1593,39 @@
    scrolls: it shrinks down to a 56px floor and never grows past its square.
    Shrinking is flex-shrink, which does nothing without a definite height, so
    an inline flow keeps its square photo. Under 700px tall the stage tightens
-   its padding and gaps so its note stays on screen. */
+   its padding and gaps so its note stays on screen. The fit applies while the flow's Fit to screen setting is on (class
+   `sgs-choice-flow--fit-screen`); off, cards keep their 16:9 pictures and the
+   stage its square photo. */
 @container sgs-choice-flow-showcase (min-width: 768px) {
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel {
 		grid-template-rows: minmax(0, 1fr);
 	}
 
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner {
 		align-self: start;
 		min-height: 100%;
 	}
 
 	/* A step with pictured options passes the row's height down to them. */
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner:has(> .sgs-form-step:not([hidden]) .sgs-choice-flow-question__option-media) {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel > .sgs-choice-flow__inner:has(> .sgs-form-step:not([hidden]) .sgs-choice-flow-question__option-media) {
 		display: flex;
 		flex-direction: column;
 		align-self: stretch;
 		min-height: 0;
 	}
 
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
 		flex: 1 1 auto;
 		min-height: 0;
 		grid-template-rows: minmax(0, 1fr);
 	}
 
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__summary-media {
 		flex: 0 1 auto;
 		min-height: 56px;
 	}
 
-	.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
+	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen .sgs-choice-flow__summary-media .sgs-choice-flow__summary-image {
 		height: 100%;
 	}
 }

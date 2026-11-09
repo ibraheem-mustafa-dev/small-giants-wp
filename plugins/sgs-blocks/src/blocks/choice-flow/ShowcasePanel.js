@@ -114,6 +114,26 @@ export default function ShowcasePanel( { attributes, setAttributes } ) {
 				/>
 			</PanelBody>
 
+			<PanelBody title={ __( 'Screen fit', 'sgs-blocks' ) } initialOpen={ false }>
+				<ToggleControl
+					label={ __( 'Fit to screen', 'sgs-blocks' ) }
+					checked={ false !== attributes.fitToScreen }
+					onChange={ ( val ) => setAttributes( { fitToScreen: val } ) }
+					help={ __( 'On: a full-screen step shrinks the stage photo and option pictures so nothing scrolls. Off: option pictures stay 16:9 and the stage photo stays square, and the step scrolls if it is taller than the screen.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+				/>
+				<RangeControl
+					label={ __( 'Option columns on very wide screens', 'sgs-blocks' ) }
+					value={ attributes.optionColumnsWide ?? 2 }
+					onChange={ ( val ) => setAttributes( { optionColumnsWide: val ?? 2 } ) }
+					min={ 2 }
+					max={ 4 }
+					help={ __( 'Columns of picture option cards once the flow is 2200px wide or more. Narrower flows are not affected.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</PanelBody>
+
 			<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } />
 		</InspectorControls>
 	);

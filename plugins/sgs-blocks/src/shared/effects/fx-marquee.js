@@ -300,7 +300,11 @@ export function createMarquee( root ) {
 			}
 			return;
 		}
-		if ( 'overflow' === settings.below && size <= view ) {
+		const inset = window.getComputedStyle( root );
+		const padding = vertical
+			? parseFloat( inset.paddingTop ) + parseFloat( inset.paddingBottom )
+			: parseFloat( inset.paddingLeft ) + parseFloat( inset.paddingRight );
+		if ( 'overflow' === settings.below && size <= view - ( padding || 0 ) ) {
 			// The un-duplicated set fits the root: nothing to scroll. The copies are never measured, so the resize
 			// observer's callback cannot loop on them.
 			teardown();

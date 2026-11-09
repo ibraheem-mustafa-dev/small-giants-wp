@@ -166,7 +166,11 @@ beforeEach( () => {
 	window.IntersectionObserver = FakeObserver;
 	window.ResizeObserver = FakeResize;
 	window.matchMedia = jest.fn( query );
-	window.getComputedStyle = jest.fn( () => ( {
+	window.getComputedStyle = jest.fn( ( element ) => ( {
+		paddingLeft: element?.style?.paddingLeft || '0px',
+		paddingRight: element?.style?.paddingRight || '0px',
+		paddingTop: element?.style?.paddingTop || '0px',
+		paddingBottom: element?.style?.paddingBottom || '0px',
 		getPropertyValue: ( name ) => props[ name ] || '',
 		columnGap: `${ layout.gap }px`,
 		rowGap: `${ layout.gap }px`,
@@ -600,6 +604,16 @@ describe( 'marquee only when the items overflow', () => {
 		expect( Element.prototype.animate ).not.toHaveBeenCalled();
 		expect( root.querySelectorAll( '[data-sgs-marquee-clone]' ) ).toHaveLength( 0 );
 		expect( root.hasAttribute( 'data-sgs-marquee' ) ).toBe( false );
+	} );
+
+	test( "items that fit the block but not its padded content area run: the block's side padding counts", async () => {
+		layout.set = 580;
+		layout.root = 600;
+		const { root } = mount( { attrs: ATTRS } );
+		root.style.paddingLeft = '24px';
+		root.style.paddingRight = '24px';
+		await boot();
+		expect( root.getAttribute( 'data-sgs-marquee' ) ).toBe( 'on' );
 	} );
 
 	test( 'items wider than the block run, and widening the block stops them without looping on the copies', async () => {

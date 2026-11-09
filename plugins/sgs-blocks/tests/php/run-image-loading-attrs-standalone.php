@@ -63,13 +63,13 @@ check( 'extra close never goes negative', ! sgs_in_hidden_render_context() );
 $orn = sgs_image_loading_attrs( false );
 check( 'ornament eager but never high', 'eager' === $orn['loading'] && 'auto' === $orn['fetchpriority'] );
 
-// 3. Visible images: first four eager, one high page-wide, the rest lazy.
+// 3. Visible images: first sixteen eager, one high page-wide, the rest lazy.
 $out = array();
-for ( $i = 0; $i < 5; $i++ ) {
+for ( $i = 0; $i < 18; $i++ ) {
 	$out[] = sgs_image_loading_attrs();
 }
-check( 'ornament counted, so three more eager', 'eager' === $out[0]['loading'] && 'eager' === $out[2]['loading'] );
-check( 'fourth and fifth lazy', 'lazy' === $out[3]['loading'] && 'lazy' === $out[4]['loading'] );
+check( 'ornament counted, so fifteen more eager', 'eager' === $out[0]['loading'] && 'eager' === $out[14]['loading'] );
+check( 'sixteenth and later lazy', 'lazy' === $out[15]['loading'] && 'lazy' === $out[17]['loading'] );
 $high = count( array_filter( $out, static fn( $a ) => 'high' === $a['fetchpriority'] ) );
 check( 'exactly one fetchpriority high', 1 === $high && 'high' === $out[0]['fetchpriority'] );
 check( 'a later background image is not first', 1 !== sgs_next_background_image_index() );

@@ -1678,14 +1678,15 @@ if ( 'wc-product' === $source_mode && ! empty( $data['is_variable'] ) ) {
 					aria-current="<?php echo 0 === $thumb_idx ? 'true' : 'false'; ?>"
 					aria-label="<?php echo $thumb_aria_label; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr applied above. ?>"
 				>
+					<?php $sgs_pc_thumb_load = sgs_image_loading_attrs( false ); ?>
 					<img
 						class="<?php echo esc_attr( $sgs_pc_thumb_img_class ); ?>"
 						src="<?php echo esc_url( $thumb['url'] ); ?>"
 						alt="<?php echo esc_attr( $thumb['alt'] ); ?>"
 						<?php echo $thumb['w'] > 0 ? 'width="' . esc_attr( (string) $thumb['w'] ) . '"' : ''; ?>
 						<?php echo $thumb['h'] > 0 ? 'height="' . esc_attr( (string) $thumb['h'] ) . '"' : ''; ?>
-						loading="lazy"
-						decoding="async"
+						loading="<?php echo esc_attr( $sgs_pc_thumb_load['loading'] ); ?>"
+						decoding="<?php echo esc_attr( $sgs_pc_thumb_load['decoding'] ); ?>"
 					>
 				</button>
 				<?php endforeach; ?>

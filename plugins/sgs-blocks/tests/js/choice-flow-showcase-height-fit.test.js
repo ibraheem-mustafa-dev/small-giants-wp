@@ -25,11 +25,11 @@ const rulesWith = ( css, needle ) => {
 };
 
 test( 'the showcase body row is a minmax( 0, 1fr ) track so a definite height reaches the step pane', () => {
-	expect( rulesWith( flow, '.sgs-choice-flow__body--with-panel' ) ).toMatch( /grid-template-rows:\s*minmax\(\s*0,\s*1fr\s*\)/ );
+	expect( rulesWith( flow, '.sgs-choice-flow--fit-screen .sgs-choice-flow__body--with-panel' ) ).toMatch( /grid-template-rows:\s*minmax\(\s*0,\s*1fr\s*\)/ );
 } );
 
 test( 'the stage photo shrinks to a 56px floor and never grows past its square', () => {
-	const rule = rulesWith( flow, '.sgs-choice-flow--layout-showcase .sgs-choice-flow__summary-media' );
+	const rule = rulesWith( flow, '.sgs-choice-flow--fit-screen .sgs-choice-flow__summary-media' );
 	expect( rule ).toMatch( /flex:\s*0 1 auto/ );
 	expect( rule ).toMatch( /min-height:\s*56px/ );
 } );
@@ -45,5 +45,16 @@ test( 'the fit uses no !important and no viewport-unit height', () => {
 		expect( css ).toContain( 'Height fit' );
 		expect( fit ).not.toMatch( /!important/ );
 		expect( fit ).not.toMatch( /dvh|vh\b/ );
+	}
+} );
+
+test( 'every height-sharing rule keys off the fit-screen class, so switching it off keeps 16:9 cards and the square photo', () => {
+	for ( const css of [ flow, question ] ) {
+		const fit = css.slice( css.indexOf( 'Height fit' ) ).split( '@container' ).slice( 1, 2 ).join( '' );
+		const selectors = [ ...fit.matchAll( /([^{}]+)\{/g ) ].map( ( m ) => m[ 1 ].trim() ).filter( ( sel ) => sel.startsWith( '.' ) );
+		expect( selectors.length ).toBeGreaterThan( 0 );
+		for ( const sel of selectors ) {
+			expect( sel ).toContain( '.sgs-choice-flow--fit-screen' );
+		}
 	}
 } );

@@ -150,7 +150,7 @@ if ( function_exists( 'add_filter' ) ) {
  */
 function sgs_image_loading_attrs( bool $can_lead = true ): array {
 	static $eager_count = 0;
-	$limit              = (int) apply_filters( 'sgs_eager_image_limit', 4 );
+	$limit              = (int) apply_filters( 'sgs_eager_image_limit', 16 );
 	if ( sgs_in_hidden_render_context() || $eager_count >= $limit ) {
 		return array(
 			'loading'       => 'lazy',

@@ -194,6 +194,34 @@ if ( ! function_exists( 'sgs_media_element_scope_class' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_hover_zoom_clips' ) ) {
+	/**
+	 * Whether a sgs/media frame must clip: its image part (`sgsMotion.elements.media`) has a hover scale above 1 on any
+	 * device, and a scaled picture must not spill out of its frame. Only sgs/media: a hero's split column keeps its
+	 * spill on purpose (`SGS_Container_Wrapper`'s hoverSpillScale).
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $block_slug Block slug.
+	 * @return bool
+	 */
+	function sgs_media_hover_zoom_clips( array $attributes, string $block_slug ): bool {
+		if ( 'sgs/media' !== $block_slug ) {
+			return false;
+		}
+		$layer = $attributes['sgsMotion']['elements']['media']['hover']['state'] ?? null;
+		if ( ! is_array( $layer ) ) {
+			return false;
+		}
+		$sources = array( $layer['values'] ?? null, $layer['devices']['tablet'] ?? null, $layer['devices']['mobile'] ?? null );
+		foreach ( $sources as $values ) {
+			if ( is_array( $values ) && isset( $values['scale'] ) && is_numeric( $values['scale'] ) && (float) $values['scale'] > 1.0 ) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_element_style' ) ) {
 	/**
 	 * Every declared atom's custom-property VALUES for one media element, as one
@@ -234,6 +262,11 @@ if ( ! function_exists( 'sgs_media_element_style' ) ) {
 			if ( is_array( $emitted ) && $emitted ) {
 				$decls = array_merge( $decls, $emitted );
 			}
+		}
+
+		// A hover zoom on the picture clips at its frame.
+		if ( sgs_media_hover_zoom_clips( $attributes, (string) $block_slug ) ) {
+			$decls[] = 'overflow:hidden';
 		}
 
 		if ( empty( $decls ) ) {
