@@ -23,7 +23,7 @@
  * (`.is-open`, `[open]`, `:hover`), a pseudo-element selector that strips to a
  * dangling combinator, a rule in an `@import`ed sheet, an element inside a
  * shadow root, and a `var( --sgs-header-height )` inside an inline `style`
- * attribute. Nothing in the repository does any of these.
+ * attribute. No stylesheet in the repository does any of these as of 2026-11-09.
  *
  * @package SGS\Blocks
  */
@@ -79,29 +79,58 @@ export function hostSelector( selector ) {
 /**
  * Decide which header-height writes happen.
  *
+ * The live sink receives every change. The resting sink receives the first
+ * value, a rise, 0 and an exact publish at once. A lower value reaches it
+ * only after it has held for `delay` while the page is at the top: a lasting
+ * change (an announcement bar dismissed) is followed, a shrink (page scrolled,
+ * value moving) is not.
+ *
  * @param {{ live: function( string ): void, resting: function( string ): void }} sinks Receivers of each write, as px strings.
+ * @param {{ delay?: number, win?: Window, scrolled?: function(): boolean }} [options] Quiet delay in ms, window for timers, and whether the page is scrolled.
  * @return {function( number, boolean ): void} publish( edge, exact )
  */
-export function createHeightPublisher( sinks ) {
+export function createHeightPublisher( sinks, options = {} ) {
+	const delay = Number.isFinite( options.delay ) ? options.delay : 200;
+	const win = options.win || window;
+	const isScrolled = options.scrolled || ( () => false );
 	let live = null;
 	let resting = null;
+	let timer = 0;
 	const px = ( edge ) => Math.round( edge ) + 'px';
+
+	function writeResting( edge ) {
+		resting = edge;
+		sinks.resting( px( edge ) );
+	}
 
 	return function publish( edge, exact ) {
 		if ( edge !== live ) {
 			live = edge;
+			win.clearTimeout( timer );
+			timer = 0;
 			sinks.live( px( edge ) );
 		}
 		if ( edge === resting ) {
+			win.clearTimeout( timer );
+			timer = 0;
 			return;
 		}
 		// The inherited resting value restyles the whole page. Without an exact
-		// publish (a resize) it is written only when it first appears, rises
-		// or drops to 0: a header shrinking or growing back passes every
-		// lower value to the live sink alone.
+		// publish (a resize) it is written at once only when it first appears,
+		// rises or drops to 0.
 		if ( true === exact || null === resting || edge > resting || 0 === edge ) {
-			resting = edge;
-			sinks.resting( px( edge ) );
+			win.clearTimeout( timer );
+			timer = 0;
+			writeResting( edge );
+			return;
+		}
+		if ( ! timer ) {
+			timer = win.setTimeout( function () {
+				timer = 0;
+				if ( live === edge && ! isScrolled() ) {
+					writeResting( edge );
+				}
+			}, delay );
 		}
 	};
 }
@@ -123,7 +152,7 @@ export function createLiveHeight( options = {} ) {
 	let sheetCount = -1;
 	let value = null;
 	let timer = 0;
-	let idle = 0;
+	let idle = false;
 	let firstPending = 0;
 	let lastChange = 0;
 
@@ -211,14 +240,16 @@ export function createLiveHeight( options = {} ) {
 			return;
 		}
 		firstPending = 0;
+		idle = true;
 		const run = function () {
-			idle = 0;
+			idle = false;
 			requery();
 		};
-		idle =
-			typeof win.requestIdleCallback === 'function'
-				? win.requestIdleCallback( run, { timeout: 1000 } )
-				: win.setTimeout( run, 0 );
+		if ( typeof win.requestIdleCallback === 'function' ) {
+			win.requestIdleCallback( run, { timeout: 1000 } );
+		} else {
+			win.setTimeout( run, 0 );
+		}
 	}
 
 	function schedule() {

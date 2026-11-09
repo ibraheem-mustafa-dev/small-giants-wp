@@ -425,7 +425,7 @@ function isPageScrollLocked() {
 		// The live edge reaches :root's non-inheriting property and every
 		// consumer element; the inherited resting value is written only when
 		// it rises, flips to 0 or the viewport resizes (live-header-height.js).
-		const publish = createHeightPublisher( createHeaderHeightWriter( document ) );
+		const publish = createHeightPublisher( createHeaderHeightWriter( document ), { scrolled: () => window.scrollY > 0 } );
 
 		/**
 		 * @param {boolean} [exact] Publish a lower resting value too (a resize

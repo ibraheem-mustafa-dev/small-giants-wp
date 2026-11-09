@@ -40,7 +40,10 @@ beforeEach( () => {
 	document.head.innerHTML = '';
 	document.body.innerHTML = '';
 } );
-afterEach( () => jest.useRealTimers() );
+afterEach( () => {
+	delete window.requestIdleCallback;
+	jest.useRealTimers();
+} );
 
 describe( 'consumers receive the live value', () => {
 	test( 'an element a rule positions from the property gets it; one that does not stays untouched', () => {
@@ -119,7 +122,6 @@ describe( 'the cache follows the page', () => {
 		createLiveHeight( { delay: DELAY } ).set( '65px' );
 		const el = addEl( 'idl' );
 		await settle();
-		delete window.requestIdleCallback;
 		expect( idle ).toHaveBeenCalled();
 		expect( read( el ) ).toBe( '65px' );
 	} );
@@ -204,6 +206,35 @@ describe( 'the resting value', () => {
 		expect( s.resting ).toHaveBeenCalledTimes( 1 );
 		expect( s.resting ).toHaveBeenCalledWith( '85px' );
 		expect( s.live.mock.calls.map( ( c ) => c[ 0 ] ) ).toEqual( [ '85px', '65px', '72px', '80px' ] );
+	} );
+
+	test( 'follows a lower edge that holds past the quiet delay at the top of the page, not a transient one', () => {
+		jest.useFakeTimers();
+		const s = sinks();
+		const publish = createHeightPublisher( s, { delay: DELAY } );
+		publish( 85, true );
+		publish( 75, false );
+		jest.advanceTimersByTime( DELAY - 50 );
+		publish( 65, false );
+		jest.advanceTimersByTime( DELAY - 50 );
+		publish( 85, false );
+		jest.advanceTimersByTime( DELAY * 3 );
+		expect( s.resting ).toHaveBeenCalledTimes( 1 );
+		publish( 60, false );
+		jest.advanceTimersByTime( DELAY - 1 );
+		expect( s.resting ).toHaveBeenCalledTimes( 1 );
+		jest.advanceTimersByTime( 2 );
+		expect( s.resting ).toHaveBeenCalledTimes( 2 );
+		expect( s.resting ).toHaveBeenLastCalledWith( '60px' );
+	} );
+
+	test( 'a lower edge that holds while the page is scrolled is not written', () => {
+		const s = sinks();
+		const publish = createHeightPublisher( s, { delay: DELAY, scrolled: () => true } );
+		publish( 85, true );
+		publish( 65, false );
+		jest.advanceTimersByTime( DELAY * 3 );
+		expect( s.resting ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	test( 'is rewritten on a rise and on an exact publish, a lower value included', () => {
