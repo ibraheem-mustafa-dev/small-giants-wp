@@ -29,8 +29,11 @@ if ( ! function_exists( 'add_filter' ) ) { function add_filter() {} }
 if ( ! function_exists( 'add_action' ) ) { function add_action() {} }
 if ( ! function_exists( 'remove_filter' ) ) { function remove_filter() {} }
 
-class Fake_Product { function get_image_id() { return 9; } function get_id() { return 5; } }
-class Fake_Item { function get_name() { return 'Original Wayfarer'; } function get_product() { return new Fake_Product(); } }
+if ( ! function_exists( 'wc_price' ) ) { function wc_price( $a, $args = array() ) { return '<span>£' . number_format( (float) $a, $args['decimals'] ?? 2 ) . '</span>'; } }
+if ( ! function_exists( 'wc_get_product' ) ) { function wc_get_product( $id ) { return new Fake_Parent(); } }
+class Fake_Parent { function get_image_id() { $GLOBALS['parent_photo_read'] = true; return 7; } }
+class Fake_Product { function get_image_id() { return 0; } function get_id() { return 5; } }
+class Fake_Item { function get_name() { return 'Original Wayfarer'; } function get_product() { return new Fake_Product(); } function get_product_id() { return 4; } function get_total() { return 248; } function get_total_tax() { return 0; } }
 class Fake_Method { function __construct( private string $id ) {} function get_method_id() { return $this->id; } }
 class Fake_Date { function date_i18n( $f ) { return '2 October 2026'; } }
 class Fake_Order {
@@ -47,6 +50,11 @@ class Fake_Order {
 	function get_subtotal_to_display() { return '£248'; }
 	function get_shipping_to_display() { return 'Free'; }
 	function get_formatted_order_total() { return '£248'; }
+	function get_subtotal() { return 248; }
+	function get_shipping_total() { return 0; }
+	function get_shipping_tax() { return 0; }
+	function get_total() { return 248; }
+	function get_view_order_url() { return 'https://example.test/view-order/1700/'; }
 }
 
 require_once $base . '/includes/account/helpers-account-defaults.php';
@@ -116,5 +124,20 @@ if ( method_exists( 'SGS\Blocks\Account_Extras', 'summary_cell' ) ) {
 }
 ok( 'Original Wayfarer' === ob_get_clean(), 'the summary cell names the products' );
 
+$all2 = $all + array( 'ordersNumberPrefix' => 'N-', 'ordersTrimZeros' => true, 'orderDetailShippingLabel' => 'Delivery', 'orderDetailShippingFreeText' => 'Free' );
+$h2   = sgs_account_order_detail_html( new Fake_Order(), $all2 );
+ok( false !== strpos( $h2, '#N-EC-1700' ), 'the heading carries the block\'s order number prefix' );
+ok( ! empty( $GLOBALS['parent_photo_read'] ), 'a variation with no photo reads the parent product photo' );
+ok( false !== strpos( $h2, '<span>Delivery</span><span>Free</span>' ), 'the shipping row takes the block label and free text' );
+ok( false !== strpos( $h2, '<span>£248</span>' ) && false === strpos( $h2, '£248.00' ), 'whole amounts print without pence when ordersTrimZeros is on' );
+ok( false !== strpos( sgs_account_order_detail_html( new Fake_Order(), $all ), '£248.00' ), 'and keep two decimals when it is off' );
+SGS\Blocks\Account_Endpoints::$active = array( 'ordersRowList' => true );
+$args = array( 'has_orders' => true );
+ok( str_ends_with( (string) SGS\Blocks\Account_Extras::maybe_swap_orders_template( '/wc/orders.php', 'myaccount/orders.php', $args ), 'templates/orders-list.php' ), 'with ordersRowList on and orders present the row list replaces the WooCommerce table' );
+SGS\Blocks\Account_Endpoints::$active = array();
+ok( '/wc/orders.php' === SGS\Blocks\Account_Extras::maybe_swap_orders_template( '/wc/orders.php', 'myaccount/orders.php', $args ), 'with it off WooCommerce keeps its table' );
+$rows = sgs_account_orders_list_html( array( new Fake_Order() ), array( 'ordersNumberPrefix' => 'N-', 'ordersDateFormat' => 'j F Y', 'ordersTrimZeros' => true ) );
+ok( false !== strpos( $rows, '<a class="sgs-account__order sgs-account__order--status-processing" href="https://example.test/view-order/1700/">' ), 'each order is one link row to the order' );
+ok( false !== strpos( $rows, 'sgs-account__order-number">N-EC-1700<' ) && false !== strpos( $rows, 'Ray-Ban Original Wayfarer' ) && false !== strpos( $rows, 'Processing' ) && false !== strpos( $rows, '<span>£248</span>' ) && false !== strpos( $rows, 'sgs-account__order-chevron' ), 'the row carries the prefixed id, brand and name, status pill, whole-pound total and chevron' );
 echo $failures ? "\n$failures FAILED\n" : "\nALL PASSED\n";
 exit( $failures ? 1 : 0 );

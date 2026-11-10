@@ -108,13 +108,16 @@ final class Account_Extras {
 	 * @return mixed
 	 */
 	public static function maybe_swap_orders_template( $template, $template_name = '', $args = array() ) {
-		if ( 'myaccount/orders.php' !== $template_name || ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['ordersEmptyState'] ) ) {
+		if ( 'myaccount/orders.php' !== $template_name || ! is_array( Account_Endpoints::$active ) ) {
 			return $template;
 		}
-		if ( ! is_array( $args ) || ! array_key_exists( 'has_orders', $args ) || ! empty( $args['has_orders'] ) ) {
+		if ( ! is_array( $args ) || ! array_key_exists( 'has_orders', $args ) ) {
 			return $template;
 		}
-		return __DIR__ . '/templates/orders-empty.php';
+		if ( ! empty( $args['has_orders'] ) ) {
+			return ! empty( Account_Endpoints::$active['ordersRowList'] ) ? __DIR__ . '/templates/orders-list.php' : $template;
+		}
+		return ! empty( Account_Endpoints::$active['ordersEmptyState'] ) ? __DIR__ . '/templates/orders-empty.php' : $template;
 	}
 
 	/**

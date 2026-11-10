@@ -2660,6 +2660,28 @@
 			"ordersSummary": {
 				"type": "boolean"
 			},
+			"ordersRowList": {
+				"type": "boolean"
+			},
+			"ordersTrimZeros": {
+				"type": "boolean"
+			},
+			"ordersNumberPrefix": {
+				"type": "string",
+				"role": "content"
+			},
+			"ordersDateFormat": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailShippingLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"orderDetailShippingFreeText": {
+				"type": "string",
+				"role": "content"
+			},
 			"orderDetailBackLabel": {
 				"type": "string",
 				"role": "content"

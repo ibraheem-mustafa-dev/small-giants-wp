@@ -17,6 +17,10 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 		<>
 		<PanelBody title={ __( 'Orders list: items summary', 'sgs-blocks' ) } initialOpen={ false }>
 			<Toggle { ...p } name="ordersSummary" label={ __( 'Items summary in the orders list', 'sgs-blocks' ) } help={ __( 'A column naming the order’s products.', 'sgs-blocks' ) } />
+			<Toggle { ...p } name="ordersRowList" label={ __( 'Orders as link rows', 'sgs-blocks' ) } help={ __( 'Each order is one row that links to the order: number and date, items, status, total and a chevron. Replaces WooCommerce’s table; its pagination stays.', 'sgs-blocks' ) } />
+			<TextField { ...p } name="ordersNumberPrefix" label={ __( 'Order number prefix', 'sgs-blocks' ) } help={ __( 'Printed before the order number in the list and on the order page.', 'sgs-blocks' ) } />
+			<TextField { ...p } name="ordersDateFormat" label={ __( 'Date format', 'sgs-blocks' ) } help={ __( 'A PHP date format such as j F Y. Empty = the site’s format.', 'sgs-blocks' ) } />
+			<Toggle { ...p } name="ordersTrimZeros" label={ __( 'Whole pounds without pence', 'sgs-blocks' ) } help={ __( 'Prints £248 instead of £248.00 in the list and on the order page.', 'sgs-blocks' ) } />
 		</PanelBody>
 		<PanelBody title={ __( 'Order page', 'sgs-blocks' ) } initialOpen={ false }>
 			<Toggle { ...p } name="orderDetailLook" label={ __( 'Order detail page', 'sgs-blocks' ) } help={ __( 'Replaces WooCommerce’s order page with the parts in the panels below. Off = WooCommerce’s own page.', 'sgs-blocks' ) } />
@@ -52,6 +56,8 @@ export default function OrderPagePanels( { attributes, setAttributes } ) {
 				<TextField { ...p } name="orderDetailPaymentTitle" label={ __( 'Payment box title', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderDetailTotalTitle" label={ __( 'Total box title', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderDetailSubtotalLabel" label={ __( 'Subtotal label', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderDetailShippingLabel" label={ __( 'Shipping row label', 'sgs-blocks' ) } help={ __( 'Empty = the shipping method’s name.', 'sgs-blocks' ) } />
+				<TextField { ...p } name="orderDetailShippingFreeText" label={ __( 'Shipping row text when free', 'sgs-blocks' ) } help={ __( 'Empty = the amount.', 'sgs-blocks' ) } />
 				<TextField { ...p } name="orderDetailTotalLabel" label={ __( 'Total label', 'sgs-blocks' ) } />
 			</PanelBody>
 		) }

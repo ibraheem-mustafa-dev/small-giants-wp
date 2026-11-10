@@ -10,6 +10,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/helpers-account-orders-list.php';
+
 if ( ! function_exists( 'sgs_account_order_is_pickup' ) ) {
 	/**
 	 * Whether the order's shipping line is a local pickup method.
@@ -114,12 +116,17 @@ if ( ! function_exists( 'sgs_account_order_items_html' ) ) {
 	 * @param \WC_Order $order The order.
 	 * @return string Escaped HTML.
 	 */
-	function sgs_account_order_items_html( $order ): string {
+	function sgs_account_order_items_html( $order, array $attributes = array() ): string {
 		$html = '<div class="sgs-account__od-items">';
 		foreach ( $order->get_items() as $item ) {
 			$product = $item->get_product();
-			$image   = $product ? wp_get_attachment_image_url( (int) $product->get_image_id(), 'thumbnail' ) : '';
-			$brands  = $product && function_exists( 'wp_get_post_terms' ) ? wp_get_post_terms( $product->get_id(), 'product_brand', array( 'fields' => 'names' ) ) : array();
+			$image_id = $product ? (int) $product->get_image_id() : 0;
+			if ( 0 === $image_id && $product && function_exists( 'wc_get_product' ) ) {
+				$parent   = wc_get_product( (int) $item->get_product_id() );
+				$image_id = $parent ? (int) $parent->get_image_id() : 0;
+			}
+			$image   = $image_id ? wp_get_attachment_image_url( $image_id, 'thumbnail' ) : '';
+			$brands  = function_exists( 'wp_get_post_terms' ) ? wp_get_post_terms( (int) $item->get_product_id(), 'product_brand', array( 'fields' => 'names' ) ) : array();
 			$brand   = is_array( $brands ) && isset( $brands[0] ) ? (string) $brands[0] : '';
 			$meta    = function_exists( 'wc_display_item_meta' ) ? trim(
 				wp_strip_all_tags(
@@ -142,7 +149,7 @@ if ( ! function_exists( 'sgs_account_order_items_html' ) ) {
 				. ( '' !== $brand ? '<div class="sgs-account__od-item-brand">' . esc_html( $brand ) . '</div>' : '' )
 				. '<div class="sgs-account__od-item-name">' . esc_html( (string) $item->get_name() ) . '</div>'
 				. ( '' !== $meta ? '<div class="sgs-account__od-item-meta">' . esc_html( $meta ) . '</div>' : '' )
-				. '</div><div class="sgs-account__od-item-total">' . wp_kses_post( (string) $order->get_formatted_line_subtotal( $item ) ) . '</div></div>';
+				. '</div><div class="sgs-account__od-item-total">' . sgs_account_money( (float) $item->get_total() + (float) $item->get_total_tax(), $attributes ) . '</div></div>';
 		}
 		return $html . '</div>';
 	}
@@ -164,8 +171,8 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		$on   = static function ( string $key ) use ( $attributes ): bool {
 			return ! empty( $attributes[ $key ] );
 		};
-		$date = $order->get_date_created() ? $order->get_date_created()->date_i18n( (string) get_option( 'date_format' ) ) : '';
-		$num  = (string) $order->get_order_number();
+		$date = sgs_account_order_date( $order, $attributes );
+		$num  = sgs_account_order_number( $order, $attributes );
 		$fill = static function ( string $template ) use ( $date, $num, $order ): string {
 			return strtr(
 				esc_html( $template ),
@@ -194,20 +201,23 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 			$html .= '</ol>';
 		}
 		if ( $on( 'orderDetailItems' ) ) {
-			$html .= sgs_account_order_items_html( $order );
+			$html .= sgs_account_order_items_html( $order, $attributes );
 		}
 		if ( $on( 'orderDetailBoxes' ) ) {
 			$pickup   = sgs_account_order_is_pickup( $order );
 			$address  = $pickup ? (string) $order->get_shipping_method() : (string) $order->get_formatted_shipping_address( '' );
-			$ship_row = '<div class="sgs-account__od-row"><span>' . esc_html( (string) $order->get_shipping_method() ) . '</span><span>' . wp_kses_post( (string) $order->get_shipping_to_display() ) . '</span></div>';
+			$ship_cost = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
+			$ship_free = $text( 'orderDetailShippingFreeText' );
+			$ship_row  = '<div class="sgs-account__od-row"><span>' . esc_html( $text( 'orderDetailShippingLabel', (string) $order->get_shipping_method() ) ) . '</span><span>'
+				. ( $ship_cost <= 0 && '' !== $ship_free ? esc_html( $ship_free ) : sgs_account_money( $ship_cost, $attributes ) ) . '</span></div>';
 			$html    .= '<div class="sgs-account__od-boxes">'
 				. sgs_account_order_box( $text( 'orderDetailAddressTitle', 'Delivery address' ), '<p class="sgs-account__od-text">' . nl2br( esc_html( wp_strip_all_tags( str_replace( '<br/>', "\n", $address ) ) ) ) . '</p>' )
 				. sgs_account_order_box( $text( 'orderDetailPaymentTitle', 'Payment' ), '<p class="sgs-account__od-text">' . esc_html( (string) $order->get_payment_method_title() ) . '</p>' )
 				. sgs_account_order_box(
 					$text( 'orderDetailTotalTitle', 'Total' ),
-					'<div class="sgs-account__od-row"><span>' . esc_html( $text( 'orderDetailSubtotalLabel', 'Subtotal' ) ) . '</span><span>' . wp_kses_post( (string) $order->get_subtotal_to_display() ) . '</span></div>'
+					'<div class="sgs-account__od-row"><span>' . esc_html( $text( 'orderDetailSubtotalLabel', 'Subtotal' ) ) . '</span><span>' . sgs_account_money( (float) $order->get_subtotal(), $attributes ) . '</span></div>'
 					. $ship_row
-					. '<div class="sgs-account__od-row sgs-account__od-row--total"><span>' . esc_html( $text( 'orderDetailTotalLabel', 'Total' ) ) . '</span><span>' . wp_kses_post( (string) $order->get_formatted_order_total() ) . '</span></div>'
+					. '<div class="sgs-account__od-row sgs-account__od-row--total"><span>' . esc_html( $text( 'orderDetailTotalLabel', 'Total' ) ) . '</span><span>' . sgs_account_money( (float) $order->get_total(), $attributes ) . '</span></div>'
 				)
 				. '</div>';
 		}

@@ -109,12 +109,13 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 		$tiered = sgs_object_attr_keys( 'sgs/account' );
 		$css    = array();
 
-		if ( ! empty( $attributes['ordersLook'] ) ) {
-			$table = $root_sel . '.sgs-account--orders-rows table.woocommerce-orders-table';
-			$row   = $table . ' .woocommerce-orders-table__row';
+		$row_list = ! empty( $attributes['ordersRowList'] );
+		if ( ! empty( $attributes['ordersLook'] ) || $row_list ) {
+			$table = $row_list ? $root_sel . ' .sgs-account__orders-list' : $root_sel . '.sgs-account--orders-rows table.woocommerce-orders-table';
+			$row   = $row_list ? $table . ' .sgs-account__order' : $table . ' .woocommerce-orders-table__row';
 			$line  = sgs_colour_value( (string) ( $attributes['ordersRowBorderColour'] ?? '' ) );
 			if ( '' !== $line ) {
-				$css[] = $table . ' tbody{background-color:' . $line . ';border-color:' . $line . ';}';
+				$css[] = ( $row_list ? $table : $table . ' tbody' ) . '{background-color:' . $line . ';border-color:' . $line . ';}';
 			}
 			$css[] = sgs_fill_states_css(
 				$row,
@@ -135,15 +136,15 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				)
 			);
 			$cells = array(
-				'ordersNumber' => array( '.woocommerce-orders-table__cell-order-number', 'ordersNumberColour' ),
-				'ordersDate'   => array( '.woocommerce-orders-table__cell-order-date', 'ordersDateColour' ),
-				'ordersTotal'  => array( '.woocommerce-orders-table__cell-order-total', 'ordersTotalColour' ),
+				'ordersNumber' => array( $row_list ? '.sgs-account__order-number' : '.woocommerce-orders-table__cell-order-number', 'ordersNumberColour' ),
+				'ordersDate'   => array( $row_list ? '.sgs-account__order-date' : '.woocommerce-orders-table__cell-order-date', 'ordersDateColour' ),
+				'ordersTotal'  => array( $row_list ? '.sgs-account__order-total' : '.woocommerce-orders-table__cell-order-total', 'ordersTotalColour' ),
 			);
 			foreach ( $cells as $prefix => $cell ) {
 				$css[] = sgs_typography_css_rule( $attributes, $prefix, $row . ' ' . $cell[0], '', false, false, $tiered );
 				$css[] = sgs_text_states_css( $row . ' ' . $cell[0], $attributes, array( 'base' => $cell[1] ) );
 			}
-			$pill  = $row . ' .woocommerce-orders-table__cell-order-status';
+			$pill  = $row . ( $row_list ? ' .sgs-account__order-status' : ' .woocommerce-orders-table__cell-order-status' );
 			$css[] = sgs_typography_css_rule( $attributes, 'ordersPill', $pill, '', false, false, $tiered );
 			$css[] = sgs_fill_states_css( $pill, $attributes, array( 'base' => 'ordersPillBackground' ) );
 			$css[] = sgs_text_states_css( $pill, $attributes, array( 'base' => 'ordersPillText' ) );
@@ -168,7 +169,9 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				'failed'     => array( 'ordersPillFailedBackground', 'ordersPillFailedText' ),
 			);
 			foreach ( $stats as $slug => $pair ) {
-				$status_pill = $table . ' .woocommerce-orders-table__row--status-' . $slug . ' .woocommerce-orders-table__cell-order-status';
+				$status_pill = $row_list
+					? $table . ' .sgs-account__order--status-' . $slug . ' .sgs-account__order-status'
+					: $table . ' .woocommerce-orders-table__row--status-' . $slug . ' .woocommerce-orders-table__cell-order-status';
 				$css[]       = sgs_fill_states_css( $status_pill, $attributes, array( 'base' => $pair[0] ) );
 				$css[]       = sgs_text_states_css( $status_pill, $attributes, array( 'base' => $pair[1] ) );
 			}

@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-look-css
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-header.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-edit-account.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-order-detail.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-orders-list.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-address-editor.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-register.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';

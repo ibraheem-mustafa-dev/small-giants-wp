@@ -1223,3 +1223,60 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	font-size: 13px;
 }
 
+
+/* -- Orders list as link rows (ordersRowList) --------------------------------- */
+.sgs-account__orders-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	border: 1px solid var(--wp--preset--color--border, #e2e2e2);
+	background: var(--wp--preset--color--border, #e2e2e2);
+}
+
+.sgs-account__order {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 10px 20px;
+	align-items: center;
+	padding: 20px 22px;
+	background: var(--wp--preset--color--surface, #fff);
+	color: inherit;
+	line-height: normal;
+	text-align: left;
+	text-decoration: none;
+	transition: background var(--wp--custom--duration--fast, 250ms);
+}
+
+.sgs-account__order-id {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.sgs-account__order-summary {
+	min-width: 0;
+	text-wrap: pretty;
+}
+
+.sgs-account__order-status {
+	justify-self: start;
+	white-space: nowrap;
+}
+
+.sgs-account__order-end {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	justify-content: space-between;
+	white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+	.sgs-account__order {
+		grid-template-columns: minmax(110px, 0.6fr) minmax(0, 1.6fr) auto auto;
+	}
+
+	.sgs-account__order-end {
+		justify-content: flex-end;
+	}
+}
