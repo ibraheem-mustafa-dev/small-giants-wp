@@ -89,6 +89,28 @@ describe( 'initFitGuard', () => {
 		expect( flow.classList.contains( GUARD_CLASS ) ).toBe( false );
 	} );
 
+	test( 'a different visible step is measured afresh at the same window height', () => {
+		window.innerHeight = 570;
+		initFitGuard( flow );
+		flush();
+		expect( flow.classList.contains( GUARD_CLASS ) ).toBe( true );
+		const first = flow.querySelector( '.sgs-form-step' );
+		first.hidden = true;
+		const second = document.createElement( 'div' );
+		second.className = 'sgs-form-step';
+		const roomy = button( [ [ 0, 100 ], [ 110, 130 ] ], 200 );
+		roomy.className = 'sgs-choice-flow-question__option-button';
+		const media = document.createElement( 'span' );
+		media.className = 'sgs-choice-flow-question__option-media';
+		media.getBoundingClientRect = () => rect( 0, 100 );
+		roomy.appendChild( media );
+		second.appendChild( roomy );
+		first.parentNode.appendChild( second );
+		callbacks[ 0 ]();
+		flush();
+		expect( flow.classList.contains( GUARD_CLASS ) ).toBe( false );
+	} );
+
 	test( 'a stacked flow is never guarded', () => {
 		Object.defineProperty( flow, 'clientWidth', { value: 500, configurable: true } );
 		window.innerHeight = 570;

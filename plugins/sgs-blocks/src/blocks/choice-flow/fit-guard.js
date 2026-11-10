@@ -7,7 +7,7 @@
  * while the fit is active. When a visible option's content runs into its bottom padding, or two of its parts sit
  * closer than the computed row gap, it adds `sgs-choice-flow--fit-guarded`, which the fit rules are gated on
  * (`:not( .sgs-choice-flow--fit-guarded )`), and the step scrolls as the draft does. It remembers the window height it
- * switched at and lets the fit back in only when the window is taller than that. The two-column layout is the only
+ * switched at and lets the fit back in only when the window is taller than that or another step becomes visible. The two-column layout is the only
  * one that fits, so a stacked flow (narrower than the showcase container breakpoint) is never guarded.
  *
  * @package
@@ -105,9 +105,17 @@ export function initFitGuard( flowRoot ) {
 	}
 	let switchedAt = 0;
 	let frame = 0;
+	let measuredStep = null;
 
 	const evaluate = () => {
 		frame = 0;
+		const step = flowRoot.querySelector( STEP );
+		if ( step !== measuredStep ) {
+			// A different step is measured afresh: its content, not the last step's, decides.
+			measuredStep = step;
+			switchedAt = 0;
+			flowRoot.classList.remove( GUARD_CLASS );
+		}
 		if ( flowRoot.clientWidth < TWO_COLUMN_MIN_WIDTH ) {
 			flowRoot.classList.remove( GUARD_CLASS );
 			switchedAt = 0;
