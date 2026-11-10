@@ -35430,6 +35430,14 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "headingMarginBottom",
+      "fields": {
+        "css_property": "margin-bottom",
+        "css_element": "heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "hideRememberMe",
       "fields": {
         "css_element": "rememberMe"

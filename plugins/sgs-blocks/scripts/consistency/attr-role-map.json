@@ -1047,7 +1047,7 @@
     "sgs/account::menuLetterSpacingUnit": "typography",
     "sgs/account::menuLineHeight": "typography",
     "sgs/account::menuLineHeightUnit": "typography",
-    "sgs/account::menuOrder": "layout",
+    "sgs/account::menuOrder": "behaviour",
     "sgs/account::menuOrdersCount": "boolean-visibility",
     "sgs/account::menuTextAlign": "typography",
     "sgs/account::menuTextColour": "color",
