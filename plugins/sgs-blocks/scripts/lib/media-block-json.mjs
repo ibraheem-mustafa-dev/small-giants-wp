@@ -193,6 +193,13 @@ function spaced( value ) {
 /**
  * The override entry describing one generated attribute.
  *
+ * Carries only what the seeder cannot derive: the role, the tier shape and the Alt's
+ * companion. It never states `css_property`, `css_element`, `css_layer` or
+ * `css_state`: check #8 reads a `css_property` key as the pair (property, layer) and the
+ * seeder derives a layer (for example GRID_AREA on the hero's split media) that an entry
+ * leaving it out would contradict. The paint node and property live in the registry's
+ * C1 settings, which the Stage B emitters read.
+ *
  * @param {string} slug  Block slug.
  * @param {Object} attr  One generatedAttributes() item.
  * @param {Object} setting The registry's C1 entry for the attribute's base.
@@ -202,13 +209,6 @@ function spaced( value ) {
  */
 export function overrideEntry( slug, attr, setting, companion, tiered ) {
 	const fields = { role: setting.role };
-	if ( setting.css.property ) {
-		fields.css_property = setting.css.property;
-		fields.css_element = setting.css.paintNode;
-		if ( setting.css.state ) {
-			fields.css_state = setting.css.state;
-		}
-	}
 	if ( tiered ) {
 		fields.tier_shape = 'flat_sibling';
 	}
