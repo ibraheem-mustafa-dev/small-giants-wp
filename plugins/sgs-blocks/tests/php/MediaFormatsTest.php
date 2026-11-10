@@ -40,7 +40,7 @@ final class MediaFormatsTest extends TestCase {
 	}
 
 	private function map( string $source, ?string $file = null ): array {
-		return Sgs_Media_Formats::output_format( array(), $file ?? '/up/photo-300x200.' . ( 'image/png' === $source ? 'png' : 'jpg' ), $source );
+		return Sgs_Media_Formats::output_format( array(), $file, $source );
 	}
 
 	public function test_avif_supported_maps_jpeg_and_png_to_avif(): void {
@@ -60,13 +60,19 @@ final class MediaFormatsTest extends TestCase {
 		$this->assertSame( array( 'image/gif' => 'image/gif' ), Sgs_Media_Formats::output_format( array( 'image/gif' => 'image/gif' ), '/up/a.png', 'image/png' ) );
 	}
 
-	public function test_other_types_and_the_scaled_copy_keep_their_format(): void {
+	public function test_other_types_keep_their_format(): void {
 		$this->assertSame( array(), $this->map( 'image/gif' ) );
+	}
+
+	public function test_the_full_size_the_scaled_copy_and_the_conversion_check_keep_the_upload_format(): void {
+		$this->assertSame( array(), $this->map( 'image/jpeg', '/up/photo.jpg' ), 'full-size save and the early conversion check carry the original path' );
 		$this->assertSame( array(), $this->map( 'image/jpeg', '/up/photo-scaled.jpg' ) );
+		$this->assertSame( array(), $this->map( 'image/png', '/up/photo-rotated.png' ) );
+		$this->assertSame( array( 'image/png' => 'image/avif' ), $this->map( 'image/png', null ), 'a sub-size is saved without a name' );
 	}
 
 	public function test_existing_map_entries_are_kept(): void {
-		$out = Sgs_Media_Formats::output_format( array( 'image/gif' => 'image/png' ), '/up/a-100x100.jpg', 'image/jpeg' );
+		$out = Sgs_Media_Formats::output_format( array( 'image/gif' => 'image/png' ), null, 'image/jpeg' );
 		$this->assertSame( array( 'image/gif' => 'image/png', 'image/jpeg' => 'image/avif' ), $out );
 	}
 

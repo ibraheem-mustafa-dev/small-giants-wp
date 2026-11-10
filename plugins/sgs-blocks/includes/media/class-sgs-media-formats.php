@@ -4,7 +4,8 @@
  *
  * Every resized copy WordPress makes of an uploaded JPEG or PNG is saved as AVIF (quality 60) where the server's image
  * editor supports AVIF, else WebP (quality 82), through core's `image_editor_output_format` and `wp_editor_set_quality`
- * filters. The original upload and the big-image `-scaled` copy keep their format. A converted copy that is larger than
+ * filters. The original upload, the attachment's main (full-size) file and the big-image `-scaled` copy keep their format, because
+ * social previews, email clients and outside tools do not accept AVIF. A converted copy that is larger than
  * its source is replaced by a copy in the source format: a JPEG source is compared with the original file's bytes; a PNG
  * source is compared with the same size encoded as PNG (growth is common for flat graphics).
  *
@@ -81,7 +82,7 @@ final class Sgs_Media_Formats {
 	}
 
 	/**
-	 * `image_editor_output_format`: JPEG and PNG resized copies become AVIF, else WebP.
+	 * `image_editor_output_format`: JPEG and PNG resized sub-sizes (saved without a destination name) become AVIF, else WebP.
 	 *
 	 * @param mixed       $map       Existing source to output MIME map.
 	 * @param string|null $filename  Destination path.
@@ -93,7 +94,9 @@ final class Sgs_Media_Formats {
 		if ( self::$bypass || ! self::enabled() || ! in_array( $mime_type, self::SOURCES, true ) ) {
 			return $map;
 		}
-		if ( is_string( $filename ) && 1 === preg_match( '/-scaled\.[a-z0-9]+$/i', $filename ) ) {
+		// Resized sub-sizes are saved without a destination name; the full-size copy, the `-scaled` copy and the
+		// conversion check carry one. Only the unnamed saves convert.
+		if ( null !== $filename ) {
 			return $map;
 		}
 		$target = self::target_mime();
