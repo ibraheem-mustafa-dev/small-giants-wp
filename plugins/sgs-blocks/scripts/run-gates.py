@@ -579,10 +579,60 @@ def do_list() -> int:
     return 0
 
 
+def _git(*args: str) -> str:
+    """One git query from the plugin dir, or '' when git is unavailable."""
+    try:
+        run = subprocess.run(["git", *args], cwd=str(_PLUGIN_DIR), capture_output=True, text=True)
+    except OSError:
+        return ""
+    return run.stdout.strip() if run.returncode == 0 else ""
+
+
+def _last_run_path() -> Path | None:
+    """The failure record lives in git's common dir, shared by every worktree of the repo, so a
+    record written by a deploy's temporary worktree survives that worktree's removal."""
+    common = _git("rev-parse", "--path-format=absolute", "--git-common-dir")
+    return Path(common) / "sgs-run-gates-last.json" if common else None
+
+
+def save_last_run(results: list[dict], label: str) -> None:
+    """Record which gates failed, and on which tree, for --only-failed."""
+    path = _last_run_path()
+    if path is None:
+        return
+    record = {
+        "label": label,
+        "tree": _git("rev-parse", "HEAD^{tree}"),
+        "head": _git("rev-parse", "--short", "HEAD"),
+        "at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "ran": [r["gate"]["id"] for r in results],
+        "failed": [r["gate"]["id"] for r in results if r["code"] != 0],
+    }
+    try:
+        path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    except OSError as exc:
+        print(f"[run-gates] could not record this run for --only-failed: {exc}")
+
+
+def last_failed() -> tuple[list[str], dict]:
+    """The ids that failed on the last recorded run, and the record itself."""
+    path = _last_run_path()
+    if path is None or not path.exists():
+        return [], {}
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return [], {}
+    return list(record.get("failed") or []), record
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Consolidated SGS gate runner.")
     ap.add_argument("--tier", choices=("fast", "full", "all"), default="fast")
     ap.add_argument("--only", nargs="+", metavar="ID", help="run just these gate ids")
+    ap.add_argument("--only-failed", action="store_true",
+                    help="re-run only the gates that failed on the last recorded run (a diagnostic check, never a "
+                         "release pass: the deploy's full gate run is still required)")
     ap.add_argument("--time", action="store_true", help="measure every gate, write budget_ms")
     ap.add_argument("--no-write", action="store_true", help="with --time, do not write budget_ms")
     ap.add_argument("--list", action="store_true")
@@ -607,15 +657,42 @@ def main() -> int:
     if args.time:
         return do_time(write=not args.no_write)
 
-    gates = select(load_gates(), args.tier, args.only)
+    only = args.only
+    if args.only_failed:
+        if args.only:
+            print("[run-gates] FATAL: --only-failed and --only cannot be combined")
+            return 2
+        failed, record = last_failed()
+        if not record:
+            print("[run-gates] FATAL: no recorded run to take failures from; run a tier first")
+            return 1
+        if not failed:
+            # Re-running nothing must not read as a pass.
+            print(f"[run-gates] FATAL: the last run ({record.get('label')}, {record.get('head')}, "
+                  f"{record.get('at')}) had no failures; nothing to re-run")
+            return 1
+        known = {g["id"] for g in load_gates()}
+        gone = [f for f in failed if f not in known]
+        if gone:
+            print(f"[run-gates] note: no longer in gates.json, skipped: {' '.join(gone)}")
+        only = [f for f in failed if f in known]
+        now = _git("rev-parse", "HEAD^{tree}")
+        same = "the same tree" if now and now == record.get("tree") else "a different tree"
+        print(f"[run-gates] re-running {len(only)} gate(s) that failed on {record.get('head')} "
+              f"({record.get('at')}); this is {same}. Diagnostic only: a release still needs the full run.")
+
+    gates = select(load_gates(), args.tier, only)
     if not gates:
         # An empty selection reporting PASS is the vacuity this runner must
         # never have: it is indistinguishable from every gate passing.
-        print(f"[run-gates] FATAL: no gates selected (tier={args.tier}, only={args.only})")
+        print(f"[run-gates] FATAL: no gates selected (tier={args.tier}, only={only})")
         return 1
 
-    label = f"tier: {args.tier}" if not args.only else f"only: {' '.join(args.only)}"
+    label = f"tier: {args.tier}" if not only else f"only: {' '.join(only)}"
     results, total = execute(gates, label, args.verbose, args.jobs)
+    if not args.only and not args.only_failed:
+        # Only a whole-tier run is the record: a narrower run would overwrite the failures --only-failed needs.
+        save_last_run(results, label)
     return report(results, total, label)
 
 
