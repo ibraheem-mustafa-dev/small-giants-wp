@@ -22481,6 +22481,15 @@
       }
     },
     {
+      "slug": "sgs/pay-later-message",
+      "attr": "textColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/physics-canvas",
       "attr": "backgroundColour",
       "fields": {
@@ -37610,6 +37619,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "scrimFadeDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "scrim"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "scrimOpacity",
       "fields": {
         "css_property": "opacity",
@@ -45571,6 +45588,14 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "swatch-dot"
+      }
+    },
+    {
+      "slug": "sgs/pay-later-message",
+      "attr": "fontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "wrapper"
       }
     },
     {
