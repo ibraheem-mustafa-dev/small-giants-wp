@@ -2,7 +2,7 @@
   "_meta": {
     "purpose": "Spec 35 UNIT A0 roster \u2014 the audit denominator. DB-first, regenerate after /sgs-update.",
     "source": "sgs-framework.db blocks(source=sgs,status=built,is_stale=0)",
-    "count": 100,
+    "count": 101,
     "generator": "scripts/consistency/build-roster.py"
   },
   "blocks": [
@@ -75,7 +75,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 53,
+        "paintDeclarations": 55,
         "replacedCoreSupports": []
       }
     },
@@ -1394,6 +1394,25 @@
       },
       "qualifies": {
         "paintDeclarations": 37,
+        "replacedCoreSupports": []
+      }
+    },
+    {
+      "slug": "sgs/pay-later-message",
+      "title": "Pay later message",
+      "category": "sgs-content",
+      "tier": "block",
+      "replaces": null,
+      "has_render_php": true,
+      "surfaces": {
+        "styling": false,
+        "colour": true,
+        "link": false,
+        "media": true,
+        "animation": false
+      },
+      "qualifies": {
+        "paintDeclarations": 0,
         "replacedCoreSupports": []
       }
     },
