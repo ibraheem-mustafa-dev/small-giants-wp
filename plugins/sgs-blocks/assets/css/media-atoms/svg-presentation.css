@@ -57,7 +57,7 @@
  * it BEHIND its section's background: the optician client's brand strip showed 16
  * loaded logos as a blank white band. A layer applies only when chosen.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	z-index: var( --sgs-media-svg-zindex, auto );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
 }

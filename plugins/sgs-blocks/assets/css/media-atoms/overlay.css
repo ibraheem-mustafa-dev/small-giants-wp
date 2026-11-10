@@ -31,11 +31,11 @@
  * to desktop.
  */
 
-.sgs-media-box {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	position: relative;
 }
 
-.sgs-media-box::after {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -47,14 +47,14 @@
 	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
-:where(:root:not(.sgs-touch-input)) .sgs-media-box:hover::after,
-.sgs-media-box:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
+:where(:root:not(.sgs-touch-input)) .sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):hover::after,
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-box::after {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 		opacity: var(
 			--sgs-media-overlay-opacity-tablet,
 			var( --sgs-media-overlay-opacity, 1 )
@@ -63,7 +63,7 @@
 }
 
 @media (max-width: 767px) {
-	.sgs-media-box::after {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 		opacity: var(
 			--sgs-media-overlay-opacity-mobile,
 			var(

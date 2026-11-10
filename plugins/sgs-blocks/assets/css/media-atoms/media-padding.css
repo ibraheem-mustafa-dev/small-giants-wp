@@ -11,7 +11,7 @@
  * tier's value.
  */
 
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	padding-top: var( --sgs-media-padding-top, 0 );
 	padding-right: var( --sgs-media-padding-right, 0 );
 	padding-bottom: var( --sgs-media-padding-bottom, 0 );
@@ -19,7 +19,7 @@
 }
 
 @media ( max-width: 1023px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		padding-top: var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) );
 		padding-right: var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) );
 		padding-bottom: var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) );
@@ -28,7 +28,7 @@
 }
 
 @media ( max-width: 767px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		padding-top: var(
 			--sgs-media-padding-top-mobile,
 			var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) )

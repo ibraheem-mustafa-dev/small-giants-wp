@@ -107,23 +107,23 @@
  * page rather than by tracing descriptor → filter → schema → renderer.
  */
 
-.sgs-media-el,
-.sgs-media-box {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)),
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	/* Desktop is the base tier: it reads its own property with no fallback
 	 * chain, because there is no tier above it to inherit from. */
 	--sgs-media-tier: desktop;
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el,
-	.sgs-media-box {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)),
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		--sgs-media-tier: tablet;
 	}
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el,
-	.sgs-media-box {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)),
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		--sgs-media-tier: mobile;
 	}
 }
@@ -177,7 +177,7 @@
  */
 
 @media ( prefers-reduced-motion: no-preference ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		--sgs-base-animation-name: var( --sgs-media-svg-animation-name, none ), var( --sgs-media-motion-animation-name, none );
 		--sgs-base-animation-duration: var( --sgs-media-svg-animation-duration, 0s ), var( --sgs-media-motion-animation-duration, 20s );
 		--sgs-base-animation-timing-function: var( --sgs-media-svg-animation-timing-function, ease-in-out ), var( --sgs-media-motion-animation-timing-function, ease-in-out );
@@ -219,7 +219,7 @@
  * `calc()` with a third multiplied factor — do not give it its own bare
  * `opacity:` declaration elsewhere.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	opacity: calc( var( --sgs-media-opacity, 1 ) * var( --sgs-media-svg-opacity, 1 ) );
 }
 
@@ -250,12 +250,12 @@
  * `0px` not `0` deliberately — `max()` resolves against <length>, and a
  * unitless zero is not a length in that context.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	min-height: max( var( --sgs-media-min-height, 0px ), var( --sgs-media-svg-min-height, 0px ) );
 }
 
 @media ( max-width: 1023px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		min-height: max(
 			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) ),
 			var( --sgs-media-svg-min-height, 0px )
@@ -264,7 +264,7 @@
 }
 
 @media ( max-width: 767px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		min-height: max(
 			var(
 				--sgs-media-min-height-mobile,
@@ -285,13 +285,13 @@
  * proportions would otherwise set the row's height (a portrait photo made a
  * split section 1,500px tall). Height/Aspect ratio do not apply in this mode.
  */
-.sgs-media-box--fill {
+.sgs-media-box--fill:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	position: relative;
 	height: 100%;
 	min-height: var( --sgs-media-min-height, 0px );
 }
 
-.sgs-media-box--fill .sgs-media-el {
+.sgs-media-box--fill:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) .sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -302,13 +302,13 @@
 }
 
 @media ( max-width: 1023px ) {
-	.sgs-media-box--fill {
+	.sgs-media-box--fill:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		min-height: var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) );
 	}
 }
 
 @media ( max-width: 767px ) {
-	.sgs-media-box--fill {
+	.sgs-media-box--fill:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		min-height: var(
 			--sgs-media-min-height-mobile,
 			var( --sgs-media-min-height-tablet, var( --sgs-media-min-height, 0px ) )
@@ -363,7 +363,7 @@
  * height/width/border-radius were already tiered without being in it.
  */
 
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	height: var( --sgs-media-height, auto );
 	/* Unset, the width is the element's own width attribute (the browser's presentation mapping, which this
 	   rule would otherwise cancel): a not-yet-loaded image has no intrinsic size, so a bare `auto` painted it
@@ -413,14 +413,14 @@
  * This is a known, named gap shared by the whole atom family, not something
  * introduced here — flagged for a future follow-up, not fixed in this pass.
  */
-.sgs-media-el:hover,
-.sgs-media-el:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):hover,
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	border-color: var( --sgs-media-border-color-hover, var( --sgs-media-border-color, currentcolor ) );
 	border-image-source: var( --sgs-media-border-image-hover, var( --sgs-media-border-image, none ) );
 }
 
 @media ( max-width: 1023px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		width: var( --sgs-media-width-tablet, var( --sgs-media-width, attr( width px, auto ) ) );
 		border-top-left-radius: var( --sgs-media-border-top-left-radius-tablet, var( --sgs-media-border-top-left-radius, 0 ) );
@@ -433,7 +433,7 @@
 }
 
 @media ( max-width: 767px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		height: var(
 			--sgs-media-height-mobile,
 			var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) )
@@ -480,20 +480,20 @@
  * `.product-card .product-card-img`, which keeps its 220px default. Their
  * fallbacks equal WooCommerce's own values, so nothing changes unless a size is set.
  */
-html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
+html :where(.woocommerce, .woocommerce-page) img.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	height: var( --sgs-media-height, auto );
 	max-width: var( --sgs-media-max-width, 100% );
 }
 
 @media ( max-width: 1023px ) {
-	html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
+	html :where(.woocommerce, .woocommerce-page) img.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		height: var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) );
 		max-width: var( --sgs-media-max-width-tablet, var( --sgs-media-max-width, 100% ) );
 	}
 }
 
 @media ( max-width: 767px ) {
-	html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
+	html :where(.woocommerce, .woocommerce-page) img.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		height: var(
 			--sgs-media-height-mobile,
 			var( --sgs-media-height-tablet, var( --sgs-media-height, auto ) )
@@ -533,7 +533,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * to what paints when this rule is absent, so an unset atom never changes
  * rendering.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	object-position: var( --sgs-media-object-position, center center );
 	background-position: var( --sgs-media-background-position, center center );
 	background-repeat: var( --sgs-media-background-repeat, no-repeat );
@@ -541,7 +541,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-position: var(
 			--sgs-media-object-position-tablet,
 			var( --sgs-media-object-position, center center )
@@ -550,7 +550,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-position: var(
 			--sgs-media-object-position-mobile,
 			var(
@@ -614,7 +614,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * tier's value.
  */
 
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	padding-top: var( --sgs-media-padding-top, 0 );
 	padding-right: var( --sgs-media-padding-right, 0 );
 	padding-bottom: var( --sgs-media-padding-bottom, 0 );
@@ -622,7 +622,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media ( max-width: 1023px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		padding-top: var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) );
 		padding-right: var( --sgs-media-padding-right-tablet, var( --sgs-media-padding-right, 0 ) );
 		padding-bottom: var( --sgs-media-padding-bottom-tablet, var( --sgs-media-padding-bottom, 0 ) );
@@ -631,7 +631,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media ( max-width: 767px ) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		padding-top: var(
 			--sgs-media-padding-top-mobile,
 			var( --sgs-media-padding-top-tablet, var( --sgs-media-padding-top, 0 ) )
@@ -702,7 +702,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * inline <svg>'s own geometry either way (a surface adopting this atom for an
  * SVG tier gets no visible effect, which is correct — see registry.js).
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	/* ⛔ The fallback is `cover`, NOT `initial`, and that is measured rather than
 	   chosen. All four surfaces carrying this atom default to cover:
 	   sgs/media objectFit, sgs/hero splitMediaObjectFit and backgroundSize, and
@@ -720,7 +720,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-fit: var(
 			--sgs-media-object-fit-tablet,
 			var( --sgs-media-object-fit, cover )
@@ -729,7 +729,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-fit: var(
 			--sgs-media-object-fit-mobile,
 			var(
@@ -801,11 +801,11 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * to desktop.
  */
 
-.sgs-media-box {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	position: relative;
 }
 
-.sgs-media-box::after {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -817,14 +817,14 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 	transition: background-color var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease), opacity var(--wp--custom--duration--medium, 0.3s) var(--wp--custom--easing--ease, ease);
 }
 
-:where(:root:not(.sgs-touch-input)) .sgs-media-box:hover::after,
-.sgs-media-box:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
+:where(:root:not(.sgs-touch-input)) .sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):hover::after,
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after {
 	background-color: var( --sgs-media-overlay-colour-hover, var( --sgs-media-overlay-colour, transparent ) );
 	background-image: var( --sgs-media-overlay-gradient-hover, var( --sgs-media-overlay-gradient, none ) );
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-box::after {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 		opacity: var(
 			--sgs-media-overlay-opacity-tablet,
 			var( --sgs-media-overlay-opacity, 1 )
@@ -833,7 +833,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 767px) {
-	.sgs-media-box::after {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *))::after {
 		opacity: var(
 			--sgs-media-overlay-opacity-mobile,
 			var(
@@ -854,7 +854,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * or click on that link does not paint it, keyboard focus does.
  */
 
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	box-shadow: var( --sgs-media-box-shadow, none );
 	/* LONGHAND, not `transition: box-shadow 0.3s ease` (2026-09-10 — the hero
 	 * hover-spill-scale build). A `transition` SHORTHAND always resets
@@ -875,9 +875,9 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 /* Pointer hover carries the touch guard of includes/helpers-hover-state.php (active only when the
  * site chose "Desktop only"); keyboard focus stays unguarded and is keyed on :focus-visible and :has(:focus-visible),
  * so a tap or click does not paint it. */
-:where(:root:not(.sgs-touch-input)) .sgs-media-el:hover,
-.sgs-media-el:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)),
-.sgs-media-el:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
+:where(:root:not(.sgs-touch-input)) .sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):hover,
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)),
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)):has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) {
 	box-shadow: var( --sgs-media-box-shadow-hover, var( --sgs-media-box-shadow, none ) );
 }
 
@@ -898,12 +898,12 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * initial. `ImageUrl`/`ImageUrlTablet`/`ImageUrlMobile` are all in
  * MEDIA_TIERED_BASES, so all three tiers are real.
  */
-.sgs-media-box {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	background-image: var( --sgs-media-background-image, none );
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-box {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		background-image: var(
 			--sgs-media-background-image-tablet,
 			var( --sgs-media-background-image, none )
@@ -912,7 +912,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
 }
 
 @media (max-width: 767px) {
-	.sgs-media-box {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		background-image: var(
 			--sgs-media-background-image-mobile,
 			var(
@@ -983,7 +983,7 @@ html :where(.woocommerce, .woocommerce-page) img.sgs-media-el {
  * it BEHIND its section's background: the optician client's brand strip showed 16
  * loaded logos as a blank white band. A layer applies only when chosen.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	z-index: var( --sgs-media-svg-zindex, auto );
 	text-shadow: var( --sgs-media-svg-text-shadow, none );
 }

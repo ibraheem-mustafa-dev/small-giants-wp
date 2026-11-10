@@ -30,7 +30,7 @@
  * inline <svg>'s own geometry either way (a surface adopting this atom for an
  * SVG tier gets no visible effect, which is correct — see registry.js).
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	/* ⛔ The fallback is `cover`, NOT `initial`, and that is measured rather than
 	   chosen. All four surfaces carrying this atom default to cover:
 	   sgs/media objectFit, sgs/hero splitMediaObjectFit and backgroundSize, and
@@ -48,7 +48,7 @@
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-fit: var(
 			--sgs-media-object-fit-tablet,
 			var( --sgs-media-object-fit, cover )
@@ -57,7 +57,7 @@
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-fit: var(
 			--sgs-media-object-fit-mobile,
 			var(

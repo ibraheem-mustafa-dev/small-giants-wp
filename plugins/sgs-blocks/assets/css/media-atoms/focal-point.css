@@ -15,7 +15,7 @@
  * to what paints when this rule is absent, so an unset atom never changes
  * rendering.
  */
-.sgs-media-el {
+.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	object-position: var( --sgs-media-object-position, center center );
 	background-position: var( --sgs-media-background-position, center center );
 	background-repeat: var( --sgs-media-background-repeat, no-repeat );
@@ -23,7 +23,7 @@
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-position: var(
 			--sgs-media-object-position-tablet,
 			var( --sgs-media-object-position, center center )
@@ -32,7 +32,7 @@
 }
 
 @media (max-width: 767px) {
-	.sgs-media-el {
+	.sgs-media-el:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		object-position: var(
 			--sgs-media-object-position-mobile,
 			var(

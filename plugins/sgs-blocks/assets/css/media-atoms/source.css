@@ -14,12 +14,12 @@
  * initial. `ImageUrl`/`ImageUrlTablet`/`ImageUrlMobile` are all in
  * MEDIA_TIERED_BASES, so all three tiers are real.
  */
-.sgs-media-box {
+.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 	background-image: var( --sgs-media-background-image, none );
 }
 
 @media (max-width: 1023px) {
-	.sgs-media-box {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		background-image: var(
 			--sgs-media-background-image-tablet,
 			var( --sgs-media-background-image, none )
@@ -28,7 +28,7 @@
 }
 
 @media (max-width: 767px) {
-	.sgs-media-box {
+	.sgs-media-box:not(:where(.sgs-media--renderer, .sgs-media--renderer *)) {
 		background-image: var(
 			--sgs-media-background-image-mobile,
 			var(
