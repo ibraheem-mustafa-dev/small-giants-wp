@@ -2922,6 +2922,45 @@
 				"role": "content",
 				"description": "The line in an empty billing card while a delivery address is saved. Empty = the empty-card line."
 			},
+			"addressEditor": {
+				"type": "boolean",
+				"description": "Replaces WooCommerce's address list and address form with one card per address type, each editing inline and saving through WooCommerce's own handler. Off = WooCommerce's own screens."
+			},
+			"addressEditLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Edit link on a card that has an address. Empty = \"Edit {card title}\"."
+			},
+			"addressAddLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Edit link on a card with no address. Empty = \"Add {card title}\"."
+			},
+			"addressSaveLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Save button of the inline address form. Empty = WooCommerce's own."
+			},
+			"addressCancelLabel": {
+				"type": "string",
+				"role": "content",
+				"description": "Cancel link of the inline address form."
+			},
+			"addressLine2Label": {
+				"type": "string",
+				"role": "content",
+				"description": "Label and placeholder of the second address line, for example Flat / building. Empty = WooCommerce's own label."
+			},
+			"addressPairs": {
+				"type": "string",
+				"role": "content",
+				"description": "Comma-separated field names (city, postcode) that sit side by side in the inline form; first and last name already do."
+			},
+			"addressHideFields": {
+				"type": "string",
+				"role": "content",
+				"description": "Comma-separated optional field names (company, state) left out of the inline form; their saved value is kept. A required field is never left out."
+			},
 			"addressEmptyText": {
 				"type": "string",
 				"role": "content",

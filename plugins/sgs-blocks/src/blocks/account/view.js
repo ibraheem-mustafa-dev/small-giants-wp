@@ -8,6 +8,8 @@
  * step so a reload or a shared link opens the same tab.
  */
 
+import './address-editor';
+
 const TAB_SELECTOR = '[role="tab"][data-sgs-auth-tab]';
 
 /**

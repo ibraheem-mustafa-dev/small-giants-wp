@@ -463,6 +463,26 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account .sgs-account__wc .sgs-account__addr-form[hidden]",
+   "reason": "the closed address form is removed from view until Edit opens it; hidden is the open/shut pattern itself, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account .sgs-account__wc .sgs-account__addr-read[hidden]",
+   "reason": "the read view is removed from view while its form is open; hidden is the open/shut pattern itself, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account .sgs-account__wc .sgs-account__addr .woocommerce-Address-title a.sgs-account__addr-edit[hidden]",
+   "reason": "the Edit link is removed from view while its form is open; hidden is the open/shut pattern itself, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
+   "selector": ".sgs-account .sgs-account__wc .sgs-account__addr-actions a.sgs-account__addr-cancel:hover",
+   "reason": "the Cancel link darkens its border on hover as the draft does; its colours are the site border and text tokens, not a block setting"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/account/style.css",
    "selector": ".sgs-account__auth-tab[aria-selected=\"true\"]",
    "reason": "the open sign-in tab takes the site's primary button preset tokens and the other tab the secondary tokens, so the selected look is the site's button look, not a block setting"
   },

@@ -128,6 +128,26 @@ final class Account_Extras {
 	}
 
 	/**
+	 * Swap WooCommerce's address list and address form for the block's own address view while `addressEditor` is on.
+	 *
+	 * @param mixed $template      Located template path.
+	 * @param mixed $template_name Template name.
+	 * @return mixed
+	 */
+	public static function maybe_swap_address_template( $template, $template_name = '' ) {
+		if ( ! is_array( Account_Endpoints::$active ) || empty( Account_Endpoints::$active['addressEditor'] ) ) {
+			return $template;
+		}
+		if ( 'myaccount/my-address.php' === $template_name ) {
+			return __DIR__ . '/templates/my-address.php';
+		}
+		if ( 'myaccount/form-edit-address.php' === $template_name ) {
+			return __DIR__ . '/templates/form-edit-address.php';
+		}
+		return $template;
+	}
+
+	/**
 	 * Add the items summary column to the orders table while `ordersSummary` is on.
 	 *
 	 * @param mixed $columns Column key => label.

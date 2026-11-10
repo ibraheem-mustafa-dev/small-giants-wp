@@ -139,6 +139,23 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 	const radius = attributes.addressCardBorderRadius;
 	return (
 		<PanelBody title={ __( 'Address cards', 'sgs-blocks' ) } initialOpen={ false }>
+			<Toggle
+				{ ...p }
+				name="addressEditor"
+				label={ __( 'Edit addresses inside the cards', 'sgs-blocks' ) }
+				help={ __( 'Replaces WooCommerce’s address list and address page: each card opens its own form and saves through WooCommerce. Off = WooCommerce’s own screens.', 'sgs-blocks' ) }
+			/>
+			{ attributes.addressEditor && (
+				<>
+					<TextField { ...p } name="addressEditLabel" label={ __( 'Edit link', 'sgs-blocks' ) } help={ __( 'Empty = “Edit” plus the card title.', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressAddLabel" label={ __( 'Add link (card with no address)', 'sgs-blocks' ) } help={ __( 'Empty = “Add” plus the card title.', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressSaveLabel" label={ __( 'Save button', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressCancelLabel" label={ __( 'Cancel link', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressLine2Label" label={ __( 'Second address line label', 'sgs-blocks' ) } help={ __( 'For example “Flat / building”. Empty = WooCommerce’s own label.', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressPairs" label={ __( 'Fields side by side', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “city, postcode”. First and last name already sit together.', 'sgs-blocks' ) } />
+					<TextField { ...p } name="addressHideFields" label={ __( 'Optional fields to leave out', 'sgs-blocks' ) } help={ __( 'Comma-separated, for example “company, state”. A required field is never left out; a left-out field keeps its saved value.', 'sgs-blocks' ) } />
+				</>
+			) }
 			<TextField
 				{ ...p }
 				name="addressHelperText"

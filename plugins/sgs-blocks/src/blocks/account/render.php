@@ -41,6 +41,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-look-css
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-header.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-edit-account.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-order-detail.php';
+require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-address-editor.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/helpers-account-register.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-strings.php';
 require_once dirname( __DIR__, 3 ) . '/includes/account/class-account-extras.php';
@@ -123,7 +124,7 @@ if ( $use_tabs ) {
 	);
 	$use_tabs  = false !== strpos( $wc_output, 'role="tablist"' );
 }
-sgs_account_view_module( $block, $use_tabs );
+sgs_account_view_module( $block, $use_tabs || ( ! empty( $attributes['addressEditor'] ) && is_user_logged_in() ) );
 if ( $show_card || $use_tabs ) {
 	$scoped_css[] = sgs_account_auth_card_css( $attributes, $root_sel );
 }
