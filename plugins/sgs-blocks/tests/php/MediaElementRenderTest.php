@@ -55,7 +55,26 @@ class MediaElementRenderTest extends TestCase {
 				return parse_url( $u, $c );
 			}
 		}
+		// The loading resolver reads the motion renderer's armed state; loading the renderer registers its hooks.
+		if ( ! function_exists( 'add_filter' ) ) {
+			function add_filter( ...$args ) {
+				return true;
+			}
+		}
+		if ( ! function_exists( 'add_action' ) ) {
+			function add_action( ...$args ) {
+				return true;
+			}
+		}
+		if ( ! function_exists( 'apply_filters' ) ) {
+			function apply_filters( $hook, $value, ...$args ) {
+				return $value;
+			}
+		}
 		// phpcs:enable
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/motion/class-sgs-motion-fold.php';
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/motion/class-sgs-fold-scan.php';
+		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/motion/class-sgs-motion-renderer.php';
 		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/class-sgs-breakpoints.php';
 		require_once SGS_BLOCKS_PLUGIN_DIR . '/includes/helpers-svg-kses.php';
 		if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
@@ -394,6 +413,33 @@ class MediaElementRenderTest extends TestCase {
 		$this->assertSame( '100vw', sgs_media_sizes_for_width( '100%', false ) );
 		$this->assertSame( 'auto, 100vw', sgs_media_sizes_for_width( null, true ) );
 		$this->assertSame( 'calc(100vw / 3)', sgs_media_sizes_for_width( null, false, 3 ) );
+	}
+
+	public function test_load_first_on_an_armed_page_is_eager_and_takes_the_one_lead(): void {
+		$armed = new ReflectionProperty( \SGS\Blocks\Motion\Sgs_Motion_Renderer::class, 'armed' );
+		$armed->setValue( null, true );
+		SGS_Media_Priority::reset();
+		$attrs = array(
+			'source'  => array(
+				'desktop' => array(
+					'kind'   => 'image',
+					'url'    => '/u/a.jpg',
+					'width'  => 1200,
+					'height' => 800,
+				),
+			),
+			'alt'     => 'Photo',
+			'loading' => 'first',
+		);
+		$slot   = array( 'prefix' => '', 'kinds' => array( 'image' ) );
+		$first  = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u1' ) );
+		$second = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u2' ) );
+		$armed->setValue( null, false );
+		$this->assertStringContainsString( 'loading="eager"', $first['html'] );
+		$this->assertStringContainsString( 'fetchpriority="high"', $first['html'] );
+		$this->assertTrue( $first['lead_candidate'] );
+		$this->assertStringContainsString( 'loading="eager"', $second['html'] );
+		$this->assertStringNotContainsString( 'fetchpriority="high"', $second['html'], 'one lead per page' );
 	}
 
 	public function test_atom_emitters_are_collected_when_they_exist(): void {

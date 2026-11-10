@@ -104,7 +104,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$one_file    = $image_files && count( $image_files ) === $all && 1 === count( array_unique( array_map( 'sgs_media_file_key', $image_files ) ) );
 	$only_embed  = 1 === count( $embeds ) ? reset( $embeds ) : null;
 	$only_svg    = 1 === count( $svgs ) ? reset( $svgs ) : null;
-	$bare        = 1 === $total && ( $one_file || ( $only_embed && $all === count( $only_embed['devices'] ) ) || ( $only_svg && $all === count( $only_svg['devices'] ) ) );
+	$bare        = 1 === $total && ( $one_file || ( $only_embed && count( $only_embed['devices'] ) === $all ) || ( $only_svg && count( $only_svg['devices'] ) === $all ) );
 
 	// What surrounds the media.
 	$caption     = trim( (string) ( $attrs['caption'] ?? '' ) );
@@ -120,7 +120,8 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$loading = 'lazy';
 	$fetch   = '';
 	if ( ( $image_files || $video_files ) && class_exists( 'SGS_Media_Priority' ) ) {
-		$first_img = $image_files ? reset( $image_files ) : array(
+		$load_priority = (string) ( $attr( 'Loading' ) ?? 'auto' );
+		$first_img     = $image_files ? reset( $image_files ) : array(
 			'width'  => 0,
 			'height' => 0,
 		);
@@ -131,14 +132,12 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 					'uid'    => $uid,
 					'slot'   => $slot,
 					'prefix' => $prefix,
+					'kind'   => $image_files ? 'image' : 'video',
+					'width'  => (int) $first_img['width'],
+					'height' => (int) $first_img['height'],
+					'load'   => in_array( $load_priority, array( 'first', 'later' ), true ) ? $load_priority : '',
+					'role'   => (string) ( $context['role'] ?? '' ),
 				)
-			),
-			array(
-				'kind'       => $image_files ? 'image' : 'video',
-				'width'      => $first_img['width'],
-				'height'     => $first_img['height'],
-				'decorative' => $decorative,
-				'loading'    => (string) ( $attr( 'Loading' ) ?? 'auto' ),
 			)
 		);
 		$loading   = (string) ( $resolved['loading'] ?? 'lazy' );

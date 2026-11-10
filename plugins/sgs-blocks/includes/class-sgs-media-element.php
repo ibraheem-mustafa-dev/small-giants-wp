@@ -47,6 +47,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-media-element.php';
 require_once __DIR__ . '/media/render-slot.php';
+require_once __DIR__ . '/media/class-sgs-media-priority.php';
 
 if ( ! class_exists( 'SGS_Media_Element' ) ) {
 
