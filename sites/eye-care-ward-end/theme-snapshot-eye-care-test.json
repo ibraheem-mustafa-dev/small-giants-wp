@@ -64,12 +64,12 @@
         {
           "slug": "info",
           "name": "Info",
-          "color": "#3B82F6"
+          "color": "#9C8B78"
         },
         {
           "slug": "info-light",
           "name": "Info Light",
-          "color": "#EBF5FF"
+          "color": "#EFEAE2"
         },
         {
           "slug": "whatsapp",
