@@ -58,6 +58,7 @@ from deploy_selftest import self_test
 from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
 from deploy_ship import run_isolated, step_build, step_local_cleanup, step_remote_extract, step_scp, step_tar
 from deploy_qa_tier import motion_qa_action, shipped_uncommitted
+from deploy_litespeed_probe import step_litespeed_probe
 from deploy_verify import step_first_paint, step_motion_qa, step_purge_caches, step_scoped_selector_audit, step_verify, step_verify_payload, step_verify_theme_json
 
 
@@ -510,6 +511,9 @@ def main() -> int:
                   "run, this check cannot tell the difference; confirm first.",
                   flush=True)
             return 1
+
+    # Read-only warning (never a failure): LiteSpeed's own lazy load and image optimisation must stay off.
+    timed("litespeed-probe", step_litespeed_probe, args.dry_run, use_alias, target["wp_content"])
 
     # Post-deploy CHANGE-SPECIFIC gate: is the live plugin what we just shipped?
     # Runs after the smoke test so a broken SITE is reported before a stale PAYLOAD.

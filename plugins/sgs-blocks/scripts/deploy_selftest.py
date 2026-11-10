@@ -286,6 +286,22 @@ def self_test_timing() -> list[str]:
     return failures
 
 
+def self_test_litespeed_probe() -> list[str]:
+    """The LiteSpeed probe warns for each option that is on and stays silent when both are off or missing."""
+    from deploy_litespeed_probe import litespeed_warnings
+
+    failures: list[str] = []
+    both = litespeed_warnings({"litespeed.conf.media-lazy": "1", "litespeed.conf.img_optm-webp": "1"})
+    if len(both) != 2:
+        failures.append(f"litespeed probe: expected 2 warnings with both on, got {both}")
+    one = litespeed_warnings({"litespeed.conf.media-lazy": "1", "litespeed.conf.img_optm-webp": "0"})
+    if len(one) != 1 or "media-lazy" not in one[0]:
+        failures.append(f"litespeed probe: expected the media-lazy warning only, got {one}")
+    if litespeed_warnings({"litespeed.conf.media-lazy": "0", "litespeed.conf.img_optm-webp": ""}) or litespeed_warnings({}):
+        failures.append("litespeed probe: warned with both options off or missing")
+    return failures
+
+
 def self_test_motion_qa_args() -> list[str]:
     """Self-test case 20: the motion-QA tier and parallel flags reach `npm run qa:motion` only when set (no deploy, no network).
 
@@ -499,6 +515,7 @@ def self_test() -> int:
     failures.extend(deploy_multi.self_test())
     failures.extend(self_test_timing())
     failures.extend(self_test_motion_qa_args())
+    failures.extend(self_test_litespeed_probe())
     failures.extend(deploy_qa_tier.self_test())
 
     if failures:
@@ -540,4 +557,5 @@ def self_test() -> int:
           "files shipped uncommitted (dirty or --payload) count as changed, and such a run or a --skip-verify run never records a full pass; "
           "a dry run for a non-canary target reports SKIPPED as a real run does; deploy_timing.short_commit reads the given checkout; "
           "each check is proven red on a planted fault")
+    print(" 22. LiteSpeed probe: a warning for each of media-lazy and img_optm-webp that is on, none when both are off or missing")
     return 0
