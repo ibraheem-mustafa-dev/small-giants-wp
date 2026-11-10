@@ -326,7 +326,7 @@ body .wc-block-components-form .wc-block-components-text-input input[type]:focus
 	width: 100%;
 	transition: background-color 0.18s ease, border-color 0.18s ease;
 }
-@media (forced-colors:active){.wc-block-components-checkout-place-order-button.wc-block-components-button:not(:focus-visible),.wp-block-woocommerce-checkout-actions-block .wp-element-button:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
+@media (forced-colors:active){.wc-block-components-checkout-place-order-button.wc-block-components-button:not(:focus-visible),.wc-block-components-totals-coupon__button.wc-block-components-button:not(:focus-visible),.wp-block-woocommerce-checkout-actions-block .wp-element-button:not(:focus-visible){outline:1px solid CanvasText;outline-offset:-1px}}
 
 
 .wc-block-components-checkout-place-order-button.wc-block-components-button:hover,
