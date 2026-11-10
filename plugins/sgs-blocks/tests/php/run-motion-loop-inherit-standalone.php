@@ -108,7 +108,7 @@ $first_section_css = static function ( bool $first ) use ( $reset, $css, $grid, 
 	$block = array( 'blockName' => 'sgs/card-grid', 'attrs' => $attrs );
 	if ( $first ) {
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 	}
 	Sgs_Motion_Renderer::open_frame( $block, $block, null );
 	Sgs_Motion_Loop_Delays::item_array( 'sgs/card-grid', 'sgs-cg-l1', $attrs, 2, '.sgs-card-grid__item' );

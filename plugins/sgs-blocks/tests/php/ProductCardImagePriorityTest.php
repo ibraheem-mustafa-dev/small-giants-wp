@@ -123,7 +123,7 @@ final class ProductCardImagePriorityTest extends TestCase {
 	public function test_claim_needs_the_first_section_and_takes_the_slot_once(): void {
 		require_once dirname( __DIR__, 2 ) . '/includes/helpers-media.php';
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 		$claims = array();
 		sgs_test_render_motion_block(
 			array( 'blockName' => 'sgs/card-grid', 'attrs' => array() ),
@@ -183,7 +183,7 @@ final class ProductCardImagePriorityTest extends TestCase {
 		// On a page with another section above the grid, that section takes the slot and no card does.
 		Sgs_Motion_Renderer::reset();
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 		sgs_test_render_motion_block( array( 'blockName' => 'sgs/container', 'attrs' => array() ), '<div></div>' );
 		$editor = array();
 		sgs_test_render_motion_block( array( 'blockName' => 'sgs/card-grid', 'attrs' => array() ), '<div></div>', null, $grid );

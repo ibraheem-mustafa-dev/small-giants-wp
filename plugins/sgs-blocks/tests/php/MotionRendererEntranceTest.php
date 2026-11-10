@@ -31,7 +31,7 @@ final class MotionRendererEntranceTest extends TestCase {
 
 	private function render_as_first_section( array $motion ): string {
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 		return $this->render( $motion );
 	}
 
@@ -58,7 +58,7 @@ final class MotionRendererEntranceTest extends TestCase {
 
 	public function test_edge_third_section_scroll_fade_fades_from_zero(): void {
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$GLOBALS['sgs_collected_css'] = array();
@@ -73,7 +73,7 @@ final class MotionRendererEntranceTest extends TestCase {
 
 	public function test_edge_third_section_load_fade_fades_from_zero(): void {
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$GLOBALS['sgs_collected_css'] = array();

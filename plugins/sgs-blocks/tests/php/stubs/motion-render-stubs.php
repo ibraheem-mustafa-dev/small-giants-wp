@@ -303,6 +303,14 @@ namespace {
 		return $fail;
 	}
 
+	if ( ! function_exists( 'parse_blocks' ) ) {
+		/** Stand-in parser: a test hands over the tree through `$GLOBALS['sgs_test_top_blocks']`; the default is a page of four plain sections. */
+		function parse_blocks( $content ) {
+			$section = array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() );
+			return $GLOBALS['sgs_test_top_blocks'] ?? array_fill( 0, 4, $section );
+		}
+	}
+
 	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-breakpoints.php';
 	require_once dirname( __DIR__, 3 ) . '/includes/helpers-hover-state.php';
 	require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-css-registry.php';

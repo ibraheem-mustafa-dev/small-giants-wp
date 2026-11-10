@@ -57,7 +57,7 @@ final class MotionRevealDefaultTest extends TestCase {
 	/** Start the main content: the first top-level block is the first section. */
 	private function start_content(): void {
 		$GLOBALS['sgs_test_in_loop'] = true;
-		Sgs_Motion_Renderer::arm_first_section( '' );
+		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/section /-->' );
 	}
 
 	private function section( int $count = 0 ): string {

@@ -76,6 +76,22 @@ final class Sgs_Motion_Renderer {
 	private static $tree = array();
 
 	/**
+	 * Whether top-level blocks are matched to the armed tree by what they are (name and attributes) rather than by the
+	 * order they open in: true for a tree armed from the block template, because the theme renders the header, footer
+	 * and drawers itself, as parentless top-level blocks that are not in the template's tree.
+	 *
+	 * @var bool
+	 */
+	private static $by_identity = false;
+
+	/**
+	 * The tree indexes of the sections already matched by identity.
+	 *
+	 * @var array<int,int>
+	 */
+	private static $matched = array();
+
+	/**
 	 * How many content sections count as above the fold on the page being rendered (`Sgs_Fold_Scan::section_count`).
 	 *
 	 * @var int
@@ -141,6 +157,8 @@ final class Sgs_Motion_Renderer {
 		self::$armed                       = false;
 		self::$tree                        = array();
 		self::$sections                    = 0;
+		self::$by_identity                 = false;
+		self::$matched                     = array();
 		self::$fold_sections               = Sgs_Motion_Fold::FOLD_SECTIONS;
 		self::$lone_main                   = false;
 		self::$main_children               = 0;
@@ -245,10 +263,11 @@ final class Sgs_Motion_Renderer {
 		if ( ! self::$content_seen && ( array() !== self::$stack || $in_loop ) ) {
 			$tree = is_string( $content ) && '' !== $content && function_exists( 'parse_blocks' ) ? parse_blocks( $content ) : array();
 			if ( array() === Sgs_Motion_Fold::section_indexes( $tree ) ) {
-				// Markup the parser did not return: a stand-in tree of blank sections keeps the count by order.
-				$tree = array_fill( 0, Sgs_Motion_Fold::FOLD_SECTIONS + 1, array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() ) );
+				// No parseable blocks: there are no content sections, so nothing on the page is above the fold.
+				self::$content_seen = true;
+				return $content;
 			}
-			self::arm( $tree );
+			self::arm( $tree, false );
 		}
 		return $content;
 	}
@@ -269,7 +288,7 @@ final class Sgs_Motion_Renderer {
 		}
 		$tree = parse_blocks( $content );
 		if ( array() !== Sgs_Motion_Fold::section_indexes( $tree ) ) {
-			self::arm( $tree );
+			self::arm( $tree, true );
 		}
 		return $template;
 	}
@@ -277,12 +296,15 @@ final class Sgs_Motion_Renderer {
 	/**
 	 * Start counting sections over a parsed tree.
 	 *
-	 * @param array<int,mixed> $tree Parsed blocks of the main content.
+	 * @param array<int,mixed> $tree        Parsed blocks of the main content.
+	 * @param bool             $by_identity Whether top-level blocks are matched to the tree by name and attributes.
 	 * @return void
 	 */
-	private static function arm( array $tree ): void {
+	private static function arm( array $tree, bool $by_identity ): void {
 		self::$content_seen  = true;
 		self::$armed         = true;
+		self::$by_identity   = $by_identity;
+		self::$matched       = array();
 		self::$tree          = $tree;
 		self::$lone_main     = Sgs_Motion_Fold::is_lone_main( $tree );
 		self::$fold_sections = self::measured_sections();
@@ -319,6 +341,10 @@ final class Sgs_Motion_Renderer {
 			return null;
 		}
 		$sections = Sgs_Motion_Fold::section_indexes( self::$tree );
+		if ( ! $child && self::$by_identity ) {
+			$index = self::match_in_tree( $block, $sections );
+			return null === $index ? null : array( $index );
+		}
 		if ( ! $child ) {
 			$ordinal = self::$sections++;
 			return isset( $sections[ $ordinal ] ) ? array( $sections[ $ordinal ] ) : null;
@@ -326,6 +352,51 @@ final class Sgs_Motion_Renderer {
 		$children = Sgs_Motion_Fold::section_indexes( (array) ( self::$tree[ $sections[0] ]['innerBlocks'] ?? array() ) );
 		$ordinal  = self::$main_children++;
 		return isset( $children[ $ordinal ] ) ? array( $sections[0], $children[ $ordinal ] ) : null;
+	}
+
+	/**
+	 * Whether this top-level block is the transparent `main` wrapper of a lone-main page: by identity for a template
+	 * tree, else the first section to open when it is a `main`.
+	 *
+	 * @param array<string,mixed> $block Parsed block.
+	 * @return bool
+	 */
+	private static function is_the_lone_main( array $block ): bool {
+		if ( ! self::is_main_wrapper( $block ) ) {
+			return false;
+		}
+		if ( self::$by_identity ) {
+			$sections = Sgs_Motion_Fold::section_indexes( self::$tree );
+			$index    = self::match_in_tree( $block, $sections );
+			return null !== $index;
+		}
+		if ( 0 !== self::$sections ) {
+			return false;
+		}
+		++self::$sections;
+		return true;
+	}
+
+	/**
+	 * The tree index of the not yet matched section that this block is, by name and attributes; null for a block that is
+	 * not in the tree (the header, footer or a drawer the theme renders itself).
+	 *
+	 * @param array<string,mixed> $block    Parsed block.
+	 * @param array<int,int>      $sections The tree's section indexes.
+	 * @return int|null
+	 */
+	private static function match_in_tree( array $block, array $sections ): ?int {
+		foreach ( $sections as $index ) {
+			if ( in_array( $index, self::$matched, true ) ) {
+				continue;
+			}
+			$candidate = (array) self::$tree[ $index ];
+			if ( ( $candidate['blockName'] ?? null ) === ( $block['blockName'] ?? null ) && (array) ( $candidate['attrs'] ?? array() ) == (array) ( $block['attrs'] ?? array() ) ) {
+				self::$matched[] = $index;
+				return $index;
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -387,11 +458,10 @@ final class Sgs_Motion_Renderer {
 		$at          = null;
 		$inside_section = null !== $top && ! empty( $top['section'] );
 		if ( null === $parent_block && self::$armed && ! $inside_section ) {
-			if ( self::$lone_main && 0 === self::$sections && self::is_main_wrapper( $block ) ) {
+			if ( self::$lone_main && self::is_the_lone_main( $block ) ) {
 				$transparent = true;
-				++self::$sections;
-				$first = false;
-				$fold  = false;
+				$first       = false;
+				$fold        = false;
 			} else {
 				$at = self::opens_at( $block, false ) ?? array();
 			}
