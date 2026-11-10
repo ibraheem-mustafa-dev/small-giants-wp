@@ -1,7 +1,8 @@
 <?php
 /**
  * Account details form extras for sgs/account: the Display name filled from first and last name, an optional Mobile
- * field, and a helper line under the Change password heading.
+ * field (with an optional line under it, replacing the checkout's own Mobile field), and a helper line under the Change
+ * password heading.
  *
  * WooCommerce's form template has no hook inside its field list, so the three changes are made on its finished
  * markup. Saving stays WooCommerce's own: `Account_Extras` verifies the account-details nonce before it fills the
@@ -36,10 +37,15 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 			$label = trim( (string) ( $attributes['accountMobileLabel'] ?? '' ) );
 			$label = '' !== $label ? $label : __( 'Mobile', 'sgs-blocks' );
 			$phone = (string) get_user_meta( get_current_user_id(), 'billing_phone', true );
+			$hint  = trim( (string) ( $attributes['accountMobileHint'] ?? '' ) );
 			$field = '<p class="woocommerce-form-row woocommerce-form-row--wide form-row form-row-wide">'
 				. '<label for="account_mobile">' . esc_html( $label ) . '</label>'
-				. '<input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="account_mobile" id="account_mobile" autocomplete="tel" value="' . esc_attr( $phone ) . '" />'
+				. '<input type="tel" class="woocommerce-Input woocommerce-Input--text input-text" name="account_mobile" id="account_mobile" autocomplete="tel" value="' . esc_attr( $phone ) . '"'
+				. ( '' !== $hint ? ' aria-describedby="sgs-account-mobile-hint"' : '' ) . ' />'
+				. ( '' !== $hint ? '<span class="sgs-account__password-helper sgs-account__mobile-hint" id="sgs-account-mobile-hint">' . wp_kses_post( $hint ) . '</span>' : '' )
 				. '<input type="hidden" name="sgs_account_mobile" value="1" /></p>';
+			// The checkout's own Mobile field (an additional checkout field) would print a second Mobile input here.
+			$html  = (string) preg_replace( '#<p\b(?:(?!</p>).)*?id="_wc_other/sgs/mobile_field"(?:(?!</p>).)*</p>#s', '', $html, 1 );
 			$html  = (string) preg_replace_callback( '#(<p\b(?:(?!</p>).)*?id="account_email"(?:(?!</p>).)*</p>)#s', static fn( array $m ): string => $m[1] . $field, $html, 1, $count );
 			if ( 0 === $count ) {
 				$html = (string) preg_replace_callback( '#(<fieldset\b)#', static fn( array $m ): string => $field . $m[1], $html, 1 );

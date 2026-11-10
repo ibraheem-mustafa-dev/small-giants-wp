@@ -219,8 +219,14 @@ final class Account_Endpoints {
 	 *                      the framework's WordPress-hook-callback rule).
 	 */
 	public static function render_saved_items_endpoint( $value ) {
-		// The account page's own title already names the tab, so the panel
-		// drops its heading here.
+		// The tab heading (when the block prints one) names the tab, so the panel
+		// drops its own heading here.
+		self::print_tab_heading( Account_Strings::text( 'savedItems', __( 'Saved items', 'sgs-blocks' ) ) );
+		$empty = self::saved_items_empty_card();
+		if ( '' !== $empty ) {
+			echo $empty; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html().
+			return;
+		}
 		$attrs            = self::resolve_wishlist_panel_attrs();
 		$attrs['heading'] = '';
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() output is already escaped by the block's own render.php.
@@ -233,6 +239,30 @@ final class Account_Endpoints {
 				'innerContent' => array(),
 			)
 		);
+	}
+
+	/**
+	 * The empty-state card for a customer whose saved list holds nothing, from the block's `wishlistEmpty*` settings;
+	 * '' while all three texts are unset or the list has items (the wishlist panel then draws the tab).
+	 *
+	 * @return string Escaped HTML.
+	 */
+	private static function saved_items_empty_card(): string {
+		$attrs   = is_array( self::$active ) ? self::$active : array();
+		$heading = trim( (string) ( $attrs['wishlistEmptyHeading'] ?? '' ) );
+		$text    = trim( (string) ( $attrs['wishlistEmptyText'] ?? '' ) );
+		$label   = trim( (string) ( $attrs['wishlistEmptyButtonLabel'] ?? '' ) );
+		if ( '' === $heading . $text . $label || ! function_exists( 'sgs_account_empty_card_html' ) || ! class_exists( Wishlist_Store::class ) ) {
+			return '';
+		}
+		if ( array() !== Wishlist_Store::read_list( \get_current_user_id() ) ) {
+			return '';
+		}
+		$url = trim( (string) ( $attrs['wishlistEmptyButtonUrl'] ?? '' ) );
+		if ( '' === $url && function_exists( 'wc_get_page_permalink' ) ) {
+			$url = (string) \wc_get_page_permalink( 'shop' );
+		}
+		return \sgs_account_empty_card_html( $heading, $text, $label, $url );
 	}
 
 	/**

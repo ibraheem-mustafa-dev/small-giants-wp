@@ -162,6 +162,7 @@ else : ?>
 		<?php echo $wc_output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's own already-escaped shortcode output. ?>
 	</div>
 <?php endif; ?>
+<?php echo sgs_account_lost_back_html( $attributes, sgs_account_current_view() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_lost_back_html(). ?>
 
 	<?php if ( $logged_out && ! empty( $attributes['showOrderTracking'] ) && class_exists( 'WC_Shortcode_Order_Tracking' ) ) : ?>
 		<div class="sgs-account__card sgs-account__tracking-card">

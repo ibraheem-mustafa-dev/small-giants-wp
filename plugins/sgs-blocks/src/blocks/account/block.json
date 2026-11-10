@@ -2595,6 +2595,24 @@
 				"type": "string",
 				"role": "content"
 			},
+			"wishlistEmptyHeading": {
+				"type": "string",
+				"role": "content",
+				"description": "Heading of the Saved items card shown while the list is empty (same look as the orders empty card). Empty heading, text and button = the wishlist panel's own empty message."
+			},
+			"wishlistEmptyText": {
+				"type": "string",
+				"role": "content"
+			},
+			"wishlistEmptyButtonLabel": {
+				"type": "string",
+				"role": "content"
+			},
+			"wishlistEmptyButtonUrl": {
+				"type": "string",
+				"role": "content",
+				"description": "Empty = the shop page."
+			},
 			"ordersEmptyBackground": {
 				"type": "string"
 			},
@@ -2888,6 +2906,11 @@
 			"accountMobileLabel": {
 				"type": "string",
 				"role": "content"
+			},
+			"accountMobileHint": {
+				"type": "string",
+				"role": "content",
+				"description": "A line under the Mobile field. Empty = none."
 			},
 			"accountPasswordHelper": {
 				"type": "string",

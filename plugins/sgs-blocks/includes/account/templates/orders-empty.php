@@ -21,17 +21,5 @@ if ( '' === $sgs_url && function_exists( 'wc_get_page_permalink' ) ) {
 // WooCommerce's own orders template fires these around its content; extensions hook them.
 do_action( 'woocommerce_before_account_orders', $has_orders ?? false );
 ?>
-<div class="sgs-account__orders-empty">
-	<?php if ( '' !== $sgs_heading ) : ?>
-		<p class="sgs-account__orders-empty-title"><?php echo esc_html( $sgs_heading ); ?></p>
-	<?php endif; ?>
-	<?php if ( '' !== $sgs_text ) : ?>
-		<p class="sgs-account__orders-empty-text"><?php echo wp_kses_post( $sgs_text ); ?></p>
-	<?php endif; ?>
-	<?php if ( '' !== $sgs_label && '' !== $sgs_url && function_exists( 'sgs_account_signed_out_button' ) ) : ?>
-		<div class="sgs-account__orders-empty-actions">
-			<?php echo sgs_account_signed_out_button( $sgs_label, esc_url_raw( $sgs_url ), 'primary' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered and escaped by sgs/button. ?>
-		</div>
-	<?php endif; ?>
-</div>
+<?php echo function_exists( 'sgs_account_empty_card_html' ) ? sgs_account_empty_card_html( $sgs_heading, $sgs_text, $sgs_label, $sgs_url ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html(). ?>
 <?php do_action( 'woocommerce_after_account_orders', $has_orders ?? false ); ?>

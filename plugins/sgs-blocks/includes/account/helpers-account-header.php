@@ -70,7 +70,6 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 				'eyebrow' => 'headerLostEyebrow',
 				'title'   => 'headerLostTitle',
 				'intro'   => 'headerLostIntro',
-				'back'    => 'headerLostBackLabel',
 			),
 			'account' => array(
 				'eyebrow' => 'headerAccountEyebrow',
@@ -89,8 +88,7 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 		$title   = $read( 'title' );
 		$intro   = $read( 'intro' );
 		$meta    = $read( 'meta' );
-		$back    = $read( 'back' );
-		if ( '' === $eyebrow . $title . $intro . $meta . $back ) {
+		if ( '' === $eyebrow . $title . $intro . $meta ) {
 			return '';
 		}
 
@@ -111,15 +109,30 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 		if ( '' !== $intro ) {
 			$html .= '<p class="sgs-account__header-intro">' . $fill( $intro ) . '</p>';
 		}
-		if ( '' !== $back ) {
-			$url   = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'myaccount' ) : home_url( '/' );
-			$html .= '<p class="sgs-account__header-backline"><a class="sgs-account__header-back" href="' . esc_url( $url ) . '">' . esc_html( $back ) . '</a></p>';
-		}
 		$html .= '</div>';
 		if ( '' !== $meta ) {
 			$html .= '<p class="sgs-account__header-meta">' . sgs_account_header_tokens( $meta ) . '</p>';
 		}
 		return $html . '</header>';
+	}
+}
+
+if ( ! function_exists( 'sgs_account_lost_back_html' ) ) {
+	/**
+	 * The Back to sign in link of the lost-password view. It sits under the form, not in the page header, and prints
+	 * only on that view while the label is set.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $view       'signin' | 'lost' | 'account'.
+	 * @return string Escaped HTML, or '' on any other view or with no label.
+	 */
+	function sgs_account_lost_back_html( array $attributes, string $view ): string {
+		$back = trim( (string) ( $attributes['headerLostBackLabel'] ?? '' ) );
+		if ( 'lost' !== $view || '' === $back ) {
+			return '';
+		}
+		$url = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'myaccount' ) : home_url( '/' );
+		return '<p class="sgs-account__header-backline"><a class="sgs-account__header-back" href="' . esc_url( $url ) . '">' . esc_html( $back ) . '</a></p>';
 	}
 }
 

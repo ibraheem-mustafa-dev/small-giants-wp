@@ -121,6 +121,32 @@ if ( ! function_exists( 'sgs_account_signed_out_button' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_empty_card_html' ) ) {
+	/**
+	 * The empty-state card of an account tab: a heading, a line of text and a button, each printed only while set.
+	 * The Orders and Saved items tabs share it, so one set of look settings (`ordersEmpty*`) paints both.
+	 *
+	 * @param string $heading Card heading.
+	 * @param string $text    Card text (post-level HTML).
+	 * @param string $label   Button label; the button is left out when empty.
+	 * @param string $url     Button link; the button is left out when empty.
+	 * @return string Escaped HTML.
+	 */
+	function sgs_account_empty_card_html( string $heading, string $text, string $label, string $url ): string {
+		$html = '<div class="sgs-account__orders-empty">';
+		if ( '' !== $heading ) {
+			$html .= '<p class="sgs-account__orders-empty-title">' . esc_html( $heading ) . '</p>';
+		}
+		if ( '' !== $text ) {
+			$html .= '<p class="sgs-account__orders-empty-text">' . wp_kses_post( $text ) . '</p>';
+		}
+		if ( '' !== $label && '' !== $url ) {
+			$html .= '<div class="sgs-account__orders-empty-actions">' . sgs_account_signed_out_button( $label, esc_url_raw( $url ), 'primary' ) . '</div>';
+		}
+		return $html . '</div>';
+	}
+}
+
 if ( ! function_exists( 'sgs_account_signed_out_html' ) ) {
 	/**
 	 * The signed-out card: heading, copy and the sign-in / create-account

@@ -53,6 +53,20 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
 					/>
 					<TierBox { ...p } name="ordersEmptyPadding" label={ __( 'Card padding', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="wishlistEmptyHeading"
+						label={ __( 'Saved items card: heading', 'sgs-blocks' ) }
+						help={ __( 'The Saved items tab shows this card, in the same look, while the list is empty. Leave the heading, text and button empty for the wishlist panel’s own message.', 'sgs-blocks' ) }
+					/>
+					<TextField { ...p } name="wishlistEmptyText" label={ __( 'Saved items card: text', 'sgs-blocks' ) } />
+					<TextField { ...p } name="wishlistEmptyButtonLabel" label={ __( 'Saved items card: button label', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="wishlistEmptyButtonUrl"
+						label={ __( 'Saved items card: button link', 'sgs-blocks' ) }
+						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
+					/>
 				</>
 			) }
 		</PanelBody>

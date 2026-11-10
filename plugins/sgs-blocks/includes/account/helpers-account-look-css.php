@@ -298,7 +298,7 @@ if ( ! function_exists( 'sgs_account_details_look_css' ) ) {
 
 if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 	/**
-	 * The sign-in button (and with the all-forms scope the other form buttons), the lost-password link, its
+	 * The sign-in button (and with the all-forms scope the other form buttons and the buttons inside the account content), the lost-password link, its
 	 * placement and the Remember me row.
 	 *
 	 * @param array  $attributes Block attributes.
@@ -316,6 +316,22 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 			$buttons[] = $form . '.lost_reset_password button[type="submit"]';
 			$buttons[] = $form . '.woocommerce-EditAccountForm button[type="submit"]';
 			$buttons[] = $form . ' button[name="save_address"]';
+		}
+		// The buttons WooCommerce and the wishlist panel print inside the account content (the saved-items empty
+		// link, Select options, an order's Pay or Cancel, Browse products) are not form buttons, so the theme paints
+		// them in its own button colour; with the all-forms scope they take the same preset, at their natural width.
+		$extra = array();
+		if ( 'all-forms' === ( $attributes['loginButtonScope'] ?? '' ) ) {
+			$content = $root_sel . ' .woocommerce-MyAccount-content';
+			$extra   = array(
+				$root_sel . ' .sgs-wishlist-panel__empty-cta',
+				$root_sel . ' .sgs-wishlist-panel__choose-options',
+				$content . ' a.button:not(.view)',
+				$content . ' a.woocommerce-button:not(.view)',
+				$content . ' button.button:not([type="submit"])',
+				$content . ' button.woocommerce-button:not([type="submit"])',
+			);
+			$buttons = array_merge( $buttons, $extra );
 		}
 		$preset   = (string) ( $attributes['loginButtonPreset'] ?? '' );
 		$reg_pre  = (string) ( $attributes['registerButtonPreset'] ?? '' );
@@ -387,7 +403,7 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 					)
 				);
 			}
-			if ( ! empty( $attributes['loginButtonFullWidth'] ) ) {
+			if ( ! empty( $attributes['loginButtonFullWidth'] ) && ! in_array( $btn, $extra, true ) ) {
 				$css[] = $btn . '{width:100%;}';
 			}
 		}

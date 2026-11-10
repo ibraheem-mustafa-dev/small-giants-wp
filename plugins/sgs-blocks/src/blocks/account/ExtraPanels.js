@@ -219,7 +219,15 @@ export function AccountDetailsPanel( { attributes, setAttributes } ) {
 				help={ __( 'Saved to the customer’s billing phone.', 'sgs-blocks' ) }
 			/>
 			{ attributes.accountShowMobile && (
-				<TextField { ...p } name="accountMobileLabel" label={ __( 'Mobile field label', 'sgs-blocks' ) } />
+				<>
+					<TextField { ...p } name="accountMobileLabel" label={ __( 'Mobile field label', 'sgs-blocks' ) } />
+					<TextField
+						{ ...p }
+						name="accountMobileHint"
+						label={ __( 'Line under the Mobile field', 'sgs-blocks' ) }
+						help={ __( 'Empty = no line. It takes the password helper’s type and colour.', 'sgs-blocks' ) }
+					/>
+				</>
 			) }
 			<TextField { ...p } name="accountPasswordHelper" label={ __( 'Text under the password heading', 'sgs-blocks' ) } />
 			<Toggle { ...p } name="accountSaveFullWidth" label={ __( 'Save button full width', 'sgs-blocks' ) } />
