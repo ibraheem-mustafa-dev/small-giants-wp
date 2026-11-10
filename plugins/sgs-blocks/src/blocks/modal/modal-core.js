@@ -10,6 +10,60 @@
 import { announceModalOpen } from './modal-motion-state';
 
 /**
+ * The page's real scroll position. While another surface (the nav drawer) holds a fixed-position body scroll lock,
+ * `window.scrollY` is 0 and the position lives in the body's negative `top`.
+ *
+ * @return {number} Pixels scrolled.
+ */
+function pageScrollY() {
+	const { style } = document.body;
+	const top = Number.parseFloat( style.top );
+	if ( 'fixed' === style.position && Number.isFinite( top ) && top < 0 ) {
+		return Math.round( -top );
+	}
+	return window.scrollY;
+}
+
+/**
+ * Whether an element can take focus now: attached, laid out, and not inside a closed dialog.
+ *
+ * @param {Element|null} el Candidate.
+ * @return {boolean} True when it is shown.
+ */
+function isShown( el ) {
+	if ( ! el || ! el.isConnected || 'function' !== typeof el.getClientRects || 0 === el.getClientRects().length ) {
+		return false;
+	}
+	const host = el.closest( 'dialog' );
+	return ! host || host.open;
+}
+
+/**
+ * Put focus back after a modal closes. The browser returns it to the element focused at open, which is gone when that
+ * was a link inside a nav drawer that has since closed (focus then falls to the body). The opener is used when still
+ * shown; otherwise the control that opened its drawer (`aria-controls`).
+ *
+ * @param {HTMLDialogElement} dialog The dialog that just closed.
+ */
+export function restoreModalFocus( dialog ) {
+	const target = dialog.__sgsReturnFocus || null;
+	dialog.__sgsReturnFocus = null;
+	const active = document.activeElement;
+	if ( active && active !== document.body && active !== document.documentElement ) {
+		return;
+	}
+	if ( isShown( target ) ) {
+		target.focus( { preventScroll: true } );
+		return;
+	}
+	const drawer = target ? target.closest( '[data-sgs-nav-drawer]' ) : null;
+	const burger = drawer && drawer.id ? document.querySelector( `[aria-controls="${ drawer.id }"]` ) : null;
+	if ( isShown( burger ) ) {
+		burger.focus( { preventScroll: true } );
+	}
+}
+
+/**
  * Open a modal using native dialog.showModal().
  *
  * Native dialog provides a built-in focus trap — Tab and Shift+Tab cycle
@@ -40,6 +94,11 @@ import { announceModalOpen } from './modal-motion-state';
  * @param {HTMLElement|null}  opener      The element that triggered the open.
  */
 export function openModal( dialog, closeButton, opener ) {
+	// Where focus goes back to on close: the opener, else whatever held focus.
+	const active = document.activeElement;
+	dialog.__sgsReturnFocus = opener || ( active && active !== document.body ? active : null );
+	// Read before showModal: a nav drawer's scroll lock may still be on, which reports window.scrollY as 0.
+	const scrollY = pageScrollY();
 	dialog.showModal();
 	announceModalOpen( dialog );
 
@@ -48,7 +107,6 @@ export function openModal( dialog, closeButton, opener ) {
 	// on the `.sgs-modal-scroll-locked` class (no-inline styling contract,
 	// Spec 32); only the scroll-position VALUE is written here, as a CSS
 	// custom-property value (allowed).
-	const scrollY = window.scrollY;
 	document.body.classList.add( 'sgs-modal-scroll-locked' );
 	document.body.style.setProperty( '--sgs-modal-scroll-y', `-${ scrollY }px` );
 	dialog.dataset.scrollY = scrollY;

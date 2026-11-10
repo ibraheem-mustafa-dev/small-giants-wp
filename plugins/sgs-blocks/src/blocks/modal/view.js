@@ -15,7 +15,7 @@
  * @package SGS\Blocks
  */
 
-import { openModal, closeModal } from './modal-core';
+import { openModal, closeModal, restoreModalFocus } from './modal-core';
 import { initGenericOpeners, initHashOnLoad } from './open-anywhere';
 import initModalMotionState from './modal-motion-state';
 
@@ -83,6 +83,7 @@ function initDialog( dialog ) {
 			dialog.__sgsOpener.setAttribute( 'aria-expanded', 'false' );
 		}
 		dialog.__sgsOpener = null;
+		restoreModalFocus( dialog );
 	} );
 }
 

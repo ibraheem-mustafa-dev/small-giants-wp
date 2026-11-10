@@ -1,0 +1,70 @@
+/**
+ * A modal opened from a nav-drawer link while the drawer's scroll lock is still on (body position:fixed, top:-900px,
+ * window.scrollY reads 0) must save the page's real position (900), not the locked 0, so closing it returns the page to
+ * 900. Focus then returns to the opener, or when that sat in the now-closed drawer, to the burger that opened the drawer.
+ */
+
+const mount = () => {
+	document.body.innerHTML = `
+		<button class="sgs-nav-bar-menu__burger" id="burger" aria-controls="drawer">Menu</button>
+		<dialog id="drawer" data-sgs-nav-drawer=""><a id="link" href="#size-guide">Size guide</a></dialog>
+		<dialog id="m" class="sgs-modal__dialog"><button class="sgs-modal__close">x</button></dialog>`;
+	const dialog = document.getElementById( 'm' );
+	dialog.showModal = () => dialog.setAttribute( 'open', '' );
+	dialog.close = () => dialog.removeAttribute( 'open' );
+	return dialog;
+};
+
+const visible = ( el ) => {
+	el.getClientRects = () => [ { width: 1, height: 1 } ];
+};
+
+beforeEach( () => {
+	document.body.removeAttribute( 'style' );
+	document.body.className = '';
+	jest.resetModules();
+	Object.defineProperty( window, 'scrollY', { configurable: true, value: 0 } );
+} );
+
+test( 'opened under a drawer scroll lock, the modal saves the locked page position, not 0', () => {
+	const dialog = mount();
+	document.body.style.position = 'fixed';
+	document.body.style.top = '-900px';
+	const { openModal } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, null );
+	expect( dialog.dataset.scrollY ).toBe( '900' );
+	expect( document.body.style.getPropertyValue( '--sgs-modal-scroll-y' ) ).toBe( '-900px' );
+} );
+
+test( 'a plain modal still saves window.scrollY', () => {
+	const dialog = mount();
+	Object.defineProperty( window, 'scrollY', { configurable: true, value: 420 } );
+	const { openModal } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, null );
+	expect( dialog.dataset.scrollY ).toBe( '420' );
+} );
+
+test( 'focus returns to the burger when the opener sat in the drawer that has closed', () => {
+	const dialog = mount();
+	const link = document.getElementById( 'link' );
+	const burger = document.getElementById( 'burger' );
+	visible( burger );
+	link.focus();
+	const { openModal, restoreModalFocus } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, link );
+	document.activeElement.blur();
+	restoreModalFocus( dialog );
+	expect( document.activeElement ).toBe( burger );
+} );
+
+test( 'focus returns to a plain opener that is still shown', () => {
+	const dialog = mount();
+	const burger = document.getElementById( 'burger' );
+	visible( burger );
+	burger.focus();
+	const { openModal, restoreModalFocus } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, burger );
+	document.activeElement.blur();
+	restoreModalFocus( dialog );
+	expect( document.activeElement ).toBe( burger );
+} );
