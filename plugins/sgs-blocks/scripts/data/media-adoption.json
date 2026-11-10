@@ -514,5 +514,23 @@
 				}
 			}
 		}
+	],
+	"excluded": [
+		{
+			"block": "sgs/cart",
+			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"
+		},
+		{
+			"block": "sgs/mega-panel",
+			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"
+		},
+		{
+			"block": "sgs/google-reviews",
+			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"
+		},
+		{
+			"block": "sgs/product-search",
+			"reason": "small fixed thumbnail: keeps its own attributes and is not a slot (Appendix A)"
+		}
 	]
 }
