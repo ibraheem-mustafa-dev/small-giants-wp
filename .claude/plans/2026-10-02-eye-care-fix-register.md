@@ -714,6 +714,25 @@ The comparison tool missed several things you found. Each gap becomes a check, w
 - **Also built 2026-10-05:** pages are read once their animations finish (no row read mid-entrance), the draft's declared widths are read (Contact's 168px address), transition and animation timings are compared, and a list's spacing between its lines (Contact's hours).
 - **Shopping flows as scripted end-to-end tests**, not comparisons: two products in the bag, a second pair, choosing then clearing a filter (N11, N25).
 
+## Round 14 (Bean's sign-off pass of 2026-11-10; live 2026-11-10)
+
+Bean's eleven points (bag goes to the cart page, toast motion and hover, checkout fonts and radios, focus rings on choices, payment borders, coupon and summary, Edit link, Collect keeps the address, account inaccuracies, emails) were treated as a cross-check, not the scope: each surface was walked from a checklist written from the draft's code, structure first (`E:/sgs-tmp/ec-check/r14/`, one folder per job, with `CHECKLIST-*.md`, the fixers' reports and the independent `V*/VERIFY.md` walks). Posts backed up first under `sites/eye-care-ward-end/build/backups/2026-11-10-r14/` (local only). Shipped with the new `plugins/sgs-blocks/scripts/ship.py`.
+
+| Surface | What changed | Kind |
+|---|---|---|
+| Bag and toast | View bag opens the drawer (the cart page only when a page has no drawer, or for a modified click, or from inside a pop-up); the toast rises, holds, drifts right and fades (a 3.2s keyframe life); an error toast fades in and stays; the drawer scrim follows the slide (`scrimFadeDuration` fine control, 300ms); close glyph, free-delivery bar and row text positions | framework + settings |
+| Checkout | Inset taupe focus line on checkboxes, radios and delivery cards (the focus system's seventh arm); coupon Apply takes the button preset; the summary heading and Edit link sit in the card at every width; Email / Town or city labels (a gettext filter scoped to the Checkout block); "Signed in as" line; "Loading payment options…" instead of WooCommerce's premature no-payment notice (WooCommerce #64796); the Klarna pay-later line (Stripe's messaging element, `sgs/pay-later-message`, under the payment options); WooCommerce's block Local pickup (one location, 644 Washwood Heath Rd) restyled as the draft's two cards with "Post it to me", "Delivery" and "Collection" wording; payment option group outline and gap, coupon panel and Stripe card-field appearance settings | framework + settings |
+| Account | SGS's own templates: Addresses (inline editor, Flat / building on the account only, saving through WooCommerce's own handler), Orders list rows, order detail parts, reset-password form with inline errors; account entrances; wishlist cards layout and count; menu and form spacing | framework + settings |
+| Notices | WooCommerce notices take the `sgs/notice-banner` look per variant; the action link is a black underlined text link on its own line under 768px; Eye Care's `info` colours are the brand taupe and cream | framework + snapshot |
+
+**Decided this round:** checkboxes, radios and selectable cards take the inset focus line; Stripe's save-payment checkbox stays; the toast keeps the draft's life (a 3.2s keyframe life, about 3.3s with the end fade); Local pickup asks for a billing address on Collect (card payment needs it); the Klarna line's font and colour are Stripe's own.
+
+**Test order:** #1744 (Stripe test mode, the test customer): processing, thank-you owner note and View my orders, "Processing order" and "New order" emails sent.
+
+**Open (streams plan "Eye Care", steps 1 to 4):** the final walks' rows (`E:/sgs-tmp/ec-check/r14/V5/VERIFY.md` checkout, `V6/VERIFY.md` account), then the Custom CSS on posts 1609 and 9 into settings, then Bean's sign-off.
+
+**Process lessons recorded in auto memory:** a surface is matched from a checklist written from the draft's code, never from a findings list; a one-off look never covers everyday properties; after each deploy every "visible after deploy" line is re-read live; a mirror is checked for which site it copies before an agent writes to it.
+
 ## Round 13 (Bean's list of 2026-11-09; live 2026-11-10)
 
 Causes proven before each fix (evidence under `E:/sgs-tmp/ec-check/`), built test-first in ten jobs, integrated once, reseeded once and deployed to eye-care-test, then checked live in real Chrome beside the draft at 375, 768 and 1440 in five passes. Posts were backed up first to `sites/eye-care-ward-end/build/backups/2026-11-09-r13/` (local only). Framework commits `92866dfb7`, `e816a9dfe`, `6c7c64f95`, `64272973b`, `b71e20add`, `e74a4aef8`, `77c8ce234`, `a5192d52b`, `c5c346dda`, `e783fee50` and the fixes after them, up to main `f9b2e70fa` (the fold rule's last fixes `bfc0b5851` and `f9b2e70fa`, the checkout line-item fix `5ddbaf93e` and the modal-from-drawer focus fix `fad5a5097` included); the generated-file chores are the "chore(db)" commits.

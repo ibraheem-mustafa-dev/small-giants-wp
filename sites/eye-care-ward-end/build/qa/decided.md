@@ -178,6 +178,11 @@ Decided in round 13 (Bean, 2026-11-09 and 2026-11-10). Do not report:
 - The "Confirm your email" notice is kept.
 - The Express Checkout heading is hidden; the wallet buttons and their divider stay.
 - Stripe's "Save payment information to my account" checkbox stays at checkout, though the draft has none (Bean, 2026-11-10).
+- The "Added to bag" toast follows the draft's life: about 3.3s, paused while hovered or focused (Bean, round 14).
+- Collect in Birmingham is WooCommerce's block Local pickup with one location: it asks for a billing address (card payment needs one) and shows "Collect from 644 Washwood Heath Rd…" under the delivery cards (Bean, round 14).
+- The express wallet row (Apple Pay, Google Pay and the like) is Stripe's own: which buttons show, their count, size and layout depend on the visitor's browser and device and are not compared with the draft (Bean, round 14).
+- The Klarna pay-later line under the payment options is Stripe's own messaging: its font, size and colour are Stripe's, not the draft's 12.5px grey (round 14).
+- Form and WooCommerce buttons keep the site button preset's 3px lift on hover and keyboard focus, though the draft's account buttons do not lift (round 13 ruling, restated round 14).
 - The thank-you note ("View my orders") shows only to the signed-in owner of the order.
 - Prices hide ".00" everywhere except at checkout, where pennies show.
 - "Already have an account? Sign in" sits beside the Contact heading on one line, not below the fields.
