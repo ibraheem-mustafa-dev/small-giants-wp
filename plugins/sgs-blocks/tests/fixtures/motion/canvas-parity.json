@@ -225,7 +225,7 @@
 	},
 	{
 		"name": "entrance under the LCP rule",
-		"css": ".sgs-m-0123456789{--sgs-me-from-op:1;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0.01;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}@media(max-width:767px){.sgs-m-0123456789{--sgs-me-from-op:0.2;}}",
 		"plans": [
 			{
 				"target": "root",
@@ -242,7 +242,7 @@
 	},
 	{
 		"name": "scroll entrance under the LCP rule",
-		"css": ".sgs-m-0123456789{--sgs-me-from-op:1;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0.01;--sgs-me-from-ty:24px;--sgs-me-dur:600ms;}",
 		"plans": [
 			{
 				"target": "root",
@@ -250,6 +250,75 @@
 				"root": true,
 				"attrs": {
 					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "above the fold: a clip reveal and a scale from zero start at the floor",
+		"css": ".sgs-m-0123456789{--sgs-me-from-clip:99%;--sgs-me-from-s:0.01;--sgs-me-from-op:0.01;--sgs-me-dur:600ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load scale opacity clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "above the fold: allowLcpFade keeps the stored start values",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0;--sgs-me-from-clip:100%;--sgs-me-dur:600ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load opacity clip-path"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "above the fold: the lowest-offset keyframe takes the floor",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0.01;--sgs-me-from-ty:40px;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-op\":\"0.01\",\"--sgs-me-ty\":\"40px\"},{\"offset\":1,\"--sgs-me-op\":\"1\",\"--sgs-me-ty\":\"0px\"}]",
+					"data-sgs-me": "scroll translate opacity"
+				},
+				"entrance": true
+			}
+		],
+		"rootAttrs": {},
+		"losers": {}
+	},
+	{
+		"name": "above the fold: other start values pass through",
+		"css": ".sgs-m-0123456789{--sgs-me-from-op:0.4;--sgs-me-from-s:0.9;--sgs-me-from-clip:40%;--sgs-me-dur:600ms;}",
+		"plans": [
+			{
+				"target": "root",
+				"selector": ".sgs-m-0123456789",
+				"root": true,
+				"attrs": {
+					"data-sgs-me": "load scale opacity clip-path"
 				},
 				"entrance": true
 			}
@@ -296,14 +365,14 @@
 	},
 	{
 		"name": "keyframes with angles and LCP",
-		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-me-from-rx:0deg;--sgs-me-from-op:1;}",
+		"css": ".sgs-m-0123456789{--sgs-persp-self:800px;--sgs-me-from-rx:0deg;--sgs-me-from-op:0.01;}",
 		"plans": [
 			{
 				"target": "root",
 				"selector": ".sgs-m-0123456789",
 				"root": true,
 				"attrs": {
-					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"1\"},{\"offset\":0.5,\"--sgs-me-rx\":\"20deg\",\"--sgs-me-ry\":\"-10deg\",\"--sgs-me-op\":\"1\"},{\"offset\":1,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"1\"}]",
+					"data-sgs-me-keyframes": "[{\"offset\":0,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"0.01\"},{\"offset\":0.5,\"--sgs-me-rx\":\"20deg\",\"--sgs-me-ry\":\"-10deg\",\"--sgs-me-op\":\"1\"},{\"offset\":1,\"--sgs-me-rx\":\"0deg\",\"--sgs-me-op\":\"1\"}]",
 					"data-sgs-me": "load transform opacity"
 				},
 				"entrance": true

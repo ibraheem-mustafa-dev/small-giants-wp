@@ -354,11 +354,10 @@ function sortedFrames( list ) {
  *
  * @param {unknown}                list    Stored keyframe list.
  * @param {Object<string,boolean>} used    Owner properties touched (mutated).
- * @param {boolean}                keepOp  Whether the LCP rule holds opacity at 1.
  * @param {Object<string,string>}  desktop Desktop declarations (mutated).
  * @return {string|null} JSON, or null.
  */
-export function keyframesJson( list, used, keepOp, desktop ) {
+export function keyframesJson( list, used, desktop ) {
 	if (
 		! list ||
 		typeof list !== 'object' ||
@@ -382,7 +381,7 @@ export function keyframesJson( list, used, keepOp, desktop ) {
 			const prop = frameFields[ key ]?.css ?? null;
 			const css = valueCss( 'EntranceKeyframe', key, value );
 			if ( prop !== null && css !== null ) {
-				row[ prop ] = keepOp && ME_PREFIX + 'op' === prop ? '1' : css;
+				row[ prop ] = css;
 				used[ prop ] = true;
 				const from = ME_PREFIX + 'from-' + prop.slice( ME_PREFIX.length );
 				if (

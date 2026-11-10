@@ -20,6 +20,7 @@ import {
 import { keyframesJson } from './emit-rotation';
 import { filterTrigger } from './trigger-rules';
 import { applyClipEdge } from './emit-clip-edge';
+import { clampHiddenStarts } from './emit-start-floor';
 
 const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
 
@@ -29,7 +30,7 @@ const has = ( obj, key ) => Object.prototype.hasOwnProperty.call( obj, key );
  * @param {Object} base    Entrance base layer.
  * @param {Object} decls   Per-tier declarations (mutated).
  * @param {Object} attrs   Data attributes (mutated).
- * @param {Object} context `lcp` (boolean), `states` (the block's declared states).
+ * @param {Object} context `lcp` (boolean: the block is above the fold), `states` (the block's declared states).
  * @return {boolean} Whether an entrance was emitted.
  */
 export function emitEntrance( base, decls, attrs, context ) {
@@ -37,8 +38,10 @@ export function emitEntrance( base, decls, attrs, context ) {
 	if ( trigger === '' ) {
 		return false;
 	}
-	const tiers = tierValues( base );
-	const keepOp = ( trigger === 'load' || trigger === 'scroll' ) && Boolean( context.lcp ) && tiers.desktop.allowLcpFade !== true;
+	let tiers = tierValues( base );
+	if ( ( trigger === 'load' || trigger === 'scroll' ) && Boolean( context.lcp ) && tiers.desktop.allowLcpFade !== true ) {
+		tiers = clampHiddenStarts( tiers );
+	}
 	const map = propertyChannels();
 	const used = {};
 	const timing = { duration: 'dur', delay: 'delay', easing: 'ease', start: 'start' };
@@ -75,15 +78,7 @@ export function emitEntrance( base, decls, attrs, context ) {
 		}
 	} );
 	applyClipEdge( tiers, decls, context.report );
-	const keyframes = keyframesJson( tiers.desktop.keyframes ?? null, used, keepOp, decls.desktop );
-	if ( keepOp ) {
-		const opFrom = ME_PREFIX + 'from-op';
-		delete decls.tablet[ opFrom ];
-		delete decls.mobile[ opFrom ];
-		if ( used[ ME_PREFIX + 'op' ] ) {
-			decls.desktop[ opFrom ] = '1';
-		}
-	}
+	const keyframes = keyframesJson( tiers.desktop.keyframes ?? null, used, decls.desktop );
 	if ( keyframes !== null ) {
 		attrs[ 'data-sgs-me-keyframes' ] = keyframes;
 	}

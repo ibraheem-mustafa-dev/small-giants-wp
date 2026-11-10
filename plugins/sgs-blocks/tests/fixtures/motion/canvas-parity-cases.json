@@ -375,6 +375,124 @@
 			"root": ".sgs-m-0123456789"
 		},
 		{
+			"name": "above the fold: a clip reveal and a scale from zero start at the floor",
+			"block": "sgs/hero",
+			"context": {
+				"lcp": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"clip": 100,
+										"scale": 0,
+										"opacity": 0
+									},
+									"duration": 600
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "above the fold: allowLcpFade keeps the stored start values",
+			"block": "sgs/hero",
+			"context": {
+				"lcp": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0,
+										"clip": 100
+									},
+									"duration": 600,
+									"allowLcpFade": true
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "above the fold: the lowest-offset keyframe takes the floor",
+			"block": "sgs/hero",
+			"context": {
+				"lcp": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "scroll",
+								"values": {
+									"keyframes": [
+										{
+											"offset": 100,
+											"opacity": 1,
+											"translateY": 0
+										},
+										{
+											"offset": 0,
+											"opacity": 0,
+											"translateY": 40
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
+			"name": "above the fold: other start values pass through",
+			"block": "sgs/hero",
+			"context": {
+				"lcp": true
+			},
+			"motion": {
+				"v": 1,
+				"elements": {
+					"root": {
+						"entrance": {
+							"base": {
+								"trigger": "load",
+								"values": {
+									"from": {
+										"opacity": 0.4,
+										"scale": 0.9,
+										"clip": 40
+									},
+									"duration": 600
+								}
+							}
+						}
+					}
+				}
+			},
+			"root": ".sgs-m-0123456789"
+		},
+		{
 			"name": "entrance suppressed by a scroll owner",
 			"block": "sgs/hero",
 			"context": {
