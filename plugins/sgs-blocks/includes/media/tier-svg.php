@@ -10,6 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once dirname( __DIR__ ) . '/helpers-svg-document.php';
+require_once dirname( __DIR__ ) . '/helpers-svg-instance-scope.php';
+
 if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
 	/**
 	 * One tier's inline SVG, sanitised and wrapped in a decorative span.
@@ -27,109 +30,59 @@ if ( ! function_exists( 'sgs_tier_media_svg_html' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_media_svg_prefix_reference' ) ) {
-	/**
-	 * One attribute value with every reference to a listed id re-pointed at its prefixed id.
-	 *
-	 * @param string   $value  Attribute value ( text, not markup ).
-	 * @param string[] $ids    Ids defined in the SVG.
-	 * @param string   $prefix Prefix.
-	 * @return string
-	 */
-	function sgs_media_svg_prefix_reference( string $value, array $ids, string $prefix ): string {
-		return (string) preg_replace_callback(
-			'/url\(\s*(["\x27]?)#([^"\x27)\s]+)\1\s*\)/',
-			static function ( array $m ) use ( $ids, $prefix ): string {
-				return in_array( $m[2], $ids, true ) ? 'url(' . $m[1] . '#' . $prefix . $m[2] . $m[1] . ')' : $m[0];
-			},
-			$value
-		);
-	}
-}
-
 if ( ! function_exists( 'sgs_media_svg_element' ) ) {
 	/**
-	 * An inline SVG slot sibling: ids prefixed, root given its classes and accessible name, then sanitised.
+	 * An inline SVG slot sibling: made safe by the sanitiser every SVG upload goes through, scoped to its own instance
+	 * (ids, `<style>` rules and keyframes), then given its classes and accessible name.
 	 *
-	 * Every edit is made with `WP_HTML_Tag_Processor`, which escapes each value it sets, and `wp_kses` with the SVG
-	 * allow-list runs last on the final markup, so nothing edited here can reach the page unsanitised.
+	 * `sgs_svg_sanitise_document()` parses the markup as XML and rebuilds it from the SVG allowlist, which keeps a
+	 * `<style>` element (class colours) and screens `url()`, `href` and `<image>` references to anything but a
+	 * `#fragment` or a raster `data:image`. `sgs_svg_scope_instance()` prefixes every id with the instance scope and
+	 * limits the file's CSS to this one SVG. The remaining edits are made with `WP_HTML_Tag_Processor`, which escapes
+	 * each value it sets.
 	 *
 	 * @param string $markup     Raw SVG markup.
 	 * @param string $classes    Classes for the root element.
-	 * @param string $id_prefix  Prefix for element ids.
+	 * @param string $id_prefix  Instance scope with a trailing dash, e.g. `u1-s1-`; ids become `u1-s1-<id>`. '' keeps ids.
 	 * @param string $label      Accessible name; ignored when `$decorative`.
 	 * @param bool   $decorative True to hide the SVG from assistive technology.
 	 * @param string $fit        `cover`, `contain` or '' for the viewBox default.
-	 * @return string The `<svg>` markup, or '' when nothing survives sanitising.
+	 * @return string The `<svg>` markup, or '' when the sanitiser refuses it.
 	 */
 	function sgs_media_svg_element( string $markup, string $classes, string $id_prefix, string $label, bool $decorative, string $fit ): string {
 		$markup = trim( $markup );
 		if ( '' === $markup || ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 			return '';
 		}
-		$ids  = array();
-		$scan = new WP_HTML_Tag_Processor( $markup );
-		while ( $scan->next_tag() ) {
-			$id = $scan->get_attribute( 'id' );
-			if ( is_string( $id ) && '' !== $id ) {
-				$ids[] = $id;
+		$markup = sgs_svg_sanitise_document( $markup )['svg'];
+		if ( '' !== $markup && '' !== $id_prefix ) {
+			$markup = sgs_svg_scope_instance( $markup, rtrim( $id_prefix, '-' ) );
+		}
+		if ( 1 !== preg_match( '/^<svg[\s>\/]/i', $markup ) ) {
+			return '';
+		}
+		$tags = new WP_HTML_Tag_Processor( $markup );
+		if ( ! $tags->next_tag() || 'SVG' !== $tags->get_tag() ) {
+			return '';
+		}
+		foreach ( array( 'role', 'aria-label', 'aria-hidden' ) as $name ) {
+			$tags->remove_attribute( $name );
+		}
+		foreach ( preg_split( '/\s+/', trim( $classes ) ) as $class ) {
+			if ( '' !== $class ) {
+				$tags->add_class( $class );
 			}
 		}
-		$refs  = array( 'fill', 'stroke', 'clip-path', 'mask', 'filter', 'style', 'marker-start', 'marker-mid', 'marker-end' );
-		$tags  = new WP_HTML_Tag_Processor( $markup );
-		$first = true;
-		while ( $tags->next_tag() ) {
-			if ( '' !== $id_prefix && $ids ) {
-				$id = $tags->get_attribute( 'id' );
-				if ( is_string( $id ) && in_array( $id, $ids, true ) ) {
-					$tags->set_attribute( 'id', $id_prefix . $id );
-				}
-				foreach ( array( 'href', 'xlink:href' ) as $name ) {
-					$href = $tags->get_attribute( $name );
-					if ( is_string( $href ) && 0 === strpos( $href, '#' ) && in_array( substr( $href, 1 ), $ids, true ) ) {
-						$tags->set_attribute( $name, '#' . $id_prefix . substr( $href, 1 ) );
-					}
-				}
-				$labelled = $tags->get_attribute( 'aria-labelledby' );
-				if ( is_string( $labelled ) && '' !== $labelled ) {
-					$parts = array_map(
-						static fn( string $p ): string => in_array( $p, $ids, true ) ? $id_prefix . $p : $p,
-						preg_split( '/\s+/', trim( $labelled ) )
-					);
-					$tags->set_attribute( 'aria-labelledby', implode( ' ', $parts ) );
-				}
-				foreach ( $refs as $name ) {
-					$value = $tags->get_attribute( $name );
-					if ( is_string( $value ) && false !== strpos( $value, 'url(' ) ) {
-						$tags->set_attribute( $name, sgs_media_svg_prefix_reference( $value, $ids, $id_prefix ) );
-					}
-				}
-			}
-			if ( $first ) {
-				$first = false;
-				if ( 'SVG' !== $tags->get_tag() ) {
-					return '';
-				}
-				foreach ( array( 'role', 'aria-label', 'aria-hidden' ) as $name ) {
-					$tags->remove_attribute( $name );
-				}
-				foreach ( preg_split( '/\s+/', trim( $classes ) ) as $class ) {
-					if ( '' !== $class ) {
-						$tags->add_class( $class );
-					}
-				}
-				if ( 'cover' === $fit || 'contain' === $fit ) {
-					$tags->set_attribute( 'preserveAspectRatio', 'cover' === $fit ? 'xMidYMid slice' : 'xMidYMid meet' );
-				}
-				if ( $decorative || '' === $label ) {
-					$tags->set_attribute( 'aria-hidden', 'true' );
-				} else {
-					$tags->set_attribute( 'role', 'img' );
-					$tags->set_attribute( 'aria-label', $label );
-				}
-			}
+		if ( 'cover' === $fit || 'contain' === $fit ) {
+			$tags->set_attribute( 'preserveAspectRatio', 'cover' === $fit ? 'xMidYMid slice' : 'xMidYMid meet' );
 		}
-		$svg = trim( wp_kses( $tags->get_updated_html(), sgs_svg_kses_allowed_tags() ) );
+		if ( $decorative || '' === $label ) {
+			$tags->set_attribute( 'aria-hidden', 'true' );
+		} else {
+			$tags->set_attribute( 'role', 'img' );
+			$tags->set_attribute( 'aria-label', $label );
+		}
+		$svg = trim( $tags->get_updated_html() );
 		return 1 === preg_match( '/^<svg[\s>\/]/i', $svg ) ? $svg : '';
 	}
 }

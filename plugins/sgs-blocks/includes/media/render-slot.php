@@ -14,6 +14,7 @@ require_once __DIR__ . '/render-picture.php';
 require_once __DIR__ . '/render-chrome.php';
 require_once __DIR__ . '/tier-svg.php';
 require_once __DIR__ . '/tier-embed.php';
+require_once dirname( __DIR__ ) . '/helpers-link-source.php';
 
 /**
  * Every defined C3 emitter id (`sgs_media_atom_<id>_emit`), sorted.
@@ -32,6 +33,16 @@ function sgs_media_atom_emitter_ids(): array {
 }
 
 /**
+ * The atoms whose settings differ per item of an item set (§8.3): `source`, `alt`, `decorative`, `fit`, `focal`.
+ * Their rules print under each item's own scope class; every other atom's rules print once under the block's.
+ *
+ * @return string[]
+ */
+function sgs_media_item_atom_ids(): array {
+	return array( 'focal_point', 'meaning', 'object_fit', 'source' );
+}
+
+/**
  * Render one media slot (Spec 49 C2): markup, per-instance CSS, whether the helper printed and whether the
  * slot is the page's lead image candidate.
  *
@@ -39,9 +50,14 @@ function sgs_media_atom_emitter_ids(): array {
  * from each atom's `sgs_media_atom_<id>_emit()` when it exists, plus the sibling and caption rules. An empty
  * or deleted source returns empty `html`.
  *
+ * An item of an item set passes `item_set.index`: the item prints in a group carrying `{uid}-i{index}` and the block's
+ * `{uid}`, its per-item rules (sibling, caption, fit, focal) use `{uid}-i{index}`, and the block-level rules print under
+ * `{uid}` once, with the item whose `item_set.block_rules` is true (item 0 when the key is absent). `item_set.columns`
+ * is one count or a count per device.
+ *
  * @param array $slot    `{prefix, kinds, context}`.
  * @param array $attrs   Block attributes.
- * @param array $context `{uid, block, area, section_index, item_set:{index,columns}, in_editor, extra_class, anchor}`
+ * @param array $context `{uid, block, area, section_index, item_set:{index,columns,block_rules}, in_editor, extra_class, anchor}`
  *                       plus `effects`, `entrance` and `hover` for §7.3.
  * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
  */
@@ -57,10 +73,15 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	if ( ! array_filter( $sources ) ) {
 		return $result;
 	}
-	$uid = sanitize_html_class( (string) ( $context['uid'] ?? '' ) );
-	if ( '' === $uid ) {
-		$uid = 'sgs-media-' . substr( md5( (string) wp_json_encode( array( $slot, $attrs ) ) ), 0, 8 );
+	$block_uid = sanitize_html_class( (string) ( $context['uid'] ?? '' ) );
+	if ( '' === $block_uid ) {
+		$block_uid = 'sgs-media-' . substr( md5( (string) wp_json_encode( array( $slot, $attrs ) ) ), 0, 8 );
 	}
+	// An item of an item set (§8.3): per-item rules use `{uid}-i{index}`; block-level rules print once, with item 0.
+	$item_set   = is_array( $context['item_set'] ?? null ) ? $context['item_set'] : array();
+	$item_index = isset( $item_set['index'] ) && is_numeric( $item_set['index'] ) ? max( 0, (int) $item_set['index'] ) : null;
+	$uid        = null === $item_index ? $block_uid : $block_uid . '-i' . $item_index;
+	$block_rules = null === $item_index || ! empty( $item_set['block_rules'] ) || ( ! array_key_exists( 'block_rules', $item_set ) && 0 === $item_index );
 	$attr       = static function ( string $base ) use ( $attrs, $prefix ) {
 		return $attrs[ sgs_media_element_attr( $prefix, $base ) ] ?? null;
 	};
@@ -90,6 +111,8 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		} elseif ( 'embed' === $source['kind'] ) {
 			$key                         = sgs_media_normalise_embed_url( $source['url'], $playback );
 			$embeds[ $key ]['source']    = $source;
+			// An autoplaying embed prints without autoplay; the view module turns it on unless motion is reduced.
+			$embeds[ $key ]['still']     = $playback['autoplay'] ? sgs_media_normalise_embed_url( $source['url'], array_merge( $playback, array( 'autoplay' => false ) ) ) : '';
 			$embeds[ $key ]['devices'][] = $device;
 		} else {
 			$key                       = md5( $source['markup'] );
@@ -107,14 +130,23 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	$bare        = 1 === $total && ( $one_file || ( $only_embed && count( $only_embed['devices'] ) === $all ) || ( $only_svg && count( $only_svg['devices'] ) === $all ) );
 
 	// What surrounds the media.
-	$caption     = trim( (string) ( $attrs['caption'] ?? '' ) );
-	$link_url    = $decorative ? '' : trim( (string) ( $attrs['linkUrl'] ?? '' ) );
+	$caption     = trim( (string) $attr( 'Caption' ) );
+	$caption_tag = in_array( $attr( 'CaptionTag' ), array( 'figcaption', 'div' ), true ) ? (string) $attr( 'CaptionTag' ) : 'figcaption';
+	$link_url    = '';
+	$link_source = '';
+	if ( ! $decorative ) {
+		$link_source = is_string( $attr( 'LinkUrlSource' ) ) ? (string) $attr( 'LinkUrlSource' ) : '';
+		$link_url    = trim( (string) sgs_link_source_href( $link_source, trim( (string) $attr( 'LinkUrl' ) ) ) );
+	}
 	$helper      = sgs_media_needs_helper( $prefix, $attrs, $context );
 	$fill        = $helper && sgs_media_any_value( $attr( 'Height' ), static fn( $v ): bool => 'fill' === $v );
 	$has_figure  = '' !== $caption;
 	$has_link    = '' !== $link_url;
-	$plain       = $bare && ! $has_figure && ! $has_link && ! $helper;
-	$needs_group = ! $has_figure && ! $has_link && ! $helper && ! $plain;
+	// An item of an item set always sits in one group that owns the scope classes, so the block-level rules find the
+	// same nodes in every item whatever its caption, link or helper.
+	$grouped     = null !== $item_index;
+	$plain       = $bare && ! $has_figure && ! $has_link && ! $helper && ! $grouped;
+	$needs_group = ! $has_figure && ! $has_link && ! $helper && ! $plain && ! $grouped;
 
 	// Loading, resolved once for the slot.
 	$loading = 'lazy';
@@ -143,11 +175,13 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		$loading   = (string) ( $resolved['loading'] ?? 'lazy' );
 		$fetch     = (string) ( $resolved['fetchpriority'] ?? '' );
 	}
-	$columns = (int) ( $context['item_set']['columns'] ?? 0 );
-	$widths  = sgs_media_device_values( $attr( 'Width' ) );
-	$sizes   = array();
+	// `columns` is one count or a count per device (§8.3); each device's `sizes` divides by its own count.
+	$columns    = sgs_media_device_values( $item_set['columns'] ?? 0 );
+	$widths     = sgs_media_device_values( $attr( 'Width' ) );
+	$max_widths = sgs_media_device_values( $attr( 'MaxWidth' ) );
+	$sizes      = array();
 	foreach ( sgs_media_devices() as $device ) {
-		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, $columns );
+		$sizes[ $device ] = sgs_media_sizes_for_width( $widths[ $device ], 'lazy' === $loading, (int) $columns[ $device ], $max_widths[ $device ] );
 	}
 	$crop_id = $image_files ? (int) reset( $image_files )['id'] : 0;
 	if ( $crop_id > 0 && ! empty( $context['block'] ) && function_exists( 'sgs_media_cover_crop_plan' ) ) {
@@ -158,7 +192,8 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	}
 
 	// The media elements: one sibling per kind, per distinct embed and per distinct SVG.
-	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media ' . $uid : '' );
+	$scope    = $uid . ( $uid !== $block_uid ? ' ' . $block_uid : '' );
+	$direct   = 'sgs-media-el' . ( $plain ? ' sgs-media sgs-media--renderer ' . $scope : '' );
 	$siblings = array();
 	$html     = '';
 	if ( $image_files ) {
@@ -208,14 +243,17 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				'decorative' => $decorative,
 			)
 		);
-		$html .= '<span class="sgs-media-stack sgs-media-sib sgs-media-sib--video">' . $stack . '</span>';
+		$stack .= $playback['autoplay'] && $playback['pause'] ? sgs_media_pause_button() : '';
+		$html  .= '<span class="sgs-media-stack sgs-media-sib sgs-media-sib--video">' . $stack . '</span>';
 		$siblings['sgs-media-sib--video'] = array_keys( $video_files );
 	}
 	$n = 0;
 	foreach ( $embeds as $url => $entry ) {
 		++$n;
 		$class = $plain ? $direct . ' sgs-media-embed' : 'sgs-media-el sgs-media-embed sgs-media-sib sgs-media-sib--embed-' . $n;
-		$html .= sgs_media_embed_element( (string) $url, $class, $alt_of( $entry['source'] ) );
+		$html .= '' !== $entry['still']
+			? sgs_media_embed_element( $entry['still'], $class, $alt_of( $entry['source'] ), (string) $url )
+			: sgs_media_embed_element( (string) $url, $class, $alt_of( $entry['source'] ) );
 		$siblings[ 'sgs-media-sib--embed-' . $n ] = $entry['devices'];
 	}
 	$n   = 0;
@@ -232,10 +270,10 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 	}
 
 	// Nesting, innermost first. The outermost printed element carries the uid, the block classes and the anchor.
-	$outer = static function ( string $classes ) use ( $context, $uid ): string {
+	$outer = static function ( string $classes ) use ( $context, $scope ): string {
 		$extra  = trim( (string) ( $context['extra_class'] ?? '' ) );
 		$anchor = trim( (string) ( $context['anchor'] ?? '' ) );
-		return ' class="' . esc_attr( trim( $classes . ' sgs-media ' . $uid . ' ' . $extra ) ) . '"' . ( '' !== $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '' );
+		return ' class="' . esc_attr( trim( $classes . ' sgs-media sgs-media--renderer ' . $scope . ' ' . $extra ) ) . '"' . ( '' !== $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '' );
 	};
 	$out = $html;
 	if ( $needs_group ) {
@@ -245,35 +283,48 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		$box  = 'sgs-media-box' . ( $fill ? ' sgs-media-box--fill' : '' );
 		$mask = sgs_media_has_mask( $prefix, $attrs );
 		$out  = ( $mask ? '<span class="sgs-media-box__mask">' . $out . '</span>' : $out );
-		$out  = '<span' . ( $has_figure || $has_link ? ' class="' . $box . '"' : $outer( $box ) ) . '>' . $out . '</span>';
+		$out  = '<span' . ( $has_figure || $has_link || $grouped ? ' class="' . $box . '"' : $outer( $box ) ) . '>' . $out . '</span>';
 	}
 	if ( $has_link ) {
-		$new_tab = ! empty( $attrs['linkOpensNewTab'] );
-		$rel     = trim( (string) ( $attrs['linkRel'] ?? '' ) . ( $new_tab ? ' noopener noreferrer' : '' ) );
+		$new_tab = ! empty( $attr( 'LinkOpensNewTab' ) );
+		$rel     = trim( (string) $attr( 'LinkRel' ) . ( $new_tab ? ' noopener noreferrer' : '' ) );
 		$a_class = 'sgs-media-link' . ( $fill && ! $has_figure ? ' sgs-fill-wrap' : '' );
-		$out     = '<a' . ( $has_figure ? ' class="' . $a_class . '"' : $outer( $a_class ) )
-			. ' href="' . esc_url( $link_url ) . '"' . ( $new_tab ? ' target="_blank"' : '' ) . ( '' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '' )
+		$out     = '<a' . ( $has_figure || $grouped ? ' class="' . $a_class . '"' : $outer( $a_class ) )
+			. ' href="' . esc_url( $link_url ) . '"' . ( $new_tab ? ' target="_blank"' : '' ) . sgs_link_source_attrs_html( $link_source ) . ( '' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '' )
 			. '>' . $out . '</a>';
 	}
 	if ( $has_figure ) {
-		$out = '<figure' . $outer( $fill ? 'sgs-fill-wrap' : '' ) . '>' . $out
-			. '<figcaption class="sgs-media-caption">' . wp_kses_post( $caption ) . '</figcaption></figure>';
+		$out = '<figure' . ( $grouped ? ( $fill ? ' class="sgs-fill-wrap"' : '' ) : $outer( $fill ? 'sgs-fill-wrap' : '' ) ) . '>' . $out
+			. '<' . $caption_tag . ' class="sgs-media-caption">' . wp_kses_post( $caption ) . '</' . $caption_tag . '></figure>';
+	}
+
+	if ( $grouped ) {
+		$out = '<span' . $outer( 'sgs-media-group' ) . '>' . $out . '</span>';
 	}
 
 	// CSS: the sibling rules, the caption rule, then each atom's own emitter.
-	$atom_slot = array_merge( $slot, array( 'wrapper' => $has_figure || $has_link || $needs_group ) );
+	$atom_slot = array_merge( $slot, array( 'wrapper' => $has_figure || $has_link || $needs_group || $grouped ) );
 	$css       = sgs_media_sibling_css( $uid, $plain ? array() : $siblings );
 	if ( $has_figure ) {
 		$css .= sgs_media_caption_css( $uid, sgs_media_width_is_auto( $prefix, $attrs ) );
 	}
 	foreach ( sgs_media_atom_emitter_ids() as $id ) {
 		$emit = 'sgs_media_atom_' . $id . '_emit';
-		if ( function_exists( $emit ) ) {
-			$css .= (string) $emit( $atom_slot, $attrs, $uid, $helper );
+		if ( ! function_exists( $emit ) ) {
+			continue;
 		}
+		$scope_uid = $uid;
+		if ( $grouped && ! in_array( $id, sgs_media_item_atom_ids(), true ) ) {
+			// A block-level atom reads settings every item shares: its rules print once, under the block's scope class.
+			if ( ! $block_rules ) {
+				continue;
+			}
+			$scope_uid = $block_uid;
+		}
+		$css .= (string) $emit( $atom_slot, $attrs, $scope_uid, $helper );
 	}
 	if ( ! empty( $slot['kinds'] ) && empty( $context['in_editor'] ) ) {
-		sgs_media_enqueue_assets( $helper, (bool) $video_files, sgs_media_has_mask( $prefix, $attrs ) );
+		sgs_media_enqueue_assets( $helper, (bool) $video_files, sgs_media_has_mask( $prefix, $attrs ), $playback['autoplay'] && array() !== array_filter( array_column( $embeds, 'still' ) ) );
 	}
 	return array(
 		'html'           => $out,

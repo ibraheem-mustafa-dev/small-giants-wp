@@ -143,10 +143,10 @@ class MediaElementRenderTest extends TestCase {
 	private function query_matches( string $query, int $width ): bool {
 		$ok = true;
 		foreach ( explode( ' and ', $query ) as $part ) {
-			if ( preg_match( '/\(max-width:\s*(\d+)px\)/', $part, $m ) ) {
-				$ok = $ok && $width <= (int) $m[1];
-			} elseif ( preg_match( '/\(min-width:\s*(\d+)px\)/', $part, $m ) ) {
-				$ok = $ok && $width >= (int) $m[1];
+			if ( preg_match( '/\(max-width:\s*([\d.]+)px\)/', $part, $m ) ) {
+				$ok = $ok && $width <= (float) $m[1];
+			} elseif ( preg_match( '/\(min-width:\s*([\d.]+)px\)/', $part, $m ) ) {
+				$ok = $ok && $width >= (float) $m[1];
 			}
 		}
 		return $ok;
@@ -259,7 +259,7 @@ class MediaElementRenderTest extends TestCase {
 		$this->assertSame( 1, substr_count( $out['html'], '<video' ) );
 		preg_match_all( '/<source src="[^"]*" type="video[^>]*>/', $out['html'], $m );
 		$this->assertCount( 1, $m[0] );
-		$this->assertStringContainsString( 'media="(min-width:1024px) and (prefers-reduced-motion:no-preference), (min-width:768px) and (max-width:1023px) and (prefers-reduced-motion:no-preference)"', $m[0][0] );
+		$this->assertStringContainsString( 'media="(min-width:1024px) and (prefers-reduced-motion:no-preference), (min-width:768px) and (max-width:1023.98px) and (prefers-reduced-motion:no-preference)"', $m[0][0] );
 	}
 
 	public function test_a_device_showing_another_kind_gets_the_blank_gif_source(): void {
@@ -376,12 +376,12 @@ class MediaElementRenderTest extends TestCase {
 			'height'          => 'fill',
 		);
 		$out   = SGS_Media_Element::render( array( 'prefix' => '', 'kinds' => array( 'image' ) ), $attrs, array( 'uid' => 'u1' ) );
-		$this->assertMatchesRegularExpression( '#^<figure class="sgs-fill-wrap sgs-media u1"><a class="sgs-media-link"[^>]*><span class="sgs-media-box sgs-media-box--fill"><img #', $out['html'] );
+		$this->assertMatchesRegularExpression( '#^<figure class="sgs-fill-wrap sgs-media sgs-media--renderer u1"><a class="sgs-media-link"[^>]*><span class="sgs-media-box sgs-media-box--fill"><img #', $out['html'] );
 		$this->assertStringContainsString( '<figcaption class="sgs-media-caption">Cap</figcaption>', $out['html'] );
 		$attrs['caption'] = '';
 		$attrs['linkUrl'] = '';
 		$bare             = SGS_Media_Element::render( array( 'prefix' => '', 'kinds' => array( 'image' ) ), $attrs, array( 'uid' => 'u1' ) );
-		$this->assertMatchesRegularExpression( '#^<span class="sgs-media-box sgs-media-box--fill sgs-media u1">#', $bare['html'] );
+		$this->assertMatchesRegularExpression( '#^<span class="sgs-media-box sgs-media-box--fill sgs-media sgs-media--renderer u1">#', $bare['html'] );
 	}
 
 	public function test_a_plain_single_image_carries_the_uid_on_the_img_and_no_wrapper(): void {
@@ -400,7 +400,7 @@ class MediaElementRenderTest extends TestCase {
 			),
 			array( 'uid' => 'u1' )
 		);
-		$this->assertMatchesRegularExpression( '#^<img [^>]*class="sgs-media-el sgs-media u1"[^>]*width="600" height="400"#', $out['html'] );
+		$this->assertMatchesRegularExpression( '#^<img [^>]*class="sgs-media-el sgs-media sgs-media--renderer u1"[^>]*width="600" height="400"#', $out['html'] );
 		$this->assertStringContainsString( 'alt="Photo"', $out['html'] );
 		$this->assertSame( '', $out['css'] );
 	}

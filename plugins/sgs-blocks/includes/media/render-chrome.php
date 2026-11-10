@@ -27,6 +27,28 @@ if ( ! function_exists( 'sgs_media_any_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_effect_paints_layer' ) ) {
+	/**
+	 * Whether an effect paints a layer on, or moves, the media part, so the slot prints the helper (§7.3).
+	 *
+	 * The list is `includes/media/helper-effects.json`, which the editor's `mediaPreview.js::needsHelper` imports too, so
+	 * both decide alike. A registry id (`fx-surface-treatment`) and a listed alias (`surface`) name the same effect.
+	 *
+	 * @param string $effect Effect name as the motion layer reports it.
+	 * @return bool
+	 */
+	function sgs_media_effect_paints_layer( string $effect ): bool {
+		static $list = null;
+		if ( null === $list ) {
+			$json = json_decode( (string) file_get_contents( __DIR__ . '/helper-effects.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a plugin file.
+			$list = is_array( $json ) ? $json : array();
+		}
+		$effect = (string) preg_replace( '/^fx-/', '', $effect );
+		$effect = (string) ( $list['aliases'][ $effect ] ?? $effect );
+		return in_array( $effect, (array) ( $list['effects'] ?? array() ), true );
+	}
+}
+
 if ( ! function_exists( 'sgs_media_needs_helper' ) ) {
 	/**
 	 * Whether the helper is printed (Spec 49 §7.3): at any device, on resolved values, Height is Fill; an overlay or a
@@ -67,9 +89,8 @@ if ( ! function_exists( 'sgs_media_needs_helper' ) ) {
 		if ( (float) ( $context['hover']['scale'] ?? 0 ) > 1 ) {
 			return true;
 		}
-		$painting = array( 'parallax', 'ken-burns', 'sheen', 'glare', 'ripple', 'curtain', 'surface' );
 		foreach ( (array) ( $context['effects'] ?? array() ) as $effect ) {
-			if ( in_array( (string) $effect, $painting, true ) ) {
+			if ( sgs_media_effect_paints_layer( (string) $effect ) ) {
 				return true;
 			}
 		}
@@ -168,7 +189,7 @@ if ( ! function_exists( 'sgs_media_sibling_css' ) ) {
 				}
 			}
 			if ( $hide ) {
-				$css .= SGS_Breakpoints::media( sgs_media_range_for_device( $device ) ) . '{' . implode( ',', $hide ) . '{display:none}}';
+				$css .= SGS_Breakpoints::media_fractional( sgs_media_range_for_device( $device ) ) . '{' . implode( ',', $hide ) . '{display:none}}';
 			}
 		}
 		return $css;
@@ -186,7 +207,7 @@ if ( ! function_exists( 'sgs_media_caption_css' ) ) {
 	function sgs_media_caption_css( string $uid, array $devices ): string {
 		$css = '';
 		foreach ( $devices as $device ) {
-			$css .= SGS_Breakpoints::media( sgs_media_range_for_device( $device ) )
+			$css .= SGS_Breakpoints::media_fractional( sgs_media_range_for_device( $device ) )
 				. '{.' . $uid . '{display:table}.' . $uid . ' .sgs-media-caption{display:table-caption;caption-side:bottom;overflow-wrap:anywhere}}';
 		}
 		return $css;
@@ -200,9 +221,10 @@ if ( ! function_exists( 'sgs_media_enqueue_assets' ) ) {
 	 * @param bool $helper Whether the helper is printed (loads the overlay sheet).
 	 * @param bool $video  Whether a video sibling is printed (loads the video sheet and the view module).
 	 * @param bool $mask   Whether a mask shape is on at any device (loads the mask sheet).
+	 * @param bool $embed_autoplay Whether an autoplaying embed is printed (loads the view module that starts it).
 	 * @return void
 	 */
-	function sgs_media_enqueue_assets( bool $helper, bool $video, bool $mask = false ): void {
+	function sgs_media_enqueue_assets( bool $helper, bool $video, bool $mask = false, bool $embed_autoplay = false ): void {
 		if ( ! defined( 'SGS_BLOCKS_URL' ) || ! function_exists( 'wp_enqueue_style' ) ) {
 			return;
 		}
@@ -226,7 +248,7 @@ if ( ! function_exists( 'sgs_media_enqueue_assets' ) ) {
 			wp_enqueue_style( $handle, SGS_BLOCKS_URL . $rel, array(), (string) filemtime( $file ) );
 		}
 		$module = 'build/shared/media/device-video.js';
-		if ( $video && file_exists( SGS_BLOCKS_PATH . $module ) ) {
+		if ( ( $video || $embed_autoplay ) && file_exists( SGS_BLOCKS_PATH . $module ) ) {
 			wp_enqueue_script_module( '@sgs/media-device-video', SGS_BLOCKS_URL . $module, array(), (string) filemtime( SGS_BLOCKS_PATH . $module ) );
 		}
 	}

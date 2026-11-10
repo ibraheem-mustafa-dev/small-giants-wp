@@ -1,0 +1,4 @@
+{
+	"effects": [ "parallax", "ken-burns", "sheen", "glare", "ripple", "curtain", "surface-treatment" ],
+	"aliases": { "surface": "surface-treatment" }
+}

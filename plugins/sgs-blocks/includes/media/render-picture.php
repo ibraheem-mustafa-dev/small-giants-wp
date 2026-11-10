@@ -135,7 +135,7 @@ if ( ! function_exists( 'sgs_media_picture' ) ) {
 		}
 		$sources = '';
 		if ( $keys['mobile'] === $keys['tablet'] && $keys['tablet'] !== $keys['desktop'] ) {
-			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, SGS_Breakpoints::query( 'tablet' ), (string) ( $sizes['tablet'] ?? '' ) );
+			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, SGS_Breakpoints::query_fractional( 'tablet' ), (string) ( $sizes['tablet'] ?? '' ) );
 		} else {
 			foreach ( array( 'tablet', 'mobile' ) as $device ) {
 				if ( $keys[ $device ] !== $keys['desktop'] ) {
@@ -222,5 +222,24 @@ if ( ! function_exists( 'sgs_media_video' ) ) {
 			$attrs .= ' aria-hidden="true" tabindex="-1"';
 		}
 		return '<video' . $attrs . '>' . $out . '</video>';
+	}
+}
+
+if ( ! function_exists( 'sgs_media_pause_button' ) ) {
+	/**
+	 * The pause control for an autoplaying video (Spec 49 §8, Spec 38 §1: SC 2.2.2).
+	 *
+	 * Printed `hidden`: the view module shows it once the video is playing, so with no script, or under reduced motion
+	 * (nothing autoplays), no dead control sits in the tab order. `aria-pressed` is true while the visitor has paused, and the
+	 * play icon replaces the pause icon.
+	 *
+	 * @return string
+	 */
+	function sgs_media_pause_button(): string {
+		return '<button type="button" class="sgs-media-pause sgs-focus--duotone" data-sgs-media-pause aria-pressed="false" hidden'
+			. ' data-sgs-label-pause="' . esc_attr( esc_html__( 'Pause video', 'sgs-blocks' ) ) . '"'
+			. ' data-sgs-label-play="' . esc_attr( esc_html__( 'Play video', 'sgs-blocks' ) ) . '"'
+			. ' aria-label="' . esc_attr( esc_html__( 'Pause video', 'sgs-blocks' ) ) . '">'
+			. '<span class="sgs-media-pause__bars" aria-hidden="true"></span><span class="sgs-media-pause__play" aria-hidden="true" hidden></span></button>';
 	}
 }

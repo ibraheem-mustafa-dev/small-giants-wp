@@ -65,6 +65,40 @@ if ( ! class_exists( 'SGS_Breakpoints' ) ) {
 		}
 
 		/**
+		 * The bare media condition for a named device range with no gap at fractional widths (browser zoom, some pixel
+		 * ratios): an upper edge sits at the tier's maximum plus 0.98px, and the next range starts at the next whole
+		 * pixel, so every width matches exactly one of mobile, tablet-only and desktop. The JS twin is
+		 * `QUERY_MOBILE_FRACTIONAL` and `QUERY_TABLET_ONLY_FRACTIONAL` in `src/utils/breakpoints.js`.
+		 *
+		 * Keys as query(): 'tablet', 'mobile', 'tablet-up', 'desktop', 'tablet-only'.
+		 *
+		 * @param string $range Range key.
+		 * @return string e.g. '(max-width:1023.98px)'; '' for an unknown key.
+		 */
+		public static function query_fractional( $range ) {
+			switch ( $range ) {
+				case 'tablet':
+					return '(max-width:' . self::TABLET_MAX . '.98px)';
+				case 'mobile':
+					return '(max-width:' . self::MOBILE_MAX . '.98px)';
+				case 'tablet-only':
+					return '(min-width:' . ( self::MOBILE_MAX + 1 ) . 'px) and (max-width:' . self::TABLET_MAX . '.98px)';
+				default:
+					return self::query( $range );
+			}
+		}
+
+		/**
+		 * The at-rule prefix (no opening brace) for a named device range, fractional-width safe (see query_fractional()).
+		 *
+		 * @param string $range Range key.
+		 * @return string e.g. '@media(max-width:1023.98px)'.
+		 */
+		public static function media_fractional( $range ) {
+			return '@media' . self::query_fractional( $range );
+		}
+
+		/**
 		 * The at-rule prefix (no opening brace) for a named device range: `@media` plus query().
 		 *
 		 * @param string $range Range key (see query()).
