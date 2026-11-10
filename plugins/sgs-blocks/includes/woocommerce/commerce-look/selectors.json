@@ -130,7 +130,7 @@
 		},
 		"summary": {
 			"cart": ".wc-block-cart__sidebar .wp-block-woocommerce-cart-order-summary-block",
-			"checkout": ".wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block",
+			"checkout": ".wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block, .wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; any width",
 			"needs": {

@@ -101,7 +101,7 @@ final class CommerceLookItemLookTest extends TestCase {
 		$checkout = $this->css( $this->attrs(), 'checkout' );
 		$this->assertStringContainsString( '.sgs-x .wc-block-components-order-summary .wc-block-components-order-summary-item__image > img{background-color:#f9d5d3;', $checkout, 'checkout picture look' );
 		$this->assertStringContainsString( '.wp-block-woocommerce-checkout-actions-block .wp-element-button{border-style:solid;border-width:2px 2px 2px 2px;border-color:#3a2a22;}', $checkout, 'checkout button edge' );
-		$this->assertStringContainsString( '.wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block{background-color:#ffffff;}', $checkout, 'the checkout card keeps its own target' );
+		$this->assertStringContainsString( '.wc-block-checkout__sidebar .wp-block-woocommerce-checkout-order-summary-block,.sgs-x .wp-block-woocommerce-checkout-order-summary-block.checkout-order-summary-block-fill-wrapper{background-color:#ffffff;}', $checkout, 'the checkout card paints on the sidebar summary and on the stacked summary copy' );
 		foreach ( array( 'quantity-selector', 'border-top-width:0', 'wc-block-cart__sidebar' ) as $needle ) {
 			$this->assertStringNotContainsString( $needle, $checkout, "the checkout has no '{$needle}'" );
 		}
