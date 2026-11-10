@@ -2909,6 +2909,11 @@
 				"type": "string",
 				"role": "content"
 			},
+			"addressSameText": {
+				"type": "string",
+				"role": "content",
+				"description": "The line in an empty billing card while a delivery address is saved. Empty = the empty-card line."
+			},
 			"addressEmptyText": {
 				"type": "string",
 				"role": "content",

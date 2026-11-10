@@ -95,6 +95,8 @@ $cards = '<div class="u-column1 woocommerce-Address"><header class="woocommerce-
 $worded = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'No {type} address saved yet.' ) );
 ok( false !== strpos( $worded, '<address>No delivery address saved yet.</address>' ) && false !== strpos( $worded, '<address>No billing address saved yet.</address>' ), 'an empty address card names its own type' );
 ok( false !== strpos( $worded, '<address>Ada Lovelace<br/>1 Road</address>' ), 'a saved address is left as it is' );
+$same = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'No {type} address saved yet.', 'addressSameText' => 'Same as delivery address' ) );
+ok( false !== strpos( $same, '<address>Same as delivery address</address>' ) && false !== strpos( $same, '<address>No delivery address saved yet.</address>' ), 'an empty billing card says same as delivery while a delivery address is saved' );
 ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the setting WooCommerce\'s line stays' );
 
 // 4) Saved items: the empty card while the list is empty, else the panel.

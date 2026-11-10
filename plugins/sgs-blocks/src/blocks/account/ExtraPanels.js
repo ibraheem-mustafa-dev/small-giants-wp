@@ -150,6 +150,12 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 				label={ __( 'Line in a card with no address', 'sgs-blocks' ) }
 				help={ __( '{type} becomes the card title without the word address, for example “No {type} address saved yet.”', 'sgs-blocks' ) }
 			/>
+			<TextField
+				{ ...p }
+				name="addressSameText"
+				label={ __( 'Line in an empty billing card while a delivery address is saved', 'sgs-blocks' ) }
+				help={ __( 'For example “Same as delivery address”.', 'sgs-blocks' ) }
+			/>
 			<SgsBorderControl
 				widthValues={ attributes.addressCardBorderWidth ?? {} }
 				onWidthChange={ ( next ) => setAttributes( { addressCardBorderWidth: next } ) }

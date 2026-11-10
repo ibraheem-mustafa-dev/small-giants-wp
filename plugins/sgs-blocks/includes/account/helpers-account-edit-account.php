@@ -16,7 +16,8 @@ defined( 'ABSPATH' ) || exit;
 if ( ! function_exists( 'sgs_account_address_empty_markup' ) ) {
 	/**
 	 * Reword the line of an address card with nothing saved. WooCommerce prints one fixed sentence for both cards; the
-	 * setting's {type} token becomes the card's own title without the word address (delivery, billing).
+	 * setting's {type} token becomes the card's own title without the word address (delivery, billing). An empty billing
+	 * card takes its own line while a delivery address is saved (addressSameText, for example "Same as delivery address").
 	 *
 	 * @param string $html       WooCommerce's rendered account output.
 	 * @param array  $attributes Block attributes.
@@ -24,15 +25,18 @@ if ( ! function_exists( 'sgs_account_address_empty_markup' ) ) {
 	 */
 	function sgs_account_address_empty_markup( string $html, array $attributes ): string {
 		$line = trim( (string) ( $attributes['addressEmptyText'] ?? '' ) );
-		if ( '' === $line || false === strpos( $html, 'woocommerce-Address-title' ) ) {
+		$same = trim( (string) ( $attributes['addressSameText'] ?? '' ) );
+		if ( ( '' === $line && '' === $same ) || false === strpos( $html, 'woocommerce-Address-title' ) ) {
 			return $html;
 		}
+		$has_delivery = '' !== trim( (string) get_user_meta( get_current_user_id(), 'shipping_address_1', true ) );
 		$original = preg_quote( esc_html__( 'You have not set up this type of address yet.', 'woocommerce' ), '#' );
 		$out      = preg_replace_callback(
 			'#(<header class="woocommerce-Address-title[^"]*">(?:(?!</header>).)*?<h[23][^>]*>((?:(?!</header>).)*?)</h[23]>(?:(?!</header>).)*</header>\s*<address>)\s*' . $original . '\s*(</address>)#s',
-			static function ( array $m ) use ( $line ): string {
+			static function ( array $m ) use ( $line, $same, $has_delivery ): string {
 				$type = strtolower( trim( (string) preg_replace( '/\s+address$/i', '', wp_strip_all_tags( $m[2] ) ) ) );
-				return $m[1] . esc_html( str_replace( '{type}', $type, $line ) ) . $m[3];
+				$text = '' !== $same && 'billing' === $type && $has_delivery ? $same : $line;
+				return '' === $text ? $m[0] : $m[1] . esc_html( str_replace( '{type}', $type, $text ) ) . $m[3];
 			},
 			$html
 		);
