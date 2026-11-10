@@ -1173,7 +1173,7 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/form/style.css",
-   "selector": ":where(.sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label)",
+   "selector": ".sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
