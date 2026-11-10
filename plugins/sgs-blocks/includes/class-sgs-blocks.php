@@ -448,7 +448,7 @@ final class SGS_Blocks {
 				SGS_BLOCKS_VERSION
 			);
 		}
-		foreach ( array( 'base', 'overlay', 'video' ) as $sgs_media_sheet ) {
+		foreach ( array( 'base', 'overlay', 'mask', 'video' ) as $sgs_media_sheet ) {
 			if ( file_exists( SGS_BLOCKS_PATH . 'assets/css/media-' . $sgs_media_sheet . '.css' ) ) {
 				wp_enqueue_style(
 					'sgs-media-' . $sgs_media_sheet . '-editor',

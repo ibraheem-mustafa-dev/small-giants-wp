@@ -17,7 +17,7 @@ const React = require( 'react' );
 const { createRoot } = require( 'react-dom/client' );
 const { act } = require( 'react' );
 
-import { OUTLINE_SHAPES, SHAPE_SLUGS, shapeUsesWidthOnly } from '../../src/utils/icon-shapes';
+import { MEDIA_SHAPES, OUTLINE_SHAPES, SHAPE_SLUGS, shapeUsesWidthOnly } from '../../src/utils/icon-shapes';
 import { outlineStroke } from '../../src/blocks/icon/icon-state';
 import { CanvasOutline } from '../../src/blocks/icon/shape-options';
 import { cssLengthValue, cssSingleLengthValue } from '../../src/utils/css-length';
@@ -82,6 +82,20 @@ describe( 'icon shape registry parity', () => {
 	it( 'both sides read the same outlines in the same order', () => {
 		expect( OUTLINE_SHAPES.map( ( s ) => ( { ...s } ) ) ).toEqual( php.outlines );
 		expect( OUTLINE_SHAPES.map( ( s ) => s.slug ) ).toEqual( [ 'hexagon', 'diamond', 'octagon', 'star', 'blob' ] );
+	} );
+
+	it( 'icons read only the entries that list the icons surface; media reads the media entries, on both sides', () => {
+		const registry = require( '../../includes/data/icon-shapes.json' ).shapes;
+		expect( OUTLINE_SHAPES.map( ( s ) => s.slug ) ).toEqual( registry.filter( ( e ) => e.surfaces.includes( 'icons' ) ).map( ( e ) => e.slug ) );
+		expect( MEDIA_SHAPES.map( ( s ) => ( { ...s } ) ) ).toEqual( php.media );
+		expect( MEDIA_SHAPES.map( ( s ) => s.slug ) ).toEqual( [
+			'circle', 'ellipse', 'pill', 'squircle', 'arch', 'hexagon', 'diamond', 'octagon', 'star', 'tag', 'speech-bubble', 'ticket', 'blob', 'blob-2', 'blob-3',
+		] );
+		MEDIA_SHAPES.filter( ( s ) => 'radius' === s.paint ).forEach( ( s ) => expect( s.d ).toBe( '' ) );
+		MEDIA_SHAPES.filter( ( s ) => 'mask' === s.paint ).forEach( ( s ) => expect( s.d ).toMatch( /^M[^M]*Z$/ ) );
+		// New shapes never reach the icon picker or its enum.
+		expect( SHAPE_SLUGS ).not.toContain( 'arch' );
+		expect( SHAPE_SLUGS ).not.toContain( 'ticket' );
 	} );
 
 	it( 'the shape list and the width-only rule match', () => {

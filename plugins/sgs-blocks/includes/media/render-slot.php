@@ -273,7 +273,7 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 		}
 	}
 	if ( ! empty( $slot['kinds'] ) && empty( $context['in_editor'] ) ) {
-		sgs_media_enqueue_assets( $helper, (bool) $video_files );
+		sgs_media_enqueue_assets( $helper, (bool) $video_files, sgs_media_has_mask( $prefix, $attrs ) );
 	}
 	return array(
 		'html'           => $out,

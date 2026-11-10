@@ -260,7 +260,7 @@ if ( ! function_exists( 'sgs_icon_outline_shapes' ) ) {
 	/**
 	 * The custom outline shapes (icon plan D2), keyed by slug, in the registry's order: one SVG path each in a
 	 * `0 0 100 100` viewBox. Read from `includes/data/icon-shapes.json`, the one list the editor imports through
-	 * `src/utils/icon-shapes.js`. An entry with an unsafe slug, a box-shape slug or a path holding anything but path
+	 * `src/utils/icon-shapes.js`; only entries whose `surfaces` include `icons` are read. An entry with an unsafe slug, a box-shape slug or a path holding anything but path
 	 * commands and numbers is dropped, so a bad edit to the JSON never reaches the markup.
 	 *
 	 * @return array<string,array{slug:string,label:string,d:string}>
@@ -275,6 +275,9 @@ if ( ! function_exists( 'sgs_icon_outline_shapes' ) ) {
 		$data   = is_string( $raw ) ? json_decode( $raw, true ) : null;
 		$list   = is_array( $data['shapes'] ?? null ) ? $data['shapes'] : array();
 		foreach ( $list as $entry ) {
+			if ( ! in_array( 'icons', is_array( $entry['surfaces'] ?? null ) ? $entry['surfaces'] : array(), true ) ) {
+				continue;
+			}
 			$slug = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
 			$d    = is_string( $entry['d'] ?? null ) ? trim( $entry['d'] ) : '';
 			if ( ! preg_match( '/^[a-z][a-z0-9-]*$/', $slug ) || in_array( $slug, sgs_icon_box_shapes(), true ) || ! preg_match( '/^[MLHVCSQTAZmlhvcsqtaz0-9.,\s-]+$/', $d ) ) {

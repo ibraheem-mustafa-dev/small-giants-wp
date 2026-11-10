@@ -1,31 +1,173 @@
 {
-	"$comment": "The custom outline shapes of sgs/icon (icon plan D2, Phase D): a fixed list, each one SVG path in a 0 0 100 100 viewBox that touches the box's edges. PHP reads it through includes/helpers-icon.php::sgs_icon_outline_shapes(); the editor imports it through src/utils/icon-shapes.js. The box shapes (square, circle, pill) are drawn by icon/style.css and are not listed here. Per entry: slug (the `shape` enum value), label (the inspector's name for it), d (the path). The star points up, fills the box's width and is drawn about the box's centre (its circumcentre, 50 50), so its top point touches the top edge and its lower points stop short of the bottom; its inner radius is 0.55 of its outer radius, which keeps a centred glyph up to 31.5% of the shape's size inside its inner pentagon (icon/style.css gives the star a default size of 3.2 times the icon for that reason). render.php draws the path behind the glyph with its stroke inside the path (twice the border width, clipped to the path), so a path may run to the viewBox edge.",
+	"$comment": "The shape registry. Icons: the custom outlines of sgs/icon (icon plan D2, Phase D), read through includes/helpers-icon.php::sgs_icon_outline_shapes() and src/utils/icon-shapes.js (OUTLINE_SHAPES), which keep only entries whose `surfaces` include `icons`. Media: the Shape grid of every media slot (Spec 49 7.5), read through includes/media/atoms/shape.php::sgs_media_atom_shape_registry() and src/utils/icon-shapes.js (MEDIA_SHAPES), which keep only entries whose `surfaces` include `media`. Per entry: slug, label, d (one closed path in a 0 0 100 100 box that touches the box's edges; radius entries have none), proportions (`stretch` fills the box, `keep` fits the shape inside it; the default when a slot stores none), paint (`radius`: border-radius on the surface, `mask`: a mask on the mask layer), ratio (the Ratio written when the shape is picked and no Ratio is set; '' writes none) and surfaces. The box shapes of the icon (square, circle, pill) are drawn by icon/style.css. The star points up, fills the box's width and is drawn about the box's centre (its circumcentre, 50 50), so its top point touches the top edge and its lower points stop short of the bottom; its inner radius is 0.55 of its outer radius, which keeps a centred glyph up to 31.5% of the shape's size inside its inner pentagon (icon/style.css gives the star a default size of 3.2 times the icon for that reason). The icon's render.php draws the path behind the glyph with its stroke inside the path (twice the border width, clipped to the path), so a path may run to the viewBox edge.",
 	"viewBox": "0 0 100 100",
 	"shapes": [
 		{
+			"slug": "circle",
+			"label": "Circle",
+			"proportions": "stretch",
+			"paint": "radius",
+			"ratio": "1 / 1",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "ellipse",
+			"label": "Ellipse",
+			"proportions": "stretch",
+			"paint": "radius",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "pill",
+			"label": "Pill",
+			"proportions": "stretch",
+			"paint": "radius",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "squircle",
+			"label": "Squircle",
+			"d": "M50 0C85 0 100 15 100 50C100 85 85 100 50 100C15 100 0 85 0 50C0 15 15 0 50 0Z",
+			"proportions": "keep",
+			"paint": "mask",
+			"ratio": "1 / 1",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "arch",
+			"label": "Arch",
+			"d": "M0 100V50A50 50 0 0 1 100 50V100Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "4 / 5",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
 			"slug": "hexagon",
 			"label": "Hexagon",
-			"d": "M50 0L93.3 25V75L50 100L6.7 75V25Z"
+			"d": "M50 0L93.3 25V75L50 100L6.7 75V25Z",
+			"proportions": "keep",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"icons",
+				"media"
+			]
 		},
 		{
 			"slug": "diamond",
 			"label": "Diamond",
-			"d": "M50 0L100 50L50 100L0 50Z"
+			"d": "M50 0L100 50L50 100L0 50Z",
+			"proportions": "keep",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"icons",
+				"media"
+			]
 		},
 		{
 			"slug": "octagon",
 			"label": "Octagon",
-			"d": "M29.29 0H70.71L100 29.29V70.71L70.71 100H29.29L0 70.71V29.29Z"
+			"d": "M29.29 0H70.71L100 29.29V70.71L70.71 100H29.29L0 70.71V29.29Z",
+			"proportions": "keep",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"icons",
+				"media"
+			]
 		},
 		{
 			"slug": "star",
 			"label": "Star",
-			"d": "M50 0L66.16 27.75L97.55 34.55L76.15 58.5L79.39 90.45L50 77.5L20.61 90.45L23.85 58.5L2.45 34.55L33.84 27.75Z"
+			"d": "M50 0L66.16 27.75L97.55 34.55L76.15 58.5L79.39 90.45L50 77.5L20.61 90.45L23.85 58.5L2.45 34.55L33.84 27.75Z",
+			"proportions": "keep",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"icons",
+				"media"
+			]
+		},
+		{
+			"slug": "tag",
+			"label": "Tag",
+			"d": "M0 10Q0 0 10 0H70L100 50L70 100H10Q0 100 0 90Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "speech-bubble",
+			"label": "Speech bubble",
+			"d": "M12 0H88Q100 0 100 12V62Q100 74 88 74H40L18 100V74H12Q0 74 0 62V12Q0 0 12 0Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "ticket",
+			"label": "Ticket",
+			"d": "M0 0H100V38A12 12 0 0 0 100 62V100H0V62A12 12 0 0 0 0 38Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
 		},
 		{
 			"slug": "blob",
 			"label": "Blob",
-			"d": "M54 2C79 1 99 19 98 45C97 73 77 99 48 98C21 97 1 79 2 51C3 24 28 3 54 2Z"
+			"d": "M54 2C79 1 99 19 98 45C97 73 77 99 48 98C21 97 1 79 2 51C3 24 28 3 54 2Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"icons",
+				"media"
+			]
+		},
+		{
+			"slug": "blob-2",
+			"label": "Blob 2",
+			"d": "M45 2C68 0 92 12 97 36C102 60 88 82 66 94C44 106 14 92 5 68C-4 44 22 4 45 2Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
+		},
+		{
+			"slug": "blob-3",
+			"label": "Blob 3",
+			"d": "M30 6C52 -4 84 4 94 30C104 56 80 72 78 88C76 104 40 100 20 86C0 72 -6 44 6 26C12 16 20 12 30 6Z",
+			"proportions": "stretch",
+			"paint": "mask",
+			"ratio": "",
+			"surfaces": [
+				"media"
+			]
 		}
 	]
 }

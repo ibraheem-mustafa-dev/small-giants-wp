@@ -13,9 +13,48 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__ ) . '/media-values.php';
 
+if ( ! function_exists( 'sgs_media_atom_shape_entries' ) ) {
+	/**
+	 * Every shape of the media Shape grid in registry order, read from `includes/data/icon-shapes.json` with the
+	 * editor's validation (twin: `MEDIA_SHAPES` in `src/utils/icon-shapes.js`): entries whose `surfaces` include
+	 * `media`, radius entries (circle, ellipse, pill) without a path and mask entries with one.
+	 *
+	 * @return array<int,array{slug:string,label:string,paint:string,d:string,proportions:string,ratio:string}>
+	 */
+	function sgs_media_atom_shape_entries(): array {
+		static $entries = null;
+		if ( null !== $entries ) {
+			return $entries;
+		}
+		$entries = array();
+		$file    = dirname( __DIR__, 2 ) . '/data/icon-shapes.json';
+		$json    = is_readable( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		foreach ( is_array( $json['shapes'] ?? null ) ? $json['shapes'] : array() as $entry ) {
+			$slug = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
+			if ( 1 !== preg_match( '/^[a-z][a-z0-9-]*$/', $slug ) || ! in_array( 'media', is_array( $entry['surfaces'] ?? null ) ? $entry['surfaces'] : array(), true ) ) {
+				continue;
+			}
+			$paint = 'radius' === ( $entry['paint'] ?? '' ) ? 'radius' : 'mask';
+			$path  = is_string( $entry['d'] ?? null ) ? trim( $entry['d'] ) : '';
+			if ( 'mask' === $paint && 1 !== preg_match( '/^[MLHVCSQTAZmlhvcsqtaz0-9.,\s-]+$/', $path ) ) {
+				continue;
+			}
+			$entries[] = array(
+				'slug'        => $slug,
+				'label'       => is_string( $entry['label'] ?? null ) ? $entry['label'] : $slug,
+				'paint'       => $paint,
+				'd'           => $path,
+				'proportions' => 'keep' === ( $entry['proportions'] ?? '' ) ? 'keep' : 'stretch',
+				'ratio'       => is_string( $entry['ratio'] ?? null ) ? $entry['ratio'] : '',
+			);
+		}
+		return $entries;
+	}
+}
+
 if ( ! function_exists( 'sgs_media_atom_shape_registry' ) ) {
 	/**
-	 * The mask shapes by slug, read from `includes/data/icon-shapes.json` with the editor's validation.
+	 * The mask shapes by slug: the media entries painted as a mask.
 	 *
 	 * @return array<string,array{d:string,proportions:string}>
 	 */
@@ -25,19 +64,13 @@ if ( ! function_exists( 'sgs_media_atom_shape_registry' ) ) {
 			return $registry;
 		}
 		$registry = array();
-		$file     = dirname( __DIR__, 2 ) . '/data/icon-shapes.json';
-		$json     = is_readable( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		foreach ( is_array( $json['shapes'] ?? null ) ? $json['shapes'] : array() as $entry ) {
-			$slug = is_string( $entry['slug'] ?? null ) ? $entry['slug'] : '';
-			$path = is_string( $entry['d'] ?? null ) ? trim( $entry['d'] ) : '';
-			if ( 1 !== preg_match( '/^[a-z][a-z0-9-]*$/', $slug ) || in_array( $slug, array( 'square', 'circle', 'pill' ), true ) || 1 !== preg_match( '/^[MLHVCSQTAZmlhvcsqtaz0-9.,\s-]+$/', $path ) ) {
-				continue;
+		foreach ( sgs_media_atom_shape_entries() as $entry ) {
+			if ( 'mask' === $entry['paint'] ) {
+				$registry[ $entry['slug'] ] = array(
+					'd'           => $entry['d'],
+					'proportions' => $entry['proportions'],
+				);
 			}
-			$keep              = is_string( $entry['proportions'] ?? null ) && 'keep' === $entry['proportions'];
-			$registry[ $slug ] = array(
-				'd'           => $path,
-				'proportions' => $keep ? 'keep' : 'stretch',
-			);
 		}
 		return $registry;
 	}

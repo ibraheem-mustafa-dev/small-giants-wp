@@ -99,6 +99,14 @@ const extras = {
 	'source-sizes': { Source: T( { kind: 'image', width: 800, height: 400 }, { kind: 'image', width: 400, height: 400 }, undefined ), Height: '300px', Width: 'auto' },
 	empty: {},
 };
+// One case per registry mask shape, stretched and kept, with a shadow (the shadow follows the shape).
+for ( const entry of JSON.parse( fs.readFileSync( path.join( PLUGIN, 'includes/data/icon-shapes.json' ), 'utf8' ) ).shapes ) {
+	if ( entry.d && entry.surfaces.includes( 'media' ) ) {
+		for ( const proportions of [ 'stretch', 'keep' ] ) {
+			extras[ `shape-each-${ entry.slug }-${ proportions }` ] = { Shape: { shape: entry.slug, proportions }, BoxShadow: '0 4px 12px', BoxShadowColour: 'rgba(0,0,0,.3)' };
+		}
+	}
+}
 for ( const [ label, settings ] of Object.entries( extras ) ) {
 	const attrs = toAttrs( {}, FILE );
 	for ( const [ base, value ] of Object.entries( settings ) ) {

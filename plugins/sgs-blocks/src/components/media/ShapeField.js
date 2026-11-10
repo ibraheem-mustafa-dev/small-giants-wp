@@ -1,42 +1,33 @@
 /**
  * ShapeField: one grid, labelled Shape, drawing the client's own photo in each shape (Spec 49 §9.2, §7.5).
  *
- * None, Circle, Ellipse and Pill are drawn with `border-radius`; every other entry of `icon-shapes.json` that lists
- * the `media` surface (or lists none) is a mask. Picking a shape that carries a ratio (Circle: 1:1) writes that
- * Ratio at the same device in the same `setAttributes` call when no Ratio resolves there, so it is one undo step.
- * Per device through `ResponsiveOverride`; an embed offers Circle, Ellipse and Pill only.
+ * The grid is the media view of the shape registry (`includes/data/icon-shapes.json`, read through
+ * `MEDIA_SHAPES`): None, then every entry in registry order. Entries painted as `radius` (Circle, Ellipse, Pill) are
+ * `border-radius`; the rest are masks, and each offers Keep proportions. Picking a shape that carries a ratio (Circle:
+ * 1:1) writes that Ratio at the same device in the same `setAttributes` call when no Ratio resolves there, so it is
+ * one undo step. Per device through `ResponsiveOverride`; an embed offers the radius shapes only.
  *
  * @package
  */
 import { __, sprintf } from '@wordpress/i18n';
 import ResponsiveOverride from '../ResponsiveOverride.js';
 import Chips from './Chips.js';
-import registry from '../../../includes/data/icon-shapes.json';
+import { MEDIA_SHAPES } from '../../utils/icon-shapes.js';
+import { RADIUS_OF } from './emit/mask.js';
 import { slotAccess, slotKind } from './fieldBase.js';
 import { deviceName, isUnset, resolveTierSource, useActiveDevice, writeDevice } from './deviceValues.js';
 import { FILL, NATURAL } from './sizing-model.js';
 import './ShapeField.css';
 
-/** Shapes drawn as a border radius: no helper, ordinary borders and shadows. */
-export const RADIUS_SHAPES = [
-	{ slug: 'circle', label: __( 'Circle', 'sgs-blocks' ), ratio: '1 / 1', radius: '50%' },
-	{ slug: 'ellipse', label: __( 'Ellipse', 'sgs-blocks' ), ratio: '', radius: '50%' },
-	{ slug: 'pill', label: __( 'Pill', 'sgs-blocks' ), ratio: '', radius: '9999px' },
-];
-
 /**
- * The mask shapes the media slot offers, from the shared registry.
+ * The shapes the grid offers for a slot kind, in registry order.
  *
- * @param {Array} [entries] Registry entries (`{ slug, label, d, proportions, ratio, surfaces }`).
- * @return {Array} Mask entries that show on the `media` surface, in registry order.
+ * @param {string} [kind] The slot's kind at the active device; an embed gets the radius shapes only.
+ * @return {Array} Entries with `mask` (the path, for masks) or `radius` (the corner radius, for radius shapes).
  */
-export function maskShapes( entries = registry?.shapes ) {
-	return ( Array.isArray( entries ) ? entries : [] ).filter(
-		( entry ) =>
-			'string' === typeof entry?.slug &&
-			'string' === typeof entry?.d &&
-			entry.d &&
-			( ! Array.isArray( entry.surfaces ) || entry.surfaces.includes( 'media' ) )
+export function shapeEntries( kind = '' ) {
+	return MEDIA_SHAPES.filter( ( entry ) => 'radius' === entry.paint ? !! RADIUS_OF[ entry.slug ] : 'embed' !== kind ).map( ( entry ) =>
+		'radius' === entry.paint ? { ...entry, radius: RADIUS_OF[ entry.slug ] } : { ...entry, mask: entry.d }
 	);
 }
 
@@ -65,8 +56,7 @@ export default function ShapeField( { attributes, setAttributes, prefix, slot } 
 	const device = useActiveDevice();
 	const kind = slotKind( slot, access );
 	const photo = resolveTierSource( access.read( 'Source' ), device, ( s ) => !! s?.url ).value?.url || '';
-	const masks = 'embed' === kind ? [] : maskShapes();
-	const entries = [ ...RADIUS_SHAPES, ...masks.map( ( m ) => ( { ...m, mask: m.d } ) ) ];
+	const entries = shapeEntries( kind );
 
 	const options = [
 		{ value: 'none', label: __( 'None', 'sgs-blocks' ), icon: <span className="sgs-shape-tile" style={ photo ? { '--sgs-shape-photo': `url("${ photo }")` } : undefined } /> },

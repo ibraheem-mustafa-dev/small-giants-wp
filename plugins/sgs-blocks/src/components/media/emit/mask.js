@@ -17,12 +17,12 @@ const NO_SHAPE = Object.freeze( { kind: 'none', slug: '', proportions: 'stretch'
 let masks = {};
 
 /**
- * Register the mask shapes: every entry of the shape registry that is not a box shape.
+ * Register the mask shapes: the media entries of the shape registry that are painted as a mask.
  *
- * @param {Array<{slug:string,d:string}>} list Registry entries.
+ * @param {Array<{slug:string,d:string,proportions?:string}>} list Mask entries.
  */
 export function registerMaskShapes( list ) {
-	masks = Object.fromEntries( list.map( ( s ) => [ s.slug, { d: s.d, proportions: 'stretch' } ] ) );
+	masks = Object.fromEntries( list.map( ( s ) => [ s.slug, { d: s.d, proportions: 'keep' === s.proportions ? 'keep' : 'stretch' } ] ) );
 }
 
 /**

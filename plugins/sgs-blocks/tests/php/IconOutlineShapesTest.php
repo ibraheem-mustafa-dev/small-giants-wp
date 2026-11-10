@@ -70,7 +70,11 @@ final class IconOutlineShapesTest extends TestCase {
 
 	private function registry(): array {
 		$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/data/icon-shapes.json' ), true );
-		return array_column( $json['shapes'], 'd', 'slug' );
+		$icons = array_filter(
+			$json['shapes'],
+			static fn( array $entry ): bool => in_array( 'icons', $entry['surfaces'] ?? array(), true )
+		);
+		return array_column( $icons, 'd', 'slug' );
 	}
 
 	private function load_helpers(): void {
@@ -338,6 +342,15 @@ final class IconOutlineShapesTest extends TestCase {
 	public function test_a_non_brand_glyph_outline_prints_no_brand_hover_stroke(): void {
 		$css = $this->css( $this->render( array( 'iconName' => 'phone', 'linkUrl' => 'https://x.test', 'shape' => 'hexagon' ) ) );
 		$this->assertStringNotContainsString( 'sgs-icon__outline-path{stroke', $css );
+	}
+
+	public function test_media_only_shapes_never_reach_the_icon_readers(): void {
+		$this->load_helpers();
+		$all = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/includes/data/icon-shapes.json' ), true )['shapes'];
+		$this->assertContains( 'arch', array_column( $all, 'slug' ) );
+		$this->assertNotContains( 'arch', sgs_icon_shape_slugs() );
+		$this->assertNotContains( 'ticket', sgs_icon_shape_slugs() );
+		$this->assertSame( array( 'hexagon', 'diamond', 'octagon', 'star', 'blob' ), array_keys( sgs_icon_outline_shapes() ) );
 	}
 
 	// ── Stylesheet and registry ───────────────────────────────────────────────

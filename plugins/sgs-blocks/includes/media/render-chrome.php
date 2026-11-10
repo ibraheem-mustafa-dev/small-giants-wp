@@ -199,15 +199,19 @@ if ( ! function_exists( 'sgs_media_enqueue_assets' ) ) {
 	 *
 	 * @param bool $helper Whether the helper is printed (loads the overlay sheet).
 	 * @param bool $video  Whether a video sibling is printed (loads the video sheet and the view module).
+	 * @param bool $mask   Whether a mask shape is on at any device (loads the mask sheet).
 	 * @return void
 	 */
-	function sgs_media_enqueue_assets( bool $helper, bool $video ): void {
+	function sgs_media_enqueue_assets( bool $helper, bool $video, bool $mask = false ): void {
 		if ( ! defined( 'SGS_BLOCKS_URL' ) || ! function_exists( 'wp_enqueue_style' ) ) {
 			return;
 		}
 		$sheets = array( 'base' => true );
 		if ( $helper ) {
 			$sheets['overlay'] = true;
+		}
+		if ( $mask ) {
+			$sheets['mask'] = true;
 		}
 		if ( $video ) {
 			$sheets['video'] = true;

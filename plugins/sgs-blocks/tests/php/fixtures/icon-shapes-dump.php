@@ -29,12 +29,14 @@ if ( ! function_exists( 'absint' ) ) {
 	}
 }
 require_once $plugin . '/includes/helpers-icon.php';
+require_once $plugin . '/includes/media/atoms/shape.php';
 
 $input = json_decode( (string) file_get_contents( $argv[1] ?? '' ), true );
 $input = is_array( $input ) ? $input : array();
 
 $out = array(
 	'outlines'   => array_values( sgs_icon_outline_shapes() ),
+	'media'      => sgs_media_atom_shape_entries(),
 	'slugs'      => sgs_icon_shape_slugs(),
 	'width_only' => array(),
 	'svg'        => array(),

@@ -8,7 +8,7 @@
  * @package SGS\Blocks
  */
 
-import { OUTLINE_SHAPES } from '../../../utils/icon-shapes.js';
+import { MEDIA_SHAPES } from '../../../utils/icon-shapes.js';
 import { DEVICES, add, nodes, own, resolved, rulesCss, scalar } from '../emit/core.js';
 import { RADIUS_OF, maskShapes, registerMaskShapes, shapeAt, shapeHasMask } from '../emit/mask.js';
 import { maskCss } from '../emit/mask-css.js';
@@ -22,7 +22,7 @@ const CORNERS = {
 };
 const BORDER_STYLES = [ 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' ];
 
-registerMaskShapes( OUTLINE_SHAPES );
+registerMaskShapes( MEDIA_SHAPES.filter( ( entry ) => 'mask' === entry.paint ) );
 
 export { shapeAt, shapeHasMask };
 

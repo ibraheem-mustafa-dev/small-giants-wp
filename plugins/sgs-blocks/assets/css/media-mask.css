@@ -1,0 +1,23 @@
+/*
+ * Spec 49 media renderer: the mask layer (§7.4, §7.5). Loaded only for a slot that has a mask shape at some device (the
+ * editor loads it with the other media sheets). The shape itself (`mask-image`, its size and position) is printed per
+ * device by the shape atom's emitter on `.sgs-media-box__mask`; this sheet holds what every mask layer shares.
+ *
+ * Structure: helper (carries the shadow as `filter: drop-shadow()`, so the shadow follows the shape) >
+ * `.sgs-media-box__mask` (the mask; clips the media, the overlay and the zoom).
+ */
+
+/* Defaults for a mask layer; the emitter's rules win. A stretched shape fills the box, a kept one is `contain`. */
+:where(.sgs-media-box__mask) {
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	mask-position: center;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+/* Under a mask the media fills the layer; the mask decides what shows, so the layer needs no radius of its own. */
+.sgs-media-box__mask {
+	border-radius: 0;
+}
