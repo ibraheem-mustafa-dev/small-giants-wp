@@ -61,6 +61,17 @@ ok( function_exists( 'sgs_account_lost_back_html' ) && false !== strpos( sgs_acc
 ok( function_exists( 'sgs_account_lost_back_html' ) && '' === sgs_account_lost_back_html( $attrs, 'signin' ), 'no Back link on the sign-in view' );
 ok( function_exists( 'sgs_account_lost_back_html' ) && '' === sgs_account_lost_back_html( array(), 'lost' ), 'no Back link without a label' );
 
+// 2b) The confirmation and new-password views word themselves, and keep the request header when unworded.
+$sent_attrs = $attrs + array( 'headerLostSentTitle' => 'Check your email', 'headerLostSentIntro' => 'A link is on its way.', 'headerLostResetTitle' => 'Choose a new password', 'headerLostResetIntro' => '8 characters or more.' );
+ok( false !== strpos( sgs_account_header_html( $sent_attrs, 'lost-sent' ), 'Check your email' ) && false !== strpos( sgs_account_header_html( $sent_attrs, 'lost-sent' ), 'FORGOTTEN' ), 'the confirmation view has its own title and keeps the eyebrow' );
+ok( false !== strpos( sgs_account_header_html( $sent_attrs, 'lost-reset' ), 'Choose a new password' ), 'the new-password view has its own title' );
+ok( false !== strpos( sgs_account_header_html( $attrs, 'lost-sent' ), '>Reset</' ), 'an unworded confirmation keeps the request header' );
+ok( '' !== sgs_account_lost_back_html( $attrs, 'lost-sent' ) && '' === sgs_account_lost_back_html( $attrs, 'lost-reset' ), 'the Back link shows on the confirmation, not on the new-password form' );
+Account_Endpoints::$active = $sent_attrs;
+ok( str_ends_with( (string) SGS\Blocks\Account_Extras::maybe_swap_lost_confirmation_template( '/wc/lost-password-confirmation.php', 'myaccount/lost-password-confirmation.php' ), 'templates/lost-sent.php' ), 'a worded confirmation drops the WooCommerce message' );
+Account_Endpoints::$active = $attrs;
+ok( '/wc/x.php' === SGS\Blocks\Account_Extras::maybe_swap_lost_confirmation_template( '/wc/x.php', 'myaccount/lost-password-confirmation.php' ), 'an unworded confirmation keeps the WooCommerce message' );
+
 // 3) Account details: one Mobile field, with the optional line.
 $form = '<form class="woocommerce-EditAccountForm"><p id="account_email_field"><input id="account_email"></p><p class="form-row " id="_wc_other/sgs/mobile_field"><label>Mobile (optional)</label><input name="_wc_other/sgs/mobile"></p><fieldset><legend>Change password</legend></fieldset></form>';
 $out  = sgs_account_edit_account_markup( $form, array( 'accountShowMobile' => true, 'accountMobileLabel' => 'Mobile', 'accountMobileHint' => 'For WhatsApp updates' ) );

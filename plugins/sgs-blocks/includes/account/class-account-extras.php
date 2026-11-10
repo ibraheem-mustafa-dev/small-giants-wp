@@ -21,6 +21,7 @@ final class Account_Extras {
 		\add_action( 'woocommerce_before_account_navigation', array( __CLASS__, 'start_menu_buffer' ), 1 );
 		\add_action( 'woocommerce_after_account_navigation', array( __CLASS__, 'end_menu_buffer' ), 99 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
+		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
 		\add_action( 'woocommerce_account_edit-address_endpoint', array( __CLASS__, 'address_helper_line' ), 20 );
 		\add_action( 'wp_loaded', array( __CLASS__, 'fill_display_name' ), 10 );
 		\add_action( 'woocommerce_save_account_details_errors', array( __CLASS__, 'validate_mobile' ), 10, 1 );
@@ -107,6 +108,21 @@ final class Account_Extras {
 			return $template;
 		}
 		return __DIR__ . '/templates/orders-empty.php';
+	}
+
+	/**
+	 * Swap `myaccount/lost-password-confirmation.php` for an empty one while the block's header words the confirmation.
+	 *
+	 * @param mixed $template      Located template path.
+	 * @param mixed $template_name Template name.
+	 * @return mixed
+	 */
+	public static function maybe_swap_lost_confirmation_template( $template, $template_name = '' ) {
+		if ( 'myaccount/lost-password-confirmation.php' !== $template_name || ! is_array( Account_Endpoints::$active ) ) {
+			return $template;
+		}
+		$words = trim( (string) ( Account_Endpoints::$active['headerLostSentTitle'] ?? '' ) . (string) ( Account_Endpoints::$active['headerLostSentIntro'] ?? '' ) );
+		return '' === $words ? $template : __DIR__ . '/templates/lost-sent.php';
 	}
 
 	/**

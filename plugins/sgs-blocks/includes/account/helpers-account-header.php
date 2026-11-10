@@ -17,7 +17,9 @@ require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
 
 if ( ! function_exists( 'sgs_account_current_view' ) ) {
 	/**
-	 * Which view the block is showing: 'account' (signed in), 'lost' (lost-password endpoint) or 'signin'.
+	 * Which view the block is showing: 'account' (signed in), 'lost' (the lost-password request form), 'lost-sent'
+	 * (its confirmation, WooCommerce's `reset-link-sent` query var), 'lost-reset' (the choose-a-new-password form,
+	 * `show-reset-form`) or 'signin'.
 	 *
 	 * @return string
 	 */
@@ -25,7 +27,18 @@ if ( ! function_exists( 'sgs_account_current_view' ) ) {
 		if ( is_user_logged_in() ) {
 			return 'account';
 		}
-		return function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'lost-password' ) ? 'lost' : 'signin';
+		if ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url( 'lost-password' ) ) {
+			return 'signin';
+		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only: WooCommerce's own flags choose which view to word.
+		if ( isset( $_GET['reset-link-sent'] ) ) {
+			return 'lost-sent';
+		}
+		if ( isset( $_GET['show-reset-form'] ) ) {
+			return 'lost-reset';
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return 'lost';
 	}
 }
 
@@ -56,10 +69,18 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 	 * The page header for one view, or '' when the view has nothing set.
 	 *
 	 * @param array  $attributes Block attributes.
-	 * @param string $view       'signin' | 'lost' | 'account'.
+	 * @param string $view       'signin' | 'lost' | 'lost-sent' | 'lost-reset' | 'account'.
 	 * @return string Escaped HTML.
 	 */
 	function sgs_account_header_html( array $attributes, string $view ): string {
+		// The confirmation and reset views use their own title and intro; with neither set they keep the request view's header.
+		$sub = array(
+			'lost-sent'  => array( 'headerLostSentTitle', 'headerLostSentIntro' ),
+			'lost-reset' => array( 'headerLostResetTitle', 'headerLostResetIntro' ),
+		);
+		if ( isset( $sub[ $view ] ) && '' === trim( (string) ( $attributes[ $sub[ $view ][0] ] ?? '' ) . (string) ( $attributes[ $sub[ $view ][1] ] ?? '' ) ) ) {
+			$view = 'lost';
+		}
 		$names = array(
 			'signin'  => array(
 				'eyebrow' => 'headerSignInEyebrow',
@@ -70,6 +91,16 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 				'eyebrow' => 'headerLostEyebrow',
 				'title'   => 'headerLostTitle',
 				'intro'   => 'headerLostIntro',
+			),
+			'lost-sent'  => array(
+				'eyebrow' => 'headerLostEyebrow',
+				'title'   => 'headerLostSentTitle',
+				'intro'   => 'headerLostSentIntro',
+			),
+			'lost-reset' => array(
+				'eyebrow' => 'headerLostEyebrow',
+				'title'   => 'headerLostResetTitle',
+				'intro'   => 'headerLostResetIntro',
 			),
 			'account' => array(
 				'eyebrow' => 'headerAccountEyebrow',
@@ -119,16 +150,16 @@ if ( ! function_exists( 'sgs_account_header_html' ) ) {
 
 if ( ! function_exists( 'sgs_account_lost_back_html' ) ) {
 	/**
-	 * The Back to sign in link of the lost-password view. It sits under the form, not in the page header, and prints
-	 * only on that view while the label is set.
+	 * The Back to sign in link of the lost-password views. It sits under the form, not in the page header, and prints
+	 * on the request and confirmation views (not the new-password form) while the label is set.
 	 *
 	 * @param array  $attributes Block attributes.
-	 * @param string $view       'signin' | 'lost' | 'account'.
+	 * @param string $view       Value of sgs_account_current_view().
 	 * @return string Escaped HTML, or '' on any other view or with no label.
 	 */
 	function sgs_account_lost_back_html( array $attributes, string $view ): string {
 		$back = trim( (string) ( $attributes['headerLostBackLabel'] ?? '' ) );
-		if ( 'lost' !== $view || '' === $back ) {
+		if ( ! in_array( $view, array( 'lost', 'lost-sent' ), true ) || '' === $back ) {
 			return '';
 		}
 		$url = function_exists( 'wc_get_page_permalink' ) ? (string) wc_get_page_permalink( 'myaccount' ) : home_url( '/' );

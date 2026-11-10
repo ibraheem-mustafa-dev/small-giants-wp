@@ -39,6 +39,8 @@ const WORDING = [
 const VIEWS = [
 	[ 'headerSignIn', __( 'Sign in page', 'sgs-blocks' ), 'headerSignInEyebrow', 'headerSignInTitle', 'headerSignInIntro' ],
 	[ 'headerLost', __( 'Lost password page', 'sgs-blocks' ), 'headerLostEyebrow', 'headerLostTitle', 'headerLostIntro' ],
+	[ 'headerLostSent', __( 'Lost password: email sent', 'sgs-blocks' ), '', 'headerLostSentTitle', 'headerLostSentIntro' ],
+	[ 'headerLostReset', __( 'Lost password: choose a new one', 'sgs-blocks' ), '', 'headerLostResetTitle', 'headerLostResetIntro' ],
 	[ 'headerAccount', __( 'Signed-in account', 'sgs-blocks' ), 'headerAccountEyebrow', 'headerAccountTitle', 'headerAccountIntro' ],
 ];
 
@@ -96,7 +98,7 @@ export function HeaderPanel( { attributes, setAttributes } ) {
 			/>
 			{ VIEWS.map( ( [ prefix, label, eyebrow, title, intro ] ) => (
 				<PanelBody key={ prefix } title={ label } initialOpen={ false }>
-					<TextField { ...p } name={ eyebrow } label={ __( 'Eyebrow', 'sgs-blocks' ) } />
+					{ '' !== eyebrow && <TextField { ...p } name={ eyebrow } label={ __( 'Eyebrow', 'sgs-blocks' ) } /> }
 					<TextField
 						{ ...p }
 						name={ title }

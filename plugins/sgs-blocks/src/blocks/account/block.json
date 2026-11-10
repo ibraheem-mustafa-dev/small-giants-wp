@@ -1917,6 +1917,24 @@
 				"type": "string",
 				"role": "content"
 			},
+			"headerLostSentTitle": {
+				"type": "string",
+				"role": "content",
+				"description": "Title of the lost-password confirmation view. With this and the intro empty the confirmation keeps the request view's header and WooCommerce's own message."
+			},
+			"headerLostSentIntro": {
+				"type": "string",
+				"role": "content"
+			},
+			"headerLostResetTitle": {
+				"type": "string",
+				"role": "content",
+				"description": "Title of the choose-a-new-password view. With this and the intro empty it keeps the request view's header."
+			},
+			"headerLostResetIntro": {
+				"type": "string",
+				"role": "content"
+			},
 			"headerLostBackLabel": {
 				"type": "string",
 				"role": "content"
