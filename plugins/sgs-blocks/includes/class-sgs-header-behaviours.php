@@ -36,11 +36,11 @@ final class Sgs_Header_Behaviours {
 	}
 
 	/**
-	 * The pre-paint scroll-restore script, with the project's tier queries filled in.
+	 * The pre-paint header script, with the project's tier queries filled in.
 	 *
-	 * On a reload or a back/forward visit with no hash it takes scroll restoration from the browser, pre-shrinks the header
-	 * row the saved position would shrink, and scrolls to the saved position once the page has settled, so the content does
-	 * not move while the page grows. Every other visit keeps the browser's behaviour.
+	 * Scroll restoration stays with the browser. On a reload or a back/forward visit with no hash, for a page that was scrolled
+	 * past 50, it adds the shrunk classes to the header row before first paint and holds the row's transitions until load, so
+	 * the header does not shrink after first paint and move the content. Every other visit is untouched.
 	 *
 	 * @return string The script body, without the script tags.
 	 */
@@ -53,28 +53,20 @@ final class Sgs_Header_Behaviours {
 var d=document,h=d.documentElement,store=null;
 try{store=window.sessionStorage;}catch(e){}
 if(!store){return;}
-var st=history.state,id=st&&st.sgsScrollId;
-if(!id){
-id=Math.random().toString(36).slice(2)+Date.now().toString(36);
-try{history.replaceState(Object.assign({},st&&typeof st==='object'?st:{},{sgsScrollId:id}),'');}catch(e){}
-}
-var KEY='sgs-scroll:'+id;
+var KEY='sgs-scrolled:'+location.pathname+location.search;
 window.addEventListener('pagehide',function(){
 try{
-if(d.querySelector('[data-sgs-row-shrink]')){store.setItem(KEY,String(Math.round(window.scrollY)));}else{store.removeItem(KEY);}
+if(window.scrollY>50&&d.querySelector('[data-sgs-row-shrink]')){store.setItem(KEY,'1');}else{store.removeItem(KEY);}
 }catch(e){}
 });
 var nav=window.performance&&performance.getEntriesByType?performance.getEntriesByType('navigation')[0]:null;
 var type=nav?nav.type:'';
 if((type!=='reload'&&type!=='back_forward')||location.hash){return;}
 if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
-var saved=parseInt(store.getItem(KEY),10);
-if(!(saved>0)){return;}
-try{history.scrollRestoration='manual';}catch(e){return;}
+if(!(window.scrollY>50||store.getItem(KEY)==='1')){return;}
 var tier='desktop';
 if(matchMedia('__SGS_MOBILE_QUERY__').matches){tier='mobile';}else if(matchMedia('__SGS_TABLET_QUERY__').matches){tier='tablet';}
-var shrink=saved>50,applied=false,jumped=false;
-h.setAttribute('data-sgs-scroll-restore',shrink?'shrunk':'1');
+h.setAttribute('data-sgs-scroll-restore','shrunk');
 var hold=d.createElement('style');
 hold.textContent='html[data-sgs-scroll-restore] .sgs-row-behaviour,html[data-sgs-scroll-restore] .sgs-row-behaviour>.sgs-container__inner{transition:none!important}';
 (d.head||h).appendChild(hold);
@@ -86,33 +78,14 @@ if(tiers.indexOf(tier)!==-1){rows[i].classList.add('is-row-shrink-active','is-ro
 }
 return n;
 }
-function jump(){window.scrollTo({top:saved,left:0,behavior:'instant'});}
-function early(){
-if(shrink&&!applied){applied=apply()>0;}
-if(!jumped&&d.body&&d.body.scrollHeight>=saved+window.innerHeight){jumped=true;jump();}
-if((!shrink||applied)&&jumped){mo.disconnect();}
-}
-var mo=new MutationObserver(early);
+var mo=new MutationObserver(function(){if(apply()){mo.disconnect();}});
+apply();
 mo.observe(h,{childList:true,subtree:true});
-early();
-d.addEventListener('DOMContentLoaded',function(){
-if(shrink){apply();}
-if(!jumped){jumped=true;jump();}
-mo.disconnect();
-});
+d.addEventListener('DOMContentLoaded',function(){apply();mo.disconnect();});
 function release(){
 requestAnimationFrame(function(){requestAnimationFrame(function(){h.removeAttribute('data-sgs-scroll-restore');if(hold.parentNode){hold.parentNode.removeChild(hold);}});});
 }
-function settle(){
-if(Math.abs(window.scrollY-saved)>1){jump();}
-release();
-}
-function afterLayout(){
-requestAnimationFrame(function(){
-if(d.fonts&&d.fonts.ready){d.fonts.ready.then(settle,settle);}else{settle();}
-});
-}
-if(d.readyState==='complete'){afterLayout();}else{window.addEventListener('load',afterLayout);}
+if(d.readyState==='complete'){release();}else{window.addEventListener('load',release);}
 })();
 JS
 		);

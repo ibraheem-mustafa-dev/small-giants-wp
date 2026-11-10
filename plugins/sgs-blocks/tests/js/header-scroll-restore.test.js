@@ -1,8 +1,8 @@
 /**
- * The pre-paint scroll-restore script (class-sgs-header-behaviours.php::scroll_restore_script) acts only on a reload or a
- * back/forward visit with no hash, no reduced-motion preference and a position stored for this history entry. A position is
- * stored only by a page that carries a shrink row, so every other page keeps the native restore. The restore is instant,
- * runs as soon as the content is tall enough or parsed, and is re-asserted after load only when it drifted.
+ * The pre-paint header script (class-sgs-header-behaviours.php::scroll_restore_script) leaves scroll restoration to the
+ * browser. On a reload or back/forward visit with no hash, when the page was scrolled past 50 (now at parse, or flagged by
+ * the last pagehide), it adds the shrunk classes to the header row before first paint with transitions held until load.
+ * It never stores a position, never scrolls, never touches history.
  */
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -17,24 +17,21 @@ const script = match
 	: '';
 
 const ROW = '<div class="sgs-site-header-row--middle sgs-row-behaviour" data-sgs-row-shrink="desktop tablet"></div>';
-const KEY = 'sgs-scroll:t1';
-const INSTANT = { top: 600, left: 0, behavior: 'instant' };
+const KEY = 'sgs-scrolled:/shop/';
 
 function setScrollY( y ) {
 	Object.defineProperty( window, 'scrollY', { value: y, configurable: true } );
 }
 
-function run( { type = 'reload', hash = '', stored = '600', reduced = false, width = 1440, body = ROW, token = 't1', scrollHeight = 0 } = {} ) {
+function run( { type = 'reload', hash = '', flag = '1', reduced = false, width = 1440, body = ROW, scrollY = 0 } = {} ) {
 	document.head.innerHTML = '';
 	document.documentElement.removeAttribute( 'data-sgs-scroll-restore' );
 	document.body.innerHTML = body;
-	Object.defineProperty( document.body, 'scrollHeight', { value: scrollHeight, configurable: true } );
-	Object.defineProperty( window, 'innerHeight', { value: 900, configurable: true } );
-	setScrollY( 0 );
-	window.history.replaceState( token ? { sgsScrollId: token } : null, '', '/shop/' + hash );
+	setScrollY( scrollY );
+	window.history.replaceState( null, '', '/shop/' + hash );
 	window.sessionStorage.clear();
-	if ( stored !== null ) {
-		window.sessionStorage.setItem( KEY, stored );
+	if ( flag !== null ) {
+		window.sessionStorage.setItem( KEY, flag );
 	}
 	window.performance.getEntriesByType = () => [ { type } ];
 	window.matchMedia = ( q ) => ( {
@@ -42,141 +39,96 @@ function run( { type = 'reload', hash = '', stored = '600', reduced = false, wid
 	} );
 	window.scrollTo = jest.fn();
 	window.history.scrollRestoration = 'auto';
+	jest.spyOn( window.history, 'replaceState' );
 	new Function( script )();
-	return document.querySelector( '.sgs-row-behaviour' );
-}
-
-function flushFrames( frames ) {
-	while ( frames.length ) {
-		frames.shift()();
-	}
+	const calls = window.history.replaceState.mock.calls.length;
+	window.history.replaceState.mockRestore();
+	return { row: document.querySelector( '.sgs-row-behaviour' ), replaceCalls: calls };
 }
 
 test( 'the script is found in the class', () => {
-	expect( script ).toContain( 'scrollRestoration' );
+	expect( script ).toContain( 'sgs-scrolled:' );
 } );
 
-test( 'a reload with a stored position above 50 takes restoration and pre-shrinks the row', () => {
-	const row = run();
-	expect( window.history.scrollRestoration ).toBe( 'manual' );
+test( 'a reload flagged as scrolled pre-shrinks the row and leaves native restoration alone', () => {
+	const { row, replaceCalls } = run();
 	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( true );
 	expect( row.classList.contains( 'is-row-shrink-active' ) ).toBe( true );
 	expect( document.documentElement.getAttribute( 'data-sgs-scroll-restore' ) ).toBe( 'shrunk' );
 	expect( document.head.textContent ).toContain( 'transition:none!important' );
+	expect( window.history.scrollRestoration ).toBe( 'auto' );
+	expect( window.scrollTo ).not.toHaveBeenCalled();
+	expect( replaceCalls ).toBe( 0 );
 } );
 
 test( 'back_forward behaves like reload', () => {
-	run( { type: 'back_forward' } );
-	expect( window.history.scrollRestoration ).toBe( 'manual' );
+	const { row } = run( { type: 'back_forward' } );
+	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( true );
 } );
 
-test( 'a stored position of 50 or less restores without shrinking', () => {
-	const row = run( { stored: '30' } );
-	expect( window.history.scrollRestoration ).toBe( 'manual' );
+test( 'a page already scrolled past 50 at parse is pre-shrunk without a flag', () => {
+	const { row } = run( { flag: null, scrollY: 300 } );
+	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( true );
+} );
+
+test( 'a normal navigation is left alone', () => {
+	const { row } = run( { type: 'navigate' } );
 	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( false );
 } );
 
-test( 'a normal navigation keeps the browser behaviour', () => {
-	const row = run( { type: 'navigate' } );
-	expect( window.history.scrollRestoration ).toBe( 'auto' );
+test( 'a URL with a hash is left alone', () => {
+	const { row } = run( { hash: '#faq' } );
 	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( false );
 } );
 
-test( 'a URL with a hash keeps the browser behaviour', () => {
-	run( { hash: '#faq' } );
-	expect( window.history.scrollRestoration ).toBe( 'auto' );
+test( 'reduced motion is left alone', () => {
+	const { row } = run( { reduced: true } );
+	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( false );
 } );
 
-test( 'reduced motion keeps the browser behaviour', () => {
-	run( { reduced: true } );
-	expect( window.history.scrollRestoration ).toBe( 'auto' );
-} );
-
-test( 'no stored position keeps the browser behaviour', () => {
-	run( { stored: null } );
-	expect( window.history.scrollRestoration ).toBe( 'auto' );
+test( 'a page that was not scrolled is left alone', () => {
+	const { row } = run( { flag: null } );
+	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( false );
+	expect( document.documentElement.hasAttribute( 'data-sgs-scroll-restore' ) ).toBe( false );
 } );
 
 test( 'a tier where the row does not shrink is left alone', () => {
-	const row = run( { width: 375 } );
+	const { row } = run( { width: 375 } );
 	expect( row.classList.contains( 'is-row-shrunk' ) ).toBe( false );
 } );
 
-test( 'the position is stored per history entry on pagehide, by a page with a shrink row', () => {
-	run( { type: 'navigate', stored: null } );
-	expect( window.history.state.sgsScrollId ).toBe( 't1' );
+test( 'pagehide flags a scrolled page that has a shrink row, holding no position', () => {
+	run( { type: 'navigate', flag: null } );
 	setScrollY( 321 );
 	window.dispatchEvent( new Event( 'pagehide' ) );
-	expect( window.sessionStorage.getItem( KEY ) ).toBe( '321' );
+	expect( window.sessionStorage.getItem( KEY ) ).toBe( '1' );
 } );
 
-test( 'a history entry without a token gets one, and its position is stored under it', () => {
-	run( { type: 'navigate', stored: null, token: null } );
-	const id = window.history.state && window.history.state.sgsScrollId;
-	expect( typeof id ).toBe( 'string' );
-	setScrollY( 77 );
+test( 'pagehide clears the flag for a page at the top or without a shrink row', () => {
+	run( { type: 'navigate', flag: '1' } );
+	setScrollY( 10 );
 	window.dispatchEvent( new Event( 'pagehide' ) );
-	expect( window.sessionStorage.getItem( 'sgs-scroll:' + id ) ).toBe( '77' );
-} );
-
-test( 'a page with no shrink row stores nothing and leaves native restoration', () => {
-	run( { type: 'navigate', stored: '500', body: '<div></div>' } );
+	expect( window.sessionStorage.getItem( KEY ) ).toBe( null );
+	run( { type: 'navigate', flag: '1', body: '<div></div>' } );
 	setScrollY( 400 );
 	window.dispatchEvent( new Event( 'pagehide' ) );
 	expect( window.sessionStorage.getItem( KEY ) ).toBe( null );
-	run( { body: '<div></div>', stored: null } );
-	expect( window.history.scrollRestoration ).toBe( 'auto' );
 } );
 
-test( 'the restore is instant and runs once the content is tall enough, before load', () => {
-	run( { scrollHeight: 600 + 900 } );
-	document.body.appendChild( document.createElement( 'p' ) );
-	return Promise.resolve().then( () => {
-		expect( window.scrollTo ).toHaveBeenCalledWith( INSTANT );
-	} );
-} );
-
-test( 'the restore runs at DOMContentLoaded when the content is still short', () => {
-	run( { scrollHeight: 100 } );
-	document.body.appendChild( document.createElement( 'p' ) );
-	return Promise.resolve().then( () => {
-		expect( window.scrollTo ).not.toHaveBeenCalled();
-		document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
-		expect( window.scrollTo ).toHaveBeenCalledWith( INSTANT );
-	} );
-} );
-
-test( 'after load the position is left alone when it did not drift', () => {
+test( 'the hold is released two frames after load', () => {
 	const frames = [];
 	window.requestAnimationFrame = ( fn ) => frames.push( fn );
-	run( { scrollHeight: 100 } );
-	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
-	window.scrollTo.mockClear();
-	setScrollY( 600 );
+	run();
+	expect( document.documentElement.hasAttribute( 'data-sgs-scroll-restore' ) ).toBe( true );
 	window.dispatchEvent( new Event( 'load' ) );
-	flushFrames( frames );
-	return Promise.resolve().then( () => {
-		flushFrames( frames );
-		expect( window.scrollTo ).not.toHaveBeenCalled();
-	} );
+	while ( frames.length ) {
+		frames.shift()();
+	}
+	expect( document.documentElement.hasAttribute( 'data-sgs-scroll-restore' ) ).toBe( false );
+	expect( document.head.textContent ).not.toContain( 'transition:none' );
 } );
 
-test( 'after load a drifted position is put back', () => {
-	const frames = [];
-	window.requestAnimationFrame = ( fn ) => frames.push( fn );
-	run( { scrollHeight: 100 } );
-	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
-	window.scrollTo.mockClear();
-	setScrollY( 626 );
-	window.dispatchEvent( new Event( 'load' ) );
-	flushFrames( frames );
-	return Promise.resolve().then( () => {
-		flushFrames( frames );
-		expect( window.scrollTo ).toHaveBeenCalledWith( INSTANT );
-	} );
-} );
-
-test( 'the row tick keeps the shrunk class while the restore is pending', () => {
+test( 'the row tick keeps the shrunk class while the hold is pending', () => {
 	const view = fs.readFileSync( viewPath, 'utf8' );
 	expect( view ).toContain( "'data-sgs-scroll-restore'" );
 } );
