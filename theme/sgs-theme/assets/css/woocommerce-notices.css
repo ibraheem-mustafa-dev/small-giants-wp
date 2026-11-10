@@ -74,6 +74,30 @@
 	margin: 0;
 }
 
+/* The action link reads as a text link like the site's other text links: the text colour, underlined, in the
+   notice's own case and weight; never a grey or letter-spaced button. */
+.wc-block-components-notice-banner .wc-block-components-notice-banner__content .button,
+.wc-block-components-notice-banner .wc-block-components-notice-banner__content a,
+.woocommerce-info .button,
+.woocommerce-message .button,
+.woocommerce-error .button,
+.woocommerce-info a,
+.woocommerce-message a,
+.woocommerce-error a {
+	color: var(--wp--preset--color--text, currentColor);
+	background: none;
+	border: 0;
+	padding: 0;
+	min-height: 0;
+	box-shadow: none;
+	font: inherit;
+	letter-spacing: normal;
+	text-transform: none;
+	text-decoration-line: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
 .wc-block-components-notice-banner.is-error ul {
 	margin: 0;
 	padding: 0;

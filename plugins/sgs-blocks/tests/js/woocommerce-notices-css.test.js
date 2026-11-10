@@ -19,6 +19,16 @@ describe( 'woocommerce notices', () => {
 		expect( css ).toContain( `--wp--preset--color--${ border }` );
 	} );
 
+	test( 'the action link is a plain text link in the text colour, underlined, never a grey button', () => {
+		const start = css.indexOf( '/* The action link reads as a text link' );
+		expect( start ).toBeGreaterThan( -1 );
+		const rule = css.slice( start, css.indexOf( '}', start ) );
+		expect( rule ).toContain( 'color: var(--wp--preset--color--text' );
+		expect( rule ).toContain( 'text-decoration-line: underline' );
+		expect( rule ).toContain( 'background: none' );
+		expect( rule ).toContain( 'text-transform: none' );
+	} );
+
 	test( 'covers blocks and classic notices', () => {
 		for ( const s of [ '.is-success', '.is-error', '.is-warning', '.woocommerce-info', '.woocommerce-message', '.woocommerce-error' ] ) {
 			expect( css ).toContain( s );
