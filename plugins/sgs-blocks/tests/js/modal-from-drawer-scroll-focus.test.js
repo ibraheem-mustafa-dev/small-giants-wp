@@ -94,3 +94,51 @@ test( 'focus returns to a plain opener that is still shown', () => {
 	restoreModalFocus( dialog );
 	expect( document.activeElement ).toBe( burger );
 } );
+
+describe( 'a drawer id that is not selector-safe', () => {
+	const BS = String.fromCharCode( 92 );
+	const ID = `d"q${ BS }x`; // d"q, backslash, x
+	const ESCAPED_SELECTOR = `[aria-controls="d${ BS }"q${ BS }${ BS }x"]`; // each quote and backslash of the id escaped
+
+	const setup = () => {
+		document.body.innerHTML = `
+			<button id="burger"></button>
+			<dialog id="drawer" data-sgs-nav-drawer=""><a id="link" href="#x">x</a></dialog>
+			<dialog id="m" class="sgs-modal__dialog"><button class="sgs-modal__close">x</button></dialog>`;
+		document.getElementById( 'drawer' ).id = ID;
+		const burger = document.getElementById( 'burger' );
+		burger.setAttribute( 'aria-controls', ID );
+		visible( burger );
+		const dialog = document.getElementById( 'm' );
+		dialog.showModal = () => dialog.setAttribute( 'open', '' );
+		const link = document.getElementById( 'link' );
+		link.focus();
+		const { openModal, restoreModalFocus } = require( '../../src/blocks/modal/modal-core' );
+		openModal( dialog, null, link );
+		link.blur();
+		// jsdom's selector engine can hang on a raw quote, so the browser's behaviour is stood in for: an unescaped
+		// quote throws a SyntaxError, the escaped selector finds the burger.
+		const original = document.querySelector.bind( document );
+		jest.spyOn( document, 'querySelector' ).mockImplementation( ( selector ) => {
+			if ( selector.includes( 'd"q' ) && selector !== ESCAPED_SELECTOR ) {
+				throw new SyntaxError( 'not a valid selector' );
+			}
+			return selector === ESCAPED_SELECTOR ? burger : original( selector );
+		} );
+		return { dialog, burger, restoreModalFocus };
+	};
+
+	test( 'with CSS.escape it finds the burger and does not throw', () => {
+		window.CSS = { escape: ( v ) => v.split( '' ).map( ( ch ) => ( '"' === ch || BS === ch ? BS + ch : ch ) ).join( '' ) };
+		const { dialog, burger, restoreModalFocus } = setup();
+		expect( () => restoreModalFocus( dialog ) ).not.toThrow();
+		expect( document.activeElement ).toBe( burger );
+	} );
+
+	test( 'without CSS.escape it compares the attribute and finds the burger', () => {
+		delete window.CSS;
+		const { dialog, burger, restoreModalFocus } = setup();
+		expect( () => restoreModalFocus( dialog ) ).not.toThrow();
+		expect( document.activeElement ).toBe( burger );
+	} );
+} );

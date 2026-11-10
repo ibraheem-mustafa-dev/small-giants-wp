@@ -39,6 +39,20 @@ function isShown( el ) {
 }
 
 /**
+ * The control whose `aria-controls` names an id. The id is escaped for the selector; without `CSS.escape` the attributes
+ * are compared directly, so an id holding a quote or backslash never throws.
+ *
+ * @param {string} id The controlled element's id.
+ * @return {Element|null} The first control naming it.
+ */
+function controlOf( id ) {
+	if ( window.CSS && 'function' === typeof window.CSS.escape ) {
+		return document.querySelector( `[aria-controls="${ window.CSS.escape( id ) }"]` );
+	}
+	return Array.from( document.querySelectorAll( '[aria-controls]' ) ).find( ( el ) => el.getAttribute( 'aria-controls' ) === id ) || null;
+}
+
+/**
  * Put focus back after a modal closes. The browser returns it to the element focused at open, which is unusable when that
  * was a link inside a nav drawer that has since closed (focus then falls to the body). The opener is used when still
  * shown; otherwise the control that opened its drawer (`aria-controls`).
@@ -60,7 +74,7 @@ export function restoreModalFocus( dialog ) {
 		return;
 	}
 	const drawer = target ? target.closest( '[data-sgs-nav-drawer]' ) : null;
-	const burger = drawer && drawer.id ? document.querySelector( `[aria-controls="${ drawer.id }"]` ) : null;
+	const burger = drawer && drawer.id ? controlOf( drawer.id ) : null;
 	if ( isShown( burger ) ) {
 		burger.focus( { preventScroll: true } );
 	}
