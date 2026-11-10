@@ -1,0 +1,30 @@
+{
+	"description": "The helper decision (Spec 49 §7.3): PHP sgs_media_needs_helper and JS needsHelper must agree on every case, and on the expected answer.",
+	"cases": [
+		{ "id": "nothing-set", "prefix": "", "attrs": {}, "motion": {}, "expected": false },
+		{ "id": "height-fill-desktop", "prefix": "", "attrs": { "height": "fill" }, "motion": {}, "expected": true },
+		{ "id": "height-fill-on-tablet-tier", "prefix": "item", "attrs": { "itemHeight": { "desktop": "auto", "tablet": "fill" } }, "motion": {}, "expected": true },
+		{ "id": "overlay-colour", "prefix": "", "attrs": { "overlayColour": "#000" }, "motion": {}, "expected": true },
+		{ "id": "overlay-gradient-tier", "prefix": "hero", "attrs": { "heroOverlayGradient": { "mobile": "linear-gradient(red, blue)" } }, "motion": {}, "expected": true },
+		{ "id": "overlay-hover-colour", "prefix": "", "attrs": { "overlayColourHover": "#111" }, "motion": {}, "expected": true },
+		{ "id": "overlay-hover-other-key", "prefix": "", "attrs": { "overlayOpacityHover": 0.4 }, "motion": {}, "expected": true },
+		{ "id": "overlay-hover-blank", "prefix": "", "attrs": { "overlayColourHover": "   " }, "motion": {}, "expected": false },
+		{ "id": "overlay-inherit-only", "prefix": "", "attrs": { "overlayColour": { "desktop": "inherit" } }, "motion": {}, "expected": false },
+		{ "id": "overlay-empty-array", "prefix": "", "attrs": { "overlayColour": [] }, "motion": {}, "expected": false },
+		{ "id": "shape-mask", "prefix": "", "attrs": { "shape": "blob" }, "motion": {}, "expected": true },
+		{ "id": "shape-object-mask", "prefix": "", "attrs": { "shape": { "shape": "hexagon" } }, "motion": {}, "expected": true },
+		{ "id": "shape-circle", "prefix": "", "attrs": { "shape": "circle" }, "motion": {}, "expected": false },
+		{ "id": "shape-object-without-shape-key", "prefix": "", "attrs": { "shape": { "angle": 4 } }, "motion": {}, "expected": false },
+		{ "id": "shape-inherit", "prefix": "", "attrs": { "shape": { "desktop": "inherit" } }, "motion": {}, "expected": false },
+		{ "id": "hover-scale", "prefix": "", "attrs": {}, "motion": { "hoverScale": 1.05 }, "expected": true },
+		{ "id": "hover-scale-one", "prefix": "", "attrs": {}, "motion": { "hoverScale": 1 }, "expected": false },
+		{ "id": "effect-parallax", "prefix": "", "attrs": {}, "motion": { "effects": [ "parallax" ] }, "expected": true },
+		{ "id": "effect-surface-treatment", "prefix": "", "attrs": {}, "motion": { "effects": [ "surface-treatment" ] }, "expected": true },
+		{ "id": "effect-registry-id", "prefix": "", "attrs": {}, "motion": { "effects": [ "fx-surface-treatment" ] }, "expected": true },
+		{ "id": "effect-alias-surface", "prefix": "", "attrs": {}, "motion": { "effects": [ "surface" ] }, "expected": true },
+		{ "id": "effect-not-painting", "prefix": "", "attrs": {}, "motion": { "effects": [ "fade", "count-up" ] }, "expected": false },
+		{ "id": "entrance-clip", "prefix": "", "attrs": {}, "motion": { "entrance": "clip-up" }, "expected": true },
+		{ "id": "entrance-fade", "prefix": "", "attrs": {}, "motion": { "entrance": "fade-up" }, "expected": false },
+		{ "id": "caption-and-link-only", "prefix": "", "attrs": { "caption": "C", "linkUrl": "/x" }, "motion": {}, "expected": false }
+	]
+}

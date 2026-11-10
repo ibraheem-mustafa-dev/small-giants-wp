@@ -19,24 +19,57 @@
  */
 import { emitSlot } from './emit/emitters.js';
 import { mediaAttrName } from '../MediaElementControls.js';
+import helperEffects from '../../../includes/media/helper-effects.json';
 
 const MASK_FREE_SHAPES = [ '', 'none', 'circle', 'ellipse', 'pill' ];
 
-/** Effects that paint a layer on, or move, the media part (§7.3). */
-export const HELPER_EFFECTS = [ 'parallax', 'ken-burns', 'sheen', 'glare', 'ripple', 'curtain', 'surface-treatment' ];
+/**
+ * Effects that paint a layer on, or move, the media part (§7.3). The list is `includes/media/helper-effects.json`, the
+ * file `render-chrome.php::sgs_media_effect_paints_layer` reads, so the editor and the page decide alike.
+ */
+export const HELPER_EFFECTS = helperEffects.effects;
 
 /**
- * Every device's value of a per-device attribute.
+ * Whether an effect paints a layer: a registry id (`fx-surface-treatment`) and a listed alias (`surface`) count.
+ *
+ * @param {string} effect The effect name the motion layer reports.
+ * @return {boolean} True when the helper is needed.
+ */
+export function effectPaintsLayer( effect ) {
+	const bare = String( effect ).replace( /^fx-/, '' );
+	return HELPER_EFFECTS.includes( helperEffects.aliases[ bare ] ?? bare );
+}
+
+/**
+ * The same test the PHP helper uses for a stored value: a string needs a character that is not a space; anything else
+ * must be non-empty (no `0`, `false`, `null`, `[]` or `{}`).
+ *
+ * @param {*} value A stored value.
+ * @return {boolean} True when the value is set.
+ */
+function isFilled( value ) {
+	if ( 'string' === typeof value ) {
+		return '' !== value.trim();
+	}
+	if ( value && 'object' === typeof value ) {
+		return Object.keys( value ).length > 0;
+	}
+	return !! value;
+}
+
+/**
+ * Every device's value of a per-device attribute, as `sgs_media_device_values` reads it: a blank, `'inherit'` or empty
+ * array means the device inherits, so it is not a value.
  *
  * @param {*} stored A tier object, or a plain value (the desktop value).
- * @return {Array} The non-blank values, desktop first.
+ * @return {Array} The values that are set, desktop first.
  */
 function everyDevice( stored ) {
 	const list =
 		stored && 'object' === typeof stored && ! Array.isArray( stored ) && ( 'desktop' in stored || 'tablet' in stored || 'mobile' in stored )
 			? [ stored.desktop, stored.tablet, stored.mobile ]
 			: [ stored ];
-	return list.filter( ( v ) => undefined !== v && null !== v && '' !== v );
+	return list.filter( ( v ) => undefined !== v && null !== v && '' !== v && 'inherit' !== v && ! ( Array.isArray( v ) && ! v.length ) );
 }
 
 /**
@@ -50,15 +83,20 @@ export function needsHelper( slot, attrs, motion = {} ) {
 	if ( read( 'Height' ).includes( 'fill' ) ) {
 		return true;
 	}
-	if ( [ 'OverlayColour', 'OverlayGradient', 'OverlayColourHover', 'OverlayGradientHover' ].some( ( base ) => read( base ).length ) ) {
+	if ( [ 'OverlayColour', 'OverlayGradient' ].some( ( base ) => read( base ).some( isFilled ) ) ) {
 		return true;
 	}
-	if ( read( 'Shape' ).some( ( shape ) => ! MASK_FREE_SHAPES.includes( 'object' === typeof shape ? shape?.shape : shape ) ) ) {
+	// Any stored `{prefix}Overlay…Hover…` setting is an overlay hover form.
+	const overlayKey = mediaAttrName( slot?.prefix || '', 'Overlay' );
+	if ( Object.entries( attrs || {} ).some( ( [ key, value ] ) => key.startsWith( overlayKey ) && key.includes( 'Hover' ) && isFilled( value ) ) ) {
+		return true;
+	}
+	if ( read( 'Shape' ).some( ( shape ) => ! MASK_FREE_SHAPES.includes( String( ( 'object' === typeof shape ? shape?.shape : shape ) ?? '' ) ) ) ) {
 		return true;
 	}
 	const effects = Array.isArray( motion?.effects ) ? motion.effects : [];
 	const entrance = String( motion?.entrance || '' );
-	return Number( motion?.hoverScale ) > 1 || effects.some( ( e ) => HELPER_EFFECTS.includes( e ) ) || entrance.startsWith( 'clip' );
+	return Number( motion?.hoverScale ) > 1 || effects.some( effectPaintsLayer ) || entrance.includes( 'clip' );
 }
 
 /** The rule text one atom contributes. */

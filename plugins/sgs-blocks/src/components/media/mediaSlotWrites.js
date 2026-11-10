@@ -47,19 +47,67 @@ export function hasFile( source ) {
 }
 
 /**
- * The iframe address for a YouTube or Vimeo link.
+ * A pasted start time as whole seconds: `90`, `90s`, `1m30s` or `1h2m3s` (the twin of `sgs_media_embed_start_seconds`).
+ *
+ * @param {string|undefined} raw The pasted value.
+ * @return {number} Seconds; 0 when blank or not a time.
+ */
+function startSeconds( raw ) {
+	const text = String( raw ?? '' ).trim().toLowerCase();
+	if ( /^\d+$/.test( text ) ) {
+		return Number( text );
+	}
+	const m = text.match( /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/ );
+	return m && text ? Number( m[ 1 ] || 0 ) * 3600 + Number( m[ 2 ] || 0 ) * 60 + Number( m[ 3 ] || 0 ) : 0;
+}
+
+/**
+ * The iframe address for a YouTube or Vimeo link, as `sgs_media_normalise_embed_url` prints it with no playback
+ * options: YouTube `watch`, `embed`, `shorts`, `live` and `youtu.be` links keep a pasted start time; Vimeo keeps its
+ * privacy hash (`h`, from the query or the `vimeo.com/ID/HASH` path), which an unlisted video needs.
  *
  * @param {string} url The pasted address.
  * @return {string} The embeddable address, or '' when the link is not supported.
  */
 export function embedSrc( url ) {
 	const text = String( url || '' ).trim();
-	const youtube = text.match( /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,20})/i );
-	if ( youtube ) {
-		return `https://www.youtube-nocookie.com/embed/${ youtube[ 1 ] }`;
+	let parsed;
+	try {
+		parsed = new URL( text );
+	} catch {
+		return '';
 	}
-	const vimeo = text.match( /^https?:\/\/(?:www\.|player\.)?vimeo\.com\/(?:video\/)?(\d{5,12})/i );
-	return vimeo ? `https://player.vimeo.com/video/${ vimeo[ 1 ] }` : '';
+	const host = parsed.hostname.toLowerCase();
+	const query = parsed.searchParams;
+	const hashQuery = new URLSearchParams( parsed.hash.replace( /^#/, '' ) );
+	const start = startSeconds( query.get( 'start' ) ?? query.get( 't' ) ?? hashQuery.get( 't' ) );
+	let youtube = null;
+	if ( [ 'youtube.com', 'www.youtube.com', 'm.youtube.com' ].includes( host ) ) {
+		const candidate = query.get( 'v' ) || ( parsed.pathname.match( /^\/(?:embed|shorts|live)\/([\w-]+)/ ) || [] )[ 1 ];
+		youtube = candidate && /^[\w-]+$/.test( candidate ) ? candidate : null;
+	} else if ( [ 'youtube-nocookie.com', 'www.youtube-nocookie.com' ].includes( host ) ) {
+		youtube = ( parsed.pathname.match( /^\/embed\/([\w-]+)/ ) || [] )[ 1 ] || null;
+	} else if ( 'youtu.be' === host ) {
+		youtube = ( parsed.pathname.match( /^\/([\w-]+)/ ) || [] )[ 1 ] || null;
+	}
+	if ( youtube ) {
+		return `https://www.youtube-nocookie.com/embed/${ youtube }${ start > 0 ? `?start=${ start }` : '' }`;
+	}
+	let vimeo = null;
+	let hash = '';
+	if ( 'player.vimeo.com' === host ) {
+		vimeo = ( parsed.pathname.match( /^\/video\/(\d+)/ ) || [] )[ 1 ];
+		hash = query.get( 'h' ) || '';
+	} else if ( [ 'vimeo.com', 'www.vimeo.com' ].includes( host ) ) {
+		const m = parsed.pathname.match( /^\/(\d+)(?:\/([A-Za-z0-9]+))?/ );
+		vimeo = m?.[ 1 ];
+		hash = m?.[ 2 ] || query.get( 'h' ) || '';
+	}
+	if ( ! vimeo ) {
+		return '';
+	}
+	const safeHash = /^[A-Za-z0-9]+$/.test( hash ) ? hash : '';
+	return `https://player.vimeo.com/video/${ vimeo }${ safeHash ? `?h=${ safeHash }` : '' }${ start > 0 ? `#t=${ start }s` : '' }`;
 }
 
 /** A device's source built from a library attachment. */

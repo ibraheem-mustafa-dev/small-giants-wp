@@ -32,3 +32,49 @@
 	z-index: 1;
 	pointer-events: none;
 }
+
+/*
+ * The pause button of an autoplaying video (Spec 49 §8, WCAG 2.2.2). Printed `hidden`; the view module shows it while
+ * the video is shown and may autoplay. A 44px target in the stack's bottom-right corner above the cover and the video.
+ * It carries two icons, the bars (pause) and the triangle (play); the module shows the one that matches the video.
+ * No rule sets `display`, so the `hidden` attribute keeps hiding the button and the icon that is not current.
+ */
+.sgs-media-stack > .sgs-media-pause {
+	grid-area: 1 / 1;
+	justify-self: end;
+	align-self: end;
+	z-index: 3;
+	position: relative;
+	width: 44px;
+	height: 44px;
+	margin: 12px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: rgb(255 255 255 / 0.85);
+	color: #111;
+	cursor: pointer;
+}
+
+.sgs-media-pause__bars,
+.sgs-media-pause__play {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	width: 0;
+	height: 0;
+}
+
+.sgs-media-pause__bars {
+	width: 10px;
+	height: 14px;
+	border-style: solid;
+	border-color: currentcolor;
+	border-width: 0 4px;
+}
+
+.sgs-media-pause__play {
+	border-style: solid;
+	border-color: transparent transparent transparent currentcolor;
+	border-width: 7px 0 7px 12px;
+}

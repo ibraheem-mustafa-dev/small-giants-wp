@@ -35,6 +35,8 @@ foreach ( glob( $sgs_plugin . '/includes/media/atoms/*.php' ) as $sgs_file ) {
 	require_once $sgs_file;
 }
 require_once $sgs_plugin . '/includes/media/emit-none.php';
+require_once $sgs_plugin . '/includes/media/render-sources.php';
+require_once $sgs_plugin . '/includes/media/render-chrome.php';
 
 $cases = json_decode( (string) file_get_contents( $argv[1] ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 $out   = array();
@@ -61,6 +63,20 @@ foreach ( $cases['lengths'] ?? array() as $i => $raw ) {
 		'colour' => sgs_media_colour( $raw ),
 		'gradient' => sgs_media_gradient( $raw ),
 		'url'    => sgs_media_url( $raw ),
+	);
+}
+// The helper decision (§7.3) for each case: the JS twin is `mediaPreview.js::needsHelper`.
+$out['__helpers'] = array();
+foreach ( $cases['helpers'] ?? array() as $case ) {
+	$motion                          = $case['motion'] ?? array();
+	$out['__helpers'][ $case['id'] ] = sgs_media_needs_helper(
+		(string) $case['prefix'],
+		$case['attrs'],
+		array(
+			'effects'  => $motion['effects'] ?? array(),
+			'entrance' => $motion['entrance'] ?? '',
+			'hover'    => array( 'scale' => $motion['hoverScale'] ?? 0 ),
+		)
 	);
 }
 echo wp_json_encode_stub( $out );

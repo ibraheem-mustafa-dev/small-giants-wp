@@ -20,6 +20,10 @@ export const SELECT_OPTIONS = {
 		[ 'medium', __( 'Medium', 'sgs-blocks' ) ],
 		[ 'fast', __( 'Fast', 'sgs-blocks' ) ],
 	] ),
+	SvgLayer: options( [
+		[ 'behind', __( 'Behind content', 'sgs-blocks' ) ],
+		[ 'front', __( 'In front of content', 'sgs-blocks' ) ],
+	] ),
 	SvgPosition: options( [
 		[ 'background', __( 'Behind content', 'sgs-blocks' ) ],
 		[ 'foreground', __( 'In front of content', 'sgs-blocks' ) ],

@@ -150,7 +150,8 @@ for ( const s of attrSets ) {
 // PHP side.
 const lengths = [ ...refused, ...breakouts.keep.length, ...breakouts.keep.colour, ...breakouts.keep.gradient, ...breakouts.keep.ratio ];
 const tmp = path.join( os.tmpdir(), `sgs-media-emitter-${ process.pid }.json` );
-fs.writeFileSync( tmp, JSON.stringify( { cases, lengths } ) );
+const helperCases = readJson( 'helper-cases.json' ).cases;
+fs.writeFileSync( tmp, JSON.stringify( { cases, lengths, helpers: helperCases } ) );
 let php;
 try {
 	php = JSON.parse(
@@ -200,6 +201,22 @@ for ( const key of slotCaseKeys ) {
 	}
 }
 ck( `a slot's CSS joined in print order is identical in PHP and JS (${ slotCaseKeys.size } slots)`, 0 === orderMismatches, `${ orderMismatches } differ` );
+
+// 1c. The helper decision (§7.3): PHP `sgs_media_needs_helper` and JS `needsHelper` agree on every case and match the
+// fixture's answer (a case list that is all true, or all false, would pass a broken twin).
+const { needsHelper } = await load( 'src/components/media/mediaPreview.js' );
+let helperMismatches = 0;
+const helperShown = [];
+for ( const c of helperCases ) {
+	const js = needsHelper( { prefix: c.prefix }, c.attrs, c.motion );
+	const ph = php.__helpers[ c.id ];
+	if ( js !== ph || js !== c.expected ) {
+		helperMismatches++;
+		helperShown.push( `${ c.id }: JS ${ js } PHP ${ ph } expected ${ c.expected }` );
+	}
+}
+ck( `PHP and JS decide the helper alike, and as the fixture says, in all ${ helperCases.length } cases`, 0 === helperMismatches, `${ helperMismatches } differ: ${ helperShown.join( '; ' ) }` );
+ck( 'the helper cases hold both answers', helperCases.some( ( c ) => c.expected ) && helperCases.some( ( c ) => ! c.expected ) );
 
 // 2. Not vacuous: every atom that paints printed something.
 const PAINTS = [ 'sizing', 'layout', 'object-fit', 'focal-point', 'media-padding', 'shape', 'shadow', 'opacity', 'filter', 'overlay', 'svg-presentation' ];
