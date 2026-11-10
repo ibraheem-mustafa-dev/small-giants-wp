@@ -312,11 +312,7 @@
 		"scrimBlur": {
 			"type": "object",
 			"default": {}
-		},
-		"objectFit": {"type":"string","_generated":"media-atoms"},
-		"objectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"objectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"size": {"type":"string","_generated":"media-atoms"}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

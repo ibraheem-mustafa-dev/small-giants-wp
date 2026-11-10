@@ -3312,21 +3312,7 @@
 			"type": "boolean",
 			"default": true,
 			"description": "The card's resting drop shadow. Off = border only; the hover lift keeps its shadow."
-		},
-		"mainObjectFit": {"type":"string","_generated":"media-atoms"},
-		"mainObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"mainObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"mainSize": {"type":"string","_generated":"media-atoms"},
-		"mainObjectPosition": {"type":"string","_generated":"media-atoms"},
-		"mainObjectPositionTablet": {"type":"string","_generated":"media-atoms"},
-		"mainObjectPositionMobile": {"type":"string","_generated":"media-atoms"},
-		"mainPosition": {"type":"string","_generated":"media-atoms"},
-		"mainRepeat": {"type":"string","_generated":"media-atoms"},
-		"mainAttachment": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFit": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"thumbSize": {"type":"string","_generated":"media-atoms"}
+		}
 	},
 	"styles": [
 		{

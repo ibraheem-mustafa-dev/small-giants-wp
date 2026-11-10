@@ -918,11 +918,7 @@
 				"vertical-lr"
 			],
 			"default": ""
-		},
-		"sgsObjectFit": {"type":"string","_generated":"media-atoms"},
-		"sgsObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"sgsObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"sgsSize": {"type":"string","_generated":"media-atoms"}
+		}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

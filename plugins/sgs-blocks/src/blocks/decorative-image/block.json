@@ -251,25 +251,7 @@
         "hideOnMobile": {
             "type": "boolean",
             "default": false
-        },
-    	"objectFit": {"type":"string","_generated":"media-atoms"},
-    	"objectFitTablet": {"type":"string","_generated":"media-atoms"},
-    	"objectFitMobile": {"type":"string","_generated":"media-atoms"},
-    	"size": {"type":"string","_generated":"media-atoms"},
-    	"objectPosition": {"type":"string","_generated":"media-atoms"},
-    	"objectPositionTablet": {"type":"string","_generated":"media-atoms"},
-    	"objectPositionMobile": {"type":"string","_generated":"media-atoms"},
-    	"position": {"type":"string","_generated":"media-atoms"},
-    	"repeat": {"type":"string","_generated":"media-atoms"},
-    	"attachment": {"type":"string","_generated":"media-atoms"},
-    	"overlayColour": {"type":"string","_generated":"media-atoms"},
-    	"overlayColourHover": {"type":"string","_generated":"media-atoms"},
-    	"overlayGradient": {"type":"string","_generated":"media-atoms"},
-    	"overlayGradientHover": {"type":"string","_generated":"media-atoms"},
-    	"overlayOpacity": {"type":"number","_generated":"media-atoms"},
-    	"overlayOpacityTablet": {"type":"number","_generated":"media-atoms"},
-    	"overlayOpacityMobile": {"type":"number","_generated":"media-atoms"},
-    	"overlayBlendMode": {"type":"string","_generated":"media-atoms"}
+        }
     },
     "render": "file:./render.php",
     "editorScript": "file:./index.js",

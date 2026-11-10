@@ -963,21 +963,7 @@
 				"vertical-lr"
 			],
 			"default": ""
-		},
-		"avatarObjectFit": {"type":"string","_generated":"media-atoms"},
-		"avatarObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"avatarObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"avatarSize": {"type":"string","_generated":"media-atoms"},
-		"workObjectFit": {"type":"string","_generated":"media-atoms"},
-		"workObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"workObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"workSize": {"type":"string","_generated":"media-atoms"},
-		"workObjectPosition": {"type":"string","_generated":"media-atoms"},
-		"workObjectPositionTablet": {"type":"string","_generated":"media-atoms"},
-		"workObjectPositionMobile": {"type":"string","_generated":"media-atoms"},
-		"workPosition": {"type":"string","_generated":"media-atoms"},
-		"workRepeat": {"type":"string","_generated":"media-atoms"},
-		"workAttachment": {"type":"string","_generated":"media-atoms"}
+		}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

@@ -3927,15 +3927,7 @@
 				"vertical-lr"
 			],
 			"default": ""
-		},
-		"mainObjectFit": {"type":"string","_generated":"media-atoms"},
-		"mainObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"mainObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"mainSize": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFit": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFitTablet": {"type":"string","_generated":"media-atoms"},
-		"thumbObjectFitMobile": {"type":"string","_generated":"media-atoms"},
-		"thumbSize": {"type":"string","_generated":"media-atoms"}
+		}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",
