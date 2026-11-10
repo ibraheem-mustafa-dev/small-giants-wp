@@ -2948,6 +2948,11 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__group",
+   "reason": "each filter group fades in over the duration-fast token as the drawer opens (the draft's group fade); the groups are built in the browser around WooCommerce filter blocks, which take no motion settings"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
