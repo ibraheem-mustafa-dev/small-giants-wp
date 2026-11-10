@@ -40,6 +40,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 # An optional "snapshot" (a repo-relative path) names the target's own snapshot when two
 # sites of one client need different theme.json files (target_snapshot_rel()).
 #
+# "editor_mirror" names the local mirror (scripts/local-wp/README.md) whose block editor ship.py loads with this build
+# before the upload (build-deploy.py --editor-check).
+#
 # "kind" says what the site is for: "canary" (the framework's own live site), "test" (a per-client test site) or
 # "reference" (a hand-built site kept as a read-only reference). scripts/local-wp/push-to-remote.sh, which overwrites
 # a site's database and adds to its uploads from a local mirror, copies only into a "test" site (it reads this dict
@@ -51,6 +54,7 @@ TARGETS = {
         "explicit_opt_in_required": False,
         "client": "mamas-munches",
         "kind": "canary",
+        "editor_mirror": "local-sandybrown",
     },
     # Dedicated Indus Foods test site — separate from sandybrown because
     # sandybrown has a single global active-header/footer/theme-snapshot pointer,
@@ -61,6 +65,7 @@ TARGETS = {
         "explicit_opt_in_required": True,
         "client": "indus-foods",
         "kind": "test",
+        "editor_mirror": "local-indus",
     },
     # Dedicated Eye Care Birmingham test site — sgs-theme + sgs-blocks +
     # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
@@ -77,6 +82,9 @@ TARGETS = {
         "client": "eye-care-ward-end",
         "snapshot": "sites/eye-care-ward-end/theme-snapshot-eye-care-test.json",
         "kind": "reference",
+        # No mirror copies this site; the clone mirror runs the same build, so its editor check still catches a
+        # fatal or a crashed block before upload (ship.py and the deploy rule "editor check before any push").
+        "editor_mirror": "local-eye-care",
     },
     # Second Eye Care test site: the fresh WordPress for the full re-clone of the Eye Care draft;
     # eye-care-test is left untouched. Credentials: .claude/secrets/eye-care-clone-test.env (gitignored).
@@ -86,6 +94,7 @@ TARGETS = {
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
         "kind": "test",
+        "editor_mirror": "local-eye-care",
     },
     # Dedicated Mama's Munches redesign test site: a fresh WordPress for the redesign draft
     # (sites/mamas-munches-redesign/), independent of sandybrown, which keeps the live catalogue.
@@ -96,6 +105,7 @@ TARGETS = {
         "explicit_opt_in_required": True,
         "client": "mamas-munches-redesign",
         "kind": "test",
+        "editor_mirror": "local-mamas",
     },
 }
 

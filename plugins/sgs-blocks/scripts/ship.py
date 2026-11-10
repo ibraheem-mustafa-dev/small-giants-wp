@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""ship.py - one command from a committed tree to a deployed, published, pushed release.
+
+    python plugins/sgs-blocks/scripts/ship.py --target <site> [--reseed auto|yes|no] [--takeover] [--no-push] [--plan]
+
+Steps, each stopping the run on failure:
+  1. Preconditions: tracked files under plugins/ and theme/ are clean, and HEAD is not behind origin/main (rebase first:
+     the gate pass is keyed on HEAD's tree, so a rebase after gating would void it).
+  2. Reseed only when it is needed (--reseed auto): a block.json, the composition seeder or the DB seeder changed since
+     the last commit that regenerated the DB's generated files (consistency/attr-role-map.json). The reseed runs on a
+     private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
+     regenerated files are committed.
+  3. ONE build-deploy.py pass for the target, with SGS_FRAMEWORK_DB pointing at the copy when reseeded: build, both gate
+     tiers, the editor check on the target's own mirror (TARGETS["editor_mirror"] in deploy_common.py) and the deploy.
+     That pass records the gate pass publish needs, so no separate --gate-only run is made.
+  4. Publish the copy to the shared framework DB (only when reseeded).
+  5. git push origin HEAD:main (unless --no-push).
+Another session's commits between your "starting" and "done" messages reject the push; send them before running this.
+--plan prints the steps it would run and exits 0. Self-test: python plugins/sgs-blocks/scripts/tests/test_ship.py
+"""
+from __future__ import annotations
+
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+SCRIPTS = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPTS.parents[2]
+sys.path.insert(0, str(SCRIPTS))
+import deploy_common  # noqa: E402
+
+GENERATED = (
+    "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+    "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+    "plugins/sgs-blocks/scripts/consistency/roster.json",
+    "plugins/sgs-blocks/scripts/dbschema/seed-history.json",
+)
+# The generated file every reseed rewrites: its last commit is the last reseed this tree carries.
+RESEED_MARKER = "plugins/sgs-blocks/scripts/consistency/attr-role-map.json"
+# A change to any of these after that commit means the DB no longer describes the blocks.
+RESEED_TRIGGERS = (
+    "plugins/sgs-blocks/src/blocks/",
+    "plugins/sgs-blocks/scripts/seed-composition-roles.py",
+    "plugins/sgs-blocks/scripts/sgs-update-v2.py",
+    "plugins/sgs-blocks/scripts/dbschema/",
+)
+
+
+def needs_reseed(changed: list[str]) -> list[str]:
+    """The changed paths that make a reseed necessary: a block.json under src/blocks/, or a seeder file."""
+    hits = []
+    for path in changed:
+        p = path.replace("\\", "/")
+        if p.startswith("plugins/sgs-blocks/src/blocks/"):
+            if p.endswith("/block.json"):
+                hits.append(p)
+        elif any(p.startswith(t) for t in RESEED_TRIGGERS):
+            hits.append(p)
+    return hits
+
+
+def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool) -> list[tuple[str, list[str], dict]]:
+    """The ordered steps: (name, argv, extra env). Pure, so the self-test can read it."""
+    py = sys.executable
+    s = "plugins/sgs-blocks/scripts/"
+    steps: list[tuple[str, list[str], dict]] = []
+    db_env = {"SGS_FRAMEWORK_DB": copy} if reseed else {}
+    if reseed:
+        steps += [
+            ("begin", [py, s + "publish-framework-db.py", "begin", "--copy", copy], {}),
+            ("reseed", [py, s + "sgs-update-v2.py", "--db", copy], {}),
+            ("seed-reference", [py, s + "dbschema/seed_reference_data.py"], db_env),
+            ("regenerate", [py, s + "publish-framework-db.py", "regenerate", "--copy", copy, "--restore-first"], {}),
+            ("commit-generated", ["git", "commit", "-q", "-m", "chore(db): generated files from a private reseed (ship.py)", "--", *GENERATED], {}),
+        ]
+    deploy = [py, s + "build-deploy.py", "--target", target]
+    mirror = deploy_common.TARGETS.get(target, {}).get("editor_mirror")
+    if mirror:
+        deploy += ["--editor-check", mirror]
+    if takeover:
+        deploy.append("--takeover")
+    steps.append(("build-deploy", deploy, db_env))
+    if reseed:
+        steps.append(("publish", [py, s + "publish-framework-db.py", "publish", "--copy", copy], {}))
+    if push:
+        steps.append(("push", ["git", "push", "-q", "origin", "HEAD:main"], {}))
+    return steps
+
+
+def git(*args: str) -> str:
+    return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=False).stdout.strip()
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--target", required=True, help="One target from deploy_common.TARGETS")
+    ap.add_argument("--reseed", choices=("auto", "yes", "no"), default="auto")
+    ap.add_argument("--takeover", action="store_true", help="Passed to build-deploy.py (see its help)")
+    ap.add_argument("--no-push", action="store_true")
+    ap.add_argument("--plan", action="store_true", help="Print the steps and exit")
+    args = ap.parse_args()
+    if args.target not in deploy_common.TARGETS:
+        print(f"[ship] unknown target {args.target!r}; known: {', '.join(deploy_common.TARGETS)}", file=sys.stderr)
+        return 2
+
+    dirty = [line for line in git("status", "--porcelain", "--", "plugins", "theme").splitlines() if not line.startswith("??")]
+    if dirty and not args.plan:
+        print("[ship] tracked files under plugins/ or theme/ are not committed:\n  " + "\n  ".join(dirty), file=sys.stderr)
+        return 2
+    git("fetch", "-q", "origin")
+    behind = git("rev-list", "--count", "HEAD..origin/main")
+    if behind not in ("", "0") and not args.plan:
+        print(f"[ship] HEAD is {behind} commit(s) behind origin/main: rebase first, then run ship again.", file=sys.stderr)
+        return 2
+
+    marker = git("log", "-1", "--format=%H", "--", RESEED_MARKER)
+    changed = git("diff", "--name-only", f"{marker}..HEAD").splitlines() if marker else []
+    hits = needs_reseed(changed)
+    reseed = {"yes": True, "no": False}.get(args.reseed, bool(hits))
+    print(f"[ship] last reseed commit {marker[:9] or 'none'}; reseed: {'yes' if reseed else 'no'}"
+          + (f" ({len(hits)} trigger(s): {', '.join(hits[:4])}{' ...' if len(hits) > 4 else ''})" if hits else ""))
+
+    copy = str(Path(tempfile.gettempdir()) / f"ship-{os.getpid()}.db")
+    steps = plan(args.target, reseed, copy, args.takeover, not args.no_push)
+    for name, argv, env in steps:
+        shown = " ".join(argv[1:] if argv[0] == sys.executable else argv)
+        print(f"[ship] {name}: {shown}" + (f"  (env {env})" if env else ""), flush=True)
+        if args.plan:
+            continue
+        if name == "commit-generated":
+            subprocess.run(["git", "add", "--", *GENERATED], cwd=REPO_ROOT, check=False)
+            if not git("diff", "--cached", "--name-only", "--", *GENERATED):
+                print("[ship] commit-generated: nothing changed")
+                continue
+        rc = subprocess.run(argv, cwd=REPO_ROOT, env={**os.environ, **env}, check=False).returncode
+        if rc != 0:
+            print(f"[ship] STOP: {name} exited {rc}", file=sys.stderr)
+            return rc
+    if not args.plan:
+        print(f"[ship] done: main {git('rev-parse', '--short', 'HEAD')}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
