@@ -84,7 +84,8 @@
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
-						"fill"
+						"fill",
+						"motion"
 					],
 					"prefix": "scrim",
 					"attrMap": {

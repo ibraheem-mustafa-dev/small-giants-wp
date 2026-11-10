@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 159,
+  "L3": 160,
   "L5": 27,
   "C1": 3,
   "L2": 2,
@@ -84,6 +84,7 @@
   "sgs/mega-panel::drawerCardLinkBg::C1",
   "sgs/mega-panel::drawerCardLinkColour::C1",
   "sgs/mega-panel::drawerCardLinkShiftHover::C1",
+  "sgs/modal::openStartScale::L3",
   "sgs/modal::scrimBlur::L3",
   "sgs/modal::scrimColour::L3",
   "sgs/modal::scrimColourGradient::L3",
