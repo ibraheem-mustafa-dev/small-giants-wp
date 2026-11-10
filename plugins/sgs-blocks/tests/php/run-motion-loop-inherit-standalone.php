@@ -118,7 +118,7 @@ $first_section_css = static function ( bool $first ) use ( $reset, $css, $grid, 
 };
 $above = $first_section_css( true );
 $below = $first_section_css( false );
-$check( 1 === preg_match( '/\.sgs-cg-l1 \.sgs-card-grid__item\{[^}]*--sgs-me-from-op:1[;}]/', $above ), 'LCP: an inherited load fade on a first-section grid keeps its items at opacity 1: ' . $above );
+$check( 1 === preg_match( '/\.sgs-cg-l1 \.sgs-card-grid__item\{[^}]*--sgs-me-from-op:0\.01[;}]/', $above ), 'above the fold: an inherited load fade on a first-section grid starts its items at 1% opacity: ' . $above );
 $check( 1 === preg_match( '/\.sgs-cg-l1 \.sgs-card-grid__item\{[^}]*--sgs-me-from-op:0[;}]/', $below ), 'LCP negative control: the same grid below the first section fades from 0: ' . $below );
 
 // 3. Item 10: with apply on the container's entrance plays on the children only.

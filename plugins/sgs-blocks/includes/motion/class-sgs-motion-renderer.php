@@ -22,12 +22,11 @@
  *    later one overwriting the earlier. Effect value fields that name a custom property are written into the same
  *    scoped CSS, per device tier (`Sgs_Motion_Effect_Properties`).
  *
- * The LCP rule (§9): a `load` or `scroll` entrance in the page's first top-level section (the first top-level block of the main
- * content, filterable through `sgs_motion_is_first_section`) or on an `<img fetchpriority="high">` keeps its
- * from-opacity at 1 unless the entrance sets `allowLcpFade`. When the main content is one top-level block with
- * `tagName` `main`, that wrapper is transparent: it does not take the mark, its first child block does, and the
- * wrapper's other children and the wrapper's own entrance fade as usual. A `main` block with top-level siblings is a
- * section among sections and takes the mark itself.
+ * The start floor (§9): a `load` or `scroll` entrance on a block above the fold (`Sgs_Motion_Fold::is_above_fold`: one of the
+ * first `Sgs_Motion_Fold::FOLD_SECTIONS` top-level content sections, filterable through `sgs_motion_is_first_section`)
+ * has the start values that would hide it completely raised to the nearest visible ones unless the entrance sets
+ * `allowLcpFade`. When the main content is one top-level block with `tagName` `main`, that wrapper is transparent: its
+ * child blocks are the sections, and the wrapper's own entrance is not floored.
  *
  * Hover groups: any block whose root carries a whole-block link (`sgsBlockLink`, `sgsBlockLinkSource` or `sgsBlockLinkAuto`, the blockLink
  * extension that also adds `.sgs-has-block-link`) or a container set to `hoverAsCard` gets `data-sgs-hover-group`. While a block whose hover layers use
@@ -63,19 +62,39 @@ final class Sgs_Motion_Renderer {
 	private static $stack = array();
 
 	/**
-	 * Whether the next top-level block of the main content is the first section.
+	 * Whether the main content is armed: its top-level blocks are being counted into sections.
 	 *
 	 * @var bool
 	 */
-	private static $first_pending = false;
+	private static $armed = false;
 
 	/**
-	 * Whether the main content is one top-level block that is a `main` wrapper: the first top-level block then passes
-	 * the mark to its first child.
+	 * The parsed main content, the tree `Sgs_Motion_Fold::is_above_fold` reads.
+	 *
+	 * @var array<int,mixed>
+	 */
+	private static $tree = array();
+
+	/**
+	 * How many content sections (top-level blocks that are not template parts) have opened since the content was armed.
+	 *
+	 * @var int
+	 */
+	private static $sections = 0;
+
+	/**
+	 * Whether the main content is one `main` wrapper: its child blocks are then the sections.
 	 *
 	 * @var bool
 	 */
 	private static $lone_main = false;
+
+	/**
+	 * How many child blocks of the transparent `main` wrapper have opened.
+	 *
+	 * @var int
+	 */
+	private static $main_children = 0;
 
 	/**
 	 * Whether the main content has started rendering.
@@ -111,8 +130,11 @@ final class Sgs_Motion_Renderer {
 	 */
 	public static function reset(): void {
 		self::$stack                       = array();
-		self::$first_pending               = false;
+		self::$armed                       = false;
+		self::$tree                        = array();
+		self::$sections                    = 0;
 		self::$lone_main                   = false;
+		self::$main_children               = 0;
 		self::$content_seen                = false;
 		self::$used                        = array();
 		Sgs_Motion_Reveal_Default::reset();
@@ -129,13 +151,23 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Whether the block rendering now sits in the page's first section (the LCP rule, §9): read by code that emits
-	 * entrances from inside a block's render callback (`Sgs_Motion_Loop_Inherit`).
+	 * Whether the block rendering now sits in the page's first content section (the reveal default and the image loader
+	 * skip it).
 	 *
 	 * @return bool
 	 */
 	public static function in_first_section(): bool {
 		return array() !== self::$stack && ! empty( self::$stack[ count( self::$stack ) - 1 ]['first'] );
+	}
+
+	/**
+	 * Whether the block rendering now sits above the fold (`Sgs_Motion_Fold`, section 9): read by code that emits
+	 * entrances from inside a block's render callback (`Sgs_Motion_Loop_Inherit`).
+	 *
+	 * @return bool
+	 */
+	public static function in_above_fold(): bool {
+		return array() !== self::$stack && ! empty( self::$stack[ count( self::$stack ) - 1 ]['fold'] );
 	}
 
 	/**
@@ -193,8 +225,8 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Arm the first-section rule when the main content starts, and note whether the content is one lone `main` wrapper
-	 * (the filter runs before the blocks are parsed for rendering, so the top-level blocks are counted from the string).
+	 * Arm the above-the-fold rule when the main content starts: the content is parsed once into the tree that
+	 * `Sgs_Motion_Fold::is_above_fold` reads.
 	 *
 	 * @param mixed $content Post content.
 	 * @return mixed
@@ -202,32 +234,38 @@ final class Sgs_Motion_Renderer {
 	public static function arm_first_section( $content ) {
 		$in_loop = function_exists( 'in_the_loop' ) && in_the_loop();
 		if ( ! self::$content_seen && ( array() !== self::$stack || $in_loop ) ) {
-			self::$content_seen  = true;
-			self::$first_pending = true;
-			self::$lone_main     = self::is_lone_main( $content );
+			self::$content_seen = true;
+			self::$armed        = true;
+			self::$tree         = is_string( $content ) && '' !== $content && function_exists( 'parse_blocks' ) ? parse_blocks( $content ) : array();
+			if ( array() === Sgs_Motion_Fold::section_indexes( self::$tree ) ) {
+				// Markup the parser did not return: a stand-in tree of blank sections keeps the count by order.
+				self::$tree = array_fill( 0, Sgs_Motion_Fold::FOLD_SECTIONS + 1, array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() ) );
+			}
+			self::$lone_main = Sgs_Motion_Fold::is_lone_main( self::$tree );
 		}
 		return $content;
 	}
 
 	/**
-	 * Whether the content is exactly one top-level block whose `tagName` is `main`.
+	 * The position in the parsed content of the block that opens now, as a top-level block or a child of the transparent
+	 * `main` wrapper: the order it opens in among the content's section candidates, mapped to its index in the tree.
 	 *
-	 * @param mixed $content Post content.
-	 * @return bool
+	 * @param array<string,mixed> $block Parsed block.
+	 * @param bool                $child Whether it is a child of the transparent `main` wrapper.
+	 * @return array<int,int>|null Null for a block that is not a section candidate (a template part, a freeform entry).
 	 */
-	private static function is_lone_main( $content ): bool {
-		if ( ! is_string( $content ) || ! function_exists( 'parse_blocks' ) || false === strpos( $content, '"main"' ) ) {
-			return false;
+	private static function opens_at( array $block, bool $child ): ?array {
+		if ( ! Sgs_Motion_Fold::is_section_name( $block['blockName'] ?? null ) ) {
+			return null;
 		}
-		$top = array_values(
-			array_filter(
-				parse_blocks( $content ),
-				static function ( $block ): bool {
-					return is_array( $block ) && ! empty( $block['blockName'] );
-				}
-			)
-		);
-		return 1 === count( $top ) && self::is_main_wrapper( $top[0] );
+		$sections = Sgs_Motion_Fold::section_indexes( self::$tree );
+		if ( ! $child ) {
+			$ordinal = self::$sections++;
+			return isset( $sections[ $ordinal ] ) ? array( $sections[ $ordinal ] ) : null;
+		}
+		$children = Sgs_Motion_Fold::section_indexes( (array) ( self::$tree[ $sections[0] ]['innerBlocks'] ?? array() ) );
+		$ordinal  = self::$main_children++;
+		return isset( $children[ $ordinal ] ) ? array( $sections[0], $children[ $ordinal ] ) : null;
 	}
 
 	/**
@@ -237,7 +275,7 @@ final class Sgs_Motion_Renderer {
 	 * @return bool
 	 */
 	private static function is_main_wrapper( array $block ): bool {
-		return 'main' === ( $block['attrs']['tagName'] ?? null );
+		return Sgs_Motion_Fold::is_main_wrapper( $block );
 	}
 
 	/**
@@ -284,20 +322,28 @@ final class Sgs_Motion_Renderer {
 		$top   = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$doc   = self::document( $block );
 		$first = null !== $top && ! empty( $top['first'] );
+		$fold  = null !== $top && ! empty( $top['fold'] );
 		$transparent = false;
-		if ( null === $parent_block && self::$first_pending ) {
-			if ( self::$lone_main && self::is_main_wrapper( $block ) ) {
+		$at          = null;
+		$inside_section = null !== $top && ! empty( $top['section'] );
+		if ( null === $parent_block && self::$armed && ! $inside_section ) {
+			if ( self::$lone_main && 0 === self::$sections && self::is_main_wrapper( $block ) ) {
 				$transparent = true;
+				++self::$sections;
+				$first = false;
+				$fold  = false;
 			} else {
-				self::$first_pending = false;
-				$first               = true;
+				$at = self::opens_at( $block, false ) ?? array();
 			}
-			self::$lone_main = false;
-		} elseif ( null !== $parent_block && self::$first_pending && null !== $top && ! empty( $top['transparent'] ) ) {
-			self::$first_pending = false;
-			$first               = true;
+		} elseif ( null !== $parent_block && self::$armed && null !== $top && ! empty( $top['transparent'] ) ) {
+			$at = self::opens_at( $block, true ) ?? array();
+		}
+		if ( null !== $at ) {
+			$first = 0 === Sgs_Motion_Fold::section_position( self::$tree, $at );
+			$fold  = Sgs_Motion_Fold::is_above_fold( self::$tree, $at );
 		}
 		$first   = (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block );
+		$fold    = $fold || $first;
 		$reveal  = Sgs_Motion_Reveal_Default::resolve( $doc, $block, self::$stack, $first, self::$content_seen, $transparent );
 		$doc     = $reveal['doc'];
 		$dropped = array();
@@ -316,6 +362,8 @@ final class Sgs_Motion_Renderer {
 			'name'        => (string) ( $block['blockName'] ?? '' ),
 			'doc'         => $doc,
 			'first'       => $first,
+			'fold'        => $fold,
+			'section'     => $inside_section || $transparent || null !== $at,
 			'transparent' => $transparent,
 			'group'       => $group,
 			'dropped'     => $dropped,
@@ -381,9 +429,6 @@ final class Sgs_Motion_Renderer {
 	public static function close_frame( $block_content, $block ) {
 		unset( $block );
 		$closed = array_pop( self::$stack );
-		if ( is_array( $closed ) && ! empty( $closed['transparent'] ) ) {
-			self::$first_pending = false;
-		}
 		$top                               = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$GLOBALS['sgs_hover_group_active'] = null !== $top && ! empty( $top['group'] );
 		return $block_content;
@@ -466,29 +511,6 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * The targets whose element is, or contains, an `<img fetchpriority="high">` (the LCP rule's image clause), in
-	 * document order. A target's match does not depend on the scope class, so a placeholder scope resolves it.
-	 *
-	 * @param string              $name     Block name.
-	 * @param string              $html     Rendered HTML.
-	 * @param array<string,mixed> $elements The document's elements.
-	 * @return array<string,true> Target => true.
-	 */
-	private static function priority_targets( string $name, string $html, array $elements ): array {
-		$out = array();
-		if ( false === stripos( $html, 'fetchpriority' ) ) {
-			return $out;
-		}
-		foreach ( $elements as $target => $element ) {
-			$resolved = Sgs_Motion_Targets::resolve( $name, 'sgs-m-0000000000', (string) $target, (array) $element, $html );
-			if ( null !== $resolved && Sgs_Motion_Markup::is_priority_image( $html, $resolved['match'] ) ) {
-				$out[ (string) $target ] = true;
-			}
-		}
-		return $out;
-	}
-
-	/**
 	 * Emit the block's motion (render_block, priority 20).
 	 *
 	 * @param mixed $block_content Rendered HTML.
@@ -505,6 +527,7 @@ final class Sgs_Motion_Renderer {
 			$frame = array(
 				'doc'     => self::document( $block ),
 				'first'   => false,
+				'fold'    => false,
 				'dropped' => array(),
 			);
 		}
@@ -531,11 +554,8 @@ final class Sgs_Motion_Renderer {
 			do_action( 'sgs_motion_layer_dropped', $name, 'root', $refusal );
 		}
 
-		// The targets holding an `<img fetchpriority="high">` change what the LCP rule emits, so they are part of the scope:
-		// two blocks with one document (the cards a delegating grid prints) share a scope only when their CSS is the same.
-		$priority = self::priority_targets( $name, $block_content, $doc['elements'] );
 		$in_item  = Sgs_Motion_Loop_Delays::in_template_item();
-		$scope    = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) . ( array() === $priority ? '' : '|' . implode( ',', array_keys( $priority ) ) ) . ( $in_item ? '|item' : '' ) ), 0, 10 );
+		$scope    = 'sgs-m-' . substr( md5( $name . '|' . wp_json_encode( $doc ) . '|' . ( $frame['first'] ? '1' : '0' ) . ( $in_item ? '|item' : '' ) ), 0, 10 );
 		if ( self::uses_source( $doc, 'root' ) ) {
 			$root_attrs['data-sgs-mroot'] = '';
 		}
@@ -569,12 +589,11 @@ final class Sgs_Motion_Renderer {
 			foreach ( $element['effects'] ?? array() as $layer ) {
 				$suppress = $suppress || sgs_effect_owns_scroll_transform( (string) $layer['effect'] );
 			}
-			$lcp_image = isset( $priority[ $target ] );
 			$emitted   = Sgs_Motion_Emitter::emit(
 				$element,
 				$resolved['selector'],
 				array(
-					'lcp'               => $frame['first'] || $lcp_image,
+					'above_fold'        => $frame['fold'],
 					'suppress_entrance' => $suppress,
 					'no_transition'     => isset( $losers[ $target ] ),
 					'block'             => $name,

@@ -105,7 +105,7 @@ foreach ( is_array( $sgs_input['cases'] ?? null ) ? $sgs_input['cases'] : array(
 			$sgs_element,
 			$sgs_resolved['selector'],
 			array(
-				'lcp'               => ! empty( $sgs_context['lcp'] ),
+				'above_fold'        => ! empty( $sgs_context['lcp'] ),
 				'suppress_entrance' => ! empty( $sgs_context['suppress_entrance'] ) || $sgs_target === $sgs_moved,
 				'no_transition'     => isset( $sgs_losers[ $sgs_target ] ),
 				'block'             => $sgs_name,

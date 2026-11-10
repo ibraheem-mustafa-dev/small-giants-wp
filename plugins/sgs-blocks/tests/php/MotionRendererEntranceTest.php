@@ -35,18 +35,18 @@ final class MotionRendererEntranceTest extends TestCase {
 		return $this->render( $motion );
 	}
 
-	public function test_edge_first_section_load_fade_keeps_from_opacity_1(): void {
+	public function test_edge_first_section_load_fade_starts_at_one_percent(): void {
 		$out = $this->render_as_first_section( self::load_fade() );
 		$css = $this->css();
-		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $css );
 		$this->assertStringContainsString( '--sgs-me-from-ty:24px;', $css, 'movement still plays' );
 		$this->assertStringContainsString( 'data-sgs-me="load translate opacity"', $out );
 	}
 
-	public function test_edge_first_section_scroll_fade_keeps_from_opacity_1(): void {
+	public function test_edge_first_section_scroll_fade_starts_at_one_percent(): void {
 		$out = $this->render_as_first_section( self::load_fade( false, 'scroll' ) );
 		$css = $this->css();
-		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css, 'the ready gate hides a scroll entrance from first paint, so the LCP rule holds its opacity' );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $css, 'the ready gate hides a scroll entrance from first paint, so above the fold it starts at one percent' );
 		$this->assertStringContainsString( '--sgs-me-from-ty:24px;', $css, 'movement still plays' );
 		$this->assertStringContainsString( 'data-sgs-me="scroll translate opacity"', $out );
 	}
@@ -56,9 +56,10 @@ final class MotionRendererEntranceTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
 	}
 
-	public function test_edge_second_section_scroll_fade_fades(): void {
+	public function test_edge_third_section_scroll_fade_fades_from_zero(): void {
 		$GLOBALS['sgs_test_in_loop'] = true;
 		Sgs_Motion_Renderer::arm_first_section( '' );
+		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$GLOBALS['sgs_collected_css'] = array();
 		$this->render( self::load_fade( false, 'scroll' ) );
@@ -70,19 +71,20 @@ final class MotionRendererEntranceTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
 	}
 
-	public function test_edge_second_section_load_fade_fades(): void {
+	public function test_edge_third_section_load_fade_fades_from_zero(): void {
 		$GLOBALS['sgs_test_in_loop'] = true;
 		Sgs_Motion_Renderer::arm_first_section( '' );
+		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$this->render( array( 'v' => 1, 'elements' => array( 'media' => array( 'hover' => array( 'state' => array( 'values' => array( 'scale' => 1.1 ) ) ) ) ) ) );
 		$GLOBALS['sgs_collected_css'] = array();
 		$this->render( self::load_fade() );
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
 	}
 
-	public function test_edge_priority_image_keeps_from_opacity_1(): void {
+	public function test_edge_priority_image_outside_the_first_section_fades_from_zero(): void {
 		$html = '<div class="wp-block-sgs-hero"><div class="sgs-hero__media"><img src="a.jpg" alt="" fetchpriority="high"></div></div>';
 		$this->render( self::load_fade(), $html );
-		$this->assertStringContainsString( '--sgs-me-from-op:1;', $this->css() );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
 	}
 
 	private static function keyframe_entrance( string $trigger ): array {
@@ -182,10 +184,10 @@ final class MotionRendererEntranceTest extends TestCase {
 		return $frames;
 	}
 
-	public function test_edge_first_section_load_keyframes_keep_from_opacity_1(): void {
+	public function test_edge_first_section_load_keyframes_start_at_one_percent(): void {
 		$this->render_as_first_section( self::keyframe_entrance( 'load' ) );
 		$css = $this->css();
-		$this->assertStringContainsString( '--sgs-me-from-op:1;', $css );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $css );
 		$this->assertStringContainsString( '--sgs-me-from-ty:40px;', $css, 'movement still plays' );
 	}
 

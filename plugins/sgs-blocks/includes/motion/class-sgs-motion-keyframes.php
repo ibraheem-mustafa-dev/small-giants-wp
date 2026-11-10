@@ -25,11 +25,10 @@ final class Sgs_Motion_Keyframes {
 	 *
 	 * @param mixed                $list    Stored keyframe list.
 	 * @param array<string,bool>   $used    Owner properties touched (by reference through the caller's array).
-	 * @param bool                 $keep_op Whether the LCP rule holds opacity at 1.
 	 * @param array<string,string> $desktop Desktop declarations (by reference).
 	 * @return string|null
 	 */
-	public static function json( $list, array &$used, bool $keep_op, array &$desktop ): ?string {
+	public static function json( $list, array &$used, array &$desktop ): ?string {
 		if ( ! is_array( $list ) || array() === $list ) {
 			return null;
 		}
@@ -47,7 +46,7 @@ final class Sgs_Motion_Keyframes {
 				$prop = Sgs_Motion_Emitter::fields( 'EntranceKeyframe' )[ $key ]['css'] ?? null;
 				$css  = Sgs_Motion_Emitter::value_css( 'EntranceKeyframe', (string) $key, $value );
 				if ( null !== $prop && null !== $css ) {
-					$row[ $prop ]  = $keep_op && Sgs_Motion_Emitter::ME_PREFIX . 'op' === $prop ? '1' : $css;
+					$row[ $prop ]  = $css;
 					$used[ $prop ] = true;
 					$from          = Sgs_Motion_Emitter::ME_PREFIX . 'from-' . substr( $prop, strlen( Sgs_Motion_Emitter::ME_PREFIX ) );
 					if ( 0 === $index && ! isset( $desktop[ $from ] ) ) {

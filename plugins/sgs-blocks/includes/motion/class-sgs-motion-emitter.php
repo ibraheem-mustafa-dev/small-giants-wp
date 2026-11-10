@@ -81,7 +81,7 @@ final class Sgs_Motion_Emitter {
 	 *
 	 * @param array<string,mixed> $element  The resolved element (refusals already dropped).
 	 * @param string              $selector The target's scoped selector.
-	 * @param array<string,mixed> $context  `match` (the target's matcher from `Sgs_Motion_Targets::resolve`: its item classes for a `restRotate` list), `lcp` (bool), `suppress_entrance` (bool), `attributes` (the block's stored attributes, for the ring guard), `no_transition` (bool: a target
+	 * @param array<string,mixed> $context  `match` (the target's matcher from `Sgs_Motion_Targets::resolve`: its item classes for a `restRotate` list), `above_fold` (bool), `suppress_entrance` (bool), `attributes` (the block's stored attributes, for the ring guard), `no_transition` (bool: a target
 	 *                                      that shares its element with an earlier-declared one writes no `transition`,
 	 *                                      `Sgs_Motion_Shared_Element`), `block`, `target`.
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool}
@@ -602,7 +602,10 @@ final class Sgs_Motion_Emitter {
 			return false;
 		}
 		$tiers   = self::tier_values( $base );
-		$keep_op = in_array( $trigger, array( 'load', 'scroll' ), true ) && ! empty( $context['lcp'] ) && true !== ( $tiers['desktop']['allowLcpFade'] ?? false );
+		$clamp   = in_array( $trigger, array( 'load', 'scroll' ), true ) && ! empty( $context['above_fold'] ) && true !== ( $tiers['desktop']['allowLcpFade'] ?? false );
+		if ( $clamp ) {
+			$tiers = self::clamp_hidden_starts( $tiers );
+		}
 		$map     = self::property_channels();
 		$used    = array();
 		$timing  = array(
@@ -639,16 +642,7 @@ final class Sgs_Motion_Emitter {
 			}
 		}
 		Sgs_Motion_Clip_Edge::apply( $tiers, $decls, $context );
-		$keyframes = Sgs_Motion_Keyframes::json( $tiers['desktop']['keyframes'] ?? null, $used, $keep_op, $decls['desktop'] );
-		if ( $keep_op ) {
-			$op_from = self::ME_PREFIX . 'from-op';
-			foreach ( array( 'tablet', 'mobile' ) as $tier ) {
-				unset( $decls[ $tier ][ $op_from ] );
-			}
-			if ( isset( $used[ self::ME_PREFIX . 'op' ] ) ) {
-				$decls['desktop'][ $op_from ] = '1';
-			}
-		}
+		$keyframes = Sgs_Motion_Keyframes::json( $tiers['desktop']['keyframes'] ?? null, $used, $decls['desktop'] );
 		if ( null !== $keyframes ) {
 			$attrs['data-sgs-me-keyframes'] = $keyframes;
 		}
@@ -660,6 +654,52 @@ final class Sgs_Motion_Emitter {
 		}
 		$attrs['data-sgs-me'] = trim( $trigger . ' ' . implode( ' ', self::ordered_channels( $channels ) ) );
 		return true;
+	}
+
+	/**
+	 * The start values that would hide an above-the-fold load or scroll entrance completely become the nearest visible
+	 * ones: opacity 0 starts at 0.01, a full clip (100) at 99 and a scale of 0 at 0.01 (Spec 38A §9), so the element is
+	 * eligible for LCP from its first paint. Applies to the from end and to the first keyframe (the lowest offset) at every
+	 * device tier; every other value passes through.
+	 *
+	 * @param array<string,array<string,mixed>> $tiers Per-tier values.
+	 * @return array<string,array<string,mixed>>
+	 */
+	private static function clamp_hidden_starts( array $tiers ): array {
+		$floor = array(
+			'opacity' => array( 0, 0.01 ),
+			'clip'    => array( 100, 99 ),
+			'scale'   => array( 0, 0.01 ),
+		);
+		$fix   = static function ( array $row ) use ( $floor ): array {
+			foreach ( $floor as $key => $pair ) {
+				if ( isset( $row[ $key ] ) && is_numeric( $row[ $key ] ) && (float) $row[ $key ] === (float) $pair[0] ) {
+					$row[ $key ] = $pair[1];
+				}
+			}
+			return $row;
+		};
+		foreach ( $tiers as $tier => $values ) {
+			if ( is_array( $values['from'] ?? null ) ) {
+				$tiers[ $tier ]['from'] = $fix( $values['from'] );
+			}
+			if ( is_array( $values['keyframes'] ?? null ) ) {
+				$frames = array_values( $values['keyframes'] );
+				$start  = 0;
+				foreach ( $frames as $index => $frame ) {
+					$offset = is_array( $frame ) ? ( $frame['offset'] ?? null ) : null;
+					$least  = $frames[ $start ]['offset'] ?? null;
+					if ( is_numeric( $offset ) && is_numeric( $least ) && $offset < $least ) {
+						$start = $index;
+					}
+				}
+				if ( is_array( $frames[ $start ] ?? null ) ) {
+					$frames[ $start ] = $fix( $frames[ $start ] );
+				}
+				$tiers[ $tier ]['keyframes'] = $frames;
+			}
+		}
+		return $tiers;
 	}
 
 	/**

@@ -93,7 +93,7 @@ final class Sgs_Motion_Loop_Inherit {
 		if ( '' === $uid ) {
 			return null;
 		}
-		$emitted = self::inherited( $block_name, $attributes, $item_selector, '.' . $uid . ' ' . $item_selector, Sgs_Motion_Renderer::in_first_section() );
+		$emitted = self::inherited( $block_name, $attributes, $item_selector, '.' . $uid . ' ' . $item_selector, Sgs_Motion_Renderer::in_above_fold() );
 		if ( null === $emitted ) {
 			return null;
 		}
@@ -429,7 +429,7 @@ final class Sgs_Motion_Loop_Inherit {
 	 * @param array<string,mixed> $attributes    The block's attributes.
 	 * @param string              $item_selector Class selector of one item under the root.
 	 * @param string              $selector      The items' scoped selector.
-	 * @param bool                $lcp           Whether the block sits in the page's first section (the LCP rule, §9).
+	 * @param bool                $lcp           Whether the block is above the fold (`Sgs_Motion_Fold`, §9).
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool,from:string}|null
 	 */
 	private static function inherited( string $block_name, array $attributes, string $item_selector, string $selector, bool $lcp ): ?array {
@@ -452,7 +452,7 @@ final class Sgs_Motion_Loop_Inherit {
 	 * @param string                                                  $block_name Block slug.
 	 * @param array{part:string,from:string,base:array<string,mixed>} $layer      `inherited_layer()`.
 	 * @param string                                                  $selector   The items' scoped selector.
-	 * @param bool                                                    $lcp        The LCP rule (section 9).
+	 * @param bool                                                    $lcp        Above the fold (`Sgs_Motion_Fold`, section 9).
 	 * @return array{css:string,attrs:array<string,string>,entrance:bool}|null
 	 */
 	public static function emit_layer( string $block_name, array $layer, string $selector, bool $lcp ): ?array {
@@ -460,7 +460,7 @@ final class Sgs_Motion_Loop_Inherit {
 			array( 'entrance' => array( 'base' => $layer['base'] ) ),
 			$selector,
 			array(
-				'lcp'               => $lcp,
+				'above_fold'        => $lcp,
 				'suppress_entrance' => false,
 				'no_transition'     => false,
 				'block'             => $block_name,

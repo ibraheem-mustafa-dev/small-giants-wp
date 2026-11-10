@@ -1,10 +1,10 @@
 <?php
 /**
- * Tests: the LCP first-section mark with a lone `main` wrapper (Spec 38A §9).
+ * Tests: the renderer's above-the-fold mark with a lone `main` wrapper (Spec 38A §9, `Sgs_Motion_Fold`).
  *
- * A page whose main content is one top-level block with `tagName` `main` passes the mark to the wrapper's first child;
- * a `main` block with top-level siblings, and a plain first section, keep the mark themselves; an
- * `<img fetchpriority="high">` keeps its protection wherever it sits.
+ * A page whose main content is one top-level block with `tagName` `main` passes the mark to the wrapper's first two
+ * children; a `main` block with top-level siblings, and the first two plain sections, keep the mark themselves; an
+ * `<img fetchpriority="high">` below them fades from 0 like any other block.
  *
  * Run with:
  *   vendor/bin/phpunit --filter MotionFirstSectionMainTest
@@ -42,11 +42,11 @@ final class MotionFirstSectionMainTest extends TestCase {
 	}
 
 	private static function main_block(): array {
-		return array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ) );
+		return array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => array( self::section(), self::section(), self::section() ) );
 	}
 
 	private static function section(): array {
-		return array( 'blockName' => 'sgs/container', 'attrs' => array() );
+		return array( 'blockName' => 'sgs/container', 'attrs' => array(), 'innerBlocks' => array() );
 	}
 
 	/** Arm the content the way the_content does, with these top-level blocks (the content string carries "main"). */
@@ -55,7 +55,7 @@ final class MotionFirstSectionMainTest extends TestCase {
 		Sgs_Motion_Renderer::arm_first_section( '<!-- wp:sgs/container {"tagName":"main"} -->' );
 	}
 
-	/** Whether the block, rendered as the next one, sits in the first section. */
+	/** Whether the block, rendered as the next one, sits above the fold. */
 	private function first( array $block, $parent = null ): bool {
 		$seen = null;
 		sgs_test_render_motion_block(
@@ -63,7 +63,7 @@ final class MotionFirstSectionMainTest extends TestCase {
 			self::HTML,
 			$parent,
 			static function () use ( &$seen ): void {
-				$seen = Sgs_Motion_Renderer::in_first_section();
+				$seen = Sgs_Motion_Renderer::in_above_fold();
 			}
 		);
 		return (bool) $seen;
@@ -78,17 +78,28 @@ final class MotionFirstSectionMainTest extends TestCase {
 		$wrapper = self::main_block();
 		$renderer = Sgs_Motion_Renderer::class;
 		$wrapper  = $renderer::open_frame( $wrapper, $wrapper, null );
-		$this->assertFalse( $renderer::in_first_section(), 'the wrapper does not take the mark' );
+		$this->assertFalse( $renderer::in_above_fold(), 'the wrapper does not take the mark' );
 		$parent = (object) array( 'name' => 'sgs/container' );
 		$this->assertTrue( $this->first( array( 'blockName' => 'sgs/hero', 'attrs' => array() ), $parent ), 'the first child takes it' );
-		$this->assertFalse( $this->first( array( 'blockName' => 'sgs/hero', 'attrs' => array() ), $parent ), 'the second child does not' );
+		$this->assertTrue( $this->first( array( 'blockName' => 'sgs/hero', 'attrs' => array() ), $parent ), 'the second child does too' );
+		$this->assertFalse( $this->first( array( 'blockName' => 'sgs/hero', 'attrs' => array() ), $parent ), 'the third child does not' );
 		$renderer::close_frame( '', $wrapper );
 	}
 
-	public function test_happy_a_plain_first_section_still_takes_the_mark(): void {
-		$this->arm( array( self::section(), self::section() ) );
+	public function test_happy_the_first_two_plain_sections_take_the_mark(): void {
+		$this->arm( array( self::section(), self::section(), self::section() ) );
 		$this->assertTrue( $this->first( self::section() ) );
-		$this->assertFalse( $this->first( self::section() ), 'the next top-level block does not' );
+		$this->assertTrue( $this->first( self::section() ) );
+		$this->assertFalse( $this->first( self::section() ), 'the third top-level block does not' );
+	}
+
+	public function test_edge_a_template_part_is_not_counted_as_a_section(): void {
+		$this->arm( array( self::section(), self::section(), self::section() ) );
+		$part = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		$this->assertFalse( $this->first( $part ) );
+		$this->assertTrue( $this->first( self::section() ) );
+		$this->assertTrue( $this->first( self::section() ) );
+		$this->assertFalse( $this->first( self::section() ) );
 	}
 
 	public function test_edge_main_with_a_sibling_takes_the_mark_itself(): void {
@@ -109,8 +120,9 @@ final class MotionFirstSectionMainTest extends TestCase {
 		$this->assertFalse( $this->first( self::section() ) );
 	}
 
-	public function test_edge_a_high_priority_image_keeps_its_protection_outside_the_first_section(): void {
-		$this->arm( array( self::section(), self::section() ) );
+	public function test_edge_a_high_priority_image_outside_the_first_section_fades_from_zero(): void {
+		$this->arm( array( self::section(), self::section(), self::section() ) );
+		$this->first( self::section() );
 		$this->first( self::section() );
 		$motion = array(
 			'v'        => 1,
@@ -120,6 +132,22 @@ final class MotionFirstSectionMainTest extends TestCase {
 			array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => $motion ) ),
 			'<div class="wp-block-sgs-hero"><img src="a.jpg" fetchpriority="high" alt=""></div>'
 		);
-		$this->assertStringContainsString( '--sgs-me-from-op:1', str_replace( ' ', '', $this->css() ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', str_replace( ' ', '', $this->css() ) );
+	}
+
+	public function test_edge_in_first_section_names_only_section_one_while_the_fold_holds_two(): void {
+		$this->arm( array( self::section(), self::section(), self::section() ) );
+		$marks = array();
+		foreach ( array( 1, 2, 3 ) as $unused ) {
+			sgs_test_render_motion_block(
+				self::section(),
+				self::HTML,
+				null,
+				static function () use ( &$marks ): void {
+					$marks[] = array( Sgs_Motion_Renderer::in_first_section(), Sgs_Motion_Renderer::in_above_fold() );
+				}
+			);
+		}
+		$this->assertSame( array( array( true, true ), array( false, true ), array( false, false ) ), $marks );
 	}
 }

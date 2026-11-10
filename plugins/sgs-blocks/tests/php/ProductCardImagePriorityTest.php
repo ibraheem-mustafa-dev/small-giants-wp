@@ -196,20 +196,19 @@ final class ProductCardImagePriorityTest extends TestCase {
 		$this->assertStringNotContainsString( '--sgs-me-from-op:1;', $this->css() );
 	}
 
-	public function test_cards_whose_priority_image_differs_keep_their_own_entrance_in_the_editor(): void {
+	public function test_cards_whose_priority_image_differs_share_one_scope_and_all_fade(): void {
 		$GLOBALS['sgs_test_rest'] = true;
 		$with    = '<div class="wp-block-sgs-product-card"><img class="sgs-product-card__image" src="a.jpg" alt="" fetchpriority="high"></div>';
 		$without = $this->card_html( array( 'image_id' => 0 ) + self::PRODUCT );
 		$this->assertStringNotContainsString( 'fetchpriority', $without, 'the no-photo card prints no priority image' );
 
-		$a     = $this->through_renderer( $with );
-		$b     = $this->through_renderer( $without );
+		$a       = $this->through_renderer( $with );
+		$b       = $this->through_renderer( $without );
 		$scope_a = $this->scope( $a );
-		$scope_b = $this->scope( $b );
-		$this->assertNotSame( $scope_a, $scope_b, 'cards whose LCP state differs never share a motion scope' );
+		$this->assertSame( $scope_a, $this->scope( $b ), 'a priority image gives its card no scope of its own' );
 
 		$html = Sgs_Motion_Delegate::single_scope_styles( $a . $b );
-		$this->assertSame( 1, preg_match( '/<style id="' . $scope_b . '">(.*?)<\/style>/s', $html, $m ), 'the no-photo card keeps its own rules' );
-		$this->assertStringContainsString( '--sgs-me-from-op:0;', $m[1], 'the no-photo card fades' );
+		$this->assertSame( 1, preg_match( '/<style id="' . $scope_a . '">(.*?)<\/style>/s', $html, $m ), 'the shared scope prints once' );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $m[1], 'every card fades from its stored start' );
 	}
 }
