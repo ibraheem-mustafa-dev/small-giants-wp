@@ -1,0 +1,7 @@
+/*
+ * Pay later message. Stripe draws the message inside its own frame; this block only
+ * spaces the mount point.
+ */
+.sgs-pay-later {
+	margin: 0 0 1em;
+}

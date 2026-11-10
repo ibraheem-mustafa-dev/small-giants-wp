@@ -1,0 +1,68 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/pay-later-message",
+	"version": "0.1.0",
+	"title": "Pay later message",
+	"category": "sgs-content",
+	"description": "Stripe's own buy-now-pay-later message (for example Klarna's instalments) for the live cart total, inside the Cart and Checkout blocks. Prints nothing while Stripe is absent or the method is not enabled.",
+	"keywords": [
+		"klarna",
+		"pay later",
+		"instalments",
+		"checkout",
+		"stripe"
+	],
+	"textdomain": "sgs-blocks",
+	"icon": "money-alt",
+	"parent": [
+		"woocommerce/cart-totals-block",
+		"woocommerce/checkout-fields-block",
+		"woocommerce/checkout-totals-block"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"inserter": true
+	},
+	"attributes": {
+		"method": {
+			"type": "string",
+			"enum": [
+				"klarna",
+				"afterpay_clearpay",
+				"affirm"
+			],
+			"default": "klarna",
+			"description": "The Stripe payment method whose message is shown. Nothing is printed unless that method is enabled in the Stripe plugin."
+		},
+		"countryCode": {
+			"type": "string",
+			"default": "",
+			"description": "Two-letter country for the message's terms. Empty uses the shopper's shipping country, then the shop's base country."
+		},
+		"textColour": {
+			"type": "string",
+			"default": "",
+			"description": "Message text colour (Stripe's colorText): a palette slug or any CSS colour; empty keeps Stripe's default."
+		},
+		"logoColour": {
+			"type": "string",
+			"enum": [
+				"black",
+				"white",
+				"color"
+			],
+			"default": "black",
+			"description": "Colour of the provider's logo in the message (Stripe's logoColor)."
+		},
+		"fontSize": {
+			"type": "number",
+			"default": 0,
+			"description": "Message text size in px (Stripe's fontSizeBase); 0 keeps Stripe's default."
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

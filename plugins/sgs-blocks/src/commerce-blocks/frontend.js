@@ -16,9 +16,15 @@ import giftMetadata from '../blocks/gift-order/block.json';
 import GiftOrder from './gift/component';
 import { GIFT_ORDER_PARENTS } from './gift/parents';
 import { flagStoreApiRequests } from './api';
+import PayLaterMessage from './pay-later/component';
+import payLaterMetadata from '../blocks/pay-later-message/block.json';
 
 flagStoreApiRequests();
 registerCheckoutBlock( {
 	metadata: { ...giftMetadata, parent: GIFT_ORDER_PARENTS },
 	component: GiftOrder,
+} );
+registerCheckoutBlock( {
+	metadata: payLaterMetadata,
+	component: PayLaterMessage,
 } );
