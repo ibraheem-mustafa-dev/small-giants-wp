@@ -37,11 +37,13 @@ final class Sgs_Motion_Fold {
 	 * @param array<int,mixed> $blocks Parsed blocks (`parse_blocks()` output).
 	 * @param array<int,int>   $path   The block's position: an index into `$blocks`, then an index into that block's
 	 *                                 `innerBlocks`, and so on (`array( 2, 0 )` is the first inner block of the third block).
+	 * @param int              $sections How many sections count as above the fold: `FOLD_SECTIONS`, or a page's measured
+	 *                                 count (`Sgs_Fold_Scan::section_count()`).
 	 * @return bool
 	 */
-	public static function is_above_fold( array $blocks, array $path ): bool {
+	public static function is_above_fold( array $blocks, array $path, int $sections = self::FOLD_SECTIONS ): bool {
 		$position = self::section_position( $blocks, $path );
-		return null !== $position && $position < self::FOLD_SECTIONS;
+		return null !== $position && $position < $sections;
 	}
 
 	/**

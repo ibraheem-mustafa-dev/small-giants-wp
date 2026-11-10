@@ -76,6 +76,13 @@ final class Sgs_Motion_Renderer {
 	private static $tree = array();
 
 	/**
+	 * How many content sections count as above the fold on the page being rendered (`Sgs_Fold_Scan::section_count`).
+	 *
+	 * @var int
+	 */
+	private static $fold_sections = Sgs_Motion_Fold::FOLD_SECTIONS;
+
+	/**
 	 * How many content sections (top-level blocks that are not template parts) have opened since the content was armed.
 	 *
 	 * @var int
@@ -133,6 +140,7 @@ final class Sgs_Motion_Renderer {
 		self::$armed                       = false;
 		self::$tree                        = array();
 		self::$sections                    = 0;
+		self::$fold_sections               = Sgs_Motion_Fold::FOLD_SECTIONS;
 		self::$lone_main                   = false;
 		self::$main_children               = 0;
 		self::$content_seen                = false;
@@ -242,8 +250,27 @@ final class Sgs_Motion_Renderer {
 				self::$tree = array_fill( 0, Sgs_Motion_Fold::FOLD_SECTIONS + 1, array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() ) );
 			}
 			self::$lone_main = Sgs_Motion_Fold::is_lone_main( self::$tree );
+			self::$fold_sections = self::measured_sections();
 		}
 		return $content;
+	}
+
+	/**
+	 * The section count of the post whose content is being rendered: the count the editor measured for it, else
+	 * `Sgs_Motion_Fold::FOLD_SECTIONS`. The post is the one in the loop (`get_the_ID()`, the post `the_content` is
+	 * filtering), falling back to the queried object.
+	 *
+	 * @return int
+	 */
+	private static function measured_sections(): int {
+		$post_id = function_exists( 'get_the_ID' ) ? (int) get_the_ID() : 0;
+		if ( $post_id <= 0 && function_exists( 'get_queried_object_id' ) ) {
+			$post_id = (int) get_queried_object_id();
+		}
+		if ( $post_id <= 0 || ! class_exists( __NAMESPACE__ . '\Sgs_Fold_Scan' ) || ! function_exists( 'get_post_meta' ) ) {
+			return Sgs_Motion_Fold::FOLD_SECTIONS;
+		}
+		return Sgs_Fold_Scan::section_count( $post_id );
 	}
 
 	/**
@@ -340,7 +367,7 @@ final class Sgs_Motion_Renderer {
 		}
 		if ( null !== $at ) {
 			$first = 0 === Sgs_Motion_Fold::section_position( self::$tree, $at );
-			$fold  = Sgs_Motion_Fold::is_above_fold( self::$tree, $at );
+			$fold  = Sgs_Motion_Fold::is_above_fold( self::$tree, $at, self::$fold_sections );
 		}
 		$first   = (bool) apply_filters( 'sgs_motion_is_first_section', $first, $block );
 		$fold    = $fold || $first;

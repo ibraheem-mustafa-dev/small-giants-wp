@@ -95,4 +95,11 @@ final class MotionFoldTest extends TestCase {
 		$this->assertTrue( Sgs_Motion_Fold::is_above_fold( array( $main ), array( 0, 1 ) ) );
 		$this->assertFalse( Sgs_Motion_Fold::is_above_fold( array( $main ), array( 0, 0 ) ) );
 	}
+
+	public function test_edge_an_explicit_section_count_moves_the_fold(): void {
+		$tree = array( self::block(), self::block(), self::block(), self::block() );
+		$this->assertFalse( Sgs_Motion_Fold::is_above_fold( $tree, array( 2 ) ) );
+		$this->assertTrue( Sgs_Motion_Fold::is_above_fold( $tree, array( 2 ), 3 ) );
+		$this->assertFalse( Sgs_Motion_Fold::is_above_fold( $tree, array( 3 ), 3 ) );
+	}
 }

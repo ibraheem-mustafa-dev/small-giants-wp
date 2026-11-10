@@ -143,6 +143,42 @@ final class MotionStartFloorTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-clip:100%;', $css );
 	}
 
+	/** Stand in for the post in the loop and its stored `_sgs_fold_sections` meta (null: none stored). */
+	private function post_with_stored_sections( ?int $stored ): void {
+		$GLOBALS['sgs_test_fold_meta'] = $stored;
+		if ( ! function_exists( 'get_the_ID' ) ) {
+			function get_the_ID() {
+				return 77;
+			}
+		}
+		if ( ! function_exists( 'get_post_meta' ) ) {
+			function get_post_meta( $post_id, $key, $single = false ) {
+				return 77 === $post_id && '_sgs_fold_sections' === $key && null !== $GLOBALS['sgs_test_fold_meta'] ? $GLOBALS['sgs_test_fold_meta'] : '';
+			}
+		}
+	}
+
+	public function test_happy_a_stored_count_of_three_marks_section_three_above_the_fold(): void {
+		$this->post_with_stored_sections( 3 );
+		$this->sections_before( 2 );
+		$this->render( self::entrance( array( 'opacity' => 0 ) ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $this->css() );
+	}
+
+	public function test_edge_with_a_stored_count_of_three_section_four_starts_at_zero(): void {
+		$this->post_with_stored_sections( 3 );
+		$this->sections_before( 3 );
+		$this->render( self::entrance( array( 'opacity' => 0 ) ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
+	}
+
+	public function test_edge_with_no_stored_count_section_three_is_not_above_the_fold(): void {
+		$this->post_with_stored_sections( null );
+		$this->sections_before( 2 );
+		$this->render( self::entrance( array( 'opacity' => 0 ) ) );
+		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
+	}
+
 	public function test_fail_an_unarmed_page_is_never_above_the_fold(): void {
 		$this->render( self::entrance( array( 'opacity' => 0 ) ) );
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
