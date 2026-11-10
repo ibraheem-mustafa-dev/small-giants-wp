@@ -617,6 +617,16 @@ def _block_provisions(
     if sgs_supports.get("imageControls") is True or block_slug in raster_image_blocks:
         provisions.add("image")
 
+    # An adopted media slot (Spec 49 §10.1): a `supports.sgs.mediaElements` entry that declares `kinds` is a paintable
+    # media or background part, so it meets `surface`, and `image` when an image is one of its kinds. The panel filters
+    # the list again by the kind each device shows (`src/components/motion/kind-fit.js`).
+    for entry in sgs_supports.get("mediaElements") or []:
+        kinds = entry.get("kinds") if isinstance(entry, dict) else None
+        if isinstance(kinds, list) and kinds:
+            provisions.add("surface")
+            if "image" in kinds:
+                provisions.add("image")
+
     return provisions
 
 

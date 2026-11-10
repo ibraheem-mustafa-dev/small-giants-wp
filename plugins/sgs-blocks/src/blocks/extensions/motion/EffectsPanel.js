@@ -25,7 +25,10 @@ import {
 	deviceNote,
 	offTiersFor,
 } from '../../../components/motion/kind-fit.js';
-import { usePartKinds } from '../../../components/motion/use-part-kinds.js';
+import {
+	usePartKinds,
+	useActiveDevice,
+} from '../../../components/motion/use-part-kinds.js';
 import { INSPECTOR_FOCUS_STORE } from '../../../components/media/inspector-focus-store.js';
 import { registerMotionPanel } from './panel-slots';
 import TargetRow from './layers/TargetRow';
@@ -260,13 +263,20 @@ export default function EffectsPanel( {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
 	const kindsOf = usePartKinds( clientId, blockName );
 	const kinds = kindsOf( elements?.[ target ] );
+	const device = useActiveDevice();
 	const state = useEffectsPanelState( layers, target, ( effect ) => {
 		const off = kinds ? offTiersFor( effect, kinds ) : [];
 		return off.length ? off : undefined;
 	} );
 	const tier = usePreviewTier();
 	const { first, rest, flow, setProblem } = state;
-	const offered = effectOptions( blockName, target, elements, kinds );
+	// The list follows the device the editor previews: the effects that fit the kind shown there.
+	const offered = effectOptions(
+		blockName,
+		target,
+		elements,
+		kinds && { [ device ]: kinds[ device ] }
+	);
 	const note = first && kinds ? deviceNote( first.effect, kinds ) : '';
 	const focus = useFocusRequest( {
 		clientId,

@@ -59,3 +59,18 @@ export function usePartKinds( clientId, blockName ) {
 		return entry && attributes ? kindsByDeviceFor( attributes, entry ) : null;
 	};
 }
+
+const DEVICE_KEYS = { Desktop: 'desktop', Tablet: 'tablet', Mobile: 'mobile' };
+
+/**
+ * The editor's previewed device, from the one global toggle.
+ *
+ * @return {string} `desktop`, `tablet` or `mobile`.
+ */
+export function useActiveDevice() {
+	return useSelect( ( select ) => {
+		const editor = select( 'core/editor' );
+		const device = editor && 'function' === typeof editor.getDeviceType ? editor.getDeviceType() : null;
+		return DEVICE_KEYS[ device ] || 'desktop';
+	}, [] );
+}

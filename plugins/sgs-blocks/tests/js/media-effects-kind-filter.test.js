@@ -48,6 +48,15 @@ describe( 'the effect list per device', () => {
 		expect( video.length ).toBeLessThan( photo.length );
 	} );
 
+	it( 'one device alone: Desktop photo lists the image effects, Mobile video does not', () => {
+		const desktop = effectOptions( 'sgs/container', 'background', ELEMENTS, { desktop: photoThenVideo.desktop } );
+		const mobile = effectOptions( 'sgs/container', 'background', ELEMENTS, { mobile: photoThenVideo.mobile } );
+		expect( desktop ).toContain( 'ken-burns' );
+		expect( mobile ).not.toContain( 'ken-burns' );
+		expect( mobile ).toContain( 'parallax' );
+		expect( desktop ).not.toEqual( mobile );
+	} );
+
 	it( 'an SVG on every device lists only effects that fit an SVG', () => {
 		const list = effectOptions( 'sgs/container', 'background', ELEMENTS, allSvg );
 		expect( list ).not.toContain( 'ken-burns' );
