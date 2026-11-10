@@ -169,7 +169,7 @@ Decided in round 12 (Bean, 2026-11-09). Do not report:
 - The hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until Spec 49.
 
 Decided in round 13 (Bean, 2026-11-09 and 2026-11-10). Do not report:
-- Input focus is one inset 2px outline drawn inside the border, with no border colour change, on every text input, select and textarea (contact, account, checkout); buttons and links keep the gap. This replaces "Contact fields turn tan on focus" (R7).
+- Input focus is one inset 2px outline drawn inside the border, with no border colour change, on every text input, select and textarea (contact, account, checkout), and on every checkbox, radio and selectable delivery or payment card, on a click as well as a keyboard focus, with no second ring outside (Bean, round 14); buttons and links keep the gap. This replaces "Contact fields turn tan on focus" (R7).
 - The drawer call button's hover border is taupe.
 - Field labels stay 13px.
 - Above the fold, no entrance starts fully invisible: fades start at 1%, clip reveals at 99% and scale-from-zero at a tiny scale. "Above the fold" is the first two content sections, or the count the editor measured when the page was saved.
@@ -177,6 +177,7 @@ Decided in round 13 (Bean, 2026-11-09 and 2026-11-10). Do not report:
 - The size pop-up matches the draft: a zoom from .985 to 1 with a 270ms fade and a 250ms backdrop.
 - The "Confirm your email" notice is kept.
 - The Express Checkout heading is hidden; the wallet buttons and their divider stay.
+- Stripe's "Save payment information to my account" checkbox stays at checkout, though the draft has none (Bean, 2026-11-10).
 - The thank-you note ("View my orders") shows only to the signed-in owner of the order.
 - Prices hide ".00" everywhere except at checkout, where pennies show.
 - "Already have an account? Sign in" sits beside the Contact heading on one line, not below the fields.
