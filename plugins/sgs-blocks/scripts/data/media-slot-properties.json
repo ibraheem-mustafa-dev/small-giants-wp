@@ -1,0 +1,449 @@
+{
+	"Source": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"kind": {
+				"type": "string",
+				"enum": [
+					"image",
+					"video",
+					"embed",
+					"svg",
+					"featured",
+					"none"
+				]
+			},
+			"id": {
+				"type": "integer",
+				"minimum": 0
+			},
+			"url": {
+				"type": "string"
+			},
+			"width": {
+				"type": "integer",
+				"minimum": 0
+			},
+			"height": {
+				"type": "integer",
+				"minimum": 0
+			},
+			"mime": {
+				"type": "string"
+			},
+			"alt": {
+				"type": "string"
+			},
+			"poster": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"url": {
+						"type": "string"
+					},
+					"width": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"height": {
+						"type": "integer",
+						"minimum": 0
+					}
+				}
+			},
+			"captions": {
+				"type": "object",
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"label": {
+						"type": "string"
+					},
+					"lang": {
+						"type": "string"
+					}
+				}
+			},
+			"markup": {
+				"type": "string"
+			}
+		}
+	},
+	"Loading": {
+		"type": "string",
+		"enum": [
+			"auto",
+			"first",
+			"later"
+		]
+	},
+	"Alt": {
+		"type": "string"
+	},
+	"Decorative": {
+		"type": "boolean"
+	},
+	"Fit": {
+		"type": "string",
+		"enum": [
+			"cover",
+			"contain",
+			"fill",
+			"none",
+			"scale-down",
+			"tile"
+		]
+	},
+	"Repeat": {
+		"type": "string",
+		"enum": [
+			"repeat",
+			"repeat-x",
+			"repeat-y",
+			"no-repeat"
+		]
+	},
+	"TileSize": {
+		"type": "string"
+	},
+	"Focal": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"x": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 100
+			},
+			"y": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 100
+			}
+		}
+	},
+	"Pinned": {
+		"type": "boolean"
+	},
+	"Padding": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"top": {
+				"type": "string"
+			},
+			"right": {
+				"type": "string"
+			},
+			"bottom": {
+				"type": "string"
+			},
+			"left": {
+				"type": "string"
+			}
+		}
+	},
+	"Background": {
+		"type": "string"
+	},
+	"OverlayColour": {
+		"type": "string"
+	},
+	"OverlayColourHover": {
+		"type": "string"
+	},
+	"OverlayGradient": {
+		"type": "string"
+	},
+	"OverlayGradientHover": {
+		"type": "string"
+	},
+	"OverlayOpacity": {
+		"type": "number",
+		"minimum": 0,
+		"maximum": 100
+	},
+	"OverlayBlend": {
+		"type": "string",
+		"enum": [
+			"normal",
+			"multiply",
+			"screen",
+			"overlay",
+			"darken",
+			"lighten",
+			"color-dodge",
+			"color-burn",
+			"hard-light",
+			"soft-light",
+			"difference",
+			"exclusion",
+			"hue",
+			"saturation",
+			"color",
+			"luminosity",
+			"plus-lighter"
+		]
+	},
+	"Opacity": {
+		"type": "number",
+		"minimum": 0,
+		"maximum": 100
+	},
+	"Blend": {
+		"type": "string",
+		"enum": [
+			"normal",
+			"multiply",
+			"screen",
+			"overlay",
+			"darken",
+			"lighten",
+			"color-dodge",
+			"color-burn",
+			"hard-light",
+			"soft-light",
+			"difference",
+			"exclusion",
+			"hue",
+			"saturation",
+			"color",
+			"luminosity",
+			"plus-lighter"
+		]
+	},
+	"BoxShadow": {
+		"type": "string"
+	},
+	"BoxShadowColour": {
+		"type": "string"
+	},
+	"BoxShadowColourHover": {
+		"type": "string"
+	},
+	"SvgLayer": {
+		"type": "string",
+		"enum": [
+			"behind",
+			"front"
+		]
+	},
+	"SvgTextShadow": {
+		"type": "boolean"
+	},
+	"SvgParts": {
+		"type": "array",
+		"items": {
+			"type": "string"
+		}
+	},
+	"SvgPartsTrigger": {
+		"type": "string"
+	},
+	"Playback": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"autoplay": {
+				"type": "boolean"
+			},
+			"muted": {
+				"type": "boolean"
+			},
+			"inline": {
+				"type": "boolean"
+			},
+			"loop": {
+				"type": "boolean"
+			},
+			"controls": {
+				"type": "boolean"
+			},
+			"lazy": {
+				"type": "boolean"
+			},
+			"pause": {
+				"type": "boolean"
+			},
+			"start": {
+				"type": "number",
+				"minimum": 0
+			}
+		}
+	},
+	"Captions": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"id": {
+				"type": "integer",
+				"minimum": 0
+			},
+			"label": {
+				"type": "string"
+			},
+			"lang": {
+				"type": "string"
+			}
+		}
+	},
+	"Caption": {
+		"type": "string"
+	},
+	"CaptionTag": {
+		"type": "string",
+		"enum": [
+			"figcaption",
+			"p",
+			"span",
+			"div"
+		]
+	},
+	"LinkUrl": {
+		"type": "string"
+	},
+	"LinkOpensNewTab": {
+		"type": "boolean"
+	},
+	"LinkRel": {
+		"type": "string"
+	},
+	"LinkUrlSource": {
+		"type": "string"
+	},
+	"Ratio": {
+		"type": "string"
+	},
+	"Width": {
+		"type": "string"
+	},
+	"Height": {
+		"type": "string"
+	},
+	"MinWidth": {
+		"type": "string"
+	},
+	"MaxWidth": {
+		"type": "string"
+	},
+	"MinHeight": {
+		"type": "string"
+	},
+	"MaxHeight": {
+		"type": "string"
+	},
+	"Shape": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"shape": {
+				"type": "string"
+			},
+			"proportions": {
+				"type": "string",
+				"enum": [
+					"stretch",
+					"keep"
+				]
+			}
+		}
+	},
+	"Radius": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"topLeft": {
+				"type": "string"
+			},
+			"topRight": {
+				"type": "string"
+			},
+			"bottomRight": {
+				"type": "string"
+			},
+			"bottomLeft": {
+				"type": "string"
+			}
+		}
+	},
+	"BorderWidth": {
+		"type": "object",
+		"additionalProperties": false,
+		"properties": {
+			"top": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 40
+			},
+			"right": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 40
+			},
+			"bottom": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 40
+			},
+			"left": {
+				"type": "number",
+				"minimum": 0,
+				"maximum": 40
+			}
+		}
+	},
+	"BorderStyle": {
+		"type": "string",
+		"enum": [
+			"solid",
+			"dashed",
+			"dotted",
+			"double",
+			"groove",
+			"ridge",
+			"inset",
+			"outset",
+			"none"
+		]
+	},
+	"BorderColour": {
+		"type": "string"
+	},
+	"BorderColourHover": {
+		"type": "string"
+	},
+	"Colour": {
+		"type": "string",
+		"enum": [
+			"natural",
+			"greyscale",
+			"white"
+		]
+	},
+	"Greyscale": {
+		"type": "number",
+		"minimum": 0,
+		"maximum": 100
+	},
+	"Alignment": {
+		"type": "string",
+		"enum": [
+			"start",
+			"center",
+			"end"
+		]
+	},
+	"Order": {
+		"type": "number",
+		"minimum": -20,
+		"maximum": 20
+	}
+}

@@ -815,6 +815,15 @@
     "order": 86
   },
   {
+    "id": "check-media-slot-schema",
+    "cmd": "node scripts/generate-media-slot-schema.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 255
+  },
+  {
     "id": "test-media-injection-parity",
     "cmd": "node scripts/tests/test-media-injection-parity.mjs",
     "tier": "fast",

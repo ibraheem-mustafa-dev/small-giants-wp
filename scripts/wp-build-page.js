@@ -56,6 +56,7 @@ const crypto = require( 'crypto' );
 const { execFileSync } = require( 'child_process' );
 
 const surfaceShape = require( './lib/surface-tree-shape' );
+const objectAttrCheck = require( './lib/object-attr-check' );
 const pluginRequire = createRequire( path.join( __dirname, '..', 'plugins', 'sgs-blocks', 'package.json' ) );
 const { chromium } = pluginRequire( 'playwright' );
 
@@ -452,7 +453,8 @@ async function main() {
 		}
 
 		// Validate the whole tree before touching the post.
-		const problems = await page.evaluate( ( { t, bannedMap, flat } ) => {
+		const problems = await page.evaluate( ( { t, bannedMap, flat, checkSrc } ) => {
+			const objectProblems = new Function( `return ${ checkSrc }` )();
 			const out = [];
 			const walk = ( blocks, trail ) => blocks.forEach( ( b, i ) => {
 				const where = `${ trail }[${ i }] ${ b && b.name }`;
@@ -492,12 +494,16 @@ async function main() {
 					if ( Array.isArray( def.enum ) && ! def.enum.includes( v ) ) {
 						out.push( `${ where }: setting "${ k }" must be one of ${ JSON.stringify( def.enum ) }, got ${ JSON.stringify( v ) }` );
 					}
+					// An object attribute that declares `properties` is checked inside (Spec 49 FR-49-34).
+					if ( def.properties && v && typeof v === 'object' ) {
+						out.push( ...objectProblems( v, def, `${ where }: setting`, k ) );
+					}
 				} );
 				walk( b.innerBlocks || [], `${ where } >` );
 			} );
 			walk( t, '' );
 			return out;
-		}, { t: tree, bannedMap: banned, flat: flatAttrs } );
+		}, { t: tree, bannedMap: banned, flat: flatAttrs, checkSrc: objectAttrCheck.objectProblems.toString() } );
 		if ( problems.length ) fail( 4, `tree rejected:\n  ${ problems.join( '\n  ' ) }` );
 
 		if ( templateSlug ) {
