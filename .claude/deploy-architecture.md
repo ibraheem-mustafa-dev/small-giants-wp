@@ -35,7 +35,7 @@ All files are in `plugins/sgs-blocks/scripts/`. One job per file; the command fi
 `main()` runs these in order; each is wrapped in `deploy_timing.timed()` or `stage()` and appears in the timing table under the name shown.
 
 1. Isolation: `run_isolated()` creates a worktree at `HEAD` and re-runs the script from it, so a concurrent session's uncommitted files cannot reach the deploy. `--no-isolate` and `--payload` deploys run from the shared checkout instead.
-2. `oldshape-audit`: reads stored post content from the target and refuses a deploy whose schemas would strand or delete it.
+2. `oldshape-audit`: reads stored post content from the target and refuses a deploy whose schemas would strand or delete it. `media-guard` (`deploy_media_guard.py`, blocks deploys only): when the build is post-cutover (a block declares media `kinds`), exports the target's saved content over SSH and refuses the deploy while the Spec 49 detector finds old media attributes; a pre-cutover build skips it.
 3. `build`: `npm run build`, whose `prebuild` runs the generators then the fast gate tier (so fast-gate time is inside this stage), or a restore from the deploy cache.
 4. `gate-full`: `npm run gate:full` (the full gate tier), skipped and logged as `gate-full (cached)` when this commit and framework DB already passed.
 5. `deploy-ownership`, `theme-json-guard`: refuse to overwrite a newer deploy by another session (`--takeover` overrides) and ship the target client's own `theme.json`.

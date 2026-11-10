@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 import deploy_cache
+import deploy_media_guard
 import deploy_multi
 import deploy_qa_tier
 import deploy_timing
@@ -517,6 +518,7 @@ def self_test() -> int:
     failures.extend(self_test_motion_qa_args())
     failures.extend(self_test_litespeed_probe())
     failures.extend(deploy_qa_tier.self_test())
+    failures.extend(deploy_media_guard.self_test())
 
     if failures:
         print("[SELF-TEST FAIL]")
@@ -558,4 +560,6 @@ def self_test() -> int:
           "a dry run for a non-canary target reports SKIPPED as a real run does; deploy_timing.short_commit reads the given checkout; "
           "each check is proven red on a planted fault")
     print(" 22. LiteSpeed probe: a warning for each of media-lazy and img_optm-webp that is on, none when both are off or missing")
+    print(" 23. media guard: a pre-cutover build skips, a clean export passes, an export with one old attribute is refused "
+          "(negative control), an unreadable export fails closed")
     return 0

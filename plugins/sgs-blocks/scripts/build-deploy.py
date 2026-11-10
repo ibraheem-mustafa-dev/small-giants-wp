@@ -53,6 +53,7 @@ import deploy_multi  # several sites from one build (sibling module)
 # scripts load from this file by path (TARGETS, the SSH and run helpers,
 # NON_BLOCK_POST_TYPES) are re-exported here.
 from deploy_common import BUILD_DIR, NON_BLOCK_POST_TYPES, PLUGIN_DIR, REPO_ROOT, SSH_ALIAS, TARGETS, err, fmt_cmd, log, resolve_exe, run, scp_base_cmd, ssh_base_cmd, ssh_has_alias  # noqa: F401 (re-exported)
+from deploy_media_guard import step_media_guard
 from deploy_guards import deploy_roots_for_scope, deployed_dirty_files, resolve_theme_json_payload, should_isolate, split_dirty_by_payload, step_deploy_ownership, step_oldshape_audit, step_theme_json_guard, write_deploy_marker
 from deploy_selftest import self_test
 from deploy_timing import finish as finish_timings, record as record_stage, stage, timed
@@ -416,6 +417,10 @@ def main() -> int:
                   "silently lose render or attrs under the schemas being deployed)",
                   flush=True)
             return 1
+
+    if deploy_blocks and timed("media-guard", step_media_guard, args.dry_run, use_alias, target_key, target["wp_content"]) != 0:
+        print("[ABORTED] reason: media-guard-refused (saved content still holds old media attributes)", flush=True)
+        return 1
 
     rc = build_and_gate(args, deploy_blocks) or editor_check_step(args)
     if rc != 0:
