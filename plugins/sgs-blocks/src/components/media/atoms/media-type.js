@@ -31,6 +31,8 @@
  * @package SGS\Blocks
  */
 
+import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
+
 /**
  * The canonical enum (registry `types` field, verbatim). `lottie` (U-17,
  * `.claude/reports/2026-09-26-u17-lottie-design.md` §3.1) is the 4th member,
@@ -66,8 +68,35 @@ export function validate( value, { allowInherit = false } = {} ) {
  *
  * @return {{state: string, hiddenReason: null}}
  */
-export function disclosure() {
+function legacyDisclosure() {
 	return { state: 'shown', hiddenReason: null };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'type', attrs, device, prefix, opts, ( base, c ) => {
+		if ( 'MediaType' === base ) {
+			return 1 === c.kinds.length ? omitted() : undefined;
+		}
+		if ( 'VideoSource' === base ) {
+			return kindIn( c, 'video', 'embed' ) ? undefined : omitted();
+		}
+		return omitted();
+	} );
 }
 
 /**

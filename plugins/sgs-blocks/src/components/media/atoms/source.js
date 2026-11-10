@@ -28,6 +28,7 @@
  * @package SGS\Blocks
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
+import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
 
 /** The vocabulary this atom's `types` field declares (registry.js: source.types). */
 export const TYPE_VOCABULARY = [ 'image', 'video', 'svg' ];
@@ -55,8 +56,39 @@ export function resolveMediaType( attributes, prefix, blockSlug ) {
  *
  * @return {{state: 'shown'}}
  */
-export function disclosure() {
+function legacyDisclosure() {
 	return { state: 'shown' };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'source', attrs, device, prefix, opts, ( base, c ) => {
+		const wanted = {
+			ImageId: [ 'image' ],
+			ImageUrl: [ 'image' ],
+			VideoId: [ 'video', 'embed' ],
+			VideoUrl: [ 'video', 'embed' ],
+			SvgContent: [ 'svg' ],
+			Thumbnail: [ 'video' ],
+			ThumbnailId: [ 'video' ],
+			LottieId: [ 'lottie' ],
+		}[ base ];
+		return wanted && ! kindIn( c, ...wanted ) ? omitted() : undefined;
+	} );
 }
 
 /**

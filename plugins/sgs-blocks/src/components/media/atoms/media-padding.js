@@ -34,6 +34,7 @@
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { toLengthValue } from './box-shape.js';
+import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
 
 /**
  * [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
@@ -98,8 +99,29 @@ export function sideDecls( sides, suffix ) {
 }
 
 /** Unconditional — nothing gates padding off. */
-export function disclosure() {
+function legacyDisclosure() {
 	return { state: 'shown', hiddenReason: null };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'padding', attrs, device, prefix, opts, ( base, c ) =>
+		c.background || kindIn( c, 'embed' ) ? omitted() : undefined
+	);
 }
 
 /**

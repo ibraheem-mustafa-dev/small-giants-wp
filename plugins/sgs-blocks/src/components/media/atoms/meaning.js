@@ -26,6 +26,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { mediaAttrName, mediaStoredAttrName } from '../../MediaElementControls.js';
+import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
 
 export const TYPE_VOCABULARY = [ 'image', 'video', 'svg' ];
 
@@ -66,7 +67,7 @@ export function resolveMediaType( attributes, prefix, blockSlug ) {
  * @param {string} ctx.prefix
  * @return {{state: 'shown'|'disabled', hiddenReason?: string}}
  */
-export function disclosure( { attributes, prefix } ) {
+function legacyDisclosure( { attributes, prefix } ) {
 	const attrs = attributes || {};
 	const key = mediaAttrName( prefix, 'ImageDecorative' );
 	const isDecorative = !! attrs[ key ];
@@ -80,6 +81,37 @@ export function disclosure( { attributes, prefix } ) {
 				),
 		  }
 		: { state: 'shown' };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'meaning', attrs, device, prefix, opts, ( base, c ) => {
+		const decorative = !! c.get( 'ImageDecorative' ) && 'embed' !== c.kind;
+		if ( 'ImageDecorative' === base ) {
+			if ( ! kindIn( c, 'image', 'video', 'svg' ) ) {
+				return omitted();
+			}
+			return ! c.background && c.has( 'LinkUrl' ) ? omitted() : undefined;
+		}
+		if ( 'ImageAlt' === base ) {
+			return kindIn( c, 'image', 'svg' ) && ! decorative ? undefined : omitted();
+		}
+		return kindIn( c, 'video', 'embed' ) && ! decorative ? undefined : omitted();
+	} );
 }
 
 /**

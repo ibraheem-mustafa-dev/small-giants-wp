@@ -49,6 +49,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { mediaAttrName } from '../../MediaElementControls.js';
+import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
 
 /** Boolean bases this atom owns. */
 const BOOLEAN_BASES = [
@@ -120,7 +121,7 @@ export function validate( value, base = 'VideoAutoplay' ) {
 // Defaulted so a caller with no attributes cannot throw. The panel dispatch
 // calls disclosure() on EVERY atom to decide what to render, so one throw here
 // takes down the whole inspector, not just this row.
-export function disclosure( { attributes = {}, prefix = '' } = {} ) {
+function legacyDisclosure( { attributes = {}, prefix = '' } = {} ) {
 	const autoplayKey = mediaAttrName( prefix, 'VideoAutoplay' );
 	const autoplayOn = !! attributes[ autoplayKey ];
 
@@ -150,6 +151,40 @@ export function disclosure( { attributes = {}, prefix = '' } = {} ) {
 	} );
 
 	return states;
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'behaviour', attrs, device, prefix, opts, ( base, c ) => {
+		if ( c.background || ! kindIn( c, 'video', 'embed' ) ) {
+			return omitted();
+		}
+		const embedOnly = [ 'VideoAutoplay', 'VideoMuted', 'VideoLoop', 'VideoControls' ];
+		if ( 'embed' === c.kind && ! embedOnly.includes( base ) ) {
+			return omitted();
+		}
+		if ( base.startsWith( 'Lottie' ) ) {
+			return omitted();
+		}
+		if ( [ 'VideoMuted', 'VideoPlaysInline' ].includes( base ) && c.get( 'VideoAutoplay' ) ) {
+			return disabled( REASONS.autoplayLock );
+		}
+		return undefined;
+	} );
 }
 
 /**

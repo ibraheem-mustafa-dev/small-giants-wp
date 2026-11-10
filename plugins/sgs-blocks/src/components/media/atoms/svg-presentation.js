@@ -63,6 +63,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
+import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
 
 const POSITION_VALUES = [ 'background', 'foreground' ];
 const ANIMATION_VALUES = [ 'none', 'pulse', 'float', 'wave' ];
@@ -111,7 +112,7 @@ export function attrKeys( prefix, blockSlug ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
 	const keys = attrKeys( prefix, blockSlug );
 	const animation = validateAnimation( attributes[ keys.animation ] );
 	if ( 'none' === animation ) {
@@ -121,6 +122,34 @@ export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {
 		};
 	}
 	return { state: 'shown', hiddenReason: null };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'svg', attrs, device, prefix, opts, ( base, c ) => {
+		if ( ! kindIn( c, 'svg' ) || [ 'SvgOpacity', 'SvgMinHeight' ].includes( base ) ) {
+			return omitted();
+		}
+		const animation = c.get( 'SvgAnimation' );
+		if ( 'SvgAnimationSpeed' === base && ( ! animation || 'none' === animation ) ) {
+			return disabled( REASONS.svgSpeed );
+		}
+		return undefined;
+	} );
 }
 
 /**

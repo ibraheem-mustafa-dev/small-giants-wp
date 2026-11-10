@@ -33,13 +33,23 @@
  * states rather than a single state (D910). Re-reading it here would duplicate
  * that logic in a form that cannot express the map.
  *
+ * ── adopted slots ────────────────────────────────────────────────────────────
+ *
+ * A slot whose `supports.sgs.mediaElements` entry declares `kinds` takes the
+ * panel path instead (`media/panels/MediaPanels.js`): Spec 49 §9.4's panels,
+ * built from each atom's `disclosure( attrs, device, prefix )`. `kinds` comes
+ * from the `kinds` prop or, with `blockName`, from the block's own entry for
+ * this prefix. Every other slot runs the body below unchanged.
+ *
  * @package SGS\Blocks
  */
+import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 import { MEDIA_ATOMS, atomsForElement } from './media/atoms/registry.js';
+import MediaPanels from './media/panels/MediaPanels.js';
 
 import { control as sourceControl } from './media/atoms/source.control.js';
 import { control as mediaTypeControl } from './media/atoms/media-type.control.js';
@@ -84,6 +94,21 @@ const ATOM_CONTROLS = {
 };
 
 /**
+ * The `kinds` a block declares for one media slot, or an empty list.
+ *
+ * @param {string} blockName Block name, for example 'sgs/media'.
+ * @param {string} prefix    Slot prefix.
+ * @return {string[]} The allowed kinds.
+ */
+export function declaredKinds( blockName, prefix ) {
+	const entries = getBlockType( blockName )?.supports?.sgs?.mediaElements;
+	const entry = Array.isArray( entries )
+		? entries.find( ( e ) => ( e.prefix || '' ) === prefix )
+		: null;
+	return entry && Array.isArray( entry.kinds ) ? entry.kinds : [];
+}
+
+/**
  * Compose one media element's inspector rows.
  *
  * @param {Object}   props
@@ -99,6 +124,11 @@ const ATOM_CONTROLS = {
  * @param {string}   [props.format]      Focal-point storage: 'xy'|'css-string'.
  * @param {string}   [props.title]       Panel title when insertion is 'root'.
  * @param {string}   [props.group]       InspectorControls group when 'root'.
+ * @param {string[]} [props.kinds]       The slot's allowed kinds; a non-empty list selects the panel path.
+ * @param {string}   [props.blockName]   Block name, to read `kinds` from its slot entry.
+ * @param {string}   [props.context]     'element' | 'background' (panel path).
+ * @param {boolean}  [props.parallax]    Parallax is on for this background (panel path).
+ * @param {Object}   [props.panelContent] Panel id to caller content (panel path).
  * @return {Array|Object|null} Bare rows, a mounted panel, or null.
  */
 export default function MediaElementPanel( {
@@ -114,8 +144,30 @@ export default function MediaElementPanel( {
 	format = 'css-string',
 	title,
 	group,
+	kinds,
+	blockName = '',
+	context = 'element',
+	parallax = false,
+	panelContent,
 } ) {
 	const ids = atomsForElement( { atoms } );
+
+	const slotKinds = Array.isArray( kinds ) && kinds.length ? kinds : declaredKinds( blockName, prefix );
+	if ( slotKinds.length ) {
+		return (
+			<MediaPanels
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				prefix={ prefix }
+				blockSlug={ blockSlug }
+				atomIds={ ids }
+				kinds={ slotKinds }
+				context={ context }
+				parallax={ parallax }
+				panelContent={ panelContent }
+			/>
+		);
+	}
 	const rows = [];
 
 	ids.forEach( ( id ) => {

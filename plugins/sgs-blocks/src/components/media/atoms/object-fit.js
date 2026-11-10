@@ -39,6 +39,7 @@
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
+import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
 
 const ATOM_ID = 'object-fit';
 
@@ -62,8 +63,35 @@ export function validate( value, scope = 'element' ) {
  *
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-export function disclosure() {
+function legacyDisclosure() {
 	return { state: 'shown', hiddenReason: null };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'fit', attrs, device, prefix, opts, ( base, c ) => {
+		if ( 'Size' === base ) {
+			return c.background ? undefined : omitted();
+		}
+		if ( c.background || ! kindIn( c, 'image', 'video', 'svg' ) ) {
+			return omitted();
+		}
+		return c.boxCrops ? undefined : disabled( REASONS.noCrop );
+	} );
 }
 
 /**

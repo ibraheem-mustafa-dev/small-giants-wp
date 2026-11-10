@@ -72,6 +72,7 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
+import { isLegacyCall, rulesFor, disabled, REASONS } from '../panels/disclosure-context.js';
 
 const GRADIENT_PATTERN = /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
 const GRADIENT_BREAKOUT = /[;{}]|url\s*\(|<|>|@|expression/i;
@@ -181,7 +182,7 @@ function formatOpacityDecl( raw ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
 	const keys = attrKeys( prefix, blockSlug );
 	const paint = resolvePaint( attributes[ keys.colour ], attributes[ keys.gradient ] );
 	if ( '' === paint.property ) {
@@ -194,6 +195,31 @@ export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {
 		};
 	}
 	return { state: 'shown', hiddenReason: null };
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'overlay', attrs, device, prefix, opts, ( base, c ) => {
+		const needsPaint = [ 'OverlayOpacity', 'OverlayBlendMode' ].includes( base );
+		if ( needsPaint && ! c.has( 'OverlayColour' ) && ! c.has( 'OverlayGradient' ) ) {
+			return disabled( REASONS.overlayPaint );
+		}
+		return undefined;
+	} );
 }
 
 /**

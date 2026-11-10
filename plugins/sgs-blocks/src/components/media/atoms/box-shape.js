@@ -80,6 +80,7 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
 import { cssLengthValue } from '../../../utils/css-length.js';
 import { MEDIA_ATOMS } from './registry.js';
+import { isLegacyCall, rulesFor, omitted, REASONS } from '../panels/disclosure-context.js';
 
 const ATOM_ID = 'box-shape';
 
@@ -470,7 +471,7 @@ export function resolveBorderColour( value ) {
  * @param {string} [props.blockSlug]
  * @return {{state: string, hiddenReason: (string|null), mode: string, heightState: string, ratioState: string}}
  */
-export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
+function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '' } = {} ) {
 	const sizingKey = mediaStoredAttrName( blockSlug, prefix, 'MediaSizing' );
 	const fitKey = mediaStoredAttrName( blockSlug, prefix, 'ObjectFit' );
 	const mode = resolveSizingMode( attributes[ sizingKey ], attributes[ fitKey ], attributes, prefix, blockSlug );
@@ -481,6 +482,45 @@ export function disclosure( { attributes = {}, prefix = '', blockSlug = '' } = {
 		heightState: 'height' === mode ? 'visible' : 'hidden',
 		ratioState: 'ratio' === mode ? 'visible' : 'hidden',
 	};
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'shape', attrs, device, prefix, opts, ( base, c ) => {
+		if ( c.background || 'MediaSizing' === base ) {
+			return omitted();
+		}
+		if ( 'AspectRatio' === base ) {
+			return c.heightMatchesSpace ? omitted() : undefined;
+		}
+		if ( 'BorderRadius' === base ) {
+			return c.shapeHidesCorners ? omitted( REASONS.corners ) : undefined;
+		}
+		if ( 'BorderWidth' === base ) {
+			return c.isMask ? omitted( REASONS.borders ) : undefined;
+		}
+		if ( base.startsWith( 'Border' ) ) {
+			if ( c.isMask ) {
+				return omitted( REASONS.borders );
+			}
+			return c.hasBorderWidth ? undefined : omitted();
+		}
+		return undefined;
+	} );
 }
 
 /**

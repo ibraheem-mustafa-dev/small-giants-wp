@@ -45,6 +45,7 @@ import { __ } from '@wordpress/i18n';
 
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
+import { isLegacyCall, rulesFor, kindIn, omitted, disabled, shown, REASONS } from '../panels/disclosure-context.js';
 
 const ATOM_ID = 'focal-point';
 
@@ -128,7 +129,7 @@ export function validate( value, base = 'ObjectPosition' ) {
  *                                   gated — see the module docblock.
  * @return {{state: string, hiddenReason: (string|null)}}
  */
-export function disclosure( { attributes = {}, prefix = '', blockSlug = '', scope = 'element' } = {} ) {
+function legacyDisclosure( { attributes = {}, prefix = '', blockSlug = '', scope = 'element' } = {} ) {
 	if ( 'element' !== scope ) {
 		return { state: 'shown', hiddenReason: null };
 	}
@@ -151,6 +152,43 @@ export function disclosure( { attributes = {}, prefix = '', blockSlug = '', scop
 			'sgs-blocks'
 		),
 	};
+}
+
+/**
+ * Per-base disclosure at the active device (Spec 49 §9.3). Returns a map of
+ * base to `{ state, hiddenReason }`, the second legal return shape. Called the
+ * earlier way, `disclosure( { attributes, prefix, blockSlug } )`, it returns
+ * what it always did.
+ *
+ * @param {Object} attrs  Block attributes.
+ * @param {string} device 'desktop' | 'tablet' | 'mobile'.
+ * @param {string} prefix Surface prefix.
+ * @param {Object} opts   `{ blockSlug, kinds, context, parallax }`.
+ * @return {Object} Per-base states.
+ */
+export function disclosure( attrs, device, prefix = '', opts = {} ) {
+	if ( isLegacyCall( attrs, device ) ) {
+		return legacyDisclosure( attrs );
+	}
+	return rulesFor( 'focal', attrs, device, prefix, opts, ( base, c ) => {
+		const media = kindIn( c, 'image', 'video' );
+		if ( 'ObjectPosition' === base ) {
+			if ( c.background || ! media ) {
+				return omitted();
+			}
+			if ( ! c.boxCrops ) {
+				return disabled( REASONS.noCrop );
+			}
+			return 'fill' === c.get( 'ObjectFit' ) ? disabled( REASONS.focalFill ) : undefined;
+		}
+		if ( 'Position' === base ) {
+			return c.background && media ? undefined : omitted();
+		}
+		if ( 'Repeat' === base ) {
+			return c.background && kindIn( c, 'image' ) && 'tile' === c.get( 'Size' ) ? shown() : omitted();
+		}
+		return c.background && kindIn( c, 'image' ) && ! c.parallax ? shown() : omitted();
+	} );
 }
 
 /**
