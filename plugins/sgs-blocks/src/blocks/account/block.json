@@ -885,6 +885,35 @@
 						"attrMap": {
 							"css:display": "hideRememberMe"
 						}
+					},
+					"headerBlock": {
+						"selector": ".sgs-account__header",
+						"label": "Page header",
+						"order": 74,
+						"clusters": [],
+						"_note": "The page header (eyebrow, title, intro, signed-in line) as one motion part: the target of a header entrance."
+					},
+					"authGrid": {
+						"selector": ".sgs-account__wc > #customer_login",
+						"label": "Sign-in and register forms",
+						"order": 75,
+						"clusters": [],
+						"absentIn": [
+							"logged-in"
+						],
+						"absentWhy": "The sign-in and register forms print for a signed-out visitor only.",
+						"_note": "The two forms (sign in, register) as one motion part: the target of their entrance."
+					},
+					"tabContent": {
+						"selector": ".sgs-account__wc > .woocommerce-MyAccount-content",
+						"label": "Tab content",
+						"order": 76,
+						"clusters": [],
+						"absentIn": [
+							"logged-out"
+						],
+						"absentWhy": "The tab content prints for a signed-in customer only.",
+						"_note": "The content of the open tab (orders, addresses, wishlist, account details) as one motion part: the target of a tab entrance."
 					}
 			},
 				"spacingDefaults": {
@@ -2789,6 +2818,11 @@
 			"addressHelperText": {
 				"type": "string",
 				"role": "content"
+			},
+			"addressEmptyText": {
+				"type": "string",
+				"role": "content",
+				"description": "The line in an address card with nothing saved; {type} becomes the card's title without the word address (delivery, billing). Empty = WooCommerce's own line."
 			},
 			"addressTitleFontSize": {
 				"type": "object"

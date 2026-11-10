@@ -81,6 +81,15 @@ ok( false !== strpos( $out, 'id="sgs-account-mobile-hint">For WhatsApp updates</
 $plain = sgs_account_edit_account_markup( $form, array( 'accountShowMobile' => true ) );
 ok( false === strpos( $plain, 'sgs-account-mobile-hint' ), 'no line without the setting' );
 
+// 3b) A card with nothing saved takes the setting's line, with its own type.
+$cards = '<div class="u-column1 woocommerce-Address"><header class="woocommerce-Address-title title"><h2>Delivery address</h2><a class="edit" href="#">Add</a></header><address>You have not set up this type of address yet.</address></div>'
+	. '<div class="u-column2 woocommerce-Address"><header class="woocommerce-Address-title title"><h2>Billing address</h2><a class="edit" href="#">Edit</a></header><address>Ada Lovelace<br/>1 Road</address></div>'
+	. '<div class="u-column2 woocommerce-Address"><header class="woocommerce-Address-title title"><h2>Billing address</h2><a class="edit" href="#">Add</a></header><address>You have not set up this type of address yet.</address></div>';
+$worded = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'No {type} address saved yet.' ) );
+ok( false !== strpos( $worded, '<address>No delivery address saved yet.</address>' ) && false !== strpos( $worded, '<address>No billing address saved yet.</address>' ), 'an empty address card names its own type' );
+ok( false !== strpos( $worded, '<address>Ada Lovelace<br/>1 Road</address>' ), 'a saved address is left as it is' );
+ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the setting WooCommerce\'s line stays' );
+
 // 4) Saved items: the empty card while the list is empty, else the panel.
 Account_Endpoints::$active = array( 'tabHeadings' => true, 'wishlistEmptyHeading' => 'Nothing saved yet.', 'wishlistEmptyText' => 'Tap the heart.', 'wishlistEmptyButtonLabel' => 'Shop sunglasses' );
 $GLOBALS['saved'] = array();

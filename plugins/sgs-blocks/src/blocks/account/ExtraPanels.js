@@ -142,6 +142,12 @@ export function AddressesPanel( { attributes, setAttributes } ) {
 				name="addressHelperText"
 				label={ __( 'Helper line under the cards', 'sgs-blocks' ) }
 			/>
+			<TextField
+				{ ...p }
+				name="addressEmptyText"
+				label={ __( 'Line in a card with no address', 'sgs-blocks' ) }
+				help={ __( '{type} becomes the card title without the word address, for example “No {type} address saved yet.”', 'sgs-blocks' ) }
+			/>
 			<SgsBorderControl
 				widthValues={ attributes.addressCardBorderWidth ?? {} }
 				onWidthChange={ ( next ) => setAttributes( { addressCardBorderWidth: next } ) }

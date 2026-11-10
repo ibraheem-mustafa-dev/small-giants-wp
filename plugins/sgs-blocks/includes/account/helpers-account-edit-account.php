@@ -13,6 +13,33 @@
 
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'sgs_account_address_empty_markup' ) ) {
+	/**
+	 * Reword the line of an address card with nothing saved. WooCommerce prints one fixed sentence for both cards; the
+	 * setting's {type} token becomes the card's own title without the word address (delivery, billing).
+	 *
+	 * @param string $html       WooCommerce's rendered account output.
+	 * @param array  $attributes Block attributes.
+	 * @return string
+	 */
+	function sgs_account_address_empty_markup( string $html, array $attributes ): string {
+		$line = trim( (string) ( $attributes['addressEmptyText'] ?? '' ) );
+		if ( '' === $line || false === strpos( $html, 'woocommerce-Address-title' ) ) {
+			return $html;
+		}
+		$original = preg_quote( esc_html__( 'You have not set up this type of address yet.', 'woocommerce' ), '#' );
+		$out      = preg_replace_callback(
+			'#(<header class="woocommerce-Address-title[^"]*">(?:(?!</header>).)*?<h[23][^>]*>((?:(?!</header>).)*?)</h[23]>(?:(?!</header>).)*</header>\s*<address>)\s*' . $original . '\s*(</address>)#s',
+			static function ( array $m ) use ( $line ): string {
+				$type = strtolower( trim( (string) preg_replace( '/\s+address$/i', '', wp_strip_all_tags( $m[2] ) ) ) );
+				return $m[1] . esc_html( str_replace( '{type}', $type, $line ) ) . $m[3];
+			},
+			$html
+		);
+		return is_string( $out ) ? $out : $html;
+	}
+}
+
 if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 	/**
 	 * Apply the account details settings to WooCommerce's output.
@@ -22,6 +49,7 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 	 * @return string
 	 */
 	function sgs_account_edit_account_markup( string $html, array $attributes ): string {
+		$html = sgs_account_address_empty_markup( $html, $attributes );
 		if ( false === strpos( $html, 'woocommerce-EditAccountForm' ) || ! is_user_logged_in() ) {
 			return $html;
 		}
