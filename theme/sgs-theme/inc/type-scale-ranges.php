@@ -14,8 +14,9 @@ namespace SGS\Theme;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Whether a preset size is fluid: a bare viewport-unit length, or a `clamp()`, `min()`, `max()` or `calc()` call with a
- * viewport or container unit in it. A value carrying a comment marker or unbalanced parentheses is never fluid.
+ * Whether a preset size is a range to keep: any `clamp()`, a bare viewport-unit length, or a `min()`, `max()` or
+ * `calc()` call with a viewport or container unit in it. A value carrying a comment marker or unbalanced parentheses
+ * is never kept.
  *
  * @param string $size Preset size.
  * @return bool True when the size scales with the viewport or container.
@@ -28,8 +29,11 @@ function is_fluid_size( string $size ): bool {
 	if ( 1 === preg_match( '/^-?[0-9]*\.?[0-9]+' . $unit . '$/i', $size ) ) {
 		return true;
 	}
-	return 1 === preg_match( '/^(?:clamp|min|max|calc)(\((?:[0-9a-z.,+\-*\/% ]|(?1))*\))$/i', $size )
-		&& 1 === preg_match( '/[0-9.]' . $unit . '/i', $size );
+	if ( 1 !== preg_match( '/^(clamp|min|max|calc)(\((?:[0-9a-z.,+\-*\/% ]|(?2))*\))$/i', $size, $match ) ) {
+		return false;
+	}
+	// A draft's clamp() is kept as written whatever its units; min(), max() and calc() count only with a fluid unit.
+	return 'clamp' === strtolower( $match[1] ) || 1 === preg_match( '/[0-9.]' . $unit . '/i', $size );
 }
 
 /**

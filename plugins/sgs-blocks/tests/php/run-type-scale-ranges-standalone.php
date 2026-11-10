@@ -66,7 +66,8 @@ namespace {
 	$check( 'a clamp() with a viewport unit is kept', '' !== $fluid( 'clamp(2rem, 4vw, 3rem)' ) );
 	$check( 'a plain rem size is stepped down', '' === $fluid( '2rem' ) );
 	$check( 'a plain px size is stepped down', '' === $fluid( '32px' ) );
-	$check( 'a clamp() with no viewport unit is stepped down', '' === $fluid( 'clamp(1rem, 2rem, 3rem)' ) );
+	$check( 'a clamp() with no viewport unit is kept as written', '' !== $fluid( 'clamp(1rem, 2rem, 3rem)' ) );
+	$check( 'a calc() with no viewport unit is stepped down', '' === $fluid( 'calc(1rem + 2px)' ) );
 	$check( 'unbalanced parentheses are refused', '' === $fluid( 'clamp(1rem, 4vw, 3rem' ) );
 
 	$functions = (string) file_get_contents( __DIR__ . '/../../../../theme/sgs-theme/functions.php' );
