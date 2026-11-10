@@ -486,6 +486,7 @@
     "doing_filter",
     "extract_from_markers",
     "insert_with_markers",
-    "user_can"
+    "user_can",
+    "woocommerce_register_additional_checkout_field"
   ]
 }
