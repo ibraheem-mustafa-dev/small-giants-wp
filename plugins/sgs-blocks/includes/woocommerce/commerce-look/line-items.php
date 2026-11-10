@@ -116,7 +116,7 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
  * The text before the Checkout's Log in link (`sgsCheckoutStrings.loginPrefix`, a span the checkout script adds beside
  * the link). WooCommerce floats the link to the right of the Contact heading; the span floats right too, so it sits
  * directly to the link's left on the same line. A long text wraps inside 70% of the row instead of overflowing; the
- * Eye Care value fits on one line at 375px. WooCommerce pulls the link up with
+ * usual short phrase fits on one line at 375px. WooCommerce pulls the link up with
  * a -24px top margin (to sit beside the heading); the span takes the same margin so both land on one row. The link's own margin box ends above its top
  * edge, so it gets a 24px bottom margin to become an obstacle the span floats beside rather than under.
  *
