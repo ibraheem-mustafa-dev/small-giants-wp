@@ -17,7 +17,7 @@ const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
 /**
  * @param {Object} o { reads, wrapper, schema, shapes }.
- * @return {{target:string, slot:Object, reported:Object[], notes:string[], matchItsSpace:boolean}} The slot document.
+ * @return {{target:string, slot:Object, reported:Object[], notes:string[]}} The slot document.
  */
 export function slotFromReads( { reads, wrapper = null, schema, shapes = null } ) {
 	const reported = [];
@@ -37,14 +37,12 @@ export function slotFromReads( { reads, wrapper = null, schema, shapes = null } 
 		verdict.absorb || notes.push( `wrapper not merged: ${ verdict.reason }` );
 	}
 	const perTier = {};
-	let matchItsSpace = false;
 	for ( const [ w, tier ] of TIERS ) {
 		const element = reads?.[ w ]?.element;
 		if ( ! element ) {
 			continue;
 		}
 		const fill = heightFill( element );
-		matchItsSpace = matchItsSpace || fill.matchItsSpace;
 		const rows = styleRows( element, fill, shapes );
 		perTier[ tier ] = rows.writes;
 		reported.push( ...rows.reported.map( ( r ) => ( { ...r, width: w } ) ) );
@@ -71,7 +69,7 @@ export function slotFromReads( { reads, wrapper = null, schema, shapes = null } 
 			v !== undefined && ( slot[ key ] = v );
 		}
 	}
-	return { target, slot, reported, notes, matchItsSpace };
+	return { target, slot, reported, notes };
 }
 
 export { heightFill, absorbs, placement, kindPerWidth, styleRows, WIDTH_TIER };

@@ -137,7 +137,7 @@ export function styleRows( e, fill, shapes ) {
 	}
 	for ( const [ key, prop ] of Object.entries( SIZING ) ) {
 		const v = d[ prop ];
-		if ( v === undefined || v === '' || ( 'height' === key && ( fill?.fill || fill?.matchItsSpace ) ) ) continue;
+		if ( v === undefined || v === '' || ( 'height' === key && ( fill?.fill || fill?.inertHeight ) ) ) continue;
 		out.writes[ key ] = 'ratio' === key ? ( /^auto$/i.test( v ) ? 'natural' : String( v ).replace( /\s*\/\s*/, ' / ' ) ) : v;
 	}
 	fill?.fill && delete out.writes.ratio;

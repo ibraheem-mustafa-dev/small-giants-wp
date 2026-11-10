@@ -23,10 +23,10 @@ test( 'Fill: a stretched row maps to Height Fill; the file\'s own height does no
 	assert.equal( rows( 'ownHeightRow' ).writes.height, undefined );
 } );
 
-test( 'Fill: height 100% of a definite parent is Fill; of an indefinite parent writes no Height and flags Match its space', () => {
+test( 'Fill: height 100% of a definite parent is Fill; of an indefinite parent it is inert and writes no Height', () => {
 	assert.equal( rows( 'pct100Definite' ).writes.height, 'fill' );
 	const r = heightFill( F.pct100Indefinite );
-	assert.deepEqual( [ r.fill, r.matchItsSpace ], [ false, true ] );
+	assert.deepEqual( [ r.fill, r.inertHeight ], [ false, true ] );
 	assert.equal( rows( 'pct100Indefinite' ).writes.height, undefined );
 } );
 
