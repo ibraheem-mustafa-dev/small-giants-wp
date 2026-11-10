@@ -487,7 +487,8 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"drawingVideoAlt": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

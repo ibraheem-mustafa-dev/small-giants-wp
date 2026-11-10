@@ -878,7 +878,10 @@
 			"vertical-lr"
 		],
 		"default": ""
-	}
+	},
+		"objectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"objectFitMobile": {"type":"string","_generated":"media-atoms"},
+		"size": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

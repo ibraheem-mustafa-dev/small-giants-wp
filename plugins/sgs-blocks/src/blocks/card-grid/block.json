@@ -1363,7 +1363,11 @@
       "type": "string",
       "default": "",
       "description": "No-photo label colour. Theme token slug or raw colour. Empty = the tile's text colour at half strength."
-    }
+    },
+  	"sgsObjectFit": {"type":"string","_generated":"media-atoms"},
+  	"sgsObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+  	"sgsObjectFitMobile": {"type":"string","_generated":"media-atoms"},
+  	"sgsSize": {"type":"string","_generated":"media-atoms"}
   },
   "render": "file:./render.php",
   "editorScript": "file:./index.js",

@@ -764,7 +764,10 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"swatchObjectFit": {"type":"string","_generated":"media-atoms"},
+		"swatchObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"swatchObjectFitMobile": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

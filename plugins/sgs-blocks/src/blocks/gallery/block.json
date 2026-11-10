@@ -678,7 +678,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Fits every image inside its tile without cropping, centred (object-fit contain), whatever each item's own fit says."
-		}
+		},
+		"sgsObjectFit": {"type":"string","_generated":"media-atoms"},
+		"sgsObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"sgsObjectFitMobile": {"type":"string","_generated":"media-atoms"},
+		"sgsSize": {"type":"string","_generated":"media-atoms"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

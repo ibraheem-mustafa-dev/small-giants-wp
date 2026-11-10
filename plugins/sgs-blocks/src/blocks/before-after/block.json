@@ -659,7 +659,27 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"beforeObjectFit": {"type":"string","_generated":"media-atoms"},
+		"beforeObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"beforeObjectFitMobile": {"type":"string","_generated":"media-atoms"},
+		"beforeSize": {"type":"string","_generated":"media-atoms"},
+		"beforeObjectPosition": {"type":"string","_generated":"media-atoms"},
+		"beforeObjectPositionTablet": {"type":"string","_generated":"media-atoms"},
+		"beforeObjectPositionMobile": {"type":"string","_generated":"media-atoms"},
+		"beforePosition": {"type":"string","_generated":"media-atoms"},
+		"beforeRepeat": {"type":"string","_generated":"media-atoms"},
+		"beforeAttachment": {"type":"string","_generated":"media-atoms"},
+		"afterObjectFit": {"type":"string","_generated":"media-atoms"},
+		"afterObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"afterObjectFitMobile": {"type":"string","_generated":"media-atoms"},
+		"afterSize": {"type":"string","_generated":"media-atoms"},
+		"afterObjectPosition": {"type":"string","_generated":"media-atoms"},
+		"afterObjectPositionTablet": {"type":"string","_generated":"media-atoms"},
+		"afterObjectPositionMobile": {"type":"string","_generated":"media-atoms"},
+		"afterPosition": {"type":"string","_generated":"media-atoms"},
+		"afterRepeat": {"type":"string","_generated":"media-atoms"},
+		"afterAttachment": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

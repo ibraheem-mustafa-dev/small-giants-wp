@@ -1775,7 +1775,11 @@
       "type": "string",
       "default": "",
       "description": "Corner radius of every card, written to --sgs-card-radius on the block. Empty keeps the stylesheet's 8px."
-    }
+    },
+  	"objectFit": {"type":"string","_generated":"media-atoms"},
+  	"objectFitTablet": {"type":"string","_generated":"media-atoms"},
+  	"objectFitMobile": {"type":"string","_generated":"media-atoms"},
+  	"size": {"type":"string","_generated":"media-atoms"}
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",

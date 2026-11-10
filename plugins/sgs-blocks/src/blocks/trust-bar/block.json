@@ -1249,7 +1249,9 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"badgeImageObjectFitTablet": {"type":"string","_generated":"media-atoms"},
+		"badgeImageObjectFitMobile": {"type":"string","_generated":"media-atoms"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
