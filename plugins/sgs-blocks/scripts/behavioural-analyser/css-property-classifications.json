@@ -6375,6 +6375,14 @@
     },
     {
       "slug": "sgs/card-grid",
+      "attr": "cardBackgroundGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
       "attr": "cardBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -6704,21 +6712,6 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "no-image-label"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "imageOverlay"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
-      "attr": "overlayOpacity",
-      "fields": {
-        "css_property": "opacity"
       }
     },
     {
@@ -8520,40 +8513,9 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/container",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color"
       }
     },
     {
@@ -8569,45 +8531,7 @@
       "slug": "sgs/container",
       "attr": "backgroundOverlayOpacity",
       "fields": {
-        "css_property": "opacity",
-        "css_element": "overlay"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position,object-position"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size,object-fit"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "bgSvgMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "bgSvgOpacity",
-      "fields": {
-        "css_property": "opacity",
-        "css_element": "svg-bg"
+        "css_property": "opacity"
       }
     },
     {
@@ -8802,13 +8726,6 @@
         "css_property": "overflow",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/container",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -17020,30 +16937,6 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
@@ -17082,30 +16975,16 @@
       "slug": "sgs/hero",
       "attr": "backgroundPosition",
       "fields": {
-        "css_property": "background-position,object-position",
+        "css_property": "object-position",
         "css_element": "video-bg"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat"
       }
     },
     {
       "slug": "sgs/hero",
       "attr": "backgroundSize",
       "fields": {
-        "css_property": "background-size,object-fit",
+        "css_property": "object-fit",
         "css_element": "video-bg"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "bgSvgOpacity",
-      "fields": {
-        "css_property": "opacity"
       }
     },
     {
@@ -20595,42 +20474,9 @@
     },
     {
       "slug": "sgs/multi-button",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color"
       }
     },
     {
@@ -20647,35 +20493,6 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position,object-position"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size,object-fit"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "bgSvgMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_layer": "OUTER"
       }
     },
     {
@@ -20793,13 +20610,6 @@
         "css_property": "max-width",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/multi-button",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -22672,6 +22482,23 @@
     },
     {
       "slug": "sgs/physics-canvas",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -22688,40 +22515,9 @@
     },
     {
       "slug": "sgs/physics-canvas",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color"
       }
     },
     {
@@ -22738,27 +22534,6 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position,object-position"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size,object-fit"
       }
     },
     {
@@ -22813,13 +22588,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -28702,40 +28470,9 @@
     },
     {
       "slug": "sgs/site-footer",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color"
       }
     },
     {
@@ -28752,33 +28489,6 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -28869,13 +28579,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-footer",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -29160,40 +28863,9 @@
     },
     {
       "slug": "sgs/site-header",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-color"
       }
     },
     {
@@ -29210,33 +28882,6 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -29291,13 +28936,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/site-header",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -33087,6 +32725,23 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "backgroundColourHover",
       "fields": {
         "css_property": "background-color",
@@ -33106,42 +32761,9 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "backgroundImage",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "desktop"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundImageMobile",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "mobile"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundImageTablet",
-      "fields": {
-        "css_property": "background-image",
-        "css_tier": "tablet"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
       "attr": "backgroundOverlayBlendMode",
       "fields": {
         "css_property": "mix-blend-mode"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundOverlayColour",
-      "fields": {
-        "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -33158,33 +32780,6 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundPosition",
-      "fields": {
-        "css_property": "background-position",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundRepeat",
-      "fields": {
-        "css_property": "background-repeat",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundSize",
-      "fields": {
-        "css_property": "background-size",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
@@ -33587,13 +33182,6 @@
         "css_property": "min-height",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "overlayGradient",
-      "fields": {
-        "css_property": "background-image"
       }
     },
     {
@@ -37539,14 +37127,6 @@
     },
     {
       "slug": "sgs/card-grid",
-      "attr": "cardBackgroundGradient",
-      "fields": {
-        "css_property": "background-image",
-        "css_element": "item"
-      }
-    },
-    {
-      "slug": "sgs/card-grid",
       "attr": "cardBorderColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -37611,6 +37191,14 @@
       "fields": {
         "css_property": "background-color",
         "role": "color",
+        "css_element": "imageOverlay"
+      }
+    },
+    {
+      "slug": "sgs/card-grid",
+      "attr": "overlayGradient",
+      "fields": {
+        "css_property": "background-image",
         "css_element": "imageOverlay"
       }
     },
@@ -43158,6 +42746,15 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "backgroundImage",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -45978,16 +45575,6 @@
     },
     {
       "slug": "sgs/physics-canvas",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/physics-canvas",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -47499,6 +47086,33 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -47618,6 +47232,33 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "scrolled"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -49462,10 +49103,36 @@
     },
     {
       "slug": "sgs/trust-bar",
-      "attr": "backgroundColour",
+      "attr": "backgroundOverlayColour",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
+        "css_property": "background-image",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundPosition",
+      "fields": {
+        "css_property": "background-position",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundRepeat",
+      "fields": {
+        "css_property": "background-repeat",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundSize",
+      "fields": {
+        "css_property": "background-size",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -49840,6 +49507,26 @@
       }
     },
     {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundImageMobile",
+      "fields": {
+        "css_property": "background-image",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundImageTablet",
+      "fields": {
+        "css_property": "background-image",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/responsive-logo",
       "attr": "logoIdTablet",
       "fields": {
@@ -50054,15 +49741,6 @@
       }
     },
     {
-      "slug": "sgs/physics-canvas",
-      "attr": "backgroundColourGradient",
-      "fields": {
-        "css_property": "background-color-gradient",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
-      }
-    },
-    {
       "slug": "sgs/product-card",
       "attr": "descColourGradient",
       "fields": {
@@ -50159,15 +49837,6 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "first-letter"
-      }
-    },
-    {
-      "slug": "sgs/trust-bar",
-      "attr": "backgroundColourGradient",
-      "fields": {
-        "css_property": "background-color-gradient",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
       }
     },
     {
