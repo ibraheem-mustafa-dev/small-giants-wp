@@ -82,6 +82,37 @@ describe( 'checkout login prefix', () => {
 		expect( document.querySelectorAll( '.wc-block-checkout__login-prompt' ) ).toHaveLength( 1 );
 	} );
 
+	test( 'hides the span from assistive technology and names the link with the whole phrase', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
+		const link = document.querySelector( '.wc-block-checkout__login-prompt' );
+		expect( document.querySelector( '.sgs-checkout-login-prefix' ).getAttribute( 'aria-hidden' ) ).toBe( 'true' );
+		expect( link.getAttribute( 'aria-label' ) ).toBe( 'Already have an account? Sign in' );
+		expect( link.textContent ).toBe( 'Sign in' );
+	} );
+
+	test( 'a second pass keeps one span and the same label; a re-rendered link gets the label again', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		expect( document.querySelectorAll( '.sgs-checkout-login-prefix' ) ).toHaveLength( 1 );
+		const link = document.querySelector( '.wc-block-checkout__login-prompt' );
+		expect( link.getAttribute( 'aria-label' ) ).toBe( 'Already have an account? Sign in' );
+		const fresh = link.cloneNode( true );
+		fresh.removeAttribute( 'aria-label' );
+		link.replaceWith( fresh );
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		expect( document.querySelector( '.wc-block-checkout__login-prompt' ).getAttribute( 'aria-label' ) ).toBe( 'Already have an account? Sign in' );
+		expect( document.querySelectorAll( '.sgs-checkout-login-prefix' ) ).toHaveLength( 1 );
+	} );
+
+	test( 'with no prefix set nothing is added to the link', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: '' } );
+		const link = document.querySelector( '.wc-block-checkout__login-prompt' );
+		expect( link.hasAttribute( 'aria-label' ) ).toBe( false );
+		expect( document.querySelector( '.sgs-checkout-login-prefix' ) ).toBeNull();
+	} );
+
 	test( 'a second render adds the text once', () => {
 		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
 		// eslint-disable-next-line no-new-func

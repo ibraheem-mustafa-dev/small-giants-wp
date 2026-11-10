@@ -55,13 +55,22 @@
 		}
 		if ( config.loginPrefix ) {
 			var prompt = doc.querySelector( LOGIN );
-			if ( prompt && prompt.parentNode && ! doc.querySelector( '.sgs-checkout-login-prefix' ) ) {
-				// After the link in the DOM: WooCommerce floats the link right, and a second right float lands to its
-				// left, so the text reads before the link on screen. The link node itself is never moved.
-				var prefix = doc.createElement( 'span' );
-				prefix.className = 'sgs-checkout-login-prefix';
-				prefix.textContent = config.loginPrefix;
-				prompt.insertAdjacentElement( 'afterend', prefix );
+			if ( prompt && prompt.parentNode ) {
+				if ( ! doc.querySelector( '.sgs-checkout-login-prefix' ) ) {
+					// After the link in the DOM: WooCommerce floats the link right, and a second right float lands to
+					// its left, so the text reads before the link on screen. The link node itself is never moved.
+					var prefix = doc.createElement( 'span' );
+					prefix.className = 'sgs-checkout-login-prefix';
+					prefix.setAttribute( 'aria-hidden', 'true' );
+					prefix.textContent = config.loginPrefix;
+					prompt.insertAdjacentElement( 'afterend', prefix );
+				}
+				// The span is hidden from assistive technology, so the link carries the whole phrase as its name
+				// (the visible label stays inside it). Only the attribute is set; React keeps the node.
+				var name = config.loginPrefix.trim() + ' ' + ( prompt.textContent || '' ).trim();
+				if ( prompt.getAttribute( 'aria-label' ) !== name ) {
+					prompt.setAttribute( 'aria-label', name );
+				}
 			}
 		}
 		if ( config.brand ) {
