@@ -37,14 +37,14 @@ test( 'dimensions map to the setting of the same name; a height on a ratio-keepi
 } );
 
 test( 'Fit and Focal are written only where the box crops; fill counts; a keyword with an offset converts', () => {
-	assert.deepEqual( [ rows( 'cropCoverFocal' ).writes.fit, rows( 'cropCoverFocal' ).writes.focal ], [ 'cover', { x: 20, y: 0 } ] );
+	assert.deepEqual( [ rows( 'cropCoverFocal' ).writes.fit, rows( 'cropCoverFocal' ).writes.focal ], [ 'cover', { x: 0.2, y: 0 } ] );
 	assert.equal( rows( 'fillDistorts' ).writes.fit, 'fill' );
 	assert.equal( rows( 'fillDistorts' ).writes.focal, undefined );
 	assert.deepEqual( [ rows( 'noCrop' ).writes.fit, rows( 'noCrop' ).writes.focal ], [ undefined, undefined ] );
 	const e = { box: { w: 600, h: 300 }, rendered: { w: 600, h: 400 } };
-	assert.deepEqual( focalOf( 'top', e ), { x: 50, y: 0 } );
-	assert.deepEqual( focalOf( 'right bottom', e ), { x: 100, y: 100 } );
-	assert.deepEqual( focalOf( '30% 70%', e ), { x: 30, y: 70 } );
+	assert.deepEqual( focalOf( 'top', e ), { x: 0.5, y: 0 } );
+	assert.deepEqual( focalOf( 'right bottom', e ), { x: 1, y: 1 } );
+	assert.deepEqual( focalOf( '30% 70%', e ), { x: 0.3, y: 0.7 } );
 	assert.equal( focalOf( 'banana', e ), null );
 	assert.equal( rows( 'cropCoverFocal' ).reported.length, 0 );
 } );

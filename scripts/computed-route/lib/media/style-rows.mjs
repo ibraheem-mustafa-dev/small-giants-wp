@@ -17,14 +17,14 @@ function crops( e ) {
 }
 
 /**
- * `object-position` as `{x,y}` percentages. Percentages and keywords convert directly; keywords with offsets (`left 20% top`)
- * take the percentage; a pixel offset uses the free space of the rendered image size. null when unparseable.
+ * `object-position` as `{x,y}` percentages (0 to 100). Percentages and keywords convert directly; keywords with offsets
+ * (`left 20% top`) take the percentage; a pixel offset uses the free space of the rendered image size. null when unparseable.
  *
  * @param {string} value Computed object-position.
  * @param {Object} e     Element read.
- * @return {{x:number,y:number}|null} Focal, or null.
+ * @return {{x:number,y:number}|null} Percentages, or null.
  */
-export function focalOf( value, e ) {
+function focalPercent( value, e ) {
 	const t = String( value ?? '' ).trim().toLowerCase().split( /\s+/ ).filter( Boolean );
 	const axisOf = ( k ) => ( 'left' === k || 'right' === k ? 'x' : 'top' === k || 'bottom' === k ? 'y' : null );
 	const free = { x: ( e.box?.w ?? 0 ) - ( e.rendered?.w ?? NaN ), y: ( e.box?.h ?? 0 ) - ( e.rendered?.h ?? NaN ) };
@@ -68,6 +68,19 @@ export function focalOf( value, e ) {
 		next && ! ( next in KEYWORD ) && i++;
 	}
 	return out;
+}
+
+/**
+ * `object-position` as the Focal setting's `{x,y}`, each 0 to 1 (Spec 49 §8 and FR-49-4); 0.5 is the centre.
+ *
+ * @param {string} value Computed object-position.
+ * @param {Object} e     Element read.
+ * @return {{x:number,y:number}|null} Focal, or null when unparseable.
+ */
+export function focalOf( value, e ) {
+	const p = focalPercent( value, e );
+	const unit = ( n ) => Math.min( 1, Math.max( 0, Math.round( n * 100 ) / 10000 ) );
+	return p ? { x: unit( p.x ), y: unit( p.y ) } : null;
 }
 
 function radiusRows( e, shapes, out ) {
@@ -150,7 +163,7 @@ export function styleRows( e, fill, shapes ) {
 		const focal = focalOf( c.objectPosition, e );
 		if ( null === focal ) {
 			out.reported.push( { property: 'object-position', value: c.objectPosition, reason: 'unparseable' } );
-		} else if ( 50 !== focal.x || 50 !== focal.y ) {
+		} else if ( 0.5 !== focal.x || 0.5 !== focal.y ) {
 			out.writes.focal = focal;
 		}
 	}
