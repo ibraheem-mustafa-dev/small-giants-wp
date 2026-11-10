@@ -93,6 +93,12 @@ foreach ( array( '', 'hero', '16px', '#fff', 'url(x)', null, 12, array() ) as $v
 	$check( 'predicate refuses non-function ' . var_export( $value, true ), '', sgs_resolved_css_value( $value ) );
 }
 
+$check( 'colour keeps an upper-case var()', 'VAR(--x)', sgs_colour_value( 'VAR(--x)' ) );
+$check( 'colour keeps a mixed-case var()', 'Var(--x, #fff)', sgs_colour_value( 'Var(--x, #fff)' ) );
+$check( 'colour slug still wraps', 'var(--wp--preset--color--primary, currentColor)', sgs_colour_value( 'primary' ) );
+$check( 'shadow keeps an upper-case var()', 'VAR(--x)', sgs_shadow_value( 'VAR(--x)' ) );
+$check( 'shadow slug still wraps', 'var(--wp--preset--shadow--soft)', sgs_shadow_value( 'soft' ) );
+
 // Existing slug and number behaviour is unchanged.
 $check( 'slug', 'var(--wp--preset--font-size--hero)', sgs_font_size_value( 'hero' ) );
 $check( 'slug upper', 'var(--wp--preset--font-size--x-large)', sgs_font_size_value( 'X-Large' ) );

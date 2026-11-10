@@ -603,7 +603,7 @@ function sgs_colour_value( ?string $slug_or_value ): string {
 	// `var(--wp--preset--color--var--border)`, which resolves to currentColor
 	// (proven live 2026-07-05 on the ghost button — a dark border where the draft
 	// wants the light `var(--border)`).
-	if ( str_starts_with( $value, 'var(' ) ) {
+	if ( 0 === stripos( $value, 'var(' ) ) {
 		// SECURITY: reject a declaration breakout riding the passthrough
 		// (`var(--x);}body{...}`) — see sgs_css_value_has_breakout().
 		return sgs_css_value_has_breakout( $value ) ? '' : esc_attr( $value );
@@ -669,7 +669,7 @@ function sgs_shadow_value( ?string $slug_or_value ): string {
 	// "don't wrap in preset var, pass through". A leading minus or dot is a number
 	// too: `-2px 4px 8px` is a legal shadow, not a slug.
 	$is_raw = (
-		str_starts_with( $value, 'var(' ) ||
+		0 === stripos( $value, 'var(' ) ||
 		str_starts_with( $value, 'inset' ) ||
 		str_starts_with( $value, 'rgb' ) ||
 		str_starts_with( $value, '0 ' ) ||

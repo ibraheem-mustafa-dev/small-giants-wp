@@ -104,7 +104,7 @@ function colourToCss( token ) {
 	// Same order as sgs_colour_value(): var(), then a real colour, then everything else is a
 	// palette slug (a `#` that is not a valid hex code is a slug with its junk stripped).
 	if (
-		token.startsWith( 'var(' ) ||
+		/^var\(/i.test( token ) ||
 		/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test( token ) ||
 		/^(rgb|rgba|hsl|hsla|oklch|lch|oklab|lab|hwb)\s*\(/i.test( token )
 	) {
