@@ -602,7 +602,11 @@
         "actionWeight": "400",
         "actionPadding": "0",
         "actionHoverBackground": "transparent",
-        "actionFontSize": "13px"
+        "actionFontSize": "13px",
+        "duration": "3.2s",
+        "offsetBottom": "32px",
+        "actionUnderlineColour": "rgba(250,248,245,.6)",
+        "actionHoverUnderlineThickness": "1px"
       },
       "focus": {
         "width": "2px",
