@@ -2,7 +2,7 @@
  * Responsive class name helpers.
  */
 
-import { SGS_BREAKPOINTS } from './breakpoints';
+import { SGS_BREAKPOINTS } from './breakpoints.js';
 
 export { SGS_BREAKPOINTS };
 
