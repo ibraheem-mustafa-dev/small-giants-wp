@@ -19,6 +19,9 @@ export function createSaveWatcher( { getEditor, onScan } ) {
 	let wasManualSave = false;
 	return function check() {
 		const editor = getEditor();
+		if ( ! editor || typeof editor.isSavingPost !== 'function' ) {
+			return;
+		}
 		const saving = editor.isSavingPost();
 		const manual = saving && ! editor.isAutosavingPost();
 		if ( saving ) {

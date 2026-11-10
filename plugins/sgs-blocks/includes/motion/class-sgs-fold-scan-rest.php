@@ -56,7 +56,7 @@ final class Sgs_Fold_Scan_Rest {
 	}
 
 	/**
-	 * A valid REST nonce and the right to edit the post.
+	 * A valid REST nonce, a published post and the right to edit it.
 	 *
 	 * @param \WP_REST_Request $request Request.
 	 * @return bool
@@ -66,7 +66,8 @@ final class Sgs_Fold_Scan_Rest {
 		if ( '' === $nonce || ! \wp_verify_nonce( $nonce, 'wp_rest' ) ) {
 			return false;
 		}
-		return \current_user_can( 'edit_post', (int) $request->get_param( 'id' ) );
+		$post_id = (int) $request->get_param( 'id' );
+		return 'publish' === \get_post_status( $post_id ) && \current_user_can( 'edit_post', $post_id );
 	}
 
 	/**

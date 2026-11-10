@@ -23,7 +23,22 @@ function sectionsOf( wrapper ) {
 }
 
 /**
- * Count the top-level sections whose top edge is above the viewport height.
+ * A box's distance from the document top along its offsetParent chain: layout position only, so a transform (an
+ * entrance start state, a hover lift) can never shift it.
+ *
+ * @param {HTMLElement} el Element to locate.
+ * @return {number} Pixels from the document top.
+ */
+function untransformedTop( el ) {
+	let top = 0;
+	for ( let node = el; node; node = node.offsetParent ) {
+		top += node.offsetTop;
+	}
+	return top;
+}
+
+/**
+ * Count the top-level sections that have a rendered height and whose untransformed top edge is above the viewport height.
  *
  * @param {Document} doc            The rendered page document.
  * @param {number}   viewportHeight Viewport height in CSS pixels.
@@ -41,13 +56,9 @@ export function countSectionsAboveFold( doc, viewportHeight ) {
 	if ( sections.length === 1 && sections[ 0 ].tagName === 'MAIN' ) {
 		sections = sectionsOf( sections[ 0 ] );
 	}
-	return sections.filter( ( el ) => {
-		const rect = el.getBoundingClientRect();
-		if ( rect.width === 0 && rect.height === 0 ) {
-			return false;
-		}
-		return rect.top < viewportHeight;
-	} ).length;
+	return sections.filter(
+		( el ) => el.offsetHeight > 0 && untransformedTop( el ) < viewportHeight
+	).length;
 }
 
 /**

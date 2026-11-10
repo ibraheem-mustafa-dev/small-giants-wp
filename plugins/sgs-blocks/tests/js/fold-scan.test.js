@@ -13,14 +13,18 @@ jest.mock( '@wordpress/data', () => ( {
 } ) );
 jest.mock( '@wordpress/api-fetch', () => jest.fn() );
 
+function boxOf( el, top, parent ) {
+	Object.defineProperty( el, 'offsetTop', { value: top === null ? 0 : top, configurable: true } );
+	Object.defineProperty( el, 'offsetHeight', { value: top === null ? 0 : 200, configurable: true } );
+	Object.defineProperty( el, 'offsetParent', { value: parent || null, configurable: true } );
+	// A transform would move this rect; the count must ignore it.
+	el.getBoundingClientRect = () => ( { top: 99999, width: 100, height: 200 } );
+}
+
 function page( html, tops ) {
 	document.body.innerHTML = html;
 	document.querySelectorAll( '[data-s]' ).forEach( ( el, i ) => {
-		el.getBoundingClientRect = () => ( {
-			top: tops[ i ],
-			width: tops[ i ] === null ? 0 : 100,
-			height: tops[ i ] === null ? 0 : 200,
-		} );
+		boxOf( el, tops[ i ] );
 	} );
 	return document;
 }
@@ -50,6 +54,19 @@ describe( 'countSectionsAboveFold', () => {
 			[ 0, 400, 2000 ]
 		);
 		expect( countSectionsAboveFold( doc, 812 ) ).toBe( 2 );
+	} );
+
+	it( 'sums the offsetTop chain and ignores transforms', () => {
+		const doc = page( SIX, [ 0, 0, 0, 0, 0, 0 ] );
+		const sections = doc.querySelectorAll( '[data-s]' );
+		const holder = doc.createElement( 'div' );
+		Object.defineProperty( holder, 'offsetTop', { value: 700, configurable: true } );
+		Object.defineProperty( holder, 'offsetParent', { value: null, configurable: true } );
+		boxOf( sections[ 0 ], 200, holder );
+		expect( countSectionsAboveFold( doc, 812 ) ).toBe( 5 );
+		expect( countSectionsAboveFold( doc, 900 ) ).toBe( 5 );
+		boxOf( sections[ 1 ], 700, holder );
+		expect( countSectionsAboveFold( doc, 812 ) ).toBe( 4 );
 	} );
 
 	it( 'ignores scripts and styles among the sections', () => {
@@ -118,6 +135,13 @@ describe( 'createSaveWatcher', () => {
 
 	it( 'does not scan an unpublished draft', () => {
 		expect( runSave( { status: 'draft' } ) ).not.toHaveBeenCalled();
+	} );
+
+	it( 'does nothing where the core/editor store is absent', () => {
+		const onScan = jest.fn();
+		const check = createSaveWatcher( { getEditor: () => undefined, onScan } );
+		expect( () => check() ).not.toThrow();
+		expect( onScan ).not.toHaveBeenCalled();
 	} );
 
 	it( 'does not scan a failed save', () => {

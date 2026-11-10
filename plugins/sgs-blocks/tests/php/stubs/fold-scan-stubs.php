@@ -40,6 +40,9 @@ if ( ! function_exists( 'absint' ) ) {
 	function wp_verify_nonce( $nonce, $action ) {
 		return $GLOBALS['fs_nonce_ok'] ? 1 : false;
 	}
+	function get_post_status( $id ) {
+		return $GLOBALS['fs_status'];
+	}
 	function get_post_meta( $id, $key, $single = false ) {
 		return $GLOBALS['fs_meta'][ $id ][ $key ] ?? '';
 	}

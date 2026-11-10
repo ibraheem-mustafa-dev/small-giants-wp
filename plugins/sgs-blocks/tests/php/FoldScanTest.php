@@ -29,6 +29,7 @@ final class FoldScanTest extends TestCase {
 		$GLOBALS['fs_nonce_ok'] = true;
 		$GLOBALS['fs_purged']  = array();
 		$GLOBALS['fs_has_hook'] = true;
+		$GLOBALS['fs_status'] = 'publish';
 		require_once __DIR__ . '/stubs/fold-scan-stubs.php';
 		require_once dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-fold-scan.php';
 		require_once dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-fold-scan-rest.php';
@@ -62,6 +63,11 @@ final class FoldScanTest extends TestCase {
 
 	public function test_permission_refuses_a_user_without_edit_post(): void {
 		$GLOBALS['fs_can'] = false;
+		$this->assertFalse( true === Sgs_Fold_Scan_Rest::permission( self::request( 3 ) ) );
+	}
+
+	public function test_permission_refuses_an_unpublished_post(): void {
+		$GLOBALS['fs_status'] = 'draft';
 		$this->assertFalse( true === Sgs_Fold_Scan_Rest::permission( self::request( 3 ) ) );
 	}
 

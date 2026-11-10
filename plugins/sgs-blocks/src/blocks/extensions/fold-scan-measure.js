@@ -32,6 +32,9 @@ function measureAtSize( url, size ) {
 			LOAD_TIMEOUT_MS
 		);
 		const set = ( name, value ) => frame.style.setProperty( name, value );
+		// No allow-scripts: the page's scripts (analytics, counters, the motion ready gate) never run, so no entrance
+		// start state is applied and the layout is measured at rest. allow-same-origin lets the editor read it.
+		frame.setAttribute( 'sandbox', 'allow-same-origin' );
 		frame.setAttribute( 'aria-hidden', 'true' );
 		frame.setAttribute( 'tabindex', '-1' );
 		set( 'position', 'fixed' );
