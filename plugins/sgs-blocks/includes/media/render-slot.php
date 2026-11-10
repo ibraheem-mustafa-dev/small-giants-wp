@@ -192,7 +192,9 @@ function sgs_media_render_slot( array $slot, array $attrs, array $context = arra
 				'picture_classes' => 'sgs-media-picture',
 				'alt'             => '',
 				'loading'         => $loading,
-				'fetchpriority'   => $image_files ? '' : $fetch,
+				// Both pictures carry the slot's lead attributes: each device shows one kind, and the other picture
+				// resolves to the blank source there, so every device fetches at most one high-priority file (§7.7).
+				'fetchpriority'   => $fetch,
 				'sizes'           => $sizes,
 				'force_picture'   => true,
 			)

@@ -442,7 +442,7 @@ class MediaElementRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $second['html'], 'one lead per page' );
 	}
 
-	public function test_photo_desktop_video_mobile_slot_prints_one_high_fetchpriority(): void {
+	public function test_photo_desktop_video_mobile_slot_fetches_one_high_priority_file_per_device(): void {
 		$armed = new ReflectionProperty( \SGS\Blocks\Motion\Sgs_Motion_Renderer::class, 'armed' );
 		$armed->setValue( null, true );
 		SGS_Media_Priority::reset();
@@ -471,7 +471,14 @@ class MediaElementRenderTest extends TestCase {
 		$result = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u1' ) );
 		$armed->setValue( null, false );
 		$this->assertStringContainsString( 'sgs-media-cover', $result['html'] );
-		$this->assertSame( 1, substr_count( $result['html'], 'fetchpriority="high"' ), 'one fetchpriority=high per slot' );
+		// The photo and the cover both carry the lead attributes; each device resolves only one of them to a file.
+		$this->assertSame( 2, substr_count( $result['html'], 'fetchpriority="high"' ) );
+		$desktop = implode( ' ', $this->requests( $result, 1440 ) );
+		$mobile  = implode( ' ', $this->requests( $result, 375 ) );
+		$this->assertStringContainsString( 'a.jpg', $desktop );
+		$this->assertStringNotContainsString( 'c.jpg', $desktop, 'desktop fetches no cover' );
+		$this->assertStringContainsString( 'c.jpg', $mobile );
+		$this->assertStringNotContainsString( 'a.jpg', $mobile, 'mobile fetches no photo' );
 	}
 
 	public function test_atom_emitters_are_collected_when_they_exist(): void {
