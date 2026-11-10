@@ -33,6 +33,8 @@ function wp_script_is( $h, $s = 'enqueued' ) { if ( 'wp-i18n' === $h ) { return 
 function wp_register_script( $h, $src = false, $deps = array(), $v = false, $f = false ) { $GLOBALS['registered'][ $h ] = $deps; return true; }
 function wp_enqueue_script( $h ) { $GLOBALS['enqueued'][] = $h; }
 function wp_add_inline_script( $h, $js, $pos = 'after' ) { $GLOBALS['inline'][] = array( $h, $js ); return true; }
+function is_user_logged_in() { return ! empty( $GLOBALS['user_email'] ); }
+function wp_get_current_user() { return (object) array( 'user_email' => $GLOBALS['user_email'] ?? '' ); }
 function wc_get_cart_url() { return 'https://example.test/bag/'; }
 function woocommerce_register_additional_checkout_field( $args ) { $GLOBALS['fields'][] = $args; }
 function do_action_sim( $tag, ...$args ) { foreach ( $GLOBALS['filters'][ $tag ] ?? array() as $cb ) { $cb( ...$args ); } }
@@ -138,7 +140,15 @@ if ( function_exists( 'SGS\Blocks\sgs_checkout_strings_inject' ) ) {
 	$GLOBALS['inline'] = array();
 	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'emailLabel' => 'Email', 'cityLabel' => 'Town or city', 'newPasswordLabel' => 'Choose a password' ) ) ) );
 	$words = (string) ( $GLOBALS['inline'][0][1] ?? '' );
-	ok( false !== strpos( $words, '"Email address":"Email"' ) && false !== strpos( $words, '"City":"Town or city"' ) && false !== strpos( $words, '"Create a password":"Choose a password"' ), 'emailLabel, cityLabel and newPasswordLabel rewrite the email, city and password field labels' );
+	ok( false === strpos( $words, '"Email address"' ) && false === strpos( $words, '"City"' ) && false !== strpos( $words, '"Create a password":"Choose a password"' ), 'the client-side filter carries the password label only: the email and city labels are server data it cannot reach' );
+	$settings = SGS\Blocks\sgs_checkout_shared_settings( array( 'defaultFields' => array( 'email' => array( 'label' => 'Email address', 'required' => true ), 'city' => array( 'label' => 'City' ), 'country' => array( 'label' => 'Country/Region' ) ) ) );
+	ok( 'Email' === $settings['defaultFields']['email']['label'] && 'Town or city' === $settings['defaultFields']['city']['label'] && true === $settings['defaultFields']['email']['required'] && 'Country/Region' === $settings['defaultFields']['country']['label'], 'emailLabel and cityLabel rewrite the defaultFields labels WooCommerce hands the Checkout block, nothing else' );
+	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
+	$settings = SGS\Blocks\sgs_checkout_shared_settings( array( 'defaultFields' => array( 'email' => array( 'label' => 'Email address' ), 'city' => array( 'label' => 'City' ) ) ) );
+	ok( 'Email address' === $settings['defaultFields']['email']['label'] && 'City' === $settings['defaultFields']['city']['label'], 'a Checkout block with no field labels set leaves the defaultFields untouched' );
+	ok( isset( $GLOBALS['filters']['woocommerce_shared_settings'] ), 'the defaultFields rewrite is hooked on woocommerce_shared_settings' );
+	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'emailLabel' => 'Email', 'cityLabel' => 'Town or city' ) ) ) );
+	$GLOBALS['inline'] = array();
 	$GLOBALS['inline'] = array( array( 'wp-i18n', $js ) );
 	ok( false !== strpos( $js, 'i18n.gettext_woocommerce' ) && false !== strpos( $js, '"Log in":"Sign in"' ) && false !== strpos( $js, '"Or continue below":"or pay by card"' ) && false === strpos( $js, 'bogus' ), 'the script filters the woocommerce domain with the supported keys only' );
 	$GLOBALS['i18n_done'] = true;
@@ -188,6 +198,16 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	ok( false !== strpos( $js, '&&' ) && false === strpos( $js, '&#038;' ), 'the summary extras script is printed with its && intact' );
 	$c = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'https://example.test/bag/' );
 	ok( 'Already have an account?' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and is stripped of tags and edge spaces (the span margin makes the gap)' );
+	$sl = array( 'sgsCheckoutStrings' => array( 'signedInLine' => 'Signed in as %s. This order will be saved to your account.' ) );
+	$GLOBALS['user_email'] = 'bean@example.test';
+	$c = SGS\Blocks\sgs_commerce_look_summary_extras( $sl, 'https://example.test/bag/' );
+	ok( 'Signed in as bean@example.test. This order will be saved to your account.' === ( $c['signedInLine'] ?? null ), 'signedInLine puts the signed-in customer email where %s stands' );
+	$GLOBALS['user_email'] = '';
+	ok( array() === SGS\Blocks\sgs_commerce_look_summary_extras( $sl, 'https://example.test/bag/' ), 'a guest gets no signed-in line and no extras config' );
+	ok( array() === SGS\Blocks\sgs_checkout_strings_map( $sl['sgsCheckoutStrings'] ), 'signedInLine is not a gettext key' );
+	$GLOBALS['user_email'] = 'bean@example.test';
+	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['signedInLine'] ?? 'x' ), 'no signedInLine when it is not set' );
+	$GLOBALS['user_email'] = '';
 	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['loginPrefix'] ?? 'x' ), 'no loginPrefix when it is not set' );
 	ok( array() === SGS\Blocks\sgs_checkout_strings_map( array( 'loginPrefix' => 'Already have an account? ' ) ), 'loginPrefix is not a gettext key, so the translation filter never carries it' );
 	$css = SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'checkout', '.root' );

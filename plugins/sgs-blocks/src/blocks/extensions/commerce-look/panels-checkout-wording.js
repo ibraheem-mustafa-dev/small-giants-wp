@@ -52,6 +52,14 @@ export function CheckoutWordingPanel( { attributes, setAttributes } ) {
 				/>
 			) ) }
 			<TextControl
+				label={ __( 'Signed-in line under Contact (%s becomes the customer email)', 'sgs-blocks' ) }
+				help={ __( 'Shown only to a signed-in customer, for example: Signed in as %s. Leave empty for none.', 'sgs-blocks' ) }
+				value={ strings.signedInLine || '' }
+				onChange={ ( value ) => setString( 'signedInLine', value ) }
+				__nextHasNoMarginBottom
+				__next40pxDefaultSize
+			/>
+			<TextControl
 				label={ __( 'Text before the Log in link (for example: Already have an account? )', 'sgs-blocks' ) }
 				help={ __( 'Plain text placed in front of the link; only the link stays clickable. Keep a trailing space.', 'sgs-blocks' ) }
 				value={ strings.loginPrefix || '' }

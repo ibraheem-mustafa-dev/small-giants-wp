@@ -5,7 +5,9 @@
  *
  * It also puts `loginPrefix` in a span beside the Log in link (outside it), so only the link is clickable.
  *
- * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string }.
+ * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string, signedInLine: string }.
+ *
+ * `signedInLine` is a paragraph at the end of the Contact step (set only for a signed-in customer).
  */
 ( function ( config, root ) {
 	var WRAPPER = '.wp-block-woocommerce-checkout';
@@ -15,6 +17,7 @@
 		'.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title',
 		'.checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading',
 	];
+	var CONTACT = '.wp-block-woocommerce-checkout-contact-information-block';
 	var ITEM = '.wc-block-components-order-summary-item';
 	var NAME = '.wc-block-components-product-name';
 
@@ -77,6 +80,15 @@
 				if ( prompt.getAttribute( 'aria-label' ) !== name ) {
 					prompt.setAttribute( 'aria-label', name );
 				}
+			}
+		}
+		if ( config.signedInLine ) {
+			var contact = doc.querySelector( CONTACT );
+			if ( contact && ! contact.querySelector( '.sgs-checkout-signed-in' ) ) {
+				var note = doc.createElement( 'p' );
+				note.className = 'sgs-checkout-signed-in';
+				note.textContent = config.signedInLine;
+				contact.appendChild( note );
 			}
 		}
 		if ( config.brand ) {

@@ -16,6 +16,78 @@ namespace SGS\Blocks;
 defined( 'ABSPATH' ) || exit;
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_checkout_strings_inject', 12, 2 );
+add_filter( 'woocommerce_shared_settings', __NAMESPACE__ . '\sgs_checkout_shared_settings' );
+
+/**
+ * Field-label keys: key => the WooCommerce field (`defaultFields` entry) whose label it replaces.
+ *
+ * WooCommerce builds these labels in PHP (`__()` at request time) and hands them to the Checkout block as
+ * `wcSettings.defaultFields`, so the client-side translation filter never sees them.
+ *
+ * @return array<string, string>
+ */
+function sgs_checkout_field_label_keys(): array {
+	return array(
+		'emailLabel' => 'email',
+		'cityLabel'  => 'city',
+	);
+}
+
+/**
+ * The field labels the Checkout block on this page asks for; set while the block renders, read when WooCommerce
+ * prints its shared settings in the footer.
+ *
+ * @param array<string, string>|null $set New labels (field => text), or null to read.
+ * @return array<string, string>
+ */
+function sgs_checkout_field_labels_state( ?array $set = null ): array {
+	static $labels = array();
+	if ( null !== $set ) {
+		$labels = $set;
+	}
+	return $labels;
+}
+
+/**
+ * Keep the field-label keys with non-empty plain text.
+ *
+ * @param mixed $raw The `sgsCheckoutStrings` attribute.
+ * @return array<string, string> WooCommerce field => client's label.
+ */
+function sgs_checkout_field_labels( $raw ): array {
+	$labels = array();
+	if ( ! is_array( $raw ) ) {
+		return $labels;
+	}
+	foreach ( sgs_checkout_field_label_keys() as $key => $field ) {
+		if ( isset( $raw[ $key ] ) && is_scalar( $raw[ $key ] ) ) {
+			$text = trim( sanitize_text_field( (string) $raw[ $key ] ) );
+			if ( '' !== $text ) {
+				$labels[ $field ] = $text;
+			}
+		}
+	}
+	return $labels;
+}
+
+/**
+ * `woocommerce_shared_settings` filter: write the client's field labels into `defaultFields`.
+ *
+ * @param mixed $settings WooCommerce's shared settings.
+ * @return mixed
+ */
+function sgs_checkout_shared_settings( $settings ) {
+	$labels = sgs_checkout_field_labels_state();
+	if ( array() === $labels || ! is_array( $settings ) || ! is_array( $settings['defaultFields'] ?? null ) ) {
+		return $settings;
+	}
+	foreach ( $labels as $field => $text ) {
+		if ( is_array( $settings['defaultFields'][ $field ] ?? null ) ) {
+			$settings['defaultFields'][ $field ]['label'] = $text;
+		}
+	}
+	return $settings;
+}
 
 /**
  * Supported keys: key => WooCommerce's original text (the msgid the Checkout block passes to `__()`).
@@ -28,8 +100,6 @@ function sgs_checkout_strings_supported(): array {
 		'createAccountLabel' => 'Create an account with %s',
 		'expressDivider'     => 'Or continue below',
 		'summaryTitle'       => 'Order summary',
-		'emailLabel'         => 'Email address',
-		'cityLabel'          => 'City',
 		'newPasswordLabel'   => 'Create a password',
 	);
 }
@@ -92,7 +162,8 @@ function sgs_checkout_strings_inject( $block_content, $block ) {
 	if ( ! is_string( $block_content ) || ! is_array( $block ) || 'woocommerce/checkout' !== ( $block['blockName'] ?? '' ) ) {
 		return $block_content;
 	}
-	$attrs  = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+	$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
+	sgs_checkout_field_labels_state( sgs_checkout_field_labels( $attrs['sgsCheckoutStrings'] ?? null ) );
 	$script = sgs_checkout_strings_script( sgs_checkout_strings_map( $attrs['sgsCheckoutStrings'] ?? null ) );
 	if ( '' === $script ) {
 		return $block_content;

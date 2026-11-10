@@ -344,6 +344,13 @@ body .wc-block-components-form .wc-block-components-text-input input[type]:focus
 	min-height: 48px;
 }
 
+/* The signed-in line the checkout wording setting adds at the end of the Contact step. */
+.sgs-checkout-signed-in {
+	margin: 12px 0 0;
+	font-size: 13.5px;
+	color: var(--wp--preset--color--text-muted);
+}
+
 /* Below WooCommerce's own 920px layout break (a container query on the checkout block) the
    collapsed summary sits at the top of the sidebar and the full summary repeats above the
    place-order button. Keep the full one, hide the top copy. */

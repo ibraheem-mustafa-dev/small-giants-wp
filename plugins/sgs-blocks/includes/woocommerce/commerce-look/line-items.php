@@ -143,22 +143,32 @@ add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_i
  *
  * @param array<string, mixed> $attrs Stored block attributes.
  * @param string               $bag   Address of the bag page.
- * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string}|array{} Empty when none is set.
+ * The signed-in line (`sgsCheckoutStrings.signedInLine`, `%s` standing for the customer's email) is resolved here for
+ * the signed-in customer and shown at the end of the Contact step; guests get none.
+ *
+ * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string,signedInLine:string}|array{} Empty when none is set.
  */
 function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 	$label  = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
 	$brand  = true === ( $attrs['sgsItemShowBrand'] ?? false );
 	$raw    = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? (string) ( $attrs['sgsCheckoutStrings']['loginPrefix'] ?? '' ) : '';
-	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "", "
+	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "
+", "
 ", "	" ), ' ', wp_specialchars_decode( wp_strip_all_tags( $raw ) ) ), 0, 120 );
-	if ( '' === $label && ! $brand && '' === $prefix ) {
+	$signed = '';
+	$line   = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? trim( sanitize_text_field( (string) ( $attrs['sgsCheckoutStrings']['signedInLine'] ?? '' ) ) ) : '';
+	if ( '' !== $line && function_exists( 'is_user_logged_in' ) && is_user_logged_in() ) {
+		$signed = str_replace( '%s', (string) wp_get_current_user()->user_email, $line );
+	}
+	if ( '' === $label && ! $brand && '' === $prefix && '' === $signed ) {
 		return array();
 	}
 	return array(
-		'editLabel'   => '' !== $bag ? $label : '',
-		'editUrl'     => esc_url_raw( $bag ),
-		'brand'       => $brand,
-		'loginPrefix' => $prefix,
+		'editLabel'    => '' !== $bag ? $label : '',
+		'editUrl'      => esc_url_raw( $bag ),
+		'brand'        => $brand,
+		'loginPrefix'  => $prefix,
+		'signedInLine' => $signed,
 	);
 }
 

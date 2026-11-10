@@ -12,6 +12,7 @@ const SCRIPT = fs.readFileSync(
 const SUMMARY = `
 <div class="wp-block-woocommerce-checkout">
 <div class="wc-block-checkout__login-wrap"><a class="wc-block-checkout__login-prompt" href="/my-account/">Sign in</a></div>
+<div class="wp-block-woocommerce-checkout-contact-information-block"><div class="wc-block-components-checkout-step__container"><input type="email"></div></div>
 <div class="wp-block-woocommerce-checkout-order-summary-block">
 	<div class="wc-block-components-checkout-order-summary__title"><p class="wc-block-components-checkout-order-summary__title-text">Your bag</p></div>
 	<div class="wc-block-components-order-summary-item"><a class="wc-block-components-product-name" href="https://example.test/p/frame/">Frame</a></div>
@@ -194,5 +195,26 @@ describe( 'checkout summary extras: observing', () => {
 		expect( document.querySelector( '.sgs-checkout-summary-edit' ) ).toBeNull();
 		frames[ 0 ]();
 		expect( document.querySelector( '.sgs-checkout-summary-edit' ) ).not.toBeNull();
+	} );
+} );
+
+describe( 'checkout signed-in line', () => {
+	const LINE = 'Signed in as bean@example.test. This order will be saved to your account.';
+
+	test( 'adds the line as the last child of the Contact step, once', () => {
+		run( { editLabel: '', editUrl: '', brand: false, signedInLine: LINE } );
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		const lines = document.querySelectorAll( '.sgs-checkout-signed-in' );
+		expect( lines ).toHaveLength( 1 );
+		expect( lines[ 0 ].tagName ).toBe( 'P' );
+		expect( lines[ 0 ].textContent ).toBe( LINE );
+		expect( lines[ 0 ].parentElement.className ).toBe( 'wp-block-woocommerce-checkout-contact-information-block' );
+		expect( lines[ 0 ].parentElement.lastElementChild ).toBe( lines[ 0 ] );
+	} );
+
+	test( 'adds nothing without the text', () => {
+		run( { editLabel: 'Edit', editUrl: 'https://example.test/bag/', brand: false, signedInLine: '' } );
+		expect( document.querySelector( '.sgs-checkout-signed-in' ) ).toBeNull();
 	} );
 } );
