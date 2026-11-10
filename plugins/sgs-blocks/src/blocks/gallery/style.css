@@ -691,6 +691,7 @@
 			var( --sgs-columns-tablet, 2 ),
 			calc( ( 100% - ( var( --sgs-columns-tablet, 2 ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns-tablet, 2 ) )
 		);
+		grid-auto-columns: calc( ( 100% - ( var( --sgs-columns-tablet, 2 ) - 1 ) * var( --sgs-gap ) ) / var( --sgs-columns-tablet, 2 ) );
 	}
 }
 
@@ -713,6 +714,7 @@
 			var( --sgs-columns-mobile, 1 ),
 			calc( 100% )
 		);
+		grid-auto-columns: calc( 100% );
 	}
 
 	/* Phones: the arrows leave the image's sides for a bottom row, either
