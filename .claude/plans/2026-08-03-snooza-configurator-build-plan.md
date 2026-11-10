@@ -4,7 +4,7 @@ project: small-giants-wp
 plan_name: 2026-08-03-snooza-configurator-build-plan
 generated: 2026-08-03
 timebox: "6 weeks (quoted) — pitch-demo track is 2-3 days, separate from this timebox"
-status: draft
+status: parked
 authors: Bean + Claude (wp-sgs-developer)
 primary_goal: "Ship the Snooza Chair 3D/AR configurator on a reusable SGS plugin architecture, without a false demo promise or an unbuilt accessories model surfacing mid-build"
 motivation: "This is the first paid client build to lean on a genuinely new capability (WebGL/3D) instead of pattern-matching an existing block — and the pitch meeting date is fixed. Getting the model spec and the accessory-model gap right BEFORE either track starts is what keeps the 6-week quote honest."

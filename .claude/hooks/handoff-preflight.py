@@ -11,9 +11,13 @@ Checks:
   3. no-dangling-links  every .md link out of a session-start doc resolves.
   4. memory-size        the auto-memory MEMORY.md index stays under MEMORY_CAP_BYTES — past
                         Claude Code's load limit the bottom entries silently stop loading.
-  5. plans-folder       plans/ holds only live plans: none with a finished `status:`, none whose
-                        checkboxes are all ticked, and no plans/<name>.md reference that points at
-                        a missing file (LEDGER, specs and live plans).
+  5. plans-folder       plans/ holds only live plans, each with front-matter status active, parked,
+                        done or superseded-by (done and superseded fail: archive them); none whose
+                        body Status says built/shipped/live with nothing open; none whose checkboxes
+                        are all ticked; each reachable from LEDGER (directly or through a plan or
+                        spec LEDGER names); none active but untouched for 14 days; and no
+                        plans/<name>.md reference that points at a missing file. --commits names
+                        this session's commits so a plan they add and leave unregistered is named.
 
 It never edits a file: detection only (a hook that rewrites a doc the agent just wrote
 fights the agent). Each failure names the file, the measured value and the fix.
@@ -199,16 +203,61 @@ def _plan_refs(text: str) -> set[str]:
     return out
 
 
-def check_plans_folder(claude_dir: Path | None = None) -> Result:
+PLAN_STATUSES = ("active", "parked", "done")
+STALE_DAYS = 14
+# A body "Status:" line that says the work shipped, with no qualifier keeping it open.
+BODY_STATUS_RE = re.compile(r"^\**Status[^:\n]*:\**\s*(.*)$", re.IGNORECASE | re.MULTILINE)
+BODY_FINISHED_RE = re.compile(r"\b(?:built|shipped|live)\b", re.IGNORECASE)
+BODY_OPEN_RE = re.compile(r"\b(?:open|remaining|remain|except|left|todo|not yet|partly|waiting)\b", re.IGNORECASE)
+_SPEC_REF_RE = re.compile(r"(?<![\w./-])(?:\.claude/)?(specs/[^\s`()\[\]<>*\"'#]+\.md)")
+
+
+def _plan_ages(root: Path, plan_files: list[Path]) -> dict[str, float]:
+    """Days since each plan was last committed; a plan with uncommitted edits counts as touched today."""
+    import subprocess
+    import time
+    ages: dict[str, float] = {}
+    for f in plan_files:
+        rel = f.relative_to(root.parent).as_posix()
+        dirty = subprocess.run(["git", "-C", str(root.parent), "status", "--porcelain", "--", rel],
+                               capture_output=True, text=True).stdout.strip()
+        if dirty:
+            ages[f.name] = 0.0
+            continue
+        out = subprocess.run(["git", "-C", str(root.parent), "log", "-1", "--format=%ct", "--", rel],
+                             capture_output=True, text=True).stdout.strip()
+        ages[f.name] = (time.time() - int(out)) / 86400 if out else 0.0
+    return ages
+
+
+def check_plans_folder(claude_dir: Path | None = None, ages: dict[str, float] | None = None,
+                       added: list[str] | None = None) -> Result:
+    """Live plans only, each with a fixed status, reachable from LEDGER, and not stale.
+
+    `ages` (days since last commit, by file name) and `added` (plan file names the session's
+    commits created) are injectable for the self-test; by default ages come from git.
+    """
     root = claude_dir if claude_dir is not None else _CLAUDE
     plans = root / "plans"
     problems: list[str] = []
     plan_files = sorted(plans.glob("*.md")) if plans.is_dir() else []
+    statuses: dict[str, str] = {}
     for f in plan_files:
         text = f.read_text(encoding="utf-8", errors="replace")
         status = _front_matter_status(text)
-        if status is not None and FINISHED_STATUS_RE.match(status):
-            problems.append(f"plans/{f.name}: status '{status.strip()[:30]}' is finished (move to plans/archive/)")
+        st = (status or "").strip().strip("\"'")
+        statuses[f.name] = st
+        if status is None:
+            problems.append(f"plans/{f.name}: no front-matter status (add status: active, parked, done or superseded-by: <path>)")
+        elif FINISHED_STATUS_RE.match(status) or st.lower() == "done" or st.lower().startswith("superseded-by"):
+            problems.append(f"plans/{f.name}: status '{st[:40]}' is finished (move to plans/archive/)")
+        elif st.lower() not in PLAN_STATUSES:
+            problems.append(f"plans/{f.name}: status '{st[:40]}' is not one of active, parked, done, superseded-by: <path>")
+        if st.lower() in ("active", ""):
+            body = text.split("\n---", 1)[1] if text.startswith("---") and "\n---" in text[3:] else text
+            m = BODY_STATUS_RE.search(body)
+            if m and BODY_FINISHED_RE.search(m.group(1)) and not BODY_OPEN_RE.search(m.group(1)):
+                problems.append(f"plans/{f.name}: its Status line says '{m.group(1).strip()[:50]}' with nothing open (archive it, or mark what remains)")
         boxes = CHECKBOX_RE.findall(text)
         if boxes and " " not in boxes:
             problems.append(f"plans/{f.name}: all {len(boxes)} checkbox(es) ticked (move to plans/archive/)")
@@ -222,13 +271,35 @@ def check_plans_folder(claude_dir: Path | None = None) -> Result:
         for ref in sorted(_plan_refs(text)):
             if not (root / ref).exists():
                 problems.append(f"{src.relative_to(root).as_posix()} -> {ref} (missing)")
+    # Reachability: LEDGER names a plan directly, or names a plan or spec that names it.
+    ledger = root / "LEDGER.md"
+    if ledger.is_file() and plan_files:
+        ltext = ledger.read_text(encoding="utf-8", errors="replace")
+        direct = {Path(r).name for r in _plan_refs(ltext) if "/archive/" not in r}
+        hops = [plans / n for n in direct if (plans / n).is_file()]
+        hops += [root / m.group(1) for m in _SPEC_REF_RE.finditer(ltext) if (root / m.group(1)).is_file()]
+        reach = set(direct)
+        for h in hops:
+            reach |= {Path(r).name for r in _plan_refs(h.read_text(encoding="utf-8", errors="replace")) if "/archive/" not in r}
+        for f in plan_files:
+            if f.name not in reach:
+                kind = "new plan not registered" if added and f.name in added else "orphaned"
+                problems.append(f"plans/{f.name}: {kind}: LEDGER does not reach it (add a pointer, or archive it)")
+    # Staleness: an active plan nobody has touched for STALE_DAYS.
+    if ages is None and claude_dir is None:
+        ages = _plan_ages(root, plan_files)
+    for f in plan_files:
+        age = (ages or {}).get(f.name)
+        if age is not None and age > STALE_DAYS and statuses.get(f.name, "").lower() != "parked":
+            problems.append(f"plans/{f.name}: untouched for {age:.0f} days (confirm it is active, mark it parked, or archive it)")
     if not problems:
-        return Result("plans-folder", True, f"{len(plan_files)} live plan(s), none finished, no dangling plan reference")
+        return Result("plans-folder", True, f"{len(plan_files)} live plan(s): each with a status, reachable from LEDGER, none stale or finished")
     return Result(
         "plans-folder", False,
         f"{len(problems)} problem(s): " + "; ".join(problems),
-        "Move finished plans to plans/archive/ (git mv) and repoint or remove every reference "
-        "to a plan file that no longer exists.",
+        "Archive finished plans (git mv to plans/archive/), give every live plan status: active, parked, "
+        "done or superseded-by, point LEDGER at it (directly or through a plan or spec it names), "
+        "and repoint or remove references to plans that no longer exist.",
     )
 
 
@@ -236,14 +307,15 @@ CHECKS = (check_ledger_size, check_no_tombstones, check_no_dangling_links, check
           check_plans_folder)
 
 
-def _plans_case(files: dict[str, str]) -> Result:
+def _plans_case(files: dict[str, str], ages: dict[str, float] | None = None,
+                added: list[str] | None = None) -> Result:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         for rel, body in files.items():
             target = root / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body, encoding="utf-8")
-        return check_plans_folder(root)
+        return check_plans_folder(root, ages=ages or {}, added=added)
 
 
 def self_test() -> int:
@@ -261,18 +333,39 @@ def self_test() -> int:
          lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES + 1}),
          lambda: check_memory_size({"synthetic/MEMORY.md": MEMORY_CAP_BYTES - 1})),
         ("plans-folder: finished status",
-         lambda: _plans_case({"plans/a.md": "---\nstatus: COMPLETE\n---\n- [ ] open\n"}),
-         lambda: _plans_case({"plans/a.md": "---\nstatus: phase 1 shipped\n---\n- [ ] open\n",
-                              "plans/b.md": "---\nstatus: BUILD IN PROGRESS\n---\n- [x] a\n- [ ] b\n",
-                              "plans/c.md": "---\nstatus: complete except Phase 4\n---\n- [ ] p4\n",
-                              "plans/d.md": "---\nstatus: Doneness review\n---\n- [ ] r\n"})),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: done\n---\n- [ ] x\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md` `plans/b.md`\n",
+                              "plans/a.md": "---\nstatus: active\n---\n- [ ] open\n",
+                              "plans/b.md": "---\nstatus: parked\n---\n- [x] a\n- [ ] b\n"})),
+        ("plans-folder: status outside the fixed set",
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: BUILD IN PROGRESS\n---\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n"})),
+        ("plans-folder: no status",
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "# A plan\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: parked\n---\n# A plan\n"})),
+        ("plans-folder: body says built with nothing open",
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n**Status (2026-11-03):** built and live on mamas-test.\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n**Status:** built; the flip remains open.\n"})),
         ("plans-folder: all ticked",
-         lambda: _plans_case({"plans/a.md": "- [x] one\n* [X] two\n"}),
-         lambda: _plans_case({"plans/a.md": "no checkboxes here\n"})),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n- [x] one\n* [X] two\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\nno checkboxes here\n"})),
         ("plans-folder: missing reference",
          lambda: _plans_case({"LEDGER.md": "see `plans/missing-plan.md`\n"}),
          lambda: _plans_case({"LEDGER.md": "see `.claude/plans/a.md`, [x](plans/archive/z.md#top) and plans/<name>.md\n",
-                              "plans/a.md": "- [ ] open\n", "plans/archive/z.md": "- [x] done\n"})),
+                              "plans/a.md": "---\nstatus: active\n---\n- [ ] open\n", "plans/archive/z.md": "- [x] done\n"})),
+        ("plans-folder: orphaned (LEDGER does not reach it)",
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n",
+                              "plans/b.md": "---\nstatus: active\n---\n"}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md` and `specs/01-x.md`\n", "plans/a.md": "---\nstatus: active\n---\nsee `plans/b.md`\n",
+                              "plans/b.md": "---\nstatus: active\n---\n", "plans/c.md": "---\nstatus: active\n---\n",
+                              "specs/01-x.md": "plan: `plans/c.md`\n"})),
+        ("plans-folder: new plan not registered",
+         lambda: _plans_case({"LEDGER.md": "nothing\n", "plans/new.md": "---\nstatus: active\n---\n"}, added=["new.md"]),
+         lambda: _plans_case({"LEDGER.md": "`plans/new.md`\n", "plans/new.md": "---\nstatus: active\n---\n"}, added=["new.md"])),
+        ("plans-folder: stale active plan",
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n"}, ages={"a.md": 30}),
+         lambda: _plans_case({"LEDGER.md": "`plans/a.md` `plans/b.md`\n", "plans/a.md": "---\nstatus: parked\n---\n",
+                              "plans/b.md": "---\nstatus: active\n---\n"}, ages={"a.md": 90, "b.md": 3})),
     ]
     failures = 0
     for name, bad_fn, good_fn in cases:
@@ -288,10 +381,20 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--check", action="store_true", help="gate mode: exit 1 if any check fails")
     ap.add_argument("--self-test", action="store_true", help="prove each check can fail and pass")
+    ap.add_argument("--commits", nargs="*", default=[], help="this session's commits: plans they add must be registered")
     args = ap.parse_args()
     if args.self_test:
         return self_test()
-    results = [c() for c in CHECKS]
+    added = None
+    if args.commits:
+        import subprocess
+        added = []
+        for c in args.commits:
+            out = subprocess.run(["git", "-C", str(_REPO), "show", "--name-status", "--format=", c],
+                                 capture_output=True, text=True).stdout
+            added += [Path(line.split("\t")[-1]).name for line in out.splitlines()
+                      if line[:1] == "A" and "/plans/" in line and "/archive/" not in line]
+    results = [check_plans_folder(added=added) if c is check_plans_folder else c() for c in CHECKS]
     failed = [r for r in results if not r.ok]
     for r in results:
         print(f"  [{'PASS' if r.ok else 'FAIL'}] {r.name}: {r.detail}")

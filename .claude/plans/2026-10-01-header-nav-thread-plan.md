@@ -2,7 +2,7 @@
 doc_type: implementation-plan
 project: small-giants-wp
 spec_id: 36+37 (merged navigation, header and footer track); 18 (floating UI, for G8)
-status: ACTIVE
+status: parked
 supersedes: plans/archive/2026-07-29-merged-spec36-37-track-strategic-plan.md, plans/archive/2026-09-21-wave-3c-implementation-plan.md, plans/archive/2026-09-27-reference-capture-method-plan.md, plans/archive/2026-09-27-g8-screen-corner-pin-plan.md
 ---
 

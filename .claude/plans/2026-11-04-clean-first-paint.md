@@ -1,3 +1,9 @@
+---
+doc_type: plan
+status: parked
+archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+---
+
 # Clean first paint: no page jumps or unstyled parts while a page loads
 
 Plan date 2026-11-04. Status: all seven fixes (C, F-lite, D, G, A, B, E) are built and live on eye-care-test and sandybrown. Found by the Eye Care stream, round 7. Bean: "things tend to look quite broken as the page loads for the first half a second". Bean chose (2026-11-04) to fix every proven cause once in the framework, then add a gate so it cannot come back.

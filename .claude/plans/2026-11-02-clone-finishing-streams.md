@@ -83,6 +83,16 @@ Rules:
   - The plugin has about 6,500 lint-js formatting errors (R3-25), which needs a quiet window across sessions.
   - eye-care-clone-test (not the presented site) holds 213 blocks in the old single-value shape. Migrate them with `plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py` before its next deploy.
 
+## FW-F rollout to every site (open)
+
+FW-F changes the stored shape of 155 attributes on 53 blocks, so every site's saved content must be swept to the per-device object shape immediately before that site's first deploy at or after `c7ce83476`; the deploy's old-shape audit refuses an unswept site. The sweep is `plugins/sgs-blocks/scripts/migrate-scalar-tier-live.php` with rules from `python plugins/sgs-blocks/scripts/find-scalar-tier-attrs.py --rules > rules.json` (the rules also cover the earlier gallery `layout`, nav-bar-menu `justifyContent` and cart `showZero` conversions): take a database backup (mysqldump as `scripts/local-wp/push-to-remote.sh` does), `wp eval-file migrate-scalar-tier-live.php dry-run rules.json`, then `apply rules.json undo.json` (it re-counts and errors if anything old-shape remains), then deploy straight after. On a server the script and rules are copied to the home folder first (the scripts folder is not in the deploy payload).
+- eye-care-test and sandybrown (the canary): the Eye Care session runs the sweep before its next deploys of each (told 2026-11-03). The canary's motion-QA fixture pages are swept like any page.
+- indus-test: done 2026-11-03 by the Indus session (local-indus and the server both swept, deploy `3d2a52377`, mirror push, site-check).
+- mamas-test: deployed at FW-F (`1dd2bdb17`) and pushed from the already-swept local-mamas, so its content should already be in the FW-F shape; if the next deploy's old-shape audit refuses, sweep the server's content first (the Indus order: sweep, deploy, `push-to-remote.sh local-mamas mamas-test`, site-check).
+- local-eye-care and eye-care-clone-test (the clone stream's): swept by whichever session next pushes or deploys them.
+
+History: `plans/archive/2026-11-02-footer-framework-batch.md`.
+
 ## After the three sites are signed off
 
 - Group the fix catalogues by cause into the clone pipeline's fix list (`plans/2026-10-30-clone-recognition-fixes.md`, "Rewind").

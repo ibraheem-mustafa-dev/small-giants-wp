@@ -1,14 +1,15 @@
 ---
 doc_type: plan
 title: Mama's framework batch: string-in-box detector, four small fixes, an accordion filter and per-product card content
-status: built (2026-11-05); B5's flip and the Audit section's three open items remain
+status: parked
+archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
 created: 2026-11-03
-governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md section B (B4, B5, B10, B11) plus the small fixes below; B8 moved to plans/2026-11-03-buybox-configurator.md
+governs: sites/mamas-munches-redesign/build/qa/vision-audit/2026-11-03-phase0.md section B (B4, B5, B10, B11) plus the small fixes below; B8 moved to plans/archive/2026-11-03-buybox-configurator.md
 ---
 
 # Mama's framework batch
 
-**Why (Bean, 2026-11-03):** gaps no existing setting can express, built after Round 4 ("rounds first"). Same ruling as `.claude/plans/2026-11-02-footer-framework-batch.md`: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), no client name in code, every other site renders as today. B6 and B7 run in their own rounds. Which Mama's pages each item serves: B5 every page; B2 Home (and shop, gifts, contact where the sparkle sits); B4 Help; B8 Home (the Zookie builder) and Product; small fixes the header, drawer and footer.
+**Why (Bean, 2026-11-03):** gaps no existing setting can express, built after Round 4 ("rounds first"). Same ruling as `.claude/plans/archive/2026-11-02-footer-framework-batch.md`: no Custom CSS where a framework fix makes sense, every change universal (a restaurant, a wedding planner and a law firm), no client name in code, every other site renders as today. B6 and B7 run in their own rounds. Which Mama's pages each item serves: B5 every page; B2 Home (and shop, gifts, contact where the sparkle sits); B4 Help; B8 Home (the Zookie builder) and Product; small fixes the header, drawer and footer.
 
 ## Status (2026-11-03, end of session)
 
@@ -100,7 +101,7 @@ Sanctioned diffs, not byte-identical: the cart pill name and the icon background
 
 ## B8: replaced by the buy box Pick a set configurator (Bean 2026-11-03)
 
-- Bean judged the one-page Zookie builder a product-card-like buy box with more function, not a choice-flow layout. Design, council, decisions and status: `.claude/plans/2026-11-03-buybox-configurator.md`; spec Spec 27 FR-27-PS1 to PS5. The 4th flavour pick replacing the oldest (Bean) is the product flag "If they pick one too many: Swap out the oldest pick".
+- Bean judged the one-page Zookie builder a product-card-like buy box with more function, not a choice-flow layout. Design, council, decisions and status: `.claude/plans/archive/2026-11-03-buybox-configurator.md`; spec Spec 27 FR-27-PS1 to PS5. The 4th flavour pick replacing the oldest (Bean) is the product flag "If they pick one too many: Swap out the oldest pick".
 
 ## B10: extracted snapshots made every font size fluid (done by the Eye Care session)
 

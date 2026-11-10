@@ -1,3 +1,9 @@
+---
+doc_type: plan
+status: parked
+archive-after: the Eye Care sign-off (an Eye Care doc links here; it moves to plans/archive/ with the links repointed then)
+---
+
 # Shop "Load more" mode (FR-30-3b)
 
 Plan date 2026-11-02. Executed via `/subagent-driven-development` (Sonnet implementers; the main session deploys). Governing spec: `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` Part 3 (Spec 30), FR-30-3. Test site: `eye-care-test` (https://darkcyan-grouse-898606.hostingersite.com/shop/, 17 products), a hand-built site: set test values with theme mods and restore them in the same command (memory: restore live fixtures in the same command). Do not edit `plugins/sgs-blocks/src/blocks/post-grid/*` this round (another session owns it).
