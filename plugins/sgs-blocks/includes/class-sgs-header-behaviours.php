@@ -47,7 +47,7 @@ final class Sgs_Header_Behaviours {
 	public static function scroll_restore_script(): string {
 		return str_replace(
 			array( '__SGS_MOBILE_QUERY__', '__SGS_TABLET_QUERY__' ),
-			array( SGS_Breakpoints::query( 'mobile' ), SGS_Breakpoints::query( 'tablet' ) ),
+			array( \SGS_Breakpoints::query( 'mobile' ), \SGS_Breakpoints::query( 'tablet' ) ),
 			<<<'JS'
 (function(){
 var d=document,h=d.documentElement,KEY='sgs-scroll:'+location.pathname+location.search,store=null;
