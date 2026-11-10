@@ -51,6 +51,7 @@ require_once __DIR__ . '/helpers-surface-ground.php';
 // sgs_css_length_or_sizing_keyword() — the `$sgs_css_length` closure's sanitiser.
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
+require_once __DIR__ . '/class-sgs-background-layer.php';
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -504,76 +505,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			$gap_tablet           = $attributes['gapTablet'] ?? '';
 			$gap_mobile           = $attributes['gapMobile'] ?? '';
 
-			// D6 (2026-08-11, Bean-decided): background/overlay attrs are no longer
-			// gated on container_kind==='section'. They now read universally — a
-			// layout/content-kind block only gets a working background if it also
-			// DECLARES these attrs in its own block.json (undeclared attrs are
-			// never passed by WordPress, so this is safe by construction, not by
-			// a runtime check). The old zero-out branch existed because these were
-			// architecturally "section-only concepts" (Spec 02 "Composite wrapper rule"); Bean
-			// overruled that scope restriction directly rather than leaving it as
-			// a control that can't apply on some blocks.
-			$bg_image         = $attributes['backgroundImage'] ?? null;
-			$bg_image_tablet  = $attributes['backgroundImageTablet'] ?? null;
-			$bg_image_mobile  = $attributes['backgroundImageMobile'] ?? null;
-			$bg_size          = $attributes['backgroundSize'] ?? 'cover';
-			$allowed_bg_sizes = array( 'cover', 'contain', 'auto' );
-			if ( ! in_array( $bg_size, $allowed_bg_sizes, true ) ) {
-				$bg_size = 'cover';
-			}
-			$bg_position        = $attributes['backgroundPosition'] ?? 'center center';
-			$bg_position        = preg_replace( '/[^A-Za-z0-9\s%]/', '', $bg_position );
-			$bg_repeat          = $attributes['backgroundRepeat'] ?? 'no-repeat';
-			$allowed_bg_repeats = array( 'no-repeat', 'repeat', 'repeat-x', 'repeat-y' );
-			if ( ! in_array( $bg_repeat, $allowed_bg_repeats, true ) ) {
-				$bg_repeat = 'no-repeat';
-			}
-			$bg_attachment       = $attributes['backgroundAttachment'] ?? 'scroll';
-			$allowed_attachments = array( 'scroll', 'fixed' );
-			if ( ! in_array( $bg_attachment, $allowed_attachments, true ) ) {
-				$bg_attachment = 'scroll';
-			}
-			$overlay_colour = $attributes['backgroundOverlayColour'] ?? '';
-			// D717 (2026-08-21): a real 0-100 opacity attribute, replacing the colour
-			// picker's alpha channel as the overlay's transparency mechanism. Null when
-			// a block has not adopted the attribute — the helper then emits no opacity
-			// declaration at all, so nothing changes for that block.
-			// backgroundOverlayOpacity is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
-				// migration, 2026-09-06); backgroundOverlayOpacityTablet/Mobile are no longer
-				// declared by any block.json. A raw read here would hand sgs_overlay_decls()
-				// an array, which is_numeric() silently rejects -- the desktop opacity would
-				// vanish with no error, same failure mode as the pre-fix minHeight bug.
-				$overlay_opacity_obj    = sgs_responsive_normalise_object( $attributes['backgroundOverlayOpacity'] ?? null );
-				$overlay_opacity        = $overlay_opacity_obj['desktop'] ?? null;
-			// Task 3 (gradient palette-stop rebuild): overlayGradient is now ONE
-			// attribute holding the complete CSS gradient value (any stop count),
-			// validated through sgs_css_gradient_value() at the point of emission
-			// below — replaces the old 4-attr bool/angle/from/to shape, which could
-			// only ever express a straight two-stop gradient.
-			$overlay_gradient = $attributes['overlayGradient'] ?? '';
-			// D6 (2026-08-22) — hover + responsive-tier siblings for the overlay
-			// paint pair, plus Step 8's blend mode. Null/absent on a block that
-			// has not adopted the sibling (WordPress drops an undeclared attr on
-			// the editor surface — D338/D704) is handled downstream exactly like
-			// $overlay_opacity above: sgs_overlay_decls() simply emits nothing
-			// extra for that state/tier.
-			$overlay_colour_hover    = $attributes['backgroundOverlayColourHover'] ?? '';
-			$overlay_gradient_hover  = $attributes['overlayGradientHover'] ?? '';
-			// D739: the responsive tier axis lives on OPACITY, not colour. A
-			// per-device overlay need is "a heavier scrim on the small screen",
-			// which is an opacity change rather than a different hue. The tier
-			// COLOUR attrs this replaces were the framework's only responsive
-			// colour, and crossing tier x state also produced an incoherent
-			// control — a hover tab that appeared on the desktop tier alone.
-			// null means "this tier does not override".
-			$overlay_opacity_tablet  = $overlay_opacity_obj['tablet'] ?? null;
-			$overlay_opacity_mobile  = $overlay_opacity_obj['mobile'] ?? null;
-			$overlay_blend_mode      = $attributes['backgroundOverlayBlendMode'] ?? '';
-			$bg_video                = $attributes['bgVideo'] ?? null;
-			$bg_video_tablet         = $attributes['bgVideoTablet'] ?? null;
-			$bg_video_mobile         = $attributes['bgVideoMobile'] ?? null;
-			// A `lottie` layer on the background part plays in a holder the wrapper prints (Spec 38A FR-38A-52).
-			$has_bg_lottie_layer     = empty( $opts['no_background_holder'] ) && \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::has_layer( $attributes );
+			// Background and overlay attributes read universally (no kind gate): a block only gets a
+			// working background when its own block.json declares them.
+			$bg                     = SGS_Background_Layer::read( $attributes, $opts );
+			$bg_image               = $bg['image'];
+			$bg_image_tablet        = $bg['image_tablet'];
+			$bg_image_mobile        = $bg['image_mobile'];
+			$overlay_colour         = $bg['overlay_colour'];
+			$overlay_opacity        = $bg['overlay_opacity'];
+			$overlay_gradient       = $bg['overlay_gradient'];
+			$bg_video_tablet        = $bg['video_tablet'];
+			$bg_video_mobile        = $bg['video_mobile'];
+			$has_bg_lottie_layer    = $bg['has_lottie_layer'];
 
 			$shadow = $attributes['shadow'] ?? '';
 			// is_array guard (Spec 35 Phase 1.4b, STAGE 2): `shadow` is being made
@@ -1060,24 +1003,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$flex_wrap = '';
 			}
 
-			// D6: SVG background attrs, universal (see the equivalent note above the
-			// main bg-attrs block).
-			$bg_svg_content        = $attributes['bgSvgContent'] ?? '';
-			$bg_svg_position       = $attributes['bgSvgPosition'] ?? 'background';
-			$allowed_svg_positions = array( 'background', 'foreground' );
-			if ( ! in_array( $bg_svg_position, $allowed_svg_positions, true ) ) {
-				$bg_svg_position = 'background';
-			}
-			$bg_svg_opacity     = isset( $attributes['bgSvgOpacity'] ) ? absint( $attributes['bgSvgOpacity'] ) : 100;
-			$bg_svg_min_height  = is_string( $attributes['bgSvgMinHeight'] ?? null ) ? sgs_css_length_value( $attributes['bgSvgMinHeight'] ) : '';
-			$bg_svg_text_shadow = ! empty( $attributes['bgSvgTextShadow'] );
-			$has_bg_svg         = ! empty( $bg_svg_content );
+			// SVG background attrs, universal.
+			$bg_svg             = SGS_Background_Layer::read_svg( $attributes );
+			$bg_svg_content    = $bg_svg['content'];
+			$bg_svg_position   = $bg_svg['position'];
+			$bg_svg_min_height = $bg_svg['min_height'];
+			$has_bg_svg        = $bg_svg['has_svg'];
 
 			// ----------------------------------------------------------------
 			// Derived booleans.
 			// ----------------------------------------------------------------
-			$has_bg_image = ! empty( $bg_image['url'] );
-			$has_bg_video = ! empty( $bg_video['url'] );
+			$has_bg_image = $bg['has_image'];
+			$has_bg_video = $bg['has_video'];
 
 			// ----------------------------------------------------------------
 			// Build inline styles.
@@ -1255,157 +1192,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$base_outer_decls[] = $surface_decl;
 			}
 
-			// Background image — real <img> fast path (Phase 2 LCP, mirrors
-			// sgs/hero's own `bg_img_html` in render.php).
-			//
-			// Why: a CSS background-image only becomes discoverable to the browser's
-			// PRELOAD SCANNER once it has downloaded and matched the render-blocking
-			// stylesheet that declares it — the scanner cannot see inside a <style>
-			// tag while still parsing the HTML. A real <img fetchpriority="high"> is
-			// visible to the scanner immediately, while it is still reading markup,
-			// which lets the browser start the request for the section's LCP image
-			// far earlier and shortens the page's largest paint.
-			//
-			// $sgs_bg_img_is_simple gates the <img> path to cases it can express
-			// FAITHFULLY. Every clause below names a real capability gap between
-			// <img> and CSS background-* — this is a mechanism boundary applied
-			// identically to every block that reaches this shared wrapper, not a
-			// per-block carve-out.
-			$sgs_bg_img_is_simple = ( 'no-repeat' === $bg_repeat )
-				// An <img> is a single raster paint — it has no equivalent to
-				// background-repeat's tiling, so a tiled background must stay CSS.
-				&& in_array( $bg_size, array( 'cover', 'contain' ), true )
-				// object-fit only maps to cover/contain. background-size also
-				// accepts arbitrary lengths/percentages/'auto', none of which
-				// object-fit can express, so anything other than cover/contain
-				// must stay CSS.
-				&& 'fixed' !== $bg_attachment
-				// background-attachment:fixed has no <img> equivalent: it pins the
-				// CSS background box to the viewport, which an <img> painting the
-				// section's own box cannot reproduce.
-				&& empty( $bg_image_tablet['url'] )
-				&& empty( $bg_image_mobile['url'] );
-				// The tablet/mobile tier overrides (below, ~L2079-2083) swap the
-				// image on the SAME ::before layer inside @media rules — an <img>
-				// element sitting outside that layer does not participate. Migrating
-				// only the desktop tier while leaving tiers on ::before would
-				// silently drop a client's tablet/mobile background the moment they
-				// set one, so whenever ANY tier override exists the WHOLE image
-				// stays on the existing CSS path until the tiers are migrated too.
-
-			$bg_img_html = '';
-			if ( $has_bg_image && ! $has_bg_video && $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
-				// PAGE-SCOPED counter (Fix 3, adversarial-review corrected): LCP
-				// priority is a property of the PAGE's render order, not of this
-				// block's own code path — a private static here would only know
-				// "am I first within THIS wrapper", so a hero background image
-				// followed by a container background image would mark BOTH
-				// `fetchpriority=high`, prioritising neither. sgs_hero/render.php
-				// calls the SAME shared counter (helpers-media.php) so only the
-				// image that renders first ON THE PAGE — whichever block it
-				// belongs to — gets the high-priority hint; every later instance
-				// is presumed below-the-fold and stays lazy.
-				$sgs_bg_img_is_first = 1 === sgs_next_background_image_index();
-
-				$bg_img_html = sgs_responsive_image(
-					! empty( $bg_image['id'] ) ? absint( $bg_image['id'] ) : 0,
-					$bg_image['url'],
-					'',
-					'full',
-					array(
-						'class'         => trim( ( $has_bg_lottie_layer ? \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::POSTER_CLASS : 'sgs-container__image-bg' ) . ' ' . $opt_bg_img_class ),
-						'aria-hidden'   => 'true',
-						'fetchpriority' => $sgs_bg_img_is_first ? 'high' : 'auto',
-						'loading'       => $sgs_bg_img_is_first ? 'eager' : 'lazy',
-						'decoding'      => $sgs_bg_img_is_first ? 'sync' : 'async',
-					)
-				);
-			}
-
-			// object-fit/object-position for the <img> path above — built here
-			// (where $bg_size/$bg_position are in scope) but EMITTED with the
-			// other scoped rules further down, same reason as $sgs_media_layer_decls
-			// below: $uid/$responsive_css don't exist yet at this point. No-inline
-			// contract (Spec 32): these values route to the scoped <style>, never
-			// onto the <img> tag itself.
-			$sgs_bg_img_style_decls = array();
-			if ( '' !== $bg_img_html ) {
-				$sgs_bg_img_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
-				$sgs_bg_img_style_decls[] = 'object-position:' . esc_attr( $bg_position );
-			}
-
-			// object-fit/object-position for the <video> background — same
-			// $bg_size/$bg_position source as the <img> fast path immediately
-			// above and the CSS-background ::before layer below.
-			// `backgroundSize`/`backgroundPosition` are the ONE attribute pair
-			// the whole Background panel writes; the Video tab's new Size/
-			// Position controls (BackgroundPanel.js) now write into them too,
-			// via the shared object-fit/focal-point media atoms (backdrop
-			// scope) — no second attribute family. Before this, a video
-			// background had NO size/position control at all: it only ever
-			// got style.css's hardcoded `object-fit:cover` default with no
-			// object-position rule. Built here (where $bg_size/$bg_position
-			// are in scope) but EMITTED with the other scoped rules further
-			// down — $uid/$responsive_css don't exist yet at this point.
-			// No-inline contract (Spec 32): these values route to the scoped
-			// <style>, never onto the <video> tag itself.
-			$sgs_bg_video_style_decls = array();
-			if ( $has_bg_video ) {
-				$sgs_bg_video_style_decls[] = 'object-fit:' . esc_attr( $bg_size );
-				$sgs_bg_video_style_decls[] = 'object-position:' . esc_attr( $bg_position );
-			}
-
-			// Background image — section kind only, painted on the .$uid::before
-			// MEDIA LAYER rather than on .$uid itself (Phase 1, 2026-08-08).
-			//
-			// Why a layer: `opacity` applies to a whole element, so while the image
-			// was a background of .$uid there was no way to dim the media without
-			// dimming the section's own content with it. The pseudo-element carries
-			// the image and its own `backgroundMediaOpacity`; the colour/gradient
-			// overlay span already paints ABOVE it (z-index 0 vs -1) and content
-			// above both, so lowering a colour's alpha lets the media through —
-			// one mental model instead of a separate "overlay" concept.
-			//
-			// ::before was verified unused on .sgs-container before taking it.
-			// The responsive tablet/mobile overrides target the same layer below.
-			// NOTE: the declarations are BUILT here (where $bg_* are in scope) but
-			// EMITTED with the other scoped rules further down — $uid and
-			// $responsive_css do not exist yet at this point, and $responsive_css
-			// is initialised to '' below, which would silently discard anything
-			// appended here.
-			//
-			// Gated on `! $sgs_bg_img_is_simple` (added Phase 2): when the <img>
-			// fast path above already painted the image, this block must NOT also
-			// push background-image onto ::before — that would double-paint the
-			// same image on two separate layers for no benefit.
-			$sgs_media_layer_decls = array();
-			if ( $has_bg_image && ! $has_bg_video && ! $sgs_bg_img_is_simple ) { // D6: universal, was section-only.
-				// The layer's own box properties are emitted HERE rather than as a
-				// blanket `.sgs-container::before` rule in style.css, so the
-				// pseudo-element only becomes a box on containers that actually have
-				// a background image — every other container is untouched.
-				// `content` is mandatory: without it ::before generates no box and
-				// the background-image below would never paint.
-				// z-index -1 paints ABOVE the container's own background-colour and
-				// BELOW both the overlay span (z-index 0) and content (z-index 1),
-				// which is the media < colour < content order the model requires.
-				$sgs_media_layer_decls[] = 'content:""';
-				$sgs_media_layer_decls[] = 'position:absolute';
-				$sgs_media_layer_decls[] = 'inset:0';
-				$sgs_media_layer_decls[] = 'z-index:-1';
-				$sgs_media_layer_decls[] = 'pointer-events:none';
-				$sgs_media_layer_decls[] = 'background-image:url(' . esc_url( $bg_image['url'] ) . ')';
-				$sgs_media_layer_decls[] = 'background-size:' . esc_attr( $bg_size );
-				$sgs_media_layer_decls[] = 'background-position:' . esc_attr( $bg_position );
-				$sgs_media_layer_decls[] = 'background-repeat:' . esc_attr( $bg_repeat );
-				if ( 'fixed' === $bg_attachment ) {
-					$sgs_media_layer_decls[] = 'background-attachment:fixed';
-				}
-				// D5 (Background panel redesign, 2026-08-11): the media-opacity
-				// control is REMOVED — `backgroundMediaOpacity` no longer exists
-				// as an attribute (see container/block.json). The colour/gradient
-				// overlay's own alpha is the one dimming mechanism now.
-			}
+			// Background image media: the <img> fast path or the CSS layer, and the object-fit rules.
+			$sgs_media                = SGS_Background_Layer::media( $bg, $opt_bg_img_class );
+			$bg_img_html              = $sgs_media['img_html'];
+			$sgs_bg_img_style_decls   = $sgs_media['img_style_decls'];
+			$sgs_bg_video_style_decls = $sgs_media['video_style_decls'];
 
 			// Box shape — parsed above, beside the min-height flex-fill it shares.
 			if ( '' !== $sgs_box_ratio ) {
@@ -1849,25 +1640,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$classes[] = 'sgs-container--sized';
 			}
 
-			// D6: universal, was section-only (the `if ( true )` wrapper this was
-			// left inside of has been removed as dead-conditional cleanup).
-			//
-			if ( $has_bg_image && ! $has_bg_video ) {
-				$classes[] = 'sgs-container--has-bg-image';
-			}
-			if ( $has_bg_video ) {
-				$classes[] = 'sgs-container--has-bg-video';
-			}
-			if ( $has_bg_svg ) {
-				$classes[] = 'sgs-container--has-bg-svg';
-				$classes[] = 'sgs-container--svg-' . esc_attr( $bg_svg_position );
-				if ( $bg_svg_text_shadow ) {
-					$classes[] = 'sgs-container--svg-text-shadow';
-				}
-				if ( ! empty( $bg_svg_min_height ) ) {
-					$classes[] = 'sgs-container--has-svg-min-height';
-				}
-			}
+			$classes = array_merge( $classes, SGS_Background_Layer::modifier_classes( $bg, $bg_svg ) );
 
 			// Grid column count classes — section + layout kinds.
 			// Emit a shorthand sgs-cols-* class ONLY when the corresponding tier has
@@ -1920,107 +1693,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
 			);
 
-			// ----------------------------------------------------------------
-			// Video HTML — section kind only.
-			// ----------------------------------------------------------------
-			$video_html = '';
-			if ( $has_bg_video ) { // D6: universal, was section-only.
-				$has_bg_video_tablet = ! empty( $bg_video_tablet['url'] );
-				$desktop_src         = esc_url( $bg_video['url'] );
-				// Fall back upward when a tier has no override: tablet falls back to
-				// desktop, mobile falls back to tablet (which itself may already have
-				// fallen back to desktop) — mirrors the client-side swapVideoSrc() fallback.
-				$tablet_src = $has_bg_video_tablet ? esc_url( $bg_video_tablet['url'] ) : $desktop_src;
-				$mobile_src = ! empty( $bg_video_mobile['url'] ) ? esc_url( $bg_video_mobile['url'] ) : $tablet_src;
+			// Video HTML, then the Lottie holder that takes the image's place.
+			$video_html = SGS_Background_Layer::video_html( $bg );
+			[ $bg_img_html, $video_html ] = SGS_Background_Layer::lottie_holder( $has_bg_lottie_layer, $bg_img_html, $video_html );
 
-				if ( $desktop_src === $tablet_src && $tablet_src === $mobile_src ) {
-					$video_html = sprintf(
-						'<video class="sgs-container__video-bg" autoplay loop muted playsinline preload="none" aria-hidden="true">' .
-						'<source src="%s" type="video/mp4"></video>',
-						$desktop_src
-					);
-				} else {
-					// data-src-tablet is emitted ONLY when a tablet override was actually
-					// set — a block with no tablet value renders byte-identically to
-					// before this tier existed (no stray attribute carrying the desktop
-					// fallback value). swapVideoSrc() falls back the same way when the
-					// attribute is simply absent from the DOM.
-					$tablet_attr = $has_bg_video_tablet ? sprintf( ' data-src-tablet="%s"', esc_attr( $tablet_src ) ) : '';
-					$video_html  = sprintf(
-						'<video class="sgs-container__video-bg sgs-container__video-bg--responsive" autoplay loop muted playsinline preload="none" aria-hidden="true"' .
-						' data-src-desktop="%s"%s data-src-mobile="%s">' .
-						'<source src="%s" type="video/mp4"></video>',
-						esc_attr( $desktop_src ),
-						$tablet_attr,
-						esc_attr( $mobile_src ),
-						$desktop_src
-					);
-				}
-			}
-
-			// The background Lottie layer's holder takes the image's place, with the image inside as its poster; a video
-			// gives way to it.
-			if ( $has_bg_lottie_layer ) {
-				$bg_img_html = \SGS\Blocks\Motion\Sgs_Motion_Background_Lottie::holder( $bg_img_html );
-				$video_html  = '';
-			}
-
-			// ----------------------------------------------------------------
-			// Overlay HTML — section kind only; suppressed by no_overlay opt (C3).
-			// ----------------------------------------------------------------
-			$overlay_html  = '';
-			$overlay_decls = ''; // Emitted scoped on .{uid} .sgs-container__overlay below (no-inline).
-			if ( ! $opt_no_overlay ) { // D6: universal, was section-only.
-				// Task 3: overlayGradient is now a complete CSS gradient string,
-				// validated through sgs_css_gradient_value() — a non-empty valid
-				// gradient wins over the flat colour, matching how WP core and
-				// Kadence/Spectra/Otter all resolve colour-vs-gradient.
-				// D718 (2026-08-21): the EXISTENCE test IS the shared helper's return value.
-				// sgs_overlay_decls() yields '' when there is nothing to paint, so "is there an
-				// overlay?" and "what does it paint?" are ONE decision in ONE place. D717
-				// unified the declaration building but left this gating hand-written at both
-				// call sites, which is exactly how sgs/hero kept a divergent overlay policy
-				// through that change. hero now gates identically.
-				// D6/Step 8 (2026-08-22): blend mode joins the same call — one shared
-				// owner for the whole overlay declaration set, not a second emitter
-				// appended after this one (the exact gap D718 named and closed for
-				// opacity/existence; blend mode does not reopen it).
-				$overlay_decls_computed = sgs_overlay_decls( $overlay_colour, $overlay_gradient, $overlay_opacity, $overlay_blend_mode );
-
-				// UNGATED 2026-08-08 (Phase 1). This used to require `$has_any_bg &&`
-				// — a colour or gradient set with NO media rendered nothing at all,
-				// which is why a flat background colour was only reachable through
-				// WordPress's native Color panel.
-				//
-				// CORRECTED 2026-08-21 (D717). The rest of this comment used to claim the
-				// overlay "simply IS the background" when no media sits beneath it. That
-				// was true on 2026-08-08 and is NOT true now: `1905257e` gave every one of
-				// the eight blocks mounting <BackgroundPanel> its own separate
-				// `backgroundColour` base layer, declared AND rendered (verified per block
-				// 2026-08-21). This layer is an overlay and only an overlay — which is why
-				// it can carry a 30% default opacity without washing out a solid background.
-				if ( '' !== $overlay_decls_computed ) {
-					// D717 (2026-08-21) — SUPERSEDES D581's D5, which stood here as an
-					// explicit "do not reintroduce `backgroundOverlayOpacity`" prohibition.
-					// D5 was right that ONE transparency mechanism beats two; it picked the
-					// wrong one. The colour picker's alpha silently unlinks the client's
-					// brand token — DesignTokenPicker stores a palette slug only on exact
-					// string equality, so altering the alpha stores a raw hex instead — and
-					// that side effect was not known when D5 was made. Alpha is now off on
-					// that row and this is the one mechanism.
-					//
-					// The gradient-beats-colour resolution is no longer hand-rolled here:
-					// sgs_overlay_decls() owns the whole overlay declaration set, and
-					// sgs/hero's own `.sgs-hero__overlay` calls the same helper. Two
-					// drifting copies became one.
-					$overlay_decls = $overlay_decls_computed;
-					// No-inline contract (Spec 32): the overlay paint is emitted as a
-					// scoped `.{uid} .sgs-container__overlay` rule below — NOT inline on
-					// the span. safecss doesn't touch this raw-echoed span, but an inline
-					// property declaration still violates the contract + the --check gate.
-					$overlay_html = '<span class="sgs-container__overlay" aria-hidden="true"></span>';
-				}
-			}
+			// Overlay HTML and paint; suppressed by the no_overlay option.
+			[ $overlay_html, $overlay_decls ] = SGS_Background_Layer::overlay( $attributes, $opt_no_overlay );
 
 			// ----------------------------------------------------------------
 			// Shape dividers — section kind only.
@@ -2514,82 +2192,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
-			// MEDIA LAYER scoped rule (Phase 1, 2026-08-08) — the background image
-			// paints on .{uid}::before, not on .{uid}, so `backgroundMediaOpacity`
-			// can dim the media WITHOUT dimming the section's own content. Built
-			// further up where $bg_* are in scope; emitted here because $uid and
-			// $responsive_css only exist from this point on. Must come BEFORE the
-			// @media tier overrides below so a narrower viewport still wins.
-			if ( $sgs_media_layer_decls && $uid ) {
-				$responsive_css .= '.' . $uid . '::before{' . implode( ';', $sgs_media_layer_decls ) . '}';
-			}
-
-			// <img> fast-path object-fit/object-position scoped rule (Phase 2 LCP,
-			// built further up alongside $sgs_bg_img_is_simple) — the real <img>
-			// sits directly inside .{uid} (see the final-assembly sprintf below),
-			// so this targets it as a direct child, matching the ::before media
-			// layer's box exactly (same object-fit/object-position semantics as
-			// that layer's background-size/background-position).
-			if ( $sgs_bg_img_style_decls && $uid ) {
-				$responsive_css .= '.' . $uid . ' > .sgs-container__image-bg{' . implode( ';', $sgs_bg_img_style_decls ) . '}';
-			}
-
-			// <video> background object-fit/object-position scoped rule — same
-			// direct-child selector shape as the <img> fast-path rule above
-			// (the video markup sits directly inside .{uid}, see the final-
-			// assembly sprintf near the end of render()). Closes the gap
-			// where a video background had no per-instance size/position at
-			// all (style.css's `.sgs-container__video-bg{object-fit:cover}`
-			// stays as the CSS fallback default for the (rare) no-uid case).
-			if ( $sgs_bg_video_style_decls && $uid ) {
-				$responsive_css .= '.' . $uid . ' > .sgs-container__video-bg{' . implode( ';', $sgs_bg_video_style_decls ) . '}';
-			}
-
-			// Overlay paint scoped rule (Spec 32 no-inline contract) — the bg overlay
-			// span's background/opacity, emitted on `.{uid} .sgs-container__overlay`
-			// instead of inline on the span. $overlay_decls is pre-sanitised
-			// (sgs_colour_value + esc_attr on the opacity/angle).
-			if ( '' !== $overlay_decls && $uid ) {
-				$responsive_css .= '.' . $uid . ' .sgs-container__overlay{' . $overlay_decls . '}';
-
-				// Overlay HOVER state (D6, 2026-08-22) — same shared owner
-				// (sgs_overlay_decls()), NOT a hand-rolled second emitter. Opacity
-				// and blend mode are deliberately not re-passed here: the base
-				// rule above already declared them, and the more specific
-				// `:hover`/`:focus-visible` selector only needs to override the
-				// properties that actually change — colour/gradient. Gated on the
-				// span existing at all (the `'' !== $overlay_decls` outer check):
-				// a hover-only value with no resting paint has nothing to select,
-				// matching D717/D718's "no colour set means no overlay" rule.
-				if ( '' !== $overlay_colour_hover || '' !== $overlay_gradient_hover ) {
-					$overlay_hover_paint = sgs_overlay_decls( $overlay_colour_hover, $overlay_gradient_hover );
-					if ( '' !== $overlay_hover_paint ) {
-						$responsive_css .= sgs_emit_state_colour_css(
-							'.' . $uid . ' .sgs-container__overlay',
-							array(),
-							array( $overlay_hover_paint )
-						);
-					}
-				}
-
-				// Overlay responsive TIERS (D739) — the tier axis is OPACITY, not colour.
-				// Project-standard 768/1024 breakpoints (tablet max-width:1023px, mobile
-				// max-width:767px). Emitted only when a tier explicitly overrides; an
-				// unset tier inherits the desktop rule by ordinary cascade.
-				//
-				// ONLY the opacity declaration is re-emitted, never the whole paint.
-				// Colour, gradient and blend mode are deliberately NOT per-tier, so
-				// restating them inside a @media block would create a SECOND owner for
-				// the same properties — and the tier rule would then silently outrank a
-				// later desktop edit at the same specificity. Two owners for one
-				// property is the defect, not the fix.
-				if ( null !== $overlay_opacity_tablet && '' !== $overlay_opacity_tablet ) {
-					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_tablet / 100 ) . '}}';
-				}
-				if ( null !== $overlay_opacity_mobile && '' !== $overlay_opacity_mobile ) {
-					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . ' .sgs-container__overlay{opacity:' . esc_attr( (float) $overlay_opacity_mobile / 100 ) . '}}';
-				}
-			}
+			// Background scoped rules: media layer, <img> and <video> object-fit, overlay paint, hover and tiers.
+			// They come before the @media tier overrides below so a narrower viewport still wins.
+			$responsive_css .= SGS_Background_Layer::scoped_css( (string) $uid, $sgs_media, $overlay_decls, $bg, $attributes );
 
 			// Base content-band scoped rule (Spec 32, D293 no-inline contract) —
 			// emitted whenever base band-level CSS exists (contentWidth / band padding /
@@ -2844,18 +2449,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 				}
 
-				// Responsive bg image overrides — section kind only. These target the
-				// SAME ::before media layer as the base tier (Phase 1, 2026-08-08);
-				// targeting .$uid here while the base painted ::before would leave the
-				// desktop image showing through underneath on tablet/mobile.
-				// D6: universal, was section-only (the `if ( true )` wrapper this was
-				// left inside of has been removed as dead-conditional cleanup).
-				if ( ! empty( $bg_image_tablet['url'] ) ) {
-					$responsive_css .= SGS_Breakpoints::media( 'tablet' ) . '{.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_tablet['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
-				}
-				if ( ! empty( $bg_image_mobile['url'] ) ) {
-					$responsive_css .= SGS_Breakpoints::media( 'mobile' ) . '{.' . $uid . '::before{background-image:url(' . esc_url( $bg_image_mobile['url'] ) . ');background-size:' . esc_attr( $bg_size ) . ';background-position:' . esc_attr( $bg_position ) . '}}';
-				}
+					// Responsive bg image overrides.
+					$responsive_css .= SGS_Background_Layer::tier_css( (string) $uid, $bg );
 
 				// QB-2: Responsive gridTemplateColumns — section + layout kinds.
 				if ( $is_section || $is_layout ) {
@@ -2972,41 +2567,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
-			// ----------------------------------------------------------------
-			// SVG background HTML — section kind only.
-			// ----------------------------------------------------------------
-			$svg_html = '';
-			if ( $has_bg_svg ) { // D6: universal, was section-only.
-				// Shared wp_kses() allowlist - was an 86-line hand-rolled copy of
-				// sgs_allowed_svg_tags(), verified byte-equivalent as parsed data
-				// before collapsing (negative-controlled). Behaviour-neutral.
-				$allowed_svg_tags = sgs_allowed_svg_tags();
-
-				// FR-32-4 / D345: the opacity custom-property VALUE is scoped to the
-				// instance, never inline on the layer div. $uid is guaranteed here —
-				// $has_bg_svg is one of the $needs_uid conditions above. style.css
-				// consumes it via var(--sgs-svg-opacity, 1) on the same element, so
-				// behaviour is identical to the old inline declaration.
-				if ( $uid ) {
-					$responsive_css .= '.' . $uid . ' .sgs-container__svg-bg{--sgs-svg-opacity:' . esc_attr( $bg_svg_opacity / 100 ) . ';}';
-				}
-
-				// A motion layer on the `svg-bg` part (the `draw` effect) reaches this element through the part's own
-				// selector, so the div carries no effect attributes of its own.
-				// A block that stores `bgSvgParts` animates named parts of the SVG: the cleaned document rides on the
-				// layer as `data-sgs-svg-parts`, read by src/shared/svg-parts/svg-parts.js. Nothing is printed without parts.
-				$svg_parts_attr = '';
-				if ( ! empty( $attributes['bgSvgParts'] ) ) {
-					require_once __DIR__ . '/helpers-svg-parts.php';
-					$svg_parts_json = sgs_svg_parts_data( $attributes['bgSvgParts'], (string) ( $attributes['bgSvgPartsTrigger'] ?? 'load' ) );
-					$svg_parts_attr = '' !== $svg_parts_json ? ' data-sgs-svg-parts="' . esc_attr( $svg_parts_json ) . '"' : '';
-				}
-				$svg_html = sprintf(
-					'<div class="sgs-container__svg-bg"%s aria-hidden="true">%s</div>',
-					$svg_parts_attr,
-					wp_kses( $bg_svg_content, $allowed_svg_tags )
-				);
-			}
+			// SVG background layer and its scoped opacity rule.
+			$responsive_css .= SGS_Background_Layer::svg_opacity_css( (string) $uid, $bg_svg );
+			$svg_html         = SGS_Background_Layer::svg_html( $attributes, $bg_svg );
 
 			// SVG position routing.
 			$svg_bg_html = ( $has_bg_svg && 'background' === $bg_svg_position ) ? $svg_html : '';
