@@ -1,11 +1,13 @@
 """The Spec 49 §13 mapping rows as data.
 
-Facts come from the code, not from this file: the base vocabulary, the per-device (tiered) bases and each atom's bases
-are read from `includes/media-element-attributes.generated.php` (the PHP mirror of `MediaElementControls.js` and the
-atom registry); which blocks declare which slots is read from each `block.json`'s `supports.sgs.mediaElements`; old
-defaults, types and the declared attribute names are read from the framework database (read-only, through
-`scripts/lib/framework_db.py::framework_db_path`). This file holds only the decisions §13 and Appendix A make: which
-old name becomes which new one, and which slots are exempt.
+The facts the rows rest on are frozen in `mapping-frozen.json` beside this file: the base vocabulary, the per-device
+(tiered) bases and each atom's bases (from `includes/media-element-attributes.generated.php`), the pre-adoption
+`supports.sgs.mediaElements` entries and attribute names of every block (from each `block.json`), the old defaults and
+types (from the framework database) and the mapping rows built from them. Stage B rewrites or deletes all of those
+sources, so every reader (`rows`, `survey`, `fix`, `check`, `self-test`) reads the frozen file only. `regenerate()`
+rebuilds it from the live files and refuses once any block declares `kinds` (the cutover marker, §8.3). This file holds
+the decisions §13 and Appendix A make: which old name becomes which new one, which attributes stay and why, and which
+slots are exempt.
 """
 from __future__ import annotations
 
@@ -42,8 +44,8 @@ def attr_name(prefix: str, base: str) -> str:
 # ---------------------------------------------------------------- facts read from the code
 
 @lru_cache(maxsize=1)
-def generated_maps() -> dict:
-    """{'atoms': {atom: [bases]}, 'tiered': set, 'bases': set} from the generated PHP mirror."""
+def live_generated_maps() -> dict:
+    """{'atoms': {atom: [bases]}, 'tiered': [..]} read from the generated PHP mirror (regeneration only)."""
     text = GENERATED_PHP.read_text(encoding="utf-8")
 
     def section(name: str) -> str:
@@ -63,11 +65,11 @@ def generated_maps() -> dict:
     for m in re.finditer(r'"([a-z-]+)"\s*=>\s*array\(([^)]*)\)', section("atoms")):
         atoms[m.group(1)] = re.findall(r'"([A-Za-z]+)"', m.group(2))
     tiered = set(re.findall(r'"([A-Za-z]+)"', section("tiered")))
-    return {"atoms": atoms, "tiered": tiered, "bases": {b for group in atoms.values() for b in group}}
+    return {"atoms": atoms, "tiered": sorted(tiered)}
 
 
 @lru_cache(maxsize=1)
-def declared_slots() -> dict:
+def live_declared_slots() -> dict:
     """{block: [{prefix, atoms|None, kinds|None}]} from every block.json's supports.sgs.mediaElements."""
     out: dict[str, list[dict]] = {}
     for path in sorted(BLOCKS_DIR.glob("*/block.json")):
@@ -82,25 +84,55 @@ def declared_slots() -> dict:
 
 def any_block_adopted() -> bool:
     """True once any block declares `kinds` on a media slot: the cutover marker (§8.3)."""
-    return any(e["kinds"] for entries in declared_slots().values() for e in entries)
+    return any(e["kinds"] for entries in live_declared_slots().values() for e in entries)
 
 
-@lru_cache(maxsize=1)
-def db_attributes() -> dict:
-    """{block: {attr: (type, default_json)}} for source='sgs' attributes; {} when the database is unavailable."""
+def live_db_attributes() -> dict:
+    """{block: {attr: [type, default_json]}} for source='sgs' attributes of the framework database (regeneration only)."""
     path = framework_db_path()
     if not Path(path).is_file():
-        return {}
+        raise SystemExit(f"regenerate needs the framework database: {path} is missing")
     con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
     try:
         out: dict[str, dict] = {}
         for block, attr, kind, default in con.execute(
             "SELECT block_slug, attr_name, attr_type, default_value FROM block_attributes WHERE source='sgs'"
         ):
-            out.setdefault(block, {})[attr] = (kind, default)
+            out.setdefault(block, {})[attr] = [kind, default]
         return out
     finally:
         con.close()
+
+
+# ---------------------------------------------------------------- the frozen facts
+
+FROZEN = HERE / "mapping-frozen.json"
+
+
+@lru_cache(maxsize=1)
+def frozen() -> dict:
+    """The committed facts: atoms, tiered, declared, attributes, dbAttributes, rows."""
+    return json.loads(FROZEN.read_text(encoding="utf-8"))
+
+
+def generated_maps() -> dict:
+    data = frozen()
+    return {"atoms": data["atoms"], "tiered": set(data["tiered"]), "bases": {b for group in data["atoms"].values() for b in group}}
+
+
+def declared_slots() -> dict:
+    """{block: [{prefix, atoms|None, kinds|None}]} as the blocks declared them before adoption."""
+    return frozen()["declared"]
+
+
+def block_attribute_names(block: str) -> list[str]:
+    """The attribute names a block declared before adoption (generated ones excluded)."""
+    return frozen()["attributes"].get(block, [])
+
+
+def db_attributes() -> dict:
+    """{block: {attr: (type, default_json)}} frozen from the framework database."""
+    return {b: {a: tuple(v) for a, v in attrs.items()} for b, attrs in frozen()["dbAttributes"].items()}
 
 
 def old_default(block: str, attr: str):
@@ -226,6 +258,13 @@ EXTRA = {
     ("sgs/timeline", "mediaBorderRadius"): ("rename", "entryRadius"),
     ("sgs/timeline", "milestoneMediaWidth"): ("sizing", "entryWidth"),
     ("sgs/trust-bar", "badgeImageSize"): ("sizing", "badgeWidth"),
+    ("sgs/trust-bar", "badgeImageBorderRadius"): ("radius", "badgeRadius"),
+    ("sgs/product-card", "brandLogoHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
+    ("sgs/product-card", "brandLogoWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
+    ("sgs/product-card", "brandLogoMaxHeight"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
+    ("sgs/product-card", "brandLogoMaxWidth"): ("report", "brand logo box: the `logo` slot is named by WP-9"),
+    ("sgs/hero", "splitMediaBorderColourHover"): ("report", "Hover effect on the media part (WP-10a)"),
+    ("sgs/hero", "splitMediaBorderColourHoverGradient"): ("report", "Hover effect on the media part (WP-10a)"),
     ("sgs/brand-strip", "tileShape"): ("shape", "logoShape"),
     ("sgs/brand-strip", "logoFit"): ("fit", "logoFit"),
     ("sgs/trust-bar", "badgeImageObjectFit"): ("fit", "badgeFit"),
@@ -257,6 +296,21 @@ EXTRA = {
     ("sgs/measured-diagram", "drawingImageDecorative"): ("alt", "drawingDecorative"),
     ("sgs/decorative-image", "decorMedia"): ("source", "layerSource"),
     ("sgs/decorative-image", "shape"): ("shape", "layerShape"),
+    ("sgs/decorative-image", "opacity"): ("opacity", "layerOpacity"),
+    ("sgs/decorative-image", "width"): ("sizing", "layerWidth"),
+    ("sgs/decorative-image", "maxWidth"): ("sizing", "layerMaxWidth"),
+    ("sgs/decorative-image", "height"): ("sizing", "layerHeight"),
+    ("sgs/decorative-image", "borderRadius"): ("radius", "layerRadius"),
+    ("sgs/decorative-image", "borderWidth"): ("rename", "layerBorderWidth"),
+    ("sgs/decorative-image", "borderStyle"): ("rename", "layerBorderStyle"),
+    ("sgs/decorative-image", "borderColour"): ("rename", "layerBorderColour"),
+    ("sgs/decorative-image", "borderColourGradient"): ("rename", "layerBorderColourGradient"),
+    ("sgs/decorative-image", "boxShadow"): ("rename", "layerBoxShadow"),
+    ("sgs/decorative-image", "boxShadowColour"): ("rename", "layerBoxShadowColour"),
+    ("sgs/decorative-image", "boxShadowColourHover"): ("rename", "layerBoxShadowColourHover"),
+    ("sgs/decorative-image", "boxShadowHover"): ("report", "the Hover panel owns lift: shadow on hover is Effects data (WP-10a)"),
+    ("sgs/decorative-image", "backgroundColour"): ("rename", "layerBackground"),
+    ("sgs/decorative-image", "backgroundColourGradient"): ("report", "no Background gradient form in §8"),
     ("sgs/decorative-image", "hideOnTablet"): ("hideon", "sgsHideOnTablet"),
     ("sgs/decorative-image", "hideOnMobile"): ("hideon", "sgsHideOnMobile"),
     ("sgs/responsive-logo", "logoId"): ("source", "logoSource"),
@@ -309,22 +363,65 @@ SLOT_EXTRA_BASES = {
     ("sgs/before-after", "after"): SOURCE_BASES,
 }
 
-# Old attributes §13 leaves on the block: measurement data, not display settings.
-STAYS = {
-    "sgs/measured-diagram": ("drawingImageWidth", "drawingImageHeight"),
-    "sgs/container": ("boxAspectRatio",),
-    "sgs/responsive-logo": ("logoSwitchCustomPx", "logoSwitchMode", "width", "maxWidth", "maxHeight", "shrinkWidth"),
-    "sgs/nav-drawer": ("chromeLogoWidth", "chromeLogoLink", "chromeLogoShow", "chromeLogoBoxBg", "chromeLogoBoxBgGradient",
-                       "chromeLogoBoxPadding", "chromeLogoBoxRadius", "chromeLogoBoxShadow", "chromeLogoBoxShadowColour",
-                       "chromeLogoAlt"),
-    "sgs/product-card": ("imageAlt", "imageDecorative", "brandUseLogo", "showGalleryThumbs", "noImageLabel", "thumbsFlexWrap"),
-    "sgs/brand-strip": ("logoGap", "logoLayout", "logoMaxWidth", "logoOpacity"),
-    "sgs/mega-panel": ("drawerCardThumbSize", "drawerCardMediaHeight", "drawerCardMediaRatio"),
-    "sgs/choice-flow": ("headerLogoHeight", "optionMediaSize"),
-    "sgs/choice-flow-question": ("optionMediaSize",),
-    "sgs/card-grid": ("imagePadding", "imageFallback", "imageFallbackColour", "noImageLabel", "noImageLabelColour"),
-    "sgs/buybox": ("thumbGap", "thumbsPerRow", "thumbSelectedScale", "thumbStripOffset", "thumbsFlexWrap"),
-}
+# Old attributes §13 leaves on the block, each with its reason: (block, reason) -> attributes. A block's media attribute
+# that is neither a mapping row nor listed here is reported as "unmapped legacy attribute" by `fix`, `survey` and `check`.
+_STAYS_GROUPS = (
+    ("sgs/measured-diagram", "measurement data, not a display setting (§13)", ("drawingImageWidth", "drawingImageHeight")),
+    ("sgs/container", "layout, not media: the box ratio stays (§13)", ("boxAspectRatio",)),
+    ("sgs/responsive-logo", "logo switching and sizing are the block's own layout (Appendix A)",
+     ("logoSwitchCustomPx", "logoSwitchMode", "width", "maxWidth", "maxHeight", "shrinkWidth")),
+    ("sgs/nav-drawer", "chrome logo box and link are the drawer's own layout (Appendix A)",
+     ("chromeLogoWidth", "chromeLogoLink", "chromeLogoShow", "chromeLogoBoxBg", "chromeLogoBoxBgGradient", "chromeLogoBoxPadding",
+      "chromeLogoBoxRadius", "chromeLogoBoxShadow", "chromeLogoBoxShadowColour", "chromeLogoAlt")),
+    ("sgs/product-card", "card behaviour, not a slot setting: alt and decorative stay, the gallery strip and labels stay (Appendix A)",
+     ("imageAlt", "imageDecorative", "brandUseLogo", "showGalleryThumbs", "noImageLabel", "thumbsFlexWrap")),
+    ("sgs/brand-strip", "strip layout needs a common size (Appendix A)", ("logoGap", "logoLayout", "logoMaxWidth", "logoOpacity")),
+    ("sgs/brand-strip", "the items array is rewritten by the items migration, not by a row", ("logos",)),
+    ("sgs/mega-panel", "drawer card thumbnail is exempt (Appendix A)", ("drawerCardThumbSize", "drawerCardMediaHeight", "drawerCardMediaRatio")),
+    ("sgs/mega-panel", "accent panel surface image on an exempt block (Appendix A): it keeps its own attributes",
+     ("accentBackgroundImage", "accentBackgroundImageGradient")),
+    ("sgs/choice-flow", "flow chrome sizing stays (Appendix A)", ("headerLogoHeight", "optionMediaSize")),
+    ("sgs/choice-flow", "the summary photo is built by summary.js with explicit size: the toggle stays (Appendix A)", ("summaryShowImage",)),
+    ("sgs/choice-flow-question", "flow chrome sizing stays (Appendix A)", ("optionMediaSize",)),
+    ("sgs/card-grid", "empty-state and padding of the card, not the photo (Appendix A)",
+     ("imagePadding", "imageFallback", "imageFallbackColour", "noImageLabel", "noImageLabelColour")),
+    ("sgs/product-card", "empty-state label colour, not the photo (Appendix A)", ("noImageLabelColour",)),
+    ("sgs/buybox", "thumbnail strip layout and states stay with the block (Appendix A: thumbnail strip, thumbSelectedScale)",
+     ("thumbGap", "thumbsPerRow", "thumbSelectedScale", "thumbStripOffset", "thumbsFlexWrap")),
+    ("sgs/buybox", "the strip's fixed thumbnail size is strip layout, read as a CSS custom property by extras.php",
+     ("galleryThumbSize",)),
+    ("sgs/buybox", "hover and selected states of the thumbnail strip belong to the strip (Appendix A: thumbnail strip)",
+     ("galleryThumbBorderColourHover", "galleryThumbBorderColourCurrent")),
+    ("sgs/post-grid", "the show-image toggle stays (Appendix A: post-grid showImage)", ("showImage",)),
+    ("sgs/post-grid", "the new Decorative has the same name (imageDecorative): nothing to move", ("imageDecorative",)),
+    ("sgs/trust-bar", "the badge shadow stays on the item (Appendix A: trust-bar badge)",
+     ("badgeImageShadow", "badgeImageShadowColour", "badgeImageShadowColourHover")),
+    ("sgs/before-after", "slider caption text, not media", ("beforeLabel", "afterLabel")),
+    ("sgs/gallery", "the items array is rewritten by the items migration, not by a row", ("mediaItems",)),
+    ("sgs/cart", "small fixed thumbnail on an exempt block (Appendix A)", ("itemThumbBg", "itemThumbSize", "itemThumbRadius", "iconSvg")),
+    ("sgs/media", "player readout typography (§13: videoTime typography stays)", ("videoTimeTextColumns",)),
+    ("sgs/google-reviews", "remote avatar and card logo on an exempt block (Appendix A)",
+     ("logoPosition", "avatarSize", "avatarBorderRadius", "showCardLogo", "cardLogoSize", "avatarTextAlign", "avatarTextColour")),
+    ("sgs/hero", "content order is layout, not media", ("splitContentOrder",)),
+    ("sgs/option-picker", "swatch selected-state ring and tick are picker UI, not media",
+     ("swatchRingWidth", "swatchRingColour", "swatchTickInside", "swatchTickColour")),
+    ("sgs/decorative-image", "a floating layer's position, rotation, order and visibility describe the layer, not its media (Appendix A)",
+     ("positionX", "positionY", "anchorTo", "positionTop", "positionRight", "positionBottom", "positionLeft", "rotation", "zIndex",
+      "flipX", "fadeOnScroll", "overflow")),
+)
+STAYS: dict[str, tuple] = {}
+STAYS_WHY: dict[tuple, str] = {}
+for _block, _why, _names in _STAYS_GROUPS:
+    STAYS[_block] = STAYS.get(_block, ()) + _names
+    for _name in _names:
+        STAYS_WHY[(_block, _name)] = _why
+
+# Blocks whose every declared attribute the self-test classifies, because their entry prefix is empty: the slot grammar
+# alone cannot tell the layer's own settings from the block's.
+FULLY_CLASSIFIED = ("sgs/decorative-image",)
+
+# Opacity scale of the old attribute (§8 Opacity is 0 to 100): sgs/media stored 0 to 1, decorative-image already 0 to 100.
+OPACITY_SCALE = {"sgs/decorative-image": 1}
 
 # Hover and effect attributes (§13 "Hover effects on the media part", "Motion layers on old parts"): the target is
 # Effects data owned by WP-10a, so the detector reports and refuses them until that shape exists.
@@ -357,11 +454,52 @@ BACKGROUND_OLD = (
 NAME_FAMILIES = ("keep", "rename", "fit", "focal", "opacity", "overlayopacity", "radius", "shape", "sizing", "alt", "svglayer")
 
 
-def slots_for(block: str) -> list[dict]:
+MEDIAISH = re.compile(r"image|video|svg|photo|avatar|logo|poster|thumb|aspectratio|objectfit|objectposition|focal|lottie|^media", re.I)
+TYPOGRAPHY = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|LetterSp|LineHeight|TextStroke|TextTrans|TextDec|"
+                        r"TextWrap|WritingMode", re.I)
+
+
+def known_names(block: str) -> set[str]:
+    """Every old name or new target a mapping row, a STAYS entry or a wildcard row gives this block."""
+    out = set(STAYS.get(block, ()))
+    for row in rows():
+        if row["block"] in (block, "*"):
+            out |= {row["old"], row["target"]}
+    return out
+
+
+def slot_prefixes(block: str) -> list[str]:
+    """The non-empty old entry prefixes of a block's mapped (non-exempt) slots."""
+    return [e["prefix"] for e in declared_slots().get(block, []) if e["prefix"] and (block, e["prefix"]) in NEW_PREFIX]
+
+
+def is_candidate(block: str, name: str) -> bool:
+    """True for an attribute that is media-looking on a block with a slot: under a slot prefix, or (declared by the block
+    before adoption) a media word outside typography. `FULLY_CLASSIFIED` blocks answer for every declared attribute."""
+    if name.startswith("_"):
+        return False
+    for p in slot_prefixes(block):
+        if name == p or (name.startswith(p) and name[len(p)].isupper()):
+            # `sgs` is the universal-extension prefix (sgsMotion, sgsHideOnTablet): only its image-control bases are media.
+            return p != "sgs" or re.sub(r"(Tablet|Mobile)$", "", name[len(p):]) in BASE_FAMILY
+    declared = name in block_attribute_names(block)
+    if block in FULLY_CLASSIFIED:
+        return declared
+    return declared and bool(MEDIAISH.search(name)) and not TYPOGRAPHY.search(name)
+
+
+def unmapped_attributes(block: str, names) -> list[str]:
+    """Candidate attributes among `names` that have neither a row nor a STAYS entry."""
+    known = known_names(block)
+    return sorted(n for n in names if n not in known and is_candidate(block, n))
+
+
+def slots_for(block: str, declared: dict | None = None, maps: dict | None = None) -> list[dict]:
     """Slot specs of a block: one per `mediaElements` entry that is neither exempt nor unlisted."""
-    maps = generated_maps()
+    maps = maps or generated_maps()
+    declared = declared if declared is not None else declared_slots()
     out = []
-    for entry in declared_slots().get(block, []):
+    for entry in declared.get(block, []):
         key = (block, entry["prefix"])
         if key in EXEMPT or key not in NEW_PREFIX:
             continue
@@ -371,10 +509,10 @@ def slots_for(block: str) -> list[dict]:
     return out
 
 
-def merged_slots(block: str) -> list[dict]:
+def merged_slots(block: str, declared: dict | None = None, maps: dict | None = None) -> list[dict]:
     """A block's slots with entries sharing a new prefix merged (hero's `split` and `splitMedia`)."""
     merged: dict[str, dict] = {}
-    for slot in slots_for(block):
+    for slot in slots_for(block, declared, maps):
         item = merged.setdefault(slot["new"], {"block": block, "new": slot["new"], "olds": [], "bases": set()})
         item["olds"].append(slot["old"])
         item["bases"] |= set(slot["bases"])
@@ -392,11 +530,17 @@ def new_target(family: str, target: str, new_prefix: str) -> str:
 
 @lru_cache(maxsize=1)
 def rows() -> list[dict]:
-    """Every mapping row {block, old, family, target, new_prefix, base, tier}, generated from the facts above."""
-    tiered = generated_maps()["tiered"]
+    """Every mapping row {block, old, family, target, new_prefix, base, tier}, read from the frozen file."""
+    return frozen()["rows"]
+
+
+def build_rows(declared: dict, maps: dict) -> list[dict]:
+    """The rows generated from a set of declared slots and atom maps (regeneration only)."""
+    tiered = set(maps["tiered"])
+    maps = {"atoms": maps["atoms"], "tiered": tiered, "bases": {b for group in maps["atoms"].values() for b in group}}
     out: list[dict] = []
-    for block in sorted(declared_slots()):
-        for slot in merged_slots(block):
+    for block in sorted(declared):
+        for slot in merged_slots(block, declared, maps):
             for old_prefix in slot["olds"]:
                 for base in slot["bases"]:
                     family, target = BASE_FAMILY.get(base, ("refuse", "no mapping"))
@@ -414,4 +558,27 @@ def rows() -> list[dict]:
             out.append({"block": block, "old": old, "family": family, "target": target, "new_prefix": "background", "base": None, "tier": ""})
     for old, reason in REPORT_ALWAYS.items():
         out.append({"block": "*", "old": old, "family": "report", "target": reason, "new_prefix": None, "base": None, "tier": ""})
+    return out
+
+
+def regenerate() -> dict:
+    """Rebuild `mapping-frozen.json` from the live files; refuses once any block declares `kinds` (§8.3)."""
+    if any_block_adopted():
+        raise SystemExit("regenerate refused: a block already declares `kinds` on a media slot, so the live files no longer "
+                         "describe the old shape. The frozen rows are final.")
+    declared, maps = live_declared_slots(), live_generated_maps()
+    attributes = {}
+    for block in declared:
+        data = json.loads((BLOCKS_DIR / block.split("/")[1] / "block.json").read_text(encoding="utf-8"))
+        attributes[block] = [k for k, v in data.get("attributes", {}).items()
+                             if not k.startswith("_") and not (isinstance(v, dict) and v.get("_generated"))]
+    wanted = set(declared) | set(BACKGROUND_BLOCKS) | {b for b, _ in EXTRA} | {"sgs/team-member", "sgs/decorative-image"}
+    db = {b: a for b, a in live_db_attributes().items() if b in wanted}
+    out = {"atoms": maps["atoms"], "tiered": maps["tiered"], "declared": declared, "attributes": attributes,
+           "dbAttributes": db, "rows": build_rows(declared, maps)}
+    tmp = FROZEN.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(out, indent=1, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    tmp.replace(FROZEN)
+    frozen.cache_clear()
+    rows.cache_clear()
     return out

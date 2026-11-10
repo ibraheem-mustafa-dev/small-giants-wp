@@ -4,8 +4,12 @@
   cli.py survey [--json] [--out FILE] [--repo] [--mirror NAME]... [--content FILE]...
   cli.py fix    [--dry-run | --apply] [--target KIND]... [--file PATH]... [--content FILE]...
   cli.py check  [--active auto|on|off] [--target KIND]... [--content FILE]...
-  cli.py rows   [--json]
+  cli.py rows   [--json | --regenerate]
   cli.py self-test
+
+The mapping rows and the facts they rest on are frozen in `mapping-frozen.json`; every command reads that file, never the
+PHP mirror or the block.json files. `rows --regenerate` rebuilds it from the live files and refuses once a block declares
+`kinds` on a media slot.
 
 `survey` counts old attributes per block and per target. `fix` rewrites block attributes per the mapping rows
 (dry run prints a unified diff; `--apply` writes repo files atomically and refuses saved content). `check` exits 1 while
@@ -214,6 +218,10 @@ def cmd_check(args) -> int:
 
 
 def cmd_rows(args) -> int:
+    if args.regenerate:
+        data = M.regenerate()
+        print(f"regenerated {M.FROZEN.name}: {len(data['rows'])} rows, {len(data['declared'])} blocks", file=sys.stderr)
+        return 0
     rows = M.rows()
     if args.json:
         print(json.dumps(rows, indent=1, ensure_ascii=False))
@@ -246,6 +254,7 @@ def main(argv=None) -> int:
             p.add_argument("--self-test", action="store_true", help="run the self-test first (the gate form)")
     rows_parser = sub.add_parser("rows")
     rows_parser.add_argument("--json", action="store_true")
+    rows_parser.add_argument("--regenerate", action="store_true", help="rebuild the frozen rows from the live files (refused after adoption)")
     sub.add_parser("self-test").add_argument("--break", dest="break_mapping", action="store_true",
                                              help="run against a deliberately broken mapping: must exit 1")
     args = parser.parse_args(argv)
