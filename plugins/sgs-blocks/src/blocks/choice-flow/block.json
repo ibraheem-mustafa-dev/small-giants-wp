@@ -111,6 +111,8 @@
 					}
 				},
 				"summary-photo": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
 					"surface": true,
 					"selector": ".sgs-choice-flow__summary-image",
 					"label": "Summary photo",
@@ -120,6 +122,8 @@
 					"_note": "A motion-only part: the photo's finish transition (the dim, deepen, soften and brighten effects of a lens-style option) reads this part's motion duration, falling back to the site's slow duration."
 				},
 				"summary-total": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
 					"selector": ".sgs-choice-flow__summary-total-value",
 					"label": "Summary total",
 					"layer": "CONTENT",
@@ -128,6 +132,8 @@
 					"_note": "A motion-only part: the total's pop when its value changes reads this part's motion duration, falling back to the site's medium duration."
 				},
 				"summary-pane-total": {
+					"absentIn": ["compact"],
+					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
 					"selector": ".sgs-choice-flow__summary-summary-total-value",
 					"label": "Summary total (narrow screens)",
 					"layer": "CONTENT",
