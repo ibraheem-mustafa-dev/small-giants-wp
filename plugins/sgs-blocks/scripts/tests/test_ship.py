@@ -36,6 +36,27 @@ check("a block.json and a seeder trigger a reseed; css, php and theme files do n
       hits == ["plugins/sgs-blocks/src/blocks/account/block.json", "plugins/sgs-blocks/scripts/seed-composition-roles.py"], hits)
 check("no trigger, no reseed", ship.needs_reseed(["plugins/sgs-blocks/src/blocks/cart/style.css", "README.md"]) == [])
 
+import json, sqlite3, tempfile  # noqa: E401,E402
+tmp = Path(tempfile.mkdtemp())
+(tmp / "blocks" / "alpha").mkdir(parents=True)
+(tmp / "blocks" / "beta").mkdir(parents=True)
+(tmp / "blocks" / "alpha" / "block.json").write_text(json.dumps({"name": "sgs/alpha", "attributes": {"a": {}, "b": {}}}))
+(tmp / "blocks" / "beta" / "block.json").write_text(json.dumps({"name": "sgs/beta", "attributes": {"c": {}}}))
+db = tmp / "f.db"
+con = sqlite3.connect(db)
+con.execute("CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT)")
+con.executemany("INSERT INTO block_attributes VALUES (?, ?)", [("sgs/alpha", "a"), ("sgs/alpha", "b")])
+con.commit()
+con.close()
+missing = ship.missing_from_db(tmp / "blocks", db)
+check("an attribute or a block the shared DB lacks forces a reseed (generated files committed by an unpublished reseed do not count)",
+      missing == ["sgs/beta::c"], missing)
+con = sqlite3.connect(db)
+con.execute("INSERT INTO block_attributes VALUES ('sgs/beta', 'c')")
+con.commit()
+con.close()
+check("a DB that holds every attribute needs no reseed", ship.missing_from_db(tmp / "blocks", db) == [])
+
 names = [n for n, _, _ in ship.plan("eye-care-test", True, "C:/t/x.db", False, True)]
 check("reseeded run order", names == ["begin", "reseed", "seed-reference", "regenerate", "commit-generated", "build-deploy", "publish", "push"], names)
 check("publish comes after the one build-deploy pass", names.index("publish") > names.index("build-deploy"))

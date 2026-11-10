@@ -6,9 +6,10 @@
 Steps, each stopping the run on failure:
   1. Preconditions: tracked files under plugins/ and theme/ are clean, and HEAD is not behind origin/main (rebase first:
      the gate pass is keyed on HEAD's tree, so a rebase after gating would void it).
-  2. Reseed only when it is needed (--reseed auto): a block.json, the composition seeder or the DB seeder changed since
-     the last commit that regenerated the DB's generated files (consistency/attr-role-map.json). The reseed runs on a
-     private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
+  2. Reseed only when it is needed (--reseed auto): the shared framework DB lacks an attribute some block.json declares
+     (read from the DB itself, because generated files can be committed by a private reseed that was never published),
+     or the composition seeder or the DB seeder changed since the last commit that regenerated the DB's generated files
+     (consistency/attr-role-map.json). The reseed runs on a private copy (publish-framework-db.py begin, sgs-update-v2.py --db, seed_reference_data.py, regenerate) and the
      regenerated files are committed.
   3. ONE build-deploy.py pass for the target, with SGS_FRAMEWORK_DB pointing at the copy when reseeded: build, both gate
      tiers, the editor check on the target's own mirror (TARGETS["editor_mirror"] in deploy_common.py) and the deploy.
@@ -60,6 +61,29 @@ def needs_reseed(changed: list[str]) -> list[str]:
         elif any(p.startswith(t) for t in RESEED_TRIGGERS):
             hits.append(p)
     return hits
+
+
+def missing_from_db(blocks_dir: Path, db: Path) -> list[str]:
+    """Every `<block>::<attribute>` a block.json declares that the framework DB does not hold (read-only).
+
+    This is the reseed condition itself: generated files can be committed by a private reseed whose publish never
+    happened (its gate failed), so git history alone cannot say whether the shared DB is current."""
+    import json
+    import sqlite3
+
+    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        have = set(con.execute("SELECT block_slug, attr_name FROM block_attributes"))
+    finally:
+        con.close()
+    missing = []
+    for path in sorted(blocks_dir.glob("*/block.json")):
+        meta = json.loads(path.read_text(encoding="utf-8"))
+        slug = meta.get("name", "")
+        for attr in meta.get("attributes", {}):
+            if (slug, attr) not in have:
+                missing.append(f"{slug}::{attr}")
+    return missing
 
 
 def plan(target: str, reseed: bool, copy: str, takeover: bool, push: bool) -> list[tuple[str, list[str], dict]]:
@@ -116,12 +140,20 @@ def main() -> int:
         print(f"[ship] HEAD is {behind} commit(s) behind origin/main: rebase first, then run ship again.", file=sys.stderr)
         return 2
 
+    # Reseed when the shared DB lacks an attribute some block.json declares, or a seeder changed since the last
+    # generated-files commit (a seeder change alters rows without adding attributes).
+    sys.path.insert(0, str(SCRIPTS / "lib"))
+    from framework_db import framework_db_path  # noqa: PLC0415
+
+    shared = Path(framework_db_path())
+    missing = missing_from_db(REPO_ROOT / "plugins/sgs-blocks/src/blocks", shared) if shared.is_file() else ["(no shared DB found)"]
     marker = git("log", "-1", "--format=%H", "--", RESEED_MARKER)
     changed = git("diff", "--name-only", f"{marker}..HEAD").splitlines() if marker else []
-    hits = needs_reseed(changed)
+    seeders = [p for p in needs_reseed(changed) if not p.endswith("/block.json")]
+    hits = missing + seeders
     reseed = {"yes": True, "no": False}.get(args.reseed, bool(hits))
-    print(f"[ship] last reseed commit {marker[:9] or 'none'}; reseed: {'yes' if reseed else 'no'}"
-          + (f" ({len(hits)} trigger(s): {', '.join(hits[:4])}{' ...' if len(hits) > 4 else ''})" if hits else ""))
+    print(f"[ship] shared DB {shared}; reseed: {'yes' if reseed else 'no'}"
+          + (f" ({len(hits)} reason(s): {', '.join(hits[:4])}{' ...' if len(hits) > 4 else ''})" if hits else ""))
 
     copy = str(Path(tempfile.gettempdir()) / f"ship-{os.getpid()}.db")
     steps = plan(args.target, reseed, copy, args.takeover, not args.no_push)
