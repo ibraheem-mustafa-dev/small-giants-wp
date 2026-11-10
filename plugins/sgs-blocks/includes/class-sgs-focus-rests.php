@@ -37,7 +37,7 @@ final class Sgs_Focus_Rests {
 	/**
 	 * Open render frames, outermost first: each is whether that block has the setting on.
 	 *
-	 * @var bool[]
+	 * @var array<int,array{name:string,on:bool}>
 	 */
 	private static $stack = array();
 
@@ -82,23 +82,34 @@ final class Sgs_Focus_Rests {
 	 * @return mixed The parsed block, unchanged.
 	 */
 	public static function open_frame( $parsed_block ) {
-		self::$stack[]                       = self::block_has_setting( $parsed_block );
-		$GLOBALS['sgs_focus_rests_active'] = self::$stack[ count( self::$stack ) - 1 ];
+		$name                                = is_array( $parsed_block ) && is_string( $parsed_block['blockName'] ?? null ) ? $parsed_block['blockName'] : '';
+		self::$stack[]                       = array(
+			'name' => $name,
+			'on'   => self::block_has_setting( $parsed_block ),
+		);
+		$GLOBALS['sgs_focus_rests_active'] = self::$stack[ count( self::$stack ) - 1 ]['on'];
 		return $parsed_block;
 	}
 
 	/**
 	 * Close the frame after the block rendered (render_block, last): pop it, restore the parent's flag, and put the
-	 * root class on a block that had the setting on.
+	 * root class on a block that had the setting on. Only the block that opened the top frame closes it:
+	 * `render_block` also fires for blocks that never went through `render_block_data` (WooCommerce's product template
+	 * announces a synthetic `core/null` block once per product), and such a block must not pop a frame that is not its own.
 	 *
 	 * @param mixed $block_content Rendered HTML.
 	 * @param mixed $block         Parsed block.
 	 * @return mixed
 	 */
 	public static function close_frame( $block_content, $block = null ) {
-		$had                                 = (bool) array_pop( self::$stack );
-		$GLOBALS['sgs_focus_rests_active'] = array() !== self::$stack && (bool) self::$stack[ count( self::$stack ) - 1 ];
-		unset( $block );
+		$name = is_array( $block ) && is_string( $block['blockName'] ?? null ) ? $block['blockName'] : '';
+		$last = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
+		if ( null === $last || $last['name'] !== $name ) {
+			return $block_content;
+		}
+		array_pop( self::$stack );
+		$had                                 = $last['on'];
+		$GLOBALS['sgs_focus_rests_active'] = array() !== self::$stack && self::$stack[ count( self::$stack ) - 1 ]['on'];
 		if ( ! $had || ! is_string( $block_content ) || '' === $block_content ) {
 			return $block_content;
 		}

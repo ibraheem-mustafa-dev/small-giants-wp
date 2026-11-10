@@ -534,12 +534,11 @@ $error = null;
 // on render_block_data, so `sgsFocusRests` reaches sgs_hover_state_rules() exactly as on a live page.
 require_once $sgs_blocks_dir . '/includes/class-sgs-focus-rests.php';
 \SGS\Blocks\Sgs_Focus_Rests::reset();
-\SGS\Blocks\Sgs_Focus_Rests::open_frame(
-	array(
-		'blockName' => $harness_slug,
-		'attrs'     => is_array( $attributes ?? null ) ? $attributes : array(),
-	)
+$harness_block = array(
+	'blockName' => $harness_slug,
+	'attrs'     => is_array( $attributes ?? null ) ? $attributes : array(),
 );
+\SGS\Blocks\Sgs_Focus_Rests::open_frame( $harness_block );
 ob_start();
 try {
 	// $attributes / $content / $block are the three variables every SGS
@@ -550,7 +549,7 @@ try {
 	$error = $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine();
 }
 $html = ob_get_clean();
-$html = (string) \SGS\Blocks\Sgs_Focus_Rests::close_frame( $html );
+$html = (string) \SGS\Blocks\Sgs_Focus_Rests::close_frame( $html, $harness_block );
 
 if ( null !== $error ) {
 	harness_fail( $error );

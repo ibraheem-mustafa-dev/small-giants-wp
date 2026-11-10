@@ -55,10 +55,16 @@ Sgs_Focus_Rests::open_frame( array( 'blockName' => 'sgs/icon', 'attrs' => array(
 $check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2. a nested block without the setting gets both rules again' );
 Sgs_Focus_Rests::open_frame( array( 'blockName' => 'core/group', 'attrs' => array( 'sgsFocusRests' => true ) ) );
 $check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2. a core block never takes the flag' );
-Sgs_Focus_Rests::close_frame( '<div></div>' );
-Sgs_Focus_Rests::close_frame( '<div></div>' );
+// WooCommerce's product template announces a synthetic `core/null` block once per product with no `render_block_data`
+// before it: such a stray close must not pop a frame that is not its own.
+Sgs_Focus_Rests::close_frame( '<div></div>', array( 'blockName' => 'core/null', 'attrs' => array() ) );
+$check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2. a stray core/null close leaves the open frames alone' );
+Sgs_Focus_Rests::close_frame( '<div></div>', array( 'blockName' => 'core/group', 'attrs' => array() ) );
+Sgs_Focus_Rests::close_frame( '<div></div>', array( 'blockName' => 'sgs/icon', 'attrs' => array() ) );
 $check( $guard === sgs_hover_state_rules( '.x', 'color:red' ), '2. the parent\'s flag returns after the child closes' );
-$closed = Sgs_Focus_Rests::close_frame( '<a class="a">x</a>' );
+Sgs_Focus_Rests::close_frame( '<div></div>', array( 'blockName' => 'core/null', 'attrs' => array() ) );
+$check( $guard === sgs_hover_state_rules( '.x', 'color:red' ), '2. a stray core/null close does not clear the outer flag' );
+$closed = Sgs_Focus_Rests::close_frame( '<a class="a">x</a>', array( 'blockName' => 'sgs/button', 'attrs' => array( 'sgsFocusRests' => true ) ) );
 $check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2. the flag is off once the outermost block closes' );
 $check( $has( (string) $closed, 'sgs-focus-rests' ), '2. a closing block with the setting wears sgs-focus-rests: ' . $closed );
 
