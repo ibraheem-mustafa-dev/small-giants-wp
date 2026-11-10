@@ -1616,6 +1616,7 @@
 	}
 
 	.sgs-choice-flow--layout-showcase.sgs-choice-flow--fit-screen:not(.sgs-choice-flow--fit-guarded) .sgs-choice-flow__inner > .sgs-form-step:not([hidden]):has(.sgs-choice-flow-question__option-media) {
+		display: grid;
 		flex: 1 1 auto;
 		min-height: 0;
 		grid-template-rows: minmax(0, 1fr);
