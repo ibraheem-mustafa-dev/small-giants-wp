@@ -1541,15 +1541,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "labelGap",
-      "fields": {
-        "css_property": "margin-bottom",
-        "css_layer": "OUTER",
-        "css_element": "fieldLabel"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "labelLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -1582,14 +1573,6 @@
         "css_property": "text-transform",
         "css_layer": "OUTER",
         "css_element": "wc"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "loginButtonPreset",
-      "fields": {
-        "css_property": "background-color,border-color,border-radius,color,font-weight,letter-spacing,text-transform",
-        "css_state": "hover"
       }
     },
     {
@@ -1970,6 +1953,13 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "progress-step"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "registerButtonPreset",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,color,font-weight,letter-spacing,rotate,scale,text-transform,transform"
       }
     },
     {
@@ -20503,6 +20493,37 @@
     },
     {
       "slug": "sgs/modal",
+      "attr": "openDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "dialog"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "openEasing",
+      "fields": {
+        "css_property": "transition-timing-function",
+        "css_element": "dialog"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "openEasingCustom",
+      "fields": {
+        "css_property": "transition-timing-function"
+      }
+    },
+    {
+      "slug": "sgs/modal",
+      "attr": "openStartScale",
+      "fields": {
+        "css_property": "transform",
+        "css_element": "dialog"
+      }
+    },
+    {
+      "slug": "sgs/modal",
       "attr": "triggerBackground",
       "fields": {
         "css_property": "background-color",
@@ -31649,14 +31670,6 @@
     },
     {
       "slug": "sgs/testimonial",
-      "attr": "summaryFontSize",
-      "fields": {
-        "css_property": "font-size",
-        "css_element": "summary"
-      }
-    },
-    {
-      "slug": "sgs/testimonial",
       "attr": "transitionDuration",
       "fields": {
         "css_property": "transition,transition-duration"
@@ -35428,6 +35441,15 @@
       "fields": {
         "css_property": "color",
         "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "fieldLabel"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "labelGap",
+      "fields": {
+        "css_property": "margin-bottom",
         "css_layer": "OUTER",
         "css_element": "fieldLabel"
       }
@@ -43094,6 +43116,14 @@
     },
     {
       "slug": "sgs/modal",
+      "attr": "scrimFadeDuration",
+      "fields": {
+        "css_property": "transition-duration",
+        "css_element": "backdrop"
+      }
+    },
+    {
+      "slug": "sgs/modal",
       "attr": "scrimOpacity",
       "fields": {
         "css_property": "opacity",
@@ -48608,6 +48638,14 @@
         "role": "color",
         "css_element": "summary",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "summaryFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "summary"
       }
     },
     {

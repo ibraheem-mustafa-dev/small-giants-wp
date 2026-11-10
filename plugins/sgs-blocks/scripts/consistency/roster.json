@@ -520,7 +520,7 @@
         "animation": false
       },
       "qualifies": {
-        "paintDeclarations": 69,
+        "paintDeclarations": 68,
         "replacedCoreSupports": [
           "anchor",
           "color",
