@@ -442,6 +442,38 @@ class MediaElementRenderTest extends TestCase {
 		$this->assertStringNotContainsString( 'fetchpriority="high"', $second['html'], 'one lead per page' );
 	}
 
+	public function test_photo_desktop_video_mobile_slot_prints_one_high_fetchpriority(): void {
+		$armed = new ReflectionProperty( \SGS\Blocks\Motion\Sgs_Motion_Renderer::class, 'armed' );
+		$armed->setValue( null, true );
+		SGS_Media_Priority::reset();
+		$attrs = array(
+			'source'  => array(
+				'desktop' => array(
+					'kind'   => 'image',
+					'url'    => '/u/a.jpg',
+					'width'  => 1200,
+					'height' => 800,
+				),
+				'mobile'  => array(
+					'kind'   => 'video',
+					'url'    => '/u/v.mp4',
+					'poster' => array(
+						'url'    => '/u/c.jpg',
+						'width'  => 600,
+						'height' => 400,
+					),
+				),
+			),
+			'alt'     => 'Photo',
+			'loading' => 'first',
+		);
+		$slot   = array( 'prefix' => '', 'kinds' => array( 'image', 'video' ) );
+		$result = SGS_Media_Element::render( $slot, $attrs, array( 'uid' => 'u1' ) );
+		$armed->setValue( null, false );
+		$this->assertStringContainsString( 'sgs-media-cover', $result['html'] );
+		$this->assertSame( 1, substr_count( $result['html'], 'fetchpriority="high"' ), 'one fetchpriority=high per slot' );
+	}
+
 	public function test_atom_emitters_are_collected_when_they_exist(): void {
 		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- test double for an atom emitter.
 		function sgs_media_atom_zz_probe_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
