@@ -180,6 +180,7 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-strings.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-mobile-field.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-payment-loading.php';
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-delivery-cards.php';
 
 		// Product Collection "Minimum card width" -- `woocommerce/product-collection`
 		// only. Adds the per-device `sgsCardMinWidth` length as an auto-fill grid rule.

@@ -171,7 +171,7 @@
 			}
 		},
 		"option": {
-			"checkout": "label.wc-block-components-radio-control__option",
+			"checkout": "label.wc-block-components-radio-control__option, .wc-block-checkout__shipping-method-option",
 			"wc_version": "11.2.1",
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {
@@ -179,7 +179,7 @@
 			}
 		},
 		"option_chosen": {
-			"checkout": "label.wc-block-components-radio-control__option-checked.wc-block-components-radio-control__option--checked-option-highlighted",
+			"checkout": "label.wc-block-components-radio-control__option-checked.wc-block-components-radio-control__option--checked-option-highlighted, .wc-block-checkout__shipping-method-option--selected",
 			"wc_version": "11.2.1",
 			"state": "basket filled; a shipping zone with a rate; any width",
 			"needs": {

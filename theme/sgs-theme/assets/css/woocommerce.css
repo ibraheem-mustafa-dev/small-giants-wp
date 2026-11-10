@@ -3493,3 +3493,80 @@ body.sgs-shop-active-bar .sgs-shop-filters .wp-block-woocommerce-product-filter-
 	font-size: var(--wp--preset--font-size--regular);
 	color: var(--wp--preset--color--text-muted);
 }
+
+/* Checkout delivery cards: WooCommerce's Ship / Collect toggle laid out as two cards (title, price, description). The
+   card edge, fill and chosen state come from the Checkout block's option-card settings. */
+.wc-block-checkout__shipping-method .wc-block-checkout__shipping-method-container.components-button-group {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+	gap: 8px;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+}
+
+.wc-block-checkout__shipping-method-container .wc-block-checkout__shipping-method-option {
+	display: flex;
+	border-width: 1px;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	height: auto;
+	min-height: 0;
+	margin: 0;
+	text-align: left;
+	cursor: pointer;
+	box-shadow: none;
+	transition: border-color 0.2s;
+}
+
+.wc-block-checkout__shipping-method-option:hover {
+	border-color: var(--wp--preset--color--text);
+}
+
+.wc-block-checkout__shipping-method-option:focus-visible {
+	outline: 2px solid var(--wp--preset--color--text);
+	outline-offset: -2px;
+}
+
+.wc-block-checkout__shipping-method-option .wc-block-checkout__shipping-method-option-icon {
+	display: none;
+}
+
+.wc-block-checkout__shipping-method-option-title-wrapper {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+}
+
+.wc-block-checkout__shipping-method-option-title {
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.sgs-delivery-card__price {
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--wp--preset--color--accent-text);
+}
+
+.sgs-delivery-card__description {
+	display: block;
+	margin-top: 4px;
+	font-size: 13.5px;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.sgs-delivery-address {
+	margin: 12px 0 0;
+	font-size: 13.5px;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.sgs-delivery-step--folded {
+	display: none;
+}
