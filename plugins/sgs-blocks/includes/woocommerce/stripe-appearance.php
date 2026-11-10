@@ -16,6 +16,8 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__ ) . '/helpers-global-settings.php';
+
 add_filter( 'render_block_data', __NAMESPACE__ . '\sgs_stripe_appearance_record' );
 add_filter( 'wc_stripe_params', __NAMESPACE__ . '\sgs_stripe_appearance_params' );
 
@@ -196,7 +198,7 @@ function sgs_stripe_appearance_from_attrs( array $attrs ): array {
 	}
 
 	$rules = array( '.Input' => $input );
-	$ring  = sgs_stripe_resolve_colour( function_exists( 'wp_get_global_settings' ) ? ( wp_get_global_settings( array( 'custom', 'focus' ) )['ring'] ?? '' ) : '' );
+	$ring  = sgs_stripe_resolve_colour( (string) ( ( (array) ( sgs_global_custom_setting( 'focus' ) ?? array() ) )['ring'] ?? '' ) );
 	if ( '' !== $ring ) {
 		$rules['.Input:focus'] = array(
 			'outline'       => '2px solid ' . $ring,

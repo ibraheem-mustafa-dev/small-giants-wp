@@ -94,6 +94,7 @@ ROLE_EXCEPTIONS = {
     'extension/sgsSortBorderRadius': ('spacing', 'extension attribute: the sort select corner radius'),
     'extension/sgsFieldMinHeight': ('spacing', 'extension attribute: the minimum height of a Cart or Checkout form field'),
     'extension/sgsItemGap': ('spacing', 'extension attribute: the space between Cart line-item cards'),
+    'extension/sgsOptionGap': ('spacing', 'extension attribute: the space below each Checkout payment option'),
     'extension/sgsItemThumbSize': ('spacing', 'extension attribute: the width of a line-item picture'),
     'extension/sgsItemStepperRadius': ('spacing', 'extension attribute: the corner radius of the quantity stepper'),
     'extension/sgsSidebarWidth': ('spacing', 'extension attribute: the width of the Cart or Checkout summary column per device'),
