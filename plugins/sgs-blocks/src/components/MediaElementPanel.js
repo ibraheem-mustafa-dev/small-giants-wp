@@ -50,6 +50,7 @@ import { Suspense, lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import { MEDIA_ATOMS, atomsForElement } from './media/atoms/registry.js';
+import { ADOPTED_ATOM_IDS } from './media/emit/adopted-settings.js';
 
 // The adopted panels load on first use as one shared chunk, so the 30-odd block bundles that import this
 // component do not each carry a copy (about 80 KB apiece).
@@ -165,7 +166,7 @@ export default function MediaElementPanel( {
 					setAttributes={ setAttributes }
 					prefix={ prefix }
 					blockSlug={ blockSlug }
-					atomIds={ ids }
+					atomIds={ Array.isArray( atoms ) && atoms.length ? atoms : ADOPTED_ATOM_IDS }
 					kinds={ slotKinds }
 					context={ context }
 					parallax={ parallax }

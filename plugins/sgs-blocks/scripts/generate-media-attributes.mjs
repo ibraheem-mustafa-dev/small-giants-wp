@@ -179,9 +179,9 @@ const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' 
  */
 function planBlock( text, handWritten ) {
 	const block = JSON.parse( text );
-	const own = Object.entries( block.attributes || {} )
-		.filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
-		.map( ( [ name ] ) => name );
+	const own = Object.fromEntries(
+		Object.entries( block.attributes || {} ).filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
+	);
 	const attrs = generatedAttributes( block, ENV, own );
 	const next = applyGeneratedAttributes( text, attrs );
 	JSON.parse( next ); // refuse to hand back a file that no longer parses
@@ -327,6 +327,19 @@ function selfTest() {
 		tampered !== done.next && planBlock( tampered, new Set() ).next !== tampered
 	);
 	ck( 'drift check: reverting the edit makes it match again', planBlock( done.next, new Set() ).next === done.next );
+	// A block that already declares an attribute the generator would write, with another type, fails naming it.
+	const clash = JSON.parse( fixText );
+	clash.attributes.overlayOpacity = { type: 'number' };
+	let clashMessage = '';
+	try {
+		generatedAttributes( clash, ENV, clash.attributes );
+	} catch ( e ) {
+		clashMessage = e.message;
+	}
+	ck( 'type clash: an own `overlayOpacity` of type number against the object setting fails naming the attribute', clashMessage.includes( '"overlayOpacity"' ) && clashMessage.includes( 'object' ) );
+	const agree = JSON.parse( fixText );
+	agree.attributes.overlayOpacity = { type: 'object' };
+	ck( 'type clash: an own `overlayOpacity` of type object is kept without error', ( () => { try { return ! generatedAttributes( agree, ENV, agree.attributes ).some( ( a ) => 'overlayOpacity' === a.name ); } catch ( e ) { return false; } } )() );
 	const unadopted = fixText.replace( '"kinds": [ "image" ], ', '' );
 	const none = planBlock( unadopted, new Set() );
 	ck(
