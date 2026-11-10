@@ -63,8 +63,9 @@ export function effectTriggers( effect, layerDef = EFFECT_LAYER_DEF ) {
  * @param {Object|null} [elements] The block's `supports.sgs.elements` (a part marked `"surface": true` takes
  *                                 surface-level effects; one marked `"text": true` or `"svg": true` takes that kind's effects).
  * @param {Object|null} [kindsByDevice] For a part that declares `availableWhen`: the media kind shown on each device
- *                                 (`{ desktop, tablet, mobile }`). The effects then filter by the kind on each device
- *                                 (`kind-fit.js`, Spec 49 ง10.1) in place of the part's static `svg` and `text` flags.
+ *                                 (`{ desktop, tablet, mobile }`, or the devices to judge by). The effects then filter by
+ *                                 the kind on each device (`kind-fit.js`, Spec 49 ยง10.1) in place of the part's static
+ *                                 `svg` and `text` flags.
  * @return {string[]} The slugs.
  */
 export function effectOptions( blockName, target, elements = null, kindsByDevice = null ) {
