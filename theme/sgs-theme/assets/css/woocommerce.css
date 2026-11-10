@@ -296,6 +296,12 @@ h2.wc-block-mini-cart__title {
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* WooCommerce's own block stylesheet recolours a focused field's border to the text colour; the focus system draws the
+   indicator, so the border stays at its resting colour (the field's own edge colour when set). */
+body .wc-block-components-form .wc-block-components-text-input input[type]:focus-within {
+	border-color: var(--sgs-field-edge-colour, var(--wp--preset--color--border, currentColor));
+}
+
 /* Checkout step headings */
 .wc-block-components-checkout-step__heading {
 	font-family: var(--wp--preset--font-family--heading, inherit);

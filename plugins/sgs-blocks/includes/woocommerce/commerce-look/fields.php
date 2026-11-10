@@ -98,10 +98,11 @@ function sgs_commerce_look_fields_css( array $attrs, string $block, string $root
 	$css .= (string) sgs_typography_css_rule( $attrs, 'sgsField', $controls );
 
 	// The resting edge colour: the form's helper keeps it as a custom property for the form's own stylesheet, which
-	// WooCommerce's inputs do not read, so it is painted here.
+	// WooCommerce's inputs do not read, so it is painted here and kept in the same property for the focus state
+	// (theme woocommerce.css holds the border at it).
 	$edge = sgs_colour_value( (string) ( $attrs['sgsFieldBorderColour'] ?? '' ) );
 	if ( '' !== $edge ) {
-		$css .= $controls . '{border-color:' . $edge . ';}';
+		$css .= $controls . '{--sgs-field-edge-colour:' . $edge . ';border-color:' . $edge . ';}';
 	}
 
 	$css .= sgs_commerce_look_label_position_css( $attrs, $block, $root );
