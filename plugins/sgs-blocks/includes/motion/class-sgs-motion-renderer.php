@@ -125,6 +125,7 @@ final class Sgs_Motion_Renderer {
 	 */
 	public static function register(): void {
 		add_filter( 'the_content', array( self::class, 'arm_first_section' ), 8 );
+		add_filter( 'template_include', array( self::class, 'arm_from_template' ), 30 );
 		add_filter( 'render_block_data', array( self::class, 'open_frame' ), 10, 3 );
 		add_filter( 'render_block', array( self::class, 'render' ), 20, 2 );
 		add_filter( 'render_block', array( self::class, 'close_frame' ), PHP_INT_MAX, 2 );
@@ -242,17 +243,49 @@ final class Sgs_Motion_Renderer {
 	public static function arm_first_section( $content ) {
 		$in_loop = function_exists( 'in_the_loop' ) && in_the_loop();
 		if ( ! self::$content_seen && ( array() !== self::$stack || $in_loop ) ) {
-			self::$content_seen = true;
-			self::$armed        = true;
-			self::$tree         = is_string( $content ) && '' !== $content && function_exists( 'parse_blocks' ) ? parse_blocks( $content ) : array();
-			if ( array() === Sgs_Motion_Fold::section_indexes( self::$tree ) ) {
+			$tree = is_string( $content ) && '' !== $content && function_exists( 'parse_blocks' ) ? parse_blocks( $content ) : array();
+			if ( array() === Sgs_Motion_Fold::section_indexes( $tree ) ) {
 				// Markup the parser did not return: a stand-in tree of blank sections keeps the count by order.
-				self::$tree = array_fill( 0, Sgs_Motion_Fold::FOLD_SECTIONS + 1, array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() ) );
+				$tree = array_fill( 0, Sgs_Motion_Fold::FOLD_SECTIONS + 1, array( 'blockName' => 'sgs/section', 'attrs' => array(), 'innerBlocks' => array() ) );
 			}
-			self::$lone_main = Sgs_Motion_Fold::is_lone_main( self::$tree );
-			self::$fold_sections = self::measured_sections();
+			self::arm( $tree );
 		}
 		return $content;
+	}
+
+	/**
+	 * Arm the above-the-fold rule from the block template when the page's main content comes from it: a template with no
+	 * `core/post-content` block (the shop and other archives, search, a product page) never runs `the_content` for its
+	 * sections, so its own blocks are the tree. Template parts stay out of the count (`Sgs_Motion_Fold`). A template that
+	 * prints the post content is left to `arm_first_section`.
+	 *
+	 * @param mixed $template The template path (`template_include`), returned unchanged.
+	 * @return mixed
+	 */
+	public static function arm_from_template( $template ) {
+		$content = $GLOBALS['_wp_current_template_content'] ?? '';
+		if ( self::$content_seen || ! is_string( $content ) || '' === $content || false !== strpos( $content, 'wp:post-content' ) || ! function_exists( 'parse_blocks' ) ) {
+			return $template;
+		}
+		$tree = parse_blocks( $content );
+		if ( array() !== Sgs_Motion_Fold::section_indexes( $tree ) ) {
+			self::arm( $tree );
+		}
+		return $template;
+	}
+
+	/**
+	 * Start counting sections over a parsed tree.
+	 *
+	 * @param array<int,mixed> $tree Parsed blocks of the main content.
+	 * @return void
+	 */
+	private static function arm( array $tree ): void {
+		self::$content_seen  = true;
+		self::$armed         = true;
+		self::$tree          = $tree;
+		self::$lone_main     = Sgs_Motion_Fold::is_lone_main( $tree );
+		self::$fold_sections = self::measured_sections();
 	}
 
 	/**

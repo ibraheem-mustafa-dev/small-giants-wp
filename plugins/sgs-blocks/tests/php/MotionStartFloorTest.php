@@ -179,6 +179,59 @@ final class MotionStartFloorTest extends TestCase {
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
 	}
 
+	/** A block template whose main content is a lone `main` wrapper of three sections, a header part before it and a footer part after. */
+	private function template_tree( bool $with_post_content = false ): void {
+		$section = array( 'blockName' => 'sgs/container', 'attrs' => array(), 'innerBlocks' => array() );
+		$main    = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => array( $section, $section, $section ) );
+		$part    = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		if ( ! function_exists( 'parse_blocks' ) ) {
+			function parse_blocks( $content ) {
+				return $GLOBALS['sgs_test_top_blocks'] ?? array();
+			}
+		}
+		$GLOBALS['sgs_test_top_blocks']          = array( $part, $main, $part );
+		$GLOBALS['_wp_current_template_content'] = $with_post_content ? '<!-- wp:post-content /-->' : '<!-- wp:sgs/container {"tagName":"main"} -->';
+		$GLOBALS['sgs_test_in_loop']             = false;
+	}
+
+	/** Render the template's blocks in order and return the start opacity each of the main's three children printed. */
+	private function render_template_children(): array {
+		$part = array( 'blockName' => 'core/template-part', 'attrs' => array() );
+		sgs_test_render_motion_block( $part, '<header></header>' );
+		$main = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ) );
+		Sgs_Motion_Renderer::open_frame( $main, $main, null );
+		$parent = (object) array( 'name' => 'sgs/container' );
+		$out    = array();
+		for ( $i = 0; $i < 3; $i++ ) {
+			$GLOBALS['sgs_collected_css'] = array();
+			$block = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => self::entrance( array( 'opacity' => 0 ) ) ) );
+			sgs_test_render_motion_block( $block, '<div class="wp-block-sgs-hero"><p>Card</p></div>', $parent );
+			$out[] = preg_match( '/--sgs-me-from-op:([0-9.]+);/', $this->css(), $m ) ? $m[1] : null;
+		}
+		Sgs_Motion_Renderer::close_frame( '', $main );
+		return $out;
+	}
+
+	public function test_happy_a_template_rendered_page_with_empty_post_content_takes_its_sections_from_the_template(): void {
+		$this->template_tree();
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+		$this->assertSame( array( '0.01', '0.01', '0' ), $this->render_template_children(), 'the first two sections of the template main are above the fold, the third is not' );
+	}
+
+	public function test_edge_a_template_with_a_post_content_block_is_left_to_the_content_filter(): void {
+		$this->template_tree( true );
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+		$this->assertSame( array( '0', '0', '0' ), $this->render_template_children(), 'the post content arms it, not the template' );
+	}
+
+	public function test_edge_the_template_arms_once_and_returns_the_template_path_unchanged(): void {
+		$this->template_tree();
+		$this->assertSame( '/theme/index.php', Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' ) );
+		$GLOBALS['sgs_test_top_blocks'] = array();
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+		$this->assertSame( array( '0.01', '0.01', '0' ), $this->render_template_children(), 'a second call does not re-arm' );
+	}
+
 	public function test_fail_an_unarmed_page_is_never_above_the_fold(): void {
 		$this->render( self::entrance( array( 'opacity' => 0 ) ) );
 		$this->assertStringContainsString( '--sgs-me-from-op:0;', $this->css() );
