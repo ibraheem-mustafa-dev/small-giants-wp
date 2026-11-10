@@ -61,6 +61,23 @@ final class ChoiceFlowSpeedPartsTest extends TestCase {
 		}
 	}
 
+	public function test_a_duration_only_part_gets_no_entrance_marker(): void {
+		$html = $this->render_speeds( self::SPEEDS );
+		$this->assertStringNotContainsString( 'data-sgs-me', $html, 'a duration-only part must not take the shared entrance animation rule' );
+		$this->assertStringContainsString( '--sgs-me-dur:600ms', $this->css(), 'the duration still prints' );
+	}
+
+	public function test_a_part_with_a_real_entrance_keeps_its_marker(): void {
+		$html = sgs_test_render_motion_block(
+			array(
+				'blockName' => 'sgs/choice-flow',
+				'attrs'     => array( 'sgsMotion' => array( 'v' => 1, 'elements' => array( 'summary-photo' => array( 'entrance' => array( 'base' => array( 'trigger' => 'load', 'values' => array( 'from' => array( 'opacity' => 0 ), 'duration' => 600 ) ) ) ) ) ) ),
+			),
+			self::HTML
+		);
+		$this->assertStringContainsString( 'data-sgs-me="load opacity"', $html );
+	}
+
 	public function test_an_unset_part_prints_no_duration(): void {
 		$this->render_speeds( array( 'progress-fill' => 500 ) );
 		$css = $this->css();

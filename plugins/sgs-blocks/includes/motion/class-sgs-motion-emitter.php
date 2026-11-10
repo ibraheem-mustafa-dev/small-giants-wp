@@ -652,6 +652,12 @@ final class Sgs_Motion_Emitter {
 				$channels[ $map[ $prop ] ] = true;
 			}
 		}
+		if ( array() === $channels && null === $keyframes && in_array( $trigger, array( 'load', 'scroll' ), true ) ) {
+			// A timing-only entrance (a duration, delay or easing and no values) plays nothing: its custom properties
+			// print for the part's own built-in animation to read, and the shared entrance rule never attaches, so it
+			// cannot override that animation with a list of `none`.
+			return false;
+		}
 		$attrs['data-sgs-me'] = trim( $trigger . ' ' . implode( ' ', self::ordered_channels( $channels ) ) );
 		return true;
 	}
