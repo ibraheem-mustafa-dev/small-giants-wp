@@ -18,7 +18,7 @@ $GLOBALS['i18n_done'] = false;
 
 function add_filter( $tag, $cb, $prio = 10, $args = 1 ) { $GLOBALS['filters'][ $tag ][] = $cb; }
 function add_action( $tag, $cb, $prio = 10, $args = 1 ) { add_filter( $tag, $cb ); }
-function remove_filter( $tag, $cb, $prio = 10 ) { unset( $GLOBALS['filters'][ $tag ] ); }
+function remove_filter( $tag, $cb, $prio = 10 ) { $GLOBALS['filters'][ $tag ] = array_values( array_filter( $GLOBALS['filters'][ $tag ] ?? array(), static function ( $f ) use ( $cb ) { return $f !== $cb; } ) ); if ( array() === $GLOBALS['filters'][ $tag ] ) { unset( $GLOBALS['filters'][ $tag ] ); } }
 function __( $t, $d = null ) { return $t; }
 function esc_html( $t ) { return htmlspecialchars( (string) $t, ENT_QUOTES ); }
 function esc_url_raw( $t ) { return (string) $t; }
@@ -141,13 +141,17 @@ if ( function_exists( 'SGS\Blocks\sgs_checkout_strings_inject' ) ) {
 	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'emailLabel' => 'Email', 'cityLabel' => 'Town or city', 'newPasswordLabel' => 'Choose a password' ) ) ) );
 	$words = (string) ( $GLOBALS['inline'][0][1] ?? '' );
 	ok( false === strpos( $words, '"Email address"' ) && false === strpos( $words, '"City"' ) && false !== strpos( $words, '"Create a password":"Choose a password"' ), 'the client-side filter carries the password label only: the email and city labels are server data it cannot reach' );
-	$settings = SGS\Blocks\sgs_checkout_shared_settings( array( 'defaultFields' => array( 'email' => array( 'label' => 'Email address', 'required' => true ), 'city' => array( 'label' => 'City' ), 'country' => array( 'label' => 'Country/Region' ) ) ) );
-	ok( 'Email' === $settings['defaultFields']['email']['label'] && 'Town or city' === $settings['defaultFields']['city']['label'] && true === $settings['defaultFields']['email']['required'] && 'Country/Region' === $settings['defaultFields']['country']['label'], 'emailLabel and cityLabel rewrite the defaultFields labels WooCommerce hands the Checkout block, nothing else' );
-	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
-	$settings = SGS\Blocks\sgs_checkout_shared_settings( array( 'defaultFields' => array( 'email' => array( 'label' => 'Email address' ), 'city' => array( 'label' => 'City' ) ) ) );
-	ok( 'Email address' === $settings['defaultFields']['email']['label'] && 'City' === $settings['defaultFields']['city']['label'], 'a Checkout block with no field labels set leaves the defaultFields untouched' );
-	ok( isset( $GLOBALS['filters']['woocommerce_shared_settings'] ), 'the defaultFields rewrite is hooked on woocommerce_shared_settings' );
-	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'emailLabel' => 'Email', 'cityLabel' => 'Town or city' ) ) ) );
+	$arm = array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsCheckoutStrings' => array( 'emailLabel' => 'Email', 'cityLabel' => 'Town or city' ) ) );
+	ok( isset( $GLOBALS['filters']['render_block_data'] ) && isset( $GLOBALS['filters']['gettext'] ) && ! isset( $GLOBALS['filters']['woocommerce_shared_settings'] ), 'the field labels use render_block_data and gettext, never the deprecated woocommerce_shared_settings' );
+	ok( 'Email address' === SGS\Blocks\sgs_checkout_field_gettext( 'Email address', 'Email address', 'woocommerce' ), 'before a Checkout block renders the gettext filter changes nothing' );
+	SGS\Blocks\sgs_checkout_arm_field_labels( $arm );
+	ok( 'Email' === SGS\Blocks\sgs_checkout_field_gettext( 'Email address', 'Email address', 'woocommerce' ) && 'Town or city' === SGS\Blocks\sgs_checkout_field_gettext( 'City', 'City', 'woocommerce' ) && 'Country/Region' === SGS\Blocks\sgs_checkout_field_gettext( 'Country/Region', 'Country/Region', 'woocommerce' ) && 'City' === SGS\Blocks\sgs_checkout_field_gettext( 'City', 'City', 'other-domain' ), 'while a Checkout block renders, Email address and City take the client wording in the woocommerce domain only' );
+	SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', $arm );
+	ok( 'City' === SGS\Blocks\sgs_checkout_field_gettext( 'City', 'City', 'woocommerce' ), 'after the block has rendered the labels are back to WooCommerce own, so the account page is untouched' );
+	SGS\Blocks\sgs_checkout_arm_field_labels( array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
+	ok( 'City' === SGS\Blocks\sgs_checkout_field_gettext( 'City', 'City', 'woocommerce' ), 'a Checkout block with no field labels set changes nothing' );
+	SGS\Blocks\sgs_checkout_arm_field_labels( array( 'blockName' => 'woocommerce/cart', 'attrs' => $arm['attrs'] ) );
+	ok( 'City' === SGS\Blocks\sgs_checkout_field_gettext( 'City', 'City', 'woocommerce' ), 'only the Checkout block arms the labels' );
 	$GLOBALS['inline'] = array();
 	$GLOBALS['inline'] = array( array( 'wp-i18n', $js ) );
 	ok( false !== strpos( $js, 'i18n.gettext_woocommerce' ) && false !== strpos( $js, '"Log in":"Sign in"' ) && false !== strpos( $js, '"Or continue below":"or pay by card"' ) && false === strpos( $js, 'bogus' ), 'the script filters the woocommerce domain with the supported keys only' );
