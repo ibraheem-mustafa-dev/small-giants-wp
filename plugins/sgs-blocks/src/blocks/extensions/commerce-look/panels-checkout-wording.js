@@ -63,7 +63,7 @@ export function CheckoutWordingPanel( { attributes, setAttributes } ) {
 			/>
 			<TextControl
 				label={ __( 'Mobile field under Contact: label', 'sgs-blocks' ) }
-				help={ __( 'A site-wide setting. Leave both fields empty for no mobile field.', 'sgs-blocks' ) }
+				help={ __( 'A site-wide setting that only administrators can change. Leave both fields empty for no mobile field.', 'sgs-blocks' ) }
 				value={ mobileValue.label || '' }
 				onChange={ ( value ) => setMobileField( 'label', value ) }
 				__nextHasNoMarginBottom

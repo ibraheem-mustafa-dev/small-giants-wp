@@ -135,6 +135,15 @@ if ( function_exists( 'SGS\Blocks\sgs_checkout_strings_inject' ) ) {
 	$GLOBALS['inline']    = array();
 	$out                  = SGS\Blocks\sgs_checkout_strings_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
 	ok( '<div>checkout</div>' === $out && array() === $GLOBALS['inline'], 'an unset block prints nothing' );
+	ok( false !== strpos( $js, 'window.sgsCheckoutStringsApplied' ) && false !== strpos( $js, 'wp-block-woocommerce-checkout' ), 'the filter runs once per page and only while the Checkout block is on it' );
+	$node = trim( (string) shell_exec( 'node -v 2>&1' ) );
+	if ( 0 === strpos( $node, 'v' ) ) {
+		$file = sys_get_temp_dir() . '/sgs-checkout-strings-' . getmypid() . '.js';
+		file_put_contents( $file, 'var f=[];global.document={querySelector:function(s){return global.hasCheckout?{}:null;}};global.window={wp:{hooks:{addFilter:function(h,n,cb){f.push(cb);}}}};' . $js . $js . 'global.hasCheckout=false;var off=f[0]("Log in","Log in","woocommerce");global.hasCheckout=true;var on=f[0]("Log in","Log in","woocommerce");console.log(f.length+"|"+off+"|"+on);' );
+		$out = trim( (string) shell_exec( 'node ' . escapeshellarg( $file ) . ' 2>&1' ) );
+		unlink( $file );
+		ok( 'Log in' === explode( '|', $out )[1] && 'Sign in' === explode( '|', $out )[2] && '1' === explode( '|', $out )[0], 'run twice it adds one filter; it rewrites only with the Checkout block present' );
+	}
 	SGS\Blocks\sgs_checkout_strings_inject( '<div>cart</div>', array( 'blockName' => 'woocommerce/cart', 'attrs' => $block['attrs'] ) );
 	ok( array() === $GLOBALS['inline'], 'the cart block is never touched' );
 }

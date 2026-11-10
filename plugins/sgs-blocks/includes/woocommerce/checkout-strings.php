@@ -63,10 +63,15 @@ function sgs_checkout_strings_script( array $map ): string {
 		return '';
 	}
 	$json = wp_json_encode( $map, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE );
-	return '( function ( map ) { if ( ! window.wp || ! window.wp.hooks ) { return; } '
-		. 'window.wp.hooks.addFilter( "i18n.gettext_woocommerce", "sgs/checkout-strings", '
-		. 'function ( translation, text ) { return Object.prototype.hasOwnProperty.call( map, text ) ? map[ text ] : translation; } ); '
-		. '}( ' . $json . ' ) );';
+	// WooCommerce passes `__()` no context for these strings, so the filter cannot tell which component asked. It
+	// rewrites only while the Checkout block is on the page (the block's own wrapper), once per page.
+	return 'if ( ! window.sgsCheckoutStringsApplied ) { window.sgsCheckoutStringsApplied = true; '
+		. '( function ( map ) { if ( ! window.wp || ! window.wp.hooks ) { return; } var onCheckout = null; '
+		. 'window.wp.hooks.addFilter( "i18n.gettext_woocommerce", "sgs/checkout-strings", function ( translation, text ) { '
+		. 'if ( ! Object.prototype.hasOwnProperty.call( map, text ) ) { return translation; } '
+		. 'if ( ! onCheckout ) { onCheckout = document.querySelector( ".wp-block-woocommerce-checkout" ); } '
+		. 'return onCheckout ? map[ text ] : translation; } ); '
+		. '}( ' . $json . ' ) ); }';
 }
 
 /**

@@ -6,6 +6,7 @@
  * `config`: { editLabel: string, editUrl: string, brand: boolean }.
  */
 ( function ( config, root ) {
+	var WRAPPER = '.wp-block-woocommerce-checkout-order-summary-block';
 	var TITLE = '.wp-block-woocommerce-checkout-order-summary-block .wc-block-components-checkout-order-summary__title';
 	var ITEM = '.wc-block-components-order-summary-item';
 	var NAME = '.wc-block-components-product-name';
@@ -14,9 +15,9 @@
 		try {
 			var store = win.wp.data.select( 'wc/store/cart' );
 			var data = store && store.getCartData ? store.getCartData() : null;
-			return data && Array.isArray( data.items ) ? data.items : [];
+			return data && Array.isArray( data.items ) ? data.items : EMPTY;
 		} catch ( e ) {
-			return [];
+			return EMPTY;
 		}
 	}
 
@@ -67,12 +68,80 @@
 		}
 	}
 
-	function start() {
-		apply();
-		new root.MutationObserver( apply ).observe( root.document.body, { childList: true, subtree: true } );
-		if ( root.wp && root.wp.data && root.wp.data.subscribe ) {
-			root.wp.data.subscribe( apply );
+	var queued = false;
+	var EMPTY = [];
+
+	/** One pass per animation frame, however many changes arrive in it. */
+	function schedule() {
+		if ( queued ) {
+			return;
 		}
+		queued = true;
+		root.requestAnimationFrame( function () {
+			queued = false;
+			apply();
+		} );
+	}
+
+	function start() {
+		var doc = root.document;
+		var observer = null;
+		var unsubscribe = null;
+
+		// Until the order summary exists the page body is watched for it; from then on only the summary is, and the
+		// body watch is disconnected. A summary that React replaces sends the watch back to the body.
+		function watchBody() {
+			if ( observer ) {
+				observer.disconnect();
+			}
+			observer = new root.MutationObserver( function () {
+				if ( watchSummary() ) {
+					schedule();
+				}
+			} );
+			observer.observe( doc.body, { childList: true, subtree: true } );
+		}
+
+		function watchSummary() {
+			var wrapper = doc.querySelector( WRAPPER );
+			if ( ! wrapper ) {
+				return false;
+			}
+			if ( observer ) {
+				observer.disconnect();
+			}
+			observer = new root.MutationObserver( function () {
+				if ( ! wrapper.isConnected ) {
+					watchBody();
+				}
+				schedule();
+			} );
+			observer.observe( wrapper, { childList: true, subtree: true } );
+			return true;
+		}
+
+		apply();
+		if ( ! watchSummary() ) {
+			watchBody();
+		}
+		if ( config.brand && root.wp && root.wp.data && root.wp.data.subscribe ) {
+			var last = EMPTY;
+			unsubscribe = root.wp.data.subscribe( function () {
+				var items = cartItems( root );
+				if ( items !== last ) {
+					last = items;
+					schedule();
+				}
+			} );
+		}
+		root.addEventListener( 'pagehide', function () {
+			if ( observer ) {
+				observer.disconnect();
+			}
+			if ( 'function' === typeof unsubscribe ) {
+				unsubscribe();
+			}
+		} );
 	}
 
 	if ( 'loading' === root.document.readyState ) {

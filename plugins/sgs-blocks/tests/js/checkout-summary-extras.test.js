@@ -56,3 +56,72 @@ describe( 'checkout summary extras', () => {
 		expect( document.querySelector( '.sgs-checkout-summary-edit' ) ).toBeNull();
 	} );
 } );
+
+describe( 'checkout summary extras: observing', () => {
+	const originalObserver = window.MutationObserver;
+	let observed;
+	let frames;
+
+	function install() {
+		observed = [];
+		frames = [];
+		window.requestAnimationFrame = ( cb ) => {
+			frames.push( cb );
+			return frames.length;
+		};
+		window.MutationObserver = class {
+			constructor( cb ) {
+				this.cb = cb;
+				observed.push( this );
+			}
+			observe( target ) {
+				this.target = target;
+			}
+			disconnect() {
+				this.target = null;
+			}
+		};
+	}
+
+	function load( html, config ) {
+		document.body.innerHTML = html;
+		window.sgsCheckoutSummaryExtrasConfig = config;
+		window.wp = { data: { subscribe: () => () => {}, select: () => ( { getCartData: () => ( { items: [] } ) } ) } };
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+	}
+
+	beforeEach( install );
+	afterEach( () => {
+		window.MutationObserver = originalObserver;
+	} );
+
+	test( 'watches the order summary wrapper, never the whole body, once it exists', () => {
+		load( SUMMARY, { editLabel: 'Edit', editUrl: '/bag/', brand: true } );
+		const targets = observed.map( ( o ) => o.target ).filter( Boolean );
+		expect( targets ).toHaveLength( 1 );
+		expect( targets[ 0 ].className ).toBe( 'wp-block-woocommerce-checkout-order-summary-block' );
+	} );
+
+	test( 'before the wrapper exists it watches the body, then hands over to the wrapper and disconnects the body watch', () => {
+		load( '<div id="x"></div>', { editLabel: 'Edit', editUrl: '/bag/', brand: false } );
+		expect( observed[ 0 ].target ).toBe( document.body );
+		document.body.innerHTML = SUMMARY;
+		observed[ 0 ].cb( [] );
+		expect( observed[ 0 ].target ).toBeNull();
+		expect( observed.some( ( o ) => o.target && o.target.className === 'wp-block-woocommerce-checkout-order-summary-block' ) ).toBe( true );
+	} );
+
+	test( 'a burst of mutations runs one pass per animation frame', () => {
+		load( SUMMARY, { editLabel: 'Edit', editUrl: '/bag/', brand: false } );
+		document.querySelector( '.sgs-checkout-summary-edit' ).remove();
+		const watcher = observed.find( ( o ) => o.target );
+		watcher.cb( [] );
+		watcher.cb( [] );
+		watcher.cb( [] );
+		expect( frames ).toHaveLength( 1 );
+		expect( document.querySelector( '.sgs-checkout-summary-edit' ) ).toBeNull();
+		frames[ 0 ]();
+		expect( document.querySelector( '.sgs-checkout-summary-edit' ) ).not.toBeNull();
+	} );
+} );
