@@ -11,7 +11,10 @@ tests/, fixtures/ and node_modules/ (dated migrations run once and tests build t
 closure (sgs-update-v2.py and every script it names, followed transitively, a script that runs sub-gates bringing them
 in) is part of that scope and is reported separately, because a closure script a `--db` run would otherwise skip is the
 costlier failure. A script is in violation when its code (comments and docstrings removed) names the shared database
-path and neither reads SGS_FRAMEWORK_DB nor uses framework_db_path() / frameworkDbPath().
+path and neither reads SGS_FRAMEWORK_DB nor uses framework_db_path() / frameworkDbPath(), or when it builds a path to
+the shared database, a skill folder or the `db data` folder under a hard-coded ~/.claude or ~/.agents root even though it
+reads SGS_FRAMEWORK_DB (ask framework_db_path(), skill_dir(), skills_root() or shared_csv_dir() in lib/framework_db.py,
+or the twins in lib/framework-db.js, so a folder move is a one-file change).
 
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey
   python plugins/sgs-blocks/scripts/check-framework-db-resolver.py --survey-all  # every script under scripts/, reseed or not
@@ -27,7 +30,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / "lib"))
-from framework_db import builds_default_db_by_hand, code_of, javascript_code, python_code  # noqa: E402
+from framework_db import RESOLVER_FILES, builds_default_db_by_hand, builds_skill_path_by_hand, code_of, hand_built_skill_lines, javascript_code, python_code  # noqa: E402
 
 ROOT_SCRIPT = "sgs-update-v2.py"
 MAX_DEPTH = 2
@@ -115,7 +118,7 @@ def live_scripts(roots: list[Path]) -> list[Path]:
 
 
 def violations(files: list[Path]) -> list[Path]:
-    return [f for f in files if builds_default_db_by_hand(code_of(f))]
+    return [f for f in files if f.name not in RESOLVER_FILES and f.resolve() != Path(__file__).resolve() and (builds_default_db_by_hand(code_of(f)) or builds_skill_path_by_hand(code_of(f)))]
 
 
 def self_test() -> int:
@@ -134,7 +137,23 @@ def self_test() -> int:
         ("python: a bare import of the resolver without a call is still a violation", python_code("from framework_db import framework_db_path\nDB = '.claude/skills/sgs-wp-engine/sgs-framework.db'\n"), True),
         ("python: a path ending in the database file is a violation", python_code("DB = 'x/sgs-framework.db'\n"), True),
     ]
+    hand = [
+        ("python: home / .claude / skills built by hand is a violation even when it reads the variable", python_code('import os\nDB = Path(os.environ.get("SGS_FRAMEWORK_DB") or Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "x.db")\n'), True),
+        ("python: a root loop over .claude and .agents is a violation", python_code('for root in (".claude", ".agents"):\n    candidate = Path.home() / root / "skills"\n'), True),
+        ("python: a db data folder under home is a violation", python_code('CSV = Path.home() / ".agents" / "skills" / "sgs-wp-engine" / "db data"\n'), True),
+        ("python: a path split over two lines is a violation", python_code('P = Path.home() / ".claude" / (\n    "skills")\n'), True),
+        ("python: expanduser of a ~/.claude/skills string is a violation", python_code('os.path.expanduser("~/.claude/skills/a")\n'), True),
+        ("js: homedir join of .claude and skills is a violation", javascript_code("path.join(os.homedir(), '.claude', 'skills', 'x')"), True),
+        ("python: the repository's own .claude/skills is clean", python_code('P = REPO / ".claude" / "skills" / "migration-method"\n'), False),
+        ("python: a home .claude secrets file is clean", python_code('P = Path.home() / ".claude/secrets/api-keys.env"\n'), False),
+        ("python: a skill_dir() call is clean", python_code('from framework_db import skill_dir\nP = skill_dir("x") / "data"\n'), False),
+        ("python: a comment naming the old path is clean", python_code('# ~/.agents/skills/x\nx = 1\n'), False),
+    ]
     failed = 0
+    for name, code, want in hand:
+        got = builds_skill_path_by_hand(code)
+        failed += got != want
+        print(f"  {'ok  ' if got == want else 'FAIL'} {name}")
     for name, code, want in cases:
         got = builds_default_db_by_hand(code)
         failed += got != want
@@ -195,7 +214,7 @@ def main() -> int:
         return 0
     scope = sorted(set(children) | set(live_scripts([HERE, REPO_SCRIPTS])))
     bad = violations(scope)
-    print(f"{len(children)} script(s) in the reseed's closure, {len(scope)} in scope; {len(bad)} build the shared database path by hand")
+    print(f"{len(children)} script(s) in the reseed's closure, {len(scope)} in scope; {len(bad)} build a shared database or skill path by hand")
     for path in bad:
         print(f"  {path.relative_to(HERE).as_posix() if HERE in path.parents else path.relative_to(HERE.parents[2]).as_posix()}")
     if a.check and bad:

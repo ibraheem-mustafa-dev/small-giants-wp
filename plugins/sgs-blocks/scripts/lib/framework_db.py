@@ -1,9 +1,10 @@
 """framework_db.py - the one answer to "which framework database does this process use?".
 
 $SGS_FRAMEWORK_DB names a database copy (a private reseed, a worktree, a test); without it the shared database under
-~/.claude/skills/sgs-wp-engine/ is used. Every script a reseed runs asks this module instead of building the path
-itself, so `sgs-update-v2.py --db <copy>` points the whole pipeline at the copy, not only the scripts that happened to
-read the variable. check-framework-db-resolver.py fails a reseed child that builds the default path by hand.
+~/.claude/skills/sgs-wp-engine/ is used. Every script asks this module for the database, the skill folders and the
+`db data` CSV folder instead of building a path under ~/.claude or ~/.agents itself, so `sgs-update-v2.py --db <copy>`
+points the whole pipeline at the copy and a folder reorganisation is a one-file change.
+check-framework-db-resolver.py fails a script that builds one of those paths by hand.
 
 The JavaScript twin is framework-db.js beside this file.
 """
@@ -18,11 +19,21 @@ from pathlib import Path
 
 ENV = "SGS_FRAMEWORK_DB"
 _SKILL_DB = Path("skills") / "sgs-wp-engine" / "sgs-framework.db"
+SKILL_ROOTS = (".claude",)
+FRAMEWORK_SKILL = "sgs-wp-engine"
 
 # A script that builds the default path by hand and neither reads the variable nor asks this module.
 # A quoted string that is the shared skill folder or a path ending in the database file (a message that merely mentions
 # the file name is not one).
 _NAMES_DEFAULT_DB = re.compile(r"""["'][^"'\n]*sgs-wp-engine[^"'\n]*["']|["'](?:[^"'\n]*[/\\])?sgs-framework\.db["']""")
+# A line of code that builds a path under a hard-coded ~/.claude or ~/.agents root to the shared skills, their
+# database or the `db data` folder (reading $SGS_FRAMEWORK_DB does not excuse it), or any use of the retired ~/.agents root.
+_HOME_ANCHOR = re.compile(r"~[/\\]|Path\.home\s*\(|homedir\s*\(|expanduser|\bHOME\b|USERPROFILE|Users[/\\]")
+_CLAUDE_ROOT = re.compile(r"\.claude\b")
+_AGENTS_ROOT = re.compile(r"\.agents\b")
+_SKILL_TARGET = re.compile(r"skills|sgs-wp-engine|sgs-framework|db data|db\\ data")
+# Files that own the hard-coded roots.
+RESOLVER_FILES = {"framework_db.py", "framework-db.js"}
 # Reading the variable, or calling the resolver (a bare import does not count).
 _HONOURS_ENV = re.compile(r"SGS_FRAMEWORK_DB|framework_db_path\s*\(|frameworkDbPath\s*\(")
 
@@ -30,22 +41,50 @@ _HONOURS_ENV = re.compile(r"SGS_FRAMEWORK_DB|framework_db_path\s*\(|frameworkDbP
 JS_STRIP = re.compile(r"""("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'|`(?:\\.|[^`\\])*`)|//[^\n]*|/\*.*?\*/""", re.DOTALL)
 
 
-def framework_db_path() -> Path:
-    """$SGS_FRAMEWORK_DB when set, else the shared database under ~/.claude when it is non-empty."""
-    override = os.environ.get(ENV)
-    if override:
-        return Path(override)
-    for root in (".claude",):
+def shared_framework_db_path() -> Path:
+    """The shared database, ignoring $SGS_FRAMEWORK_DB: the non-empty one under ~/.claude."""
+    for root in SKILL_ROOTS:
         candidate = Path.home() / root / _SKILL_DB
         if candidate.is_file() and candidate.stat().st_size > 0:
             return candidate
-    return Path.home() / ".claude" / _SKILL_DB
+    return Path.home() / SKILL_ROOTS[0] / _SKILL_DB
+
+
+def framework_db_path() -> Path:
+    """$SGS_FRAMEWORK_DB when set, else the shared database."""
+    override = os.environ.get(ENV)
+    if override:
+        return Path(override)
+    return shared_framework_db_path()
+
+
+def skills_root() -> Path:
+    """The folder that holds the skills: ~/.claude/skills."""
+    for root in SKILL_ROOTS:
+        candidate = Path.home() / root / "skills"
+        if candidate.is_dir():
+            return candidate
+    return Path.home() / SKILL_ROOTS[0] / "skills"
+
+
+def skill_dir(name: str = FRAMEWORK_SKILL) -> Path:
+    """One skill's folder: ~/.claude/skills/<name>."""
+    for root in SKILL_ROOTS:
+        candidate = Path.home() / root / "skills" / name
+        if candidate.is_dir():
+            return candidate
+    return Path.home() / SKILL_ROOTS[0] / "skills" / name
 
 
 def skill_scripts_dir() -> Path:
-    """The skill's own tools (sgs-db.py, sgs-update.py). They live in the shared skill folder whatever database copy
-    $SGS_FRAMEWORK_DB names, so a script that runs one asks here, not at the database's folder."""
-    return Path.home() / ".claude" / _SKILL_DB.parent / "scripts"
+    """The framework skill's own tools (sgs-db.py, sgs-update.py). They live in the shared skill folder whatever
+    database copy $SGS_FRAMEWORK_DB names, so a script that runs one asks here, not at the database's folder."""
+    return skill_dir() / "scripts"
+
+
+def shared_csv_dir() -> Path:
+    """The shared database's reference CSV folder (`db data`, the space is literal)."""
+    return skill_dir() / "db data"
 
 
 def builds_default_db_by_hand(code: str) -> bool:
@@ -53,6 +92,25 @@ def builds_default_db_by_hand(code: str) -> bool:
     if _HONOURS_ENV.search(code):
         return False
     return bool(_NAMES_DEFAULT_DB.search(code))
+
+
+def hand_built_skill_lines(code: str) -> list[str]:
+    """Lines (a statement split over two lines counts as one) of `code`, comments already removed, that build a path under
+    a hard-coded ~/.claude or ~/.agents root to the skills, the framework database or its `db data` folder, whether or not
+    the script also reads $SGS_FRAMEWORK_DB. lib/framework_db.py and lib/framework-db.js own those roots."""
+    lines = code.splitlines()
+    found: list[str] = []
+    for index, line in enumerate(lines):
+        window = line + " " + (lines[index + 1] if index + 1 < len(lines) else "")
+        if _AGENTS_ROOT.search(line) and _SKILL_TARGET.search(window) or _AGENTS_ROOT.search(line) and _HOME_ANCHOR.search(window):
+            found.append(line.strip())
+        elif _CLAUDE_ROOT.search(line) and _HOME_ANCHOR.search(window) and _SKILL_TARGET.search(window):
+            found.append(line.strip())
+    return found
+
+
+def builds_skill_path_by_hand(code: str) -> bool:
+    return bool(hand_built_skill_lines(code))
 
 
 def python_code(source: str) -> str:
