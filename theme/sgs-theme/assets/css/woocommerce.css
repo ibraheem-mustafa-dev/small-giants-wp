@@ -3148,6 +3148,27 @@ body.sgs-shop-sort-native .wp-block-woocommerce-product-sort-select select {
 	}
 }
 
+/* Each filter group fades in as the filter drawer opens. A closed drawer is not rendered, so the animation plays again
+   on every open. The groups are built in the browser around WooCommerce's filter blocks, which take no motion settings. */
+dialog.sgs-shop-filters:modal .sgs-shop-filters__group {
+	animation: sgs-shop-filter-group-in var(--wp--custom--duration--fast, 250ms) ease both;
+}
+
+@keyframes sgs-shop-filter-group-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	dialog.sgs-shop-filters:modal .sgs-shop-filters__group {
+		animation: none;
+	}
+}
+
 .sgs-shop-active-pills .sgs-shop-filters .wc-block-product-filter-removable-chips__remove svg {
 	width: 18px;
 	height: 18px;
