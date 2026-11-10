@@ -17,15 +17,31 @@
  * `generate-svg-allowlist.js` executes its PHP: a parser would reimplement the
  * thing it mirrors and could then disagree with it.
  *
+ * It also writes the atoms' attributes into each adopting block's committed
+ * `block.json` (marked `"_generated": "media-atoms"`) and the matching entries
+ * of `scripts/attr-classification-overrides.json`, through
+ * `scripts/lib/media-block-json.mjs`. `--check` fails when the PHP mirror, any
+ * block.json or the override file differs from what a run would write.
+ *
  * USAGE
- *   node scripts/generate-media-attributes.mjs            # write
- *   node scripts/generate-media-attributes.mjs --check    # gate: fail if stale
+ *   node scripts/generate-media-attributes.mjs                    # write
+ *   node scripts/generate-media-attributes.mjs --block sgs/hero   # one block's block.json and overrides
+ *   node scripts/generate-media-attributes.mjs --check            # gate: fail if stale
  *   node scripts/generate-media-attributes.mjs --self-test
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import {
+	findBlockJsons,
+	generatedAttributes,
+	applyGeneratedAttributes,
+	overrideEntry,
+	applyOverrideEntries,
+	handWrittenOverrideKeys,
+} from './lib/media-block-json.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const PLUGIN_DIR = path.resolve( HERE, '..' );
@@ -42,14 +58,14 @@ const toUrl = ( ...seg ) =>
 		.split( String.fromCharCode( 92 ) )
 		.join( '/' );
 
-const { MEDIA_ATTR_TYPES, MEDIA_BASES, MEDIA_TIERED_BASES } = await import(
+const { MEDIA_ATTR_TYPES, MEDIA_BASES, MEDIA_TIERED_BASES, MEDIA_TIERS, mediaAttrType, mediaStoredAttrName } = await import(
 	toUrl( 'src', 'components', 'MediaElementControls.js' )
 );
 
 // The atom registry is imported, never re-declared: the atom -> bases map is
 // what drives selective injection on BOTH sides, and two copies of it would be
 // two chances to disagree about which attributes a surface receives.
-const { MEDIA_ATOMS } = await import(
+const { MEDIA_ATOMS, basesForAtoms, atomsForElement } = await import(
 	toUrl( 'src', 'components', 'media', 'atoms', 'registry.js' )
 );
 
@@ -227,24 +243,115 @@ if ( process.argv.includes( '--self-test' ) ) {
 	process.exit( selfTest() );
 }
 
+const BLOCKS_DIR = path.join( PLUGIN_DIR, 'src', 'blocks' );
+const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
+
+const ENV = {
+	attrType: mediaAttrType,
+	storedName: mediaStoredAttrName,
+	basesForAtoms,
+	atomsForElement,
+	tiered: MEDIA_TIERED_BASES,
+	tiers: MEDIA_TIERS,
+};
+
+// base -> the registry's C1 entry, so the override entries come from the same
+// table the editor and the emitters read.
+const SETTING_BY_BASE = {};
+Object.values( MEDIA_ATOMS ).forEach( ( atom ) =>
+	atom.settings.forEach( ( setting ) => {
+		SETTING_BY_BASE[ setting.base ] = setting;
+	} )
+);
+
+const argBlock = process.argv.includes( '--block' )
+	? process.argv[ process.argv.indexOf( '--block' ) + 1 ]
+	: null;
+const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' );
+
+/**
+ * What a run would write, without writing it.
+ *
+ * @return {{files: Map<string,string>, entries: Object[], skipped: string[]}} New block.json texts (changed ones only), override entries, and override keys left to a hand-written entry.
+ */
+function plan() {
+	const overridesText = fs.readFileSync( OVERRIDES_FILE, 'utf8' );
+	const handWritten = handWrittenOverrideKeys( overridesText );
+	const files = new Map();
+	const entries = [];
+	const skipped = [];
+	for ( const file of findBlockJsons( BLOCKS_DIR ) ) {
+		const text = fs.readFileSync( file, 'utf8' );
+		const block = JSON.parse( text );
+		if ( argBlock && block.name !== argBlock && block.name !== `sgs/${ argBlock }` ) {
+			continue;
+		}
+		const own = Object.entries( block.attributes || {} )
+			.filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
+			.map( ( [ name ] ) => name );
+		const attrs = generatedAttributes( block, ENV, own );
+		const next = applyGeneratedAttributes( text, attrs );
+		JSON.parse( next ); // refuse to hand back a file that no longer parses
+		if ( next !== text ) {
+			files.set( file, next );
+		}
+		for ( const a of attrs ) {
+			if ( handWritten.has( `${ block.name }|${ a.name }` ) ) {
+				skipped.push( `${ block.name } ${ a.name }` );
+				continue;
+			}
+			const setting = SETTING_BY_BASE[ a.base ];
+			const companion =
+				a.base === 'ImageAlt'
+					? ENV.storedName( block.name, a.prefix, 'ImageUrl' + a.tier )
+					: '';
+			entries.push(
+				overrideEntry( block.name, a, setting, companion, MEDIA_TIERED_BASES.includes( a.base ) )
+			);
+		}
+	}
+	return { files, entries, skipped, overridesText };
+}
+
 const out = render();
 
 if ( process.argv.includes( '--check' ) ) {
+	const stale = [];
 	const current = fs.existsSync( OUT_FILE ) ? fs.readFileSync( OUT_FILE, 'utf8' ) : '';
 	if ( current !== out ) {
+		stale.push( 'includes/media-element-attributes.generated.php (PHP mirror differs from MediaElementControls.js)' );
+	}
+	const { files, entries, overridesText } = plan();
+	files.forEach( ( _text, file ) => stale.push( `${ rel( file ) } (generated media attributes differ from the registry)` ) );
+	if ( applyOverrideEntries( overridesText, entries, argBlock ) !== overridesText ) {
+		stale.push( 'scripts/attr-classification-overrides.json (generated entries differ from the registry)' );
+	}
+	if ( stale.length ) {
 		process.stderr.write(
-			'[generate-media-attributes] STALE: includes/media-element-attributes.generated.php ' +
-				'does not match MediaElementControls.js.\n' +
-				'The server schema and the editor injection have DIVERGED. ' +
-				'Run: node scripts/generate-media-attributes.mjs\n'
+			'[generate-media-attributes] STALE:\n  ' +
+				stale.join( '\n  ' ) +
+				'\nRun: node scripts/generate-media-attributes.mjs\n'
 		);
 		process.exit( 1 );
 	}
-	process.stdout.write( '[generate-media-attributes] OK - PHP mirrors JS.\n' );
+	process.stdout.write( '[generate-media-attributes] OK - PHP mirror, every block.json and the override entries match the registry.\n' );
 	process.exit( 0 );
 }
 
-fs.writeFileSync( OUT_FILE, out, 'utf8' );
+if ( ! argBlock ) {
+	fs.writeFileSync( OUT_FILE, out, 'utf8' );
+}
+const { files, entries, skipped, overridesText } = plan();
+files.forEach( ( text, file ) => fs.writeFileSync( file, text, 'utf8' ) );
+const nextOverrides = applyOverrideEntries( overridesText, entries, argBlock );
+if ( nextOverrides !== overridesText ) {
+	fs.writeFileSync( OVERRIDES_FILE, nextOverrides, 'utf8' );
+}
+if ( skipped.length ) {
+	process.stdout.write(
+		`[generate-media-attributes] ${ skipped.length } attribute(s) keep their hand-written override entry (merge by hand): ${ skipped.join( ', ' ) }\n`
+	);
+}
 process.stdout.write(
-	'[generate-media-attributes] wrote includes/media-element-attributes.generated.php\n'
+	`[generate-media-attributes] wrote ${ argBlock ? '' : 'the PHP mirror, ' }${ files.size } changed block.json file(s) and ${ entries.length } override entries\n`
 );
