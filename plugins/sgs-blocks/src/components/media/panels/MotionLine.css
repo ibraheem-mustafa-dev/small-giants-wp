@@ -1,0 +1,19 @@
+.sgs-media-motion-line {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid #ddd;
+}
+
+.sgs-media-motion-line__text {
+	flex: 1 1 140px;
+	font-size: 12px;
+}
+
+.sgs-media-motion-line__button {
+	min-height: 44px;
+}

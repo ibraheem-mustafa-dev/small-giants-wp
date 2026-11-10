@@ -13,6 +13,7 @@ import effectMeta from '../generated-fx-effect-meta.json';
 import defs from '../../../components/motion/motion-defs';
 import { DEFS, effectsForList } from './layers/layer-lists';
 import { kindsFit, levelsForTarget } from './layers/refusal-match';
+import { effectsForKinds } from '../../../components/motion/kind-fit.js';
 
 export const EFFECTS_LIST = 'effects';
 export const EFFECTS_PANEL = 'effects';
@@ -61,12 +62,16 @@ export function effectTriggers( effect, layerDef = EFFECT_LAYER_DEF ) {
  * @param {string}      target     `root`, a part key or a `custom:<n>` target.
  * @param {Object|null} [elements] The block's `supports.sgs.elements` (a part marked `"surface": true` takes
  *                                 surface-level effects; one marked `"text": true` or `"svg": true` takes that kind's effects).
+ * @param {Object|null} [kindsByDevice] For a part that declares `availableWhen`: the media kind shown on each device
+ *                                 (`{ desktop, tablet, mobile }`). The effects then filter by the kind on each device
+ *                                 (`kind-fit.js`, Spec 49 §10.1) in place of the part's static `svg` and `text` flags.
  * @return {string[]} The slugs.
  */
-export function effectOptions( blockName, target, elements = null ) {
+export function effectOptions( blockName, target, elements = null, kindsByDevice = null ) {
 	const qualifying = qualifyingBlocks[ blockName ] || [];
 	const levels = levelsForTarget( target, elements );
-	return effectsForList( EFFECTS_LIST ).filter( ( effect ) => {
+	const byKind = Boolean( kindsByDevice && elements?.[ target ]?.availableWhen );
+	const offered = effectsForList( EFFECTS_LIST ).filter( ( effect ) => {
 		const row = effectMetaOf( effect );
 		return (
 			Boolean( row ) &&
@@ -75,7 +80,8 @@ export function effectOptions( blockName, target, elements = null ) {
 			( row.target_level || [] ).some( ( level ) =>
 				levels.includes( level )
 			) &&
-			kindsFit( effect, target, elements )
+			( byKind || kindsFit( effect, target, elements ) )
 		);
 	} );
+	return byKind ? effectsForKinds( offered, kindsByDevice ) : offered;
 }

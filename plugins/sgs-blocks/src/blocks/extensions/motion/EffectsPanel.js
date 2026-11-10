@@ -14,11 +14,19 @@
  */
 
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
+import { speak } from '@wordpress/a11y';
 import { Notice, PanelBody } from '@wordpress/components';
 import { usePreviewTier } from '../../../utils/usePreviewTier';
 import ChoiceAtom from '../../../components/motion/ChoiceAtom';
 import { ROOT_TARGET } from '../../../components/motion/TargetPicker';
+import {
+	deviceNote,
+	offTiersFor,
+} from '../../../components/motion/kind-fit.js';
+import { usePartKinds } from '../../../components/motion/use-part-kinds.js';
+import { INSPECTOR_FOCUS_STORE } from '../../../components/media/inspector-focus-store.js';
 import { registerMotionPanel } from './panel-slots';
 import TargetRow from './layers/TargetRow';
 import LayerList from './layers/LayerList';
@@ -27,7 +35,12 @@ import { effectLabel } from './layers/refusals';
 import { RestampConfirm, useRestamp } from './layers/restamp';
 import { problemText } from './entrance/layer-edit';
 import { heldPaths, presetBySlug } from './layers/stamp';
-import { EFFECTS_LIST, effectOptions, effectTriggers } from './effect-options';
+import {
+	EFFECTS_LIST,
+	EFFECTS_PANEL,
+	effectOptions,
+	effectTriggers,
+} from './effect-options';
 import EffectLayerControls, { EffectLayerHead } from './EffectLayerControls';
 
 /** Where the panel sits in the Styles tab (Hover is 10, Entrance and reveal 20). */
@@ -87,9 +100,11 @@ export function swapMessage( layer, effect, count ) {
  *
  * @param {Object} layers The `useMotionLayers` result.
  * @param {string} target The chosen target.
+ * @param {Function} [offFor] `( effect ) => string[]|undefined`: the device tiers a new layer is switched off on
+ *                            (an adopted media part whose kind differs per device, `kind-fit.js::offTiersFor`).
  * @return {Object} `{ flow, first, rest, problem, setProblem, swap, chooseEffect, confirmSwap, cancelSwap, addEffect, reset }`.
  */
-export function useEffectsPanelState( layers, target ) {
+export function useEffectsPanelState( layers, target, offFor = () => undefined ) {
 	const flow = useRestamp( layers );
 	const [ problem, setProblem ] = useState( null );
 	const [ swap, setSwap ] = useState( null );
@@ -97,7 +112,12 @@ export function useEffectsPanelState( layers, target ) {
 
 	const applySwap = ( id, effect ) =>
 		setProblem(
-			problemText( layers.swap( target, EFFECTS_LIST, id, { effect } ) )
+			problemText(
+				layers.swap( target, EFFECTS_LIST, id, {
+					effect,
+					off: offFor( effect ),
+				} )
+			)
 		);
 
 	const chooseEffect = ( slug ) => {
@@ -113,7 +133,10 @@ export function useEffectsPanelState( layers, target ) {
 		if ( ! first ) {
 			setProblem(
 				problemText(
-					layers.add( target, EFFECTS_LIST, { effect: slug } )
+					layers.add( target, EFFECTS_LIST, {
+						effect: slug,
+						off: offFor( slug ),
+					} )
 				)
 			);
 			return;
@@ -160,7 +183,11 @@ export function useEffectsPanelState( layers, target ) {
 			setSwap( null );
 		},
 		cancelSwap: () => setSwap( null ),
-		addEffect: ( effect ) => layers.add( target, EFFECTS_LIST, { effect } ),
+		addEffect: ( effect ) =>
+			layers.add( target, EFFECTS_LIST, {
+				effect,
+				off: offFor( effect ),
+			} ),
 		reset: () => {
 			flow.cancel();
 			setSwap( null );
@@ -170,8 +197,54 @@ export function useEffectsPanelState( layers, target ) {
 }
 
 /**
+ * Opens the panel when another panel asks for it through the `sgs/inspector-focus` store (Spec 49 C6): the panel
+ * opens, `onRequest` selects the target, the panel scrolls into view, focus moves to its heading and `announce`'s text
+ * goes to the live region. The request is cleared once acted on.
+ *
+ * @param {Object}   args
+ * @param {string}   args.clientId  The block's client id.
+ * @param {Function} args.onRequest Called with the request.
+ * @param {Function} args.announce  `( request ) => string`.
+ * @return {{ref: Object, opened: boolean, toggle: Function}} The marker's `ref` (a hidden element inside the panel body), `opened` and `toggle`.
+ */
+export function useFocusRequest( { clientId, onRequest, announce } ) {
+	const ref = useRef( null );
+	const [ opened, setOpened ] = useState( false );
+	const request = useSelect(
+		( select ) =>
+			select( INSPECTOR_FOCUS_STORE )?.getRequest?.( clientId ) || null,
+		[ clientId ]
+	);
+	const { clear } = useDispatch( INSPECTOR_FOCUS_STORE );
+	const requestId =
+		request?.panel === EFFECTS_PANEL ? request.requestId : null;
+	useEffect( () => {
+		if ( null === requestId ) {
+			return;
+		}
+		onRequest( request );
+		setOpened( true );
+		window.requestAnimationFrame( () => {
+			const node = ref.current?.closest( '.components-panel__body' );
+			if ( node ) {
+				node.scrollIntoView?.( { block: 'nearest' } );
+				node
+					.querySelector( '.components-panel__body-title button' )
+					?.focus();
+			}
+			speak( announce( request ), 'polite' );
+			clear( clientId );
+		} );
+		// Only a new request acts; the callbacks are read as they were when it arrived.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ requestId ] );
+	return { ref, opened, toggle: () => setOpened( ( value ) => ! value ) };
+}
+
+/**
  * @param {Object}           props
  * @param {string}           props.blockName The block's name.
+ * @param {string}           props.clientId  The block's client id: the key of its inspector-focus request.
  * @param {Object|null}      props.elements  The block's `supports.sgs.elements`.
  * @param {Object|undefined} props.motion    The block's motion value.
  * @param {Object}           props.layers    The layer operations (`useMotionLayers`).
@@ -179,15 +252,37 @@ export function useEffectsPanelState( layers, target ) {
  */
 export default function EffectsPanel( {
 	blockName,
+	clientId,
 	elements,
 	motion,
 	layers,
 } ) {
 	const [ target, setTarget ] = useState( ROOT_TARGET );
-	const state = useEffectsPanelState( layers, target );
+	const kindsOf = usePartKinds( clientId, blockName );
+	const kinds = kindsOf( elements?.[ target ] );
+	const state = useEffectsPanelState( layers, target, ( effect ) => {
+		const off = kinds ? offTiersFor( effect, kinds ) : [];
+		return off.length ? off : undefined;
+	} );
 	const tier = usePreviewTier();
 	const { first, rest, flow, setProblem } = state;
-	const offered = effectOptions( blockName, target, elements );
+	const offered = effectOptions( blockName, target, elements, kinds );
+	const note = first && kinds ? deviceNote( first.effect, kinds ) : '';
+	const focus = useFocusRequest( {
+		clientId,
+		onRequest: ( request ) => {
+			state.reset();
+			setTarget( request.target || ROOT_TARGET );
+		},
+		announce: ( request ) =>
+			sprintf(
+				/* translators: %s: the target the Effects panel opened on, for example Background. */
+				__( 'Effects opened on %s.', 'sgs-blocks' ),
+				elements?.[ request.target ]?.label ||
+					request.target ||
+					__( 'the whole block', 'sgs-blocks' )
+			),
+	} );
 	const options = offered.map( ( value ) => ( {
 		value,
 		label: effectLabel( value ),
@@ -206,14 +301,17 @@ export default function EffectsPanel( {
 		<PanelBody
 			title={ __( 'Effects', 'sgs-blocks' ) }
 			className="sgs-motion-panel sgs-motion-panel--effects"
-			initialOpen={ false }
+			opened={ focus.opened }
+			onToggle={ focus.toggle }
 		>
+			<span ref={ focus.ref } hidden />
 			<TargetRow
 				blockName={ blockName }
 				elements={ elements }
 				motion={ motion }
 				panel="effects"
 				value={ target }
+				kindsOf={ kindsOf }
 				onChange={ ( next ) => {
 					state.reset();
 					setTarget( next );
@@ -234,6 +332,11 @@ export default function EffectsPanel( {
 				onChange={ state.chooseEffect }
 				emptyLabel={ __( 'None', 'sgs-blocks' ) }
 			/>
+			{ note && (
+				<p className="sgs-motion-atom__help sgs-motion-panel__device-note">
+					{ note }
+				</p>
+			) }
 			{ first && (
 				<EffectLayerHead
 					layer={ first }

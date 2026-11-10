@@ -69,6 +69,7 @@ export {
  * @param {Object}           options
  * @param {string}           [options.effect]   Effect slug (lists only).
  * @param {string}           [options.preset]   Preset slug to stamp; an effect defaults to its Standard preset.
+ * @param {string[]}         [options.off]      Device tiers the layer is switched off on (`tablet`, `mobile`).
  * @param {Function}         [options.random]   Id randomness (tests pass a fixed sequence).
  * @param {Object|null}      [options.elements] The block's `supports.sgs.elements`, so a part marked as a surface
  *                                              accepts surface-level effects.
@@ -79,7 +80,7 @@ export function addLayer(
 	motion,
 	target,
 	list,
-	{ effect, preset, random, elements = null } = {}
+	{ effect, preset, random, off, elements = null } = {}
 ) {
 	const entry = listOf( list );
 	if ( ! isTarget( target ) ) {
@@ -125,6 +126,9 @@ export function addLayer(
 		if ( first ) {
 			layer.trigger = first;
 		}
+	}
+	if ( entry.kind === 'list' && Array.isArray( off ) && off.length ) {
+		layer.off = [ ...off ];
 	}
 	if ( entry.kind === 'single' && ! isObject( layer.values ) ) {
 		layer.values = {};

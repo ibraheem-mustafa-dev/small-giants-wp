@@ -13,6 +13,10 @@ jest.mock( '@wordpress/icons', () => ( {
 	moreVertical: require( 'react' ).createElement( 'i' ),
 } ) );
 jest.mock( '@wordpress/data', () => ( {
+	createReduxStore: ( name ) => ( { name } ),
+	register: () => {},
+	select: () => undefined,
+	useDispatch: () => ( {} ),
 	useSelect: ( fn ) =>
 		fn( ( store ) => ( 'core/editor' === store ? { getDeviceType: () => global.__device || 'Desktop' } : {} ) ),
 } ) );
@@ -21,6 +25,7 @@ jest.mock( '@wordpress/block-editor', () => {
 	return {
 		InspectorControls: ( { children } ) => R.createElement( R.Fragment, null, children ),
 		useSettings: () => [ undefined ],
+		useBlockEditContext: () => ( { name: 'sgs/test', clientId: 'test-client' } ),
 		MediaUploadCheck: ( { children } ) => R.createElement( R.Fragment, null, children ),
 		MediaUpload: () => null,
 	};

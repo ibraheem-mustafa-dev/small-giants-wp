@@ -10,13 +10,15 @@
  *
  * @package SGS\Blocks
  */
-import { InspectorControls } from '@wordpress/block-editor';
+import { InspectorControls, useBlockEditContext } from '@wordpress/block-editor';
 import { DropdownMenu, MenuGroup, MenuItem, PanelBody } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
 import { moreVertical } from '@wordpress/icons';
 
+import { blockHasMotion } from '../../../blocks/extensions/motion/support-cache.js';
 import { SizingSummary } from '../SizingFields.js';
+import MotionLine from './MotionLine.js';
 import PanelRow from './PanelRow.js';
 import { createContext } from './disclosure-context.js';
 import { buildPanelModel } from './panel-model.js';
@@ -64,13 +66,19 @@ export default function MediaPanels( {
 	const device = deviceOverride || activeDevice;
 	const opts = { blockSlug, kinds, context, parallax, adopted: true };
 	const kind = createContext( attributes, device, prefix, opts ).kind;
+	const { clientId, name } = useBlockEditContext();
+	// A background's motion line (§9.6), unless the caller fills the panel; only a block that has the Effects panel.
+	const content =
+		'background' === context && ! panelContent.background && blockHasMotion( name )
+			? { ...panelContent, background: <MotionLine clientId={ clientId } attributes={ attributes } kind={ kind } /> }
+			: panelContent;
 	const model = buildPanelModel( {
 		atomIds,
 		attrs: attributes,
 		device,
 		prefix,
 		opts,
-		extraPanelIds: Object.keys( panelContent ),
+		extraPanelIds: Object.keys( content ),
 		adopted: true,
 	} );
 	const slot = { prefix, kinds, context };
@@ -129,7 +137,7 @@ export default function MediaPanels( {
 							slot={ slot }
 						/>
 					) ) }
-					{ panelContent[ panel.id ] || null }
+					{ content[ panel.id ] || null }
 				</PanelBody>
 			) );
 

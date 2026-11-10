@@ -13,6 +13,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { getBlockType } from '@wordpress/blocks';
 import ChoiceAtom from './ChoiceAtom';
+import { partAvailable } from './kind-fit.js';
 
 export const ROOT_TARGET = 'root';
 const CUSTOM_PREFIX = 'custom:';
@@ -27,9 +28,12 @@ export const humanise = ( key ) => {
  *
  * @param {Object|null} elements `supports.sgs.elements`: `{ <partKey>: { label, order } }`.
  * @param {string[]}    [held]    Targets that already hold a stored layer; a wrapper part among them stays listed.
+ * @param {Function}    [kindsOf] `( part ) => { desktop, tablet, mobile }|null`: a part that declares `availableWhen`
+ *                                is listed only while the kind shown on some device is one it is for (`kind-fit.js`),
+ *                                or while it holds a stored layer.
  * @return {{value: string, label: string}[]} The whole block first, then each declared part by its `order`, then key.
  */
-export function targetOptions( elements, held = [] ) {
+export function targetOptions( elements, held = [], kindsOf = null ) {
 	const parts = Object.entries( elements || {} )
 		.map( ( [ key, part ], index ) => ( {
 			value: key,
@@ -47,7 +51,11 @@ export function targetOptions( elements, held = [] ) {
 				part.value !== ROOT_TARGET &&
 				elements[ part.value ]?.motion !== false &&
 				( elements[ part.value ]?.isWrapper !== true ||
-					held.includes( part.value ) )
+					held.includes( part.value ) ) &&
+				( held.includes( part.value ) ||
+					! kindsOf ||
+					! kindsOf( elements[ part.value ] ) ||
+					partAvailable( elements[ part.value ], kindsOf( elements[ part.value ] ) ) )
 		)
 		.sort( ( a, b ) => a.order - b.order );
 	return [

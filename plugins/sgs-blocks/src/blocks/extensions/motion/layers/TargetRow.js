@@ -28,9 +28,10 @@ const CUSTOM_PREFIX = 'custom:';
  * @param {Object|null}      elements `supports.sgs.elements`.
  * @param {Object|undefined} motion   The block's motion value.
  * @param {string}           panel    `hover`, `entrance` or `effects`.
+ * @param {Function}         [kindsOf] `( part ) => kinds per device|null` (`TargetPicker.js::targetOptions`).
  * @return {{value: string, label: string}[]} The options.
  */
-export function targetRowOptions( elements, motion, panel ) {
+export function targetRowOptions( elements, motion, panel, kindsOf = null ) {
 	const marked = targetsWithLayers( motion, panel );
 	const custom = Object.keys( motion?.elements || {} )
 		.filter( ( key ) => key.startsWith( CUSTOM_PREFIX ) )
@@ -43,7 +44,7 @@ export function targetRowOptions( elements, motion, panel ) {
 			),
 		} ) );
 	const held = Object.keys( motion?.elements || {} );
-	return [ ...targetOptions( elements, held ), ...custom ].map( ( option ) => ( {
+	return [ ...targetOptions( elements, held, kindsOf ), ...custom ].map( ( option ) => ( {
 		value: option.value,
 		label: marked.includes( option.value )
 			? `${ option.label } ${ DOT }`
@@ -59,6 +60,7 @@ export function targetRowOptions( elements, motion, panel ) {
  * @param {string}           props.panel      `hover`, `entrance` or `effects`.
  * @param {string}           props.value      The chosen target.
  * @param {Function}         props.onChange   Receives the chosen target key.
+ * @param {Function}         [props.kindsOf]  `( part ) => kinds per device|null`, for parts that declare `availableWhen`.
  * @return {Element} The row.
  */
 export default function TargetRow( {
@@ -68,10 +70,11 @@ export default function TargetRow( {
 	panel,
 	value,
 	onChange,
+	kindsOf = null,
 } ) {
 	const declared =
 		elements ?? getBlockType( blockName )?.supports?.sgs?.elements ?? null;
-	const options = targetRowOptions( declared, motion, panel );
+	const options = targetRowOptions( declared, motion, panel, kindsOf );
 	return (
 		<ChoiceAtom
 			label={ __( 'Target', 'sgs-blocks' ) }

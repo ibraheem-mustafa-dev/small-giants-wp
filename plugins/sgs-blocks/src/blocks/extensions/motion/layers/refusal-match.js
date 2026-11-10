@@ -56,6 +56,10 @@ export function levelsForTarget( target, elements = null ) {
  */
 export function kindsFit( effect, target, elements = null ) {
 	const kinds = EFFECTS[ effect ]?.[ PART_KINDS_KEY ];
+	// A part that declares `availableWhen` is for the media kind each device shows: `kind-fit.js` decides there.
+	if ( elements?.[ target ]?.availableWhen ) {
+		return true;
+	}
 	if (
 		! Array.isArray( kinds ) ||
 		target === 'root' ||
