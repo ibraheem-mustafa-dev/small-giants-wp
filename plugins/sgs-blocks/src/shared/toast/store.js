@@ -35,7 +35,7 @@
  * Namespace:  store( 'sgs/toast' )
  *
  * Imperative API (call from any view module after a cart request settles):
- *   actions.showSuccess( message )  — success colours, auto-closes after 5s.
+ *   actions.showSuccess( message )  — success colours, auto-closes when its motion ends (5s with none).
  *   actions.showAdded( withAddons ) — success toast carrying the site's own
  *                                     "added" wording (server state
  *                                     `addedToBag` / `addedWithAddons`).
@@ -61,8 +61,52 @@ import { store } from '@wordpress/interactivity';
 import { prefersReducedMotion } from '../effects/motion-utils.js';
 import { DRAWER_PHASE_EVENT } from '../nav-interactivity/drawer-lifecycle.js';
 
-/** Auto-close delay for a success toast, in milliseconds. */
+/** Auto-close delay for a success toast with no CSS motion to follow, in milliseconds. */
 const AUTO_CLOSE_MS = 5000;
+
+/** Margin after the toast's own animation ends before it is closed, in milliseconds. */
+const MOTION_END_MARGIN_MS = 100;
+
+/**
+ * How long a success toast stays up.
+ *
+ * The stylesheet's animation runs the whole life of the toast (entrance,
+ * hold, fade-out), so the close follows its duration and the two always end
+ * together. With no animation (reduced motion, or none set) the default
+ * applies.
+ *
+ * @return {number} Milliseconds until the auto-close.
+ */
+function successLifetime() {
+	const toast = document.querySelector( '.sgs-toast' );
+	if ( ! toast || state.reduceMotion ) {
+		return AUTO_CLOSE_MS;
+	}
+	const raw = String( window.getComputedStyle( toast ).animationDuration || '' );
+	const first = raw.split( ',' )[ 0 ].trim();
+	const seconds = first.endsWith( 'ms' )
+		? parseFloat( first ) / 1000
+		: parseFloat( first );
+	if ( ! Number.isFinite( seconds ) || seconds <= 0 ) {
+		return AUTO_CLOSE_MS;
+	}
+	return Math.round( seconds * 1000 ) + MOTION_END_MARGIN_MS;
+}
+
+/**
+ * Replay the toast's entrance, for a repeat add of the same message while it
+ * is already showing.
+ */
+function replayMotion() {
+	const toast = document.querySelector( '.sgs-toast' );
+	if ( ! toast || 'function' !== typeof toast.getAnimations ) {
+		return;
+	}
+	toast.getAnimations().forEach( ( animation ) => {
+		animation.cancel();
+		animation.play();
+	} );
+}
 
 /**
  * Where the toast lives when no dialog is open, so it can be put back.
@@ -249,7 +293,7 @@ const { state, actions } = store( 'sgs/toast', {
 
 	actions: {
 		/**
-		 * Show a success toast. Auto-closes after 5s.
+		 * Show a success toast. Auto-closes when its CSS motion ends (5s with none).
 		 *
 		 * Rapid repeat adds REPLACE rather than queue or stack: one region,
 		 * one message, timer reset, and a repeat count when the sentence is
@@ -274,13 +318,14 @@ const { state, actions } = store( 'sgs/toast', {
 
 			if ( 'success' === state.variant && state.baseMessage === text ) {
 				state.repeat += 1;
+				replayMotion();
 			} else {
 				state.repeat = 1;
 				state.baseMessage = text;
 			}
 
 			state.variant = 'success';
-			arm( AUTO_CLOSE_MS );
+			arm( successLifetime() );
 		},
 
 		/**

@@ -12,9 +12,9 @@
  * (WordPress prints each as `--wp--custom--toast--<kebab-name>`). Unset keys
  * fall back to the look below, so nothing changes for a site that sets none.
  * Keys: background, colour, borderColour, borderWidth, radius, padding,
- * gap, fontSize, shadow, iconBackground, iconColour, iconRadius, iconBox,
+ * gap, fontSize, shadow, offsetBottom, duration, iconBackground, iconColour, iconRadius, iconBox,
  * iconSize, actionColour, actionWeight, actionPadding, actionHoverBackground,
- * actionFontSize.
+ * actionFontSize, actionUnderlineColour, actionHoverUnderlineThickness.
  *
  * The wrapper is NEVER display:none, visibility:hidden or [hidden]: its
  * message paragraph is a role="status" live region, and any of those three
@@ -26,7 +26,7 @@
 .sgs-toast {
 	position: fixed;
 	z-index: 100000;
-	inset-block-end: var(--wp--preset--spacing--30, 1rem);
+	inset-block-end: var(--wp--custom--toast--offset-bottom, var(--wp--preset--spacing--30, 1rem));
 	inset-inline: var(--wp--preset--spacing--30, 1rem);
 	margin-inline: auto;
 	width: fit-content;
@@ -47,6 +47,13 @@
 
 	opacity: 0;
 	pointer-events: none;
+
+	/* The one motion the toast plays while it shows: the timing is set here
+	   so src/shared/toast/store.js can read the duration and close the toast
+	   when the motion ends. */
+	animation-duration: var(--wp--custom--toast--duration, 5s);
+	animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+	animation-fill-mode: both;
 }
 
 /* Success — sgs/notice-banner's success tint and border token. */
@@ -68,17 +75,36 @@
 }
 
 /* Motion only when the store has confirmed the visitor has not asked for
-   reduced motion (state.isAnimated adds this class). */
-.sgs-toast--animated {
-	transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+   reduced motion (state.isAnimated adds this class). The toast rises 16px
+   into place while fading in over the first 12% of its life, holds, then
+   fades out over the last 15% while drifting half its own width to the
+   right. Hovering or focusing the toast holds the motion, as the store's
+   auto-close timer is held. */
+.sgs-toast--animated.sgs-toast--visible {
+	animation-name: sgs-toast-life;
 }
 
-/* The pre-entrance offset is scoped to the hidden state rather than written
-   as `transform: none` on --visible: both classes carry identical
-   specificity, so a plain pair would resolve by source order instead of by
-   intent. */
-.sgs-toast--animated:not(.sgs-toast--visible) {
-	transform: translateY(0.75rem);
+.sgs-toast--animated.sgs-toast--visible:hover,
+.sgs-toast--animated.sgs-toast--visible:focus-within {
+	animation-play-state: paused;
+}
+
+@keyframes sgs-toast-life {
+	0% {
+		opacity: 0;
+		transform: translate(0, 16px);
+	}
+	12% {
+		opacity: 1;
+		transform: translate(0, 0);
+	}
+	85% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+		transform: translate(50%, 0);
+	}
 }
 
 /* `hidden` must win over every display rule below it. The UA's own
@@ -146,6 +172,7 @@
 	font-size: var(--wp--custom--toast--action-font-size, var(--wp--preset--font-size--small, 0.9375rem));
 	font-weight: var(--wp--custom--toast--action-weight, 600);
 	text-decoration: underline;
+	text-decoration-color: var(--wp--custom--toast--action-underline-colour, currentcolor);
 	text-underline-offset: 3px;
 }
 
@@ -153,7 +180,8 @@
    put, so contrast only ever improves. */
 .sgs-toast__action:hover {
 	background-color: var(--wp--custom--toast--action-hover-background, rgba(255, 255, 255, 0.65));
-	text-decoration-thickness: 2px;
+	color: var(--wp--custom--toast--action-colour, inherit);
+	text-decoration-thickness: var(--wp--custom--toast--action-hover-underline-thickness, 2px);
 }
 
 /* ===== Close button ===== */
@@ -185,10 +213,8 @@
  */
 @media (prefers-reduced-motion: reduce) {
 	.sgs-toast,
-	.sgs-toast--animated,
-	.sgs-toast--animated:not(.sgs-toast--visible) {
-		transform: none;
-		transition: none;
+	.sgs-toast--animated.sgs-toast--visible {
+		animation: none;
 	}
 }
 
