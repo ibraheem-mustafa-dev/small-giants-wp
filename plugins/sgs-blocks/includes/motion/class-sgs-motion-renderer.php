@@ -84,6 +84,9 @@ final class Sgs_Motion_Renderer {
 	 */
 	private static $by_identity = false;
 
+	/** The attributes that identify a template block when matching it to the armed tree. */
+	const IDENTITY_ATTRS = array( 'anchor', 'className', 'sgsMotion', 'tagName' );
+
 	/**
 	 * The tree indexes of the sections already matched by identity.
 	 *
@@ -276,7 +279,9 @@ final class Sgs_Motion_Renderer {
 	 * Arm the above-the-fold rule from the block template when the page's main content comes from it: a template with no
 	 * `core/post-content` block (the shop and other archives, search, a product page) never runs `the_content` for its
 	 * sections, so its own blocks are the tree. Template parts stay out of the count (`Sgs_Motion_Fold`). A template that
-	 * prints the post content is left to `arm_first_section`.
+	 * prints the post content is left to `arm_first_section`. A `core/pattern` block is not expanded
+	 * (`resolve_pattern_blocks` would turn its blocks into sections, but they render inside the pattern block's own frame,
+	 * where they are not counted): the pattern block is one section and everything inside it follows its fold mark.
 	 *
 	 * @param mixed $template The template path (`template_include`), returned unchanged.
 	 * @return mixed
@@ -386,17 +391,41 @@ final class Sgs_Motion_Renderer {
 	 * @return int|null
 	 */
 	private static function match_in_tree( array $block, array $sections ): ?int {
+		$same_name = array();
 		foreach ( $sections as $index ) {
 			if ( in_array( $index, self::$matched, true ) ) {
 				continue;
 			}
 			$candidate = (array) self::$tree[ $index ];
-			if ( ( $candidate['blockName'] ?? null ) === ( $block['blockName'] ?? null ) && (array) ( $candidate['attrs'] ?? array() ) == (array) ( $block['attrs'] ?? array() ) ) {
+			if ( ( $candidate['blockName'] ?? null ) !== ( $block['blockName'] ?? null ) ) {
+				continue;
+			}
+			$same_name[] = $index;
+			if ( self::stable_attrs( (array) ( $candidate['attrs'] ?? array() ) ) === self::stable_attrs( (array) ( $block['attrs'] ?? array() ) ) ) {
 				self::$matched[] = $index;
 				return $index;
 			}
 		}
+		// A `render_block_data` filter changed even the stable attributes: the one candidate of this name left is it.
+		if ( 1 === count( $same_name ) ) {
+			self::$matched[] = $same_name[0];
+			return $same_name[0];
+		}
 		return null;
+	}
+
+	/**
+	 * The attributes of a block that identify it, encoded for comparison: the ones a render-time filter does not change.
+	 *
+	 * @param array<string,mixed> $attrs Block attributes.
+	 * @return string
+	 */
+	private static function stable_attrs( array $attrs ): string {
+		$stable = array();
+		foreach ( self::IDENTITY_ATTRS as $key ) {
+			$stable[ $key ] = $attrs[ $key ] ?? null;
+		}
+		return (string) wp_json_encode( $stable );
 	}
 
 	/**
@@ -552,23 +581,41 @@ final class Sgs_Motion_Renderer {
 	/**
 	 * Close the frame after the block rendered (render_block, last). `render_block` also fires for blocks that never
 	 * went through `render_block_data` (a pre-rendered template part, WooCommerce's product template announcing a
-	 * synthetic `core/null` block once per product), so only a block that matches the top frame's own block closes it;
-	 * any other would pop a frame that is not its own and strip the enclosing blocks of their fold mark.
+	 * synthetic `core/null` block once per product), so a block closes the topmost frame opened for its own block name,
+	 * together with any frame left open above it (a block that never reached `render_block`), and a block with no open
+	 * frame closes nothing: popping for it would take a frame that is not its own and strip the enclosing blocks of their
+	 * fold mark.
 	 *
 	 * @param mixed $block_content Rendered HTML.
 	 * @param mixed $block         Parsed block.
 	 * @return mixed
 	 */
 	public static function close_frame( $block_content, $block ) {
-		$name = is_array( $block ) ? (string) ( $block['blockName'] ?? '' ) : '';
-		$last = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
-		if ( null === $last || $last['name'] !== $name ) {
+		$name  = is_array( $block ) ? (string) ( $block['blockName'] ?? '' ) : '';
+		$depth = self::topmost_frame( $name );
+		if ( null === $depth ) {
 			return $block_content;
 		}
-		array_pop( self::$stack );
+		// A frame above it belongs to a block that never reached `render_block`: it leaked, so it goes too.
+		array_splice( self::$stack, $depth );
 		$top                               = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
 		$GLOBALS['sgs_hover_group_active'] = null !== $top && ! empty( $top['group'] );
 		return $block_content;
+	}
+
+	/**
+	 * The stack position of the topmost frame opened for a block of this name, or null when none is open.
+	 *
+	 * @param string $name Block name.
+	 * @return int|null
+	 */
+	private static function topmost_frame( string $name ): ?int {
+		for ( $i = count( self::$stack ) - 1; $i >= 0; $i-- ) {
+			if ( self::$stack[ $i ]['name'] === $name ) {
+				return $i;
+			}
+		}
+		return null;
 	}
 
 	/**

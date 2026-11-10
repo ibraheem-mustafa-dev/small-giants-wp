@@ -93,7 +93,7 @@ final class Sgs_Focus_Rests {
 
 	/**
 	 * Close the frame after the block rendered (render_block, last): pop it, restore the parent's flag, and put the
-	 * root class on a block that had the setting on. Only the block that opened the top frame closes it:
+	 * root class on a block that had the setting on. The topmost frame opened for this block closes it, with any leaked frame above it:
 	 * `render_block` also fires for blocks that never went through `render_block_data` (WooCommerce's product template
 	 * announces a synthetic `core/null` block once per product), and such a block must not pop a frame that is not its own.
 	 *
@@ -103,12 +103,19 @@ final class Sgs_Focus_Rests {
 	 */
 	public static function close_frame( $block_content, $block = null ) {
 		$name = is_array( $block ) && is_string( $block['blockName'] ?? null ) ? $block['blockName'] : '';
-		$last = array() === self::$stack ? null : self::$stack[ count( self::$stack ) - 1 ];
-		if ( null === $last || $last['name'] !== $name ) {
+		$depth = null;
+		for ( $i = count( self::$stack ) - 1; $i >= 0; $i-- ) {
+			if ( self::$stack[ $i ]['name'] === $name ) {
+				$depth = $i;
+				break;
+			}
+		}
+		if ( null === $depth ) {
 			return $block_content;
 		}
-		array_pop( self::$stack );
-		$had                                 = $last['on'];
+		// A frame above it belongs to a block that never reached `render_block`: it leaked, so it goes too.
+		$had                                 = self::$stack[ $depth ]['on'];
+		array_splice( self::$stack, $depth );
 		$GLOBALS['sgs_focus_rests_active'] = array() !== self::$stack && self::$stack[ count( self::$stack ) - 1 ]['on'];
 		if ( ! $had || ! is_string( $block_content ) || '' === $block_content ) {
 			return $block_content;

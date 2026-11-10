@@ -68,6 +68,16 @@ $closed = Sgs_Focus_Rests::close_frame( '<a class="a">x</a>', array( 'blockName'
 $check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2. the flag is off once the outermost block closes' );
 $check( $has( (string) $closed, 'sgs-focus-rests' ), '2. a closing block with the setting wears sgs-focus-rests: ' . $closed );
 
+// 2b. A frame whose block never reaches render_block is popped when its parent closes, and a stray close pops nothing.
+Sgs_Focus_Rests::reset();
+Sgs_Focus_Rests::open_frame( array( 'blockName' => 'sgs/button', 'attrs' => array( 'sgsFocusRests' => true ) ) );
+Sgs_Focus_Rests::open_frame( array( 'blockName' => 'sgs/icon', 'attrs' => array() ) );
+Sgs_Focus_Rests::close_frame( '<i></i>', array( 'blockName' => 'core/null', 'attrs' => array() ) );
+$check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2b. a stray core/null close pops nothing: the leaked child frame is still open' );
+$closed = Sgs_Focus_Rests::close_frame( '<a class="a">x</a>', array( 'blockName' => 'sgs/button', 'attrs' => array( 'sgsFocusRests' => true ) ) );
+$check( $guard . $focus === sgs_hover_state_rules( '.x', 'color:red' ), '2b. closing the parent drops the leaked child frame too, so no flag is left behind' );
+$check( $has( (string) $closed, 'sgs-focus-rests' ), '2b. the parent still wears sgs-focus-rests' );
+
 // 3. A real block through the real render.php.
 function focus_rests_render( array $attrs ): array {
 	$harness = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';

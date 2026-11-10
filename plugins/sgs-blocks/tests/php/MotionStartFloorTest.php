@@ -281,6 +281,69 @@ final class MotionStartFloorTest extends TestCase {
 		$this->assertSame( array_fill( 0, 6, '0.01' ), $starts, 'every card of the section-two grid is above the fold' );
 	}
 
+	/** Arm from a template of three plain top-level sections between two template parts. */
+	private function three_section_template(): void {
+		$part = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		$one  = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'one' ), 'innerBlocks' => array() );
+		$two  = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'two' ), 'innerBlocks' => array() );
+		$tre  = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'three' ), 'innerBlocks' => array() );
+		$GLOBALS['sgs_test_top_blocks']          = array( $part, $one, $two, $tre, $part );
+		$GLOBALS['_wp_current_template_content'] = '<!-- wp:sgs/container /-->';
+		$GLOBALS['sgs_test_in_loop']             = false;
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+	}
+
+	/** Render the three sections the way a `render_block_data` filter leaves them (extra attributes added) and return each start opacity. */
+	private function render_three_sections( array $extra ): array {
+		$out = array();
+		foreach ( array( 'one', 'two', 'three' ) as $class ) {
+			$GLOBALS['sgs_collected_css'] = array();
+			$block = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => $class, 'sgsMotion' => self::entrance( array( 'opacity' => 0 ) ) ) + $extra );
+			sgs_test_render_motion_block( $block, '<div class="wp-block-sgs-container"><p>x</p></div>' );
+			$out[] = preg_match( '/--sgs-me-from-op:([0-9.]+);/', $this->css(), $m ) ? $m[1] : null;
+		}
+		return $out;
+	}
+
+	public function test_happy_a_render_time_filter_that_adds_an_attribute_leaves_section_two_above_the_fold(): void {
+		$this->three_section_template();
+		// The tree carries sgsMotion too, as the stored template does.
+		$motion = self::entrance( array( 'opacity' => 0 ) );
+		foreach ( array( 1, 2, 3 ) as $i ) {
+			$GLOBALS['sgs_test_top_blocks'][ $i ]['attrs']['sgsMotion'] = $motion;
+		}
+		Sgs_Motion_Renderer::reset();
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+		$this->assertSame( array( '0.01', '0.01', '0' ), $this->render_three_sections( array( 'dataFilterAdded' => 'yes' ) ), 'an attribute a filter adds at render time does not unmatch the section' );
+	}
+
+	public function test_edge_when_a_filter_changes_the_className_the_only_candidate_of_that_name_still_matches_by_order(): void {
+		$this->three_section_template();
+		$motion = self::entrance( array( 'opacity' => 0 ) );
+		$part   = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		$only   = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'className' => 'hero-a', 'sgsMotion' => $motion ), 'innerBlocks' => array() );
+		$GLOBALS['sgs_test_top_blocks'] = array( $part, $only, $part );
+		Sgs_Motion_Renderer::reset();
+		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
+		$block = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'className' => 'hero-a hero-b', 'sgsMotion' => $motion ) );
+		sgs_test_render_motion_block( $block, '<div class="wp-block-sgs-hero"><p>x</p></div>' );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $this->css(), 'the one remaining candidate of that block name takes the block' );
+	}
+
+	public function test_edge_a_leaked_frame_is_popped_when_its_parent_closes_and_a_stray_close_pops_nothing(): void {
+		$this->arm();
+		$a = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'a' ) );
+		$b = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'className' => 'b' ) );
+		Sgs_Motion_Renderer::open_frame( $a, $a, null );
+		Sgs_Motion_Renderer::open_frame( $b, $b, (object) array( 'name' => 'sgs/container' ) );
+		$this->assertTrue( Sgs_Motion_Renderer::in_above_fold() );
+		// A block that never reaches render_block leaves its frame open; the stray core/null close pops nothing.
+		Sgs_Motion_Renderer::close_frame( '', array( 'blockName' => 'core/null', 'attrs' => array() ) );
+		$this->assertTrue( Sgs_Motion_Renderer::in_above_fold(), 'a stray core/null close pops nothing' );
+		Sgs_Motion_Renderer::close_frame( '', $a );
+		$this->assertFalse( Sgs_Motion_Renderer::in_above_fold(), 'closing the parent also drops the leaked child frame above it' );
+	}
+
 	public function test_fail_a_post_with_no_parseable_blocks_marks_nothing_above_the_fold(): void {
 		$GLOBALS['sgs_test_top_blocks'] = array();
 		$GLOBALS['sgs_test_in_loop']    = true;
