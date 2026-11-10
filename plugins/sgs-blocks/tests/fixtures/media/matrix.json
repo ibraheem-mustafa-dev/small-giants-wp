@@ -1,0 +1,64 @@
+{
+	"_doc": "Spec 49 C0 fixture for C3 (emitter selectors), §7.3 (when the helper prints), §7.4 (what paints where) and AC-16 (editor and front end equal). 'paint' maps each setting to the selector role its declarations land on, in three states. Roles: 'layout' is the outermost printed element (figure, else a, else the surface); 'surface' is the helper when printed, else the media element; 'media' is the media element; 'overlay' is the helper's ::after, or the mask layer's ::after with a mask; 'mask' is .sgs-media-box__mask. Selectors per C3: layout .{uid}; surface .{uid} or the helper; media .{uid} .sgs-media-el with a helper or a wrapper, else .{uid}. 'slots' is AC-16's 12-slot matrix: each slot is built in the editor and on the front end and compared within 1px at 375, 768 and 1440.",
+	"paint": {
+		"Width": { "bare": "layout", "helper": "layout", "mask": "layout" },
+		"MinWidth": { "bare": "layout", "helper": "layout", "mask": "layout" },
+		"MaxWidth": { "bare": "layout", "helper": "layout", "mask": "layout" },
+		"Alignment": { "bare": "layout", "helper": "layout", "mask": "layout" },
+		"Order": { "bare": "layout", "helper": "layout", "mask": "layout" },
+		"Height": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"Ratio": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"MinHeight": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"MaxHeight": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"Border": { "bare": "media", "helper": "surface", "mask": "omitted" },
+		"Radius": { "bare": "media", "helper": "surface", "mask": "omitted" },
+		"Shadow": { "bare": "media", "helper": "surface", "mask": "surface as filter:drop-shadow" },
+		"Padding": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"Background": { "bare": "media", "helper": "surface", "mask": "surface" },
+		"Fit": { "bare": "media", "helper": "media", "mask": "media" },
+		"Focal": { "bare": "media", "helper": "media", "mask": "media" },
+		"Opacity": { "bare": "media", "helper": "media", "mask": "media" },
+		"Blend": { "bare": "media", "helper": "media", "mask": "media" },
+		"Colour": { "bare": "media", "helper": "media", "mask": "media" },
+		"Overlay": { "bare": "n/a: an overlay prints the helper", "helper": "overlay", "mask": "overlay" },
+		"Shape": { "bare": "media (circle, ellipse, pill as border-radius)", "helper": "surface (circle, ellipse, pill)", "mask": "mask" }
+	},
+	"helperTriggers": {
+		"prints": [
+			{ "Height": "fill" },
+			{ "OverlayColour": "#000" },
+			{ "OverlayGradient": "linear-gradient(#000, transparent)" },
+			{ "OverlayColourHover": "#000" },
+			{ "Shape": { "shape": "arch" } },
+			{ "hover": { "scale": 1.05 } },
+			{ "effect": "parallax" },
+			{ "effect": "ken-burns" },
+			{ "entrance": "clip-reveal" },
+			{ "effect": "sheen" },
+			{ "Height": { "mobile": "fill" } }
+		],
+		"absent": [
+			{},
+			{ "caption": "A caption" },
+			{ "link": "https://example.com" },
+			{ "caption": "A caption", "link": "https://example.com" },
+			{ "Shape": { "shape": "circle" } },
+			{ "hover": { "scale": 1 } }
+		],
+		"note": "Once printed at any device, the helper prints at every device (§7.3)."
+	},
+	"slots": [
+		{ "id": "s01", "kind": "image", "settings": { "Height": "300px" } },
+		{ "id": "s02", "kind": "image", "settings": { "Ratio": "4 / 3" } },
+		{ "id": "s03", "kind": "image", "settings": { "Ratio": "1 / 1", "Height": "240px" } },
+		{ "id": "s04", "kind": "image", "settings": { "Width": "320px", "Fit": "contain", "Ratio": "16 / 9" } },
+		{ "id": "s05", "kind": "image", "settings": { "Height": "fill" }, "parent": "stretched flex row beside 400px of text" },
+		{ "id": "s06", "kind": "image", "settings": { "Ratio": "3 / 2", "hover": { "scale": 1.08 } } },
+		{ "id": "s07", "kind": "image", "settings": { "Ratio": "16 / 9", "OverlayGradient": "linear-gradient(180deg, transparent, #000)" } },
+		{ "id": "s08", "kind": "image", "settings": { "Ratio": "1 / 1", "Radius": "24px", "BoxShadow": "0 8px 24px rgba(0,0,0,.25)" } },
+		{ "id": "s09", "kind": "image", "settings": { "Shape": { "shape": "circle" }, "BoxShadow": "0 4px 12px rgba(0,0,0,.3)" } },
+		{ "id": "s10", "kind": "image", "settings": { "Shape": { "shape": "arch" }, "BoxShadow": "0 4px 12px rgba(0,0,0,.3)" } },
+		{ "id": "s11", "kind": "video", "settings": { "Ratio": "16 / 9", "Fit": "cover" } },
+		{ "id": "s12", "kind": "embed", "settings": { "Radius": "16px" } }
+	]
+}

@@ -1,0 +1,33 @@
+{
+	"_doc": "Spec 49 C0 fixture for FR-49-12 and AC-8: every stored string reaching CSS goes through the value helper for its type (plugins/sgs-blocks/includes/helpers-css-safety.php::sgs_css_length_value, sgs_resolved_css_value; includes/helpers-tokens.php::sgs_colour_value, sgs_css_gradient_value) and its JS twin. 'refuse' values must come back as '' (or the field's safe default) from both twins, and no emitter output may contain them. 'keep' values must come back unchanged. The gate runs every entry through every emitter by type.",
+	"refuse": {
+		"any": [
+			"10px;}body{display:none",
+			"10px}",
+			"{10px",
+			"10px</style><script>alert(1)</script>",
+			"10px\\\\",
+			"10px\nbody{}",
+			"calc(10px",
+			"calc(10px))",
+			"var(--a, ')",
+			"var(--a, \"x)",
+			"10px /* x */",
+			"url(javascript:alert(1))",
+			"expression(alert(1))",
+			"@import url(x.css)",
+			"10px !important",
+			"=10px"
+		],
+		"length": [ "red", "10", "10 px", "10px 20px", "min(10px 20px)" ],
+		"colour": [ "red;background:url(x)", "rgb(0,0,0", "var(--a);color:red" ],
+		"gradient": [ "linear-gradient(red, blue);x:y", "linear-gradient(url(x), red)" ],
+		"url": [ "javascript:alert(1)", "data:text/html,<script>alert(1)</script>", "\" onerror=\"alert(1)" ]
+	},
+	"keep": {
+		"length": [ "10px", "1.5rem", "50%", "100vw", "12.5svh", "calc(100% - 2rem)", "clamp(1rem, 2vw + 1rem, 3rem)", "min(100%, 40rem)", "max(10px, 1vw)", "var(--wp--preset--spacing--40)", "var(--a, 'x')", "auto", "none" ],
+		"colour": [ "#fff", "#ff000080", "rgb(0 0 0 / 50%)", "rgba(0,0,0,.5)", "hsl(200 50% 50%)", "var(--wp--preset--color--primary)", "VAR(--x)", "primary" ],
+		"gradient": [ "linear-gradient(90deg, #000 0%, #fff 100%)", "radial-gradient(circle at 50% 50%, rgba(0,0,0,.4), transparent 70%)" ],
+		"ratio": [ "1 / 1", "16 / 9", "natural" ]
+	}
+}

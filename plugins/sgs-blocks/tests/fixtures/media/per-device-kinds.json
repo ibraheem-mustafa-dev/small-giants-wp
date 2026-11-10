@@ -1,0 +1,49 @@
+{
+	"_doc": "Spec 49 C0 fixture for FR-49-8, FR-49-9 and AC-4 (§7.1 per-device kinds). Each case gives a slot's Source per device and the files that may be requested at each width, in Chrome, Firefox and WebKit, with no other request for that slot. 'reducedMotion' runs the 1440 load with prefers-reduced-motion: reduce. 'noScript' loads 1440 with JavaScript off. 'resize' loads at the first width, resizes to the second and lists the files requested after the resize. The proven browser behaviour each case rests on is in .claude/reports/2026-11-09-media-controls/R-per-device-kind.md, QC-per-device-design.md and video-media-rm-test.mjs (PS-11 re-runs them against WP-2a's real markup).",
+	"widths": { "desktop": 1440, "tablet": 768, "mobile": 375 },
+	"cases": [
+		{
+			"id": "video-desktop-photo-mobile",
+			"source": { "desktop": { "kind": "video", "url": "v-d.mp4", "poster": "p-d.jpg", "autoplay": true }, "mobile": { "kind": "image", "url": "i-m.jpg" } },
+			"requests": { "desktop": [ "v-d.mp4", "p-d.jpg" ], "tablet": [ "v-d.mp4", "p-d.jpg" ], "mobile": [ "i-m.jpg" ] },
+			"reducedMotion": [ "p-d.jpg" ],
+			"noScript": [ "v-d.mp4", "p-d.jpg" ],
+			"resize": { "from": 1440, "to": 375, "after": [ "i-m.jpg" ], "videoPaused": true }
+		},
+		{
+			"id": "photo-desktop-video-mobile",
+			"source": { "desktop": { "kind": "image", "url": "i-d.jpg" }, "mobile": { "kind": "video", "url": "v-m.mp4", "poster": "p-m.jpg", "autoplay": true } },
+			"requests": { "desktop": [ "i-d.jpg" ], "tablet": [ "i-d.jpg" ], "mobile": [ "v-m.mp4", "p-m.jpg" ] },
+			"reducedMotion": [ "i-d.jpg" ],
+			"resize": { "from": 375, "to": 1440, "after": [ "i-d.jpg" ], "videoPaused": true }
+		},
+		{
+			"id": "photo-desktop-svg-mobile",
+			"source": { "desktop": { "kind": "image", "url": "i-d.jpg" }, "mobile": { "kind": "svg", "markup": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"5\"/></svg>" } },
+			"requests": { "desktop": [ "i-d.jpg" ], "tablet": [ "i-d.jpg" ], "mobile": [] }
+		},
+		{
+			"id": "video-desktop-none-mobile",
+			"source": { "desktop": { "kind": "video", "url": "v-d.mp4", "poster": "p-d.jpg", "autoplay": true }, "mobile": { "kind": "none" } },
+			"requests": { "desktop": [ "v-d.mp4", "p-d.jpg" ], "tablet": [ "v-d.mp4", "p-d.jpg" ], "mobile": [] }
+		},
+		{
+			"id": "embed-desktop-photo-mobile",
+			"source": { "desktop": { "kind": "embed", "url": "https://www.youtube-nocookie.com/embed/x" }, "mobile": { "kind": "image", "url": "i-m.jpg" } },
+			"requests": { "desktop": [ "youtube-nocookie.com/embed/x" ], "tablet": [ "youtube-nocookie.com/embed/x" ], "mobile": [ "i-m.jpg" ] },
+			"note": "The iframe is lazy: when it is in view at desktop it loads; hidden at mobile it never does."
+		},
+		{
+			"id": "three-photos",
+			"source": { "desktop": { "kind": "image", "url": "i-d.jpg" }, "tablet": { "kind": "image", "url": "i-t.jpg" }, "mobile": { "kind": "image", "url": "i-m.jpg" } },
+			"requests": { "desktop": [ "i-d.jpg" ], "tablet": [ "i-t.jpg" ], "mobile": [ "i-m.jpg" ] },
+			"note": "One <picture>, one request per width (FR-49-8)."
+		},
+		{
+			"id": "photo-hidden-on-mobile",
+			"source": { "desktop": { "kind": "image", "url": "i-d.jpg" }, "mobile": { "kind": "none" } },
+			"requests": { "desktop": [ "i-d.jpg" ], "tablet": [ "i-d.jpg" ], "mobile": [] },
+			"note": "The mobile source is a 1-pixel GIF data URI; an empty srcset would download i-d.jpg at mobile (tested)."
+		}
+	]
+}

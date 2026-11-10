@@ -185,7 +185,7 @@ What changes in the system as a whole: each registry entry gains a `settings` ar
 | New: filter | New | Colour: Natural, Black and white (with strength), White, in one `filter`; replaces `sgsColourTreatment` |
 | New: layout | New | Alignment and Order, on the layout box |
 
-The emitter kinds of §8 map to the atoms' PHP twins: `plain`, `sides`, `corners`, `shadow` and `colour-states` twins call `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_emit_tier_decls` and `sgs_emit_responsive_css`, `helpers-box.php`, `helpers-border-style.php`, `helpers-shadow-layers.php`, `helpers-shadow-hover.php` and `helpers-hover-state.php`; `sizing`, `focal`, `filter` and `shape` are the twins of those atoms. The editor uses each atom's JS module, plus `src/utils/border-preview.js`, `radius-preview.js` and `spacing-preview.js`; `background-preview.js` is split so `borderPaintPreview` survives. The existing parity gates check PHP against JS; `sizing-cases.json` (§7.2's 12 combinations with and without a helper) is the sizing atom's fixture, compared as parsed declarations per property and device. Order is by property, then device (desktop, tablet, mobile), with hover last.
+The emitter kinds of §8 map to the atoms' PHP twins: `plain`, `sides`, `corners`, `shadow` and `colour-states` twins call `plugins/sgs-blocks/includes/helpers-responsive.php::sgs_emit_tier_decls` and `sgs_emit_responsive_css`, `helpers-box.php`, `helpers-border-style.php`, `helpers-shadow-layers.php`, `helpers-shadow-hover.php` and `helpers-hover-state.php`; `sizing`, `focal`, `filter` and `shape` are the twins of those atoms. The editor uses each atom's JS module, plus `src/utils/border-preview.js`, `radius-preview.js` and `spacing-preview.js`; `background-preview.js` is split so `borderPaintPreview` survives. The existing parity gates check PHP against JS; `plugins/sgs-blocks/tests/fixtures/media/sizing-cases.json` (§7.2's measured combinations with and without a helper) is the sizing atom's fixture, compared as parsed declarations per property and device. Order is by property, then device (desktop, tablet, mobile), with hover last.
 
 A `plain` setting prints one property per device and nothing else.
 
@@ -279,7 +279,7 @@ The editor uses the same CSS.
 
 ### 7.3 When the helper is printed
 
-The helper is printed if, at any device, on resolved values, any of these hold: Height is `fill`; `OverlayColour`, `OverlayGradient` or a hover form is set; Shape is a mask shape (not none, circle, ellipse or pill); the media part has hover scale above 1, Parallax, Ken Burns, a clip entrance or an effect that paints a layer (sheen, glare, ripple, curtain). A caption or link never causes it. Once printed, it is printed for all devices and takes box paint at all devices.
+The helper is printed if, at any device, on resolved values, any of these hold: Height is `fill`; `OverlayColour`, `OverlayGradient` or a hover form is set; Shape is a mask shape (not none, circle, ellipse or pill); the media part has hover scale above 1, Parallax, Ken Burns, a clip entrance or an effect that paints a layer (sheen, glare, ripple, curtain, surface treatment). A caption or link never causes it. Once printed, it is printed for all devices and takes box paint at all devices.
 
 ### 7.4 What paints where
 
@@ -809,7 +809,25 @@ PS-1 DB and gates accept §8, including one item-set block's `slot-array` shape,
 
 **C8 Generator:** `scripts/generate-media-attributes.mjs`, extended, reads the registry and each `supports.sgs.mediaElements`, writes attributes marked `_generated: "media-atoms"` into `block.json`, `--check`, `--block <slug>`.
 
-C0 ships these signatures as documentation and the shared fixture files, not stub code. They stay open to correction until the Slice gate passes.
+**C9 File layout** (new files; each package owns its own and touches no other package's):
+
+| Package | New files |
+|---|---|
+| WP-1 | `plugins/sgs-blocks/schemas/media-slot.schema.json` |
+| WP-2a | `assets/css/media-base.css`, `media-overlay.css`, `media-video.css`; `includes/media/tier-image.php`, `tier-video.php`, `tier-embed.php`, `tier-svg.php` (the split of `helpers-tier-media.php`); `src/shared/media/device-video.js` |
+| WP-2b | `includes/media/atoms/sizing.php`, `shape.php`, `filter.php`, `layout.php`, with JS twins of the same names beside `src/components/media/atoms/registry.js` |
+| WP-3 | `includes/media/class-sgs-media-priority.php` |
+| WP-4 | `src/components/media/MediaSlotField.js`, `FocalField.js`, `FitField.js`, `ShapeField.js`, `Chips.js`, `mediaPreview.js` |
+| WP-0b | `includes/class-sgs-background-layer.php` |
+| WP-6 | `assets/css/media-mask.css` |
+| WP-8 | `assets/css/media-bg.css` |
+| WP-10a | `src/components/media/inspector-focus-store.js` (the plugin's first `@wordpress/data` store) |
+| WP-14 | `scripts/migrate-media-system/` (survey, fix, check, self-test) |
+| WP-15a | `scripts/data/gate-disposition.json` |
+
+Paths are under `plugins/sgs-blocks/` unless stated.
+
+C0 ships these signatures as documentation, plus the shared fixtures in `plugins/sgs-blocks/tests/fixtures/media/` (`sizing-cases.json`, `matrix.json`, `breakouts.json`, `per-device-kinds.json`; see its README), not stub code. They stay open to correction until the Slice gate passes. One sizing case is open: a helper printed with nothing sizing-related set must keep a small file at its own size; PS-2 finds and proves the rule.
 
 ### 14.4 Packages
 
