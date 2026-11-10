@@ -86,10 +86,10 @@ if ( ! function_exists( 'sgs_font_family_sanitise' ) ) {
 	 * @return string Sanitised font-family (may be '').
 	 */
 	function sgs_font_family_sanitise( $value ): string {
-			// A custom-property reference is already resolved: keep it, or refuse it whole.
-			if ( 1 === preg_match( '/^\s*var\(/i', (string) $value ) ) {
-				return sgs_resolved_css_value( $value );
-			}
+		// A custom-property reference is already resolved: keep it, or refuse it whole.
+		if ( 1 === preg_match( '/^\s*var\(/i', (string) $value ) ) {
+			return sgs_resolved_css_value( $value );
+		}
 		$clean = preg_replace( '/[^a-zA-Z0-9 ,"\'\-]/', '', (string) $value );
 		if ( preg_match( '/^[a-z0-9-]+$/', $clean ) && in_array( $clean, sgs_font_family_preset_slugs(), true ) ) {
 			return 'var(--wp--preset--font-family--' . $clean . ')';
