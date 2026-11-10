@@ -43,6 +43,8 @@
  *   actions.close()                 — close it now.
  *
  * Directive-bound API (wired by includes/class-sgs-toast.php's markup):
+ *   actions.viewBag( event )        — "View bag" click: opens the page's bag
+ *                                     drawer, else the link goes to the cart.
  *   actions.pointerIn / pointerOut  — mouseenter / mouseleave.
  *   actions.focusIn   / focusOut    — focusin / focusout.
  *   state.isVisible, isSuccess, isError, isAnimated,
@@ -122,6 +124,28 @@ function hostToast() {
 	if ( toastHome && toast.parentElement !== toastHome ) {
 		toastHome.appendChild( toast );
 	}
+}
+
+/**
+ * The page's bag button that opens a drawer or flyout, or null.
+ *
+ * `sgs/cart` prints `aria-controls` on its trigger only in the drawer and
+ * flyout modes; in link mode the trigger is a plain `<a href>` to the cart
+ * page. A visible trigger wins over a hidden one (a header may carry both a
+ * desktop and a mobile bag).
+ *
+ * @return {?HTMLElement} The trigger to click, or null.
+ */
+function pageBagTrigger() {
+	const triggers = [
+		...document.querySelectorAll(
+			'.sgs-cart [data-sgs-cart-trigger][aria-controls]'
+		),
+	];
+	const shown = triggers.find( ( t ) =>
+		'function' === typeof t.checkVisibility ? t.checkVisibility() : true
+	);
+	return shown || null;
 }
 
 const { state, actions } = store( 'sgs/toast', {
@@ -318,6 +342,25 @@ const { state, actions } = store( 'sgs/toast', {
 			// element without a focusout the wrapper can see.
 			state.hovering = false;
 			state.focused = false;
+		},
+
+		/**
+		 * "View bag" — open the page's bag drawer when it has one.
+		 *
+		 * The click goes to the bag button itself, so the drawer opens through
+		 * the same path as a tap on that button. A page with no bag drawer
+		 * (no bag block, or one that links to the cart page) leaves the link
+		 * to navigate to the cart page.
+		 *
+		 * @param {MouseEvent} event The click on the "View bag" link.
+		 */
+		viewBag( event ) {
+			const trigger = pageBagTrigger();
+			if ( ! trigger ) {
+				return;
+			}
+			event.preventDefault();
+			trigger.click();
 		},
 
 		/** Pointer entered the toast — hold the auto-close. */

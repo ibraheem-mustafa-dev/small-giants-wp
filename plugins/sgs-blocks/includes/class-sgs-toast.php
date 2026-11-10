@@ -199,6 +199,7 @@ final class Sgs_Toast {
 			<a
 				class="sgs-toast__action"
 				href="<?php echo self::bag_url(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_url'd in bag_url(). ?>"
+				data-wp-on--click="actions.viewBag"
 				data-wp-bind--hidden="state.isActionHidden"
 			><?php esc_html_e( 'View bag', 'sgs-blocks' ); ?></a>
 			<button
