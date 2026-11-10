@@ -1470,6 +1470,11 @@
 			"default": "",
 			"description": "Drawer slide easing (the slide out plays it reversed), a named easing from the shared motion easing list (includes/helpers-motion-easing.php). Empty keeps ease-out."
 		},
+		"scrimFadeDuration": {
+			"type": "number",
+			"default": 0,
+			"description": "Fade time of the dimmed layer behind the open drawer, in milliseconds. 0 (default) fades in step with the drawer slide, or the shared scrim's 200ms when the slide time is unset."
+		},
 		"panelSlideEasingCustom": {
 			"type": "string",
 			"default": "",

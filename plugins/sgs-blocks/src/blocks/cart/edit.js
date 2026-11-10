@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps, InspectorControls, useSettings } from '@wordpress/block-editor';
-import { PanelBody, TextControl, Notice } from '@wordpress/components';
+import { PanelBody, TextControl, Notice, RangeControl } from '@wordpress/components';
 import { useDrawerPreviewToggle, IconPreview, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, SgsColourPanel, ScrimControls, TypographyControls, ResponsiveOverride, SgsLengthControl, RowWrapPanel } from '../../components';
 import { ToolsPanel } from '../../components/primitives';
 import { colourVar, usePreviewTier, tierBoxLonghands, resolveTier } from '../../utils';
@@ -360,10 +360,24 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								scrimColourGradient: '',
 								scrimOpacity: { desktop: 0.55 },
 								scrimBlur: {},
+								scrimFadeDuration: 0,
 							} )
 						}
 					>
 						<ScrimControls attributes={ attributes } setAttributes={ setAttributes } />
+						<RangeControl
+							label={ __( 'Backdrop fade time (ms)', 'sgs-blocks' ) }
+							help={ __( '0 fades the dimmed page behind in step with the drawer slide.', 'sgs-blocks' ) }
+							value={ attributes.scrimFadeDuration ?? 0 }
+							onChange={ ( value ) => setAttributes( { scrimFadeDuration: value ?? 0 } ) }
+							min={ 0 }
+							max={ 3000 }
+							step={ 10 }
+							allowReset
+							resetFallbackValue={ 0 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
 					</ToolsPanel>
 				) }
 			</InspectorControls>

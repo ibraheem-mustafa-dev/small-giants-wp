@@ -4,7 +4,7 @@
  *
  * Two things are tested against the REAL shipped text, not a copy:
  *   1. The scrim-render section of `src/blocks/cart/render.php` (extracted between its
- *      "Scrim (Wave 3C U-2" comment and the "Emit the scoped <style>" comment) — the open
+ *      "Scrim (Wave 3C U-2" comment and the "Wrap settings of the panel" comment) — the open
  *      selector, the drawer-ref data attribute, and that it fires ONLY for the drawer
  *      display mode.
  *   2. `includes/helpers-cart-panel.php::sgs_cart_panel_wrapper_html()` — the real function,
@@ -52,6 +52,8 @@ if ( ! function_exists( 'add_action' ) ) {
 }
 
 require_once dirname( __DIR__, 2 ) . '/includes/class-sgs-breakpoints.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-motion-easing.php';
+require_once dirname( __DIR__, 2 ) . '/includes/motion/class-sgs-motion-field-types.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-scrim.php';
 require_once dirname( __DIR__, 2 ) . '/includes/lucide-icons.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-cart-panel.php';
@@ -73,14 +75,13 @@ function ok( bool $cond, string $label ): void {
 $render_path = dirname( __DIR__, 2 ) . '/src/blocks/cart/render.php';
 $source      = (string) file_get_contents( $render_path );
 $start       = strpos( $source, '// ── Scrim (Wave 3C U-2' );
-$end         = strpos( $source, 'Emit the scoped <style>' );
+$end         = strpos( $source, '// Wrap settings of the panel' );
 ok( false !== $start && false !== $end && $end > $start, 'the scrim section is found in the real cart/render.php' );
 if ( false === $start || false === $end || $end <= $start ) {
 	echo "\n==== $pass passed, $fail failed ====\n";
 	exit( 1 );
 }
 $section = substr( $source, $start, $end - $start );
-$section = substr( $section, 0, (int) strrpos( $section, "\n//" ) );
 
 /**
  * Run the extracted section against fixture render-state and return the CSS appended.
@@ -118,6 +119,24 @@ ok( false !== strpos( $queued_html, 'data-sgs-nav-scrim="sgs-cart-abcd1234-drawe
 // A drawer with no visible scrim tier still emits nothing (helper's own "invisible" gate).
 list( $css_invisible, ) = run_cart_scrim( $section, true, 'drawer', array() );
 ok( array() === $css_invisible, 'drawer mode with no scrimOpacity/scrimBlur set: nothing appended (default block.json ships scrimOpacity.desktop=0.55, so this is the "client cleared it" case)' );
+
+// ── Scrim fade time: the slide's timing, overridden by scrimFadeDuration ────────
+$fade_base = array( 'scrimOpacity' => array( 'desktop' => 0.55 ) );
+list( , $css_fade_default ) = run_cart_scrim( $section, true, 'drawer', $fade_base );
+ok( false !== strpos( $css_fade_default, 'transition:opacity 200ms ease' ), '(a) unset slide and unset scrimFadeDuration: the scrim keeps the 200ms ease default' );
+
+list( , $css_fade_slide ) = run_cart_scrim( $section, true, 'drawer', $fade_base + array( 'panelSlideDuration' => 600, 'panelSlideEasing' => 'quart-out' ) );
+ok( false !== strpos( $css_fade_slide, 'transition:opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1)' ), '(b) a set slide duration and easing reach the scrim rest transition' );
+ok( false !== strpos( $css_fade_slide, 'transition-duration:600ms' ), '(b) the open state uses the slide duration too' );
+
+list( , $css_fade_custom ) = run_cart_scrim( $section, true, 'drawer', $fade_base + array( 'panelSlideDuration' => 600, 'panelSlideEasing' => 'custom', 'panelSlideEasingCustom' => 'cubic-bezier(0.1, 0.2, 0.3, 0.4)' ) );
+ok( false !== strpos( $css_fade_custom, 'cubic-bezier(0.1, 0.2, 0.3, 0.4)' ), '(b) a custom slide curve reaches the scrim' );
+
+list( , $css_fade_override ) = run_cart_scrim( $section, true, 'drawer', $fade_base + array( 'panelSlideDuration' => 600, 'scrimFadeDuration' => 350 ) );
+ok( false !== strpos( $css_fade_override, 'transition:opacity 350ms' ) && false !== strpos( $css_fade_override, 'transition-duration:350ms' ), '(c) scrimFadeDuration wins over the slide duration' );
+
+list( , $css_fade_only ) = run_cart_scrim( $section, true, 'drawer', $fade_base + array( 'scrimFadeDuration' => 90 ) );
+ok( false !== strpos( $css_fade_only, 'transition:opacity 90ms ease' ), '(c) scrimFadeDuration alone keeps the default easing' );
 
 // ── Uid class on the drawer <dialog> (helpers-cart-panel.php) ───────────────────
 $dialog_with_uid = sgs_cart_panel_wrapper_html(

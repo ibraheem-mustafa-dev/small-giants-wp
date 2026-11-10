@@ -539,14 +539,26 @@ $panel_html = $has_panel
 // carries the SAME drawer-ref value as the trigger's `drawerRef` context and
 // the dialog's own id, so store.js's resolveScrim() can find this element.
 if ( $has_panel && 'drawer' === $effective_mode ) {
-	$scrim_css = sgs_scrim_render(
-		$attributes,
-		$uid,
-		array(
-			'open' => '.' . $uid . '.sgs-cart__panel--drawer[open]',
-			'data' => array( 'sgs-nav-scrim' => $drawer_id ),
-		)
+	// The scrim fades with the drawer slide (panelSlideDuration / panelSlideEasing, resolved as
+	// includes/helpers-cart-panel-css.php resolves them for the panel); scrimFadeDuration sets its own
+	// time. With neither set the helper's own 200ms default applies.
+	$scrim_args = array(
+		'open' => '.' . $uid . '.sgs-cart__panel--drawer[open]',
+		'data' => array( 'sgs-nav-scrim' => $drawer_id ),
 	);
+	$scrim_fade = sgs_flat_duration_ms( $attributes['scrimFadeDuration'] ?? 0, 0 );
+	$slide_ms   = sgs_flat_duration_ms( $attributes['panelSlideDuration'] ?? 0, 0 );
+	if ( $scrim_fade > 0 ) {
+		$scrim_args['enter_ms'] = $scrim_fade;
+		$scrim_args['exit_ms']  = $scrim_fade;
+	} elseif ( $slide_ms > 0 ) {
+		$scrim_args['enter_ms'] = $slide_ms;
+		$scrim_args['exit_ms']  = $slide_ms;
+	}
+	if ( '' !== (string) ( $attributes['panelSlideEasing'] ?? '' ) ) {
+		$scrim_args['easing'] = sgs_motion_easing_css( (string) $attributes['panelSlideEasing'], (string) ( $attributes['panelSlideEasingCustom'] ?? '' ), 'ease-out' );
+	}
+	$scrim_css = sgs_scrim_render( $attributes, $uid, $scrim_args );
 	if ( '' !== $scrim_css ) {
 		$scoped_css[] = $scrim_css;
 	}
