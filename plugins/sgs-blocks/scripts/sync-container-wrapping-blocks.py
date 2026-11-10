@@ -216,12 +216,16 @@ def inner_element_attrs(bj: Dict[str, Any]) -> set:
 def layout_attrs_for(attrs: Dict[str, Any], bj: Optional[Dict[str, Any]] = None) -> List[str]:
     """Return attr names that qualify as layout-orchestration attrs (leaving out those mapped to an inner element)."""
     inner = inner_element_attrs(bj) if bj else set()
-    return [k for k in attrs if LAYOUT_ATTR_RE.match(k) and k not in inner]
+    return [k for k, v in attrs.items() if LAYOUT_ATTR_RE.match(k) and k not in inner and not (isinstance(v, dict) and v.get("_generated"))]
 
 
 def section_attrs_for(attrs: Dict[str, Any]) -> List[str]:
-    """Return attr names that qualify as section-frame attrs."""
-    return [k for k in attrs if SECTION_ATTR_RE.match(k)]
+    """Return attr names that qualify as section-frame attrs.
+
+    An attribute the media generator wrote (`_generated: "media-atoms"`) belongs to a media
+    atom, such as the overlay atom's `overlayColour`, and says nothing about the block's frame.
+    """
+    return [k for k, v in attrs.items() if SECTION_ATTR_RE.match(k) and not (isinstance(v, dict) and v.get("_generated"))]
 
 
 def build_structural_parents(slugs: List[str]) -> Set[str]:
