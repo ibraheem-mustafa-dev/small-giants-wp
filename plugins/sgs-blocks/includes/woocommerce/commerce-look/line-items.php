@@ -115,7 +115,8 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 /**
  * The text before the Checkout's Log in link (`sgsCheckoutStrings.loginPrefix`, a span the checkout script adds beside
  * the link). WooCommerce floats the link to the right of the Contact heading; the span floats right too, so it sits
- * directly to the link's left on the same line and never wraps under the heading. WooCommerce pulls the link up with
+ * directly to the link's left on the same line. A long text wraps inside 70% of the row instead of overflowing; the
+ * Eye Care value fits on one line at 375px. WooCommerce pulls the link up with
  * a -24px top margin (to sit beside the heading); the span takes the same margin so both land on one row. The link's own margin box ends above its top
  * edge, so it gets a 24px bottom margin to become an obstacle the span floats beside rather than under.
  *
@@ -130,7 +131,7 @@ function sgs_commerce_look_login_prefix_css( array $attrs, string $block, string
 		return '';
 	}
 	return $root . ' .wc-block-checkout__login-prompt{margin-bottom:24px;}'
-		. $root . ' .sgs-checkout-login-prefix{float:right;white-space:nowrap;margin:-24px 0.35em 0 0;color:var(--wp--preset--color--text-muted,currentColor);}';
+		. $root . ' .sgs-checkout-login-prefix{float:right;max-width:70%;overflow-wrap:anywhere;margin:-24px 0.35em 0 0;color:var(--wp--preset--color--text-muted,currentColor);}';
 }
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_inject', 13, 2 );
@@ -148,7 +149,8 @@ function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 	$label  = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
 	$brand  = true === ( $attrs['sgsItemShowBrand'] ?? false );
 	$raw    = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? (string) ( $attrs['sgsCheckoutStrings']['loginPrefix'] ?? '' ) : '';
-	$prefix = '' === trim( $raw ) ? '' : substr( str_replace( array( "\r", "\n", "\t" ), ' ', wp_kses( $raw, array() ) ), 0, 120 );
+	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "", "
+", "	" ), ' ', wp_specialchars_decode( wp_strip_all_tags( $raw ) ) ), 0, 120 );
 	if ( '' === $label && ! $brand && '' === $prefix ) {
 		return array();
 	}
@@ -174,7 +176,8 @@ function sgs_commerce_look_summary_extras_inject( $block_content, $block ) {
 	$attrs  = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
 	$bag    = function_exists( 'wc_get_cart_url' ) ? (string) wc_get_cart_url() : '';
 	$config = sgs_commerce_look_summary_extras( $attrs, $bag );
-	if ( array() === $config ) {
+	// A second Checkout block render on the page finds the handle already enqueued and adds nothing.
+	if ( array() === $config || wp_script_is( 'sgs-checkout-summary-extras', 'enqueued' ) ) {
 		return $block_content;
 	}
 	$script = file_get_contents( __DIR__ . '/summary-extras.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file shipped with the plugin.

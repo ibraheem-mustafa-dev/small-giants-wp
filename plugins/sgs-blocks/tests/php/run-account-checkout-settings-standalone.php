@@ -23,12 +23,13 @@ function __( $t, $d = null ) { return $t; }
 function esc_html( $t ) { return htmlspecialchars( (string) $t, ENT_QUOTES ); }
 function esc_url_raw( $t ) { return (string) $t; }
 function sanitize_key( $k ) { return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $k ) ); }
-function wp_kses( $t, $a ) { return strip_tags( (string) $t ); }
+function wp_strip_all_tags( $t ) { return trim( strip_tags( (string) $t ) ); }
+function wp_specialchars_decode( $t ) { return htmlspecialchars_decode( (string) $t, ENT_QUOTES ); }
 function sanitize_text_field( $t ) { return trim( strip_tags( (string) $t ) ); }
 function wp_json_encode( $v, $f = 0 ) { return json_encode( $v, $f ); }
 function get_option( $k, $d = false ) { return $GLOBALS['options'][ $k ] ?? $d; }
 function register_setting( $g, $n, $a = array() ) { $GLOBALS['settings'][ $n ] = $a; }
-function wp_script_is( $h, $s = 'enqueued' ) { return 'wp-i18n' === $h ? $GLOBALS['i18n_done'] : in_array( $h, array_keys( $GLOBALS['registered'] ?? array() ), true ); }
+function wp_script_is( $h, $s = 'enqueued' ) { if ( 'wp-i18n' === $h ) { return $GLOBALS['i18n_done']; } return 'enqueued' === $s ? in_array( $h, $GLOBALS['enqueued'] ?? array(), true ) : in_array( $h, array_keys( $GLOBALS['registered'] ?? array() ), true ); }
 function wp_register_script( $h, $src = false, $deps = array(), $v = false, $f = false ) { $GLOBALS['registered'][ $h ] = $deps; return true; }
 function wp_enqueue_script( $h ) { $GLOBALS['enqueued'][] = $h; }
 function wp_add_inline_script( $h, $js, $pos = 'after' ) { $GLOBALS['inline'][] = array( $h, $js ); return true; }
@@ -177,12 +178,22 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	ok( '<div>checkout</div>' === $out && false !== strpos( $js, 'sgsCheckoutSummaryExtrasConfig={"editLabel":"Edit"' ) && false !== strpos( $js, 'sgs-checkout-item-brand' ) && in_array( $GLOBALS['inline'][0][0] ?? '', $GLOBALS['enqueued'], true ), 'the checkout block gets the config and the script through an enqueued handle, its content untouched' );
 	ok( false !== strpos( $js, '&&' ) && false === strpos( $js, '&#038;' ), 'the summary extras script is printed with its && intact' );
 	$c = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'https://example.test/bag/' );
-	ok( 'Already have an account? ' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and keeps its trailing space' );
+	ok( 'Already have an account?' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and is stripped of tags and edge spaces (the span margin makes the gap)' );
 	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['loginPrefix'] ?? 'x' ), 'no loginPrefix when it is not set' );
 	ok( array() === SGS\Blocks\sgs_checkout_strings_map( array( 'loginPrefix' => 'Already have an account? ' ) ), 'loginPrefix is not a gettext key, so the translation filter never carries it' );
 	$css = SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'checkout', '.root' );
-	ok( false !== strpos( $css, '.root .sgs-checkout-login-prefix{float:right;' ) && false !== strpos( $css, 'white-space:nowrap' ) && false !== strpos( $css, 'margin:-24px 0.35em 0 0' ) && false !== strpos( $css, '.root .wc-block-checkout__login-prompt{margin-bottom:24px;}' ), 'the login prefix keeps on one line beside the link (a floated, no-wrap span with the same top offset as the link)' );
+	ok( false !== strpos( $css, '.root .sgs-checkout-login-prefix{float:right;' ) && false === strpos( $css, 'white-space:nowrap' ) && false !== strpos( $css, 'max-width:70%' ) && false !== strpos( $css, 'overflow-wrap:anywhere' ) && false !== strpos( $css, 'margin:-24px 0.35em 0 0' ) && false !== strpos( $css, '.root .wc-block-checkout__login-prompt{margin-bottom:24px;}' ), 'the login prefix keeps on one line beside the link (a floated span that may wrap inside 70% of its row, with the same top offset as the link)' );
 	ok( '' === SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsItemShowBrand' => true ), 'checkout', '.root' ) && '' === SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'x' ) ), 'cart', '.root' ), 'no prefix rule without the setting, and none on the cart' );
+	$long = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => str_repeat( 'é', 130 ) ) ), 'https://example.test/bag/' );
+	ok( 120 === mb_strlen( $long['loginPrefix'] ) && mb_check_encoding( $long['loginPrefix'], 'UTF-8' ), 'a long prefix is cut at 120 characters, never inside a multibyte character' );
+	$amp = SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Tom &amp; <b>Jerry</b>' ) ), 'https://example.test/bag/' );
+	ok( 'Tom & Jerry' === $amp['loginPrefix'], 'entities are decoded after the tags are stripped' );
+	$GLOBALS['inline']   = array();
+	$GLOBALS['enqueued'] = array();
+	$twice               = array( 'blockName' => 'woocommerce/checkout', 'attrs' => array( 'sgsItemShowBrand' => true ) );
+	SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>a</div>', $twice );
+	SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>b</div>', $twice );
+	ok( 1 === count( $GLOBALS['inline'] ), 'a second render does not add the inline config twice' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
 	ok( '<div>checkout</div>' === $out, 'an unset checkout block is unchanged' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>cart</div>', array( 'blockName' => 'woocommerce/cart', 'attrs' => array( 'sgsItemShowBrand' => true ) ) );
