@@ -47,6 +47,8 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
 import { isLegacyCall, rulesFor, kindIn, omitted, disabled, shown, REASONS } from '../panels/disclosure-context.js';
 
+import { emitPlain, nodes, num, rulesCss } from '../emit/core.js';
+import { isNumeric } from '../emit/values.js';
 const ATOM_ID = 'focal-point';
 
 /** Repeat/attachment are small closed enums, unlike free-form position. */
@@ -279,4 +281,28 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	return decls;
+}
+
+/**
+ * C3 emitter: `object-position` on the media element once per device that sets its own Focal `{x,y}` (0 to 1). An unset
+ * point prints nothing. PHP twin: `sgs_media_atom_focal_point_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const { media } = nodes( slot, uid, helper );
+	const rules = {};
+	emitPlain( rules, attrs, slot, 'Focal', media, 'object-position', ( point ) => {
+		if ( ! point || 'object' !== typeof point || ! isNumeric( point.x ) || ! isNumeric( point.y ) ) {
+			return '';
+		}
+		const x = Math.max( 0, Math.min( 1, Number( point.x ) ) ) * 100;
+		const y = Math.max( 0, Math.min( 1, Number( point.y ) ) ) * 100;
+		return `${ num( x ) }% ${ num( y ) }%`;
+	} );
+	return rulesCss( rules );
 }

@@ -23,6 +23,7 @@
 
 import { MEDIA_BASES } from '../../MediaElementControls.js';
 import { settingsForBases } from '../atom-settings.js';
+import { FILTER_SETTINGS, LAYOUT_SETTINGS, SHAPE_SETTINGS, SIZING_SETTINGS } from '../emit/kinds-settings.js';
 
 /**
  * Every atom, with the base set it owns.
@@ -120,6 +121,8 @@ export const MEDIA_ATOMS = {
 
 	'media-type': {
 		id: 'media-type',
+		// Spec 49 §6.2: folded into `Source.kind`, read per device from the chosen file. The legacy bases stay until the cutover.
+		foldedInto: 'source',
 		bases: MEDIA_BASES.type,
 		settings: settingsForBases( MEDIA_BASES.type ),
 		effects: [],
@@ -196,6 +199,8 @@ export const MEDIA_ATOMS = {
 
 	intrinsic: {
 		id: 'intrinsic',
+		// Spec 49 §6.2: folded into `Source.width` and `Source.height`. The legacy bases stay until the cutover.
+		foldedInto: 'source',
 		bases: MEDIA_BASES.intrinsic,
 		settings: settingsForBases( MEDIA_BASES.intrinsic ),
 		effects: [],
@@ -303,6 +308,8 @@ export const MEDIA_ATOMS = {
 
 	'box-shape': {
 		id: 'box-shape',
+		// Spec 49 §6.2: split into the `sizing` and `shape` atoms (`MEDIA_KINDS_ATOMS`). The legacy bases stay until the cutover.
+		splitInto: [ 'sizing', 'shape' ],
 		bases: MEDIA_BASES.shape,
 		settings: settingsForBases( MEDIA_BASES.shape ),
 		effects: [],
@@ -444,6 +451,72 @@ export const MEDIA_ATOMS = {
 		reads: {},
 	},
 };
+
+/**
+ * The atoms Spec 49 adds. They live apart from `MEDIA_ATOMS` so nothing that walks the legacy table (the injection
+ * filters, the attribute generator, the panel, the gates) sees them: they own no legacy base, add no control and add no
+ * attribute to an existing block. A slot whose `supports.sgs.mediaElements` entry declares `kinds` uses them through
+ * `ALL_MEDIA_ATOMS`; their emitters are `sgs_media_atom_<id>_emit()` in PHP and `emit()` in each module. `paints` lists
+ * the C3 nodes an atom prints on (`layout`, `surface`, `media`, `mask`), where the legacy atoms say `attachesTo`.
+ */
+export const MEDIA_KINDS_ATOMS = {
+	sizing: {
+		id: 'sizing',
+		bases: [],
+		settings: SIZING_SETTINGS,
+		effects: [],
+		since: '2.0',
+		types: [ 'image', 'video', 'svg', 'embed' ],
+		scope: 'both',
+		paints: [ 'layout', 'surface' ],
+		requires: {},
+		reads: {},
+		replaces: [ 'box-shape' ],
+	},
+	shape: {
+		id: 'shape',
+		bases: [],
+		settings: SHAPE_SETTINGS,
+		effects: [],
+		since: '2.0',
+		types: [ 'image', 'video', 'svg', 'embed' ],
+		scope: 'both',
+		paints: [ 'surface', 'mask' ],
+		requires: {},
+		reads: {},
+		replaces: [ 'box-shape' ],
+	},
+	filter: {
+		id: 'filter',
+		bases: [],
+		settings: FILTER_SETTINGS,
+		effects: [],
+		since: '2.0',
+		types: [ 'image', 'video', 'svg' ],
+		scope: 'element',
+		paints: [ 'media' ],
+		requires: { Greyscale: [ 'Colour:greyscale' ] },
+		reads: {},
+	},
+	layout: {
+		id: 'layout',
+		bases: [],
+		settings: LAYOUT_SETTINGS,
+		effects: [],
+		since: '2.0',
+		types: [ 'image', 'video', 'svg', 'embed' ],
+		scope: 'both',
+		paints: [ 'layout' ],
+		requires: {},
+		reads: {},
+	},
+};
+
+/** Ids of the Spec 49 atoms. */
+export const KINDS_ATOM_IDS = Object.keys( MEDIA_KINDS_ATOMS );
+
+/** Every atom, legacy and Spec 49, by id: what a collector walks for a slot that declares `kinds`. */
+export const ALL_MEDIA_ATOMS = { ...MEDIA_ATOMS, ...MEDIA_KINDS_ATOMS };
 
 /** Atom ids, in panel order. */
 export const MEDIA_ATOM_IDS = Object.keys( MEDIA_ATOMS );

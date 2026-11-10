@@ -172,3 +172,66 @@ if ( ! function_exists( 'sgs_media_atom_overlay_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+require_once __DIR__ . '/shape.php';
+
+if ( ! function_exists( 'sgs_media_atom_overlay_emit' ) ) {
+	/**
+	 * C3 emitter: the overlay paint on the helper's `::after` (or the mask layer's `::after` with a mask): a gradient
+	 * wins over a flat colour, `opacity` per device, `mix-blend-mode`, and the hover paint. An overlay needs the helper,
+	 * so with none this prints nothing.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when nothing is set.
+	 */
+	function sgs_media_atom_overlay_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		if ( ! $helper ) {
+			return '';
+		}
+		$mask    = sgs_media_shape_has_mask( $attrs, $slot );
+		$nodes   = sgs_media_nodes( $slot, $uid, $helper, $mask );
+		$overlay = $nodes['overlay'];
+		$paint   = static function ( string $colour_base, string $gradient_base ) use ( $attrs, $slot ): array {
+			$gradient = sgs_media_gradient( sgs_media_scalar( $attrs, $slot, $gradient_base ) );
+			if ( '' !== $gradient ) {
+				return array( 'background-image' => $gradient );
+			}
+			$colour = sgs_media_colour( sgs_media_scalar( $attrs, $slot, $colour_base ) );
+			return '' !== $colour ? array( 'background-color' => $colour ) : array();
+		};
+		$rules   = array();
+		foreach ( $paint( 'OverlayColour', 'OverlayGradient' ) as $prop => $value ) {
+			sgs_media_add( $rules, $overlay, 'desktop', $prop, $value );
+		}
+		sgs_media_emit_plain(
+			$rules,
+			$attrs,
+			$slot,
+			'OverlayOpacity',
+			$overlay,
+			'opacity',
+			static function ( $raw ): string {
+				return is_numeric( $raw ) ? sgs_media_num( max( 0.0, min( 100.0, (float) $raw ) ) / 100 ) : '';
+			},
+			'1'
+		);
+		sgs_media_emit_plain(
+			$rules,
+			$attrs,
+			$slot,
+			'OverlayBlend',
+			$overlay,
+			'mix-blend-mode',
+			static function ( $raw ): string {
+				return sgs_media_blend( $raw );
+			}
+		);
+		$hover      = $paint( 'OverlayColourHover', 'OverlayGradientHover' );
+		$hover_list = array() === $hover ? array() : array( array( $nodes['surface'] . ':hover' . ( $mask ? ' .sgs-media-box__mask' : '' ) . '::after', $overlay, $hover ) );
+		return sgs_media_rules_css( $rules, $hover_list );
+	}
+}

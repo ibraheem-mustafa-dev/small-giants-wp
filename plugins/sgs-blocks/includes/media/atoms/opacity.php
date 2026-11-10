@@ -79,3 +79,46 @@ if ( ! function_exists( 'sgs_media_atom_opacity_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+
+if ( ! function_exists( 'sgs_media_atom_opacity_emit' ) ) {
+	/**
+	 * C3 emitter: `opacity` (Opacity 0 to 100, per device; a desktop 100 is the default and prints nothing) and
+	 * `mix-blend-mode` (Blend) on the media element.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when nothing is set.
+	 */
+	function sgs_media_atom_opacity_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		$media = sgs_media_nodes( $slot, $uid, $helper )['media'];
+		$rules = array();
+		sgs_media_emit_plain(
+			$rules,
+			$attrs,
+			$slot,
+			'Opacity',
+			$media,
+			'opacity',
+			static function ( $raw ): string {
+				return is_numeric( $raw ) ? sgs_media_num( max( 0.0, min( 100.0, (float) $raw ) ) / 100 ) : '';
+			},
+			'1'
+		);
+		sgs_media_emit_plain(
+			$rules,
+			$attrs,
+			$slot,
+			'Blend',
+			$media,
+			'mix-blend-mode',
+			static function ( $raw ): string {
+				return sgs_media_blend( $raw );
+			}
+		);
+		return sgs_media_rules_css( $rules );
+	}
+}

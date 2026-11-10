@@ -21,6 +21,8 @@
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
 
+import { emitPlain, nodes, num, rulesCss } from '../emit/core.js';
+import { isNumeric, mediaBlend } from '../emit/values.js';
 /**
  * @param {string} prefix    Surface prefix.
  * @param {string} blockSlug Block slug, for STORED_AS resolution.
@@ -116,4 +118,31 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		}
 	}
 	return decls;
+}
+
+/**
+ * C3 emitter: `opacity` (Opacity 0 to 100, per device; a desktop 100 is the default and prints nothing) and
+ * `mix-blend-mode` (Blend) on the media element. PHP twin: `sgs_media_atom_opacity_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const { media } = nodes( slot, uid, helper );
+	const rules = {};
+	emitPlain(
+		rules,
+		attrs,
+		slot,
+		'Opacity',
+		media,
+		'opacity',
+		( raw ) => ( isNumeric( raw ) ? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 ) : '' ),
+		'1'
+	);
+	emitPlain( rules, attrs, slot, 'Blend', media, 'mix-blend-mode', mediaBlend );
+	return rulesCss( rules );
 }

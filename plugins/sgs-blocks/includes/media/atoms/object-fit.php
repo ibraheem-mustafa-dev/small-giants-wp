@@ -106,3 +106,39 @@ if ( ! function_exists( 'sgs_media_atom_object_fit_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+
+if ( ! function_exists( 'sgs_media_atom_object_fit_emit' ) ) {
+	/**
+	 * C3 emitter: `object-fit` on the media element once per device that sets its own Fit. Tile (backgrounds) prints
+	 * `background-repeat` and `background-size` instead, and Pinned prints `background-attachment:fixed`.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when nothing is set.
+	 */
+	function sgs_media_atom_object_fit_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		$media   = sgs_media_nodes( $slot, $uid, $helper )['media'];
+		$fits    = array( 'cover', 'contain', 'fill', 'none', 'scale-down' );
+		$repeats = array( 'repeat', 'repeat-x', 'repeat-y', 'no-repeat' );
+		$rules   = array();
+		foreach ( sgs_media_devices() as $device ) {
+			$fit = sgs_media_own( $attrs, $slot, 'Fit', $device );
+			if ( in_array( $fit, $fits, true ) ) {
+				sgs_media_add( $rules, $media, $device, 'object-fit', $fit );
+			} elseif ( 'tile' === $fit ) {
+				$repeat = sgs_media_resolved( $attrs, $slot, 'Repeat', $device );
+				$size   = sgs_media_length( sgs_media_resolved( $attrs, $slot, 'TileSize', $device ), array( 'auto' ) );
+				sgs_media_add( $rules, $media, $device, 'background-repeat', in_array( $repeat, $repeats, true ) ? $repeat : 'repeat' );
+				sgs_media_add( $rules, $media, $device, 'background-size', '' !== $size ? $size : 'auto' );
+			}
+		}
+		if ( true === sgs_media_scalar( $attrs, $slot, 'Pinned' ) ) {
+			sgs_media_add( $rules, $media, 'desktop', 'background-attachment', 'fixed' );
+		}
+		return sgs_media_rules_css( $rules );
+	}
+}

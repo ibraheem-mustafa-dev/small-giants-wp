@@ -41,6 +41,8 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { MEDIA_ATOMS } from './registry.js';
 import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
 
+import { DEVICES, add, nodes, own, resolved, rulesCss, scalar } from '../emit/core.js';
+import { mediaLength } from '../emit/values.js';
 const ATOM_ID = 'object-fit';
 
 /**
@@ -133,4 +135,38 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	return decls;
+}
+
+const EMIT_FITS = [ 'cover', 'contain', 'fill', 'none', 'scale-down' ];
+const EMIT_REPEATS = [ 'repeat', 'repeat-x', 'repeat-y', 'no-repeat' ];
+
+/**
+ * C3 emitter: `object-fit` on the media element once per device that sets its own Fit. Tile (backgrounds) prints
+ * `background-repeat` and `background-size` instead, and Pinned prints `background-attachment:fixed`. PHP twin:
+ * `sgs_media_atom_object_fit_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const { media } = nodes( slot, uid, helper );
+	const rules = {};
+	for ( const device of DEVICES ) {
+		const fit = own( attrs, slot, 'Fit', device );
+		if ( EMIT_FITS.includes( fit ) ) {
+			add( rules, media, device, 'object-fit', fit );
+		} else if ( 'tile' === fit ) {
+			const repeat = resolved( attrs, slot, 'Repeat', device );
+			const size = mediaLength( resolved( attrs, slot, 'TileSize', device ), [ 'auto' ] );
+			add( rules, media, device, 'background-repeat', EMIT_REPEATS.includes( repeat ) ? repeat : 'repeat' );
+			add( rules, media, device, 'background-size', '' !== size ? size : 'auto' );
+		}
+	}
+	if ( true === scalar( attrs, slot, 'Pinned' ) ) {
+		add( rules, media, 'desktop', 'background-attachment', 'fixed' );
+	}
+	return rulesCss( rules );
 }

@@ -65,6 +65,7 @@ import { __ } from '@wordpress/i18n';
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { isLegacyCall, rulesFor, kindIn, omitted, disabled, REASONS } from '../panels/disclosure-context.js';
 
+import { add, nodes, rulesCss, scalar } from '../emit/core.js';
 const POSITION_VALUES = [ 'background', 'foreground' ];
 const ANIMATION_VALUES = [ 'none', 'pulse', 'float', 'wave' ];
 const SPEED_VALUES = [ 'slow', 'medium', 'fast' ];
@@ -224,4 +225,28 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	return decls;
+}
+
+/**
+ * C3 emitter: `z-index` for Layer order (`behind` is -1, `front` is 1) and `text-shadow` for SvgTextShadow, on the media
+ * element. The animation and the duplicate opacity belong to Effects and the opacity atom. PHP twin:
+ * `sgs_media_atom_svg_presentation_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const { media } = nodes( slot, uid, helper );
+	const rules = {};
+	const layer = scalar( attrs, slot, 'SvgLayer' );
+	if ( 'behind' === layer || 'front' === layer ) {
+		add( rules, media, 'desktop', 'z-index', 'front' === layer ? '1' : '-1' );
+	}
+	if ( true === scalar( attrs, slot, 'SvgTextShadow' ) ) {
+		add( rules, media, 'desktop', 'text-shadow', '0 1px 3px rgba(0,0,0,.6)' );
+	}
+	return rulesCss( rules );
 }

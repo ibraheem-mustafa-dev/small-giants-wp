@@ -199,3 +199,39 @@ if ( ! function_exists( 'sgs_media_atom_focal_point_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+
+if ( ! function_exists( 'sgs_media_atom_focal_point_emit' ) ) {
+	/**
+	 * C3 emitter: `object-position` on the media element once per device that sets its own Focal `{x,y}` (0 to 1).
+	 * An unset point prints nothing.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when nothing is set.
+	 */
+	function sgs_media_atom_focal_point_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		$media = sgs_media_nodes( $slot, $uid, $helper )['media'];
+		$rules = array();
+		sgs_media_emit_plain(
+			$rules,
+			$attrs,
+			$slot,
+			'Focal',
+			$media,
+			'object-position',
+			static function ( $point ): string {
+				if ( ! is_array( $point ) || ! is_numeric( $point['x'] ?? null ) || ! is_numeric( $point['y'] ?? null ) ) {
+					return '';
+				}
+				$x = max( 0.0, min( 1.0, (float) $point['x'] ) ) * 100;
+				$y = max( 0.0, min( 1.0, (float) $point['y'] ) ) * 100;
+				return sgs_media_num( $x ) . '% ' . sgs_media_num( $y ) . '%';
+			}
+		);
+		return sgs_media_rules_css( $rules );
+	}
+}

@@ -22,6 +22,10 @@ import { composeShadow } from '../../../utils/shadow-layers.js';
 import { shadowHoverValue } from '../../../utils/shadow-hover.js';
 import { isLegacyCall, rulesFor, omitted, REASONS } from '../panels/disclosure-context.js';
 
+import { add, nodes, rulesCss, scalar } from '../emit/core.js';
+import { mediaShadow } from '../emit/values.js';
+import { dropShadow, shadowForcedColoursDecl } from '../emit/drop-shadow.js';
+import { shapeHasMask } from '../emit/mask.js';
 /**
  * @param {string} prefix    Surface prefix.
  * @param {string} blockSlug Block slug, for STORED_AS resolution.
@@ -185,4 +189,48 @@ export function css( { attributes, prefix = '', blockSlug = '', hoverMap } = {} 
 	}
 
 	return decls;
+}
+
+/**
+ * C3 emitter: `box-shadow` on the surface (with its forced-colours fallback) and, on hover, the hover colour. A slot that
+ * has a mask shape at any device draws the shadow as `filter:drop-shadow()` instead, because a mask clips a box-shadow.
+ * PHP twin: `sgs_media_atom_shadow_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when no shadow is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const mask = shapeHasMask( attrs, slot );
+	const { surface } = nodes( slot, uid, helper, mask );
+	const shape = scalar( attrs, slot, 'BoxShadow' );
+	const decls = ( shadowColour ) => {
+		const value = mediaShadow( shape, shadowColour );
+		if ( '' === value ) {
+			return {};
+		}
+		if ( mask ) {
+			const filter = 'none' === value ? 'none' : dropShadow( value );
+			return '' === filter ? {} : { filter };
+		}
+		const out = { 'box-shadow': value };
+		if ( 'none' !== value ) {
+			out[ '@forced-colors' ] = shadowForcedColoursDecl();
+		}
+		return out;
+	};
+	const rules = {};
+	for ( const [ prop, value ] of Object.entries( decls( scalar( attrs, slot, 'BoxShadowColour' ) ) ) ) {
+		add( rules, surface, 'desktop', prop, value );
+	}
+	const hoverColour = scalar( attrs, slot, 'BoxShadowColourHover' );
+	const hover = [];
+	if ( 'string' === typeof hoverColour && '' !== hoverColour.trim() ) {
+		const hoverDecls = decls( hoverColour );
+		delete hoverDecls[ '@forced-colors' ];
+		hover.push( [ `${ surface }:hover`, surface, hoverDecls ] );
+	}
+	return rulesCss( rules, hover );
 }

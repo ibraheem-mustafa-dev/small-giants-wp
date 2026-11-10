@@ -74,6 +74,9 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
 import { isLegacyCall, rulesFor, disabled, REASONS } from '../panels/disclosure-context.js';
 
+import { add, emitPlain, nodes, num, rulesCss, scalar } from '../emit/core.js';
+import { isNumeric, mediaBlend, mediaColour, mediaGradient } from '../emit/values.js';
+import { shapeHasMask } from '../emit/mask.js';
 const GRADIENT_PATTERN = /^(repeating-)?(linear|radial|conic)-gradient\([A-Za-z0-9\s.,%()#/_-]+\)$/i;
 const GRADIENT_BREAKOUT = /[;{}]|url\s*\(|<|>|@|expression/i;
 const BLEND_MODES = [
@@ -296,4 +299,49 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	return decls;
+}
+
+/**
+ * C3 emitter: the overlay paint on the helper's `::after` (or the mask layer's `::after` with a mask): a gradient wins
+ * over a flat colour, `opacity` per device, `mix-blend-mode`, and the hover paint. An overlay needs the helper, so with
+ * none this prints nothing. PHP twin: `sgs_media_atom_overlay_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	if ( ! helper ) {
+		return '';
+	}
+	const mask = shapeHasMask( attrs, slot );
+	const { overlay, surface } = nodes( slot, uid, helper, mask );
+	const paint = ( colourBase, gradientBase ) => {
+		const gradient = mediaGradient( scalar( attrs, slot, gradientBase ) );
+		if ( '' !== gradient ) {
+			return { 'background-image': gradient };
+		}
+		const colour = mediaColour( scalar( attrs, slot, colourBase ) );
+		return '' !== colour ? { 'background-color': colour } : {};
+	};
+	const rules = {};
+	for ( const [ prop, value ] of Object.entries( paint( 'OverlayColour', 'OverlayGradient' ) ) ) {
+		add( rules, overlay, 'desktop', prop, value );
+	}
+	emitPlain(
+		rules,
+		attrs,
+		slot,
+		'OverlayOpacity',
+		overlay,
+		'opacity',
+		( raw ) => ( isNumeric( raw ) ? num( Math.max( 0, Math.min( 100, Number( raw ) ) ) / 100 ) : '' ),
+		'1'
+	);
+	emitPlain( rules, attrs, slot, 'OverlayBlend', overlay, 'mix-blend-mode', mediaBlend );
+	const hover = paint( 'OverlayColourHover', 'OverlayGradientHover' );
+	const hoverList = 0 === Object.keys( hover ).length ? [] : [ [ `${ surface }:hover${ mask ? ' .sgs-media-box__mask' : '' }::after`, overlay, hover ] ];
+	return rulesCss( rules, hoverList );
 }

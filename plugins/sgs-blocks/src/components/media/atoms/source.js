@@ -151,3 +151,12 @@ export function css( { attributes, prefix, blockSlug } ) {
 
 	return out;
 }
+
+/**
+ * C3 emitter: this atom prints no CSS of its own (see `includes/media/emit-none.php`).
+ *
+ * @return {string} Always ''.
+ */
+export function emit() {
+	return '';
+}

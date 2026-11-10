@@ -197,3 +197,12 @@ export function disclosure( attrs, device, prefix = '', opts = {} ) {
 export function css() {
 	return [];
 }
+
+/**
+ * C3 emitter: this atom prints no CSS of its own (see `includes/media/emit-none.php`).
+ *
+ * @return {string} Always ''.
+ */
+export function emit() {
+	return '';
+}

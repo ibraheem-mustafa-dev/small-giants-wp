@@ -173,3 +173,30 @@ if ( ! function_exists( 'sgs_media_atom_svg_presentation_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+
+if ( ! function_exists( 'sgs_media_atom_svg_presentation_emit' ) ) {
+	/**
+	 * C3 emitter: `z-index` for Layer order (`behind` is -1, `front` is 1) and `text-shadow` for SvgTextShadow, on the
+	 * media element. The animation and the duplicate opacity belong to Effects and the opacity atom.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when nothing is set.
+	 */
+	function sgs_media_atom_svg_presentation_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		$media = sgs_media_nodes( $slot, $uid, $helper )['media'];
+		$rules = array();
+		$layer = sgs_media_scalar( $attrs, $slot, 'SvgLayer' );
+		if ( 'behind' === $layer || 'front' === $layer ) {
+			sgs_media_add( $rules, $media, 'desktop', 'z-index', 'front' === $layer ? '1' : '-1' );
+		}
+		if ( true === sgs_media_scalar( $attrs, $slot, 'SvgTextShadow' ) ) {
+			sgs_media_add( $rules, $media, 'desktop', 'text-shadow', '0 1px 3px rgba(0,0,0,.6)' );
+		}
+		return sgs_media_rules_css( $rules );
+	}
+}

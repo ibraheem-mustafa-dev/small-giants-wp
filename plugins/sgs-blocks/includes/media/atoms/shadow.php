@@ -139,3 +139,53 @@ if ( ! function_exists( 'sgs_media_atom_shadow_css' ) ) {
 		return $decls;
 	}
 }
+
+require_once dirname( __DIR__ ) . '/media-values.php';
+require_once __DIR__ . '/shape.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-shadow-filter.php';
+
+if ( ! function_exists( 'sgs_media_atom_shadow_emit' ) ) {
+	/**
+	 * C3 emitter: `box-shadow` on the surface (with its forced-colours fallback) and, on hover, the hover colour. A slot
+	 * that has a mask shape at any device draws the shadow as `filter:drop-shadow()` instead, because a mask clips a box-shadow.
+	 *
+	 * @param array  $slot   Slot `{prefix, kinds, context, wrapper}`.
+	 * @param array  $attrs  Attributes.
+	 * @param string $uid    Scope class, without the dot.
+	 * @param bool   $helper Whether the helper is printed.
+	 * @return string CSS, '' when no shadow is set.
+	 */
+	function sgs_media_atom_shadow_emit( array $slot, array $attrs, string $uid, bool $helper ): string {
+		$mask    = sgs_media_shape_has_mask( $attrs, $slot );
+		$surface = sgs_media_nodes( $slot, $uid, $helper, $mask )['surface'];
+		$shape   = sgs_media_scalar( $attrs, $slot, 'BoxShadow' );
+		$colour  = sgs_media_scalar( $attrs, $slot, 'BoxShadowColour' );
+		$hover   = sgs_media_scalar( $attrs, $slot, 'BoxShadowColourHover' );
+		$decls   = static function ( $shadow_colour ) use ( $shape, $mask ): array {
+			$value = sgs_media_shadow( $shape, $shadow_colour );
+			if ( '' === $value ) {
+				return array();
+			}
+			if ( $mask ) {
+				$filter = 'none' === $value ? 'none' : sgs_shadow_value_to_drop_shadow( $value );
+				return '' === $filter ? array() : array( 'filter' => $filter );
+			}
+			$out = array( 'box-shadow' => $value );
+			if ( 'none' !== $value ) {
+				$out['@forced-colors'] = sgs_shadow_forced_colours_decl();
+			}
+			return $out;
+		};
+		$rules   = array();
+		foreach ( $decls( $colour ) as $prop => $value ) {
+			sgs_media_add( $rules, $surface, 'desktop', $prop, $value );
+		}
+		$hover_list = array();
+		if ( is_string( $hover ) && '' !== trim( $hover ) ) {
+			$hover_decls = $decls( $hover );
+			unset( $hover_decls['@forced-colors'] );
+			$hover_list[] = array( $surface . ':hover', $surface, $hover_decls );
+		}
+		return sgs_media_rules_css( $rules, $hover_list );
+	}
+}

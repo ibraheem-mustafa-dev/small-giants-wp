@@ -36,6 +36,8 @@ import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { toLengthValue } from './box-shape.js';
 import { isLegacyCall, rulesFor, kindIn, omitted } from '../panels/disclosure-context.js';
 
+import { DEVICES, add, nodes, own, rulesCss, scalar } from '../emit/core.js';
+import { mediaColour, mediaPx } from '../emit/values.js';
 /**
  * [D-tier-object-render-fix 2026-09-07] Padding is ONE owned tier-object
  * attribute {desktop,tablet,mobile}, not three separate flat attrs.
@@ -160,4 +162,35 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	} );
 
 	return decls;
+}
+
+/**
+ * C3 emitter (the `surface` atom): `padding-*` per side once per device that sets its own, and `background-color`
+ * (Background, all devices), on the surface. PHP twin: `sgs_media_atom_media_padding_emit()`.
+ *
+ * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
+ * @param {Object}  attrs  Attributes.
+ * @param {string}  uid    Scope class, without the dot.
+ * @param {boolean} helper Whether the helper is printed.
+ * @return {string} CSS, '' when nothing is set.
+ */
+export function emit( slot, attrs, uid, helper ) {
+	const { surface } = nodes( slot, uid, helper );
+	const rules = {};
+	for ( const device of DEVICES ) {
+		const box = own( attrs, slot, 'Padding', device );
+		if ( box && 'object' === typeof box && ! Array.isArray( box ) ) {
+			for ( const side of [ 'top', 'right', 'bottom', 'left' ] ) {
+				const value = mediaPx( box[ side ] );
+				if ( '' !== value ) {
+					add( rules, surface, device, `padding-${ side }`, value );
+				}
+			}
+		}
+	}
+	const background = mediaColour( scalar( attrs, slot, 'Background' ) );
+	if ( '' !== background ) {
+		add( rules, surface, 'desktop', 'background-color', background );
+	}
+	return rulesCss( rules );
 }

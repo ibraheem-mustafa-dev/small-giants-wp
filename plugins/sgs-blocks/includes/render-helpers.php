@@ -243,6 +243,13 @@ require_once __DIR__ . '/media/atoms/shadow.php';
 require_once __DIR__ . '/media/atoms/media-padding.php';
 require_once __DIR__ . '/media/atoms/caption.php';
 require_once __DIR__ . '/media/atoms/link.php';
+// Spec 49 C3 emitters (`sgs_media_atom_<id>_emit`), called by the media renderer for a slot that declares `kinds`.
+require_once __DIR__ . '/media/media-values.php';
+require_once __DIR__ . '/media/emit-none.php';
+require_once __DIR__ . '/media/atoms/sizing.php';
+require_once __DIR__ . '/media/atoms/shape.php';
+require_once __DIR__ . '/media/atoms/filter.php';
+require_once __DIR__ . '/media/atoms/layout.php';
 
 // Spec 43 FR-43-25 — a term's badge/description fallback for choice-flow
 // product-option steps that don't override them.
