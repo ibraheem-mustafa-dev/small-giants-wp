@@ -99,6 +99,10 @@ $same = sgs_account_edit_account_markup( $cards, array( 'addressEmptyText' => 'N
 ok( false !== strpos( $same, '<address>Same as delivery address</address>' ) && false !== strpos( $same, '<address>No delivery address saved yet.</address>' ), 'an empty billing card says same as delivery while a delivery address is saved' );
 ok( $cards === sgs_account_edit_account_markup( $cards, array() ), 'without the setting WooCommerce\'s line stays' );
 
+// 3c) Motion parts carry the block's own classes.
+$marked = sgs_account_edit_account_markup( '<div class="woocommerce-MyAccount-content"></div><div class="u-columns col2-set" id="customer_login"></div>', array() );
+ok( false !== strpos( $marked, 'woocommerce-MyAccount-content sgs-account__tab-content"' ) && false !== strpos( $marked, 'u-columns col2-set sgs-account__auth-grid" id="customer_login"' ), 'the tab content and the sign-in pair carry classes of the block' );
+
 // 4) Saved items: the empty card while the list is empty, else the panel.
 Account_Endpoints::$active = array( 'tabHeadings' => true, 'wishlistEmptyHeading' => 'Nothing saved yet.', 'wishlistEmptyText' => 'Tap the heart.', 'wishlistEmptyButtonLabel' => 'Shop sunglasses' );
 $GLOBALS['saved'] = array();

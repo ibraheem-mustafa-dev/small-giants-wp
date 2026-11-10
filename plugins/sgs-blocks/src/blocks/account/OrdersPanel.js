@@ -4,7 +4,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { fillRow, textRow } from '../../components';
-import { Choice, TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
+import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
 
 // [ row key, label, background attribute, text attribute ]
 const STATUSES = [
@@ -53,95 +53,6 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
 					/>
 					<TierBox { ...p } name="ordersEmptyPadding" label={ __( 'Card padding', 'sgs-blocks' ) } />
-					<Choice
-						{ ...p }
-						name="wishlistLayout"
-						label={ __( 'Saved items layout', 'sgs-blocks' ) }
-						options={ [
-							{ label: __( 'Wishlist panel default', 'sgs-blocks' ), value: '' },
-							{ label: __( 'Frame cards', 'sgs-blocks' ), value: 'cards' },
-						] }
-					/>
-					<TextField
-						{ ...p }
-						name="wishlistEmptyHeading"
-						label={ __( 'Saved items card: heading', 'sgs-blocks' ) }
-						help={ __( 'The Saved items tab shows this card, in the same look, while the list is empty. Leave the heading, text and button empty for the wishlist panel’s own message.', 'sgs-blocks' ) }
-					/>
-					<TextField { ...p } name="wishlistEmptyText" label={ __( 'Saved items card: text', 'sgs-blocks' ) } />
-					<TextField { ...p } name="wishlistEmptyButtonLabel" label={ __( 'Saved items card: button label', 'sgs-blocks' ) } />
-					<TextField
-						{ ...p }
-						name="wishlistEmptyButtonUrl"
-						label={ __( 'Saved items card: button link', 'sgs-blocks' ) }
-						help={ __( 'Empty = the shop page.', 'sgs-blocks' ) }
-					/>
-				</>
-			) }
-			<Toggle
-				{ ...p }
-				name="ordersSummary"
-				label={ __( 'Items summary in the orders list', 'sgs-blocks' ) }
-				help={ __( 'A column naming the order’s products.', 'sgs-blocks' ) }
-			/>
-			<Toggle
-				{ ...p }
-				name="orderDetailLook"
-				label={ __( 'Order detail page', 'sgs-blocks' ) }
-				help={ __( 'Replaces WooCommerce’s order page with the parts below. Off = WooCommerce’s own page.', 'sgs-blocks' ) }
-			/>
-			{ attributes.orderDetailLook && (
-				<>
-					<TextField { ...p } name="orderDetailBackLabel" label={ __( 'Back link label', 'sgs-blocks' ) } />
-					<TextField { ...p } name="orderDetailTitle" label={ __( 'Heading ({order} = order number)', 'sgs-blocks' ) } />
-					<TextField { ...p } name="orderDetailPlacedText" label={ __( 'Line under the heading ({date}, {method})', 'sgs-blocks' ) } />
-					<Toggle
-						{ ...p }
-						name="orderDetailProgress"
-						label={ __( 'Progress line', 'sgs-blocks' ) }
-					/>
-					{ attributes.orderDetailProgress && (
-						<>
-						<TextField { ...p } name="orderDetailProgressLabel" label={ __( 'Progress line screen-reader label', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepPlaced" label={ __( 'Step: placed', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepProcessing" label={ __( 'Step: processing', 'sgs-blocks' ) } help={ __( 'Empty = the step is left out.', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepDispatched" label={ __( 'Step: dispatched / posted', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepDelivered" label={ __( 'Step: delivered', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepReady" label={ __( 'Pickup orders: ready step', 'sgs-blocks' ) } help={ __( 'Empty = the dispatched label.', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderStepCollected" label={ __( 'Pickup orders: last step', 'sgs-blocks' ) } help={ __( 'Empty = the delivered label.', 'sgs-blocks' ) } />
-						</>
-					) }
-					<Toggle
-						{ ...p }
-						name="orderDetailItems"
-						label={ __( 'Item rows', 'sgs-blocks' ) }
-					/>
-					<Toggle
-						{ ...p }
-						name="orderDetailBoxes"
-						label={ __( 'Address, payment and total boxes', 'sgs-blocks' ) }
-					/>
-					{ attributes.orderDetailBoxes && (
-						<>
-						<TextField { ...p } name="orderDetailAddressTitle" label={ __( 'Address box title', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailPaymentTitle" label={ __( 'Payment box title', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailTotalTitle" label={ __( 'Total box title', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailSubtotalLabel" label={ __( 'Subtotal label', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailTotalLabel" label={ __( 'Total label', 'sgs-blocks' ) } />
-						</>
-					) }
-					<Toggle
-						{ ...p }
-						name="orderDetailWhatsApp"
-						label={ __( 'WhatsApp card', 'sgs-blocks' ) }
-					/>
-					{ attributes.orderDetailWhatsApp && (
-						<>
-						<TextField { ...p } name="orderDetailWhatsAppNumber" label={ __( 'WhatsApp number', 'sgs-blocks' ) } help={ __( 'Digits with the country code, for example 447960597847.', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailWhatsAppTitle" label={ __( 'Card title', 'sgs-blocks' ) } />
-						<TextField { ...p } name="orderDetailWhatsAppText" label={ __( 'Card line ({order} = order number)', 'sgs-blocks' ) } />
-						</>
-					) }
 				</>
 			) }
 		</PanelBody>

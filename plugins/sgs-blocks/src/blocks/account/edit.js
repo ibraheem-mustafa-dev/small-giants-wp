@@ -28,6 +28,7 @@ import DashboardPanel from './DashboardPanel';
 import FieldsPanel, { fieldColourRows } from './FieldsPanel';
 import LoggedOutPanel from './LoggedOutPanel';
 import OrdersPanel, { extraColourRows, EXTRA_TYPE_TARGETS } from './OrdersPanel';
+import OrderPagePanels from './OrderPagePanels';
 import { WordingPanel, HeaderPanel, AddressesPanel, AccountDetailsPanel, SignInButtonPanel, RegisterFormPanel } from './ExtraPanels';
 import { AuthTabsPanel, SignedOutContentPanel, SignedOutCardPanel } from './SignedOutPanel';
 
@@ -194,6 +195,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				<SignInButtonPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<RegisterFormPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OrdersPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OrderPagePanels attributes={ attributes } setAttributes={ setAttributes } />
 				<AddressesPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<AccountDetailsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<PanelBody

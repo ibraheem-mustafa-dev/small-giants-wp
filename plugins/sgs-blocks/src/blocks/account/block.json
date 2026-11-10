@@ -894,18 +894,18 @@
 						"_note": "The page header (eyebrow, title, intro, signed-in line) as one motion part: the target of a header entrance."
 					},
 					"authGrid": {
-						"selector": ".sgs-account__wc > #customer_login",
+						"selector": ".sgs-account__auth-grid",
 						"label": "Sign-in and register forms",
 						"order": 75,
 						"clusters": [],
 						"absentIn": [
-							"logged-in"
+							"logged-in-dashboard"
 						],
 						"absentWhy": "The sign-in and register forms print for a signed-out visitor only.",
 						"_note": "The two forms (sign in, register) as one motion part: the target of their entrance."
 					},
 					"tabContent": {
-						"selector": ".sgs-account__wc > .woocommerce-MyAccount-content",
+						"selector": ".sgs-account__tab-content",
 						"label": "Tab content",
 						"order": 76,
 						"clusters": [],

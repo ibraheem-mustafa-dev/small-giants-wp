@@ -26,9 +26,13 @@
     "logged-out": {
      "why": "a visitor (is_user_logged_in false) with showOrderTracking: the tracking card (sgs-account__card, sgs-account__heading) and the guest line around WooCommerce's login form",
      "attrs": {
-      "showOrderTracking": true
+      "showOrderTracking": true,
+      "headerSignInTitle": "Sign in or create an account"
      },
-     "stubWoocommerce": true
+     "stubWoocommerce": true,
+     "unexercised": {
+      "authGrid": "WooCommerce prints the sign-in and register pair (id customer_login) through its login template; the harness renders no WooCommerce template, so the class the block adds to it is not in the HTML"
+     }
     },
     "logged-in-dashboard": {
      "why": "logged in: WC_Shortcode_My_Account prints the dashboard from includes/account/templates/dashboard.php (cards, titles, chip, progress track)",

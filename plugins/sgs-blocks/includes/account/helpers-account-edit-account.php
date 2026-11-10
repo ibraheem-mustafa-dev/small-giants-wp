@@ -54,6 +54,10 @@ if ( ! function_exists( 'sgs_account_edit_account_markup' ) ) {
 	 */
 	function sgs_account_edit_account_markup( string $html, array $attributes ): string {
 		$html = sgs_account_address_empty_markup( $html, $attributes );
+		// The open tab's content div and the sign-in and register pair get a class of the block's own (WooCommerce prints a
+		// WooCommerce class and an id only) so each can be a motion part.
+		$html = str_replace( '<div class="woocommerce-MyAccount-content">', '<div class="woocommerce-MyAccount-content sgs-account__tab-content">', $html );
+		$html = (string) preg_replace( '#(<div class=")([^"]*)("[^>]*\bid="customer_login")#', '$1$2 sgs-account__auth-grid$3', $html, 1 );
 		if ( false === strpos( $html, 'woocommerce-EditAccountForm' ) || ! is_user_logged_in() ) {
 			return $html;
 		}
