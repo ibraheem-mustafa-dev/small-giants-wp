@@ -17,12 +17,15 @@ describe( 'choice control focus', () => {
 		expect( rule ).toContain( '--sgs-focus-halo: inset 0 0 0' );
 	} );
 
-	test( 'a pointer focus (:focus without :focus-visible) draws the same ring', () => {
-		const start = css.indexOf( 'input[type="checkbox"]:focus:not(:focus-visible' );
+	test( 'a pointer focus (:focus without :focus-visible) draws the same ring, as an arm of the one indicator rule', () => {
+		const arm = 'input:is([type="checkbox"], [type="radio"]):focus:not(:focus-visible):not(#wpadminbar *)';
+		const start = css.indexOf( arm + ' {' );
 		expect( start ).toBeGreaterThan( -1 );
-		const rule = css.slice( start, css.indexOf( '}', start ) );
+		const ruleStart = css.lastIndexOf( '}', start ) + 1;
+		const rule = css.slice( ruleStart, css.indexOf( '}', start ) );
+		expect( rule ).toContain( ':focus-visible:not(#wpadminbar *, .editor-styles-wrapper' );
 		expect( rule ).toContain( 'outline: var(--sgs-focus-width)' );
-		expect( rule ).toContain( 'outline-offset: var(--sgs-focus-offset)' );
-		expect( rule ).toContain( 'box-shadow: var(--sgs-focus-halo)' );
+		expect( rule ).toContain( 'outline-offset: var(--sgs-focus-offset,' );
+		expect( rule ).toMatch( /box-shadow:\s*var\(--sgs-focus-halo,/ );
 	} );
 } );
