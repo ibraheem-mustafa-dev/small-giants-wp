@@ -1703,6 +1703,70 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "ordersDateFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersDateTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "order-date"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "ordersEmptyTextColour",
       "fields": {
         "css_property": "color",
@@ -1849,11 +1913,203 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "ordersNumberFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersNumberTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "order-number"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersPillTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "order-status"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "ordersRowBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "order-total"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersTotalTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "order-total"
       }
     },
     {
@@ -22477,15 +22733,6 @@
       "attr": "width",
       "fields": {
         "css_property": "width",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/pay-later-message",
-      "attr": "textColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
         "css_element": "wrapper"
       }
     },
@@ -45588,14 +45835,6 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "swatch-dot"
-      }
-    },
-    {
-      "slug": "sgs/pay-later-message",
-      "attr": "fontSize",
-      "fields": {
-        "css_property": "font-size",
-        "css_element": "wrapper"
       }
     },
     {
