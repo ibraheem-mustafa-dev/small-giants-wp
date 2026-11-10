@@ -2222,5 +2222,14 @@
     "added_commit": null,
     "budget_ms": 500,
     "order": 253
+  },
+  {
+    "id": "test-media-emitter-parity",
+    "cmd": "node scripts/tests/test-media-emitter-parity.mjs",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2600,
+    "order": 254
   }
 ]

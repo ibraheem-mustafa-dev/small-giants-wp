@@ -3,12 +3,11 @@
  *
  *   mediaPreview( slot, attrs, uid ) -> { css, className, needsHelper }
  *
- * The editor prints the same CSS as the front end. `css` is each atom's CSS logic, collected through the atom
- * registry in registry order: an atom with a `css` function is called as
- * `atom.css( { slot, attrs, attributes, prefix, uid, helper } )` and returns a rule string (or an array of them) whose
- * selectors follow C3 (layout `.{uid}`; surface `.{uid}` or the helper; media `.{uid} .sgs-media-el` with a helper
- * or a wrapper, else `.{uid}`; overlay `::after`; mask `.sgs-media-box__mask`). A string without `{` is a bare list
- * of declarations and is wrapped on `.{uid}`. An atom without `css` contributes nothing.
+ * The editor prints the same CSS as the front end. `css` is every atom's C3 emitter output, collected by
+ * `emit/emitters.js::emitSlot` (the JS twins of the PHP emitters the renderer collects), with selectors per C3
+ * (layout `.{uid}`; surface `.{uid}` or the helper; media `.{uid} .sgs-media-el` with a helper or a wrapper, else
+ * `.{uid}`; overlay `::after`; mask `.sgs-media-box__mask`). Tests may pass `options.atoms`, each with a `css`
+ * function returning a rule string (or an array of them); a string without `{` is wrapped on `.{uid}`.
  *
  * `className` is the layout box's class list: the uid, plus `sgs-media-box` when the helper is printed and
  * `sgs-media-box--fill` when Height is Match its space. `needsHelper` is §7.3 on resolved values: at any device Height
@@ -18,7 +17,7 @@
  *
  * @package
  */
-import { MEDIA_ATOMS } from './atoms/registry.js';
+import { emitSlot } from './emit/emitters.js';
 import { mediaAttrName } from '../MediaElementControls.js';
 
 const MASK_FREE_SHAPES = [ '', 'none', 'circle', 'ellipse', 'pill' ];
@@ -82,9 +81,10 @@ function atomRules( atom, args ) {
  */
 export default function mediaPreview( slot, attrs, uid, options = {} ) {
 	const helper = needsHelper( slot, attrs, options.motion );
-	const atoms = options.atoms || MEDIA_ATOMS;
 	const args = { slot, attrs, attributes: attrs, prefix: slot?.prefix || '', uid, helper };
-	const css = Object.values( atoms ).flatMap( ( atom ) => atomRules( atom, args ) ).join( '\n' );
+	const css = options.atoms
+		? Object.values( options.atoms ).flatMap( ( atom ) => atomRules( atom, args ) ).join( '\n' )
+		: emitSlot( slot, attrs, uid, helper );
 	const fill = everyDevice( attrs?.[ mediaAttrName( slot?.prefix || '', 'Height' ) ] ).includes( 'fill' );
 	const className = [ uid, helper ? 'sgs-media-box' : '', fill ? 'sgs-media-box--fill' : '' ].filter( Boolean ).join( ' ' );
 	return { css, className, needsHelper: helper };
