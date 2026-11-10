@@ -13,16 +13,33 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import { SgsColourPanel, textRow } from '../../components';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
 import { colourVar } from '../../utils';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { method, countryCode, logoColour, fontSize, textColour } =
 		attributes;
 	const colour = colourVar( textColour );
+	const methodLabel =
+		{
+			klarna: 'Klarna',
+			afterpay_clearpay: 'Afterpay / Clearpay',
+			affirm: 'Affirm',
+		}[ method ] || method;
+	const logoLabel = {
+		black: __( 'black logo', 'sgs-blocks' ),
+		white: __( 'white logo', 'sgs-blocks' ),
+		color: __( 'colour logo', 'sgs-blocks' ),
+	}[ logoColour ];
 	return (
 		<div
 			{ ...useBlockProps( {
-				className: 'sgs-pay-later',
+				className: `sgs-pay-later sgs-pay-later--logo-${ logoColour }`,
+				'data-method': method,
+				'data-country': countryCode || undefined,
 				style: {
 					color: colour || undefined,
 					fontSize: fontSize ? `${ fontSize }px` : undefined,
@@ -32,6 +49,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			<InspectorControls>
 				<PanelBody title={ __( 'Message', 'sgs-blocks' ) }>
 					<SelectControl
+						__next40pxDefaultSize
 						label={ __( 'Payment method', 'sgs-blocks' ) }
 						value={ method }
 						options={ [
@@ -51,6 +69,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						) }
 					/>
 					<TextControl
+						__next40pxDefaultSize
 						label={ __( 'Country (two letters)', 'sgs-blocks' ) }
 						value={ countryCode }
 						maxLength={ 2 }
@@ -62,28 +81,30 @@ export default function Edit( { attributes, setAttributes } ) {
 							'sgs-blocks'
 						) }
 					/>
-					<SelectControl
+					<ToggleGroupControl
+						__next40pxDefaultSize
+						isBlock
 						label={ __( 'Logo colour', 'sgs-blocks' ) }
 						value={ logoColour }
-						options={ [
-							{
-								value: 'black',
-								label: __( 'Black', 'sgs-blocks' ),
-							},
-							{
-								value: 'white',
-								label: __( 'White', 'sgs-blocks' ),
-							},
-							{
-								value: 'color',
-								label: __( 'Brand colour', 'sgs-blocks' ),
-							},
-						] }
 						onChange={ ( value ) =>
 							setAttributes( { logoColour: value } )
 						}
-					/>
+					>
+						<ToggleGroupControlOption
+							value="black"
+							label={ __( 'Black', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="white"
+							label={ __( 'White', 'sgs-blocks' ) }
+						/>
+						<ToggleGroupControlOption
+							value="color"
+							label={ __( 'Colour', 'sgs-blocks' ) }
+						/>
+					</ToggleGroupControl>
 					<RangeControl
+						__next40pxDefaultSize
 						label={ __(
 							'Text size (px, 0 = default)',
 							'sgs-blocks'
@@ -117,8 +138,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 			<span>
+				{ methodLabel }
+				{ countryCode ? ` (${ countryCode.toUpperCase() })` : '' }
+				{ ' · ' }
+				{ logoLabel }
+				{ ' · ' }
 				{ __(
-					'Pay later message: Stripe shows the instalment terms here from the cart total.',
+					'Stripe shows the instalment terms here from the cart total.',
 					'sgs-blocks'
 				) }
 			</span>

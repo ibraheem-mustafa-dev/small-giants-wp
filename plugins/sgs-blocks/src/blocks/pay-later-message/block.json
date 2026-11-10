@@ -21,9 +21,30 @@
 		"woocommerce/checkout-totals-block"
 	],
 	"supports": {
+		"color": false,
 		"html": false,
 		"reusable": false,
-		"inserter": true
+		"inserter": true,
+		"sgs": {
+			"specRef": "30",
+			"elements": {
+				"message": {
+					"label": "Message",
+					"order": 1,
+					"motion": false,
+					"clusters": [
+						"text"
+					],
+					"isWrapper": true,
+					"prefix": "payLater",
+					"attrMap": {
+						"css:color": "textColour",
+						"css:font-size": "fontSize"
+					},
+					"_note": "textColour and fontSize paint the placeholder through scoped rules (sgs_text_states_css) and also reach Stripe's message iframe as appearance variables (colorText, fontSizeBase), read by src/commerce-blocks/pay-later/messaging.js from the block's data-config."
+				}
+			}
+		}
 	},
 	"attributes": {
 		"method": {

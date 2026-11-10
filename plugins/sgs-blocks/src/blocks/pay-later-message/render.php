@@ -48,11 +48,25 @@ $sgs_pl_config = array(
 
 \SGS\Blocks\Commerce_Blocks\Commerce_Blocks_Assets::enqueue();
 
+$sgs_pl_class = 'sgs-pay-later';
+$sgs_pl_css   = '';
+if ( '' !== (string) ( $attributes['textColour'] ?? '' ) || $sgs_pl_config['fontSize'] > 0 ) {
+	require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
+	$sgs_pl_uid    = 'sgs-pay-later-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+	$sgs_pl_sel    = '.' . $sgs_pl_uid . '.wp-block-sgs-pay-later-message';
+	$sgs_pl_class .= ' ' . $sgs_pl_uid;
+	$sgs_pl_css   .= sgs_text_states_css( $sgs_pl_sel, $attributes, array( 'base' => 'textColour' ) );
+	if ( $sgs_pl_config['fontSize'] > 0 ) {
+		$sgs_pl_css .= $sgs_pl_sel . '{font-size:' . $sgs_pl_config['fontSize'] . 'px;}';
+	}
+	echo '<style>' . wp_strip_all_tags( $sgs_pl_css ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the colour rules come from the shared composers and the size is a float.
+}
+
 printf(
 	'<div %s></div>',
 	get_block_wrapper_attributes( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() escapes each value.
 		array(
-			'class'           => 'sgs-pay-later',
+			'class'           => $sgs_pl_class,
 			'data-block-name' => 'sgs/pay-later-message',
 			'data-config'     => (string) wp_json_encode( $sgs_pl_config ),
 		)
