@@ -1,0 +1,518 @@
+{
+	"branch": "feature/media-stage-b",
+	"waves": [
+		{
+			"id": "wave-1",
+			"name": "Wave 1",
+			"blocks": {
+				"sgs/media": {
+					"slots": {
+						"": {
+							"kinds": [
+								"image",
+								"video",
+								"embed",
+								"svg"
+							],
+							"context": "content",
+							"from": ""
+						}
+					},
+					"replace": [
+						"alignment",
+						"opacity",
+						"overlayOpacity"
+					]
+				},
+				"sgs/decorative-image": {
+					"slots": {
+						"layer": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "element",
+							"from": ""
+						}
+					},
+					"replace": []
+				},
+				"sgs/gallery": {
+					"slots": {
+						"item": {
+							"kinds": [
+								"image",
+								"video"
+							],
+							"context": "item",
+							"from": "sgs"
+						}
+					},
+					"replace": []
+				}
+			}
+		},
+		{
+			"id": "wp-8",
+			"name": "WP-8 background adopters",
+			"blocks": {
+				"sgs/container": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/multi-button": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/physics-canvas": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/site-header": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/site-footer": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/trust-bar": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				},
+				"sgs/nav-drawer": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						}
+					},
+					"replace": [
+						"backgroundRepeat"
+					]
+				}
+			}
+		},
+		{
+			"id": "wp-9",
+			"name": "WP-9 Hero",
+			"blocks": {
+				"sgs/hero": {
+					"slots": {
+						"background": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "background",
+							"add": true
+						},
+						"split": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "content",
+							"from": "split"
+						}
+					},
+					"drop": [
+						"splitMedia"
+					],
+					"replace": [
+						"backgroundRepeat"
+					]
+				}
+			}
+		},
+		{
+			"id": "wave-3",
+			"name": "Wave 3",
+			"blocks": {
+				"sgs/card-grid": {
+					"slots": {
+						"image": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "sgs"
+						}
+					},
+					"replace": []
+				},
+				"sgs/post-grid": {
+					"slots": {
+						"image": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": ""
+						}
+					},
+					"replace": []
+				},
+				"sgs/product-card": {
+					"slots": {
+						"image": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "main"
+						},
+						"thumb": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "thumb"
+						},
+						"logo": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"add": true
+						}
+					},
+					"replace": [
+						"imageHeight"
+					]
+				},
+				"sgs/buybox": {
+					"slots": {
+						"main": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "main"
+						},
+						"thumb": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "thumb"
+						},
+						"preview": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"add": true
+						}
+					},
+					"replace": [
+						"previewBorderWidth",
+						"previewRadius"
+					]
+				},
+				"sgs/brand-strip": {
+					"slots": {
+						"logo": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "",
+							"atoms": [
+								"source",
+								"meaning",
+								"object-fit",
+								"shape",
+								"filter"
+							]
+						}
+					},
+					"replace": [
+						"logoFit"
+					]
+				},
+				"sgs/responsive-logo": {
+					"slots": {
+						"logo": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "content",
+							"add": true
+						}
+					},
+					"replace": []
+				},
+				"sgs/nav-drawer": {
+					"slots": {
+						"chromeLogo": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "content",
+							"add": true
+						}
+					},
+					"replace": []
+				},
+				"sgs/choice-flow": {
+					"slots": {
+						"headerLogo": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "content",
+							"add": true
+						}
+					},
+					"replace": [
+						"headerLogoHeight"
+					]
+				}
+			}
+		},
+		{
+			"id": "wave-4",
+			"name": "Wave 4",
+			"blocks": {
+				"sgs/team-member": {
+					"slots": {
+						"photo": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"from": "sgs"
+						}
+					},
+					"replace": [
+						"photoShape"
+					]
+				},
+				"sgs/testimonial": {
+					"slots": {
+						"photo": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"from": "avatar"
+						},
+						"logo": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"add": true
+						},
+						"work": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"from": "work"
+						}
+					},
+					"replace": []
+				},
+				"sgs/before-after": {
+					"slots": {
+						"before": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "content",
+							"from": "before"
+						},
+						"after": {
+							"kinds": [
+								"image",
+								"video",
+								"svg"
+							],
+							"context": "content",
+							"from": "after"
+						}
+					},
+					"replace": []
+				},
+				"sgs/timeline": {
+					"slots": {
+						"entry": {
+							"kinds": [
+								"image",
+								"video"
+							],
+							"context": "content",
+							"add": true
+						}
+					},
+					"replace": []
+				},
+				"sgs/choice-flow-question": {
+					"slots": {
+						"option": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"add": true
+						}
+					},
+					"replace": []
+				},
+				"sgs/form-field-tiles": {
+					"slots": {
+						"tile": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"add": true
+						}
+					},
+					"replace": []
+				},
+				"sgs/option-picker": {
+					"slots": {
+						"swatch": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "swatch"
+						}
+					},
+					"replace": [
+						"swatchShape"
+					]
+				},
+				"sgs/image-sequence": {
+					"slots": {
+						"thumbnail": {
+							"kinds": [
+								"image"
+							],
+							"context": "content",
+							"from": ""
+						}
+					},
+					"replace": []
+				},
+				"sgs/measured-diagram": {
+					"slots": {
+						"drawing": {
+							"kinds": [
+								"image",
+								"svg"
+							],
+							"context": "content",
+							"from": "drawing",
+							"atoms": [
+								"source",
+								"meaning"
+							]
+						}
+					},
+					"replace": []
+				},
+				"sgs/trust-bar": {
+					"slots": {
+						"badge": {
+							"kinds": [
+								"image"
+							],
+							"context": "item",
+							"from": "badgeImage"
+						}
+					},
+					"replace": []
+				}
+			}
+		}
+	]
+}
