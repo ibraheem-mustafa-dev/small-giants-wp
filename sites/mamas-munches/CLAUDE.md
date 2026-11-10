@@ -1,14 +1,14 @@
-# Mama's Munches — Client Site
+# Mama's Munches: client site (canary brand and product reference)
 
-**Status:** Built and live on the SGS framework — the canary (`sandybrown-nightingale-600381.hostingersite.com`) runs the real WooCommerce catalogue through `sgs-theme` + `sgs-blocks`. Current status lives in `.claude/LEDGER.md`; accepted design differences in `sites/mamas-munches/accepted-differences.md`; this file is brand/product reference.
+**Status:** the canary (`sandybrown-nightingale-600381.hostingersite.com`) runs the real WooCommerce catalogue on `sgs-theme` + `sgs-blocks`. The redesign lives in `sites/mamas-munches-redesign/`. Current status: `.claude/LEDGER.md`; accepted design differences: `sites/mamas-munches/accepted-differences.md`; choice-flow demo IDs: `choice-flow-demos.md`. This file is brand and product reference.
 
 **Public/marketing site:** https://mamasmunches.com/ (brand facts below were captured from it)
 
 **Owner email:** Zainab@mamasmunches.com
 
-**Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) — high-quality product media
+**Instagram:** [@mamasmunches](https://www.instagram.com/mamasmunches/) (high-quality product media)
 
-**Tally form (ordering on the public site):** https://tally.so/r/xXMQLk — manual flavour confirmation by Zainab
+**Tally form (ordering on the public site):** https://tally.so/r/xXMQLk (manual flavour confirmation by Zainab)
 
 **Trustpilot:** 4 real 5-star reviews at https://uk.trustpilot.com/review/mamasmunches.com (TrustScore 4.0, "Great"). Paste the URL into Settings > SGS Trustpilot Sync; the `sgs/trustpilot-reviews` block in `synced` mode renders them, and a weekly cron keeps them fresh.
 
@@ -22,22 +22,12 @@
 
 ### Variant attributes
 
-| Attribute | Options | Count |
-|-----------|---------|-------|
-| **Number in Pack** | 8 / 20 / 40 | 3 |
-| **Flavour** | Classic Oat / Chocolate | 2 |
-| **Topping** | Chocolate Chip / White Chocolate Chip / No Topping | 3 |
-| **Dietary Requirements** | Regular / Vegan | 2 |
+- **Number in Pack:** 8 / 20 / 40. The only attribute that changes the price, so the only one that creates WooCommerce variations (3).
+- **Flavour** (Classic Oat / Chocolate), **Topping** (Chocolate Chip / White Chocolate Chip / No Topping) and **Dietary Requirements** (Regular / Vegan) are product attributes that don't create variations: the shopper picks them in a choice flow and they travel to the bag line as answers (Spec 43 FR-43-7, FR-43-21).
 
-Only the pack size changes the price, so only **Number in Pack** creates WooCommerce variations (3). Flavour, Topping and Dietary are product attributes that don't create variations: the shopper picks them in a choice flow and they travel to the bag line as answers (Spec 43 FR-43-7, FR-43-21).
+On the canary this is product **3990** "Classic Lactation Cookies" (`sites/mamas-munches/build/seed-lactation-cookies.php`). Pack prices (Bean, 2026-09-26): 8 = £9.50 (£1.19 each), 20 = £21.50 (£1.08 each), 40 = £38.00 (£0.95 each); there is no 12-pack.
 
-On sandybrown this is product **3990** "Classic Lactation Cookies" (`sites/mamas-munches/build/seed-lactation-cookies.php`). Pack prices (Bean, 2026-09-26): 8 = £9.50 (£1.19 each), 20 = £21.50 (£1.08 each), 40 = £38.00 (£0.95 each); there is no 12-pack.
-
-Choice-flow demos on sandybrown (Spec 43):
-- **Full customisation:** saved flow 4008 (`mamas-build-your-box`, showcase) in a popup on page 4012.
-- **Product page:** product 3990 links flow 4010 (`mamas-choose-flavours`) through `_sgs_choice_flow`, so its buybox opens the flow.
-- **Guided buybox:** page 4083.
-- **Trees:** the trees for all three are in `build/`.
+Choice-flow demos on the canary (Spec 43): `choice-flow-demos.md`; trees in `build/`.
 
 ### Wanted but not built
 
@@ -57,7 +47,7 @@ Choice-flow demos on sandybrown (Spec 43):
 
 > "My story with lactation cookies started when my friend started struggling with breastfeeding her newborn. At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did! These cookies helped her milk supply almost immediately and I was so grateful to have been able to make her early motherhood days just a bit easier. Now I hope that I can do the same thing for you. Using natural, wholesome ingredients, everything is made with care and intention for breastfeeding mums and their new beautiful babies."
 
-## Brand identity — captured from logo assets
+## Brand identity (captured from logo assets)
 
 ### Palette (approximate hex extracted from logos; the exact tokens are in `theme-snapshot.json`)
 
@@ -72,7 +62,7 @@ Choice-flow demos on sandybrown (Spec 43):
 
 ### Typography
 - Theme snapshot: **Inter** (body) + **Fraunces** (headings/display)
-- Logo wordmark uses a chunky display script (custom — embedded in logo image)
+- Logo wordmark uses a chunky display script (custom, embedded in the logo image)
 
 ### Voice
 - Warm, personal, mum-to-mum
@@ -81,48 +71,19 @@ Choice-flow demos on sandybrown (Spec 43):
 - Tagline: **"Boost your milk, bite by bite"**
 - Hero copy variant: **"Baked with Love for Breastfeeding Mums"**
 
-### Logo variants in use
-1. **Primary circular emblem** — wordmark + cookies-in-bag illustration + tagline ring
-2. **Square pink-background tile** — same emblem on filled pink, good for social
-3. **Horizontal lockup** — small cookie + wordmark + tagline, used in site header
-4. **QR-code marketing asset** — "SCAN FOR 10% OFF" handout (physical distribution: markets, mum events, NHS leaflets, baby fairs)
+### Logos
+Circular emblem (wordmark, cookies-in-bag illustration, tagline ring); square pink tile (same emblem, for social); horizontal lockup (small cookie, wordmark, tagline; used in the site header); QR-code "SCAN FOR 10% OFF" handout (markets, mum events, NHS leaflets, baby fairs).
 
 ## Trust signals
 
-- "Handmade in Birmingham"
-- "Registered Food Business"
-- "Free UK Delivery Over £35"
-- "Loved by Breastfeeding Mums"
-- 20% off first purchase promo
-- Trustpilot reviews (4 × 5-star, TrustScore 4.0)
+"Handmade in Birmingham" · "Registered Food Business" · "Free UK Delivery Over £35" · "Loved by Breastfeeding Mums" · 20% off first purchase promo
 
-## Site information architecture
+## Public site structure
 
-| Path | Purpose |
-|------|---------|
-| `/` | Home — hero + trust signals + 20%-off promo + footer |
-| `/about/` | Founder story |
-| `/shop/` | All products |
-| `/product-category/cookies/` | Cookies |
-| `/product-category/bites/` | Bites |
-| `/contact/` | Contact form |
-| `/cart/` | WooCommerce cart |
-| `/product/lactation-cookies-8-pack/` | Single product page |
+`/`, `/about/`, `/shop/`, `/product-category/cookies/`, `/product-category/bites/`, `/contact/`, `/cart/`, plus single product pages. The home page is hero, trust signals, 20%-off promo and footer.
 
 ## Open content gaps on the SGS site
 
-- Real ingredient-education copy (galactagogues — oats, brewer's yeast, flaxseed); mums research before buying
-- Allergen labelling on the product page
+- Real ingredient-education copy (galactagogues: oats, brewer's yeast, flaxseed); mums research before buying
 - Footer "Quick Links" list needs real URLs
-
-## Folder structure
-
-```
-sites/mamas-munches/
-├── CLAUDE.md (this file)
-├── accepted-differences.md
-├── theme-snapshot.json            # per-client tokens (Spec 33)
-├── .claude/plans/                 # site-specific plans
-├── research/                      # brand/, photography/, palette + Trustpilot data, site screenshots
-└── mockups/                       # design mockups (homepage, product)
-```
+- Allergen labelling on the product page (see Audience)

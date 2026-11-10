@@ -11,7 +11,7 @@ const partners = [
     name: "Muslims in Construction",
     description: "I built their website — and I couldn't be prouder of the work they do connecting Muslim professionals in construction across the UK.",
     logo: "/images/partners/mic-logo.png",
-    url: "https://muslimsincontruction.co.uk",
+    url: "https://muslimsinconstruction.co.uk",
   },
   {
     name: "Association of Muslim Engineers",

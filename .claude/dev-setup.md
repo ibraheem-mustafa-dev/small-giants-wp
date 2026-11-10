@@ -429,6 +429,10 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client mamas-munches 
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client indus-foods --target u945238940@141.136.39.73 \
   --target-domain lavender-dinosaur-183533.hostingersite.com
 
+# Mama's Munches redesign test site
+python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client mamas-munches-redesign --target u945238940@141.136.39.73 \
+  --target-domain lightsalmon-tarsier-683012.hostingersite.com
+
 # Eye Care clone target
 python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client eye-care-ward-end --target u945238940@141.136.39.73 \
   --target-domain mintcream-lyrebird-224487.hostingersite.com
@@ -606,6 +610,7 @@ Generated files live in `.claude/catalogues/`; grep them BEFORE building or hand
 | **Hostinger caches CSS aggressively** | A theme stylesheet's URL version is the file's modified time (`theme/sgs-theme/functions.php::asset_version`), so editing and deploying a theme CSS file busts the cache on its own and no `style.css` `Version:` bump is needed; the deploy also purges the LiteSpeed page cache. `style.css` `Version:` is the fallback version, not a cache lever. |
 | **`--webpack-copy-php` flag** | Build script copies `render.php` to `build/` automatically. Dynamic blocks won't render without this. |
 | **`--experimental-modules` flag** | Required in build/start scripts for `viewScriptModule` in block.json. |
+| **`curl` the canary with `-L`** | Pages 301-redirect; without `-L` the body is empty and a block that rendered looks as if it did not. |
 | **Deprecations NOT used** | The plugin carries no `deprecated.js` and block version bumps are forbidden pre-production. On a schema change, rebuild / re-clone the content, or use the Site Editor's "Attempt Block Recovery". Do NOT author a deprecation. |
 | **SSH remote variable expansion** | Use single quotes for outer string when running `ssh hd '...'` so `$WP` expands on server. Double quotes expand locally. |
 | **Never delete the live directory before the new copy is in place** | `rm -rf $WP/plugins/sgs-blocks` before the extract succeeds leaves the site with no plugin if anything fails in between. `build-deploy.py` rotates the previous copy to `<dir>.bak` and moves the new one in. Never hand-roll this. |

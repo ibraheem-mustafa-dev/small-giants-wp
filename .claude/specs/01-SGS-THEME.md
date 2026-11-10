@@ -324,3 +324,11 @@ WP 7.0 adds native pseudo-element support for `core/button` at theme.json level:
 - **FR-1-2 — An uploaded SVG keeps its own animation and is refused, with the reason, when it holds anything the route's SVG screen refuses.** *Done when:* `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes (142 checks, MUST FAIL cases red under mutation).
 
   Status: built (be8340127, 7d50cba34, 5eeebb3db), live-verified 2026-10-22 on indus-test (deploy 170797cec, draft page 231) at 375, 768 and 1440. Proof: `php plugins/sgs-blocks/tests/php/run-svg-document-standalone.php` passes.
+
+- **FR-1-3: High-contrast preference support.** The theme honours `prefers-contrast: more` (stronger borders, text and focus colours drawn from the palette tokens).
+
+  Status: not built.
+
+- **FR-1-4: Light and dark palettes through `light-dark()`.** `dark-mode.css` and `dark-mode.js` are scaffolded; the palette tokens resolve through `light-dark()` so one declaration serves both schemes.
+
+  Status: not built (`dark-mode.css` and `dark-mode.js` are scaffolds).

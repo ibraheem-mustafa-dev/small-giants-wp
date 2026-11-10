@@ -4,19 +4,13 @@ Not built yet; this file and the spec describe the planned plugin.
 
 ## What This Is
 
-A thin WordPress plugin that connects to the Small Giants Booking System (a standalone Next.js application) via its REST API. Provides Gutenberg blocks for embedding booking forms on WordPress sites. **This plugin is a frontend client only — it stores no booking data and has no database tables.**
+A thin WordPress plugin that connects to the Small Giants Booking System (a standalone Next.js application) via its REST API. Provides Gutenberg blocks for embedding booking forms on WordPress sites. **This plugin is a frontend client only: it stores no booking data and has no database tables.**
 
-Full spec: `.claude/specs/03-SGS-BOOKING.md`
+Full spec: `.claude/specs/03-SGS-BOOKING.md` (plugin structure, configuration options, terminology, design system, API tables, phases).
 
 ## Architecture: Thin API Client
 
-The plugin calls the booking system's REST API for everything:
-- Availability slots, booking types, org branding: `GET` requests to the booking system
-- Booking creation: `POST` to the booking system
-- Payment: Stripe Elements (client-side) + Payment Intent (created by booking system API)
-- Emails, reminders, calendar sync, ICS files: all handled by the booking system
-
-**The plugin NEVER:**
+**The plugin NEVER** (the booking system owns all of these, and a second copy in WordPress would drift from it):
 - Creates database tables
 - Calculates availability
 - Syncs calendars
@@ -24,149 +18,39 @@ The plugin calls the booking system's REST API for everything:
 - Sends emails or notifications
 - Stores OAuth tokens
 
-## Planned Plugin Structure
+Data flow: `render.php` injects the cached organisation branding as CSS custom properties and outputs data attributes (API URL, org slug, type slug; never the API key); `view.js` (Interactivity API, `viewScriptModule`) calls `GET /api/v1/book/{org}/{type}/availability` and `POST .../create`; payment is Stripe Elements client-side only.
 
-```
-sgs-booking/
-├── sgs-booking.php              # Plugin bootstrap (singleton)
-├── uninstall.php                # Remove wp_options only
-├── includes/
-│   ├── class-sgs-booking.php    # Main plugin class
-│   ├── class-api-client.php     # HTTP client (wp_remote_get/post)
-│   ├── class-encryption.php     # API key encryption (AES-256-CBC + wp_salt)
-│   ├── admin/
-│   │   └── class-admin-settings.php  # Settings page (API URL, key, org slug)
-│   └── blocks/
-│       ├── booking-form/        # Full booking flow block
-│       ├── booking-types/       # Service list block
-│       └── provider-schedule/   # Provider availability display block
-├── src/                         # TypeScript source (@wordpress/scripts)
-│   ├── booking-form/            # edit.tsx, view.ts (Interactivity API), style.css
-│   ├── booking-types/
-│   ├── provider-schedule/
-│   └── shared/                  # api.ts, stripe.ts, types.ts
-└── build/                       # Compiled output
-```
+## Design
 
-## Data Flow
+Visual design inherits the booking system through the API's branding endpoint (`--brand-*` custom properties); never hardcode colours. The spec's Design System section holds the palette, motion and component looks. All customisation comes from the API, not block settings. No-JS fallback links to the hosted booking page.
 
-```
-WordPress Page
-  └─ Gutenberg Block (render.php)
-       ├─ Injects org branding as CSS custom properties (from cached API response)
-       ├─ Outputs data attributes (API URL, org slug, type slug)
-       └─ Loads viewScriptModule
-            └─ Frontend JS (Interactivity API)
-                 ├─ Fetches availability: GET /api/v1/book/{org}/{type}/availability
-                 ├─ Submits booking: POST /api/v1/book/{org}/{type}/create
-                 └─ Stripe Elements for payment (client-side only)
-```
-
-## Configuration (wp_options)
-
-| Key | Value | Encrypted |
-|---|---|---|
-| `sgs_booking_api_url` | Booking system base URL | No |
-| `sgs_booking_api_key` | Organisation API key | Yes |
-| `sgs_booking_org_slug` | Organisation slug | No |
-| `sgs_booking_default_type_slug` | Default service slug (optional) | No |
-| `sgs_booking_cache_ttl` | Cache duration in minutes (default: 10) | No |
-
-## Terminology Mapping
-
-| Booking System (API) | WP Plugin (user-facing) |
-|---|---|
-| `bookingType` | Service |
-| `organiser` / `user` | Provider |
-| `organisation` | Organisation |
-| `orgSlug` | Organisation slug |
-| `typeSlug` | Service slug |
-
-## Design Context
-
-### Users
-- **Site visitors** booking appointments on WordPress-hosted sites. They arrive from search, social, or direct links. Non-technical. Expect the booking flow to feel native to the site, not a bolted-on widget.
-- **Site owners** (SGS clients) adding booking blocks via the Gutenberg editor. Non-technical. Need the block to "just work" with minimal configuration.
-- **Bean** managing the plugin code. Has ADHD — all admin UIs must have clear focus states and obvious next actions.
-
-### Brand Personality
-Inherits from the booking system: **Confident. High-energy. Unique.** The WordPress blocks must feel like a natural extension of the booking system, not a degraded version.
-
-### Aesthetic Direction — Inherits "Dark Confidence"
-The plugin's frontend booking UI inherits the booking system's design system via `--brand-*` CSS variables served by the API's branding endpoint. Key principles:
-
-- **Public booking flow:** Warm cream background (`#FAF8F5`), orange (`#F87A1F`) CTAs, teal (`#0F7E80`) for informational elements
-- **Per-org theming:** The API returns brand colours, logo, and font per organisation. The plugin injects these as CSS custom properties — never hardcode colours
-- **ADHD-friendly:** Focus isolation (hovered elements brighten, siblings dim), spring animations, high-contrast interaction states
-- **Time slots:** Pill-shaped, flex-wrap, hover slides right with orange border
-- **Calendar:** Available dates get an orange dot indicator, not highlighted backgrounds
-- **Form inputs:** Bottom-border only, floating labels on focus
-- **Confirmation:** Teal circle + white tick with pop animation, "You're booked in" copy
-- **Loading:** Pulsing orange dot sequence, not spinning circles
-- **Transitions:** Spring-based `cubic-bezier(0.34, 1.56, 0.64, 1)`, never `ease-in-out`
-
-### What NOT to Do (Design)
-- No serif heading fonts
-- No spinning circles for loading
-- No thin grey borders on white cards
-- No uniform card grids
-- No `innerHTML` for API data — use `textContent` or Interactivity API templates
-- Never inject `customCss` from API branding response (XSS vector)
-
-### Design Principles
-1. **Native feel** — The booking block should look like it belongs on the WordPress site, not like an iframe from another product
-2. **API-driven theming** — All visual customisation comes from the booking system API, not WordPress block settings. The plugin is a faithful renderer.
-3. **Progressive enhancement** — No-JS fallback links to the hosted booking page. The block enhances with the full interactive flow when JS loads.
-4. **Spotlight focus** — Inherited from booking system. Interactive elements brighten, siblings dim.
+- No serif heading fonts, no spinning-circle loaders, no thin grey borders on white cards, no uniform card grids (they make the block read as a bolted-on widget).
 
 ## Conventions
 
-- **Monday is the first day of the week** — all calendar UIs show Mon-Sun (UK/ISO 8601). The booking system uses `0 = Sunday` internally (JS `Date.getDay()`), so reorder when displaying.
-- **Provider step order is configurable** — `stepOrder` block attribute: `service-first` (default) or `provider-first`. Clinics pick doctor first, general sites pick service first.
-- UK English everywhere (organisation, colour, cancelled)
-- 44px minimum touch targets and visible focus (root CLAUDE.md accessibility baseline)
-- Currency defaults to GBP, timezone to `Europe/London`
+- Monday is the first day of the week in every calendar UI (UK/ISO 8601). The booking system uses `0 = Sunday` (JS `Date.getDay()`), so reorder when displaying.
+- `stepOrder` block attribute: `service-first` (default) or `provider-first` (clinics pick the doctor first).
 
 ## Security Rules (Non-Negotiable)
 
-1. **Every API response value must be escaped** — `esc_html()`, `esc_attr()`, `esc_url()`, `wp_json_encode()`. Never `echo` raw values
-2. **Never inject `customCss`** from the branding response — XSS vector. Discard silently
-3. **API key encrypted in wp_options** — AES-256-CBC via `wp_salt('auth')`
-4. **API key never in frontend** — not in HTML, JS, data attributes, or API responses to browsers
-5. **HTTPS enforced** — refuse API calls to HTTP URLs
-6. **SSRF protection** — validate API URL resolves to public IP, not private/reserved ranges
-7. **Admin pages require `manage_options`** — nonce verification on all form submissions
-8. **Frontend JS uses `textContent` not `innerHTML`** for API data — or Interactivity API template system
+1. **Every API response value is escaped** (`esc_html()`, `esc_attr()`, `esc_url()`, `wp_json_encode()`), and frontend JS uses `textContent` (or Interactivity API templates), never `innerHTML`, for API data. API data is untrusted.
+2. **Never inject `customCss`** from the branding response (XSS vector). Discard silently.
+3. **API key encrypted in wp_options**: AES-256-CBC via `wp_salt('auth')`.
+4. **API key never in frontend**: not in HTML, JS, data attributes, or API responses to browsers.
+5. **HTTPS enforced**: refuse API calls to HTTP URLs.
+6. **SSRF protection**: validate the API URL resolves to a public IP, not a private or reserved range.
+7. **Admin pages require `manage_options`**, with nonce verification on all form submissions.
 
 ## Caching
 
-- All cached API data (organisation branding, booking types, single type, providers): one transient lifetime set by `sgs_booking_cache_ttl` (default 10 minutes, range 1-60)
-- Availability, booking creation and payments: never cached
-- **Availability: NEVER cached** (stale cache = double bookings)
-- **Writes: NEVER cached** (booking creation, payment)
+Cached API data (organisation branding, booking types, single type, providers): transients with one lifetime, `sgs_booking_cache_ttl` (default 10 minutes, range 1-60). Availability, booking creation and payments are NEVER cached (stale cache means double bookings).
 
-## Build Commands
+## Build
 
-```bash
-npm run build         # Production build (TypeScript → JS)
-npm run start         # Dev with hot reload
-```
+Source in `src/` is TypeScript (`.tsx`/`.ts`); `build/` is compiled output.
 
-Source in `src/` is TypeScript (`.tsx`/`.ts`). The `build/` directory is compiled output.
+## Build Order and API Dependency
 
-## Phased Build
+**This is the LAST component to build.** The booking system must complete its Phase 1 (steps 1-11) and add the missing API endpoints before the WP plugin can function. Phases: spec §Phased Build Plan.
 
-- **Phase 1:** Settings page + API client + booking-form block (date/time, details, confirmation) + booking-types block
-- **Phase 2:** Stripe Elements payment + multi-provider selection + provider-schedule block
-- **Phase 3:** Events + ticketing (requires booking system to add event support)
-- **Phase 4:** Shortcode fallback, WP admin dashboard widget, webhook receiver
-
-**This is the LAST component to build.** The booking system must complete its Phase 1 (steps 1-11) and add the missing API endpoints before the WP plugin can function.
-
-## Booking System API Dependency
-
-The plugin depends on the booking system's REST API. Full endpoint list and phase priorities: `.claude/specs/03-SGS-BOOKING.md` §Booking System API Requirements.
-
-Existing endpoints (checked against the booking-system repo; full table in the spec): `GET /api/v1/health`, `GET /api/v1/book/{orgSlug}/{typeSlug}/availability`, `POST /api/v1/book/{orgSlug}/{typeSlug}/create`, `GET /api/v1/book/{orgSlug}/{typeSlug}/ics/{bookingId}?token=`, `GET /api/v1/booking/lookup?token=&type=cancel|reschedule`, `POST /api/v1/booking/cancel`, `POST /api/v1/booking/reschedule` (token in the JSON body), `GET /api/v1/invoices/{id}/pdf?token=`, `GET /api/v1/invoices/{id}/public`.
-
-Still to build in the booking system: organisation info/branding, booking-types listing, single booking-type details, providers listing (Phase 2), payment-intent creation. There is no `GET /api/v1/bookings/{id}/status`; `lookup` returns the booking for a token. Open security fixes (rate limiting, bot protection, `customCss` stripping, API key authentication, token expiry) are in the spec's security-fixes list.
+The plugin depends on the booking system's REST API. Existing and missing endpoints, the open security-fix list and phase priorities: spec §Booking System API Requirements (re-check against the booking-system repo first, because it can move).

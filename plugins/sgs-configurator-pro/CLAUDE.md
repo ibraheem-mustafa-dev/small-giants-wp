@@ -6,9 +6,9 @@ Unrelated to Spec 27 (`.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md`), 
 
 ## What This Is
 
-A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: Snooza Chair by Ophir Solutions.
+A premium WordPress plugin that adds 3D product configuration with AR to any SGS website. Sold as a paid add-on (annual licence). First client: Snooza Chair by Ophir Solutions. This is a long-term competitive investment for SGS, not a one-off project.
 
-This is a long-term competitive investment for SGS, not a one-off project.
+Config schema and v1 scope: `.claude/plans/2026-08-03-snooza-configurator-build-plan.md`, Appendix A.
 
 ## Architecture
 
@@ -24,132 +24,26 @@ This is a long-term competitive investment for SGS, not a one-off project.
 
 ## Non-Negotiables
 
-- **NO WooCommerce** — custom lean ecommerce. No WooCommerce plugins, hooks, or dependencies
-- **NO Stripe lock-in** — payment gateway is abstracted. Stripe is ONE provider, not THE provider. Bean objects to Stripe's support for Israel
-- **NO external CDN** — model-viewer bundled via npm, not loaded from Google CDN
-- **NO freelancers** — Claude Code builds everything. AI generates 3D models
-- **Self-hosted** — the plugin works without any external service except optional AI model generation
-- **Product-agnostic** — configuration schema is JSON data, not hardcoded product logic
-- **Mobile-first** — 60%+ of furniture browsing is mobile. Test on mid-range Android
-- **WCAG 2.2 AA** — accessible. Fallback static image gallery alongside 3D viewer
-
-## Planned File Structure
-
-```
-sgs-configurator-pro/
-  sgs-configurator-pro.php     # Plugin bootstrap + Freemius init
-  includes/
-    class-product.php           # Product CPT + config schema meta
-    class-order.php             # Order CPT
-    class-cart.php              # Session/localStorage cart via REST
-    class-checkout.php          # Abstract checkout + gateway interface
-    class-gateway-stripe.php    # Stripe gateway implementation
-    class-gateway-paypal.php    # PayPal gateway implementation
-  src/
-    blocks/configurator/
-      block.json                # Gutenberg block definition
-      edit.js                   # Editor UI (static preview)
-      view.js                   # Frontend: model-viewer + Interactivity API
-      render.php                # Server-side HTML scaffold
-      style.css                 # Block styles
-    api/
-      CartController.php        # REST: /sgs-cart/v1/add, /remove, /get
-      CheckoutController.php    # REST: /sgs-cart/v1/checkout
-      WebhookController.php     # REST: /sgs-cart/v1/webhook
-    models/
-      Product.php               # Product data model
-      Order.php                 # Order data model
-    ai/
-      TripoProvider.php         # Tripo AI 3.0 API integration
-      RodinProvider.php         # Rodin API integration (premium)
-      ModelGenerator.php        # Abstract generator interface
-    licensing/
-      freemius-init.php         # Freemius SDK bootstrap
-  assets/
-    vendor/
-      model-viewer.min.js       # Self-hosted model-viewer bundle
-  templates/
-    cart.php                    # Cart page template
-    checkout.php                # Checkout page template
-    order-confirmation.php      # Thank you page
-```
+- **NO WooCommerce**: custom lean ecommerce. No WooCommerce plugins, hooks, or dependencies (the add-on must sell on sites that do not run it).
+- **NO Stripe lock-in**: the payment gateway is abstracted. Stripe is ONE provider, not THE provider. Bean objects to Stripe's support for Israel.
+- **NO external CDN**: model-viewer is bundled via npm, not loaded from Google CDN.
+- **NO freelancers**: Claude Code builds everything. AI generates 3D models.
+- **Self-hosted**: the plugin works without any external service except optional AI model generation.
+- **Product-agnostic**: configuration schema is JSON data, not hardcoded product logic.
+- **Mobile-first**: 60%+ of furniture browsing is mobile. Test on mid-range Android.
+- **Accessible**: WCAG 2.1 AA baseline (2.2 per public-sector/EU client), with a fallback static image gallery alongside the 3D viewer.
 
 ## Development Workflow
 
-- **Local dev:** WP Playground on Bean's PC. All media/files local
-- **Build:** `@wordpress/scripts` for block compilation
-- **3D models:** Processed locally via WP-CLI or scripts. Draco + KTX2 compression via glTF-Transform
-- **Testing:** Playwright for visual QA. Test on 375px/768px/1440px breakpoints
+- **Local dev:** WP Playground on Bean's PC. All media/files local.
+- **Build:** `@wordpress/scripts` for block compilation.
+- **3D models:** processed locally via WP-CLI or scripts. Draco + KTX2 compression via glTF-Transform.
+- Code standards: WordPress coding standards, ES modules, no jQuery.
 
-## Code Standards
+## Design Decisions
 
-- PHP: 300 lines max per file. WordPress coding standards. Prepared statements for all queries
-- JS/TS: 250 lines max per file. ES modules. No jQuery
-- Security: nonces for all forms, capability checks, sanitise input, escape output
-- UK English in all code comments, user-facing text, and documentation
-- Every function has a working implementation — no stubs, no TODOs
-
-## Key Design Decisions
-
-1. **model-viewer over raw Three.js** — AR for free, simpler API, maintained by Google. Drop to Three.js only if model-viewer can't do something
-2. **WP Interactivity API over React** — no framework bundle, server-rendered initial state, native block compatibility. Novel combination (nobody's done this with 3D)
-3. **JSON config schema over hardcoded options** — new product types need only new data, not new code
-4. **Abstract payment gateway** — Stripe, PayPal, Square as swappable implementations
-5. **Freemius over EDD** — faster to ship, built-in annual billing and WP admin flows
-6. **Progressive loading** — show poster image, load 3D on user interaction. Draco compression targets <5MB per model
-
-## Product Configuration Schema
-
-```json
-{
-  "schema_version": "1.0",
-  "groups": [
-    {
-      "id": "colour",
-      "label": "Colour",
-      "type": "variant",
-      "options": [
-        { "id": "blue", "label": "Royal Blue", "swatch": "#0066CC", "glb_variant": "Blue" }
-      ]
-    },
-    {
-      "id": "accessories",
-      "label": "Accessories",
-      "type": "visibility",
-      "multiple": true,
-      "options": [
-        { "id": "tray", "label": "Padded Tray", "price_modifier": 150, "mesh_show": ["tray"] }
-      ]
-    },
-    {
-      "id": "size",
-      "label": "Size",
-      "type": "metadata",
-      "options": [
-        { "id": "size-1", "label": "Size 1 (12-24 months)", "price_modifier": 0, "sku_suffix": "S1" }
-      ]
-    }
-  ]
-}
-```
-
-## v1 Scope (Snooza Chair MVP)
-
-| Feature | Included |
-|---------|---------|
-| 3D viewer block (model-viewer) | Yes |
-| Colour/material variants (6 colours) | Yes |
-| Accessory visibility toggles | Yes |
-| AR button (conditional on model quality) | Yes |
-| Lean ecommerce (cart + abstract checkout) | Yes |
-| JSON config schema | Yes |
-| Draco GLB compression | Yes |
-| Manual texture upload | Yes |
-| AI model generation (admin tool) | Yes |
-| Progressive GLB loading (Needle LODs) | No — v2 |
-| GenPBR swatch-to-texture | No — v2 |
-| Configure-and-share links | No — v2 |
-| WebGPU cloth simulation | No — v3 |
+- **model-viewer over raw Three.js**: AR for free, simpler API, maintained by Google. Drop to Three.js only if model-viewer cannot do something.
+- **Progressive loading**: show the poster image, load 3D on user interaction. Draco compression targets under 5MB per model.
 
 ## Snooza Chair Product Details
 

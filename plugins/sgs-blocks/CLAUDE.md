@@ -8,56 +8,12 @@ Full spec: `.claude/specs/02-SGS-BLOCKS.md` (blocks) + `.claude/specs/04-SGS-FOR
 
 ## Plugin Structure
 
-```
-sgs-blocks/
-├── sgs-blocks.php               # Plugin bootstrap
-├── package.json                  # @wordpress/scripts + dependencies
-├── webpack.config.js             # Build config
-├── src/
-│   ├── blocks/                   # One folder per block (block.json, edit.js, save.js, style.css, view.js)
-│   ├── bindings/                 # Block bindings sources
-│   ├── components/                # Shared editor components (SgsColourPanel, SgsBorderControl, TypographyControls, DesignTokenPicker, etc.)
-│   ├── header-behaviours/          # Header/nav interactivity modules
-│   ├── plugins/                   # Editor plugin registrations
-│   ├── shared/                    # Cross-block modules (nav-interactivity, nav-menu-panels)
-│   ├── utils/                     # Token reader, responsive helpers
-│   └── vendor-modules/            # Bundled third-party modules
-├── build/                         # Compiled output (deploy this, not src/)
-└── includes/
-    ├── class-sgs-blocks.php      # Main plugin class
-    ├── block-categories.php      # Register SGS block categories
-    ├── device-visibility.php     # Server-side render_block filter for responsive visibility
-    ├── heading-anchors.php       # Auto-generates heading IDs for Table of Contents
-    ├── lucide-icons.php          # Auto-generated Lucide icon library (exempt from the 300-line PHP limit)
-    ├── render-helpers.php        # Autoloads shared colour/font-size/box helper files
-    ├── addon-price-list/         # Site-wide priced add-ons: settings page, cart pricing, CLI seed (Spec 43 FR-43-17 to 20)
-    ├── flow-fields/              # Choice-flow answers and fields on the cart line, session-stamped upload (FR-43-21)
-    ├── gift-card/                # Emailed gift cards: ledger tables, redemption fee on the block Cart and Checkout, admin, feed and schema (Spec 27 Part 4, FR-27-GC1 to GC12); loaded by gift-card/load.php
-    └── forms/                    # Form processing engine (REST API, DB, submissions, private uploads)
-```
-
-## Block Pattern (Every Block Follows This)
-
-```
-block-name/
-├── block.json       # Metadata, attributes, supports, scripts, styles
-├── edit.js          # Editor component
-├── save.js          # Static save (or null for dynamic blocks)
-├── render.php       # Server-side render (dynamic blocks only)
-├── editor.css       # Editor-only styles
-├── style.css        # Frontend + editor styles
-├── view.js          # Frontend interactivity (viewScriptModule)
-└── index.js         # Block registration
-```
-
-## Block Categories
-
-`sgs-layout`, `sgs-content`, `sgs-interactive`, `sgs-forms` — see each block's `block.json` `category` for current membership.
+Editor source is in `src/` (`blocks/`, `components/`, `shared/`, `utils/`, `bindings/`, `header-behaviours/`, `plugins/`, `vendor-modules/`); PHP is in `includes/` (grep it: `class-sgs-blocks.php` registers blocks, `forms/` is the form engine, `render-helpers.php` autoloads the shared colour, font-size and box helpers). Deploy `build/`, never `src/`.
 
 ## Creating a New Block
 
-1. Make `src/blocks/<block-name>/` with the files in "Block Pattern" above. `class-sgs-blocks.php` registers every folder in `build/blocks/` that holds a `block.json`, so there is no manual registration step.
-2. `block.json` minimum: `apiVersion` 3, `name` `sgs/<block-name>`, `title`, `category` (one of the four above), `textdomain` `sgs-blocks`, `attributes`, `supports`, and for a dynamic block `"render": "file:./render.php"`. Every customisable attribute needs an inspector control (the Block Customisation Standard below).
+1. Make `src/blocks/<block-name>/` with `block.json`, `edit.js`, `save.js` (`null` for a dynamic block), `render.php` (dynamic blocks), `editor.css`, `style.css`, `view.js` (frontend interactivity, `viewScriptModule`) and `index.js`. `class-sgs-blocks.php` registers every folder in `build/blocks/` that holds a `block.json`, so there is no manual registration step.
+2. `block.json` minimum: `apiVersion` 3, `name` `sgs/<block-name>`, `title`, `category` (`sgs-layout`, `sgs-content`, `sgs-interactive` or `sgs-forms`), `textdomain` `sgs-blocks`, `attributes`, `supports`, and for a dynamic block `"render": "file:./render.php"`. Every customisable attribute needs an inspector control (the Block Customisation Standard below).
 3. `index.js` registers with `registerBlockType( metadata.name, { edit: Edit, save } )`; `save` is `() => null` for a dynamic block.
 4. `render.php` builds its root element from `get_block_wrapper_attributes( [ 'class' => 'sgs-<block-name>' ] )`, escapes every output, and defines no top-level function (see Cross-cutting gotchas).
 5. Scope all CSS under the `.sgs-<block-name>` BEM root; no inline `style="..."`.
@@ -65,95 +21,59 @@ block-name/
 
 ## Shared Components and Extensions
 
-- Shared editor components live in `src/components/` (`index.js` exports them): `DesignTokenPicker` (theme colour slugs, resolved in PHP by `sgs_colour_value()` in `includes/helpers-tokens.php`), `ResponsiveControl` (desktop/tablet/mobile switcher), `SgsLengthControl` (every single length), `SgsGapControl` (a gap with separate row and column parts). Grep that directory before writing a control; `.claude/catalogues/helpers.md` lists them with their purpose.
+- Shared editor components live in `src/components/` (`index.js` exports them): `DesignTokenPicker` (theme colour slugs, resolved in PHP by `sgs_colour_value()` in `includes/helpers-tokens.php`; `colourVar()` and the other token helpers are in `src/utils`), `ResponsiveControl` (desktop/tablet/mobile switcher), `SgsLengthControl` (every single length), `SgsGapControl` (a gap with separate row and column parts). Grep that directory before writing a control; `.claude/catalogues/helpers.md` lists them with their purpose.
 - Editor code reads the motion schema extract only through `src/components/motion/motion-defs.js` (`@sgs/motion-defs`, one shared editor script handle `sgs-motion-defs`); a direct import of `generated-motion-defs.json` would copy it into every block bundle.
 - Extensions add capabilities to every block through the `editor.BlockEdit` filter and live in `src/blocks/extensions/`. `extensions/index.js` imports them all and is compiled to `build/extensions/index.js`, which `class-sgs-blocks.php` enqueues once via `enqueue_block_editor_assets`. `extensions/extension-roster.json` declares which blocks receive each extension attribute; `scripts/check-extension-roster.js` fails the build on drift.
-- A new extension: add `extensions/<name>.js` following `child-sizing.js` (`addFilter( 'editor.BlockEdit', 'sgs/<name>', ... )`), import it in `extensions/index.js`, and add a `render_block` filter in a new `includes/` file (required from `sgs-blocks.php`) when it needs server-side output. Motion is not an extension file: `supports.sgs.motion` in a `block.json` registers the `sgsMotion` attribute (`includes/motion/support-registration.php` and `extensions/motion/register.js`, Spec 38A), `scripts/generate-extension-attributes.js` refuses an `sgsMotion` literal under `extensions/`, and `python scripts/run-motion-gates.py` runs every motion gate.
-- State and open motion needs `@sgs/motion-state` (`src/shared/motion-state-publish.js` publishes it) and `@sgs/motion-state-loader`, which lists it in the import map: a page without the loader silently never plays open or state motion.
-- `includes/motion/class-sgs-motion-reveal-default.php` (`Sgs_Motion_Reveal_Default`) is the site reveal default (Spec 38A §8.1): a block inside the main content with no entrance of its own takes the client's `settings.custom.entrance.reveal` rules, written into the snapshot by `scripts/theme-extractor/reveal_tokens.py`; `entrance.off` on a block opts it out, and with no `reveal` rules the output is unchanged.
-- `includes/motion/class-sgs-motion-loop-delays.php` (`Sgs_Motion_Loop_Delays`) writes per-item delays for loops and item arrays; the `sgs_motion_loop_stagger` filter supplies settings for core templates that carry no motion support.
-- `python scripts/check-motion-stagger-drift.py --check` proves the stagger delays against fixtures and the JS/PHP parity cases (`--self-test`, `--site` by hand); `run-motion-gates.py` runs it.
+- A new extension: add `extensions/<name>.js` following `child-sizing.js` (`addFilter( 'editor.BlockEdit', 'sgs/<name>', ... )`), import it in `extensions/index.js`, and add a `render_block` filter in a new `includes/` file (required from `sgs-blocks.php`) when it needs server-side output. Motion is not an extension file: `supports.sgs.motion` in a `block.json` registers the `sgsMotion` attribute (`includes/motion/support-registration.php` and `extensions/motion/register.js`, Spec 38A), and `scripts/generate-extension-attributes.js` refuses an `sgsMotion` literal under `extensions/`.
+- Motion detail (state and loop motion, stagger delays): Spec 38A. Run `python scripts/run-motion-gates.py` for every motion gate. A page without `@sgs/motion-state-loader` silently never plays open or state motion.
+- Site reveal default (Spec 38A §8.1): `includes/motion/class-sgs-motion-reveal-default.php` gives a block in the main content with no entrance of its own the client's `settings.custom.entrance.reveal` rules (written into the snapshot by `scripts/theme-extractor/reveal_tokens.py`); `entrance.off` opts a block out.
 
-## Build Commands
+## Build
 
-```bash
-npm run build         # Production (--experimental-modules for viewScriptModule, --webpack-copy-php copies render.php to build/ — dynamic blocks won't render without it)
-npm run start         # Dev with hot reload
-npm run lint:js       # ESLint
-npm run lint:css      # Stylelint
-```
+`npm run build` needs `--experimental-modules` (for `viewScriptModule`) and `--webpack-copy-php` (copies `render.php` to `build/`; dynamic blocks do not render without it); both are already in the script. Lint scripts are in `package.json`.
 
-**Side-effect modules:** `package.json` `sideEffects` lists the only source files webpack keeps when nothing uses their exports (stylesheets, `src/blocks/extensions/**`, `src/bindings/**`, `src/shared/nav-interactivity/**`, `src/shared/wishlist-store/**`). A new module that does its work just by being imported (a `registerPlugin`, an `addFilter`, a bindings source, an Interactivity `store()`) must sit under one of those globs or be added to the list, or the build silently drops it. Check by counting `registerBlockType`, `addFilter`, `registerPlugin` and `registerBlockBindingsSource` across `build/**/*.js` before and after.
-
-## A control that "doesn't work" — diff it against a block where it ALREADY works
-
-Do not design a fix from first principles. Ask which blocks already have the attribute:
-
-```bash
-python ~/.claude/skills/sgs-wp-engine/scripts/sgs-db.py sql "SELECT block_slug, attr_name, css_property, css_element, css_tier FROM block_attributes WHERE css_property='object-fit'"
-```
-
-Then read the working block's `render.php` + `style.css` and compare — the DB query surfaces blocks a hand-written survey misses. Never weigh "this changes what the canary currently renders": the framework is pre-production, so whether a default is right is decided on merit alone.
+**Side-effect modules:** a module that does its work just by being imported (a `registerPlugin`, an `addFilter`, a bindings source, an Interactivity `store()`) must match a `package.json` `sideEffects` glob or be added to it, or the build silently drops it. Check by counting `registerBlockType`, `addFilter`, `registerPlugin` and `registerBlockBindingsSource` across `build/**/*.js` before and after.
 
 ## Block Customisation Standard
 
 Every block MUST provide per-element customisation matching Kadence/Spectra depth:
 
 1. Native `supports` for wrapper-level controls (colour, typography, spacing, border).
-2. Custom attributes + controls for each inner text element: colour via `SgsColourPanel` (`.claude/rules/block-editor-controls.md`); font size/weight/style/line-height via the shared **`TypographyControls`** component (`src/components/TypographyControls.js`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`) in render.php — never hand-rolled font controls, never native `supports.typography` on an inner element (gate: `inspector-scan` rule 45). Copy the `sgs/trust-bar` triple, the clean full-surface reference; no generator scaffolds it: copy the triple by hand. Build the selector INLINE in the call — `check-hardcoded-render-defaults.js::collectHelperGovernance` learns the governed element from the string literals in the call's own argument region, so a pre-assigned selector variable registers nothing and the gate falls back to a BEM-name heuristic that flags unrelated siblings. Four further consequences, each measured: auto memory `installing-a-typography-surface-trips-four-gates`. A `{prefix}TextAlign` (and the bare `textAlign`) is a `{desktop, tablet, mobile}` object: the caller passes `sgs_object_attr_keys( $block )` (or the block name from a helper function) as the helper's seventh argument, so the schema, never the stored value's shape, decides which keys print per breakpoint; the control is the same `TypographyControls` row (`TextAlignTierControl`), and `find-scalar-tier-attrs.py --check` keeps saved content in the object shape. The device tier is chosen once, in the global `<ResponsiveControl>` toggle (`src/blocks/extensions/responsive-device-toggle.js`) — never add a per-control switcher (rule 25). This scopes to blocks rendering their own text element; an InnerBlocks composite (`sgs/heading`/`text`/`label` children) puts typography on the child — see Spec 02's Block Customisation Standard, "HC2".
-3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour) — via `sgs/multi-button` + `sgs/button` InnerBlocks by default.
+2. Custom attributes + controls for each inner text element: colour via `SgsColourPanel` (`.claude/rules/block-editor-controls.md`); font size/weight/style/line-height via the shared **`TypographyControls`** component (`src/components/TypographyControls.js`) in edit.js + the shared **`sgs_typography_css_rule( $attributes, $prefix, $selector )`** helper (`includes/helpers-typography.php`) in render.php. Never hand-roll font controls and never use native `supports.typography` on an inner element (gate: `inspector-scan` rule 45). Copy the `sgs/trust-bar` triple by hand (the clean full-surface reference; no generator scaffolds it). Build the selector INLINE in the call: `check-hardcoded-render-defaults.js::collectHelperGovernance` learns the governed element from the string literals in the call's own argument region, so a pre-assigned selector variable registers nothing and the gate falls back to a BEM-name heuristic that flags unrelated siblings. Four further consequences, each measured: auto memory `installing-a-typography-surface-trips-four-gates`. Text-align tiers and the device toggle: `.claude/rules/block-editor-controls.md`. This scopes to blocks rendering their own text element; an InnerBlocks composite (`sgs/heading`/`text`/`label` children) puts typography on the child (Spec 02's Block Customisation Standard, "HC2").
+3. Custom attributes + controls for interactive elements like CTAs (text colour, background colour), via `sgs/multi-button` + `sgs/button` InnerBlocks by default.
 4. Do NOT use `:not([style*="…"])` fallback guards. Under Spec 32 no block emits an inline `style` declaration, so the guard always matches and becomes unconditional. Let the value inherit, or emit the fallback inside `:where()` so a `.{uid}` scoped rule wins.
 5. Use Block Selectors API in `block.json` to target native typography to the primary text element.
-6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/ slot names that variant uses]`) so the right variant can be detected the correct variant, and register the variant-selector attr name to the `blocks.variant_attr` DB column via `/sgs-update` (FP-1).
-
-## Utility Functions
-
-```js
-import { colourVar, fontSizeVar, spacingVar, shadowVar, borderRadiusVar, transitionVar } from '../../utils';
-```
-
-`colourVar('primary')` → `var(--wp--preset--color--primary)` (same pattern for fontSize/spacing/ shadow/borderRadius/transition). Use `DesignTokenPicker` for colour selection from the theme.json palette in the editor sidebar.
+6. Variant-bearing blocks MUST declare `supports.sgs.variants` (a map of `variant_value → [attr/slot names that variant uses]`) so the variant in use can be detected, and register the variant-selector attr name to the `blocks.variant_attr` DB column via `/sgs-update` (FP-1).
 
 ## Cross-cutting gotchas
 
-- **Core block "unexpected content"** → open the Site Editor, click "Attempt Block Recovery" on each invalid block, then save. Never fix via WP-CLI `str_replace` on `post_content` — this breaks block validation and cascades.
-- **`style.css` vs `editor.css` are independent** — `style.css` compiles to the frontend-only `style-index.css`, `editor.css` to the editor-only `index.css`. A fix in one does not reach the other; mirror it by hand when the editor preview should match. `editor.css` reaches the editor only if the block's `index.js` has `import './editor.css';` — the build bundles nothing else (gate: `scripts/check-editor-css-imported.js`).
-- **Dynamic blocks with an InnerBlocks slot must `save: () => <InnerBlocks.Content />`**, never `null` — `save: () => null` drops the InnerBlocks tree from `post_content` on save even though render.php drives 100% of frontend output. (`sgs/product-card` has no InnerBlocks slot, so its save is genuinely `null`.) Full detail: `.claude/specs/common-wp-styling-errors.md` row B4.
-- **Never write `post_content` to a page open in the block editor** — a save from the editor writes its in-memory state (loaded before your write) over everything; only the last write survives.
-- **Tier-object attributes have no schema protection.** Every `{desktop,tablet,mobile}`-shaped attribute declares `{"type":"object","default":{}}` with no nested schema, so WordPress passes a malformed sub-key through unchanged. Read and write them only through the PHP helper (`sgs_responsive_normalise_object()`, `sgs_box_object_shorthand()`/`sgs_corner_object_shorthand()`) and the JS write helper (`patchTier()`) — never a bare `setAttributes({attr:{tier:value}})`, which silently drops the other two tiers. Full migration doctrine: `.claude/rules/migration-scripts.md`.
+- **Core block "unexpected content"**: open the Site Editor, click "Attempt Block Recovery" on each invalid block, then save. Never fix via WP-CLI `str_replace` on `post_content`; it breaks block validation and cascades.
+- **`style.css` vs `editor.css` are independent**: `style.css` compiles to the frontend-only `style-index.css`, `editor.css` to the editor-only `index.css`. A fix in one does not reach the other; mirror it by hand when the editor preview should match. `editor.css` reaches the editor only if the block's `index.js` has `import './editor.css';` because the build bundles nothing else (gate: `scripts/check-editor-css-imported.js`).
+- **Dynamic blocks with an InnerBlocks slot must `save: () => <InnerBlocks.Content />`**, never `null`: `save: () => null` drops the InnerBlocks tree from `post_content` on save even though render.php drives 100% of frontend output. A block with no InnerBlocks slot (`sgs/product-card`) correctly saves `null`. Detail: `.claude/specs/common-wp-styling-errors.md` row B4.
+- **Never write `post_content` to a page open in the block editor**: a save from the editor writes its in-memory state (loaded before your write) over everything; only the last write survives.
+- **Tier-object attributes have no schema protection.** Every `{desktop,tablet,mobile}`-shaped attribute declares `{"type":"object","default":{}}` with no nested schema, so WordPress passes a malformed sub-key through unchanged. Read and write them only through the PHP helper (`sgs_responsive_normalise_object()`, `sgs_box_object_shorthand()`/`sgs_corner_object_shorthand()`) and the JS write helper (`patchTier()`); a bare `setAttributes({attr:{tier:value}})` silently drops the other two tiers. Migration doctrine: `.claude/rules/migration-scripts.md`.
 - **Forms submit by one naming rule and one submit button.** Every `form-field-*` render.php takes its submission name from `includes/forms/field-render-helpers.php::field_submission_name` (directly or through `field_input_attrs`), never its own; a form holding an `sgs/button` with `isSubmit` renders no built-in submit button (`includes/helpers-form-own-submit.php::sgs_form_has_own_submit`, editor mirror `src/blocks/form/form-own-submit.js::hasOwnSubmit`). Spec 04, Submission name and Submit button and layout.
-- **Shared CSS atoms scope per ELEMENT, not per block** — a two-element block sharing one atom scope silently sets the same custom property twice. Detail: `.claude/rules/colour-emission.md` ("Media atom scoping").
+- **Shared CSS atoms scope per ELEMENT, not per block**: a two-element block sharing one atom scope silently sets the same custom property twice. Detail: `.claude/rules/colour-emission.md` ("Media atom scoping").
 
 ## Key rules
 
-- Every block reads colours/fonts from theme.json tokens, never hardcode. Apply THE DEFAULT-vs-HARDCODE TEST before any block literal — full test in Spec 32 §3: does it override a theme-wide default, or hinder the pipeline? A component's own constant (not a client value) may stay; `null` default = inherit is the canonical pattern. Enforced by `check-hardcoded-render-defaults.js`'s F3b.
+- Apply THE DEFAULT-vs-HARDCODE TEST before any block literal (full test in Spec 32 §3): does it override a theme-wide default, or hinder the pipeline? A component's own constant (not a client value) may stay; `null` default = inherit is the canonical pattern. Enforced by `check-hardcoded-render-defaults.js`'s F3b.
 - CSS scroll-snap for carousels, Intersection Observer for scroll-triggered animations.
 - Progressive enhancement: every block renders meaningful content without JS.
-- Responsive: every layout block has mobile/tablet/desktop controls.
-- Use `useInnerBlocksProps` (not the `InnerBlocks` component directly) for inner-block editor integration — once per block.
+- Use `useInnerBlocksProps` (not the `InnerBlocks` component directly) for inner-block editor integration, once per block, so the wrapper props merge instead of nesting a second wrapper.
 
 ## Gates
 
-Fast tier runs in `prebuild`, full tier runs pre-deploy, both four gates at a time, longest first (`run-gates.py --jobs 4`; `--time` refreshes the budgets that order them, and a gate that writes files must write only to temp folders or have one writer, because gates run side by side); `run-motion-gates.py` is in the full tier and runs every `check-motion-*.py`, `migrate-motion-*.py` and `migrate-easing-*.js` it finds by name, so a new one is live on commit. The deploy files and how to extend them: `.claude/deploy-architecture.md`. `npm run gate:list` shows what's actually wired (a standalone `check:*` alias in `package.json` proves only that the alias exists, not that a build runs it). Every gate script documents what it catches in its own header — read that before re-deriving the rule. Never dump a new finding into a gate's baseline file; fix the pattern or generalise the gate.
+Fast tier runs in `prebuild`, full tier pre-deploy (`run-gates.py --jobs 4`). `npm run gate:list` shows what is wired (a standalone `check:*` alias in `package.json` proves only that the alias exists, not that a build runs it). A gate that writes files writes only to temp folders or has one writer, because gates run side by side. `run-motion-gates.py` is in the full tier and runs every `check-motion-*.py`, `migrate-motion-*.py` and `migrate-easing-*.js` it finds by name, so a new one is live on commit. The deploy files and how to extend them: `.claude/deploy-architecture.md`. Every gate script documents what it catches in its own header; read that before re-deriving the rule. Never dump a new finding into a gate's baseline file; fix the pattern or generalise the gate.
 
 A gate that reads a block's own source reads it through `plugins/sgs-blocks/scripts/lib/block-source-files.js` / `block_source_files.py` (`renderFiles`/`renderSource`, `editFiles`/`editSource`, `viewFiles`/`viewSource`), never `render.php`, `edit.js` or `view.js` by name: a split into partials or components otherwise blinds it silently. A render partial names classes fully qualified (`\SGS\Blocks\X::`), never through a `use` of its own (gate: `check-partial-use-imports.py`).
 
-A block whose stylesheet lays repeated items out as a flex row declares `css:flex-wrap` for that element and offers the shared `FlexWrapControl` control (`src/components/FlexWrapControl.js`): `scripts/check-row-flex-wrap.py --check` (fast tier) reports a row with no setting, and its header lists the named exclusions (single controls, tab list, marquee and slider lanes, fixed step indicators).
+A block whose stylesheet lays repeated items out as a flex row declares `css:flex-wrap` for that element and offers the shared `FlexWrapControl` (`src/components/FlexWrapControl.js`); `scripts/check-row-flex-wrap.py --check` (fast tier) reports a row with no setting, and its header lists the named exclusions.
 
-Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead). `scripts/check-snapshot-focus-tokens.py` (contrast as warnings only) is not wired into any gate tier: contrast never blocks or distracts a build (Bean, 2026-10-24).
+Keyboard focus is one system (`theme/sgs-theme/assets/css/focus.css`, Spec 32 §14.5): `scripts/check-focus-system.js --check` fails any block rule that draws its own focus outline or box-shadow, suppresses one, or reads a retired focus token (blocks hand in `--sgs-focus-under` and `--sgs-focus-offset` instead). `scripts/check-snapshot-focus-tokens.py` reports contrast as warnings only and is wired into no gate tier.
 
-New authored text and repeater fields (Spec 02 §11 and §12): a new text setting whose words the author types is rich text unless proven otherwise (`<SgsFreeTextField type="rich" />` in the inspector, `sgs_rich_text_kses()` in the PHP print, `sgs_authored_text_plain()` in an attribute or JS string); a setting that cannot hold markup is listed in `scripts/data/authored-text-rich.json::unconvertible` with a cited proof. `scripts/check-authored-text-rich.py --check` (fast tier) refuses a plain authored setting without one. Every `items.properties.<field>` of a repeater declares a `role` from `scripts/data/roles.json` (`glyph` for a symbol copied verbatim); `scripts/check-item-field-roles.py --check` (fast tier) refuses a field without one. An item icon is drawn through `sgs_get_lucide_icon()`.
+New text settings and repeater fields: Spec 02 §11 (a text setting whose words the author types is rich text) and §12 (every repeater `items.properties.<field>` declares a `role`); the fast-tier gates `check-authored-text-rich.py` and `check-item-field-roles.py` refuse a setting without one.
 
-## Where the rest of this file moved
+## Where the rest moved
 
-Seven path-scoped rule files in `.claude/rules/` load when you touch their paths:
-
-- `block-authoring.md`: saved-defaults channels, no deprecations, undeclared attributes, WooCommerce loop pinning
-- `block-editor-controls.md`: border, separator, colour and alignment controls, editor-canvas mirrors, grid-item qualification
-- `colour-emission.md`: colour-emission helpers, precedent registry, shadows, scrims, touch-safe hover
-- `cloning-pipeline.md`: the computed route's cloning rules and fidelity measures
-- `framework-principles.md`: the binding rules, cited as FP-n
-- `migration-scripts.md`: migration/survey script triad, tier-object taxonomy, S1-S5 doctrine
-- `motion-qa.md`: live motion QA and canary fixture pages
-- `backend-integrations.md`: Google Reviews, Trustpilot, Font Collection
-- No-dead-controls (HC2): `.claude/specs/02-SGS-BLOCKS.md` § Block Customisation Standard
+Path-scoped rule files in `.claude/rules/` load automatically when you touch their paths. No-dead-controls (HC2): `.claude/specs/02-SGS-BLOCKS.md` § Block Customisation Standard.

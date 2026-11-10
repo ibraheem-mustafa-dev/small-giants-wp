@@ -151,3 +151,60 @@ Per the WebGL research already on file (`.claude/reports/2026-08-02-webgl-adopti
 2. Where do the reference product images actually live? The client CLAUDE.md names files that were not found in this session's `Glob` — confirm the real path before Week 1 starts.
 3. Configurator-page byte budget ceiling — needs a build-session measurement of the real `model-viewer` + existing buybox JS total, not the estimate in §10.
 4. Does the £299/year licence extraction (packaging into a standalone plugin, §9) happen before or after Snooza's own launch? Recommended: after, but Bean may want it sequenced differently for a second prospect already in the pipeline.
+
+## Appendix A. Configurator Pro plugin reference (moved from plugins/sgs-configurator-pro/CLAUDE.md)
+
+Planned REST namespace for the lean cart and checkout: `/sgs-cart/v1` (`add`, `remove`, `get`, `checkout`, `webhook`).
+
+### Product configuration schema (JSON in CPT post meta)
+
+```json
+{
+  "schema_version": "1.0",
+  "groups": [
+    {
+      "id": "colour",
+      "label": "Colour",
+      "type": "variant",
+      "options": [
+        { "id": "blue", "label": "Royal Blue", "swatch": "#0066CC", "glb_variant": "Blue" }
+      ]
+    },
+    {
+      "id": "accessories",
+      "label": "Accessories",
+      "type": "visibility",
+      "multiple": true,
+      "options": [
+        { "id": "tray", "label": "Padded Tray", "price_modifier": 150, "mesh_show": ["tray"] }
+      ]
+    },
+    {
+      "id": "size",
+      "label": "Size",
+      "type": "metadata",
+      "options": [
+        { "id": "size-1", "label": "Size 1 (12-24 months)", "price_modifier": 0, "sku_suffix": "S1" }
+      ]
+    }
+  ]
+}
+```
+
+### v1 scope (Snooza Chair MVP)
+
+| Feature | Included |
+|---------|---------|
+| 3D viewer block (model-viewer) | Yes |
+| Colour/material variants (6 colours) | Yes |
+| Accessory visibility toggles | Yes |
+| AR button (conditional on model quality) | Yes |
+| Lean ecommerce (cart + abstract checkout) | Yes |
+| JSON config schema | Yes |
+| Draco GLB compression | Yes |
+| Manual texture upload | Yes |
+| AI model generation (admin tool) | Yes |
+| Progressive GLB loading (Needle LODs) | No, v2 |
+| GenPBR swatch-to-texture | No, v2 |
+| Configure-and-share links | No, v2 |
+| WebGPU cloth simulation | No, v3 |

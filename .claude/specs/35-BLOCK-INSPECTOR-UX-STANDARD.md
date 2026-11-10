@@ -336,6 +336,8 @@ The argument binds on **four** contracts, all reachable through `src/blocks/exte
 
  **Enforcement must therefore be mechanism-aware, not binary.** Checking merely "does a gradient path exist somewhere for this row" would pass a TEXT row wired to the background mechanism, which renders nothing — the row would show green while the client's gradient never appears. This is a required refinement to rule `31-golden-colour-control`'s `row-missing-gradient` finding kind, not yet built into it. Source: `golden-controls.json`'s `controls.colour.canonical` block, which already separates these three by name.
 
+ **Open backlog: text gradient on an element that also paints a background.** `background-clip:text` clips the whole background painting area to the glyphs, so a text gradient is safe only when the element paints no background on the same selector; otherwise the background moves to the `::after` layer through `sgs_block_background_layer_css()`. Blocks needing this are any whose `supports.sgs.elements` entry declares both a `css:color*` and a separate `css:background*` member, found by `inspector-scan/rules/31-golden-colour-control.js::textSharesElementWithBackground` (never hand-derive the list); for example button, container, hero, product-card, trust-bar and info-box. It is its own project, not a quick follow-up. `scripts/colour-codemod/classify-end-shape.js::textSharesElementWithBackground` is a second definition for the codemod's classifier: change the rule and the classifier together.
+
 9. ⭐ **THE STATE + SHAPE RULE. This is the load-bearing addition to this section and it binds every colour in the framework, wherever it lives.**
 
    Three binding clauses:

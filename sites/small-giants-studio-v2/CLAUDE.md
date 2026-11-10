@@ -1,11 +1,11 @@
-# CLAUDE.md — Small Giants Studio Website
+# CLAUDE.md: Small Giants Studio Website
 
 ## Project Overview
-Website for Small Giants Studio — a Birmingham-based digital transformation consultancy founded by Ibraheem Mustafa. Serves UK SMEs, charities, and social enterprises.
+Website for Small Giants Studio, a Birmingham-based digital transformation consultancy founded by Ibraheem Mustafa. Serves UK SMEs, charities, and social enterprises.
 
 **Domain:** smallgiantsstudio.co.uk
 
-**Stack:** Next.js
+**Stack:** Next.js (not the SGS WordPress framework)
 
 **Status and plans:** `.claude/state.md`, `.claude/handoff.md`, `.claude/plans/current_mission.md`
 
@@ -13,53 +13,32 @@ Website for Small Giants Studio — a Birmingham-based digital transformation co
 
 ## Critical Rules
 
-- **UK English everywhere** — colour, behaviour, analyse, organisation. Never American spellings.
-- **Never use personal phone number** — work number only: 07424 449555
-- **Contact email:** hello@smallgiantsstudio.co.uk
-- **Other emails:** ibraheem@smallgiantsstudio.co.uk (client comms), admin@smallgiantsstudio.co.uk (backend)
-- **Old business name was MA Growth Digital Ltd** — replace with Small Giants Studio Ltd if seen anywhere
-- **WCAG 2.2 AA accessible** — 44px minimum touch targets, accessible contrast ratios throughout
-- **Mobile-first responsive** — test at mobile (375px), tablet (768px), desktop (1440px)
-- **Dark mode support**
-- **No corporate jargon** — never use "leverage", "synergy", "game-changer", "solutions"
+- **Phone:** use the work number 07424 449555 only, never the personal number.
+- **Emails:** hello@ (public contact), ibraheem@ (client comms), admin@ (backend), all at smallgiantsstudio.co.uk.
+- **Old business name was MA Growth Digital Ltd:** replace with Small Giants Studio Ltd if seen anywhere.
+- **WCAG 2.2 AA accessible:** 44px minimum touch targets, accessible contrast ratios throughout.
+- **Mobile-first responsive:** test at mobile (375px), tablet (768px), desktop (1440px).
+- **Dark mode support.**
+- **No corporate jargon** in copy: avoid "leverage", "synergy", "game-changer", "solutions" (the brand voice is plain and direct).
 
 ---
 
 ## Reference Documents
 
-All brand, voice, and positioning docs live in `/docs/`. **Read these before any content or design work:**
+Brand, voice and positioning docs are in `docs/` (index: `docs/README.md`). **Read them before any content or design work**, starting with `docs/Small_Giants_Studio_Brand_Positioning_Guide.md` (brand bible: USPs, messaging, audiences) and `docs/LinkedIn_Writing_Style_Guide_Ibraheem_Mustafa.md` (voice and tone).
 
-- `docs/Small_Giants_Studio_Brand_Positioning_Guide.md` — Brand bible: USPs, messaging, target audiences, elevator pitches
-- `docs/LinkedIn_Writing_Style_Guide_Ibraheem_Mustafa.md` — Voice, tone, language patterns
-- `docs/LinkedIn_Voice_Analysis_Ibraheem_Mustafa.md` — Evidence from actual posts
-- `docs/About_The_Company.txt` — Full company description
-- `docs/UK_Digital_Transformation_Consultant_Positioning.md` — Market research, competitor gaps, website must-haves
-
-### Screenshots & Logos in `/docs/screenshots/`
-- LinkedIn launch post, company page, Evertreen partnership post
-- LinkedIn recommendations screenshot — use these as social proof/testimonials on the site
-- Partner logos: Evertreen, Muslims in Construction, AME
-- Small Giants Studio logo
-- Ibraheem's profile photo — use for hero section and about page
+Logos: `docs/screenshots/` holds the Evertreen logo and the Small Giants Studio horizontal logo. The Muslims in Construction and AME logos, LinkedIn recommendation screenshots (social proof) and Ibraheem's profile photo (hero and About) are not in the repo yet and need sourcing.
 
 ---
 
 ## Site Structure
 
-| Page | Route |
-|------|-------|
-| Homepage | `/` |
-| About | `/about` |
-| Services | `/services` |
-| Case Studies / Work | `/work` |
-| Contact | `/contact` |
-| Privacy Policy | `/privacy` |
-| Terms | `/terms` |
+Routes: `/`, `/about`, `/services`, `/work`, `/contact`, `/privacy`, `/terms` (no blog).
 
 ---
 
-## Partnerships (Display on Homepage + Footer)
+## Partnerships (display on homepage and footer)
 
-1. **Evertreen** — https://evertreen.com — Tree planting partner. Logo in `/docs/screenshots/Evertreen-logo.svg`
-2. **Muslims in Construction** — https://muslimsincontruction.co.uk — Built their website. Logo in `/docs/screenshots/Muslims-In-Construction-logo-4-1-green-V2.png`
-3. **Association of Muslim Engineers (AME)** — https://ame.org.uk — Help with events. Logo in `/docs/screenshots/cropped-AME_logo_final-01-e1741955008221.png`
+1. **Evertreen** (https://evertreen.com): tree planting partner. Logo: `docs/screenshots/Evertreen-logo.svg`.
+2. **Muslims in Construction** (https://muslimsinconstruction.co.uk): we built their website. Logo to be sourced.
+3. **Association of Muslim Engineers (AME)** (https://ame.org.uk): help with events. Logo to be sourced.
