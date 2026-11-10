@@ -46,6 +46,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-media-element.php';
+require_once __DIR__ . '/media/render-slot.php';
 
 if ( ! class_exists( 'SGS_Media_Element' ) ) {
 
@@ -248,6 +249,21 @@ if ( ! class_exists( 'SGS_Media_Element' ) ) {
 				$block_slug
 			);
 			return 'fill' === $mode;
+		}
+
+		/**
+		 * Render one media slot (Spec 49 C2): per-device kinds, the helper decision, paint placement and `sizes`.
+		 *
+		 * The implementation is `includes/media/render-slot.php::sgs_media_render_slot`. The caller prints `html` and
+		 * passes `css` to the collector. An empty or deleted source returns empty `html`.
+		 *
+		 * @param array $slot    `{prefix, kinds, context}`.
+		 * @param array $attrs   Block attributes.
+		 * @param array $context `{uid, block, area, section_index, item_set:{index,columns}, in_editor, extra_class, anchor}`.
+		 * @return array{html:string,css:string,needs_helper:bool,lead_candidate:bool}
+		 */
+		public static function render( array $slot, array $attrs, array $context = array() ): array {
+			return sgs_media_render_slot( $slot, $attrs, $context );
 		}
 
 		/**

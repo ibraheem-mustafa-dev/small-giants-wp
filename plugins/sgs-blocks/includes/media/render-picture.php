@@ -1,0 +1,226 @@
+<?php
+/**
+ * Media renderer: the per-device `<picture>`, and the `<video>` with its cover picture (Spec 49 §7.1).
+ *
+ * A device that shows another kind, or nothing, gets a `<source>` whose srcset is a 1-pixel GIF data URI, so the
+ * browser downloads nothing for it (FR-49-8).
+ *
+ * @package SGS\Blocks
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+if ( ! defined( 'SGS_MEDIA_BLANK_GIF' ) ) {
+	define( 'SGS_MEDIA_BLANK_GIF', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' );
+}
+
+if ( ! function_exists( 'sgs_media_file_key' ) ) {
+	/**
+	 * A key that is equal for two devices showing the same file.
+	 *
+	 * @param array|null $file A file ( `id`, `url` ) or null for blank.
+	 * @return string
+	 */
+	function sgs_media_file_key( ?array $file ): string {
+		return null === $file ? 'blank' : (int) $file['id'] . '|' . $file['url'];
+	}
+}
+
+if ( ! function_exists( 'sgs_media_img_tag' ) ) {
+	/**
+	 * One `<img>`: attachment-backed through `wp_get_attachment_image`, otherwise built by hand.
+	 *
+	 * @param array|null $file    The file ( `id`, `url`, `width`, `height` ), or null for the blank GIF.
+	 * @param array      $attrs   Attributes ( `class`, `alt`, `loading`, `fetchpriority`, `sizes` ).
+	 * @return string
+	 */
+	function sgs_media_img_tag( ?array $file, array $attrs ): string {
+		$loading = (string) ( $attrs['loading'] ?? 'lazy' );
+		$base    = array(
+			'class'    => (string) ( $attrs['class'] ?? '' ),
+			'alt'      => null === $file ? '' : (string) ( $attrs['alt'] ?? '' ),
+			'loading'  => $loading,
+			'decoding' => 'async',
+		);
+		if ( ! empty( $attrs['fetchpriority'] ) && 'auto' !== $attrs['fetchpriority'] ) {
+			$base['fetchpriority'] = (string) $attrs['fetchpriority'];
+		}
+		if ( ! empty( $attrs['sizes'] ) && null !== $file ) {
+			$base['sizes'] = (string) $attrs['sizes'];
+		}
+		if ( null !== $file && $file['id'] > 0 ) {
+			$tag = wp_get_attachment_image( $file['id'], 'full', false, $base );
+			if ( '' !== $tag ) {
+				return $tag;
+			}
+		}
+		$width  = null === $file ? 1 : (int) $file['width'];
+		$height = null === $file ? 1 : (int) $file['height'];
+		$src    = null === $file ? SGS_MEDIA_BLANK_GIF : esc_url( $file['url'] );
+		$out    = '<img src="' . ( null === $file ? esc_attr( $src ) : $src ) . '"';
+		foreach ( $base as $name => $value ) {
+			$out .= ' ' . $name . '="' . esc_attr( $value ) . '"';
+		}
+		if ( $width > 0 && $height > 0 ) {
+			$out .= ' width="' . $width . '" height="' . $height . '"';
+		}
+		return $out . ' />';
+	}
+}
+
+if ( ! function_exists( 'sgs_media_source_tag' ) ) {
+	/**
+	 * One `<source>` of a picture.
+	 *
+	 * @param array|null $file  The file, or null for the blank GIF.
+	 * @param string     $query The bare media condition.
+	 * @param string     $sizes The `sizes` value.
+	 * @return string
+	 */
+	function sgs_media_source_tag( ?array $file, string $query, string $sizes ): string {
+		if ( null === $file ) {
+			return '<source media="' . esc_attr( $query ) . '" srcset="' . esc_attr( SGS_MEDIA_BLANK_GIF ) . '" />';
+		}
+		$srcset = '';
+		if ( $file['id'] > 0 && function_exists( 'wp_get_attachment_image_srcset' ) ) {
+			$srcset = (string) wp_get_attachment_image_srcset( $file['id'], 'full' );
+		}
+		$out = '<source media="' . esc_attr( $query ) . '" srcset="' . esc_attr( '' !== $srcset ? $srcset : $file['url'] ) . '"';
+		if ( '' !== $sizes ) {
+			$out .= ' sizes="' . esc_attr( $sizes ) . '"';
+		}
+		if ( $file['width'] > 0 && $file['height'] > 0 ) {
+			$out .= ' width="' . (int) $file['width'] . '" height="' . (int) $file['height'] . '"';
+		}
+		return $out . ' />';
+	}
+}
+
+if ( ! function_exists( 'sgs_media_picture' ) ) {
+	/**
+	 * Images for every device that shows one: a plain `<img>` when all devices share a file, else one `<picture>`.
+	 *
+	 * @param array<string,array|null> $files   Device => file ( `id`, `url`, `width`, `height` ), null where the device
+	 *                                          shows another kind or nothing.
+	 * @param array                    $options `classes` (img), `picture_classes`, `alt`, `loading`, `fetchpriority`,
+	 *                                          `sizes` (device => string), `force_picture`.
+	 * @return string The markup, or '' when no device shows an image.
+	 */
+	function sgs_media_picture( array $files, array $options ): string {
+		$devices = sgs_media_devices();
+		$shown   = array_filter( $files );
+		if ( ! $shown ) {
+			return '';
+		}
+		$keys = array();
+		foreach ( $devices as $device ) {
+			$keys[ $device ] = sgs_media_file_key( $files[ $device ] ?? null );
+		}
+		$sizes   = (array) ( $options['sizes'] ?? array() );
+		$default = $files['desktop'] ?? null;
+		$img     = sgs_media_img_tag(
+			$default,
+			array(
+				'class'         => $options['classes'] ?? '',
+				'alt'           => $options['alt'] ?? '',
+				'loading'       => $options['loading'] ?? 'lazy',
+				'fetchpriority' => $options['fetchpriority'] ?? '',
+				'sizes'         => $sizes['desktop'] ?? '',
+			)
+		);
+		if ( 1 === count( array_unique( $keys ) ) && empty( $options['force_picture'] ) ) {
+			return $img;
+		}
+		$sources = '';
+		if ( $keys['mobile'] === $keys['tablet'] && $keys['tablet'] !== $keys['desktop'] ) {
+			$sources .= sgs_media_source_tag( $files['tablet'] ?? null, SGS_Breakpoints::query( 'tablet' ), (string) ( $sizes['tablet'] ?? '' ) );
+		} else {
+			foreach ( array( 'tablet', 'mobile' ) as $device ) {
+				if ( $keys[ $device ] !== $keys['desktop'] ) {
+					$sources .= sgs_media_source_tag( $files[ $device ] ?? null, sgs_media_device_query( $device ), (string) ( $sizes[ $device ] ?? '' ) );
+				}
+			}
+		}
+		return '<picture class="' . esc_attr( (string) ( $options['picture_classes'] ?? 'sgs-media-picture' ) ) . '">' . $sources . $img . '</picture>';
+	}
+}
+
+if ( ! function_exists( 'sgs_media_video_mime' ) ) {
+	/**
+	 * The MIME type for a video file.
+	 *
+	 * @param array $source Normalised source ( `mime`, `url` ).
+	 * @return string
+	 */
+	function sgs_media_video_mime( array $source ): string {
+		if ( 0 === strpos( (string) $source['mime'], 'video/' ) ) {
+			return (string) $source['mime'];
+		}
+		$map = array(
+			'webm' => 'video/webm',
+			'ogv'  => 'video/ogg',
+			'mov'  => 'video/quicktime',
+			'm4v'  => 'video/mp4',
+		);
+		$ext = strtolower( pathinfo( (string) wp_parse_url( $source['url'], PHP_URL_PATH ), PATHINFO_EXTENSION ) );
+		return $map[ $ext ] ?? 'video/mp4';
+	}
+}
+
+if ( ! function_exists( 'sgs_media_video' ) ) {
+	/**
+	 * One `<video>` for every device that shows video: one `<source media>` per distinct file and no catch-all. An
+	 * autoplaying video also requires `(prefers-reduced-motion: no-preference)` in each query, so a device or visitor
+	 * that matches none downloads nothing.
+	 *
+	 * @param array<string,array|null> $sources  Device => normalised video source, null where not shown.
+	 * @param array                    $playback `sgs_media_playback()` result.
+	 * @param array                    $options  `classes`, `label`, `decorative`.
+	 * @return string
+	 */
+	function sgs_media_video( array $sources, array $playback, array $options ): string {
+		$shown = array_filter( $sources );
+		if ( ! $shown ) {
+			return '';
+		}
+		$by_file = array();
+		foreach ( $shown as $device => $source ) {
+			$by_file[ $source['url'] ]['source']    = $source;
+			$by_file[ $source['url'] ]['devices'][] = $device;
+		}
+		$all_devices = count( $shown ) === count( sgs_media_devices() );
+		$motion      = '(prefers-reduced-motion:no-preference)';
+		$out         = '';
+		foreach ( $by_file as $entry ) {
+			$queries = array_map( 'sgs_media_device_query', $entry['devices'] );
+			if ( $all_devices && 1 === count( $by_file ) ) {
+				$media = $playback['autoplay'] ? $motion : '';
+			} elseif ( $playback['autoplay'] ) {
+				$media = implode( ', ', array_map( static fn( string $q ): string => $q . ' and ' . $motion, $queries ) );
+			} else {
+				$media = implode( ', ', $queries );
+			}
+			$out .= '<source src="' . esc_url( $entry['source']['url'] ) . '" type="' . esc_attr( sgs_media_video_mime( $entry['source'] ) ) . '"'
+				. ( '' !== $media ? ' media="' . esc_attr( $media ) . '"' : '' ) . ' />';
+		}
+		$first = reset( $shown );
+		if ( ! empty( $first['captions']['url'] ) ) {
+			$out .= '<track kind="captions" src="' . esc_url( (string) $first['captions']['url'] ) . '" label="' . esc_attr( (string) ( $first['captions']['label'] ?? '' ) ) . '" srclang="' . esc_attr( (string) ( $first['captions']['lang'] ?? 'en' ) ) . '" />';
+		}
+		$attrs = ' class="' . esc_attr( (string) $options['classes'] ) . '" data-sgs-device-video'
+			. ( $playback['autoplay'] ? ' autoplay data-sgs-autoplay' : '' )
+			. ( $playback['muted'] ? ' muted' : '' )
+			. ( $playback['loop'] ? ' loop' : '' )
+			. ( $playback['inline'] ? ' playsinline' : '' )
+			. ( $playback['controls'] ? ' controls' : '' )
+			. ' preload="' . ( $playback['lazy'] ? 'none' : 'metadata' ) . '"';
+		if ( empty( $options['decorative'] ) && '' !== (string) ( $options['label'] ?? '' ) ) {
+			$attrs .= ' aria-label="' . esc_attr( (string) $options['label'] ) . '"';
+		} elseif ( ! empty( $options['decorative'] ) ) {
+			$attrs .= ' aria-hidden="true" tabindex="-1"';
+		}
+		return '<video' . $attrs . '>' . $out . '</video>';
+	}
+}

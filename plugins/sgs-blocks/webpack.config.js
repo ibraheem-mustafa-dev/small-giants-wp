@@ -359,6 +359,14 @@ if ( moduleConfig ) {
 				'shared',
 				'time-text.js'
 			),
+			// The one shared per-device video module (Spec 49 §7.1).
+			'shared/media/device-video': path.resolve(
+				process.cwd(),
+				'src',
+				'shared',
+				'media',
+				'device-video.js'
+			),
 			/*
 			 * Every effect runtime: one entry per `fx-*.js` file, found by name.
 			 * Tier V/W/H effects sit in `src/shared/effects/`, Tier G effects in

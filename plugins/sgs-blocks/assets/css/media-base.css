@@ -1,0 +1,115 @@
+/*
+ * Spec 49 media renderer: base rules (§7.1, §7.2). Loaded on the front end and in the editor for a slot that declares
+ * `kinds`. Per-instance rules (Ratio, Width, Height, limits, Fit, Focal and the rest) are printed by each atom's
+ * emitter under the slot's scope class; everything here is static and low-specificity so those rules win.
+ */
+
+/* Every printed level is border-box, and none may stop a flex or grid row shrinking it. */
+:where(.sgs-media, .sgs-media-box, .sgs-media-box__mask, .sgs-media-el, .sgs-media-stack) {
+	box-sizing: border-box;
+	min-width: 0;
+}
+
+/* A printed height attribute otherwise acts as a fixed CSS height. */
+:where(.sgs-media-el) {
+	height: auto;
+	max-width: 100%;
+}
+
+/* The picture generates no box: paint, motion and observers target the img. */
+.sgs-media-picture {
+	display: contents;
+}
+
+:where(.sgs-media-link) {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+	border-radius: inherit;
+	outline-offset: 2px;
+}
+
+/* The helper: a block that owns its own size, so a small file keeps its size and a large one stays in the space. */
+:where(.sgs-media-box) {
+	display: block;
+	position: relative;
+	width: fit-content;
+	max-width: 100%;
+}
+
+:where(.sgs-media-box, .sgs-media-box__mask) :where(.sgs-media-el) {
+	display: block;
+	width: 100%;
+	height: 100%;
+	min-width: 0;
+}
+
+/* An embed with nothing set is full width at 16:9; the player scales itself. */
+:where(iframe.sgs-media-el) {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border: 0;
+}
+
+/* Fill ("Match its space"): the height the surrounding layout gives, 12rem when nothing supplies one. */
+.sgs-media-box--fill {
+	height: auto;
+	min-height: 100%;
+	flex: 1 1 auto;
+	align-self: stretch;
+	width: 100%;
+}
+
+.sgs-media-box--fill::before {
+	content: "";
+	display: block;
+	height: 12rem;
+}
+
+.sgs-media-box--fill > .sgs-media-el,
+.sgs-media-box--fill > .sgs-media-picture > .sgs-media-el,
+.sgs-media-box--fill > .sgs-media-box__mask {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.sgs-media-box--fill > .sgs-media-box__mask > .sgs-media-el,
+.sgs-media-box--fill > .sgs-media-box__mask > .sgs-media-picture > .sgs-media-el {
+	width: 100%;
+	height: 100%;
+}
+
+/* A figure or link around a Fill helper passes the height through (PS-2). */
+.sgs-fill-wrap {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	align-self: stretch;
+	min-height: 100%;
+	min-width: 0;
+}
+
+.sgs-fill-wrap > .sgs-media-link {
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.sgs-fill-wrap .sgs-media-box--fill {
+	min-height: 0;
+}
+
+/* A content band whose height comes from a min-height, a ratio or a stretched row is a one-column grid. */
+:where(.sgs-container__inner:has(> .sgs-media-box--fill, > .sgs-fill-wrap)) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+/* Caption: wraps to the media's width, and one long word cannot overflow. */
+.sgs-media-caption {
+	overflow-wrap: anywhere;
+}

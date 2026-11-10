@@ -1,0 +1,30 @@
+/*
+ * Spec 49 media renderer: a video and its cover image (§7.1). The cover is a picture under the video, so it shows
+ * before play, without script and under reduced motion; the video paints nothing until it has a frame.
+ */
+
+.sgs-media-stack {
+	display: grid;
+	position: relative;
+	width: 100%;
+}
+
+.sgs-media-stack > .sgs-media-video,
+.sgs-media-stack > .sgs-media-picture > .sgs-media-cover,
+.sgs-media-stack > .sgs-media-cover {
+	grid-area: 1 / 1;
+	width: 100%;
+	min-width: 0;
+}
+
+.sgs-media-stack > .sgs-media-video {
+	height: 100%;
+	object-fit: inherit;
+	object-position: inherit;
+}
+
+.sgs-media-stack > .sgs-media-picture > .sgs-media-cover {
+	height: 100%;
+	object-fit: inherit;
+	object-position: inherit;
+}

@@ -1,0 +1,44 @@
+/*
+ * Spec 49 media renderer: the overlay layer (§7.4). The overlay is the helper's ::after, or the mask layer's ::after
+ * when a mask shape is on. It never takes pointer events, so a link or control under it keeps working.
+ */
+
+.sgs-media-box {
+	overflow: hidden;
+	overflow: clip;
+	overflow-clip-margin: 0;
+}
+
+.sgs-media-box:has(> .sgs-media-box__mask) {
+	overflow: visible;
+}
+
+.sgs-media-box::after,
+.sgs-media-box__mask::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.sgs-media-box__mask {
+	position: relative;
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	overflow: clip;
+	overflow-clip-margin: 0;
+}
+
+/* The mask layer owns the overlay when there is a mask, so the helper's own ::after is not drawn. */
+.sgs-media-box:has(> .sgs-media-box__mask)::after {
+	content: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sgs-media-box::after,
+	.sgs-media-box__mask::after {
+		transition: none;
+	}
+}
