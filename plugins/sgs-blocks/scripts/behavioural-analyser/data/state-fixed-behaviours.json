@@ -2823,6 +2823,11 @@
   },
   {
    "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "selector": ".wc-block-components-totals-coupon__button.wc-block-components-button:hover",
+   "reason": "the primary button preset's hover tokens, shared with the place-order button's hover in the same rule"
+  },
+  {
+   "file": "theme/sgs-theme/assets/css/woocommerce.css",
    "selector": ".wc-block-components-select select:focus",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
