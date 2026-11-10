@@ -752,10 +752,14 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 
 .sgs-account .sgs-account__addr-actions {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 	margin-top: 6px;
+}
+
+/* The Save and Cancel pair wraps on a narrow card; zero specificity, so a site rule overrides it. */
+:where(.sgs-account .sgs-account__addr-actions) {
+	flex-wrap: wrap;
 }
 
 .sgs-account .sgs-account__wc .sgs-account__addr-actions a.sgs-account__addr-cancel {

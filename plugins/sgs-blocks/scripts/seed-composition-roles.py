@@ -441,6 +441,13 @@ INSERTS: list[dict] = [
         "composition_role": "content-block",
         "accepts_allowed_blocks": None,
     },
+    # Pay-later message (2026-11-10): a leaf that mounts Stripe's payment-method messaging from its own attributes.
+    {
+        "block_slug": "sgs/pay-later-message",
+        "wraps_block": None,
+        "composition_role": "content-block",
+        "accepts_allowed_blocks": None,
+    },
 ]
 
 
