@@ -154,6 +154,92 @@ ${ atoms.join( '\n' ) }
 `;
 }
 
+const BLOCKS_DIR = path.join( PLUGIN_DIR, 'src', 'blocks' );
+const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
+
+const ENV = {
+	attrType: mediaAttrType,
+	storedName: mediaStoredAttrName,
+	basesForAtoms,
+	atomsForElement,
+	tiered: MEDIA_TIERED_BASES,
+	tiers: MEDIA_TIERS,
+};
+
+// base -> the registry's C1 entry, so the override entries come from the same
+// table the editor and the emitters read.
+const SETTING_BY_BASE = {};
+Object.values( MEDIA_ATOMS ).forEach( ( atom ) =>
+	atom.settings.forEach( ( setting ) => {
+		SETTING_BY_BASE[ setting.base ] = setting;
+	} )
+);
+
+const argBlock = process.argv.includes( '--block' )
+	? process.argv[ process.argv.indexOf( '--block' ) + 1 ]
+	: null;
+const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' );
+
+/**
+ * One block.json's new text and the override entries its generated attributes need.
+ *
+ * @param {string}      text        Current block.json source.
+ * @param {Set<string>} handWritten `slug|attr` keys that already have a hand-written override entry.
+ * @return {{next: string, entries: Object[], skipped: string[]}} New source, entries, and keys left to a hand-written entry.
+ */
+function planBlock( text, handWritten ) {
+	const block = JSON.parse( text );
+	const own = Object.entries( block.attributes || {} )
+		.filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
+		.map( ( [ name ] ) => name );
+	const attrs = generatedAttributes( block, ENV, own );
+	const next = applyGeneratedAttributes( text, attrs );
+	JSON.parse( next ); // refuse to hand back a file that no longer parses
+	const entries = [];
+	const skipped = [];
+	for ( const a of attrs ) {
+		if ( handWritten.has( `${ block.name }|${ a.name }` ) ) {
+			skipped.push( `${ block.name } ${ a.name }` );
+			continue;
+		}
+		const companion =
+			a.base === 'ImageAlt'
+				? ENV.storedName( block.name, a.prefix, 'ImageUrl' + a.tier )
+				: '';
+		entries.push(
+			overrideEntry( block.name, a, SETTING_BY_BASE[ a.base ], companion, MEDIA_TIERED_BASES.includes( a.base ) )
+		);
+	}
+	return { next, entries, skipped };
+}
+
+/**
+ * What a run would write, without writing it.
+ *
+ * @return {{files: Map<string,string>, entries: Object[], skipped: string[], overridesText: string}} New block.json texts (changed ones only), override entries, override keys left to a hand-written entry, and the current override file.
+ */
+function plan() {
+	const overridesText = fs.readFileSync( OVERRIDES_FILE, 'utf8' );
+	const handWritten = handWrittenOverrideKeys( overridesText );
+	const files = new Map();
+	const entries = [];
+	const skipped = [];
+	for ( const file of findBlockJsons( BLOCKS_DIR ) ) {
+		const text = fs.readFileSync( file, 'utf8' );
+		const name = JSON.parse( text ).name;
+		if ( argBlock && name !== argBlock && name !== `sgs/${ argBlock }` ) {
+			continue;
+		}
+		const done = planBlock( text, handWritten );
+		if ( done.next !== text ) {
+			files.set( file, done.next );
+		}
+		entries.push( ...done.entries );
+		skipped.push( ...done.skipped );
+	}
+	return { files, entries, skipped, overridesText };
+}
+
 function selfTest() {
 	const fails = [];
 	// `ran` counts real invocations. The total was a hardcoded 6, which silently
@@ -215,6 +301,56 @@ function selfTest() {
 	);
 	ck( `every base has a declared type (missing: ${ missing.join( ', ' ) || 'none' })`, ! missing.length );
 
+	// WRITE PATH AND DRIFT CHECK, on a fixture: a copy of sgs/decorative-image's block.json whose
+	// entry declares `kinds` (the adoption marker). Its expected attributes come from the
+	// registered set the registration filter produced for that block (WordPress, local-indus),
+	// not from this generator.
+	const fixDir = path.join( PLUGIN_DIR, 'tests', 'fixtures', 'media' );
+	const readFix = ( f ) => fs.readFileSync( path.join( fixDir, f ), 'utf8' );
+	const fixText = readFix( 'adopted-block.json' );
+	const fixOver = readFix( 'adopted-overrides.json' );
+	const expectedAttrs = JSON.parse( readFix( 'adopted-block.expected-attrs.json' ) );
+	const done = planBlock( fixText, handWrittenOverrideKeys( fixOver ) );
+	const written = Object.entries( JSON.parse( done.next ).attributes ).filter(
+		( [ , def ] ) => def._generated === 'media-atoms'
+	);
+	const stripMark = ( def ) => {
+		const { _generated, ...rest } = def;
+		return rest;
+	};
+	const writtenMap = Object.fromEntries( written.map( ( [ n, d ] ) => [ n, stripMark( d ) ] ) );
+	ck(
+		`adopted fixture: writes exactly the ${ Object.keys( expectedAttrs ).length } registered media attributes (names, types, defaults)`,
+		JSON.stringify( Object.keys( writtenMap ).sort() ) === JSON.stringify( Object.keys( expectedAttrs ).sort() ) &&
+			Object.keys( expectedAttrs ).every( ( n ) => JSON.stringify( writtenMap[ n ] ) === JSON.stringify( expectedAttrs[ n ] ) )
+	);
+	ck(
+		'adopted fixture: one override entry per generated attribute, each with a role and no css_property',
+		done.entries.length === written.length &&
+			done.entries.every( ( e ) => e.fields.role && ! ( 'css_property' in e.fields ) )
+	);
+	const overridden = applyOverrideEntries( fixOver, done.entries );
+	ck(
+		'adopted fixture: the override file keeps its hand-written entry and gains the generated ones',
+		JSON.parse( overridden ).entries.length === 1 + done.entries.length
+	);
+	ck(
+		'adopted fixture: a second run changes nothing',
+		planBlock( done.next, new Set() ).next === done.next && applyOverrideEntries( overridden, done.entries ) === overridden
+	);
+	const tampered = done.next.replace( /("objectFit": \{"type":)"string"/, '$1"integer"' );
+	ck(
+		'drift check: an edited generated attribute differs from what a run writes',
+		tampered !== done.next && planBlock( tampered, new Set() ).next !== tampered
+	);
+	ck( 'drift check: reverting the edit makes it match again', planBlock( done.next, new Set() ).next === done.next );
+	const unadopted = fixText.replace( '"kinds": [ "image" ], ', '' );
+	const none = planBlock( unadopted, new Set() );
+	ck(
+		'an entry without `kinds` has not adopted: nothing is written for it',
+		unadopted !== fixText && none.next === unadopted && none.entries.length === 0
+	);
+
 	const php = render();
 	ck( 'render emits a php open tag', php.startsWith( '<?php' ) );
 	ck( 'render emits the object shapes', php.includes( '"Thumbnail"' ) && php.includes( '"object"' ) );
@@ -241,76 +377,6 @@ function selfTest() {
 
 if ( process.argv.includes( '--self-test' ) ) {
 	process.exit( selfTest() );
-}
-
-const BLOCKS_DIR = path.join( PLUGIN_DIR, 'src', 'blocks' );
-const OVERRIDES_FILE = path.join( HERE, 'attr-classification-overrides.json' );
-
-const ENV = {
-	attrType: mediaAttrType,
-	storedName: mediaStoredAttrName,
-	basesForAtoms,
-	atomsForElement,
-	tiered: MEDIA_TIERED_BASES,
-	tiers: MEDIA_TIERS,
-};
-
-// base -> the registry's C1 entry, so the override entries come from the same
-// table the editor and the emitters read.
-const SETTING_BY_BASE = {};
-Object.values( MEDIA_ATOMS ).forEach( ( atom ) =>
-	atom.settings.forEach( ( setting ) => {
-		SETTING_BY_BASE[ setting.base ] = setting;
-	} )
-);
-
-const argBlock = process.argv.includes( '--block' )
-	? process.argv[ process.argv.indexOf( '--block' ) + 1 ]
-	: null;
-const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' );
-
-/**
- * What a run would write, without writing it.
- *
- * @return {{files: Map<string,string>, entries: Object[], skipped: string[]}} New block.json texts (changed ones only), override entries, and override keys left to a hand-written entry.
- */
-function plan() {
-	const overridesText = fs.readFileSync( OVERRIDES_FILE, 'utf8' );
-	const handWritten = handWrittenOverrideKeys( overridesText );
-	const files = new Map();
-	const entries = [];
-	const skipped = [];
-	for ( const file of findBlockJsons( BLOCKS_DIR ) ) {
-		const text = fs.readFileSync( file, 'utf8' );
-		const block = JSON.parse( text );
-		if ( argBlock && block.name !== argBlock && block.name !== `sgs/${ argBlock }` ) {
-			continue;
-		}
-		const own = Object.entries( block.attributes || {} )
-			.filter( ( [ , def ] ) => def?._generated !== 'media-atoms' )
-			.map( ( [ name ] ) => name );
-		const attrs = generatedAttributes( block, ENV, own );
-		const next = applyGeneratedAttributes( text, attrs );
-		JSON.parse( next ); // refuse to hand back a file that no longer parses
-		if ( next !== text ) {
-			files.set( file, next );
-		}
-		for ( const a of attrs ) {
-			if ( handWritten.has( `${ block.name }|${ a.name }` ) ) {
-				skipped.push( `${ block.name } ${ a.name }` );
-				continue;
-			}
-			const setting = SETTING_BY_BASE[ a.base ];
-			const companion =
-				a.base === 'ImageAlt'
-					? ENV.storedName( block.name, a.prefix, 'ImageUrl' + a.tier )
-					: '';
-			entries.push(
-				overrideEntry( block.name, a, setting, companion, MEDIA_TIERED_BASES.includes( a.base ) )
-			);
-		}
-	}
-	return { files, entries, skipped, overridesText };
 }
 
 const out = render();

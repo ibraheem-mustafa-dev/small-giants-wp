@@ -1,0 +1,6 @@
+{
+	"_doc": "Fixture for generate-media-attributes.mjs --self-test: one hand-written entry, then the generated ones.",
+	"entries": [
+		{"slug": "sgs/decorative-image", "attr": "imageAlt", "fields": {"role": "image-alt"}, "_reason": "fixture"}
+	]
+}

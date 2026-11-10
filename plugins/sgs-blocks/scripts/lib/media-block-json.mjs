@@ -6,7 +6,7 @@
  * files, calls these, and either writes the results or (with `--check`)
  * compares them with what is on disk.
  *
- * The attribute set is exactly what `includes/media-element-attrs-register.php`
+ * Only entries that declare `kinds` are written. The attribute set is exactly what `includes/media-element-attrs-register.php`
  * adds at registration: for each `supports.sgs.mediaElements` entry, the union
  * of the named atoms' bases (all atoms when `atoms` is omitted), each base and
  * its Tablet and Mobile siblings where the base is tiered, skipping any name the
@@ -56,8 +56,14 @@ export function findBlockJsons( dir ) {
  * @return {Array<{name:string, def:Object, base:string, tier:string, prefix:string}>} In injection order.
  */
 export function generatedAttributes( block, env, ownNames ) {
-	const elements = block?.supports?.sgs?.mediaElements;
-	if ( ! Array.isArray( elements ) || ! elements.length ) {
+	// Only an entry that declares `kinds` has adopted the new slot declaration
+	// (Spec 49 §8.3); an entry without it keeps its attributes from the
+	// registration filter.
+	const declared = block?.supports?.sgs?.mediaElements;
+	const elements = Array.isArray( declared )
+		? declared.filter( ( element ) => Array.isArray( element?.kinds ) )
+		: [];
+	if ( ! elements.length ) {
 		return [];
 	}
 	const own = new Set( ownNames );

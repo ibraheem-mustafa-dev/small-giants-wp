@@ -1,0 +1,56 @@
+{
+	"attachment": {
+		"type": "string"
+	},
+	"objectFit": {
+		"type": "string"
+	},
+	"objectFitMobile": {
+		"type": "string"
+	},
+	"objectFitTablet": {
+		"type": "string"
+	},
+	"objectPosition": {
+		"type": "string"
+	},
+	"objectPositionMobile": {
+		"type": "string"
+	},
+	"objectPositionTablet": {
+		"type": "string"
+	},
+	"overlayBlendMode": {
+		"type": "string"
+	},
+	"overlayColour": {
+		"type": "string"
+	},
+	"overlayColourHover": {
+		"type": "string"
+	},
+	"overlayGradient": {
+		"type": "string"
+	},
+	"overlayGradientHover": {
+		"type": "string"
+	},
+	"overlayOpacity": {
+		"type": "number"
+	},
+	"overlayOpacityMobile": {
+		"type": "number"
+	},
+	"overlayOpacityTablet": {
+		"type": "number"
+	},
+	"position": {
+		"type": "string"
+	},
+	"repeat": {
+		"type": "string"
+	},
+	"size": {
+		"type": "string"
+	}
+}
