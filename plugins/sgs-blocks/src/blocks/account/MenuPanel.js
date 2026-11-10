@@ -125,7 +125,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 			</ResponsiveOverride>
 			</ToolsPanelItem>
 			<ToolsPanelItem
-				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+				label={ __( 'Show the counts after Orders and Wishlist', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.menuOrdersCount }
 				onDeselect={ () => setAttributes( { menuOrdersCount: undefined } ) }
 			>
@@ -133,7 +133,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 				name="menuOrdersCount"
-				label={ __( 'Show the order count after Orders', 'sgs-blocks' ) }
+				label={ __( 'Show the counts after Orders and Wishlist', 'sgs-blocks' ) }
 			/>
 			</ToolsPanelItem>
 

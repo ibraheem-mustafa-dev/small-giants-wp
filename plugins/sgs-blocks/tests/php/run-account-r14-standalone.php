@@ -30,7 +30,7 @@ if ( ! function_exists( 'add_filter' ) ) { function add_filter() {} }
 if ( ! function_exists( 'add_action' ) ) { function add_action() {} }
 function render_block( array $b ): string { return '<!--' . $b['blockName'] . ' ' . ( $b['attrs']['label'] ?? '' ) . '-->'; }
 
-foreach ( array( 'account/helpers-account-look-css.php', 'account/helpers-account-header.php', 'account/helpers-account-edit-account.php', 'account/helpers-account-signed-out.php', 'account/class-account-strings.php', 'account/class-account-endpoints.php', 'wishlist/class-wishlist-store.php' ) as $f ) {
+foreach ( array( 'account/helpers-account-look-css.php', 'account/helpers-account-header.php', 'account/helpers-account-edit-account.php', 'account/helpers-account-signed-out.php', 'account/class-account-strings.php', 'account/class-account-endpoints.php', 'account/class-account-extras.php', 'wishlist/class-wishlist-store.php' ) as $f ) {
 	require_once $base . '/includes/' . $f;
 }
 
@@ -84,6 +84,18 @@ ob_start();
 Account_Endpoints::render_saved_items_endpoint( '' );
 $page = ob_get_clean();
 ok( false !== strpos( $page, 'sgs/wishlist-panel' ) && false === strpos( $page, 'orders-empty' ), 'a list with items shows the wishlist panel' );
+
+// 5) The menu count appears after Wishlist as well as Orders.
+$menu = '<nav><ul><li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--orders"><a href="#">Orders</a></li><li class="woocommerce-MyAccount-navigation-link woocommerce-MyAccount-navigation-link--saved-items"><a href="#">Wishlist</a></li></ul></nav>';
+Account_Endpoints::$active = array( 'menuOrdersCount' => true );
+$GLOBALS['saved'] = array( array( 'id' => 71 ), array( 'id' => 72 ) );
+ob_start();
+SGS\Blocks\Account_Extras::start_menu_buffer();
+echo $menu;
+SGS\Blocks\Account_Extras::end_menu_buffer();
+$counted = ob_get_clean();
+ok( false !== strpos( $counted, 'Wishlist<span class="sgs-account__menu-count">2</span>' ), 'the Wishlist link carries its saved count' );
+ok( false === strpos( $counted, 'Orders<span' ), 'an Orders link with no orders carries no count' );
 
 echo $failures ? "\n$failures FAILED\n" : "\nALL PASSED\n";
 exit( $failures ? 1 : 0 );

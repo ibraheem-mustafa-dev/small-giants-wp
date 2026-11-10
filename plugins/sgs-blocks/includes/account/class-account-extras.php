@@ -57,7 +57,7 @@ final class Account_Extras {
 	 */
 	private static $menu_buffer_level = null;
 
-	/** Open an output buffer around the menu when the Orders count is on. */
+	/** Open an output buffer around the menu when the menu counts are on. */
 	public static function start_menu_buffer(): void {
 		if ( is_array( Account_Endpoints::$active ) && ! empty( Account_Endpoints::$active['menuOrdersCount'] ) ) {
 			ob_start();
@@ -65,7 +65,7 @@ final class Account_Extras {
 		}
 	}
 
-	/** Close the buffer and add the count span after the Orders label (WooCommerce escapes menu labels, so the span is added to the finished markup). */
+	/** Close the buffer and add the count span after the Orders and Saved items labels (WooCommerce escapes menu labels, so the span is added to the finished markup). */
 	public static function end_menu_buffer(): void {
 		$level                   = self::$menu_buffer_level;
 		self::$menu_buffer_level = null;
@@ -73,15 +73,20 @@ final class Account_Extras {
 		if ( null === $level || ob_get_level() !== $level ) {
 			return;
 		}
-		$html  = (string) ob_get_clean();
-		$count = function_exists( 'wc_get_customer_order_count' ) ? (int) \wc_get_customer_order_count( get_current_user_id() ) : 0;
-		if ( $count > 0 ) {
-			$html = (string) preg_replace(
-				'#(<li[^>]*woocommerce-MyAccount-navigation-link--orders[^>]*>\s*<a\b[^>]*>)(.*?)(</a>)#s',
-				'$1$2<span class="sgs-account__menu-count">' . $count . '</span>$3',
-				$html,
-				1
-			);
+		$html   = (string) ob_get_clean();
+		$counts = array(
+			'orders'      => function_exists( 'wc_get_customer_order_count' ) ? (int) \wc_get_customer_order_count( get_current_user_id() ) : 0,
+			'saved-items' => class_exists( Wishlist_Store::class ) ? count( Wishlist_Store::read_list( get_current_user_id() ) ) : 0,
+		);
+		foreach ( $counts as $endpoint => $count ) {
+			if ( $count > 0 ) {
+				$html = (string) preg_replace(
+					'#(<li[^>]*woocommerce-MyAccount-navigation-link--' . $endpoint . '[^>]*>\s*<a\b[^>]*>)(.*?)(</a>)#s',
+					'$1$2<span class="sgs-account__menu-count">' . $count . '</span>$3',
+					$html,
+					1
+				);
+			}
 		}
 		echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's own escaped navigation markup plus an integer.
 	}
