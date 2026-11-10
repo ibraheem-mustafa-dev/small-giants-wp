@@ -33,6 +33,8 @@ const WORDING = [
 	[ 'addAddressLink', __( 'Add address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Add %s' ],
 	[ 'editAddressLink', __( 'Edit address link (whole text; %s is the address title)', 'sgs-blocks' ), 'Edit %s' ],
 	[ 'passwordChange', __( 'Password change heading', 'sgs-blocks' ), 'Password change' ],
+	[ 'resetConfirmLabel', __( 'Choose a new password: repeat field label', 'sgs-blocks' ), 'Re-enter new password' ],
+	[ 'savePassword', __( 'Choose a new password: button', 'sgs-blocks' ), 'Save' ],
 ];
 
 // [ view, label, eyebrow attribute, title attribute, intro attribute ]

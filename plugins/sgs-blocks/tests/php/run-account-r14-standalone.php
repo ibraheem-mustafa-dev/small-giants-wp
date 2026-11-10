@@ -72,6 +72,12 @@ ok( str_ends_with( (string) SGS\Blocks\Account_Extras::maybe_swap_lost_confirmat
 Account_Endpoints::$active = $attrs;
 ok( '/wc/x.php' === SGS\Blocks\Account_Extras::maybe_swap_lost_confirmation_template( '/wc/x.php', 'myaccount/lost-password-confirmation.php' ), 'an unworded confirmation keeps the WooCommerce message' );
 
+// 2c) The new-password form's repeat label and button can be reworded.
+$GLOBALS['gettext'] = array();
+\SGS\Blocks\Account_Strings::begin( array( 'strings' => array( 'resetConfirmLabel' => 'Type it again', 'savePassword' => 'Save new password' ) ) );
+ok( 'Type it again' === \SGS\Blocks\Account_Strings::filter( 'Re-enter new password', 'Re-enter new password', 'woocommerce' ) && 'Save new password' === \SGS\Blocks\Account_Strings::filter( 'Save', 'Save', 'woocommerce' ), 'the new-password repeat label and button take the client wording' );
+\SGS\Blocks\Account_Strings::end();
+
 // 3) Account details: one Mobile field, with the optional line.
 $form = '<form class="woocommerce-EditAccountForm"><p id="account_email_field"><input id="account_email"></p><p class="form-row " id="_wc_other/sgs/mobile_field"><label>Mobile (optional)</label><input name="_wc_other/sgs/mobile"></p><fieldset><legend>Change password</legend></fieldset></form>';
 $out  = sgs_account_edit_account_markup( $form, array( 'accountShowMobile' => true, 'accountMobileLabel' => 'Mobile', 'accountMobileHint' => 'For WhatsApp updates' ) );

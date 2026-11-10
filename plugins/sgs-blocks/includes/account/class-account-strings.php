@@ -60,6 +60,8 @@ final class Account_Strings {
 			'addAddressLink'    => 'Add %s',
 			'editAddressLink'   => 'Edit %s',
 			'passwordChange'    => 'Password change',
+			'resetConfirmLabel' => 'Re-enter new password',
+			'savePassword'      => 'Save',
 		);
 	}
 
