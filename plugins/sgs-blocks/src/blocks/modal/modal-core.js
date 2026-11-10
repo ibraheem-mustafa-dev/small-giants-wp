@@ -39,7 +39,7 @@ function isShown( el ) {
 }
 
 /**
- * Put focus back after a modal closes. The browser returns it to the element focused at open, which is gone when that
+ * Put focus back after a modal closes. The browser returns it to the element focused at open, which is unusable when that
  * was a link inside a nav drawer that has since closed (focus then falls to the body). The opener is used when still
  * shown; otherwise the control that opened its drawer (`aria-controls`).
  *
@@ -49,7 +49,10 @@ export function restoreModalFocus( dialog ) {
 	const target = dialog.__sgsReturnFocus || null;
 	dialog.__sgsReturnFocus = null;
 	const active = document.activeElement;
-	if ( active && active !== document.body && active !== document.documentElement ) {
+	// The `close` event fires before the browser moves focus off the dialog's own control (its close button), so
+	// focus still inside the dialog counts as not yet returned. Focus the visitor already put elsewhere stays.
+	const stranded = ! active || active === document.body || active === document.documentElement || dialog.contains( active );
+	if ( ! stranded ) {
 		return;
 	}
 	if ( isShown( target ) ) {

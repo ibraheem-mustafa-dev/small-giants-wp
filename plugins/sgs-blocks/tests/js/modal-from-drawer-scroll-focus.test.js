@@ -57,6 +57,32 @@ test( 'focus returns to the burger when the opener sat in the drawer that has cl
 	expect( document.activeElement ).toBe( burger );
 } );
 
+test( 'focus on the modal close button at close time (the browser has not moved it yet) still goes to the burger', () => {
+	const dialog = mount();
+	const link = document.getElementById( 'link' );
+	const burger = document.getElementById( 'burger' );
+	visible( burger );
+	link.focus();
+	const { openModal, restoreModalFocus } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, link );
+	dialog.querySelector( '.sgs-modal__close' ).focus();
+	expect( document.activeElement ).toBe( dialog.querySelector( '.sgs-modal__close' ) );
+	restoreModalFocus( dialog );
+	expect( document.activeElement ).toBe( burger );
+} );
+
+test( 'focus the user already moved outside the dialog is left alone', () => {
+	const dialog = mount();
+	const burger = document.getElementById( 'burger' );
+	const other = document.createElement( 'button' );
+	document.body.appendChild( other );
+	const { openModal, restoreModalFocus } = require( '../../src/blocks/modal/modal-core' );
+	openModal( dialog, null, burger );
+	other.focus();
+	restoreModalFocus( dialog );
+	expect( document.activeElement ).toBe( other );
+} );
+
 test( 'focus returns to a plain opener that is still shown', () => {
 	const dialog = mount();
 	const burger = document.getElementById( 'burger' );
