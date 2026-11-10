@@ -185,8 +185,8 @@ final class SGS_Media_Priority {
 	}
 
 	/**
-	 * Whether the motion renderer is armed on the main content. The renderer has no public armed accessor, so an
-	 * explicit `armed` fact wins, else a block open in the renderer's stack means a page is being rendered.
+	 * Whether the motion renderer is armed on the main content: an explicit `armed` fact wins, else the renderer's
+	 * own armed state.
 	 *
 	 * @param array<string,mixed> $facts The page facts.
 	 * @return bool
@@ -195,10 +195,7 @@ final class SGS_Media_Priority {
 		if ( isset( $facts['armed'] ) ) {
 			return (bool) $facts['armed'];
 		}
-		if ( is_callable( array( Sgs_Motion_Renderer::class, 'is_armed' ) ) ) {
-			return (bool) call_user_func( array( Sgs_Motion_Renderer::class, 'is_armed' ) );
-		}
-		return Sgs_Motion_Renderer::in_above_fold();
+		return Sgs_Motion_Renderer::is_armed();
 	}
 
 	/**

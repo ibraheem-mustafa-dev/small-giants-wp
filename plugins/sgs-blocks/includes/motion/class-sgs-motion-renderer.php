@@ -201,6 +201,16 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
+	 * Whether the renderer is armed on this request's main content tree: read by the media loading resolver
+	 * (`SGS_Media_Priority`), which treats an unarmed render as having no page around it.
+	 *
+	 * @return bool
+	 */
+	public static function is_armed(): bool {
+		return self::$armed;
+	}
+
+	/**
 	 * Record and enqueue the assets that attributes written outside the renderer's own pass need (the items'
 	 * inherited entrance, `Sgs_Motion_Loop_Inherit`).
 	 *
