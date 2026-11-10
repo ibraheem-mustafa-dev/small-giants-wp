@@ -4,7 +4,7 @@ spec_id: 49
 spec_version: "0.6"
 title: SGS Media System
 project: small-giants-wp
-status: draft
+status: approved
 authors: Bean, Claude
 session_date: 2026-11-09
 last_verified: 2026-11-10
@@ -14,7 +14,8 @@ status_history:
   - 2026-11-09: v0.3, Bean's answers: sizing is independent settings with no modes, circle is a shape, duotone and Lottie left out, videos play on phones, no CSS budget target; awaiting Bean's approval
   - 2026-11-09: v0.4, CSS sizing research applied; awaiting Bean's approval
   - 2026-11-09: v0.5, block, file, control and motion research merged, scope cut to the goal, parallax driver changed after the smoothness study; awaiting Bean's approval
-  - 2026-11-10: v0.6, QC sweep fact-checked and applied; Bean's decisions: a different kind per device on every slot that allows two or more kinds, the white logo filter and the logo switch width kept, the fixed background kept as Pinned (Parallax at full strength leaves gaps), the 28 untested effects run (T12), Effects filtered by the kind on each device, existing atoms and shared files edited live behind unchanged-output checks; Bean's above-the-fold loading rule; appendices A to C; awaiting Bean's approval
+  - 2026-11-10: v0.6, QC sweep fact-checked and applied; Bean's decisions: a different kind per device on every slot that allows two or more kinds, the white logo filter and the logo switch width kept, the fixed background kept as Pinned (Parallax at full strength leaves gaps), the 28 untested effects run (T12), Effects filtered by the kind on each device, existing atoms and shared files edited live behind unchanged-output checks; Bean's above-the-fold loading rule; appendices A to C
+  - 2026-11-10: v0.6 approved by Bean; build starts with the brief's Tasks 2 to 7
 references:
   - .claude/plans/2026-11-09-media-controls-redesign.md
   - .claude/reports/2026-11-09-media-controls/
