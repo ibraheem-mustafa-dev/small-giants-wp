@@ -80,6 +80,9 @@ NOT_BOX = re.compile(
     re.I,
 )
 BOX_PROP = re.compile(r"(^|,)\s*(min-)?(width|height|inline-size|block-size)\b")
+# A setting whose name ends Size but whose property paints a picture, not a box: a media atom's
+# `Size` base writes background-size.
+PICTURE_PROP = re.compile(r"^\s*(background-size|object-fit|object-position)\s*$")
 
 
 def load_sized_blocks(db_path: Path = DB) -> dict[str, list[str]]:
@@ -93,7 +96,7 @@ def load_sized_blocks(db_path: Path = DB) -> dict[str, list[str]]:
         conn.close()
     out: dict[str, list[str]] = {}
     for slug, attr, prop in rows:
-        if NOT_BOX.search(attr):
+        if NOT_BOX.search(attr) or PICTURE_PROP.match(prop):
             continue
         if re.search(r"(Size|Height|Width)$", attr) or BOX_PROP.search(prop):
             out.setdefault(slug.split("/")[-1], []).append(attr)
@@ -354,6 +357,21 @@ def cmd_self_test() -> int:
         ok = len(result["findings"]) == want_findings
         failed += 0 if ok else 1
         print(f"{'ok  ' if ok else 'FAIL'} {name}: {len(result['findings'])} finding(s)")
+    # A media atom's Size base writes background-size and never sizes a tap target.
+    with tempfile.TemporaryDirectory() as tmp:
+        db = Path(tmp) / "fixture.db"
+        conn = sqlite3.connect(db)
+        conn.execute("CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, css_property TEXT, source TEXT)")
+        conn.executemany(
+            "INSERT INTO block_attributes VALUES (?, ?, ?, 'sgs')",
+            [("sgs/pic", "sgsSize", "background-size"), ("sgs/pic", "avatarObjectFitSize", "object-fit"), ("sgs/box", "iconSize", "width")],
+        )
+        conn.commit()
+        conn.close()
+        loaded = load_sized_blocks(db)
+    ok = "pic" not in loaded and loaded.get("box") == ["iconSize"]
+    failed += 0 if ok else 1
+    print(f"{'ok  ' if ok else 'FAIL'} media Size base (background-size) is not a box-size setting: {loaded}")
     # The live register must name only blocks that exist, and give every entry a reason.
     data = json.loads(REGISTER.read_text(encoding="utf-8"))
     for e in data["house"]:
