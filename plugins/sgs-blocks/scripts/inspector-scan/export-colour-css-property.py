@@ -22,9 +22,11 @@ import sqlite3
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lib"))
+from framework_db import framework_db_path  # noqa: E402  ($SGS_FRAMEWORK_DB, else ~/.claude, then ~/.agents)
+
 DB_CANDIDATES = [
-    *([Path(os.environ["SGS_FRAMEWORK_DB"])] if os.environ.get("SGS_FRAMEWORK_DB") else []),
-    Path(os.path.expanduser("~/.claude/skills/sgs-wp-engine/sgs-framework.db")),
+    framework_db_path(),
     Path(__file__).resolve().parents[1] / "sgs-framework.db",
 ]
 
