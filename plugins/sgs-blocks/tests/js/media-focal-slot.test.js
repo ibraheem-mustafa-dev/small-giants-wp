@@ -144,6 +144,22 @@ describe( 'MediaSlotField', () => {
 		decorative.unmount();
 	} );
 
+	it( 'a linked image cannot be made Decorative, and a stored linked Decorative pair is flagged', () => {
+		const linked = render( MediaSlotField, { source: { desktop: PHOTO }, linkUrl: 'https://example.test/' } );
+		const box = linked.container.querySelector( '.sgs-media-slot__decorative input' );
+		expect( box.disabled ).toBe( true );
+		expect( linked.container.textContent ).toContain( 'A linked image needs alt text' );
+		linked.unmount();
+		const stored = render( MediaSlotField, { source: { desktop: PHOTO }, linkUrl: 'https://example.test/', decorative: true } );
+		expect( stored.container.querySelector( '.sgs-media-slot__decorative input' ).disabled ).toBe( false );
+		expect( stored.container.querySelector( '[role="alert"]' ).textContent ).toBe( 'A linked image needs alt text' );
+		stored.unmount();
+		const plain = render( MediaSlotField, { source: { desktop: PHOTO } } );
+		expect( plain.container.querySelector( '.sgs-media-slot__decorative input' ).disabled ).toBe( false );
+		expect( plain.container.textContent ).not.toContain( 'A linked image needs alt text' );
+		plain.unmount();
+	} );
+
 	it( 'off Desktop an inherited device says "using Desktop\'s video" and offers its own file', () => {
 		const video = { kind: 'video', id: 3, url: 'https://example.test/v.mp4', poster: { id: 4, url: 'https://example.test/c.jpg' } };
 		const { container, unmount } = render( MediaSlotField, { source: { desktop: video } }, slot( [ 'image', 'video' ] ), 'Mobile' );

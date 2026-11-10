@@ -29,6 +29,8 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 	const widerFrom = resolveTierSource( access.read( 'Source' ), widerDevice, hasFile ).from || 'desktop';
 	const value = perDevice ? ownSource.alt || '' : access.read( 'Alt' ) || '';
 	const supportsDecorative = 'embed' !== kind;
+	// A link on a Decorative image is refused (§7.1): the box keeps its alt, and a stored pair is flagged.
+	const linked = '' !== String( access.read( 'LinkUrl' ) || '' ).trim();
 
 	const onChange = ( event ) => {
 		onAltEdited();
@@ -74,10 +76,16 @@ export default function MediaSlotAlt( { access, device, kind, ownSource, staleAl
 					<input
 						type="checkbox"
 						checked={ decorative }
+						disabled={ linked && ! decorative }
 						onChange={ ( e ) => access.write( { Decorative: e.target.checked } ) }
 					/>
 					{ __( 'Decorative', 'sgs-blocks' ) }
 				</label>
+			) }
+			{ supportsDecorative && linked && (
+				<p className={ decorative ? 'sgs-media-slot__warning' : 'sgs-media-slot__note' } role={ decorative ? 'alert' : undefined }>
+					{ __( 'A linked image needs alt text', 'sgs-blocks' ) }
+				</p>
 			) }
 			{ 'desktop' !== device && ( decorative || ! perDevice ) && (
 				<p className="sgs-media-slot__note">{ __( 'Applies to all devices', 'sgs-blocks' ) }</p>
