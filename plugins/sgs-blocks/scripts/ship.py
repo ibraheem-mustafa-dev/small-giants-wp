@@ -81,6 +81,9 @@ def missing_from_db(blocks_dir: Path, db: Path) -> list[str]:
         meta = json.loads(path.read_text(encoding="utf-8"))
         slug = meta.get("name", "")
         for attr in meta.get("attributes", {}):
+            # A key starting with "_" is a note left in block.json (e.g. "_comment_..."), not an attribute WordPress registers.
+            if attr.startswith("_"):
+                continue
             if (slug, attr) not in have:
                 missing.append(f"{slug}::{attr}")
     return missing

@@ -41,7 +41,7 @@ tmp = Path(tempfile.mkdtemp())
 (tmp / "blocks" / "alpha").mkdir(parents=True)
 (tmp / "blocks" / "beta").mkdir(parents=True)
 (tmp / "blocks" / "alpha" / "block.json").write_text(json.dumps({"name": "sgs/alpha", "attributes": {"a": {}, "b": {}}}))
-(tmp / "blocks" / "beta" / "block.json").write_text(json.dumps({"name": "sgs/beta", "attributes": {"c": {}}}))
+(tmp / "blocks" / "beta" / "block.json").write_text(json.dumps({"name": "sgs/beta", "attributes": {"c": {}, "_comment_c": "a note, not an attribute"}}))
 db = tmp / "f.db"
 con = sqlite3.connect(db)
 con.execute("CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT)")
