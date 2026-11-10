@@ -5,7 +5,7 @@
  * Prints the placeholder WooCommerce's Cart and Checkout blocks replace with the
  * React component (src/commerce-blocks/pay-later/component.js), carrying the block's
  * settings as one JSON value. Prints nothing unless the Stripe plugin is active and
- * the chosen method is among the payment methods it offers.
+ * its gateway for the chosen method (`stripe_<method>`) is enabled in WooCommerce.
  *
  * @var array    $attributes Block attributes.
  * @var string   $content    Inner content (none).
@@ -20,15 +20,15 @@ if ( ! class_exists( 'WC_Stripe' ) && ! class_exists( 'WC_Gateway_Stripe' ) ) {
 	return;
 }
 
-$sgs_pl_method   = isset( $attributes['method'] ) ? (string) $attributes['method'] : 'klarna';
-$sgs_pl_stripe   = (array) get_option( 'woocommerce_stripe_settings', array() );
-$sgs_pl_accepted = isset( $sgs_pl_stripe['upe_checkout_experience_accepted_payments'] ) ? (array) $sgs_pl_stripe['upe_checkout_experience_accepted_payments'] : array();
-$sgs_pl_enabled  = 'yes' === ( $sgs_pl_stripe['enabled'] ?? '' ) && in_array( $sgs_pl_method, $sgs_pl_accepted, true );
+require_once dirname( __DIR__, 3 ) . '/includes/commerce-blocks/helpers-pay-later.php';
+
+$sgs_pl_method  = isset( $attributes['method'] ) ? (string) $attributes['method'] : 'klarna';
+$sgs_pl_enabled = sgs_pay_later_method_enabled( $sgs_pl_method );
 
 /**
  * Whether the pay later message shows for a method.
  *
- * @param bool   $enabled Whether the Stripe plugin offers the method.
+ * @param bool   $enabled Whether WooCommerce has the method's Stripe gateway enabled.
  * @param string $method  Stripe payment method id.
  */
 if ( ! apply_filters( 'sgs_pay_later_message_enabled', $sgs_pl_enabled, $sgs_pl_method ) ) {
