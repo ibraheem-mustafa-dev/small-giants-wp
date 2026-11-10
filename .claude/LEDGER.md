@@ -1,7 +1,7 @@
 ---
 doc_type: ledger
 project: small-giants-wp
-last_updated: 2026-11-09
+last_updated: 2026-11-10
 ---
 
 # small-giants-wp: LEDGER (the one living status)
@@ -12,7 +12,7 @@ last_updated: 2026-11-09
 - **Clone coverage (Front M):** Phases 1 and 2 are done (2026-10-18). Every framework capability and everything a draft can hold is listed, each covered, excluded by you or a gap in its wave; review.md's Accept all marks a seen-but-unsupported row as a tracked gap in its wave (your ruling); Spec 48 §10 now runs in both directions with one FR per Phase 4 wave (FR-48-78 to FR-48-85). Your Indus intake re-run is done and committed (2026-10-18: 184 seen-but-unsupported rows, each bulk-accepted as a tracked gap; all 93 of your recorded decisions still reproduce). The open work of both is the Indus delivery plan (`plans/2026-10-21-handoff-readers.md`). Step 4.0, the motion cloning writer, is done (2026-10-19): cloning writes each element's entrances, hovers and endless loops (marquee, float, SVG pulse) into its motion settings with the draft's own timings and your tokens, a three-rater council's findings are fixed, and on indus-test page 60 the result plays the draft's own timings at 375, 768 and 1440 (27 of 27 checks). Draft reading, is mostly built (2026-10-19): every construct kind but fonts has a reader; Fill now reads every CSS property the draft's code declares and keeps a confirm record per value (Spec 48 FR-48-8); you excluded the prototype's document plumbing; and an audit of the 86 properties the drafts use that Fill never read found most already produced by SGS some other way; your five-test re-check cut its candidate gaps to 12 real ones (`.claude/reports/2026-10-19-css-equivalence-audit.md`); all 12 are built, live-checked and on all three test sites, and you co-signed their screenshot pairs against Mama's draft (2026-10-20, `plans/archive/2026-10-19-control-gaps-build.md`). Their leftovers are closed too (2026-10-20): a button can ease its move on a spring while its shadow and colours ease plainly (your choice of two override settings), every text-outline setting reaches the cloning route, and Mama's sparkle now matches the draft's motion. Calibration reads every property a block default, the theme or a setting under another name paints, and the Indus test site is recalibrated with it (2026-10-20); what it still misses is Spec 48 §5.4 Res 54 to 61. Next: its final proof (step 6) is Indus delivery U2 (`plans/2026-10-21-handoff-readers.md`).
 - **Cloning (Spec 48, Front H):** the clone route is rewound to the 2026-10-28 version (`0ea1a6cb2`); the three sites are finished from your hand-checked issues lists, Indus first, then Eye Care, then Mama's (`plans/2026-11-02-clone-finishing-streams.md`). **Indus is complete: you signed it off on 2026-11-08** (framework `f579fdb33` and local-indus live on indus-test, shared DB `7c850505b401`). sandybrown and mamas-test run the same framework code (deployed 2026-11-09).
 - **Eye Care (Front F):** the hand-built eye-care-test (framework `24095ea4f`) is the site to present. Rounds 1 to 12 and the clean first paint are live, checked in real Chrome (your lists of 2026-11-08 and 2026-11-09). Next: the unchecked pages (about 17 differences, `.claude/reports/2026-11-09-eye-care-unchecked-pages.md`), the side-by-side at 375, 768 and 1440, then your approval (streams plan, "Eye Care").
-- **Media system (Spec 49, Front P):** a ground-up redesign of every image, video, embed, SVG and background control (v0.7): approved 2026-11-10; Tasks 2 to 4 done; Stage A next.
+- **Media system (Spec 49, Front P):** a ground-up redesign of every image, video, embed, SVG and background control (v0.7): approved 2026-11-10; building (Stage A: WP-0b, WP-1 done).
 - **Nav / header / footer (Front N):** Waves 1 to 3C are live; Gate 3C's last mile is deferred by you; Waves 4 and 5 have not started.
 - **Length controls (Spec 02 section 10):** built and live on sandybrown at `baac1a83d` (`SgsLengthControl`, `SgsGapControl`; gate `python plugins/sgs-blocks/scripts/survey-length-control-scale.py --check`). Signed off by Bean (2026-10-22, FP-13); evidence in `.claude/reports/2026-10-22-length-control.md`.
 - **Need you:** whether Eye Care's drawer call button hover still looks black (measured taupe); the rulings under Parked, the Spec 36 and Spec 38 choices under Front N.
@@ -65,9 +65,9 @@ Governing documents: the fix register `plans/2026-10-02-eye-care-fix-register.md
 
 ### Front P: Media system (Spec 49)
 
-**State:** `specs/49-SGS-MEDIA-SYSTEM.md` (v0.7, approved 2026-11-10) extends the 15 media atoms. Done: Task 2 council (`reports/2026-11-10-task2-council/`), C0 fixtures (`plugins/sgs-blocks/tests/fixtures/media/`), proofs (`reports/2026-11-10-spec49-proofs/`). Next: Stage A, WP-1 first.
+**State:** `specs/49-SGS-MEDIA-SYSTEM.md` (v0.7, approved 2026-11-10) extends the 15 media atoms. Done: Task 2 council (`reports/2026-11-10-task2-council/`), C0 fixtures (`plugins/sgs-blocks/tests/fixtures/media/`), proofs (`reports/2026-11-10-spec49-proofs/`), WP-0b and WP-1 (`4180d18d2`). Next: WP-2a, 2b, 3, 4, 5 in parallel (§14.4).
 
-**Motion findings (2026-11-09):** 28 effects work; the failures and gaps are in Spec 38A (FR-38A-27, 34, 44, 45, §17); source `reports/2026-11-09-media-controls/T10-effects-run.md`.
+**Motion findings:** Spec 38A (FR-38A-27, 34, 44, 45, §17); effects runs `reports/2026-11-09-media-controls/T10-effects-run.md`, `T12-effects-run-A.md`, `-B.md`.
 
 **Open:** Stages A and B; Eye Care's Custom CSS controls and Mama's media work wait for the cutover. Until the rebuild replaces `sgs_image_loading_attrs` (Spec 02 FR-2-20), `DecorativeImageLayerTest` stays red by design and `includes/media/atoms/source.php::sgs_media_atom_source_css` is not patched.
 
@@ -109,6 +109,6 @@ Governing documents: the fix register `plans/2026-10-02-eye-care-fix-register.md
 - Reloading with the page scrolled shifts content on shop (46px at 1440) and product (about 20px), measured by the Eye Care session (`E:/sgs-tmp/ec-check/reload-recheck.cjs`); it is on that session's round 13 list.
 - `icon-brand`/`icon-custom` roles: Bean's call, only if Spec 48 cloning must place them (`plans/archive/2026-11-05-icon-source-detector.md`).
 - `plugins/sgs-blocks/scripts/db-consistency/tests/test_f6_consistency.py::TestCheck5VariantReseed` (4 tests): the fixtures predate the `slot_value` column (2026-09-05) and one assert expects 2-tuples where the code returns 3-tuples. Small fix in the tests.
-- `tests/php/DecorativeImageLayerTest.php` (plugin `sgs-blocks`): red by design since `f791e433b` until Spec 49 replaces the image helper (Front P).
+- `tests/php/DecorativeImageLayerTest.php` (plugin `sgs-blocks`): red by design since `f791e433b` until Spec 49 replaces the image helper (Front P); `ProductCardImagePriorityTest` (2 tests) waits for Spec 49 WP-3.
 - A fresh worktree needs its own `npm ci` in `scripts/computed-route` and `plugins/sgs-blocks` and a copy of `cache/`, or route tests fail for that reason alone (`dev-setup.md`).
 - `node scripts/computed-route/lint.mjs --surfaces sites/eye-care-ward-end/build/surfaces.json`: divergences D-72 to D-91 (except D-87) cite no register decision, and the README does not list the new `lib/motion-validate.mjs`, `lib/motion-refusals.mjs` and their tests.

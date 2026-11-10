@@ -814,7 +814,8 @@ PS-1 DB and gates accept §8, including one item-set block's `slot-array` shape,
 
 | Package | New files |
 |---|---|
-| WP-1 | `plugins/sgs-blocks/schemas/media-slot.schema.json` |
+| WP-1 | `src/components/media/atom-settings.js`, `scripts/lib/media-block-json.mjs` (built) |
+| WP-13 | `plugins/sgs-blocks/schemas/media-slot.schema.json` |
 | WP-2a | `assets/css/media-base.css`, `media-overlay.css`, `media-video.css`; `includes/media/tier-image.php`, `tier-video.php`, `tier-embed.php`, `tier-svg.php` (the split of `helpers-tier-media.php`); `src/shared/media/device-video.js` |
 | WP-2b | `includes/media/atoms/sizing.php`, `shape.php`, `filter.php`, `layout.php`, with JS twins of the same names beside `src/components/media/atoms/registry.js` |
 | WP-3 | `includes/media/class-sgs-media-priority.php` |
@@ -834,11 +835,11 @@ C0 ships these signatures as documentation, plus the shared fixtures in `plugins
 
 | Package | Owns | Needs | Stage |
 |---|---|---|---|
-| C0 Contracts | §14.3 signatures, fixture files, file layout (Integrator) | | A |
-| Proofs | proof scripts, reports | C0 | A |
+| C0 Contracts | §14.3 signatures, fixture files, file layout (Integrator) | | Done (`0121d328c`) |
+| Proofs | proof scripts, reports | C0 | PS-1, 2, 5, 7, 10 done (§14.2); PS-8 and PS-11 in Stage A |
 | WP-H Header (ahead of Stage A) | Stop the header's shrink restyling the page; every sticky and anchor consumer unchanged | | Done (`89b3531b5` to `91d955343`) |
-| WP-0b Wrapper split | Background code of `class-sgs-container-wrapper.php` into `includes/class-sgs-background-layer.php`, no behaviour change | | A |
-| WP-1 Core | Atom registry fields (units, ranges, hover forms, effects by kind), the extended generator writing `block.json`, schema generated from attribute `properties`, Spec 32 and 35 amendments; `theme.json` `settings.viewport` at `767px` and `1023px` so WordPress's editor device switching and core blocks match SGS's tiers; attribute `role: content` on Source, Alt, Decorative and Caption after a spike on object attributes | PS-1 | A |
+| WP-0b Wrapper split | Background code of `class-sgs-container-wrapper.php` into `includes/class-sgs-background-layer.php`, no behaviour change | | Done (`b4c079f33` to `176d04845`; 821 captured files identical) |
+| WP-1 Core | Atom registry `settings`, `effects` and `since` data; the generator writing `block.json` and override entries for adopted slots (marker `kinds`, §8.3) with its `--check` and `--self-test`; Spec 32 and 35 amendments; `theme.json` `settings.viewport` at `767px` and `1023px` | PS-1 | Done (`bebcc02ec`); the slot schema and the `role: content` spike moved to WP-13 |
 | WP-15a Gates | New gates; `gate-disposition.json` classifying every gate and test naming removed code as reused, changed or deleted (starting list: `T3` §2.5, `T4` §5) | WP-1 | A |
 | WP-2a Markup | `SGS_Media_Element` extended into the renderer, §7.1, §7.3, §7.9; `sgs_tier_media_render` reworked and split by kind; the shared device-video module; `media-base.css` (replacing `media-element.css` and the atom partials, with the Fill content-band rule), `-overlay`, `-video.css` | WP-1, PS-2 | A |
 | WP-2b Atoms | Each atom's PHP twin printing real properties; the new `sizing`, `shape`, `filter` and `layout` atoms; folding `media-type` and `intrinsic`; the value helpers per FR-49-12 | WP-1, PS-7 | A |
@@ -847,7 +848,7 @@ C0 ships these signatures as documentation, plus the shared fixtures in `plugins
 | WP-5 Disclosure and panels | The atoms' disclosure rules per §9.3, `MediaElementPanel` reworked into §9.4's panels | WP-1 | A |
 | WP-6 Masks | `icon-shapes.json` additions with `surfaces`, `media-mask.css`, `ShapeField` | WP-1, Slice gate | A |
 | WP-10a Effects UI | Motion targets and fields, the new store, `render-paths.json`, `motionSurface` on `sgs/media`, registry filters accepting the media and background parts, per-device effect scoping (FR-49-40) | WP-1, Slice gate | A |
-| WP-13 Cloner | New files for Fill's image route (§11), the kind per width, parity, skeleton rules, `wp-build-page` descending into object attributes, Spec 48; the switch-over commit is in Stage B | WP-1, Slice gate | A |
+| WP-13 Cloner | New files for Fill's image route (§11), the kind per width, parity, skeleton rules, `wp-build-page` descending into object attributes, `schemas/media-slot.schema.json` generated from attribute `properties` (FR-49-34), the `role: content` spike on object attributes, Spec 48; the switch-over commit is in Stage B | WP-1, Slice gate | A |
 | WP-14 Detector | Migration tool, mapping rows, run on mirrors in Stage B | WP-1, Slice gate | A |
 | Wave 1 | `sgs/media`, decorative-image, gallery | WP-2 to 6 | B |
 | WP-8 Backgrounds | Background layer with per-device kinds and Pinned, BackgroundPanel, `media-bg.css`, wrapper adopters; surface effects hosted on the background part (§10.5) | WP-0b, 2, 4, 5, PS-10 | B |
@@ -1029,7 +1030,7 @@ Paths checked with `ls` in `E:/sgs-tmp/wt-media` (HEAD `e8f3c9be3`); "New" means
 | `scripts/computed-route/calibration-fixtures.json`, `fixture-refs.mjs`, `data/clone-coverage.json`, `data/capabilities.json`, `scripts/computed-route/tests/*media*` | Rework | Name old attributes; the two data files are generated (regeneration command not verified) | WP-13, WP-14 |
 | `scripts/computed-route/media-upload.mjs`, `lib/media-stock.mjs` | Keep | Independent of attribute names | WP-13 |
 | `scripts/wp-build-page.js` | Rework | Validates only top-level type and enum today, so any object passes for `mediaSource`; descend into object `properties` declared on the attribute | WP-13 |
-| `scripts/content-role-detect/detector5_image_alt_companion.py` (plugin path `plugins/sgs-blocks/scripts/content-role-detect/`) | Rework | Applies the `image-alt` role the cloner reads | WP-1 |
+| `scripts/content-role-detect/detector5_image_alt_companion.py` (plugin path `plugins/sgs-blocks/scripts/content-role-detect/`) | Rework | Applies the `image-alt` role the cloner reads | WP-13 |
 | **Docs** | | | |
 | `.claude/specs/02-SGS-BLOCKS.md`, `35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md`, `35-BLOCK-INSPECTOR-UX-STANDARD.md`, `32-COMPONENT-STYLING-TOKEN-CONTRACT.md`, `36-SGS-NAVIGATION-SYSTEM.md`, `48-CLONING-SYSTEM.md` | Edit | Current-truth text: atoms and slots, rules 37 to 39 and golden picker, `imageControls` routing, Spec 32 amendment, nav-drawer media copy, Fill's image part | WP-15b |
 | `.claude/specs/38-SGS-MOTION-SYSTEM.md`, `38A-SGS-MOTION-MODEL.md` | Edit | Media part names; not named in WP-15b today | WP-15b |

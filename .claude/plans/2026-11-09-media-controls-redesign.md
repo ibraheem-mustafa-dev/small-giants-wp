@@ -1,6 +1,6 @@
 # Media controls redesign: Bean's issue register
 
-Status: superseded by the ground-up design in `.claude/specs/49-SGS-MEDIA-SYSTEM.md` (v0.5; evidence in `.claude/reports/2026-11-09-media-controls/`; Bean 2026-11-09: design from the ground up, media-first, one shared cutover). The register below stays the list of what Bean raised; the Design and Sequence sections are replaced by the spec. Spec 49 awaits Bean's approval; nothing is built until then. Raised by Bean on 2026-11-09 after checking the editor.
+Status: superseded by the ground-up design in `.claude/specs/49-SGS-MEDIA-SYSTEM.md` (v0.7, approved by Bean 2026-11-10; evidence in `.claude/reports/2026-11-09-media-controls/`; Bean 2026-11-09: design from the ground up, media-first, one shared cutover). The register below stays the list of what Bean raised; the Design and Sequence sections are replaced by the spec. The build follows the spec's §14 (Stage A under way). Raised by Bean on 2026-11-09 after checking the editor.
 
 ## Order of work (Bean)
 
@@ -123,9 +123,4 @@ Empty, deleted and oversized media have their own states. Replacing an image kee
 
 ### Decided against
 
-Duplicating motion controls inside the Background panel. A preset mask library is deferred (see the open decision).
-
-## Open decisions for Bean
-
-1. Shape: Circle preset only, or a preset Mask control later.
-2. Whether P4 waits for the three client sites.
+Duplicating motion controls inside the Background panel. Shapes and masks: Spec 49 §7.5 (Circle is a shape; mask shapes ship in the first release).

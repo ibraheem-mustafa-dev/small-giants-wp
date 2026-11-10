@@ -69,7 +69,7 @@ Rules:
   5. Measure the six entrance rows not yet measured: filter chip, filter drawer, thank-you message, phone menu rise, size modal and lens steps (the 2026-11-08 sweep is `sites/eye-care-ward-end/build/qa/r11/entrances-2026-11-08.md`; parallax is checked).
   6. Non-admin customer sessions need a test customer login (only the admin exists); Stripe and the wallets are untested.
   7. Then Bean's approval.
-- **Waiting on Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until the media system (`specs/49-SGS-MEDIA-SYSTEM.md`, v0.4 draft, awaiting Bean's approval, nothing built) gives them controls. Bean's original wording of 8 November: `.claude/reports/2026-11-09-bean-eye-care-list-wording.md`.
+- **Waiting on Spec 49:** the hero focal points (post 208) and the lens tag and outline (post 463) stay in Custom CSS until the media system (`specs/49-SGS-MEDIA-SYSTEM.md`, v0.7, approved 2026-11-10; Stage A under way, the Stage B cutover not built) gives them controls. Bean's original wording of 8 November: `.claude/reports/2026-11-09-bean-eye-care-list-wording.md`.
 - Back up each post before editing it, under `sites/eye-care-ward-end/build/backups/<date>/` (local only: some backups hold public embed keys the secret scanner flags).
 - **Noticed, not on Bean's list:**
   - `plugins/sgs-blocks/tests/php/run-header-ink-standalone.php` fails 2 of 29, identically on unmodified code; unrelated to round 12, found 2026-11-09.
