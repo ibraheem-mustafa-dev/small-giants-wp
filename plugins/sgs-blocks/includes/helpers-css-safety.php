@@ -56,6 +56,86 @@ if ( ! function_exists( 'sgs_css_length_value_preset_slugs' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_css_quotes_balanced' ) ) {
+	/**
+	 * Whether every single or double quote in a value is closed by the same quote. JS twin: `src/utils/css-length.js::cssQuotesBalanced`.
+	 *
+	 * @param string $value CSS value.
+	 * @return bool
+	 */
+	function sgs_css_quotes_balanced( string $value ): bool {
+		$quote = '';
+		foreach ( str_split( $value ) as $char ) {
+			if ( '' === $quote && ( '"' === $char || "'" === $char ) ) {
+				$quote = $char;
+			} elseif ( '' !== $quote && $char === $quote ) {
+				$quote = '';
+			}
+		}
+		return '' === $quote;
+	}
+}
+
+if ( ! function_exists( 'sgs_css_balanced_end' ) ) {
+	/**
+	 * The index of the parenthesis that closes the one at `$open`, or -1.
+	 *
+	 * @param string $value CSS value.
+	 * @param int    $open  Index of an opening parenthesis.
+	 * @return int
+	 */
+	function sgs_css_balanced_end( string $value, int $open ): int {
+		$depth = 0;
+		$len   = strlen( $value );
+		for ( $i = $open; $i < $len; $i++ ) {
+			if ( '(' === $value[ $i ] ) {
+				++$depth;
+			} elseif ( ')' === $value[ $i ] ) {
+				--$depth;
+				if ( 0 === $depth ) {
+					return $i;
+				}
+			}
+		}
+		return -1;
+	}
+}
+
+if ( ! function_exists( 'sgs_css_math_has_adjacent_terms' ) ) {
+	/**
+	 * Whether any min(), max() or clamp() call holds two terms with only whitespace between them (`min(10px 20px)`).
+	 * Quoted text and var() calls count as one term. JS twin: `src/utils/css-length.js::cssMathHasAdjacentTerms`.
+	 *
+	 * @param string $value CSS value.
+	 * @return bool
+	 */
+	function sgs_css_math_has_adjacent_terms( string $value ): bool {
+		$offset = 0;
+		while ( 1 === preg_match( '/\b(?:min|max|clamp)\(/i', $value, $m, PREG_OFFSET_CAPTURE, $offset ) ) {
+			$open   = $m[0][1] + strlen( $m[0][0] ) - 1;
+			$close  = sgs_css_balanced_end( $value, $open );
+			$offset = $open + 1;
+			if ( -1 === $close ) {
+				continue;
+			}
+			$body = substr( $value, $open + 1, $close - $open - 1 );
+			$body = (string) preg_replace( '/([\'"])(?:(?!\1).)*\1/s', 's', $body );
+			while ( 1 === preg_match( '/\bvar\(/i', $body, $v, PREG_OFFSET_CAPTURE ) ) {
+				$v_open  = $v[0][1] + strlen( $v[0][0] ) - 1;
+				$v_close = sgs_css_balanced_end( $body, $v_open );
+				if ( -1 === $v_close ) {
+					break;
+				}
+				$body = substr( $body, 0, $v[0][1] ) . 'x' . substr( $body, $v_close + 1 );
+			}
+			if ( 1 === preg_match( '/[\w%.)]\s+[\w%.(]/', $body ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	/**
 	 * Validate and normalise a CSS length-shaped value for safe inline emission.
@@ -211,6 +291,12 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 		// with no matching close (e.g. "calc(100% - 48px") is NOT consumed by
 		// the balanced-paren pattern above, so its "(" survives into $consumed.
 		if ( preg_match( '/[\\\\&=}{;<>()]/', $consumed ) || false !== strpos( $consumed, '/*' ) ) {
+			return '';
+		}
+
+		// 4b. A quote that never closes would swallow the rest of the declaration, and two terms side by side inside
+		// min(), max() or clamp() (no operator or comma between them) make the whole declaration invalid.
+		if ( ! sgs_css_quotes_balanced( $value ) || sgs_css_math_has_adjacent_terms( $value ) ) {
 			return '';
 		}
 

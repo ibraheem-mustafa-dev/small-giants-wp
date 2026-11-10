@@ -48,6 +48,79 @@ function consumeFunctionCalls( value ) {
 }
 
 /**
+ * Whether every single or double quote in a value is closed by the same quote. Twin: sgs_css_quotes_balanced().
+ *
+ * @param {string} value CSS value.
+ * @return {boolean} Whether the quotes pair up.
+ */
+export function cssQuotesBalanced( value ) {
+	let quote = '';
+	for ( const char of value ) {
+		if ( '' === quote && ( '"' === char || "'" === char ) ) {
+			quote = char;
+		} else if ( '' !== quote && char === quote ) {
+			quote = '';
+		}
+	}
+	return '' === quote;
+}
+
+/**
+ * @param {string} value CSS value.
+ * @param {number} open  Index of an opening parenthesis.
+ * @return {number} The index of the parenthesis that closes it, or -1.
+ */
+function balancedEnd( value, open ) {
+	let depth = 0;
+	for ( let i = open; i < value.length; i++ ) {
+		if ( '(' === value[ i ] ) {
+			depth++;
+		} else if ( ')' === value[ i ] ) {
+			depth--;
+			if ( 0 === depth ) {
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+
+/**
+ * Whether any min(), max() or clamp() call holds two terms with only whitespace between them (`min(10px 20px)`). Quoted
+ * text and var() calls count as one term. Twin: sgs_css_math_has_adjacent_terms().
+ *
+ * @param {string} value CSS value.
+ * @return {boolean} Whether two terms sit side by side.
+ */
+export function cssMathHasAdjacentTerms( value ) {
+	const call = /\b(?:min|max|clamp)\(/gi;
+	let match;
+	while ( ( match = call.exec( value ) ) !== null ) {
+		const open = match.index + match[ 0 ].length - 1;
+		const close = balancedEnd( value, open );
+		if ( -1 === close ) {
+			continue;
+		}
+		let body = value.slice( open + 1, close ).replace( /(['"])(?:(?!\1)[\s\S])*\1/g, 's' );
+		for ( ;; ) {
+			const v = /\bvar\(/i.exec( body );
+			if ( ! v ) {
+				break;
+			}
+			const vClose = balancedEnd( body, v.index + v[ 0 ].length - 1 );
+			if ( -1 === vClose ) {
+				break;
+			}
+			body = `${ body.slice( 0, v.index ) }x${ body.slice( vClose + 1 ) }`;
+		}
+		if ( /[\w%.)]\s+[\w%.(]/.test( body ) ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
  * A length-shaped CSS value safe to print, or ''. Twin: sgs_css_length_value(). Digits are px, or a spacing preset
  * when the theme registers that slug; breakout characters, url()/expression()/@import and unbalanced calls are
  * rejected; anything else passes trimmed with whitespace runs collapsed (lists and keywords included).
@@ -72,6 +145,9 @@ export function cssLengthValue( raw, presetSlugs = [] ) {
 	}
 	const consumed = consumeFunctionCalls( value );
 	if ( /[\\&=}{;<>()]/.test( consumed ) || consumed.includes( '/*' ) ) {
+		return '';
+	}
+	if ( ! cssQuotesBalanced( value ) || cssMathHasAdjacentTerms( value ) ) {
 		return '';
 	}
 	return value.replace( /\s+/g, ' ' ).trim();
