@@ -7,6 +7,8 @@ the adoption marker (Spec 49 section 8.3). Once one does, it enforces:
   AC-2   For each adopting block: no flat `...Tablet` / `...Mobile` media attribute
          (FR-49-2), one focal shape, an object `{x,y}` (FR-49-4), and no per-device
          alt attribute (FR-49-3).
+  G7     No entry declares `kinds` with `context: background` until the renderer prints a
+         background layer (`sgs-bg-media`, WP-8).
   AC-18  Raw `<MediaUpload` appears only in `MediaSlotField.js` and the files in
          `scripts/data/media-picker-exemptions.json`; the core focal picker and the old
          focal field appear nowhere but `FocalField.js` (FR-49-26).
@@ -29,8 +31,11 @@ PLUGIN = os.path.dirname(HERE)
 FIXTURE = os.path.join(PLUGIN, 'tests', 'fixtures', 'media', 'adopted-block.json')
 EXEMPTIONS = os.path.join(HERE, 'data', 'media-picker-exemptions.json')
 
-MEDIA_STEMS = ('imageId', 'imageUrl', 'mediaId', 'mediaUrl', 'videoId', 'videoUrl', 'posterId', 'posterUrl',
-               'source', 'kind', 'objectFit', 'objectPosition', 'focal', 'overlay', 'ratio', 'fit', 'shape', 'alt')
+EMIT_DIR = os.path.join(PLUGIN, 'src', 'components', 'media', 'emit')
+LEGACY_REGISTRY = os.path.join(PLUGIN, 'src', 'components', 'MediaElementControls.js')
+RENDERER_DIR = os.path.join(PLUGIN, 'includes', 'media')
+BACKGROUND_MARKER = 'sgs-bg-media'
+WORD = re.compile(r'[A-Z][a-z0-9]*|[a-z0-9]+')
 DEVICE_SUFFIX = re.compile(r'(Tablet|Mobile)$')
 FOCAL_NAME = re.compile(r'(focal|objectPosition)', re.I)
 ALT_NAME = re.compile(r'(^|[a-z])(alt|Alt)([A-Z]|$)')
@@ -38,6 +43,40 @@ RAW_PICKER = re.compile(r'<\s*MediaUpload\b')
 SECOND_FOCAL = re.compile(r'\bFocalPointPicker\b|\bFocalPositionField\b')
 ALLOWED_PICKER_FILES = ('MediaSlotField.js',)
 ALLOWED_FOCAL_FILES = ('FocalField.js',)
+
+
+def _read(path: str) -> str:
+    with open(path, encoding='utf-8') as fh:
+        return fh.read()
+
+
+def media_vocabulary() -> tuple[set[str], set[str], set[str]]:
+    """(bases, lead words, last words) a flat device attribute of a media slot is recognised by.
+
+    Bases are the adopted settings rows (`adopted-settings.js`, `kinds-settings.js`) and the legacy atom bases
+    (`MEDIA_ATTR_TYPES` in `MediaElementControls.js`), lower-cased. Lead words are the first word of each legacy base
+    (`image`, `video`, `thumbnail`, `svg`, `media`); last words are the last word of each adopted base (`ratio`,
+    `height`, `source`). Nothing here is a hand-kept list: a new adopted row extends it.
+    """
+    rows = _read(os.path.join(EMIT_DIR, 'adopted-settings.js')) + _read(os.path.join(EMIT_DIR, 'kinds-settings.js'))
+    adopted = set(re.findall(r"base:\s*'([A-Za-z]+)'", rows)) | set(re.findall(r"entry\(\s*'([A-Za-z]+)'", rows))
+    registry = _read(LEGACY_REGISTRY)
+    block = registry[registry.index('export const MEDIA_ATTR_TYPES'):]
+    body = block[:block.index('};')]
+    legacy = set(re.findall(r'^[ \t]+([A-Z][A-Za-z]*):', body, re.M))
+    bases = {b.lower() for b in adopted | legacy}
+    lead = {WORD.findall(b)[0].lower() for b in legacy}
+    last = {WORD.findall(b)[-1].lower() for b in adopted}
+    return bases, lead, last
+
+
+def is_media_stem(root: str, vocab: tuple[set[str], set[str], set[str]]) -> bool:
+    """Whether a stem (slot prefix and device suffix removed) names a media setting."""
+    bases, lead, last = vocab
+    if not root:
+        return True  # the slot's own source: `photoTablet` for prefix `photo`
+    words = WORD.findall(root[:1].upper() + root[1:])
+    return root.lower() in bases or words[0].lower() in lead or words[-1].lower() in last
 
 
 def adopted_entries(block: dict) -> list[dict]:
@@ -52,6 +91,7 @@ def stem_of(name: str, prefix: str) -> str:
 
 def contract_problems(block: dict, label: str) -> list[str]:
     out = []
+    vocab = media_vocabulary()
     attrs = block.get('attributes') or {}
     for entry in adopted_entries(block):
         prefix = entry.get('prefix', '') or ''
@@ -61,8 +101,8 @@ def contract_problems(block: dict, label: str) -> list[str]:
                 continue
             stem = stem_of(name, prefix)
             has_device = DEVICE_SUFFIX.search(name)
-            root = DEVICE_SUFFIX.sub('', stem)
-            if has_device and any(root.lower().startswith(m.lower()) for m in MEDIA_STEMS):
+            root = stem_of(DEVICE_SUFFIX.sub('', name), prefix)
+            if has_device and is_media_stem(root, vocab):
                 out.append(f'{label}: {name} is a flat device attribute (FR-49-2); use the responsive value object')
             if has_device and ALT_NAME.search(name):
                 out.append(f'{label}: {name} is a per-device alt (FR-49-3); alt is per slot or inside a Source')
@@ -73,6 +113,24 @@ def contract_problems(block: dict, label: str) -> list[str]:
         if len(focal) > 1:
             out.append(f'{label}: more than one focal attribute {focal} (FR-49-4)')
     return out
+
+
+def background_supported() -> bool:
+    """Whether the renderer prints a background layer (`sgs-bg-media`, built by WP-8)."""
+    for path in glob.glob(os.path.join(RENDERER_DIR, '**', '*.php'), recursive=True):
+        if BACKGROUND_MARKER in _read(path):
+            return True
+    return False
+
+
+def background_problems(block: dict, label: str, supported: bool | None = None) -> list[str]:
+    """An entry with `context: background` and `kinds` adopts a renderer branch that does not exist yet."""
+    if supported is None:
+        supported = background_supported()
+    if supported:
+        return []
+    return [f'{label}: the entry with prefix {e.get("prefix", "")!r} declares kinds on a background context, but the renderer has no background layer yet (WP-8, `{BACKGROUND_MARKER}`); drop kinds until it lands'
+            for e in adopted_entries(block) if e.get('context') == 'background']
 
 
 def picker_problems(files: dict[str, str], exempt: set[str]) -> list[str]:
@@ -117,6 +175,7 @@ def check() -> int:
     problems = []
     for p, b in adopters:
         problems += contract_problems(b, p)
+        problems += background_problems(b, p)
     problems += picker_problems(load_sources(), load_exemptions())
     if problems:
         print(f'media-contract: FAIL ({len(problems)})')
@@ -152,6 +211,21 @@ def self_test() -> int:
              'attributes': {'source': {'type': 'object'}, 'focal': {'type': 'object'}, 'fit': {'type': 'object'}}}
     if contract_problems(clean, 'clean'):
         print('self-test FAIL: a clean adopted block was flagged'); ok = False
+    for prefix, name in (('photo', 'photoTablet'), ('badge', 'badgeImageTablet'), ('', 'heightTablet'), ('', 'aspectRatioTablet'),
+                         ('', 'mediaTypeTablet'), ('', 'videoAutoplayTablet'), ('', 'thumbnailTablet'),
+                         ('background', 'backgroundImageTablet')):
+        flat_block = {'supports': {'sgs': {'mediaElements': [{'prefix': prefix, 'kinds': ['image']}]}}, 'attributes': {name: {'type': 'string'}}}
+        if not any('flat device attribute' in m for m in contract_problems(flat_block, name)):
+            print(f'self-test FAIL: flat {name} was not flagged'); ok = False
+    own = {'supports': {'sgs': {'mediaElements': [{'prefix': 'photo', 'kinds': ['image']}]}},
+           'attributes': {'gapTablet': {'type': 'string'}, 'fontSizeMobile': {'type': 'string'}, 'photoSource': {'type': 'object'}}}
+    if contract_problems(own, 'own'):
+        print('self-test FAIL: a non-media device attribute was flagged'); ok = False
+    bg_block = {'supports': {'sgs': {'mediaElements': [{'prefix': 'background', 'context': 'background', 'kinds': ['image']}]}}}
+    if not background_problems(bg_block, 'bg', supported=False) or background_problems(bg_block, 'bg', supported=True):
+        print('self-test FAIL: kinds on a background entry is refused only until the renderer supports it'); ok = False
+    if background_problems({'supports': {'sgs': {'mediaElements': [{'prefix': '', 'context': 'background'}]}}}, 'bg', supported=False):
+        print('self-test FAIL: a background entry without kinds was refused'); ok = False
     pickers = picker_problems({
         'src/blocks/x/edit.js': '<MediaUpload onSelect={f} />',
         'src/components/media/MediaSlotField.js': '<MediaUpload onSelect={f} />',
