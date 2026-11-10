@@ -46,6 +46,14 @@ foreach ( $cases['cases'] as $case ) {
 	}
 	$out[ $case['id'] ] = $fn( $case['slot'], $case['attrs'], $case['uid'], (bool) $case['helper'] );
 }
+// The print order the renderer uses: `render-slot.php::sgs_media_atom_emitter_ids()` sorts the defined ids.
+$out['__order'] = array();
+foreach ( get_defined_functions()['user'] as $sgs_fn ) {
+	if ( preg_match( '/^sgs_media_atom_(.+)_emit$/', $sgs_fn, $sgs_m ) ) {
+		$out['__order'][] = $sgs_m[1];
+	}
+}
+sort( $out['__order'] );
 $out['__lengths'] = array();
 foreach ( $cases['lengths'] ?? array() as $i => $raw ) {
 	$out['__lengths'][ $i ] = array(

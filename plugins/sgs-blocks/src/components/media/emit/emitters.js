@@ -1,5 +1,5 @@
 /**
- * Every atom's C3 emitter, in print order. `mediaPreview()` and the tests collect a slot's CSS through this map; PHP's
+ * Every atom's C3 emitter, in print order, which is alphabetical by atom id (PHP's `sgs_media_atom_emitter_ids()` sorts by id). `mediaPreview()` and the tests collect a slot's CSS through this map; PHP's
  * counterpart is the `sgs_media_atom_<id>_emit()` functions. Importing the `shape` atom registers the mask shapes the
  * shadow and overlay emitters ask about.
  *
@@ -27,29 +27,29 @@ import { emit as svgPresentation } from '../atoms/svg-presentation.js';
 import { emit as videoBehaviour } from '../atoms/video-behaviour.js';
 
 export const MEDIA_EMITTERS = Object.freeze( {
-	source,
-	'media-type': mediaType,
-	intrinsic,
-	meaning,
-	sizing,
-	layout,
-	'object-fit': objectFit,
-	'focal-point': focalPoint,
 	'box-shape': boxShape,
-	'media-padding': mediaPadding,
-	shape,
-	shadow,
-	opacity,
+	caption,
 	filter,
+	'focal-point': focalPoint,
+	intrinsic,
+	layout,
+	link,
+	meaning,
+	'media-padding': mediaPadding,
+	'media-type': mediaType,
+	'object-fit': objectFit,
+	opacity,
 	overlay,
+	shadow,
+	shape,
+	sizing,
+	source,
 	'svg-presentation': svgPresentation,
 	'video-behaviour': videoBehaviour,
-	caption,
-	link,
 } );
 
 /**
- * The CSS of one slot: every atom's rules, in print order.
+ * The CSS of one slot: every atom's rules, in print order (alphabetical by atom id).
  *
  * @param {Object}  slot   Slot `{ prefix, kinds, context, wrapper }`.
  * @param {Object}  attrs  Attributes.

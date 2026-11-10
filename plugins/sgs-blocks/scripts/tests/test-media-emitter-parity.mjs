@@ -173,6 +173,26 @@ for ( const c of cases ) {
 }
 ck( `PHP and JS print identical CSS in all ${ cases.length } cases (${ atomIds.length } atoms)`, 0 === mismatches, `${ mismatches } differ:\n    ${ shown.join( '\n    ' ) }` );
 
+// 1b. Print order: the JS map lists the atoms in the order PHP sorts them, and a slot's CSS (every atom's string
+// joined in that order) is identical on both sides, not merely the same set of strings.
+const jsOrder = atomIds.map( ( id ) => id.replace( /-/g, '_' ) );
+ck( 'MEDIA_EMITTERS lists the atoms in the order PHP prints them (alphabetical by id)', JSON.stringify( jsOrder ) === JSON.stringify( php.__order ), `JS ${ jsOrder.join( ',' ) } PHP ${ php.__order.join( ',' ) }` );
+let orderMismatches = 0;
+const slotCaseKeys = new Set( cases.map( ( c ) => c.id.split( '|' ).slice( 0, 1 ).concat( c.id.split( '|' ).slice( 2 ) ).join( '|' ) ) );
+for ( const key of slotCaseKeys ) {
+	const [ label, h, w ] = [ key.split( '|' )[ 0 ], key.split( '|' )[ 1 ], key.split( '|' )[ 2 ] ];
+	const own = cases.filter( ( c ) => c.id.startsWith( label + '|' ) && c.id.endsWith( `|${ h }|${ w }` ) );
+	const jsJoined = own.map( ( c ) => MEDIA_EMITTERS[ c.atom ]( c.slot, c.attrs, c.uid, c.helper ) ).join( '' );
+	const phpJoined = php.__order
+		.map( ( id ) => own.find( ( c ) => c.atom.replace( /-/g, '_' ) === id ) )
+		.map( ( c ) => ( c ? php[ c.id ] : '' ) )
+		.join( '' );
+	if ( jsJoined !== phpJoined ) {
+		orderMismatches++;
+	}
+}
+ck( `a slot's CSS joined in print order is identical in PHP and JS (${ slotCaseKeys.size } slots)`, 0 === orderMismatches, `${ orderMismatches } differ` );
+
 // 2. Not vacuous: every atom that paints printed something.
 const PAINTS = [ 'sizing', 'layout', 'object-fit', 'focal-point', 'media-padding', 'shape', 'shadow', 'opacity', 'filter', 'overlay', 'svg-presentation' ];
 for ( const atom of PAINTS ) {
