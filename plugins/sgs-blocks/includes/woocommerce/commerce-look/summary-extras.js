@@ -3,7 +3,7 @@
  * name. WooCommerce draws the summary in React, so the page runs this once, with the block's settings, and it
  * (re)applies both whenever the summary redraws. The brand comes from the Store API cart line's `extensions.sgs.brand`.
  *
- * It also puts `loginPrefix` as a text node before the Log in link, so only the link is clickable.
+ * It also puts `loginPrefix` in a span beside the Log in link (outside it), so only the link is clickable.
  *
  * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string }.
  */
@@ -55,9 +55,13 @@
 		}
 		if ( config.loginPrefix ) {
 			var prompt = doc.querySelector( LOGIN );
-			var before = prompt ? prompt.previousSibling : null;
-			if ( prompt && prompt.parentNode && ! ( before && 3 === before.nodeType && before.nodeValue === config.loginPrefix ) ) {
-				prompt.parentNode.insertBefore( doc.createTextNode( config.loginPrefix ), prompt );
+			if ( prompt && prompt.parentNode && ! doc.querySelector( '.sgs-checkout-login-prefix' ) ) {
+				// After the link in the DOM: WooCommerce floats the link right, and a second right float lands to its
+				// left, so the text reads before the link on screen. The link node itself is never moved.
+				var prefix = doc.createElement( 'span' );
+				prefix.className = 'sgs-checkout-login-prefix';
+				prefix.textContent = config.loginPrefix;
+				prompt.insertAdjacentElement( 'afterend', prefix );
 			}
 		}
 		if ( config.brand ) {

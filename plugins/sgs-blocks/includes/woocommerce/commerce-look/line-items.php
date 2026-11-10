@@ -85,6 +85,8 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
 		$css .= $row . '{margin-block-end:' . $gap . ';}';
 	}
 
+	$css .= sgs_commerce_look_login_prefix_css( $attrs, $block, $root );
+
 	return $css . sgs_commerce_look_item_card_layout_css( $attrs, $block, $root );
 }
 
@@ -108,6 +110,27 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 	}
 	$cols = 'auto minmax(0,1fr) auto';
 	return $wide . '{display:grid;grid-template-columns:' . $cols . ';align-items:center;column-gap:16px;}';
+}
+
+/**
+ * The text before the Checkout's Log in link (`sgsCheckoutStrings.loginPrefix`, a span the checkout script adds beside
+ * the link). WooCommerce floats the link to the right of the Contact heading; the span floats right too, so it sits
+ * directly to the link's left on the same line and never wraps under the heading. WooCommerce pulls the link up with
+ * a -24px top margin (to sit beside the heading); the span takes the same margin so both land on one row. The link's own margin box ends above its top
+ * edge, so it gets a 24px bottom margin to become an obstacle the span floats beside rather than under.
+ *
+ * @param array<string, mixed> $attrs Set attributes.
+ * @param string               $block 'cart' or 'checkout'.
+ * @param string               $root  Scope selector.
+ * @return string CSS text; '' without the setting or on the cart.
+ */
+function sgs_commerce_look_login_prefix_css( array $attrs, string $block, string $root ): string {
+	$strings = $attrs['sgsCheckoutStrings'] ?? null;
+	if ( 'checkout' !== $block || ! is_array( $strings ) || '' === trim( (string) ( $strings['loginPrefix'] ?? '' ) ) ) {
+		return '';
+	}
+	return $root . ' .wc-block-checkout__login-prompt{margin-bottom:24px;}'
+		. $root . ' .sgs-checkout-login-prefix{float:right;white-space:nowrap;margin:-24px 0.35em 0 0;color:var(--wp--preset--color--text-muted,currentColor);}';
 }
 
 add_filter( 'render_block', __NAMESPACE__ . '\sgs_commerce_look_summary_extras_inject', 13, 2 );

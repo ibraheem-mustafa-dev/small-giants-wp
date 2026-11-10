@@ -61,20 +61,32 @@ describe( 'checkout summary extras', () => {
 } );
 
 describe( 'checkout login prefix', () => {
-	test( 'puts the text before the Log in link as a text node, outside the link', () => {
-		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: 'Already have an account? ' } );
+	const PREFIX = 'Already have an account? ';
+
+	test( 'adds the text as a span with an SGS class beside the Log in link, outside the link, without moving the link', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
+		const same = document.querySelector( '.wc-block-checkout__login-prompt' );
+		const span = document.querySelector( '.sgs-checkout-login-prefix' );
+		expect( span.tagName ).toBe( 'SPAN' );
+		expect( span.textContent ).toBe( PREFIX );
+		expect( span.parentNode ).toBe( same.parentNode );
+		expect( span.parentNode.className ).toBe( 'wc-block-checkout__login-wrap' );
+		expect( same.contains( span ) ).toBe( false );
+		expect( same.textContent ).toBe( 'Sign in' );
+	} );
+
+	test( 'the link node is the one React rendered, not a copy', () => {
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
 		const link = document.querySelector( '.wc-block-checkout__login-prompt' );
-		expect( link.previousSibling.nodeType ).toBe( 3 );
-		expect( link.previousSibling.nodeValue ).toBe( 'Already have an account? ' );
-		expect( link.textContent ).toBe( 'Sign in' );
+		expect( link.getAttribute( 'href' ) ).toBe( '/my-account/' );
+		expect( document.querySelectorAll( '.wc-block-checkout__login-prompt' ) ).toHaveLength( 1 );
 	} );
 
 	test( 'a second render adds the text once', () => {
-		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: 'Already have an account? ' } );
+		run( { editLabel: '', editUrl: '', brand: false, loginPrefix: PREFIX } );
 		// eslint-disable-next-line no-new-func
 		new Function( SCRIPT )();
-		const parent = document.querySelector( '.wc-block-checkout__login-wrap' );
-		expect( parent.textContent ).toBe( 'Already have an account? Sign in' );
+		expect( document.querySelectorAll( '.sgs-checkout-login-prefix' ) ).toHaveLength( 1 );
 	} );
 } );
 

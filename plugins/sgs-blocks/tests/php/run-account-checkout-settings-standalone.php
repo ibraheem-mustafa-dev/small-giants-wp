@@ -180,6 +180,9 @@ if ( function_exists( 'SGS\Blocks\sgs_commerce_look_summary_extras' ) ) {
 	ok( 'Already have an account? ' === ( $c['loginPrefix'] ?? null ) && '' === $c['editLabel'] && false === $c['brand'], 'loginPrefix alone configures the prefix and keeps its trailing space' );
 	ok( '' === ( SGS\Blocks\sgs_commerce_look_summary_extras( array( 'sgsItemShowBrand' => true ), 'https://example.test/bag/' )['loginPrefix'] ?? 'x' ), 'no loginPrefix when it is not set' );
 	ok( array() === SGS\Blocks\sgs_checkout_strings_map( array( 'loginPrefix' => 'Already have an account? ' ) ), 'loginPrefix is not a gettext key, so the translation filter never carries it' );
+	$css = SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'Already have an account? ' ) ), 'checkout', '.root' );
+	ok( false !== strpos( $css, '.root .sgs-checkout-login-prefix{float:right;' ) && false !== strpos( $css, 'white-space:nowrap' ) && false !== strpos( $css, 'margin:-24px 0.35em 0 0' ) && false !== strpos( $css, '.root .wc-block-checkout__login-prompt{margin-bottom:24px;}' ), 'the login prefix keeps on one line beside the link (a floated, no-wrap span with the same top offset as the link)' );
+	ok( '' === SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsItemShowBrand' => true ), 'checkout', '.root' ) && '' === SGS\Blocks\sgs_commerce_look_line_items_css( array( 'sgsCheckoutStrings' => array( 'loginPrefix' => 'x' ) ), 'cart', '.root' ), 'no prefix rule without the setting, and none on the cart' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>checkout</div>', array( 'blockName' => 'woocommerce/checkout', 'attrs' => array() ) );
 	ok( '<div>checkout</div>' === $out, 'an unset checkout block is unchanged' );
 	$out = SGS\Blocks\sgs_commerce_look_summary_extras_inject( '<div>cart</div>', array( 'blockName' => 'woocommerce/cart', 'attrs' => array( 'sgsItemShowBrand' => true ) ) );
