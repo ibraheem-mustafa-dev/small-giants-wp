@@ -628,6 +628,12 @@
    "selector": ".sgs-account__od-back",
    "property": "min-height",
    "reason": "Settings checked: navWidth, authTabMinHeight, signedOutButtonMinHeight, fieldMinHeight, loginButtonMinHeight (each sizes the navigation, a tab, a button or a field); none sizes the order detail's All orders back link, so 44px is SGS's own default."
+  },
+  {
+   "block": "account",
+   "selector": ".sgs-account .sgs-account__wc .sgs-account__addr-actions a.sgs-account__addr-cancel",
+   "property": "min-height",
+   "reason": "Settings checked: navWidth, authTabMinHeight, signedOutButtonMinHeight, fieldMinHeight, menuActiveIndicatorWidth, accountSaveFullWidth, loginButtonMinHeight, loginButtonFullWidth (each sizes the navigation, a tab, a button or a field); none sizes the address editor's Cancel link, so 44px is SGS's own default."
   }
  ]
 }
