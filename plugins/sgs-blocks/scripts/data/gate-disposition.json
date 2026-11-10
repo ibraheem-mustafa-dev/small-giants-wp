@@ -1192,6 +1192,29 @@
    "package": "WP-15a",
    "lands": "B",
    "reason": "Reads media-element.css; re-point at media-base.css"
+  },
+  {
+   "path": "scripts/migrate-media-system/mapping.py",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/image-controls.php::sgsColourTreatment",
+    "includes/media-element-attrs-register.php"
+   ],
+   "package": "WP-14",
+   "lands": "A",
+   "reason": "Migration mapping rows name the old colour-treatment attribute and the old attribute register as sources; they stay as the migration's input vocabulary until the tool retires after the cutover sweep"
+  },
+  {
+   "path": "tests/js/media-disclosure.test.js",
+   "kind": "test",
+   "disposition": "changed",
+   "names": [
+    "includes/media/atoms/media-type.php::sgs_media_atom_media_type_css"
+   ],
+   "package": "WP-15a",
+   "lands": "B",
+   "reason": "Reads sgs_media_atom_media_type_css; re-point at the renderer's media-type atom at cutover"
   }
  ]
 }
