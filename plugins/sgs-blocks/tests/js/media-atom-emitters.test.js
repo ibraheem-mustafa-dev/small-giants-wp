@@ -108,8 +108,13 @@ describe( 'shape emitter', () => {
 		const css = shape( SLOT, attrsOf( { Shape: { desktop: { shape: 'hexagon' }, mobile: 'none' } } ), 'u', true );
 		const got = parse( css );
 		expect( got[ '.u .sgs-media-box__mask' ].desktop[ 'mask-image' ] ).toMatch( /^url\("data:image\/svg\+xml,%3Csvg/ );
-		expect( got[ '.u .sgs-media-box__mask' ].desktop[ 'mask-size' ] ).toBe( '100% 100%' );
+		expect( got[ '.u .sgs-media-box__mask' ].desktop[ 'mask-size' ] ).toBe( 'contain' );
 		expect( got[ '.u .sgs-media-box__mask' ].mobile ).toEqual( { '-webkit-mask-image': 'none', 'mask-image': 'none' } );
+	} );
+
+	it( 'stretches a registry shape to its box with mask-size 100% 100% when the slot says stretch', () => {
+		const got = parse( shape( SLOT, attrsOf( { Shape: { shape: 'hexagon', proportions: 'stretch' } } ), 'u', true ) );
+		expect( got[ '.u .sgs-media-box__mask' ].desktop[ 'mask-size' ] ).toBe( '100% 100%' );
 	} );
 
 	it( 'keeps proportions with mask-size contain and no preserveAspectRatio', () => {
