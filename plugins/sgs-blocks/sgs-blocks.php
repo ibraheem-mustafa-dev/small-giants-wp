@@ -109,6 +109,8 @@ require_once SGS_BLOCKS_PATH . 'includes/class-sgs-focus-rests.php';
 // Loaded here (plugin-wide, every request) rather than only from the WP-CLI
 // block above — the upload filter must run on ordinary admin/REST uploads too.
 require_once SGS_BLOCKS_PATH . 'includes/media-top-tone.php';
+require_once SGS_BLOCKS_PATH . 'includes/media/class-sgs-media-formats.php';
+\Sgs_Media_Formats::register();
 
 // Conditional visibility — server-side block suppression by rules (login, date, etc).
 require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';

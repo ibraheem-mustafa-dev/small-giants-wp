@@ -11,7 +11,7 @@ All groups register only when `WP_CLI` is defined, so they cost nothing on a fro
 | `sgs` | `plugins/sgs-blocks/sgs-blocks.php` | `Sgs_Cli_Commands` (`plugins/sgs-blocks/includes/class-sgs-cli-commands.php`) | `site-info`, `seed-template-parts`, `reset-template-parts`, `header-rules`, `footer-rules`, `migrations`, `seeding-arm` |
 | `sgs header`, `sgs footer`, `sgs drawer` | `plugins/sgs-blocks/sgs-blocks.php` | `Sgs_Header_Footer_Cli_Commands` (`plugins/sgs-blocks/includes/class-sgs-header-footer-cli-commands.php`; the `seed-starter` body is `Sgs_Starter_Cli_Seeder` in `plugins/sgs-blocks/includes/class-sgs-starter-cli-seeder.php`) | `set-active`, `clear-active`, `list`, `seed-starter` |
 | `sgs audit-colour-tokens` | `plugins/sgs-blocks/sgs-blocks.php` | `Sgs_Colour_Audit_Cli_Commands` (`plugins/sgs-blocks/includes/class-sgs-colour-audit-cli-commands.php`) | the command itself |
-| `sgs media` | `plugins/sgs-blocks/sgs-blocks.php` | `Sgs_Media_Cli_Commands` (`plugins/sgs-blocks/includes/class-sgs-media-cli-commands.php`) | `measure-tone` |
+| `sgs media` | `plugins/sgs-blocks/sgs-blocks.php` | `Sgs_Media_Cli_Commands` (`plugins/sgs-blocks/includes/class-sgs-media-cli-commands.php`) | `measure-tone`, `modernise` |
 | `sgs addon-prices` | `plugins/sgs-blocks/includes/addon-price-list/load.php` | `Addon_Price_List_CLI` (`plugins/sgs-blocks/includes/addon-price-list/class-addon-price-list-cli.php`) | `seed` |
 | `sgs google-fonts` | `plugins/sgs-blocks/includes/class-font-collection.php` | `Google_Fonts_Cli` (`plugins/sgs-blocks/includes/class-google-fonts-cli.php`) | `sync`, `status` |
 
@@ -87,6 +87,10 @@ Read-only discovery of orphaned colour-token slugs: a colour attribute whose sto
 
 Backfills `_sgs_top_tone` (`dark` or `light`) on image attachments: the mean luminance of the top 20% of each image, measured on a small downscaled copy by `plugins/sgs-blocks/includes/media-top-tone.php` (new uploads get the same measure from its `wp_generate_attachment_metadata` filter). `sgs_surface_tone()` reads it so a photo section tells a see-through header and the shadow logic whether it reads light or dark. Without `--force`, attachments that already carry the meta are skipped. An unreadable file or a server with no image library counts as failed. It changes the tone class, and so the shadows, of existing photo sections, so run it on a client site only when asked.
 
+### `wp sgs media modernise [--batch=<n>] [--after=<id>] [--dry-run]`
+
+Regenerates the resized copies of existing JPEG and PNG attachments as AVIF (quality 60) or WebP (quality 82), through `plugins/sgs-blocks/includes/media/class-sgs-media-formats.php` (Spec 49 FR-49-42). Old resized files stay on disk (the `--skip-delete` behaviour of `wp media regenerate`), so saved URLs that name one still resolve. It runs on one thread (`MAGICK_THREAD_LIMIT=1`), `--batch` attachments at a time (default 10), in ID order; the closing line prints the `--after=<id>` to resume from. Attachments whose resized copies are already AVIF or WebP are skipped. `--dry-run` lists what it would regenerate and writes nothing. It refuses to run when `sgs_media_modern_formats` is switched off or the server writes neither AVIF nor WebP. WordPress core also saves the full-size copy in the new format as the attachment's main file and keeps the upload under `original_image`. Run it over SSH, a batch at a time, on a client site only when asked.
+
 ### `wp sgs addon-prices seed <file.json>`
 
 Replaces the site-wide add-on price list from a JSON file, through the same normaliser the settings page uses (`sgs_addon_price_list_normalise()`), so a seed file cannot bypass the admin form's sanitisation. Two shapes: a bare list of groups `[ { "key", "label", "options": [ { "key", "label", "short", "price" } ] } ]` (an option's `short` falls back to its `label`), or an object `{ "groups": [...], "summary": { "leadWithAddons", "leadWithoutAddons", "attributeLabels", "sizeBand" } }` that also seeds the cart line summary wording. Errors: `File not readable`, `Invalid JSON`.
@@ -135,6 +139,7 @@ wp sgs migrations run [--target=<slug>] --user=1
 # Diagnostics and data
 wp sgs audit-colour-tokens [--post_type=<types>]
 wp sgs media measure-tone [--force]
+wp sgs media modernise [--batch=<n>] [--after=<id>] [--dry-run]
 wp sgs addon-prices seed <file.json>
 wp sgs google-fonts sync
 wp sgs google-fonts status

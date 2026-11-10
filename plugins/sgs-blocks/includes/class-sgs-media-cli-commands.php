@@ -123,4 +123,79 @@ final class Sgs_Media_Cli_Commands {
 			)
 		);
 	}
+
+	/**
+	 * Regenerate existing JPEG and PNG attachments' resized copies as AVIF or WebP (Spec 49 FR-49-42). Old resized files
+	 * are kept, so saved URLs still resolve. One thread, in batches, resumable by attachment ID.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--batch=<n>]
+	 * : Attachments to handle in this run.
+	 * ---
+	 * default: 10
+	 * ---
+	 *
+	 * [--after=<id>]
+	 * : Resume after this attachment ID (the run prints the next value).
+	 * ---
+	 * default: 0
+	 * ---
+	 *
+	 * [--dry-run]
+	 * : List the attachments that would be regenerated without writing anything.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp sgs media modernise --dry-run
+	 *     wp sgs media modernise --batch=20 --after=1234
+	 *
+	 * @param string[] $args       Positional arguments (unused).
+	 * @param string[] $assoc_args Named arguments.
+	 */
+	public function modernise( array $args, array $assoc_args ): void {
+		unset( $args );
+		require_once __DIR__ . '/media/class-sgs-media-formats.php';
+		require_once __DIR__ . '/media/class-sgs-media-modernise.php';
+
+		$batch   = max( 1, (int) ( $assoc_args['batch'] ?? 10 ) );
+		$after   = max( 0, (int) ( $assoc_args['after'] ?? 0 ) );
+		$dry_run = ! empty( $assoc_args['dry-run'] );
+
+		if ( ! \Sgs_Media_Formats::enabled() || '' === \Sgs_Media_Formats::target_mime() ) {
+			\WP_CLI::error( 'Modern formats are switched off, or this server cannot write AVIF or WebP.' );
+		}
+		\Sgs_Media_Modernise::single_thread();
+
+		$ids = \Sgs_Media_Modernise::pending_ids( $after, $batch );
+		if ( empty( $ids ) ) {
+			\WP_CLI::success( 'Nothing left to modernise after attachment ' . $after . '.' );
+			return;
+		}
+		$done   = 0;
+		$failed = 0;
+		foreach ( $ids as $id ) {
+			if ( $dry_run ) {
+				\WP_CLI::log( sprintf( 'Would regenerate attachment %d (%s)', $id, \get_attached_file( $id ) ) );
+				continue;
+			}
+			$result = \Sgs_Media_Modernise::regenerate( $id );
+			if ( \is_wp_error( $result ) ) {
+				++$failed;
+				\WP_CLI::warning( sprintf( 'Attachment %d: %s', $id, $result->get_error_message() ) );
+				continue;
+			}
+			++$done;
+			\WP_CLI::log( sprintf( 'Attachment %d: %d sizes', $id, count( $result ) ) );
+		}
+		\WP_CLI::success(
+			sprintf(
+				'%s %d, failed %d. Resume with --after=%d.',
+				$dry_run ? 'Would regenerate' : 'Regenerated',
+				$dry_run ? count( $ids ) : $done,
+				$failed,
+				(int) end( $ids )
+			)
+		);
+	}
 }
