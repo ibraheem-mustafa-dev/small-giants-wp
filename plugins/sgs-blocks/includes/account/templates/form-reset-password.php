@@ -54,7 +54,7 @@ foreach ( $sgs_errors as $sgs_error ) {
 
 	<div class="clear"></div>
 
-	<?php echo $sgs_lines; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>
+	<?php echo '' !== $sgs_lines ? '<div class="sgs-account__reset-errors">' . $sgs_lines . '</div>' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above. ?>
 
 	<?php do_action( 'woocommerce_resetpassword_form' ); ?>
 

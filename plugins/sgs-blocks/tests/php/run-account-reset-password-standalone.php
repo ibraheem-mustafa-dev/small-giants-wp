@@ -67,6 +67,7 @@ ok( false !== strpos( $html, 'name="reset_key" value="k&quot;ey"' ) && false !==
 ok( false !== strpos( $html, 'name="wc_reset_password" value="true"' ) && false !== strpos( $html, 'name="woocommerce-reset-password-nonce" value="n-reset_password"' ), 'the action field and nonce WooCommerce checks are kept' );
 ok( false !== strpos( $html, '<p class="sgs-account__reset-error" role="alert">Those two do not match. Try again.</p>' ), 'the mismatch line takes the block wording as red text with role alert' );
 ok( false !== strpos( $html, '>Please enter your password.</p>' ), 'other errors print the same way, text unchanged' );
+ok( false !== strpos( $html, '<div class="sgs-account__reset-errors"><p class="sgs-account__reset-error"' ), 'the error lines sit in their own wrapper, not as direct paragraphs of the form (a rule hiding the intro paragraph cannot hide them)' );
 ok( strpos( $html, 'sgs-account__reset-error' ) > strpos( $html, 'name="password_2"' ) && strpos( $html, 'sgs-account__reset-error' ) < strpos( $html, 'type="submit"' ), 'the errors sit under the fields and above the button' );
 ok( ! isset( $GLOBALS['notices']['error'] ) && 'Keep me' === $GLOBALS['notices']['notice'][0]['notice'], 'the errors are taken out of the notice list so no box prints above; other notices stay' );
 $before = array_values( array_filter( $GLOBALS['actions'], fn( $a ) => 'woocommerce_before_reset_password_form' === $a[0] ) );
