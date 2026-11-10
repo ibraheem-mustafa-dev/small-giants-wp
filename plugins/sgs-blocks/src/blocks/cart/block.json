@@ -124,14 +124,16 @@
 					"label": "Backdrop / scrim",
 					"order": 5,
 					"clusters": [
-						"fill"
+						"fill",
+						"motion"
 					],
 					"prefix": "scrim",
 					"attrMap": {
 						"css:background-color": "scrimColour",
 						"css:background-image": "scrimColourGradient",
 						"css:opacity": "scrimOpacity",
-						"css:backdrop-filter": "scrimBlur"
+						"css:backdrop-filter": "scrimBlur",
+						"css:transition-duration": "scrimFadeDuration"
 					},
 					"_note": "The shared viewport scrim (Wave 3C U-2, `includes/helpers-scrim.php::sgs_scrim_render`): the see-through layer printed at wp_footer that dims the page while this block's drawer, dialog or panel is open. Mapped here so the converter can route a draft's scrim colour, strength and blur to these attributes."
 				},

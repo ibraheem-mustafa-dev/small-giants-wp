@@ -48,6 +48,7 @@ EXCLUDE_BLOCKS = {
 # (block, element) pairs inside a block that is otherwise checked.
 EXCLUDE_NAMES = {
     ("business-info", "hours-row"): "a day-and-times pair, not a list of items",
+    ("account", "addr-actions"): "the address form's Save and Cancel pair, not a list of items; it wraps on a narrow card by itself",
     ("nav-bar-menu", "root"): "pairs the link bar with the burger; the bar element carries flexWrap",
     ("form", "progress-steps"): "a fixed step indicator whose count is the form's step count, laid on one line by design",
     ("choice-flow", "stepper"): "a fixed step indicator whose count is the flow's step count, laid on one line by design (the same reason as form's progress-steps)",
