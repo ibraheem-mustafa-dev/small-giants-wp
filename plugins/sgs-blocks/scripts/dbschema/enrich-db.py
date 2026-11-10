@@ -40,10 +40,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 import os as _os
 import sys as _sys
 _sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), *([_os.pardir] * 1), "lib"))
-from framework_db import framework_db_path  # noqa: E402
+from framework_db import framework_db_path, skill_dir  # noqa: E402
 _CLAUDE_DB = framework_db_path()
-# The shared DB has one path (~/.claude); BOTH_DBS stays a one-item list unless $SGS_FRAMEWORK_DB names another copy.
-_AGENTS_DB = _CLAUDE_DB if _os.environ.get("SGS_FRAMEWORK_DB") else Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-framework.db"
+# The shared DB has one path, so BOTH_DBS is a one-item list.
+_AGENTS_DB = _CLAUDE_DB
 
 BOTH_DBS = [_CLAUDE_DB] if _AGENTS_DB == _CLAUDE_DB else [_CLAUDE_DB, _AGENTS_DB]
 
@@ -753,7 +753,7 @@ def target_29_hooks(conn: sqlite3.Connection, repo_path: Path | None, dry_run: b
 
 def target_210_health_check(dry_run: bool) -> bool:
     """Write /sgs-update post-flight health summary JSON."""
-    health_path = Path.home() / ".claude" / "skills" / "sgs-wp-engine" / "sgs-update-health.json"
+    health_path = skill_dir() / "sgs-update-health.json"
     if _os.environ.get("SGS_FRAMEWORK_DB"):
         health_path = _CLAUDE_DB.with_name(f"{_CLAUDE_DB.stem}-update-health.json")  # a copy gets its own health file
 
