@@ -679,7 +679,13 @@
         "size-h2",
         "size-h2-mobile",
         "text-base"
-      ]
+      ],
+      "toast": {
+        "duration": "3.2s",
+        "offsetBottom": "32px",
+        "actionUnderlineColour": "rgba(250,248,245,.6)",
+        "actionHoverUnderlineThickness": "1px"
+      }
     },
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,
