@@ -146,6 +146,9 @@ $wrapper_classes = array(
 if ( ! empty( $attributes['ordersLook'] ) ) {
 	$wrapper_classes[] = 'sgs-account--orders-rows';
 }
+if ( 'cards' === ( $attributes['wishlistLayout'] ?? '' ) ) {
+	$wrapper_classes[] = 'sgs-account--wishlist-cards';
+}
 
 $wrapper_attrs = get_block_wrapper_attributes( array( 'class' => implode( ' ', $wrapper_classes ) ) );
 
