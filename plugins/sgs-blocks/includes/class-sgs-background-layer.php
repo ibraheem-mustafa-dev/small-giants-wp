@@ -315,8 +315,8 @@ if ( ! class_exists( 'SGS_Background_Layer' ) ) {
 		 * The overlay span and its paint declarations.
 		 *
 		 * sgs_overlay_decls() yields '' when there is nothing to paint, so "is there an overlay?"
-		 * and "what does it paint?" are one decision. The paint is emitted by scoped_css() as a
-		 * `.{uid} .sgs-container__overlay` rule, never inline on the span.
+		 * and "what does it paint?" are one decision. The paint is emitted by scoped_css() as the
+		 * scoped overlay rule, never inline on the span.
 		 *
 		 * @param array<string,mixed> $attributes Block attributes, verbatim.
 		 * @param bool                $no_overlay True when the caller suppresses the overlay layer.
