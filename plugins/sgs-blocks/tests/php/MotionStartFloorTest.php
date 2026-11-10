@@ -182,7 +182,8 @@ final class MotionStartFloorTest extends TestCase {
 	/** A block template whose main content is a lone `main` wrapper of three sections, a header part before it and a footer part after. */
 	private function template_tree( bool $with_post_content = false ): void {
 		$section = array( 'blockName' => 'sgs/container', 'attrs' => array(), 'innerBlocks' => array() );
-		$main    = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => array( $section, $section, $section ) );
+		$content = array( 'blockName' => 'core/post-content', 'attrs' => array(), 'innerBlocks' => array() );
+		$main    = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => $with_post_content ? array( $section, $content, $section ) : array( $section, $section, $section ) );
 		$part    = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
 		if ( ! function_exists( 'parse_blocks' ) ) {
 			function parse_blocks( $content ) {
@@ -225,10 +226,42 @@ final class MotionStartFloorTest extends TestCase {
 		$this->assertSame( '0', $this->header_op, 'the header the theme renders is not a content section' );
 	}
 
-	public function test_edge_a_template_with_a_post_content_block_is_left_to_the_content_filter(): void {
+	public function test_edge_a_template_whose_section_is_the_post_content_block_is_left_to_the_content_filter(): void {
 		$this->template_tree( true );
 		Sgs_Motion_Renderer::arm_from_template( '/theme/index.php' );
 		$this->assertSame( array( '0', '0', '0' ), $this->render_template_children(), 'the post content arms it, not the template' );
+	}
+
+	/**
+	 * The real single-product shape: header part, then a lone `main` holding one wrapper with the breadcrumbs, the buy box
+	 * and, further down inside a tab, the post content (the product description). The post content is not a section of its
+	 * own, so the template arms the fold and the buy box is above it.
+	 */
+	public function test_happy_a_template_that_prints_post_content_inside_a_tab_still_arms_from_its_own_sections(): void {
+		$part    = array( 'blockName' => 'core/template-part', 'attrs' => array(), 'innerBlocks' => array() );
+		$crumbs  = array( 'blockName' => 'sgs/breadcrumbs', 'attrs' => array(), 'innerBlocks' => array() );
+		$buybox  = array( 'blockName' => 'sgs/buybox', 'attrs' => array(), 'innerBlocks' => array() );
+		$content = array( 'blockName' => 'core/post-content', 'attrs' => array(), 'innerBlocks' => array() );
+		$tab     = array( 'blockName' => 'sgs/tab', 'attrs' => array(), 'innerBlocks' => array( $content ) );
+		$wrapper = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'wrap' ), 'innerBlocks' => array( $crumbs, $buybox, $tab ) );
+		$main    = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ), 'innerBlocks' => array( $wrapper ) );
+		$GLOBALS['sgs_test_top_blocks']          = array( $part, $main, $part );
+		$GLOBALS['_wp_current_template_content'] = '<!-- wp:sgs/container {"tagName":"main"} --><!-- wp:post-content /-->';
+		$GLOBALS['sgs_test_in_loop']             = false;
+		Sgs_Motion_Renderer::arm_from_template( '/theme/single-product.php' );
+
+		$main_block = array( 'blockName' => 'sgs/container', 'attrs' => array( 'tagName' => 'main' ) );
+		Sgs_Motion_Renderer::open_frame( $main_block, $main_block, null );
+		$wrap_block = array( 'blockName' => 'sgs/container', 'attrs' => array( 'className' => 'wrap' ) );
+		Sgs_Motion_Renderer::open_frame( $wrap_block, $wrap_block, (object) array( 'name' => 'sgs/container' ) );
+		$GLOBALS['sgs_collected_css'] = array();
+		$box = array( 'blockName' => 'sgs/hero', 'attrs' => array( 'sgsMotion' => self::entrance( array( 'opacity' => 0, 'scale' => 0 ) ) ) );
+		sgs_test_render_motion_block( $box, '<div class="wp-block-sgs-hero"><p>Buy</p></div>', (object) array( 'name' => 'sgs/container' ) );
+		$css = $this->css();
+		Sgs_Motion_Renderer::close_frame( '', $wrap_block );
+		Sgs_Motion_Renderer::close_frame( '', $main_block );
+		$this->assertStringContainsString( '--sgs-me-from-op:0.01;', $css, 'the buy box is above the fold although the template prints the post content further down' );
+		$this->assertStringContainsString( '--sgs-me-from-s:0.01;', $css );
 	}
 
 	public function test_edge_the_template_arms_once_and_returns_the_template_path_unchanged(): void {

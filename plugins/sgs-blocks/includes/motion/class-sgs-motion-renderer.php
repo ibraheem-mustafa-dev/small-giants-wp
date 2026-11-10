@@ -276,26 +276,50 @@ final class Sgs_Motion_Renderer {
 	}
 
 	/**
-	 * Arm the above-the-fold rule from the block template when the page's main content comes from it: a template with no
-	 * `core/post-content` block (the shop and other archives, search, a product page) never runs `the_content` for its
-	 * sections, so its own blocks are the tree. Template parts stay out of the count (`Sgs_Motion_Fold`). A template that
-	 * prints the post content is left to `arm_first_section`. A `core/pattern` block is not expanded
-	 * (`resolve_pattern_blocks` would turn its blocks into sections, but they render inside the pattern block's own frame,
-	 * where they are not counted): the pattern block is one section and everything inside it follows its fold mark.
+	 * Arm the above-the-fold rule from the block template when the page's main content comes from it: a template whose
+	 * sections are not the post content (the shop and other archives, search, a product page, whose post content sits
+	 * inside a tab) never runs `the_content` for those sections, so its own blocks are the tree. Template parts stay out of
+	 * the count (`Sgs_Motion_Fold`). A template whose own section is the `core/post-content` block is left to
+	 * `arm_first_section`. A `core/pattern` block is not expanded (`resolve_pattern_blocks` would turn its blocks into
+	 * sections, but they render inside the pattern block's own frame, where they are not counted): the pattern block is
+	 * one section and everything inside it follows its fold mark.
 	 *
 	 * @param mixed $template The template path (`template_include`), returned unchanged.
 	 * @return mixed
 	 */
 	public static function arm_from_template( $template ) {
 		$content = $GLOBALS['_wp_current_template_content'] ?? '';
-		if ( self::$content_seen || ! is_string( $content ) || '' === $content || false !== strpos( $content, 'wp:post-content' ) || ! function_exists( 'parse_blocks' ) ) {
+		if ( self::$content_seen || ! is_string( $content ) || '' === $content || ! function_exists( 'parse_blocks' ) ) {
 			return $template;
 		}
 		$tree = parse_blocks( $content );
-		if ( array() !== Sgs_Motion_Fold::section_indexes( $tree ) ) {
+		if ( array() !== Sgs_Motion_Fold::section_indexes( $tree ) && ! self::post_content_is_a_section( $tree ) ) {
 			self::arm( $tree, true );
 		}
 		return $template;
+	}
+
+	/**
+	 * Whether one of the template's own sections is the `core/post-content` block: the page's body is then the post's
+	 * content, and its sections are counted from that content (`arm_first_section`). Post content nested deeper (a product
+	 * description inside a tab below the buy box) is part of a template section and does not defer.
+	 *
+	 * @param array<int,mixed> $tree Parsed template blocks.
+	 * @return bool
+	 */
+	private static function post_content_is_a_section( array $tree ): bool {
+		$sections = Sgs_Motion_Fold::section_indexes( $tree );
+		$blocks   = $tree;
+		if ( Sgs_Motion_Fold::is_lone_main( $tree ) ) {
+			$blocks   = (array) ( $tree[ $sections[0] ]['innerBlocks'] ?? array() );
+			$sections = Sgs_Motion_Fold::section_indexes( $blocks );
+		}
+		foreach ( $sections as $index ) {
+			if ( 'core/post-content' === ( $blocks[ $index ]['blockName'] ?? null ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
