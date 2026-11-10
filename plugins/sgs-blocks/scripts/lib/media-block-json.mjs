@@ -75,8 +75,20 @@ export function generatedAttributes( block, env, ownNames ) {
 				if ( own.has( name ) || seen.has( name ) ) {
 					continue;
 				}
-				seen.add( name );
 				const type = env.attrType( base, tier );
+				// A block that stores a base as a tier object has no use for scalar
+				// Tablet and Mobile siblings; the registration filter still adds them
+				// until it is removed, so the registered set is unchanged.
+				const baseName = env.storedName( block.name, prefix, base );
+				if (
+					tier &&
+					type !== 'object' &&
+					block.attributes?.[ baseName ]?.type === 'object' &&
+					! block.attributes[ baseName ]._generated
+				) {
+					continue;
+				}
+				seen.add( name );
 				const def = { type };
 				if ( tier && Array.isArray( type ) ) {
 					def.default = null;

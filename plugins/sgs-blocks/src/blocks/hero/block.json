@@ -1415,8 +1415,6 @@
 		"splitMediaObjectFitTablet": {"type":"string","_generated":"media-atoms"},
 		"splitMediaObjectFitMobile": {"type":"string","_generated":"media-atoms"},
 		"splitMediaSize": {"type":"string","_generated":"media-atoms"},
-		"splitMediaObjectPositionTablet": {"type":"string","_generated":"media-atoms"},
-		"splitMediaObjectPositionMobile": {"type":"string","_generated":"media-atoms"},
 		"splitMediaPosition": {"type":"string","_generated":"media-atoms"},
 		"splitMediaRepeat": {"type":"string","_generated":"media-atoms"},
 		"splitMediaAttachment": {"type":"string","_generated":"media-atoms"},
