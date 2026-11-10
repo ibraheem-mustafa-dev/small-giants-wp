@@ -37,11 +37,7 @@
 					],
 					"isWrapper": true,
 					"prefix": "payLater",
-					"attrMap": {
-						"css:color": "textColour",
-						"css:font-size": "fontSize"
-					},
-					"_note": "textColour and fontSize paint the placeholder through scoped rules (sgs_text_states_css) and also reach Stripe's message iframe as appearance variables (colorText, fontSizeBase), read by src/commerce-blocks/pay-later/messaging.js from the block's data-config."
+					"_note": "Stripe draws the message inside its own iframe, whose text, size and logo colour Stripe controls (the element accepts only amount, currency, countryCode and paymentMethodTypes), so this block carries no look settings."
 				}
 			}
 		}
@@ -61,26 +57,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Two-letter country for the message's terms. Empty uses the shopper's shipping country, then the shop's base country."
-		},
-		"textColour": {
-			"type": "string",
-			"default": "",
-			"description": "Message text colour (Stripe's colorText): a palette slug or any CSS colour; empty keeps Stripe's default."
-		},
-		"logoColour": {
-			"type": "string",
-			"enum": [
-				"black",
-				"white",
-				"color"
-			],
-			"default": "black",
-			"description": "Colour of the provider's logo in the message (Stripe's logoColor)."
-		},
-		"fontSize": {
-			"type": "number",
-			"default": 0,
-			"description": "Message text size in px (Stripe's fontSizeBase); 0 keeps Stripe's default."
 		}
 	},
 	"editorScript": "file:./index.js",

@@ -19,27 +19,19 @@ export function cartAmount( totals ) {
 }
 
 /**
- * Element options for one render.
+ * Element options for one render. Stripe's messaging element takes only these four; its text,
+ * size and logo colour are Stripe's own.
  *
- * @param {Object} settings Block settings: method, textColour, logoColour, fontSize.
+ * @param {Object} settings Block settings: method.
  * @param {Object} detail   Live values: amount (minor units), currency, country.
  * @return {Object} Options for `elements.create( 'paymentMethodMessaging', options )`.
  */
 export function buildOptions( settings, detail ) {
-	const variables = {};
-	if ( settings.textColour ) {
-		variables.colorText = settings.textColour;
-	}
-	if ( settings.fontSize ) {
-		variables.fontSizeBase = `${ settings.fontSize }px`;
-	}
 	return {
 		amount: detail.amount,
 		currency: String( detail.currency || '' ).toUpperCase(),
 		countryCode: detail.country,
 		paymentMethodTypes: [ settings.method || 'klarna' ],
-		logoColor: settings.logoColour || 'black',
-		appearance: { variables },
 	};
 }
 

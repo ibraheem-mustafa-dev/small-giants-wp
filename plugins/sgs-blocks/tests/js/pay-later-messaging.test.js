@@ -12,12 +12,7 @@ import {
 	stripeFor,
 } from '../../src/commerce-blocks/pay-later/messaging';
 
-const settings = {
-	method: 'klarna',
-	textColour: '#77716a',
-	logoColour: 'black',
-	fontSize: 12.5,
-};
+const settings = { method: 'klarna' };
 
 function stubStripe() {
 	const element = { mount: jest.fn(), update: jest.fn(), destroy: jest.fn() };
@@ -47,16 +42,12 @@ describe( 'buildOptions', () => {
 		expect( options.currency ).toBe( 'GBP' );
 		expect( options.countryCode ).toBe( 'GB' );
 		expect( options.paymentMethodTypes ).toEqual( [ 'klarna' ] );
-		expect( options.logoColor ).toBe( 'black' );
-		expect( options.appearance.variables.colorText ).toBe( '#77716a' );
-		expect( options.appearance.variables.fontSizeBase ).toBe( '12.5px' );
-	} );
-	it( 'leaves appearance variables out when the settings are empty', () => {
-		const options = buildOptions(
-			{ method: 'klarna' },
-			{ amount: 100, currency: 'GBP', country: 'GB' }
-		);
-		expect( options.appearance.variables ).toEqual( {} );
+		expect( Object.keys( options ).sort() ).toEqual( [
+			'amount',
+			'countryCode',
+			'currency',
+			'paymentMethodTypes',
+		] );
 	} );
 } );
 

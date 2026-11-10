@@ -9,12 +9,15 @@ import { useEffect, useRef } from '@wordpress/element';
 import { cartAmount, createMessaging, stripeFor } from './messaging';
 
 /**
- * The publishable key the Stripe plugin hands to the Cart and Checkout blocks.
+ * The publishable key the Stripe plugin hands to the Cart and Checkout blocks. WooCommerce
+ * publishes its settings as `wc.wcSettings` (there is no `window.wcSettings` on the front end).
  *
  * @return {string} Key, empty when Stripe is absent.
  */
 function publishableKey() {
-	const data = window.wcSettings?.stripe_data;
+	const data =
+		window.wc?.wcSettings?.getSetting?.( 'stripe_data' ) ||
+		window.wcSettings?.stripe_data;
 	return data && typeof data.key === 'string' ? data.key : '';
 }
 
@@ -45,7 +48,7 @@ export default function PayLaterMessage( { config } ) {
 			country:
 				settings.country ||
 				address.country ||
-				window.wcSettings?.baseLocation?.country ||
+				window.wc?.wcSettings?.getSetting?.( 'baseLocation' )?.country ||
 				'GB',
 		};
 	}, [] );
