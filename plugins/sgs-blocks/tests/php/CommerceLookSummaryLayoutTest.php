@@ -91,6 +91,20 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		}
 	}
 
+	/**
+	 * The CSS a block prints with no setting at all: the primary button's hover lift and transition, nothing else.
+	 */
+	private function motion( string $block ): string {
+		$css = $this->css( array(), $block );
+		$this->assertStringContainsString( 'transform:var(--wp--custom--button-presets--primary--hover-lift,translateY(-3px))', $css, "{$block}: an unset block lifts its button" );
+		$this->assertStringContainsString( 'hover-transition,0.25s)', $css, "{$block}: an unset block times its button" );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce)', $css, "{$block}: reduced motion is guarded" );
+		foreach ( array( 'background:', 'border-color:', 'border-style', ';color:', '{color:', 'padding', 'min-height' ) as $needle ) {
+			$this->assertStringNotContainsString( $needle, $css, "{$block}: an unset block prints no '{$needle}'" );
+		}
+		return $css;
+	}
+
 	public function test_every_new_setting_prints_its_property_on_its_row(): void {
 		foreach ( array( 'cart', 'checkout' ) as $block ) {
 			$css = $this->css( self::NEW_ATTRS, $block );
@@ -130,9 +144,9 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 			'sgsStepTitleFontSize' => 24,
 			'sgsFieldBackground'   => 'mm-paper',
 		);
-		$this->assertSame( '', $this->css( array(), 'cart' ) );
+		$this->motion( 'cart' );
 		foreach ( array( 'cart', 'checkout' ) as $block ) {
-			$css = $this->css( $old, $block );
+			$css = str_replace( $this->motion( $block ), '', $this->css( $old, $block ) );
 			$this->assertNotSame( '', $css );
 			foreach ( array( 'border-top', 'flex-basis', '.wc-block-components-sidebar-layout{column-gap', '> td', 'flex-shrink', 'totals-item__label', 'product-metadata', 'remove-link', 'min-height', 'proceed-to-checkout', 'place-order' ) as $needle ) {
 				$this->assertStringNotContainsString( $needle, $css, "{$block}: '{$needle}' must not print without its setting" );
@@ -141,7 +155,7 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 	}
 
 	public function test_a_saved_string_picture_size_prints_the_rule_it_always_printed(): void {
-		$css = $this->css( array( 'sgsItemThumbSize' => '96px' ), 'cart' );
+		$css = str_replace( $this->motion( 'cart' ), '', $this->css( array( 'sgsItemThumbSize' => '96px' ), 'cart' ) );
 		// md5 of the output of 28ab49ec8 for this attribute.
 		$this->assertSame( '8637bc9c27b4a43ee9e5f9c52bf56c21', md5( $css ) );
 		$checkout = $this->css( array( 'sgsItemThumbSize' => '96px' ), 'checkout' );

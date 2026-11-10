@@ -3,7 +3,7 @@
  * Cart and Checkout look settings: the one writer.
  *
  * `woocommerce/cart` and `woocommerce/checkout` carry the `commerceLook` extension's attributes (no `default`, so an
- * unset block is WooCommerce's and the theme's look, byte for byte). `render_block` hands the set ones to the group
+ * unset block keeps WooCommerce's and the theme's look, plus the primary button's hover lift and timing). `render_block` hands the set ones to the group
  * builders in this folder and prints their rules through sgs_inject_scoped_block_css(), which adds the scope class
  * to the block root only when at least one rule exists. Every rule starts with that scope class.
  *
@@ -40,11 +40,11 @@ add_filter( 'render_block', __NAMESPACE__ . '\sgs_inject_commerce_look', 11, 2 )
  * @param array<string, mixed> $attrs Stored block attributes.
  * @param string               $block 'cart' or 'checkout'.
  * @param string               $scope Scope class name, no leading dot.
- * @return string CSS text without a <style> wrapper; '' when nothing is set.
+ * @return string CSS text without a <style> wrapper; the primary button's hover lift and timing even when no setting is set.
  */
 function sgs_commerce_look_css( array $attrs, string $block, string $scope ): string {
 	$set = sgs_commerce_look_set_attrs( $attrs );
-	if ( array() === $set || '' === $scope ) {
+	if ( '' === $scope ) {
 		return '';
 	}
 	$root = '.' . $scope;
@@ -73,9 +73,6 @@ function sgs_inject_commerce_look( $block_content, $block ) {
 		return $block_content;
 	}
 	$attrs = is_array( $block['attrs'] ?? null ) ? $block['attrs'] : array();
-	if ( array() === sgs_commerce_look_set_attrs( $attrs ) ) {
-		return $block_content;
-	}
 	return sgs_inject_scoped_block_css(
 		$block_content,
 		'sgs-commerce-look',

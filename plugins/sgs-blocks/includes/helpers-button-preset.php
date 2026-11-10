@@ -19,9 +19,10 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 	 * @param string $selector  Fully scoped selector (a comma list is allowed).
 	 * @param string $preset    'primary' or 'secondary'; anything else prints nothing.
 	 * @param bool   $resting   True to print the resting look too; false when the theme already paints it.
+	 * @param bool   $colours   True to print the hover colours too; false for the lift and timing alone.
 	 * @return string CSS text; '' for an unknown preset.
 	 */
-	function sgs_button_preset_css( string $selector, string $preset, bool $resting = true ): string {
+	function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true ): string {
 		if ( '' === $selector || ! in_array( $preset, array( 'primary', 'secondary' ), true ) ) {
 			return '';
 		}
@@ -41,9 +42,12 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 				. 'text-transform:var(' . $v . 'text-transform,none);letter-spacing:var(' . $v . 'letter-spacing,normal);}';
 		}
 		$css .= $selector . '{transition:' . implode( ',', $trans ) . ';}';
-		$css .= $hover . '{background:var(' . $v . 'hover-background,var(' . $v . 'background));'
-			. 'color:var(' . $v . 'hover-text,var(' . $v . 'text));'
-			. 'border-color:var(' . $v . 'hover-border,var(' . $v . 'border,transparent));'
+		$hover_colours = $colours
+			? 'background:var(' . $v . 'hover-background,var(' . $v . 'background));'
+				. 'color:var(' . $v . 'hover-text,var(' . $v . 'text));'
+				. 'border-color:var(' . $v . 'hover-border,var(' . $v . 'border,transparent));'
+			: '';
+		$css .= $hover . '{' . $hover_colours
 			. 'transform:var(' . $v . 'hover-lift,translateY(-3px));'
 			. 'scale:var(' . $v . 'hover-scale,none);rotate:var(' . $v . 'hover-rotate,none);}';
 		$css .= '@media (prefers-reduced-motion: reduce){' . $selector . '{transition:none;}' . $hover . '{transform:none;scale:none;rotate:none;}}';

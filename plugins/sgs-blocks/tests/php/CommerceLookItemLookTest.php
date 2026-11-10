@@ -107,8 +107,22 @@ final class CommerceLookItemLookTest extends TestCase {
 		}
 	}
 
+	/**
+	 * The CSS a block prints with no setting at all: the primary button's hover lift and transition, nothing else.
+	 */
+	private function motion( string $block ): string {
+		$css = $this->css( array(), $block );
+		$this->assertStringContainsString( 'transform:var(--wp--custom--button-presets--primary--hover-lift,translateY(-3px))', $css, "{$block}: an unset block lifts its button" );
+		$this->assertStringContainsString( 'hover-transition,0.25s)', $css, "{$block}: an unset block times its button" );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce)', $css, "{$block}: reduced motion is guarded" );
+		foreach ( array( 'background:', 'border-color:', 'border-style', ';color:', '{color:', 'padding', 'min-height' ) as $needle ) {
+			$this->assertStringNotContainsString( $needle, $css, "{$block}: an unset block prints no '{$needle}'" );
+		}
+		return $css;
+	}
+
 	public function test_the_summary_card_keeps_its_target_unless_it_wraps_the_button(): void {
-		$cart = $this->css( array( 'sgsSummaryBackground' => '#ffffff' ), 'cart' );
+		$cart = str_replace( $this->motion( 'cart' ), '', $this->css( array( 'sgsSummaryBackground' => '#ffffff' ), 'cart' ) );
 		$this->assertSame( '.sgs-x .wc-block-cart__sidebar .wp-block-woocommerce-cart-order-summary-block{background-color:#ffffff;}', $cart );
 	}
 
@@ -119,13 +133,13 @@ final class CommerceLookItemLookTest extends TestCase {
 			'sgsButtonMinHeight'   => array( 'desktop' => '62px' ),
 		);
 		foreach ( array( 'cart', 'checkout' ) as $block ) {
-			$css = $this->css( $old, $block );
+			$css = str_replace( $this->motion( $block ), '', $this->css( $old, $block ) );
 			$this->assertNotSame( '', $css );
 			foreach ( array( 'img{', '> img', 'quantity-selector{width', 'border-style', 'border-width', 'border-top-width', 'cart__sidebar{' ) as $needle ) {
 				$this->assertStringNotContainsString( $needle, $css, "{$block}: '{$needle}' must not print without its setting" );
 			}
 		}
-		$this->assertSame( '', $this->css( array(), 'cart' ) );
+		$this->motion( 'cart' );
 	}
 
 	public function test_the_settings_are_declared_and_the_row_exists(): void {
