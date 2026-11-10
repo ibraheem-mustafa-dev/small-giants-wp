@@ -77,7 +77,11 @@ export function isLength( value ) {
  * @return {Object} `{ ratio, width, height, fit, minWidth, maxWidth, minHeight, maxHeight }`, each a string or ''.
  */
 export function resolveSizing( read, device ) {
-	const pick = ( base ) => resolveTierSource( read( base ), device ).value || '';
+	// A stored value that is not a string (an empty array or object a save left behind) is no value.
+	const pick = ( base ) => {
+		const value = resolveTierSource( read( base ), device ).value;
+		return 'string' === typeof value ? value.trim() : '';
+	};
 	return {
 		ratio: pick( 'Ratio' ),
 		width: pick( 'Width' ),

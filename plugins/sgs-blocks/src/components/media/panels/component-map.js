@@ -100,7 +100,7 @@ function Range( { row, io } ) {
 			min={ 0 }
 			max={ 100 }
 			step={ 1 }
-			allowReset
+			allowReset={ ! ( row.setting.adopted && io.responsive ) }
 			disabled={ isOff( row ) }
 			help={ reasonOf( row ) }
 			onChange={ ( v ) => io.write( undefined === v ? '' : v ) }

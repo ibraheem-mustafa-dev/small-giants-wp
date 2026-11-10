@@ -58,7 +58,7 @@ const fixture = require( '../fixtures/media/adopted-block.json' );
 const MediaPanels = require( '../../src/components/media/panels/MediaPanels' ).default;
 const { ADOPTED_ATOM_IDS } = require( '../../src/components/media/emit/adopted-settings' );
 const { mediaAttrName } = require( '../../src/components/MediaElementControls' );
-const { describeSizing, normaliseRatio, ratioOptions } = require( '../../src/components/media/sizing-model' );
+const { describeSizing, normaliseRatio, ratioOptions, resolveSizing } = require( '../../src/components/media/sizing-model' );
 
 const slot = fixture.supports.sgs.mediaElements[ 0 ];
 const ATOMS = [ ...ADOPTED_ATOM_IDS, 'box-shape', 'media-type', 'intrinsic' ];
@@ -156,6 +156,10 @@ describe( 'E4: the size line follows section 7.2', () => {
 	} );
 	it( 'does not say cropped when Width is auto, there is a Height and no Ratio', () => {
 		expect( describeSizing( 'desktop', { ...base, width: 'auto', height: '300px' } ) ).toBe( 'Desktop: width follows the height, 300px tall' );
+	} );
+	it( 'reads a left-over empty array as no value', () => {
+		const read = ( b ) => ( { Ratio: { desktop: '16 / 9' }, Height: [], MaxWidth: [] }[ b ] );
+		expect( describeSizing( 'desktop', resolveSizing( read, 'desktop' ) ) ).toBe( 'Desktop: full width, ratio 16:9, cropped to fill' );
 	} );
 	it( 'names the limits', () => {
 		expect( describeSizing( 'desktop', { ...base, ratio: '16 / 9', maxHeight: '300px' } ) ).toBe( 'Desktop: full width, ratio 16:9, cropped to fill, limited to max height 300px' );

@@ -130,7 +130,6 @@ export function RadiusField( { row, io } ) {
 					min={ 0 }
 					max={ 200 }
 					step={ 1 }
-					allowReset
 					onChange={ ( v ) => io.write( undefined === v ? '' : all( `${ v }px` ) ) }
 				/>
 			) }
@@ -189,7 +188,6 @@ export function OrderField( { row, io } ) {
 			min={ -20 }
 			max={ 20 }
 			step={ 1 }
-			allowReset
 			onChange={ ( v ) => io.write( undefined === v ? '' : v ) }
 		/>
 	);
