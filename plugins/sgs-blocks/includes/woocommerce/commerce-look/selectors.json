@@ -347,6 +347,44 @@
 				"basket": "filled",
 				"action": "optional"
 			}
+		},
+		"option_group_outline": {
+			"checkout": ".wc-block-checkout__payment-method .wc-block-components-radio-control::after, .wc-block-checkout__shipping-option .wc-block-components-radio-control::after",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the outline WooCommerce draws round a whole group of options (a pseudo-element of the group, not of an option)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"payment_option": {
+			"checkout": ".wc-block-checkout__payment-method .wc-block-components-radio-control-accordion-option",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; each payment method WooCommerce draws as one option card",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"coupon_panel": {
+			"cart": ".wp-block-woocommerce-cart-order-summary-coupon-form-block",
+			"checkout": ".wp-block-woocommerce-checkout-order-summary-coupon-form-block",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the collapsed coupon panel in the summary",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"coupon_label": {
+			"cart": ".wc-block-components-totals-coupon .wc-block-components-panel__button",
+			"checkout": ".wc-block-components-totals-coupon .wc-block-components-panel__button",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; the coupon panel's button text",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
 		}
 	}
 }

@@ -178,6 +178,7 @@ final class SGS_Blocks {
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/commerce-look/rest.php';
 		// Checkout wording (client-side gettext filter) and the optional mobile field under Contact.
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-strings.php';
+		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/stripe-appearance.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-mobile-field.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-payment-loading.php';
 		require_once SGS_BLOCKS_PATH . 'includes/woocommerce/checkout-delivery-cards.php';

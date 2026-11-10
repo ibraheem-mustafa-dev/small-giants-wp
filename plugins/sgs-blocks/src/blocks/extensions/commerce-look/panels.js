@@ -267,6 +267,25 @@ export function CheckoutPanels( { attributes, setAttributes } ) {
 					setAttributes={ setAttributes }
 					attrNames={ { base: 'sgsOptionChosenShadow', colour: 'sgsOptionChosenShadowColour' } }
 				/>
+				<TierBorderControl
+					label={ __( 'Outline round a whole group of options', 'sgs-blocks' ) }
+					value={ attributes.sgsOptionGroupOutline }
+					onChange={ ( next ) => setAttributes( { sgsOptionGroupOutline: next } ) }
+				/>
+				<ResponsiveLengthControl
+					scale="spacing"
+					label={ __( 'Gap below each payment option', 'sgs-blocks' ) }
+					value={ attributes.sgsOptionGap }
+					units={ LENGTH_UNITS }
+					onChange={ ( next ) => setAttributes( { sgsOptionGap: next } ) }
+				/>
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ __( 'Style the card fields to match the form fields', 'sgs-blocks' ) }
+					help={ __( 'Stripe draws the card number, expiry and security code in its own frame; this hands it the form field settings above (border, radius, padding, text, label and focus line).', 'sgs-blocks' ) }
+					checked={ true === attributes.sgsStripeMatchFields }
+					onChange={ ( on ) => setAttributes( { sgsStripeMatchFields: on ? true : undefined } ) }
+				/>
 			</PanelBody>
 			<PanelBody title={ __( 'Show order summary bar (phones)', 'sgs-blocks' ) } initialOpen={ false }>
 				<CardControls { ...shared } prefix="sgsBar" />
@@ -304,6 +323,26 @@ export function ButtonPanel( { attributes, setAttributes } ) {
 				values={ boxTiers( attributes.sgsButtonPadding ) }
 				onChange={ ( tier, next ) => setAttributes( { sgsButtonPadding: writeTier( attributes.sgsButtonPadding, tier, next ) } ) }
 			/>
+		</PanelBody>
+	);
+}
+
+/**
+ * The collapsed coupon panel in the order summary: its padding and its label text.
+ *
+ * @param {Object} props Block attributes and setter.
+ * @return {JSX.Element} The panel.
+ */
+export function CouponPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Coupon panel', 'sgs-blocks' ) } initialOpen={ false }>
+			<ResponsiveBoxControl
+				presets
+				label={ __( 'Padding', 'sgs-blocks' ) }
+				values={ boxTiers( attributes.sgsCouponPadding ) }
+				onChange={ ( tier, next ) => setAttributes( { sgsCouponPadding: writeTier( attributes.sgsCouponPadding, tier, next ) } ) }
+			/>
+			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsCouponLabel" />
 		</PanelBody>
 	);
 }
