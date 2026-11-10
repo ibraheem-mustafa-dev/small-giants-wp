@@ -409,7 +409,7 @@ Source: embed per FR-49-17. `svg` is pasted or uploaded markup, printed inline; 
 
 ### 8.1 DB and gates
 
-The paint node is a field in each atom's registry entry, read by its twin; no new DB column. `css_element` carries the node names (`media`, `surface`, `layout`, `overlay`, `mask`) so the resolver can route. The generator writes an entry in `attr-classification-overrides.json` for every attribute it generates: `css_property`, `css_element`, `tier_shape` (`tier_object` for every R value) and a `role`, merging into any existing entry for that key. Without them the seeder stores NULL properties and guesses shapes (PS-1: Padding came out non-responsive). PS-1 proves this, plus the resolver, `check_value_identity`, the inline-styling gates, and `check-wiring-fingerprint`.
+The paint node is a field in each atom's registry entry, read by its twin; no new DB column. `css_element` carries the node names (`media`, `surface`, `layout`, `overlay`, `mask`) so the resolver can route. The generator writes an entry in `attr-classification-overrides.json` for every attribute it generates, merging into any existing entry for that key. An entry carries only `role` and `tier_shape` until the emitters switch over: an entry naming a property or layer contradicts what the seeder derives and fails the consistency suite (WP-1). Stage B's generator adds `css_property` and `css_element` when the emitters switch to real properties, and `tier_shape` becomes `tier_object` with the responsive object; without them the seeder stores NULL properties and guesses shapes (PS-1). PS-1 proves this, plus the resolver, `check_value_identity`, the inline-styling gates, and `check-wiring-fingerprint`.
 
 ### 8.2 Removed
 
@@ -421,7 +421,7 @@ Before anything is deleted, `sgs_hidden_render_*` and `sgs_allowed_svg_tags` mov
 
 ### 8.3 Slot declaration
 
-`supports.sgs.mediaElements`, which 20 blocks already declare, is the slot declaration: each entry names a prefix and its atoms, and gains `context` and `kinds` (the allowed kinds; the kind choice shows only when there are two or more). The generator refuses unknown names. A block with no entry has no media controls.
+`supports.sgs.mediaElements`, which 20 blocks already declare, is the slot declaration: each entry names a prefix, its atoms and its `context` (all 25 entries declare one today), and gains `kinds` (the allowed kinds; the kind choice shows only when there are two or more). `kinds` is also the adoption marker: the generator writes attributes and override entries only for an entry that declares it, so nothing is written to a block until Stage B adopts it (WP-1). The generator refuses unknown names. A block with no entry has no media controls.
 
 Item-set blocks declare block-level settings with the item prefix (Ratio, Fit, Radius, Shape, Loading, hover zoom) as ordinary attributes, and per-item values inside each item object under `source`, `alt`, `decorative`, `fit`, `focal`, using §8's value shapes. Items inherit the block-level Fit. `tier_shape` is `slot-array`, written by the generator's override entry (PS-1: the seeder and gates accept it with no reference-table row). The seeder makes no rows for per-item fields; WP-1 adds them if the cloner or the wiring gate needs them. Per-item CSS uses scope `{uid}-i{index}`.
 
