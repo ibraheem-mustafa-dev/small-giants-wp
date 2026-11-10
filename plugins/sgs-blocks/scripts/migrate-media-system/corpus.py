@@ -2,10 +2,12 @@
 
 Repo targets (files, rewritten in place by `fix --apply`): theme patterns, templates and parts, `sites/*/build/`
 trees and skeletons (backups listed apart), block fixtures, computed-route calibration fixtures.
-Content targets (a mirror's saved posts, or a wp-cli export file): read-only here; `fix` prints their diff and never writes.
+Content targets (every store of a mirror that holds block markup, or an export file of the same shape): read by
+`export_command`; `mirror.py` rewrites a mirror's rows.
 """
 from __future__ import annotations
 
+import base64
 import json
 import os
 import re
@@ -20,11 +22,8 @@ from mapping import REPO
 MARKUP_SUFFIXES = {".php", ".html", ".txt", ".md"}
 SKIP_DIRS = {"node_modules", ".git", "__pycache__", "vendor"}
 
-# A mirror is a folder /var/www/local-<name>; only a plain name is accepted, and the one command run is a read-only `post list`.
+# A mirror is a folder /var/www/local-<name>; only a plain name is accepted.
 MIRROR_NAME = re.compile(r"^[a-z0-9-]+$")
-POST_TYPES = ("page,post,product,sgs_choice_flow,sgs_drawer,sgs_footer,sgs_form,sgs_header,sgs_mega_menu,"
-              "sgs_product_template,wp_template,wp_template_part,wp_navigation,wp_block")
-POST_STATUSES = "publish,draft,pending,private,future,trash,auto-draft,inherit"
 
 
 def _walk(root: Path, suffixes: set[str], skip: set[str] = frozenset()) -> Iterator[Path]:
@@ -99,19 +98,69 @@ def write_atomic(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
-# ---------------------------------------------------------------- saved content (read-only)
+# ---------------------------------------------------------------- saved content
 
-def mirror_export(name: str) -> list[dict]:
-    """Posts of a local mirror through a read-only `wp post list`; refuses any name that is not a plain folder name."""
+HERE = Path(__file__).resolve().parent
+UNSAFE_PATH = re.compile(r"[^A-Za-z0-9_./-]")
+
+
+def check_wp_path(wp_path: str) -> str:
+    """A WordPress folder as an absolute path of plain characters (it goes into a shell command unquoted)."""
+    if not wp_path.startswith("/") or UNSAFE_PATH.search(wp_path) or ".." in wp_path:
+        raise SystemExit(f"WordPress path {wp_path!r} must be absolute and use only letters, digits and _ . / -")
+    return wp_path
+
+
+def export_command(wp_path: str) -> str:
+    """One read-only shell command that prints every saved block-markup record of the WordPress at `wp_path` as JSON.
+
+    It runs on a WSL mirror or over SSH on a host: the PHP (`export-content.php`) travels inside the command, so
+    nothing is copied to the host. The JSON is the list `load_content` and `--content FILE` accept.
+    """
+    code = (HERE / "export-content.php").read_bytes()
+    encoded = base64.b64encode(code).decode("ascii")
+    return f'wp --path={check_wp_path(wp_path)} --allow-root eval "$(echo {encoded} | base64 -d)"'
+
+
+def check_mirror_name(name: str) -> str:
     if not MIRROR_NAME.match(name):
         raise SystemExit(f"mirror name {name!r} must be lower-case letters, digits and hyphens")
-    command = (f"wp --path=/var/www/local-{name} --allow-root post list --post_type={POST_TYPES} "
-               f"--post_status={POST_STATUSES} --fields=ID,post_type,post_name,post_status,post_content --format=json")
-    result = subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-c", command],
-                            capture_output=True, text=True, encoding="utf-8", check=False)
-    if result.returncode != 0 or not result.stdout.strip().startswith("["):
-        raise SystemExit(f"wp-cli export of {name} failed: {result.stderr.strip()[:300]}")
-    return json.loads(result.stdout)
+    return name
+
+
+def wsl(script: str) -> subprocess.CompletedProcess:
+    """Run a bash script in WSL Ubuntu as root. The script goes in on standard input as bytes, so no quoting layer
+    and no Windows newline translation touches it."""
+    return subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-s"], input=(script + "\n").encode("utf-8"),
+                          capture_output=True, check=False)
+
+
+def wsl_text(result: subprocess.CompletedProcess) -> tuple[str, str]:
+    return result.stdout.decode("utf-8", "replace"), result.stderr.decode("utf-8", "replace")
+
+
+def wsl_put(path: str, data: bytes) -> None:
+    """Write `data` to a plain WSL path (a file the caller removes afterwards)."""
+    if UNSAFE_PATH.search(path):
+        raise SystemExit(f"WSL path {path!r} uses characters outside letters, digits and _ . / -")
+    done = subprocess.run(["wsl", "-d", "Ubuntu", "-u", "root", "--", "bash", "-c", f"cat>{path}"], input=data, capture_output=True, check=False)
+    if done.returncode != 0:
+        raise SystemExit(f"could not write {path} in WSL: {done.stderr.decode('utf-8', 'replace')[:200]}")
+
+
+_EXPORTS: dict[str, list[dict]] = {}
+
+
+def mirror_export(name: str, fresh: bool = False) -> list[dict]:
+    """Every saved block-markup record of a local mirror, through the read-only export command (kept for the run; `fresh` re-reads)."""
+    if name in _EXPORTS and not fresh:
+        return _EXPORTS[name]
+    result = wsl(export_command(f"/var/www/local-{check_mirror_name(name)}"))
+    out, err = wsl_text(result)
+    if result.returncode != 0 or not out.strip().startswith("["):
+        raise SystemExit(f"wp-cli export of {name} failed: {err.strip()[:300] or out.strip()[:300]}")
+    _EXPORTS[name] = json.loads(out)
+    return _EXPORTS[name]
 
 
 def load_content(path: Path) -> list[dict]:

@@ -2,6 +2,8 @@
 pinned defaults and the one entry point `migrate(name, attrs)`."""
 from __future__ import annotations
 
+import copy
+import json
 import re
 from typing import Any
 
@@ -474,7 +476,19 @@ def migrate_unmapped(ctx: T.Ctx) -> None:
 
 # ---------------------------------------------------------------- entry point
 
+_MEMO: dict = {}
+
+
 def migrate(name: str, attrs: dict):
+    """(new attributes, events). Saved content repeats the same attribute set across revisions, so results are kept per input."""
+    key = (name, json.dumps(attrs, sort_keys=True, ensure_ascii=True))
+    if key not in _MEMO:
+        _MEMO[key] = _migrate(name, attrs)
+    new, events = _MEMO[key]
+    return copy.deepcopy(new), list(events)
+
+
+def _migrate(name: str, attrs: dict):
     ctx = T.Ctx(name, attrs)
     for slot in M.merged_slots(name):
         T.migrate_slot(ctx, slot["olds"], slot["new"], slot["bases"])

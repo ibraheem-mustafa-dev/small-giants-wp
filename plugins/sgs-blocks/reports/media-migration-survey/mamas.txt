@@ -1,0 +1,67 @@
+OLD ATTRIBUTES PER BLOCK (count of saved attributes; status = converted | deleted | reported | refused)
+
+sgs/buybox  (21 blocks affected)
+  galleryStickerShape                refused   x2    -> -                          [mirror:mamas 2]
+  galleryThumbBorderColour           converted x21   -> thumbBorderColour          [mirror:mamas 21]
+  galleryThumbBorderRadius           converted x21   -> thumbRadius                [mirror:mamas 21]
+  galleryThumbBorderWidth            converted x21   -> thumbBorderWidth           [mirror:mamas 21]
+  mainPhotoBackgroundColour          converted x8    -> mainBackground             [mirror:mamas 8]
+  mainPhotoBorderColour              converted x8    -> mainBorderColour           [mirror:mamas 8]
+  mainPhotoBorderStyle               converted x8    -> mainBorderStyle            [mirror:mamas 8]
+  mainPhotoBorderWidth               converted x8    -> mainBorderWidth            [mirror:mamas 8]
+  mainPhotoRadius                    converted x8    -> mainRadius                 [mirror:mamas 8]
+  mainPhotoShadow                    converted x8    -> mainBoxShadow              [mirror:mamas 8]
+  mainPhotoShadowColour              converted x8    -> mainBoxShadowColour        [mirror:mamas 8]
+
+sgs/decorative-image  (579 blocks affected)
+  backgroundColour                   converted x491  -> layerBackground            [mirror:mamas 491]
+  borderColour                       converted x318  -> layerBorderColour          [mirror:mamas 318]
+  borderRadius                       converted x223  -> layerRadius                [mirror:mamas 223]
+  borderStyle                        converted x318  -> layerBorderStyle           [mirror:mamas 318]
+  borderWidth                        converted x318  -> layerBorderWidth           [mirror:mamas 318]
+  boxShadow                          converted x76   -> layerBoxShadow             [mirror:mamas 76]
+  decorMedia                         converted x238  -> layerSource                [mirror:mamas 238]
+  height                             converted x325  -> layerHeight                [mirror:mamas 325]
+  imageDecorative                    converted x145  -> layerDecorative            [mirror:mamas 145]
+  imageId                            converted x26   -> layerSource                [mirror:mamas 26]
+  imageUrl                           converted x26   -> layerSource                [mirror:mamas 26]
+  opacity                            converted x116  -> layerOpacity               [mirror:mamas 116]
+  shape                              converted x38   -> layerShape                 [mirror:mamas 38]
+  width                              converted x579  -> layerWidth                 [mirror:mamas 579]
+
+sgs/gallery  (29 blocks affected)
+  mediaItems                         converted x58   -> mediaItems                 [mirror:mamas 58]
+
+sgs/hero  (18 blocks affected)
+  splitMediaAlign                    converted x7    -> splitAlignment             [mirror:mamas 7]
+  splitMediaHeight                   converted x5    -> splitHeight                [mirror:mamas 5]
+  splitMediaImageId                  converted x18   -> splitSource                [mirror:mamas 18]
+  splitMediaImageUrl                 converted x18   -> splitSource                [mirror:mamas 18]
+  splitMediaMaxWidth                 converted x16   -> splitMaxWidth              [mirror:mamas 16]
+  splitMediaMediaSizing              converted x16   -> splitHeight                [mirror:mamas 16]
+  splitMediaObjectFit                converted x16   -> splitFit                   [mirror:mamas 16]
+
+sgs/media  (513 blocks affected)
+  aspectRatio                        converted x143  -> ratio                      [mirror:mamas 143]
+  borderRadius                       converted x145  -> radius                     [mirror:mamas 145]
+  imageAlt                           converted x437  -> alt                        [mirror:mamas 437]
+  imageDecorative                    converted x12   -> decorative                 [mirror:mamas 12]
+  imageId                            converted x513  -> source                     [mirror:mamas 513]
+  imageUrl                           converted x513  -> source                     [mirror:mamas 513]
+  mediaSizing                        converted x269  -> height                     [mirror:mamas 269]
+  mediaType                          converted x12   -> source                     [mirror:mamas 12]
+  objectFit                          converted x297  -> fit                        [mirror:mamas 297]
+
+sgs/nav-drawer  (12 blocks affected)
+  chromeLogoId                       converted x12   -> chromeLogoSource           [mirror:mamas 12]
+  chromeLogoUrl                      converted x12   -> chromeLogoSource           [mirror:mamas 12]
+
+sgs/product-card  (142 blocks affected)
+  imageAspectRatio                   converted x142  -> imageRatio                 [mirror:mamas 142]
+  imageFill                          converted x62   -> imageHeight                [mirror:mamas 62]
+  imageSize                          deleted   x62   -> -                          [mirror:mamas 62]
+  mediaBackgroundColour              converted x18   -> imageBackground            [mirror:mamas 18]
+
+sgs/responsive-logo  (235 blocks affected)
+  logoId                             converted x233  -> logoSource                 [mirror:mamas 233]
+  logoUrl                            converted x235  -> logoSource                 [mirror:mamas 235]

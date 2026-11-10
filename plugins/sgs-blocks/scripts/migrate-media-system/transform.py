@@ -259,6 +259,8 @@ def migrate_playback(slot: Slot) -> None:
     for base, key in PLAYBACK_KEYS:
         raw = slot.get(base)
         if raw is None:
+            if not slot.old_names(base):
+                continue  # this slot never had the attribute (a before/after side has no playback attributes of its own)
             raw = M.old_default(ctx.block, slot.old_names(base)[0])
             if raw is None:
                 continue
@@ -272,7 +274,8 @@ def migrate_playback(slot: Slot) -> None:
                 differs.append(slot.present(base, tier))
     for name in differs:
         ctx.keep(name, "refused", "per-device playback differs from desktop: Playback is not per device")
-    ctx.put(target, playback)
+    if playback:
+        ctx.put(target, playback)
     for base, _ in PLAYBACK_KEYS:
         for tier in TIERS:
             for name in slot.old_names(base, tier):

@@ -1,0 +1,2604 @@
+{
+  "blocks": {
+    "sgs/brand-strip": {
+      "logoFit": {
+        "status": "converted",
+        "count": 127,
+        "statuses": {
+          "converted": 127
+        },
+        "targets": {
+          "mirror:indus": 127
+        },
+        "target": "logoFit",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "logos": {
+        "status": "converted",
+        "count": 588,
+        "statuses": {
+          "converted": 588
+        },
+        "targets": {
+          "mirror:indus": 588
+        },
+        "target": "logos",
+        "note": "5 items"
+      }
+    },
+    "sgs/choice-flow": {
+      "headerLogo": {
+        "status": "converted",
+        "count": 39,
+        "statuses": {
+          "converted": 39
+        },
+        "targets": {
+          "mirror:indus": 39
+        },
+        "target": "headerLogoSource",
+        "note": ""
+      }
+    },
+    "sgs/container": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "refused",
+        "count": 505,
+        "statuses": {
+          "refused": 505
+        },
+        "targets": {
+          "mirror:indus": 505
+        },
+        "target": "",
+        "note": "an SVG background combined with an image or video: kinds are exclusive per device"
+      },
+      "backgroundImageMobile": {
+        "status": "refused",
+        "count": 10,
+        "statuses": {
+          "refused": 10
+        },
+        "targets": {
+          "mirror:indus": 10
+        },
+        "target": "",
+        "note": "an SVG background combined with an image or video: kinds are exclusive per device"
+      },
+      "backgroundImageTablet": {
+        "status": "refused",
+        "count": 10,
+        "statuses": {
+          "refused": 10
+        },
+        "targets": {
+          "mirror:indus": 10
+        },
+        "target": "",
+        "note": "an SVG background combined with an image or video: kinds are exclusive per device"
+      },
+      "bgSvgContent": {
+        "status": "refused",
+        "count": 4559,
+        "statuses": {
+          "converted": 4034,
+          "refused": 525
+        },
+        "targets": {
+          "mirror:indus": 4559
+        },
+        "target": "backgroundSource",
+        "note": "an SVG background combined with an image or video: kinds are exclusive per device"
+      },
+      "bgSvgMinHeight": {
+        "status": "converted",
+        "count": 30,
+        "statuses": {
+          "converted": 30
+        },
+        "targets": {
+          "mirror:indus": 30
+        },
+        "target": "minHeight",
+        "note": ""
+      },
+      "bgSvgOpacity": {
+        "status": "converted",
+        "count": 10,
+        "statuses": {
+          "converted": 10
+        },
+        "targets": {
+          "mirror:indus": 10
+        },
+        "target": "backgroundOpacity",
+        "note": "100 is the default"
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 4,
+        "statuses": {
+          "converted": 4
+        },
+        "targets": {
+          "mirror:indus": 4
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      }
+    },
+    "sgs/decorative-image": {
+      "backgroundColour": {
+        "status": "converted",
+        "count": 112,
+        "statuses": {
+          "converted": 112
+        },
+        "targets": {
+          "mirror:indus": 112
+        },
+        "target": "layerBackground",
+        "note": ""
+      },
+      "borderColour": {
+        "status": "converted",
+        "count": 3434,
+        "statuses": {
+          "converted": 3434
+        },
+        "targets": {
+          "mirror:indus": 3434
+        },
+        "target": "layerBorderColour",
+        "note": ""
+      },
+      "borderRadius": {
+        "status": "converted",
+        "count": 3434,
+        "statuses": {
+          "converted": 3434
+        },
+        "targets": {
+          "mirror:indus": 3434
+        },
+        "target": "layerRadius",
+        "note": ""
+      },
+      "borderWidth": {
+        "status": "converted",
+        "count": 3434,
+        "statuses": {
+          "converted": 3434
+        },
+        "targets": {
+          "mirror:indus": 3434
+        },
+        "target": "layerBorderWidth",
+        "note": ""
+      },
+      "height": {
+        "status": "converted",
+        "count": 3546,
+        "statuses": {
+          "converted": 3546
+        },
+        "targets": {
+          "mirror:indus": 3546
+        },
+        "target": "layerHeight",
+        "note": ""
+      },
+      "width": {
+        "status": "converted",
+        "count": 3540,
+        "statuses": {
+          "converted": 3540
+        },
+        "targets": {
+          "mirror:indus": 3540
+        },
+        "target": "layerWidth",
+        "note": ""
+      }
+    },
+    "sgs/gallery": {
+      "aspectRatio": {
+        "status": "converted",
+        "count": 31,
+        "statuses": {
+          "converted": 31
+        },
+        "targets": {
+          "mirror:indus": 31
+        },
+        "target": "itemRatio",
+        "note": ""
+      },
+      "grayscaleHover": {
+        "status": "reported",
+        "count": 2,
+        "statuses": {
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "Hover effect on the media part (WP-10a)"
+      },
+      "mediaItems": {
+        "status": "converted",
+        "count": 618,
+        "statuses": {
+          "converted": 618
+        },
+        "targets": {
+          "mirror:indus": 618
+        },
+        "target": "mediaItems",
+        "note": "10 items"
+      },
+      "scaleHover": {
+        "status": "reported",
+        "count": 15,
+        "statuses": {
+          "reported": 15
+        },
+        "targets": {
+          "mirror:indus": 15
+        },
+        "target": "",
+        "note": "Hover effect on the media part (WP-10a)"
+      },
+      "sgsColourTreatment": {
+        "status": "reported",
+        "count": 2,
+        "statuses": {
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "Colour (natural, greyscale, white) or Hover filter (WP-10a)"
+      },
+      "sgsHeightMobile": {
+        "status": "refused",
+        "count": 2,
+        "statuses": {
+          "refused": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "unmapped legacy attribute: no mapping row and not in STAYS"
+      },
+      "sgsHeightTablet": {
+        "status": "refused",
+        "count": 2,
+        "statuses": {
+          "refused": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "unmapped legacy attribute: no mapping row and not in STAYS"
+      },
+      "sgsMaxWidth": {
+        "status": "refused",
+        "count": 2,
+        "statuses": {
+          "refused": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "unmapped legacy attribute: no mapping row and not in STAYS"
+      },
+      "sgsObjectFit": {
+        "status": "converted",
+        "count": 10,
+        "statuses": {
+          "converted": 10
+        },
+        "targets": {
+          "mirror:indus": 10
+        },
+        "target": "itemFit",
+        "note": ""
+      }
+    },
+    "sgs/hero": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 75,
+        "statuses": {
+          "converted": 75
+        },
+        "targets": {
+          "mirror:indus": 75
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageMobile": {
+        "status": "converted",
+        "count": 43,
+        "statuses": {
+          "converted": 43
+        },
+        "targets": {
+          "mirror:indus": 43
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageTablet": {
+        "status": "converted",
+        "count": 43,
+        "statuses": {
+          "converted": 43
+        },
+        "targets": {
+          "mirror:indus": 43
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundOverlayBlendMode": {
+        "status": "converted",
+        "count": 11,
+        "statuses": {
+          "converted": 11
+        },
+        "targets": {
+          "mirror:indus": 11
+        },
+        "target": "backgroundOverlayBlend",
+        "note": ""
+      },
+      "backgroundPosition": {
+        "status": "converted",
+        "count": 42,
+        "statuses": {
+          "converted": 42
+        },
+        "targets": {
+          "mirror:indus": 42
+        },
+        "target": "backgroundFocal",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 44,
+        "statuses": {
+          "converted": 44
+        },
+        "targets": {
+          "mirror:indus": 44
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "bgSvgOpacity": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundOpacity",
+        "note": "100 is the default"
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      },
+      "bgVideo": {
+        "status": "converted",
+        "count": 344,
+        "statuses": {
+          "converted": 344
+        },
+        "targets": {
+          "mirror:indus": 344
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "mediaBackground": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "splitBackground",
+        "note": ""
+      },
+      "mediaBackgroundGradient": {
+        "status": "reported",
+        "count": 1,
+        "statuses": {
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "",
+        "note": "no Background gradient form in §8"
+      },
+      "mediaPadding": {
+        "status": "converted",
+        "count": 77,
+        "statuses": {
+          "converted": 77
+        },
+        "targets": {
+          "mirror:indus": 77
+        },
+        "target": "splitPadding",
+        "note": ""
+      },
+      "splitMediaAlign": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "splitAlignment",
+        "note": ""
+      },
+      "splitMediaAspectRatio": {
+        "status": "converted",
+        "count": 673,
+        "statuses": {
+          "converted": 673
+        },
+        "targets": {
+          "mirror:indus": 673
+        },
+        "target": "splitRatio",
+        "note": ""
+      },
+      "splitMediaBackground": {
+        "status": "converted",
+        "count": 100,
+        "statuses": {
+          "converted": 100
+        },
+        "targets": {
+          "mirror:indus": 100
+        },
+        "target": "splitBackground",
+        "note": ""
+      },
+      "splitMediaBorderColour": {
+        "status": "converted",
+        "count": 674,
+        "statuses": {
+          "converted": 674
+        },
+        "targets": {
+          "mirror:indus": 674
+        },
+        "target": "splitBorderColour",
+        "note": ""
+      },
+      "splitMediaBorderColourGradient": {
+        "status": "converted",
+        "count": 4,
+        "statuses": {
+          "converted": 4
+        },
+        "targets": {
+          "mirror:indus": 4
+        },
+        "target": "splitBorderColourGradient",
+        "note": ""
+      },
+      "splitMediaBorderColourHover": {
+        "status": "reported",
+        "count": 2,
+        "statuses": {
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "Hover effect on the media part (WP-10a)"
+      },
+      "splitMediaBorderColourHoverGradient": {
+        "status": "reported",
+        "count": 1,
+        "statuses": {
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "",
+        "note": "Hover effect on the media part (WP-10a)"
+      },
+      "splitMediaBorderRadius": {
+        "status": "converted",
+        "count": 673,
+        "statuses": {
+          "converted": 673
+        },
+        "targets": {
+          "mirror:indus": 673
+        },
+        "target": "splitRadius",
+        "note": ""
+      },
+      "splitMediaBorderRadiusMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitRadius",
+        "note": ""
+      },
+      "splitMediaBorderRadiusTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitRadius",
+        "note": ""
+      },
+      "splitMediaBorderStyle": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitBorderStyle",
+        "note": ""
+      },
+      "splitMediaBorderWidth": {
+        "status": "converted",
+        "count": 686,
+        "statuses": {
+          "converted": 686
+        },
+        "targets": {
+          "mirror:indus": 686
+        },
+        "target": "splitBorderWidth",
+        "note": ""
+      },
+      "splitMediaBoxShadow": {
+        "status": "converted",
+        "count": 679,
+        "statuses": {
+          "converted": 679
+        },
+        "targets": {
+          "mirror:indus": 679
+        },
+        "target": "splitBoxShadow",
+        "note": ""
+      },
+      "splitMediaBoxShadowColour": {
+        "status": "converted",
+        "count": 674,
+        "statuses": {
+          "converted": 674
+        },
+        "targets": {
+          "mirror:indus": 674
+        },
+        "target": "splitBoxShadowColour",
+        "note": ""
+      },
+      "splitMediaBoxShadowColourHover": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "splitBoxShadowColourHover",
+        "note": ""
+      },
+      "splitMediaDecorative": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitDecorative",
+        "note": ""
+      },
+      "splitMediaHeight": {
+        "status": "converted",
+        "count": 655,
+        "statuses": {
+          "converted": 655
+        },
+        "targets": {
+          "mirror:indus": 655
+        },
+        "target": "splitHeight",
+        "note": ""
+      },
+      "splitMediaImageAlt": {
+        "status": "converted",
+        "count": 120,
+        "statuses": {
+          "converted": 120
+        },
+        "targets": {
+          "mirror:indus": 120
+        },
+        "target": "splitAlt",
+        "note": "a per-device alt that differs moved into that device's Source"
+      },
+      "splitMediaImageId": {
+        "status": "reported",
+        "count": 760,
+        "statuses": {
+          "converted": 758,
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 760
+        },
+        "target": "splitSource",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "splitMediaImageUrl": {
+        "status": "reported",
+        "count": 760,
+        "statuses": {
+          "converted": 758,
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 760
+        },
+        "target": "splitSource",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "splitMediaImageUrlMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaImageUrlTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaMaxHeight": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitMaxHeight",
+        "note": ""
+      },
+      "splitMediaMaxWidth": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitMaxWidth",
+        "note": ""
+      },
+      "splitMediaMediaSizing": {
+        "status": "converted",
+        "count": 676,
+        "statuses": {
+          "converted": 676
+        },
+        "targets": {
+          "mirror:indus": 676
+        },
+        "target": "splitHeight",
+        "note": ""
+      },
+      "splitMediaMinHeight": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "splitMinHeight",
+        "note": ""
+      },
+      "splitMediaObjectFit": {
+        "status": "deleted",
+        "count": 116,
+        "statuses": {
+          "converted": 109,
+          "deleted": 7
+        },
+        "targets": {
+          "mirror:indus": 116
+        },
+        "target": "splitFit",
+        "note": "value 'custom' is outside the fit vocabulary and rendered as unset"
+      },
+      "splitMediaObjectPosition": {
+        "status": "converted",
+        "count": 30,
+        "statuses": {
+          "converted": 30
+        },
+        "targets": {
+          "mirror:indus": 30
+        },
+        "target": "splitFocal",
+        "note": ""
+      },
+      "splitMediaOverlayColour": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "splitOverlayColour",
+        "note": ""
+      },
+      "splitMediaOverlayGradient": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitOverlayGradient",
+        "note": ""
+      },
+      "splitMediaPadding": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitPadding",
+        "note": ""
+      },
+      "splitMediaType": {
+        "status": "reported",
+        "count": 3,
+        "statuses": {
+          "converted": 2,
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "splitSource",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "splitMediaTypeMobile": {
+        "status": "reported",
+        "count": 8,
+        "statuses": {
+          "converted": 6,
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 8
+        },
+        "target": "splitSource",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "splitMediaTypeTablet": {
+        "status": "reported",
+        "count": 8,
+        "statuses": {
+          "converted": 6,
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 8
+        },
+        "target": "splitSource",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "splitMediaVideoUrl": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaVideoUrlMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaVideoUrlTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaWidth": {
+        "status": "converted",
+        "count": 159,
+        "statuses": {
+          "converted": 159
+        },
+        "targets": {
+          "mirror:indus": 159
+        },
+        "target": "splitWidth",
+        "note": ""
+      },
+      "splitMediaWidthUnit": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "splitWidth",
+        "note": "retired length-unit partner: folded into the value"
+      }
+    },
+    "sgs/media": {
+      "alignment": {
+        "status": "converted",
+        "count": 4,
+        "statuses": {
+          "converted": 4
+        },
+        "targets": {
+          "mirror:indus": 4
+        },
+        "target": "alignment",
+        "note": "value reshaped in place"
+      },
+      "aspectRatio": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "ratio",
+        "note": ""
+      },
+      "borderRadius": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "radius",
+        "note": ""
+      },
+      "borderRadiusMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "radius",
+        "note": ""
+      },
+      "borderRadiusTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "radius",
+        "note": ""
+      },
+      "displayWidth": {
+        "status": "deleted",
+        "count": 94,
+        "statuses": {
+          "deleted": 94
+        },
+        "targets": {
+          "mirror:indus": 94
+        },
+        "target": "",
+        "note": "deleted (§13): sizes are derived"
+      },
+      "height": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "height",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "imageAlt": {
+        "status": "converted",
+        "count": 511,
+        "statuses": {
+          "converted": 511
+        },
+        "targets": {
+          "mirror:indus": 511
+        },
+        "target": "alt",
+        "note": "a per-device alt that differs moved into that device's Source"
+      },
+      "imageBlendMode": {
+        "status": "converted",
+        "count": 6,
+        "statuses": {
+          "converted": 6
+        },
+        "targets": {
+          "mirror:indus": 6
+        },
+        "target": "blend",
+        "note": ""
+      },
+      "imageDecorative": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "decorative",
+        "note": ""
+      },
+      "imageId": {
+        "status": "reported",
+        "count": 3286,
+        "statuses": {
+          "converted": 3285,
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 3286
+        },
+        "target": "source",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "imageUrl": {
+        "status": "reported",
+        "count": 3286,
+        "statuses": {
+          "converted": 3285,
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 3286
+        },
+        "target": "source",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "imageUrlMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      },
+      "imageUrlTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      },
+      "maxHeight": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "maxHeight",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "maxWidth": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "maxWidth",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "mediaSizing": {
+        "status": "converted",
+        "count": 3538,
+        "statuses": {
+          "converted": 3538
+        },
+        "targets": {
+          "mirror:indus": 3538
+        },
+        "target": "height",
+        "note": ""
+      },
+      "mediaType": {
+        "status": "reported",
+        "count": 33,
+        "statuses": {
+          "converted": 32,
+          "reported": 1
+        },
+        "targets": {
+          "mirror:indus": 33
+        },
+        "target": "source",
+        "note": "media type outside image, video and svg (Lottie): resolved by hand"
+      },
+      "objectFit": {
+        "status": "converted",
+        "count": 234,
+        "statuses": {
+          "converted": 234
+        },
+        "targets": {
+          "mirror:indus": 234
+        },
+        "target": "fit",
+        "note": ""
+      },
+      "opacity": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "opacity",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "videoAutoplay": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoAutoplayMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoAutoplayTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoCaptionsUrl": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      },
+      "videoControls": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoControlsMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoControlsTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLazyLoad": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLazyLoadMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLazyLoadTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLoop": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLoopMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoLoopTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoMuted": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoMutedMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoMutedTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoPlaysInline": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoPlaysInlineMobile": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoPlaysInlineTablet": {
+        "status": "deleted",
+        "count": 1,
+        "statuses": {
+          "deleted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "playback",
+        "note": "inert: the slot shows no video"
+      },
+      "videoSource": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      },
+      "videoUrl": {
+        "status": "converted",
+        "count": 31,
+        "statuses": {
+          "converted": 31
+        },
+        "targets": {
+          "mirror:indus": 31
+        },
+        "target": "source",
+        "note": ""
+      },
+      "videoUrlMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      },
+      "videoUrlTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "source",
+        "note": ""
+      }
+    },
+    "sgs/multi-button": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 26,
+        "statuses": {
+          "converted": 26
+        },
+        "targets": {
+          "mirror:indus": 26
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundOverlayBlendMode": {
+        "status": "converted",
+        "count": 11,
+        "statuses": {
+          "converted": 11
+        },
+        "targets": {
+          "mirror:indus": 11
+        },
+        "target": "backgroundOverlayBlend",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "bgSvgMinHeight": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "minHeight",
+        "note": ""
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      }
+    },
+    "sgs/nav-drawer": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 48,
+        "statuses": {
+          "converted": 48
+        },
+        "targets": {
+          "mirror:indus": 48
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageDecorative": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundDecorative",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 9,
+        "statuses": {
+          "converted": 9
+        },
+        "targets": {
+          "mirror:indus": 9
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 6,
+        "statuses": {
+          "converted": 6
+        },
+        "targets": {
+          "mirror:indus": 6
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "chromeLogoId": {
+        "status": "converted",
+        "count": 674,
+        "statuses": {
+          "converted": 674
+        },
+        "targets": {
+          "mirror:indus": 674
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      },
+      "chromeLogoInlineSvg": {
+        "status": "reported",
+        "count": 12,
+        "statuses": {
+          "reported": 12
+        },
+        "targets": {
+          "mirror:indus": 12
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      },
+      "chromeLogoSvgParts": {
+        "status": "reported",
+        "count": 12,
+        "statuses": {
+          "reported": 12
+        },
+        "targets": {
+          "mirror:indus": 12
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      },
+      "chromeLogoSvgPartsTrigger": {
+        "status": "reported",
+        "count": 12,
+        "statuses": {
+          "reported": 12
+        },
+        "targets": {
+          "mirror:indus": 12
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      },
+      "chromeLogoUrl": {
+        "status": "converted",
+        "count": 641,
+        "statuses": {
+          "converted": 641
+        },
+        "targets": {
+          "mirror:indus": 641
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      },
+      "chromeLogoUrlMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      },
+      "chromeLogoUrlTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      }
+    },
+    "sgs/physics-canvas": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 26,
+        "statuses": {
+          "converted": 26
+        },
+        "targets": {
+          "mirror:indus": 26
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageMobile": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageTablet": {
+        "status": "converted",
+        "count": 1,
+        "statuses": {
+          "converted": 1
+        },
+        "targets": {
+          "mirror:indus": 1
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundOverlayBlendMode": {
+        "status": "converted",
+        "count": 11,
+        "statuses": {
+          "converted": 11
+        },
+        "targets": {
+          "mirror:indus": 11
+        },
+        "target": "backgroundOverlayBlend",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      }
+    },
+    "sgs/post-grid": {
+      "aspectRatio": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "imageRatio",
+        "note": ""
+      },
+      "imageSize": {
+        "status": "deleted",
+        "count": 8,
+        "statuses": {
+          "deleted": 8
+        },
+        "targets": {
+          "mirror:indus": 8
+        },
+        "target": "",
+        "note": "deleted (§13): sizes are derived"
+      },
+      "scaleHover": {
+        "status": "reported",
+        "count": 2,
+        "statuses": {
+          "reported": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "",
+        "note": "Hover effect on the media part (WP-10a)"
+      }
+    },
+    "sgs/responsive-logo": {
+      "inlineSvg": {
+        "status": "reported",
+        "count": 39,
+        "statuses": {
+          "reported": 39
+        },
+        "targets": {
+          "mirror:indus": 39
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      },
+      "logoId": {
+        "status": "converted",
+        "count": 215,
+        "statuses": {
+          "converted": 215
+        },
+        "targets": {
+          "mirror:indus": 215
+        },
+        "target": "logoSource",
+        "note": ""
+      },
+      "logoUrl": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:indus": 8
+        },
+        "target": "logoSource",
+        "note": ""
+      },
+      "logoUrlMobile": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "logoSource",
+        "note": ""
+      },
+      "logoUrlTablet": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "logoSource",
+        "note": ""
+      },
+      "svgParts": {
+        "status": "reported",
+        "count": 34,
+        "statuses": {
+          "reported": 34
+        },
+        "targets": {
+          "mirror:indus": 34
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      },
+      "svgPartsTrigger": {
+        "status": "reported",
+        "count": 34,
+        "statuses": {
+          "reported": 34
+        },
+        "targets": {
+          "mirror:indus": 34
+        },
+        "target": "",
+        "note": "inline SVG Source plus SvgParts: shape set by WP-9"
+      }
+    },
+    "sgs/site-footer": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 58,
+        "statuses": {
+          "converted": 58
+        },
+        "targets": {
+          "mirror:indus": 58
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageMobile": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageTablet": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundOverlayBlendMode": {
+        "status": "converted",
+        "count": 22,
+        "statuses": {
+          "converted": 22
+        },
+        "targets": {
+          "mirror:indus": 22
+        },
+        "target": "backgroundOverlayBlend",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 6,
+        "statuses": {
+          "converted": 6
+        },
+        "targets": {
+          "mirror:indus": 6
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 4,
+        "statuses": {
+          "converted": 4
+        },
+        "targets": {
+          "mirror:indus": 4
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      }
+    },
+    "sgs/timeline": {
+      "mediaAspectRatio": {
+        "status": "converted",
+        "count": 24,
+        "statuses": {
+          "converted": 24
+        },
+        "targets": {
+          "mirror:indus": 24
+        },
+        "target": "entryRatio",
+        "note": ""
+      },
+      "mediaBorderRadius": {
+        "status": "converted",
+        "count": 24,
+        "statuses": {
+          "converted": 24
+        },
+        "targets": {
+          "mirror:indus": 24
+        },
+        "target": "entryRadius",
+        "note": ""
+      },
+      "mediaHeight": {
+        "status": "converted",
+        "count": 11,
+        "statuses": {
+          "converted": 11
+        },
+        "targets": {
+          "mirror:indus": 11
+        },
+        "target": "entryHeight",
+        "note": ""
+      },
+      "milestoneMediaWidth": {
+        "status": "converted",
+        "count": 132,
+        "statuses": {
+          "converted": 132
+        },
+        "targets": {
+          "mirror:indus": 132
+        },
+        "target": "entryWidth",
+        "note": ""
+      }
+    },
+    "sgs/trust-bar": {
+      "backgroundAttachment": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundPinned",
+        "note": ""
+      },
+      "backgroundImage": {
+        "status": "converted",
+        "count": 111,
+        "statuses": {
+          "converted": 111
+        },
+        "targets": {
+          "mirror:indus": 111
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageMobile": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundImageTablet": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "backgroundSource",
+        "note": ""
+      },
+      "backgroundOverlayBlendMode": {
+        "status": "converted",
+        "count": 33,
+        "statuses": {
+          "converted": 33
+        },
+        "targets": {
+          "mirror:indus": 33
+        },
+        "target": "backgroundOverlayBlend",
+        "note": ""
+      },
+      "backgroundRepeat": {
+        "status": "converted",
+        "count": 9,
+        "statuses": {
+          "converted": 9
+        },
+        "targets": {
+          "mirror:indus": 9
+        },
+        "target": "backgroundRepeat",
+        "note": "value reshaped in place (same attribute name)"
+      },
+      "backgroundSize": {
+        "status": "converted",
+        "count": 6,
+        "statuses": {
+          "converted": 6
+        },
+        "targets": {
+          "mirror:indus": 6
+        },
+        "target": "backgroundFit",
+        "note": ""
+      },
+      "badgeImageBorderRadius": {
+        "status": "converted",
+        "count": 3,
+        "statuses": {
+          "converted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "badgeRadius",
+        "note": ""
+      },
+      "badgeImageObjectFit": {
+        "status": "converted",
+        "count": 12,
+        "statuses": {
+          "converted": 12
+        },
+        "targets": {
+          "mirror:indus": 12
+        },
+        "target": "badgeFit",
+        "note": ""
+      },
+      "badgeImageShadow": {
+        "status": "refused",
+        "count": 27,
+        "statuses": {
+          "refused": 27
+        },
+        "targets": {
+          "mirror:indus": 27
+        },
+        "target": "",
+        "note": "unmapped legacy attribute: no mapping row for this attribute under the slot prefix"
+      },
+      "badgeImageShadowColour": {
+        "status": "refused",
+        "count": 6,
+        "statuses": {
+          "refused": 6
+        },
+        "targets": {
+          "mirror:indus": 6
+        },
+        "target": "",
+        "note": "unmapped legacy attribute: no mapping row for this attribute under the slot prefix"
+      },
+      "badgeImageSize": {
+        "status": "deleted",
+        "count": 3,
+        "statuses": {
+          "deleted": 3
+        },
+        "targets": {
+          "mirror:indus": 3
+        },
+        "target": "",
+        "note": "value 37 is outside the fit vocabulary and rendered as unset"
+      },
+      "bgSvgPosition": {
+        "status": "converted",
+        "count": 2,
+        "statuses": {
+          "converted": 2
+        },
+        "targets": {
+          "mirror:indus": 2
+        },
+        "target": "backgroundSvgLayer",
+        "note": ""
+      }
+    }
+  },
+  "blockInstancesWithOldAttributes": {
+    "sgs/brand-strip": {
+      "mirror:indus": 294
+    },
+    "sgs/choice-flow": {
+      "mirror:indus": 39
+    },
+    "sgs/container": {
+      "mirror:indus": 4559
+    },
+    "sgs/decorative-image": {
+      "mirror:indus": 3618
+    },
+    "sgs/gallery": {
+      "mirror:indus": 309
+    },
+    "sgs/hero": {
+      "mirror:indus": 1113
+    },
+    "sgs/media": {
+      "mirror:indus": 3682
+    },
+    "sgs/multi-button": {
+      "mirror:indus": 34
+    },
+    "sgs/nav-drawer": {
+      "mirror:indus": 674
+    },
+    "sgs/physics-canvas": {
+      "mirror:indus": 31
+    },
+    "sgs/post-grid": {
+      "mirror:indus": 12
+    },
+    "sgs/responsive-logo": {
+      "mirror:indus": 215
+    },
+    "sgs/site-footer": {
+      "mirror:indus": 64
+    },
+    "sgs/timeline": {
+      "mirror:indus": 132
+    },
+    "sgs/trust-bar": {
+      "mirror:indus": 164
+    }
+  },
+  "pinnedDefaults": {
+    "sgs/hero": {
+      "backgroundOverlayOpacity": 4
+    },
+    "sgs/media": {
+      "videoAutoplay": 31,
+      "videoMuted": 31,
+      "videoPlaysInline": 31,
+      "videoLoop": 31,
+      "videoControls": 31,
+      "videoLazyLoad": 31
+    },
+    "sgs/multi-button": {
+      "backgroundOverlayOpacity": 3
+    },
+    "sgs/physics-canvas": {
+      "backgroundOverlayOpacity": 3
+    },
+    "sgs/site-footer": {
+      "backgroundOverlayOpacity": 8
+    },
+    "sgs/trust-bar": {
+      "backgroundOverlayOpacity": 24
+    }
+  },
+  "unclassifiedMediaLooking": {},
+  "blockInstancesSeen": {
+    "core/avatar": {
+      "mirror:indus": 3
+    },
+    "core/comment-date": {
+      "mirror:indus": 3
+    },
+    "core/comment-edit-link": {
+      "mirror:indus": 3
+    },
+    "core/comment-reply-link": {
+      "mirror:indus": 3
+    },
+    "core/comments-pagination": {
+      "mirror:indus": 3
+    },
+    "core/latest-comments": {
+      "mirror:indus": 1
+    },
+    "core/post-author": {
+      "mirror:indus": 3
+    },
+    "core/post-date": {
+      "mirror:indus": 45
+    },
+    "core/post-excerpt": {
+      "mirror:indus": 43
+    },
+    "core/post-featured-image": {
+      "mirror:indus": 43
+    },
+    "core/post-navigation-link": {
+      "mirror:indus": 6
+    },
+    "core/post-template": {
+      "mirror:indus": 5
+    },
+    "core/post-terms": {
+      "mirror:indus": 76
+    },
+    "core/post-time-to-read": {
+      "mirror:indus": 21
+    },
+    "core/post-title": {
+      "mirror:indus": 46
+    },
+    "core/query": {
+      "mirror:indus": 8
+    },
+    "core/query-pagination": {
+      "mirror:indus": 8
+    },
+    "core/query-title": {
+      "mirror:indus": 6
+    },
+    "core/query-total": {
+      "mirror:indus": 8
+    },
+    "core/search": {
+      "mirror:indus": 6
+    },
+    "core/spacer": {
+      "mirror:indus": 3
+    },
+    "core/template-part": {
+      "mirror:indus": 216
+    },
+    "core/term-description": {
+      "mirror:indus": 3
+    },
+    "sgs/accordion": {
+      "mirror:indus": 364
+    },
+    "sgs/accordion-item": {
+      "mirror:indus": 886
+    },
+    "sgs/account": {
+      "mirror:indus": 155
+    },
+    "sgs/brand-strip": {
+      "mirror:indus": 312
+    },
+    "sgs/breadcrumbs": {
+      "mirror:indus": 1057
+    },
+    "sgs/business-info": {
+      "mirror:indus": 1282
+    },
+    "sgs/button": {
+      "mirror:indus": 9930
+    },
+    "sgs/choice-flow": {
+      "mirror:indus": 39
+    },
+    "sgs/choice-flow-question": {
+      "mirror:indus": 39
+    },
+    "sgs/container": {
+      "mirror:indus": 84367
+    },
+    "sgs/counter": {
+      "mirror:indus": 79
+    },
+    "sgs/decorative-image": {
+      "mirror:indus": 3618
+    },
+    "sgs/form": {
+      "mirror:indus": 5974
+    },
+    "sgs/form-field-checkbox": {
+      "mirror:indus": 22
+    },
+    "sgs/form-field-consent": {
+      "mirror:indus": 4183
+    },
+    "sgs/form-field-email": {
+      "mirror:indus": 5167
+    },
+    "sgs/form-field-file": {
+      "mirror:indus": 4175
+    },
+    "sgs/form-field-number": {
+      "mirror:indus": 4131
+    },
+    "sgs/form-field-phone": {
+      "mirror:indus": 71
+    },
+    "sgs/form-field-select": {
+      "mirror:indus": 5203
+    },
+    "sgs/form-field-text": {
+      "mirror:indus": 15474
+    },
+    "sgs/form-field-textarea": {
+      "mirror:indus": 5146
+    },
+    "sgs/form-field-tiles": {
+      "mirror:indus": 4764
+    },
+    "sgs/form-review": {
+      "mirror:indus": 15
+    },
+    "sgs/form-step": {
+      "mirror:indus": 10246
+    },
+    "sgs/gallery": {
+      "mirror:indus": 313
+    },
+    "sgs/heading": {
+      "mirror:indus": 14270
+    },
+    "sgs/hero": {
+      "mirror:indus": 1539
+    },
+    "sgs/icon": {
+      "mirror:indus": 2712
+    },
+    "sgs/icon-list": {
+      "mirror:indus": 4134
+    },
+    "sgs/label": {
+      "mirror:indus": 10928
+    },
+    "sgs/language-switch": {
+      "mirror:indus": 55
+    },
+    "sgs/media": {
+      "mirror:indus": 3750
+    },
+    "sgs/mega-aside": {
+      "mirror:indus": 127
+    },
+    "sgs/mega-group": {
+      "mirror:indus": 92
+    },
+    "sgs/mega-panel": {
+      "mirror:indus": 1904
+    },
+    "sgs/multi-button": {
+      "mirror:indus": 1792
+    },
+    "sgs/nav-bar-menu": {
+      "mirror:indus": 275
+    },
+    "sgs/nav-drawer": {
+      "mirror:indus": 686
+    },
+    "sgs/nav-drawer-menu": {
+      "mirror:indus": 47
+    },
+    "sgs/option-picker": {
+      "mirror:indus": 2
+    },
+    "sgs/physics-canvas": {
+      "mirror:indus": 82
+    },
+    "sgs/post-grid": {
+      "mirror:indus": 1244
+    },
+    "sgs/pricing-table": {
+      "mirror:indus": 333
+    },
+    "sgs/process-steps": {
+      "mirror:indus": 731
+    },
+    "sgs/quote": {
+      "mirror:indus": 113
+    },
+    "sgs/responsive-logo": {
+      "mirror:indus": 221
+    },
+    "sgs/site-footer": {
+      "mirror:indus": 343
+    },
+    "sgs/site-footer-row": {
+      "mirror:indus": 444
+    },
+    "sgs/site-header": {
+      "mirror:indus": 544
+    },
+    "sgs/site-header-row": {
+      "mirror:indus": 620
+    },
+    "sgs/social-icons": {
+      "mirror:indus": 355
+    },
+    "sgs/tab": {
+      "mirror:indus": 515
+    },
+    "sgs/tabs": {
+      "mirror:indus": 277
+    },
+    "sgs/testimonial": {
+      "mirror:indus": 718
+    },
+    "sgs/testimonial-slider": {
+      "mirror:indus": 225
+    },
+    "sgs/text": {
+      "mirror:indus": 36140
+    },
+    "sgs/timeline": {
+      "mirror:indus": 331
+    },
+    "sgs/trust-bar": {
+      "mirror:indus": 1186
+    },
+    "sgs/whatsapp-cta": {
+      "mirror:indus": 287
+    },
+    "sgs/wishlist-panel": {
+      "mirror:indus": 95
+    }
+  },
+  "mappingRows": 725
+}

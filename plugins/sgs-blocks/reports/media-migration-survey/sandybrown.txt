@@ -1,0 +1,201 @@
+OLD ATTRIBUTES PER BLOCK (count of saved attributes; status = converted | deleted | reported | refused)
+
+sgs/before-after  (709 blocks affected)
+  afterImageAlt                      converted x709  -> afterAlt                   [mirror:sandybrown 709]
+  afterImageDecorative               converted x2    -> afterDecorative            [mirror:sandybrown 2]
+  afterImageId                       converted x709  -> afterSource                [mirror:sandybrown 709]
+  afterImageUrl                      converted x709  -> afterSource                [mirror:sandybrown 709]
+  afterImageUrlMobile                converted x2    -> afterSource                [mirror:sandybrown 2]
+  afterImageUrlTablet                converted x2    -> afterSource                [mirror:sandybrown 2]
+  afterMediaType                     converted x32   -> afterSource                [mirror:sandybrown 32]
+  afterVideoUrl                      converted x2    -> afterSource                [mirror:sandybrown 2]
+  beforeImageAlt                     converted x709  -> beforeAlt                  [mirror:sandybrown 709]
+  beforeImageDecorative              converted x2    -> beforeDecorative           [mirror:sandybrown 2]
+  beforeImageId                      converted x709  -> beforeSource               [mirror:sandybrown 709]
+  beforeImageUrl                     converted x709  -> beforeSource               [mirror:sandybrown 709]
+  beforeImageUrlMobile               converted x2    -> beforeSource               [mirror:sandybrown 2]
+  beforeImageUrlTablet               converted x2    -> beforeSource               [mirror:sandybrown 2]
+  beforeMediaType                    converted x32   -> beforeSource               [mirror:sandybrown 32]
+  beforeVideoUrl                     converted x2    -> beforeSource               [mirror:sandybrown 2]
+  videoAutoplay                      reported  x2    -> -                          [mirror:sandybrown 2]
+  videoAutoplayMobile                reported  x2    -> -                          [mirror:sandybrown 2]
+  videoAutoplayTablet                reported  x2    -> -                          [mirror:sandybrown 2]
+
+sgs/brand-strip  (1161 blocks affected)
+  logoFit                            converted x13   -> logoFit                    [mirror:sandybrown 13]
+  logos                              converted x2322 -> logos                      [mirror:sandybrown 2322]
+  tileShape                          deleted   x12   -> logoShape                  [mirror:sandybrown 12]  (converted 6, deleted 6)
+
+sgs/button  (81 blocks affected)
+  scaleHover                         reported  x81   -> -                          [mirror:sandybrown 81]
+
+sgs/card-grid  (7 blocks affected)
+  aspectRatio                        converted x3    -> imageRatio                 [mirror:sandybrown 3]
+  items                              converted x6    -> items                      [mirror:sandybrown 6]
+  scaleHover                         reported  x4    -> -                          [mirror:sandybrown 4]
+
+sgs/container  (5723 blocks affected)
+  backgroundAttachment               converted x10   -> backgroundPinned           [mirror:sandybrown 10]
+  backgroundImage                    refused   x888  -> backgroundSource           [mirror:sandybrown 888]  (converted 68, refused 820)
+  backgroundImageMobile              refused   x22   -> backgroundSource           [mirror:sandybrown 22]  (refused 20, converted 2)
+  backgroundImageTablet              refused   x22   -> backgroundSource           [mirror:sandybrown 22]  (refused 20, converted 2)
+  backgroundOverlayBlendMode         converted x12   -> backgroundOverlayBlend     [mirror:sandybrown 12]
+  backgroundPosition                 converted x15   -> backgroundFocal            [mirror:sandybrown 15]
+  backgroundRepeat                   converted x14   -> backgroundRepeat           [mirror:sandybrown 14]
+  backgroundSize                     converted x29   -> backgroundFit              [mirror:sandybrown 29]
+  bgSvgContent                       refused   x5641 -> backgroundSource           [mirror:sandybrown 5641]  (converted 4781, refused 860)
+  bgSvgMinHeight                     converted x43   -> minHeight                  [mirror:sandybrown 43]
+  bgSvgOpacity                       converted x11   -> backgroundOpacity          [mirror:sandybrown 11]
+  bgSvgParts                         converted x1    -> backgroundSvgParts         [mirror:sandybrown 1]
+  bgSvgPartsTrigger                  converted x1    -> backgroundSvgPartsTrigger  [mirror:sandybrown 1]
+  bgSvgPosition                      refused   x6    -> backgroundSvgLayer         [mirror:sandybrown 6]  (converted 5, refused 1)
+  bgSvgTextShadow                    converted x1    -> backgroundSvgTextShadow    [mirror:sandybrown 1]
+  bgVideo                            converted x3    -> backgroundSource           [mirror:sandybrown 3]
+  bgVideoMobile                      converted x2    -> backgroundSource           [mirror:sandybrown 2]
+  bgVideoTablet                      converted x1    -> backgroundSource           [mirror:sandybrown 1]
+
+sgs/decorative-image  (32 blocks affected)
+  decorMedia                         converted x10   -> layerSource                [mirror:sandybrown 10]
+  imageId                            converted x20   -> layerSource                [mirror:sandybrown 20]
+  imageUrl                           converted x22   -> layerSource                [mirror:sandybrown 22]
+  opacity                            converted x10   -> layerOpacity               [mirror:sandybrown 10]
+  width                              converted x10   -> layerWidth                 [mirror:sandybrown 10]
+
+sgs/gallery  (663 blocks affected)
+  aspectRatio                        converted x4    -> itemRatio                  [mirror:sandybrown 4]
+  grayscaleHover                     reported  x16   -> -                          [mirror:sandybrown 16]
+  imageZoomHover                     reported  x16   -> -                          [mirror:sandybrown 16]
+  mediaItems                         converted x1326 -> mediaItems                 [mirror:sandybrown 1326]
+
+sgs/hero  (122 blocks affected)
+  backgroundImage                    converted x15   -> backgroundSource           [mirror:sandybrown 15]
+  backgroundImageTablet              converted x1    -> backgroundSource           [mirror:sandybrown 1]
+  bgSvgContent                       converted x1    -> backgroundSource           [mirror:sandybrown 1]
+  bgSvgOpacity                       converted x1    -> backgroundOpacity          [mirror:sandybrown 1]
+  bgSvgPosition                      converted x1    -> backgroundSvgLayer         [mirror:sandybrown 1]
+  mediaBackground                    converted x1    -> splitBackground            [mirror:sandybrown 1]
+  mediaPadding                       refused   x8    -> splitPadding               [mirror:sandybrown 8]  (refused 5, converted 3)
+  splitImage                         refused   x34   -> -                          [mirror:sandybrown 34]
+  splitImageAlt                      converted x11   -> splitAlt                   [mirror:sandybrown 11]
+  splitImageAltMobile                converted x9    -> splitAlt                   [mirror:sandybrown 9]
+  splitImageId                       converted x11   -> splitSource                [mirror:sandybrown 11]
+  splitImageIdMobile                 converted x9    -> splitSource                [mirror:sandybrown 9]
+  splitImageMobile                   refused   x29   -> -                          [mirror:sandybrown 29]
+  splitImageMobileObjectPosition     refused   x10   -> -                          [mirror:sandybrown 10]
+  splitImageUrl                      converted x15   -> splitSource                [mirror:sandybrown 15]
+  splitImageUrlMobile                converted x9    -> splitSource                [mirror:sandybrown 9]
+  splitMediaBorderRadius             converted x8    -> splitRadius                [mirror:sandybrown 8]
+  splitMediaBorderRadiusMobile       converted x6    -> splitRadius                [mirror:sandybrown 6]
+  splitMediaBorderRadiusTablet       converted x6    -> splitRadius                [mirror:sandybrown 6]
+  splitMediaBorderWidth              converted x24   -> splitBorderWidth           [mirror:sandybrown 24]
+  splitMediaImageAlt                 converted x48   -> splitAlt                   [mirror:sandybrown 48]
+  splitMediaImageAltMobile           converted x30   -> splitAlt                   [mirror:sandybrown 30]
+  splitMediaImageId                  converted x35   -> splitSource                [mirror:sandybrown 35]
+  splitMediaImageIdMobile            converted x25   -> splitSource                [mirror:sandybrown 25]
+  splitMediaImageUrl                 converted x51   -> splitSource                [mirror:sandybrown 51]
+  splitMediaImageUrlMobile           converted x30   -> splitSource                [mirror:sandybrown 30]
+  splitMediaObjectFit                deleted   x4    -> -                          [mirror:sandybrown 4]
+  splitMediaObjectPosition           converted x27   -> splitFocal                 [mirror:sandybrown 27]
+  splitMediaObjectPositionMobile     converted x23   -> splitFocal                 [mirror:sandybrown 23]
+  splitMediaOverlayColour            converted x2    -> splitOverlayColour         [mirror:sandybrown 2]
+  splitMediaPadding                  converted x7    -> splitPadding               [mirror:sandybrown 7]
+  splitMediaWidth                    converted x4    -> splitWidth                 [mirror:sandybrown 4]
+  splitMediaWidthUnit                deleted   x4    -> splitWidth                 [mirror:sandybrown 4]
+
+sgs/image-sequence  (54 blocks affected)
+  aspectRatio                        converted x1    -> thumbnailRatio             [mirror:sandybrown 1]
+  thumbnail                          converted x54   -> thumbnailSource            [mirror:sandybrown 54]
+
+sgs/info-box  (10 blocks affected)
+  grayscaleHover                     reported  x8    -> -                          [mirror:sandybrown 8]
+  scaleHover                         reported  x2    -> -                          [mirror:sandybrown 2]
+
+sgs/measured-diagram  (4 blocks affected)
+  drawingImageAlt                    converted x4    -> drawingAlt                 [mirror:sandybrown 4]
+  drawingImageId                     converted x4    -> drawingSource              [mirror:sandybrown 4]
+  drawingImageUrl                    converted x4    -> drawingSource              [mirror:sandybrown 4]
+
+sgs/media  (280 blocks affected)
+  alignment                          converted x58   -> alignment                  [mirror:sandybrown 58]
+  aspectRatio                        converted x16   -> ratio                      [mirror:sandybrown 16]
+  borderRadius                       refused   x43   -> radius                     [mirror:sandybrown 43]  (converted 41, refused 2)
+  borderRadiusMobile                 converted x10   -> radius                     [mirror:sandybrown 10]
+  borderRadiusTablet                 converted x10   -> radius                     [mirror:sandybrown 10]
+  height                             converted x13   -> height                     [mirror:sandybrown 13]
+  heightUnit                         deleted   x12   -> height                     [mirror:sandybrown 12]
+  imageAlt                           converted x171  -> alt                        [mirror:sandybrown 171]
+  imageHeight                        converted x54   -> source                     [mirror:sandybrown 54]
+  imageId                            converted x86   -> source                     [mirror:sandybrown 86]
+  imageUrl                           converted x203  -> source                     [mirror:sandybrown 203]
+  imageUrlMobile                     converted x1    -> source                     [mirror:sandybrown 1]
+  imageUrlTablet                     converted x1    -> source                     [mirror:sandybrown 1]
+  imageWidth                         converted x33   -> source                     [mirror:sandybrown 33]
+  lottieId                           reported  x1    -> -                          [mirror:sandybrown 1]
+  lottieSpeed                        reported  x1    -> -                          [mirror:sandybrown 1]
+  lottieTrigger                      reported  x1    -> -                          [mirror:sandybrown 1]
+  maxHeight                          converted x1    -> maxHeight                  [mirror:sandybrown 1]
+  maxWidth                           converted x1    -> maxWidth                   [mirror:sandybrown 1]
+  mediaSizing                        converted x12   -> height                     [mirror:sandybrown 12]
+  mediaType                          reported  x60   -> source                     [mirror:sandybrown 60]  (converted 58, reported 2)
+  objectFit                          converted x36   -> fit                        [mirror:sandybrown 36]
+  overlayOpacity                     converted x1    -> overlayOpacity             [mirror:sandybrown 1]
+  shape                              deleted   x1    -> -                          [mirror:sandybrown 1]
+  svgAnimation                       reported  x6    -> -                          [mirror:sandybrown 6]
+  svgAnimationSpeed                  reported  x6    -> -                          [mirror:sandybrown 6]
+  svgContent                         converted x16   -> source                     [mirror:sandybrown 16]
+  svgContentMobile                   converted x2    -> source                     [mirror:sandybrown 2]
+  svgContentTablet                   converted x2    -> source                     [mirror:sandybrown 2]
+  thumbnailId                        reported  x2    -> -                          [mirror:sandybrown 2]
+  videoAutoplay                      converted x4    -> playback                   [mirror:sandybrown 4]
+  videoCaptionsLabel                 converted x2    -> source                     [mirror:sandybrown 2]
+  videoCaptionsSrcLang               converted x2    -> source                     [mirror:sandybrown 2]
+  videoCaptionsUrl                   converted x2    -> source                     [mirror:sandybrown 2]
+  videoControls                      converted x6    -> playback                   [mirror:sandybrown 6]
+  videoId                            converted x6    -> source                     [mirror:sandybrown 6]
+  videoLoop                          deleted   x4    -> playback                   [mirror:sandybrown 4]  (deleted 2, converted 2)
+  videoMuted                         converted x6    -> playback                   [mirror:sandybrown 6]
+  videoSource                        converted x10   -> source                     [mirror:sandybrown 10]
+  videoUrl                           converted x10   -> source                     [mirror:sandybrown 10]
+
+sgs/nav-drawer  (31 blocks affected)
+  chromeLogoId                       converted x31   -> chromeLogoSource           [mirror:sandybrown 31]
+  chromeLogoUrl                      converted x31   -> chromeLogoSource           [mirror:sandybrown 31]
+
+sgs/physics-canvas  (8 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:sandybrown 2]
+  backgroundSize                     converted x4    -> backgroundFit              [mirror:sandybrown 4]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:sandybrown 2]
+
+sgs/post-grid  (24 blocks affected)
+  aspectRatio                        converted x3    -> imageRatio                 [mirror:sandybrown 3]
+  imageSize                          deleted   x16   -> -                          [mirror:sandybrown 16]
+  imageZoomHover                     reported  x3    -> -                          [mirror:sandybrown 3]
+  scaleHover                         reported  x2    -> -                          [mirror:sandybrown 2]
+
+sgs/product-card  (154 blocks affected)
+  image                              converted x154  -> imageSource                [mirror:sandybrown 154]
+
+sgs/responsive-logo  (51 blocks affected)
+  logoId                             converted x51   -> logoSource                 [mirror:sandybrown 51]
+  logoUrl                            converted x51   -> logoSource                 [mirror:sandybrown 51]
+
+sgs/team-member  (258 blocks affected)
+  grayscaleHover                     reported  x2    -> -                          [mirror:sandybrown 2]
+  imageZoomHover                     reported  x2    -> -                          [mirror:sandybrown 2]
+  photo                              converted x258  -> photoSource                [mirror:sandybrown 258]
+  photoShape                         converted x14   -> photoShape                 [mirror:sandybrown 14]
+
+PINNED OLD DEFAULTS (written explicitly by fix)
+  sgs/container: backgroundOverlayOpacity x17
+  sgs/decorative-image: imageDecorative x32
+  sgs/hero: backgroundOverlayOpacity x11
+  sgs/media: videoAutoplay x6, videoPlaysInline x10, videoLoop x8, videoLazyLoad x10, videoMuted x4, videoControls x4
+  sgs/team-member: photoShape x257
+
+MEDIA-LOOKING ATTRIBUTES WITH NO ROW (read these: each is a mapping gap or a non-media name)
+  sgs/button: __unparseable__ x1
+  sgs/container: bgLottie x1
+  sgs/cta-section: backgroundImage x19, backgroundImageMobile x1, backgroundImageOpacity x7, backgroundImageTablet x1, bgSvgAnimation x21, bgSvgAnimationSpeed x14, bgSvgPosition x7
+  sgs/hero: imageBorderStyle x6, imageBorderWidth x10, imageObjectPosition x10
+  sgs/physics-canvas: bgSvgAnimation x6, bgSvgAnimationSpeed x4
+  sgs/site-footer-row: __unparseable__ x6

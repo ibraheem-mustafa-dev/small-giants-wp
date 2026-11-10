@@ -2,18 +2,22 @@
 """Spec 49 §13 migration detector: survey, fix, check, self-test.
 
   cli.py survey [--json] [--out FILE] [--repo] [--mirror NAME]... [--content FILE]...
-  cli.py fix    [--dry-run | --apply] [--target KIND]... [--file PATH]... [--content FILE]...
-  cli.py check  [--active auto|on|off] [--target KIND]... [--content FILE]...
+  cli.py fix    [--dry-run | --apply] [--target KIND]... [--file PATH]... [--content FILE]... [--mirror NAME]
+  cli.py check  [--active auto|on|off] [--target KIND]... [--content FILE]... [--mirror NAME]...
+  cli.py restore --mirror NAME --backup FILE
   cli.py rows   [--json | --regenerate]
-  cli.py self-test
+  cli.py self-test [--break] [--mirror [--keep]]
 
 The mapping rows and the facts they rest on are frozen in `mapping-frozen.json`; every command reads that file, never the
 PHP mirror or the block.json files. `rows --regenerate` rebuilds it from the live files and refuses once a block declares
 `kinds` on a media slot.
 
 `survey` counts old attributes per block and per target. `fix` rewrites block attributes per the mapping rows
-(dry run prints a unified diff; `--apply` writes repo files atomically and refuses saved content). `check` exits 1 while
-any old attribute remains on a target; it stays silent (exit 0) until a block declares `kinds` on a media slot
+(dry run prints a unified diff; `--apply` writes repo files atomically). `fix --mirror NAME --apply` rewrites the saved
+content of a local mirror (`mirror.py`): database backup first, direct `$wpdb` writes, then the backup path and the restore
+command; `restore` returns a mirror to a backup. Saved content means every store holding block markup: all post types and
+statuses, post meta and options (`export-content.php`). `check` exits 1 while
+any old attribute remains on a target (with `--mirror` or `--content` it reads only those, unless `--target` is named); it stays silent (exit 0) until a block declares `kinds` on a media slot
 (`--active auto`), the cutover marker of Spec 49 §8.3. `self-test` runs the fixtures, negative controls and the
 idempotence proof.
 """
@@ -32,6 +36,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blocks as B  # noqa: E402
 import corpus as C  # noqa: E402
 import mapping as M  # noqa: E402
+import mirror as MIR  # noqa: E402
 
 MEDIAISH = re.compile(r"image|video|svg|photo|avatar|logo|poster|thumb|aspectratio|objectfit|objectposition|focal|lottie|^media", re.I)
 NOT_MEDIA = re.compile(r"Typography|FontFamily|FontSize|FontStyle|FontWeight|LetterSp|LineHeight|TextStroke|TextTrans|TextDec|"
@@ -155,12 +160,22 @@ def unified(label: str, before: str, after: str) -> str:
     return "".join(difflib.unified_diff(before.splitlines(True), after.splitlines(True), f"a/{label}", f"b/{label}"))
 
 
+def saved_only_scope(args) -> bool:
+    """True when `--content` or `--mirror` is named and nothing asks for repo files (`--repo`, `--target`, `--file`)."""
+    return bool(args.mirror or args.content) and not (getattr(args, "repo", False) or args.target or getattr(args, "file", None))
+
+
 def cmd_fix(args) -> int:
-    if args.apply and (args.content or args.mirror):
-        raise SystemExit("--apply never writes saved content: this package prints the diff only")
+    if args.apply and args.dry_run:
+        raise SystemExit("--apply and --dry-run exclude each other")
+    if args.apply and args.content:
+        raise SystemExit("--apply never writes a --content export file: use --mirror NAME to write a mirror, or run the dry run")
+    if args.mirror and len(args.mirror) > 1 and args.apply:
+        raise SystemExit("--apply writes one mirror at a time")
     changed = 0
     files: list[Path] = [Path(f) for f in args.file or []]
-    if not files and not args.content:
+    saved_only = saved_only_scope(args)
+    if not files and not saved_only:
         targets = C.repo_targets()
         for kind in args.target or CHECK_KINDS:
             files += targets.get(kind, [])
@@ -184,6 +199,18 @@ def cmd_fix(args) -> int:
                 label = f"{Path(file).stem}/{post.get('post_type')}-{post.get('ID')}"
                 print(f"# {label}: {count} block(s) rewritten (dry run only)")
                 sys.stdout.write(unified(label, post["post_content"], after))
+    for name in args.mirror or []:
+        posts = C.mirror_export(name)
+        MIR.refuse_unsupported(posts, name)
+        plan = MIR.plan_rewrites(posts, fn_for)
+        changed += len(plan)
+        if args.apply and plan:
+            MIR.apply_fix(name, plan)
+        elif not args.apply:
+            MIR.print_diffs(plan, unified)
+            print(f"mirror {name}: {len(plan)} row(s) would change (dry run: nothing written)", file=sys.stderr)
+        else:
+            print(f"mirror {name}: nothing to rewrite; no backup taken", file=sys.stderr)
     print(f"\n{'applied to' if args.apply else 'would change'} {changed} file(s)/post(s)", file=sys.stderr)
     return 0
 
@@ -197,9 +224,11 @@ def cmd_check(args) -> int:
     if not active:
         print("migrate-media-system check: inactive (no block declares `kinds` on a media slot yet); nothing to enforce")
         return 0
-    args.repo = True
-    args.mirror = []
-    args.target = args.target or list(CHECK_KINDS)
+    saved_only = saved_only_scope(args)
+    args.repo = not saved_only
+    args.target = args.target or ([] if saved_only else list(CHECK_KINDS))
+    for name in args.mirror or []:
+        MIR.refuse_unsupported(C.mirror_export(name), name)
     found: collections.Counter = collections.Counter()
     where: dict = {}
     for label, name, attrs in records(args):
@@ -233,6 +262,8 @@ def cmd_rows(args) -> int:
 
 
 def main(argv=None) -> int:
+    for stream in (sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="cmd", required=True)
     for name in ("survey", "fix", "check"):
@@ -244,23 +275,38 @@ def main(argv=None) -> int:
             p.add_argument("--out")
             p.add_argument("--repo", action="store_true", help="include the repo targets (default when nothing else is named)")
             p.add_argument("--mirror", action="append", help="read-only wp-cli export of a local mirror: " + "a folder name under /var/www/local-")
+        if name != "survey":
+            p.add_argument("--repo", action="store_true", help="include the repo targets (default when no --content or --mirror is named)")
         if name == "fix":
             p.add_argument("--apply", action="store_true")
             p.add_argument("--dry-run", action="store_true")
             p.add_argument("--file", action="append")
-            p.add_argument("--mirror", action="append")
+            p.add_argument("--mirror", action="append", help="a local mirror's saved content (a folder name under /var/www/local-)")
         if name == "check":
+            p.add_argument("--mirror", action="append", help="a local mirror's saved content (a folder name under /var/www/local-)")
             p.add_argument("--active", choices=("auto", "on", "off"), default="auto")
             p.add_argument("--self-test", action="store_true", help="run the self-test first (the gate form)")
+    restore_parser = sub.add_parser("restore", help="import a database backup `fix --mirror --apply` made")
+    restore_parser.add_argument("--mirror", required=True)
+    restore_parser.add_argument("--backup", required=True, help="the backup path `fix` printed (WSL path)")
     rows_parser = sub.add_parser("rows")
     rows_parser.add_argument("--json", action="store_true")
     rows_parser.add_argument("--regenerate", action="store_true", help="rebuild the frozen rows from the live files (refused after adoption)")
-    sub.add_parser("self-test").add_argument("--break", dest="break_mapping", action="store_true",
-                                             help="run against a deliberately broken mapping: must exit 1")
+    self_test = sub.add_parser("self-test")
+    self_test.add_argument("--break", dest="break_mapping", action="store_true", help="run against a deliberately broken mapping: must exit 1")
+    self_test.add_argument("--mirror", action="store_true", help="also prove fix, check and restore on a scratch copy of local-sandybrown (needs WSL)")
+    self_test.add_argument("--keep", action="store_true", help="with --mirror: keep the scratch mirror afterwards")
     args = parser.parse_args(argv)
     if args.cmd == "self-test":
         import selftest
-        return selftest.run(args.break_mapping)
+        code = selftest.run(args.break_mapping)
+        if args.mirror and not args.break_mapping:
+            import mirror_selftest
+            code = mirror_selftest.run(args.keep) or code
+        return code
+    if args.cmd == "restore":
+        MIR.restore(args.mirror, args.backup)
+        return 0
     return {"survey": cmd_survey, "fix": cmd_fix, "check": cmd_check, "rows": cmd_rows}[args.cmd](args)
 
 

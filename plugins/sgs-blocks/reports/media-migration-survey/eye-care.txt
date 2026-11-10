@@ -1,0 +1,110 @@
+OLD ATTRIBUTES PER BLOCK (count of saved attributes; status = converted | deleted | reported | refused)
+
+sgs/container  (2420 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:eye-care 1]
+  backgroundImage                    refused   x230  -> -                          [mirror:eye-care 230]
+  backgroundImageMobile              refused   x5    -> -                          [mirror:eye-care 5]
+  backgroundImageTablet              refused   x5    -> -                          [mirror:eye-care 5]
+  bgSvgContent                       refused   x2420 -> backgroundSource           [mirror:eye-care 2420]  (converted 2180, refused 240)
+  bgSvgMinHeight                     converted x15   -> minHeight                  [mirror:eye-care 15]
+  bgSvgOpacity                       converted x5    -> backgroundOpacity          [mirror:eye-care 5]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:eye-care 2]
+
+sgs/hero  (10 blocks affected)
+  splitMediaImageAlt                 converted x3    -> splitAlt                   [mirror:eye-care 3]
+  splitMediaImageId                  converted x10   -> splitSource                [mirror:eye-care 10]
+  splitMediaImageUrl                 converted x10   -> splitSource                [mirror:eye-care 10]
+
+sgs/info-box  (4 blocks affected)
+  grayscaleHover                     reported  x2    -> -                          [mirror:eye-care 2]
+  scaleHover                         reported  x2    -> -                          [mirror:eye-care 2]
+
+sgs/measured-diagram  (109 blocks affected)
+  drawingImageAlt                    converted x109  -> drawingAlt                 [mirror:eye-care 109]
+  drawingImageDecorative             converted x1    -> drawingDecorative          [mirror:eye-care 1]
+  drawingImageId                     converted x109  -> drawingSource              [mirror:eye-care 109]
+  drawingImageUrl                    converted x109  -> drawingSource              [mirror:eye-care 109]
+
+sgs/media  (84 blocks affected)
+  imageAlt                           converted x3    -> alt                        [mirror:eye-care 3]
+  imageId                            converted x82   -> source                     [mirror:eye-care 82]
+  imageUrl                           converted x82   -> source                     [mirror:eye-care 82]
+  mediaSizing                        converted x5    -> height                     [mirror:eye-care 5]
+
+sgs/multi-button  (69 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:eye-care 2]
+  backgroundImage                    converted x53   -> backgroundSource           [mirror:eye-care 53]
+  backgroundImageMobile              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundImageTablet              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundOverlayBlendMode         converted x22   -> backgroundOverlayBlend     [mirror:eye-care 22]
+  backgroundRepeat                   converted x6    -> backgroundRepeat           [mirror:eye-care 6]
+  backgroundSize                     converted x4    -> backgroundFit              [mirror:eye-care 4]
+  bgSvgMinHeight                     converted x6    -> minHeight                  [mirror:eye-care 6]
+  bgSvgPosition                      converted x4    -> backgroundSvgLayer         [mirror:eye-care 4]
+
+sgs/nav-drawer  (1631 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:eye-care 2]
+  backgroundImage                    converted x117  -> backgroundSource           [mirror:eye-care 117]
+  backgroundImageDecorative          converted x4    -> backgroundDecorative       [mirror:eye-care 4]
+  backgroundRepeat                   converted x21   -> backgroundRepeat           [mirror:eye-care 21]
+  backgroundSize                     converted x14   -> backgroundFit              [mirror:eye-care 14]
+  chromeLogoId                       converted x1631 -> chromeLogoSource           [mirror:eye-care 1631]
+  chromeLogoUrl                      converted x1631 -> chromeLogoSource           [mirror:eye-care 1631]
+  chromeLogoUrlMobile                converted x4    -> chromeLogoSource           [mirror:eye-care 4]
+  chromeLogoUrlTablet                converted x4    -> chromeLogoSource           [mirror:eye-care 4]
+
+sgs/physics-canvas  (31 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:eye-care 1]
+  backgroundImage                    converted x26   -> backgroundSource           [mirror:eye-care 26]
+  backgroundImageMobile              converted x1    -> backgroundSource           [mirror:eye-care 1]
+  backgroundImageTablet              converted x1    -> backgroundSource           [mirror:eye-care 1]
+  backgroundOverlayBlendMode         converted x11   -> backgroundOverlayBlend     [mirror:eye-care 11]
+  backgroundRepeat                   converted x3    -> backgroundRepeat           [mirror:eye-care 3]
+  backgroundSize                     converted x2    -> backgroundFit              [mirror:eye-care 2]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:eye-care 2]
+
+sgs/responsive-logo  (3 blocks affected)
+  logoId                             converted x3    -> logoSource                 [mirror:eye-care 3]
+  logoUrl                            converted x3    -> logoSource                 [mirror:eye-care 3]
+
+sgs/site-footer  (64 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:eye-care 2]
+  backgroundImage                    converted x58   -> backgroundSource           [mirror:eye-care 58]
+  backgroundImageMobile              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundImageTablet              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundOverlayBlendMode         converted x22   -> backgroundOverlayBlend     [mirror:eye-care 22]
+  backgroundRepeat                   converted x6    -> backgroundRepeat           [mirror:eye-care 6]
+  backgroundSize                     converted x4    -> backgroundFit              [mirror:eye-care 4]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:eye-care 2]
+
+sgs/site-header  (64 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:eye-care 2]
+  backgroundImage                    converted x58   -> backgroundSource           [mirror:eye-care 58]
+  backgroundImageMobile              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundImageTablet              converted x2    -> backgroundSource           [mirror:eye-care 2]
+  backgroundOverlayBlendMode         converted x22   -> backgroundOverlayBlend     [mirror:eye-care 22]
+  backgroundRepeat                   converted x6    -> backgroundRepeat           [mirror:eye-care 6]
+  backgroundSize                     converted x4    -> backgroundFit              [mirror:eye-care 4]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:eye-care 2]
+
+sgs/trust-bar  (293 blocks affected)
+  backgroundAttachment               converted x5    -> backgroundPinned           [mirror:eye-care 5]
+  backgroundImage                    converted x197  -> backgroundSource           [mirror:eye-care 197]
+  backgroundImageMobile              converted x5    -> backgroundSource           [mirror:eye-care 5]
+  backgroundImageTablet              converted x5    -> backgroundSource           [mirror:eye-care 5]
+  backgroundOverlayBlendMode         converted x55   -> backgroundOverlayBlend     [mirror:eye-care 55]
+  backgroundRepeat                   converted x15   -> backgroundRepeat           [mirror:eye-care 15]
+  backgroundSize                     converted x10   -> backgroundFit              [mirror:eye-care 10]
+  badgeImageBorderRadius             converted x6    -> badgeRadius                [mirror:eye-care 6]
+  badgeImageObjectFit                converted x20   -> badgeFit                   [mirror:eye-care 20]
+  badgeImageShadow                   refused   x51   -> -                          [mirror:eye-care 51]
+  badgeImageShadowColour             refused   x10   -> -                          [mirror:eye-care 10]
+  badgeImageSize                     deleted   x6    -> -                          [mirror:eye-care 6]
+  bgSvgPosition                      converted x3    -> backgroundSvgLayer         [mirror:eye-care 3]
+
+PINNED OLD DEFAULTS (written explicitly by fix)
+  sgs/multi-button: backgroundOverlayOpacity x10
+  sgs/physics-canvas: backgroundOverlayOpacity x3
+  sgs/site-footer: backgroundOverlayOpacity x8
+  sgs/site-header: backgroundOverlayOpacity x8
+  sgs/trust-bar: backgroundOverlayOpacity x46

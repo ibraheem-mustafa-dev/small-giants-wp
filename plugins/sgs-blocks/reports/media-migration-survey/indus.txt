@@ -1,0 +1,225 @@
+OLD ATTRIBUTES PER BLOCK (count of saved attributes; status = converted | deleted | reported | refused)
+
+sgs/brand-strip  (294 blocks affected)
+  logoFit                            converted x127  -> logoFit                    [mirror:indus 127]
+  logos                              converted x588  -> logos                      [mirror:indus 588]
+
+sgs/choice-flow  (39 blocks affected)
+  headerLogo                         converted x39   -> headerLogoSource           [mirror:indus 39]
+
+sgs/container  (4559 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:indus 2]
+  backgroundImage                    refused   x505  -> -                          [mirror:indus 505]
+  backgroundImageMobile              refused   x10   -> -                          [mirror:indus 10]
+  backgroundImageTablet              refused   x10   -> -                          [mirror:indus 10]
+  bgSvgContent                       refused   x4559 -> backgroundSource           [mirror:indus 4559]  (converted 4034, refused 525)
+  bgSvgMinHeight                     converted x30   -> minHeight                  [mirror:indus 30]
+  bgSvgOpacity                       converted x10   -> backgroundOpacity          [mirror:indus 10]
+  bgSvgPosition                      converted x4    -> backgroundSvgLayer         [mirror:indus 4]
+
+sgs/decorative-image  (3618 blocks affected)
+  backgroundColour                   converted x112  -> layerBackground            [mirror:indus 112]
+  borderColour                       converted x3434 -> layerBorderColour          [mirror:indus 3434]
+  borderRadius                       converted x3434 -> layerRadius                [mirror:indus 3434]
+  borderWidth                        converted x3434 -> layerBorderWidth           [mirror:indus 3434]
+  height                             converted x3546 -> layerHeight                [mirror:indus 3546]
+  width                              converted x3540 -> layerWidth                 [mirror:indus 3540]
+
+sgs/gallery  (309 blocks affected)
+  aspectRatio                        converted x31   -> itemRatio                  [mirror:indus 31]
+  grayscaleHover                     reported  x2    -> -                          [mirror:indus 2]
+  mediaItems                         converted x618  -> mediaItems                 [mirror:indus 618]
+  scaleHover                         reported  x15   -> -                          [mirror:indus 15]
+  sgsColourTreatment                 reported  x2    -> -                          [mirror:indus 2]
+  sgsHeightMobile                    refused   x2    -> -                          [mirror:indus 2]
+  sgsHeightTablet                    refused   x2    -> -                          [mirror:indus 2]
+  sgsMaxWidth                        refused   x2    -> -                          [mirror:indus 2]
+  sgsObjectFit                       converted x10   -> itemFit                    [mirror:indus 10]
+
+sgs/hero  (1113 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:indus 1]
+  backgroundImage                    converted x75   -> backgroundSource           [mirror:indus 75]
+  backgroundImageMobile              converted x43   -> backgroundSource           [mirror:indus 43]
+  backgroundImageTablet              converted x43   -> backgroundSource           [mirror:indus 43]
+  backgroundOverlayBlendMode         converted x11   -> backgroundOverlayBlend     [mirror:indus 11]
+  backgroundPosition                 converted x42   -> backgroundFocal            [mirror:indus 42]
+  backgroundRepeat                   converted x3    -> backgroundRepeat           [mirror:indus 3]
+  backgroundSize                     converted x44   -> backgroundFit              [mirror:indus 44]
+  bgSvgOpacity                       converted x1    -> backgroundOpacity          [mirror:indus 1]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:indus 2]
+  bgVideo                            converted x344  -> backgroundSource           [mirror:indus 344]
+  mediaBackground                    converted x2    -> splitBackground            [mirror:indus 2]
+  mediaBackgroundGradient            reported  x1    -> -                          [mirror:indus 1]
+  mediaPadding                       converted x77   -> splitPadding               [mirror:indus 77]
+  splitMediaAlign                    converted x2    -> splitAlignment             [mirror:indus 2]
+  splitMediaAspectRatio              converted x673  -> splitRatio                 [mirror:indus 673]
+  splitMediaBackground               converted x100  -> splitBackground            [mirror:indus 100]
+  splitMediaBorderColour             converted x674  -> splitBorderColour          [mirror:indus 674]
+  splitMediaBorderColourGradient     converted x4    -> splitBorderColourGradient  [mirror:indus 4]
+  splitMediaBorderColourHover        reported  x2    -> -                          [mirror:indus 2]
+  splitMediaBorderColourHoverGradient reported  x1    -> -                          [mirror:indus 1]
+  splitMediaBorderRadius             converted x673  -> splitRadius                [mirror:indus 673]
+  splitMediaBorderRadiusMobile       converted x1    -> splitRadius                [mirror:indus 1]
+  splitMediaBorderRadiusTablet       converted x1    -> splitRadius                [mirror:indus 1]
+  splitMediaBorderStyle              converted x1    -> splitBorderStyle           [mirror:indus 1]
+  splitMediaBorderWidth              converted x686  -> splitBorderWidth           [mirror:indus 686]
+  splitMediaBoxShadow                converted x679  -> splitBoxShadow             [mirror:indus 679]
+  splitMediaBoxShadowColour          converted x674  -> splitBoxShadowColour       [mirror:indus 674]
+  splitMediaBoxShadowColourHover     converted x2    -> splitBoxShadowColourHover  [mirror:indus 2]
+  splitMediaDecorative               converted x1    -> splitDecorative            [mirror:indus 1]
+  splitMediaHeight                   converted x655  -> splitHeight                [mirror:indus 655]
+  splitMediaImageAlt                 converted x120  -> splitAlt                   [mirror:indus 120]
+  splitMediaImageId                  reported  x760  -> splitSource                [mirror:indus 760]  (converted 758, reported 2)
+  splitMediaImageUrl                 reported  x760  -> splitSource                [mirror:indus 760]  (converted 758, reported 2)
+  splitMediaImageUrlMobile           converted x1    -> splitSource                [mirror:indus 1]
+  splitMediaImageUrlTablet           converted x1    -> splitSource                [mirror:indus 1]
+  splitMediaMaxHeight                converted x1    -> splitMaxHeight             [mirror:indus 1]
+  splitMediaMaxWidth                 converted x1    -> splitMaxWidth              [mirror:indus 1]
+  splitMediaMediaSizing              converted x676  -> splitHeight                [mirror:indus 676]
+  splitMediaMinHeight                converted x3    -> splitMinHeight             [mirror:indus 3]
+  splitMediaObjectFit                deleted   x116  -> splitFit                   [mirror:indus 116]  (converted 109, deleted 7)
+  splitMediaObjectPosition           converted x30   -> splitFocal                 [mirror:indus 30]
+  splitMediaOverlayColour            converted x2    -> splitOverlayColour         [mirror:indus 2]
+  splitMediaOverlayGradient          converted x1    -> splitOverlayGradient       [mirror:indus 1]
+  splitMediaPadding                  converted x1    -> splitPadding               [mirror:indus 1]
+  splitMediaType                     reported  x3    -> splitSource                [mirror:indus 3]  (converted 2, reported 1)
+  splitMediaTypeMobile               reported  x8    -> splitSource                [mirror:indus 8]  (converted 6, reported 2)
+  splitMediaTypeTablet               reported  x8    -> splitSource                [mirror:indus 8]  (converted 6, reported 2)
+  splitMediaVideoUrl                 converted x1    -> splitSource                [mirror:indus 1]
+  splitMediaVideoUrlMobile           converted x1    -> splitSource                [mirror:indus 1]
+  splitMediaVideoUrlTablet           converted x1    -> splitSource                [mirror:indus 1]
+  splitMediaWidth                    converted x159  -> splitWidth                 [mirror:indus 159]
+  splitMediaWidthUnit                deleted   x1    -> splitWidth                 [mirror:indus 1]
+
+sgs/media  (3682 blocks affected)
+  alignment                          converted x4    -> alignment                  [mirror:indus 4]
+  aspectRatio                        converted x1    -> ratio                      [mirror:indus 1]
+  borderRadius                       converted x1    -> radius                     [mirror:indus 1]
+  borderRadiusMobile                 converted x1    -> radius                     [mirror:indus 1]
+  borderRadiusTablet                 converted x1    -> radius                     [mirror:indus 1]
+  displayWidth                       deleted   x94   -> -                          [mirror:indus 94]
+  height                             converted x1    -> height                     [mirror:indus 1]
+  imageAlt                           converted x511  -> alt                        [mirror:indus 511]
+  imageBlendMode                     converted x6    -> blend                      [mirror:indus 6]
+  imageDecorative                    converted x1    -> decorative                 [mirror:indus 1]
+  imageId                            reported  x3286 -> source                     [mirror:indus 3286]  (converted 3285, reported 1)
+  imageUrl                           reported  x3286 -> source                     [mirror:indus 3286]  (converted 3285, reported 1)
+  imageUrlMobile                     converted x1    -> source                     [mirror:indus 1]
+  imageUrlTablet                     converted x1    -> source                     [mirror:indus 1]
+  maxHeight                          converted x1    -> maxHeight                  [mirror:indus 1]
+  maxWidth                           converted x1    -> maxWidth                   [mirror:indus 1]
+  mediaSizing                        converted x3538 -> height                     [mirror:indus 3538]
+  mediaType                          reported  x33   -> source                     [mirror:indus 33]  (converted 32, reported 1)
+  objectFit                          converted x234  -> fit                        [mirror:indus 234]
+  opacity                            converted x1    -> opacity                    [mirror:indus 1]
+  videoAutoplay                      deleted   x1    -> playback                   [mirror:indus 1]
+  videoAutoplayMobile                deleted   x1    -> playback                   [mirror:indus 1]
+  videoAutoplayTablet                deleted   x1    -> playback                   [mirror:indus 1]
+  videoCaptionsUrl                   converted x1    -> source                     [mirror:indus 1]
+  videoControls                      deleted   x1    -> playback                   [mirror:indus 1]
+  videoControlsMobile                deleted   x1    -> playback                   [mirror:indus 1]
+  videoControlsTablet                deleted   x1    -> playback                   [mirror:indus 1]
+  videoLazyLoad                      deleted   x1    -> playback                   [mirror:indus 1]
+  videoLazyLoadMobile                deleted   x1    -> playback                   [mirror:indus 1]
+  videoLazyLoadTablet                deleted   x1    -> playback                   [mirror:indus 1]
+  videoLoop                          deleted   x1    -> playback                   [mirror:indus 1]
+  videoLoopMobile                    deleted   x1    -> playback                   [mirror:indus 1]
+  videoLoopTablet                    deleted   x1    -> playback                   [mirror:indus 1]
+  videoMuted                         deleted   x1    -> playback                   [mirror:indus 1]
+  videoMutedMobile                   deleted   x1    -> playback                   [mirror:indus 1]
+  videoMutedTablet                   deleted   x1    -> playback                   [mirror:indus 1]
+  videoPlaysInline                   deleted   x1    -> playback                   [mirror:indus 1]
+  videoPlaysInlineMobile             deleted   x1    -> playback                   [mirror:indus 1]
+  videoPlaysInlineTablet             deleted   x1    -> playback                   [mirror:indus 1]
+  videoSource                        converted x1    -> source                     [mirror:indus 1]
+  videoUrl                           converted x31   -> source                     [mirror:indus 31]
+  videoUrlMobile                     converted x1    -> source                     [mirror:indus 1]
+  videoUrlTablet                     converted x1    -> source                     [mirror:indus 1]
+
+sgs/multi-button  (34 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:indus 1]
+  backgroundImage                    converted x26   -> backgroundSource           [mirror:indus 26]
+  backgroundImageMobile              converted x1    -> backgroundSource           [mirror:indus 1]
+  backgroundImageTablet              converted x1    -> backgroundSource           [mirror:indus 1]
+  backgroundOverlayBlendMode         converted x11   -> backgroundOverlayBlend     [mirror:indus 11]
+  backgroundRepeat                   converted x3    -> backgroundRepeat           [mirror:indus 3]
+  backgroundSize                     converted x2    -> backgroundFit              [mirror:indus 2]
+  bgSvgMinHeight                     converted x3    -> minHeight                  [mirror:indus 3]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:indus 2]
+
+sgs/nav-drawer  (674 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:indus 1]
+  backgroundImage                    converted x48   -> backgroundSource           [mirror:indus 48]
+  backgroundImageDecorative          converted x1    -> backgroundDecorative       [mirror:indus 1]
+  backgroundRepeat                   converted x9    -> backgroundRepeat           [mirror:indus 9]
+  backgroundSize                     converted x6    -> backgroundFit              [mirror:indus 6]
+  chromeLogoId                       converted x674  -> chromeLogoSource           [mirror:indus 674]
+  chromeLogoInlineSvg                reported  x12   -> -                          [mirror:indus 12]
+  chromeLogoSvgParts                 reported  x12   -> -                          [mirror:indus 12]
+  chromeLogoSvgPartsTrigger          reported  x12   -> -                          [mirror:indus 12]
+  chromeLogoUrl                      converted x641  -> chromeLogoSource           [mirror:indus 641]
+  chromeLogoUrlMobile                converted x1    -> chromeLogoSource           [mirror:indus 1]
+  chromeLogoUrlTablet                converted x1    -> chromeLogoSource           [mirror:indus 1]
+
+sgs/physics-canvas  (31 blocks affected)
+  backgroundAttachment               converted x1    -> backgroundPinned           [mirror:indus 1]
+  backgroundImage                    converted x26   -> backgroundSource           [mirror:indus 26]
+  backgroundImageMobile              converted x1    -> backgroundSource           [mirror:indus 1]
+  backgroundImageTablet              converted x1    -> backgroundSource           [mirror:indus 1]
+  backgroundOverlayBlendMode         converted x11   -> backgroundOverlayBlend     [mirror:indus 11]
+  backgroundRepeat                   converted x3    -> backgroundRepeat           [mirror:indus 3]
+  backgroundSize                     converted x2    -> backgroundFit              [mirror:indus 2]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:indus 2]
+
+sgs/post-grid  (12 blocks affected)
+  aspectRatio                        converted x2    -> imageRatio                 [mirror:indus 2]
+  imageSize                          deleted   x8    -> -                          [mirror:indus 8]
+  scaleHover                         reported  x2    -> -                          [mirror:indus 2]
+
+sgs/responsive-logo  (215 blocks affected)
+  inlineSvg                          reported  x39   -> -                          [mirror:indus 39]
+  logoId                             converted x215  -> logoSource                 [mirror:indus 215]
+  logoUrl                            converted x8    -> logoSource                 [mirror:indus 8]
+  logoUrlMobile                      converted x2    -> logoSource                 [mirror:indus 2]
+  logoUrlTablet                      converted x2    -> logoSource                 [mirror:indus 2]
+  svgParts                           reported  x34   -> -                          [mirror:indus 34]
+  svgPartsTrigger                    reported  x34   -> -                          [mirror:indus 34]
+
+sgs/site-footer  (64 blocks affected)
+  backgroundAttachment               converted x2    -> backgroundPinned           [mirror:indus 2]
+  backgroundImage                    converted x58   -> backgroundSource           [mirror:indus 58]
+  backgroundImageMobile              converted x2    -> backgroundSource           [mirror:indus 2]
+  backgroundImageTablet              converted x2    -> backgroundSource           [mirror:indus 2]
+  backgroundOverlayBlendMode         converted x22   -> backgroundOverlayBlend     [mirror:indus 22]
+  backgroundRepeat                   converted x6    -> backgroundRepeat           [mirror:indus 6]
+  backgroundSize                     converted x4    -> backgroundFit              [mirror:indus 4]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:indus 2]
+
+sgs/timeline  (132 blocks affected)
+  mediaAspectRatio                   converted x24   -> entryRatio                 [mirror:indus 24]
+  mediaBorderRadius                  converted x24   -> entryRadius                [mirror:indus 24]
+  mediaHeight                        converted x11   -> entryHeight                [mirror:indus 11]
+  milestoneMediaWidth                converted x132  -> entryWidth                 [mirror:indus 132]
+
+sgs/trust-bar  (164 blocks affected)
+  backgroundAttachment               converted x3    -> backgroundPinned           [mirror:indus 3]
+  backgroundImage                    converted x111  -> backgroundSource           [mirror:indus 111]
+  backgroundImageMobile              converted x3    -> backgroundSource           [mirror:indus 3]
+  backgroundImageTablet              converted x3    -> backgroundSource           [mirror:indus 3]
+  backgroundOverlayBlendMode         converted x33   -> backgroundOverlayBlend     [mirror:indus 33]
+  backgroundRepeat                   converted x9    -> backgroundRepeat           [mirror:indus 9]
+  backgroundSize                     converted x6    -> backgroundFit              [mirror:indus 6]
+  badgeImageBorderRadius             converted x3    -> badgeRadius                [mirror:indus 3]
+  badgeImageObjectFit                converted x12   -> badgeFit                   [mirror:indus 12]
+  badgeImageShadow                   refused   x27   -> -                          [mirror:indus 27]
+  badgeImageShadowColour             refused   x6    -> -                          [mirror:indus 6]
+  badgeImageSize                     deleted   x3    -> -                          [mirror:indus 3]
+  bgSvgPosition                      converted x2    -> backgroundSvgLayer         [mirror:indus 2]
+
+PINNED OLD DEFAULTS (written explicitly by fix)
+  sgs/hero: backgroundOverlayOpacity x4
+  sgs/media: videoAutoplay x31, videoMuted x31, videoPlaysInline x31, videoLoop x31, videoControls x31, videoLazyLoad x31
+  sgs/multi-button: backgroundOverlayOpacity x3
+  sgs/physics-canvas: backgroundOverlayOpacity x3
+  sgs/site-footer: backgroundOverlayOpacity x8
+  sgs/trust-bar: backgroundOverlayOpacity x24

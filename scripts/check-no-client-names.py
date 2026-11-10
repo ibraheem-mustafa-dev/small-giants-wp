@@ -104,6 +104,7 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     # Generated output.
     "lighthouse-report.",
     "plugins/sgs-blocks/.phpunit.cache/",
+    "plugins/sgs-blocks/reports/media-migration-survey/",  # Spec 49 §13: each real mirror's saved-content survey, named by the mirror it read
     ".claude/memory/",
     "memory/",
     "tests/golden/",

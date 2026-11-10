@@ -107,6 +107,9 @@ case("decorative-image: position and rotation stay", "sgs/decorative-image",
      {"positionX": {"desktop": 20}, "rotation": {"desktop": 5}, "zIndex": 3}, None)
 case("media: a tablet alt with no tablet file is reported as dropped", "sgs/media",
      {"imageUrl": U, "imageAlt": "A", "imageAltTablet": "B"}, {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A"})
+case("before-after: a video side with no playback attributes of its own migrates without error", "sgs/before-after",
+     {"beforeMediaType": "video", "beforeVideoUrl": U, "beforeImageAlt": "Before"},
+     {"beforeSource": {"desktop": {"kind": "video", "url": U}}, "beforeAlt": "Before"})
 case("media: a video alt on an image is reported as dropped", "sgs/media",
      {"imageUrl": U, "imageAlt": "A", "videoAlt": "V"}, {"source": {"desktop": {"kind": "image", "url": U}}, "alt": "A"})
 case("media: a video alt on a video becomes the alt", "sgs/media",
@@ -216,6 +219,34 @@ def run_carriers(failures: list[str]) -> int:
     checks += 1
     if list(markup.iter_json_blocks(schema)):
         _fail("carrier: negative control", "a block.json schema was read as a saved block", failures)
+    return checks
+
+
+def run_scope(failures: list[str]) -> int:
+    """`check` and `fix` read only `--content` / `--mirror` unless `--repo`, `--target` or `--file` is named; an old attribute in
+    a content file fails `check` (negative control) and a clean one passes."""
+    import argparse
+    import cli
+    checks = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        clean = Path(tmp) / "clean.json"
+        dirty = Path(tmp) / "dirty.json"
+        clean.write_text(json.dumps([{"store": "posts", "ID": 1, "post_type": "page", "post_name": "a", "post_content": '<!-- wp:sgs/media {"alt":"A"} /-->'}]), encoding="utf-8")
+        dirty.write_text(json.dumps([{"store": "posts", "ID": 2, "post_type": "page", "post_name": "b", "post_content": '<!-- wp:sgs/media {"imageUrl":"%s"} /-->' % U}]), encoding="utf-8")
+        for label, file, extra, want_repo, want_exit in (
+            ("clean content file alone", clean, [], False, 0),
+            ("old attribute in a content file alone (negative control)", dirty, [], False, 1),
+            ("content file with --repo adds the repo targets", clean, ["--repo"], True, None),
+        ):
+            checks += 1
+            args = argparse.Namespace(mirror=None, content=[str(file)], target=None, repo="--repo" in extra, file=None)
+            repo_scan = not cli.saved_only_scope(args)
+            if repo_scan != want_repo:
+                _fail(f"scope: {label}", f"repo targets scanned = {repo_scan}, expected {want_repo}", failures)
+            if want_exit is not None:
+                code = cli.main(["check", "--content", str(file), "--active", "on", *extra])
+                if code != want_exit:
+                    _fail(f"scope: {label}", f"check exit {code}, expected {want_exit}", failures)
     return checks
 
 
@@ -337,7 +368,7 @@ def run(break_mapping: bool = False) -> int:
         M.rows.cache_clear()
         M.STAYS["sgs/post-grid"] = ()
     failures: list[str] = []
-    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures)
+    total = run_cases(failures) + run_carriers(failures) + run_consistency(failures) + run_frozen(failures) + run_scope(failures)
     for line in failures:
         print(line)
     print(f"migrate-media-system self-test: {total - len(failures)} of {total} checks passed"

@@ -1,0 +1,894 @@
+{
+  "blocks": {
+    "sgs/buybox": {
+      "galleryStickerShape": {
+        "status": "refused",
+        "count": 2,
+        "statuses": {
+          "refused": 2
+        },
+        "targets": {
+          "mirror:mamas": 2
+        },
+        "target": "",
+        "note": "shape 'tag' has no §8 equivalent"
+      },
+      "galleryThumbBorderColour": {
+        "status": "converted",
+        "count": 21,
+        "statuses": {
+          "converted": 21
+        },
+        "targets": {
+          "mirror:mamas": 21
+        },
+        "target": "thumbBorderColour",
+        "note": ""
+      },
+      "galleryThumbBorderRadius": {
+        "status": "converted",
+        "count": 21,
+        "statuses": {
+          "converted": 21
+        },
+        "targets": {
+          "mirror:mamas": 21
+        },
+        "target": "thumbRadius",
+        "note": ""
+      },
+      "galleryThumbBorderWidth": {
+        "status": "converted",
+        "count": 21,
+        "statuses": {
+          "converted": 21
+        },
+        "targets": {
+          "mirror:mamas": 21
+        },
+        "target": "thumbBorderWidth",
+        "note": ""
+      },
+      "mainPhotoBackgroundColour": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBackground",
+        "note": ""
+      },
+      "mainPhotoBorderColour": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBorderColour",
+        "note": ""
+      },
+      "mainPhotoBorderStyle": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBorderStyle",
+        "note": ""
+      },
+      "mainPhotoBorderWidth": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBorderWidth",
+        "note": ""
+      },
+      "mainPhotoRadius": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainRadius",
+        "note": ""
+      },
+      "mainPhotoShadow": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBoxShadow",
+        "note": ""
+      },
+      "mainPhotoShadowColour": {
+        "status": "converted",
+        "count": 8,
+        "statuses": {
+          "converted": 8
+        },
+        "targets": {
+          "mirror:mamas": 8
+        },
+        "target": "mainBoxShadowColour",
+        "note": ""
+      }
+    },
+    "sgs/decorative-image": {
+      "backgroundColour": {
+        "status": "converted",
+        "count": 491,
+        "statuses": {
+          "converted": 491
+        },
+        "targets": {
+          "mirror:mamas": 491
+        },
+        "target": "layerBackground",
+        "note": ""
+      },
+      "borderColour": {
+        "status": "converted",
+        "count": 318,
+        "statuses": {
+          "converted": 318
+        },
+        "targets": {
+          "mirror:mamas": 318
+        },
+        "target": "layerBorderColour",
+        "note": ""
+      },
+      "borderRadius": {
+        "status": "converted",
+        "count": 223,
+        "statuses": {
+          "converted": 223
+        },
+        "targets": {
+          "mirror:mamas": 223
+        },
+        "target": "layerRadius",
+        "note": ""
+      },
+      "borderStyle": {
+        "status": "converted",
+        "count": 318,
+        "statuses": {
+          "converted": 318
+        },
+        "targets": {
+          "mirror:mamas": 318
+        },
+        "target": "layerBorderStyle",
+        "note": ""
+      },
+      "borderWidth": {
+        "status": "converted",
+        "count": 318,
+        "statuses": {
+          "converted": 318
+        },
+        "targets": {
+          "mirror:mamas": 318
+        },
+        "target": "layerBorderWidth",
+        "note": ""
+      },
+      "boxShadow": {
+        "status": "converted",
+        "count": 76,
+        "statuses": {
+          "converted": 76
+        },
+        "targets": {
+          "mirror:mamas": 76
+        },
+        "target": "layerBoxShadow",
+        "note": ""
+      },
+      "decorMedia": {
+        "status": "converted",
+        "count": 238,
+        "statuses": {
+          "converted": 238
+        },
+        "targets": {
+          "mirror:mamas": 238
+        },
+        "target": "layerSource",
+        "note": ""
+      },
+      "height": {
+        "status": "converted",
+        "count": 325,
+        "statuses": {
+          "converted": 325
+        },
+        "targets": {
+          "mirror:mamas": 325
+        },
+        "target": "layerHeight",
+        "note": ""
+      },
+      "imageDecorative": {
+        "status": "converted",
+        "count": 145,
+        "statuses": {
+          "converted": 145
+        },
+        "targets": {
+          "mirror:mamas": 145
+        },
+        "target": "layerDecorative",
+        "note": ""
+      },
+      "imageId": {
+        "status": "converted",
+        "count": 26,
+        "statuses": {
+          "converted": 26
+        },
+        "targets": {
+          "mirror:mamas": 26
+        },
+        "target": "layerSource",
+        "note": ""
+      },
+      "imageUrl": {
+        "status": "converted",
+        "count": 26,
+        "statuses": {
+          "converted": 26
+        },
+        "targets": {
+          "mirror:mamas": 26
+        },
+        "target": "layerSource",
+        "note": ""
+      },
+      "opacity": {
+        "status": "converted",
+        "count": 116,
+        "statuses": {
+          "converted": 116
+        },
+        "targets": {
+          "mirror:mamas": 116
+        },
+        "target": "layerOpacity",
+        "note": ""
+      },
+      "shape": {
+        "status": "converted",
+        "count": 38,
+        "statuses": {
+          "converted": 38
+        },
+        "targets": {
+          "mirror:mamas": 38
+        },
+        "target": "layerShape",
+        "note": ""
+      },
+      "width": {
+        "status": "converted",
+        "count": 579,
+        "statuses": {
+          "converted": 579
+        },
+        "targets": {
+          "mirror:mamas": 579
+        },
+        "target": "layerWidth",
+        "note": ""
+      }
+    },
+    "sgs/gallery": {
+      "mediaItems": {
+        "status": "converted",
+        "count": 58,
+        "statuses": {
+          "converted": 58
+        },
+        "targets": {
+          "mirror:mamas": 58
+        },
+        "target": "mediaItems",
+        "note": "6 items"
+      }
+    },
+    "sgs/hero": {
+      "splitMediaAlign": {
+        "status": "converted",
+        "count": 7,
+        "statuses": {
+          "converted": 7
+        },
+        "targets": {
+          "mirror:mamas": 7
+        },
+        "target": "splitAlignment",
+        "note": ""
+      },
+      "splitMediaHeight": {
+        "status": "converted",
+        "count": 5,
+        "statuses": {
+          "converted": 5
+        },
+        "targets": {
+          "mirror:mamas": 5
+        },
+        "target": "splitHeight",
+        "note": ""
+      },
+      "splitMediaImageId": {
+        "status": "converted",
+        "count": 18,
+        "statuses": {
+          "converted": 18
+        },
+        "targets": {
+          "mirror:mamas": 18
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaImageUrl": {
+        "status": "converted",
+        "count": 18,
+        "statuses": {
+          "converted": 18
+        },
+        "targets": {
+          "mirror:mamas": 18
+        },
+        "target": "splitSource",
+        "note": ""
+      },
+      "splitMediaMaxWidth": {
+        "status": "converted",
+        "count": 16,
+        "statuses": {
+          "converted": 16
+        },
+        "targets": {
+          "mirror:mamas": 16
+        },
+        "target": "splitMaxWidth",
+        "note": ""
+      },
+      "splitMediaMediaSizing": {
+        "status": "converted",
+        "count": 16,
+        "statuses": {
+          "converted": 16
+        },
+        "targets": {
+          "mirror:mamas": 16
+        },
+        "target": "splitHeight",
+        "note": ""
+      },
+      "splitMediaObjectFit": {
+        "status": "converted",
+        "count": 16,
+        "statuses": {
+          "converted": 16
+        },
+        "targets": {
+          "mirror:mamas": 16
+        },
+        "target": "splitFit",
+        "note": ""
+      }
+    },
+    "sgs/media": {
+      "aspectRatio": {
+        "status": "converted",
+        "count": 143,
+        "statuses": {
+          "converted": 143
+        },
+        "targets": {
+          "mirror:mamas": 143
+        },
+        "target": "ratio",
+        "note": ""
+      },
+      "borderRadius": {
+        "status": "converted",
+        "count": 145,
+        "statuses": {
+          "converted": 145
+        },
+        "targets": {
+          "mirror:mamas": 145
+        },
+        "target": "radius",
+        "note": ""
+      },
+      "imageAlt": {
+        "status": "converted",
+        "count": 437,
+        "statuses": {
+          "converted": 437
+        },
+        "targets": {
+          "mirror:mamas": 437
+        },
+        "target": "alt",
+        "note": "a per-device alt that differs moved into that device's Source"
+      },
+      "imageDecorative": {
+        "status": "converted",
+        "count": 12,
+        "statuses": {
+          "converted": 12
+        },
+        "targets": {
+          "mirror:mamas": 12
+        },
+        "target": "decorative",
+        "note": ""
+      },
+      "imageId": {
+        "status": "converted",
+        "count": 513,
+        "statuses": {
+          "converted": 513
+        },
+        "targets": {
+          "mirror:mamas": 513
+        },
+        "target": "source",
+        "note": ""
+      },
+      "imageUrl": {
+        "status": "converted",
+        "count": 513,
+        "statuses": {
+          "converted": 513
+        },
+        "targets": {
+          "mirror:mamas": 513
+        },
+        "target": "source",
+        "note": ""
+      },
+      "mediaSizing": {
+        "status": "converted",
+        "count": 269,
+        "statuses": {
+          "converted": 269
+        },
+        "targets": {
+          "mirror:mamas": 269
+        },
+        "target": "height",
+        "note": ""
+      },
+      "mediaType": {
+        "status": "converted",
+        "count": 12,
+        "statuses": {
+          "converted": 12
+        },
+        "targets": {
+          "mirror:mamas": 12
+        },
+        "target": "source",
+        "note": ""
+      },
+      "objectFit": {
+        "status": "converted",
+        "count": 297,
+        "statuses": {
+          "converted": 297
+        },
+        "targets": {
+          "mirror:mamas": 297
+        },
+        "target": "fit",
+        "note": ""
+      }
+    },
+    "sgs/nav-drawer": {
+      "chromeLogoId": {
+        "status": "converted",
+        "count": 12,
+        "statuses": {
+          "converted": 12
+        },
+        "targets": {
+          "mirror:mamas": 12
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      },
+      "chromeLogoUrl": {
+        "status": "converted",
+        "count": 12,
+        "statuses": {
+          "converted": 12
+        },
+        "targets": {
+          "mirror:mamas": 12
+        },
+        "target": "chromeLogoSource",
+        "note": ""
+      }
+    },
+    "sgs/product-card": {
+      "imageAspectRatio": {
+        "status": "converted",
+        "count": 142,
+        "statuses": {
+          "converted": 142
+        },
+        "targets": {
+          "mirror:mamas": 142
+        },
+        "target": "imageRatio",
+        "note": ""
+      },
+      "imageFill": {
+        "status": "converted",
+        "count": 62,
+        "statuses": {
+          "converted": 62
+        },
+        "targets": {
+          "mirror:mamas": 62
+        },
+        "target": "imageHeight",
+        "note": ""
+      },
+      "imageSize": {
+        "status": "deleted",
+        "count": 62,
+        "statuses": {
+          "deleted": 62
+        },
+        "targets": {
+          "mirror:mamas": 62
+        },
+        "target": "",
+        "note": "deleted (§13): sizes are derived"
+      },
+      "mediaBackgroundColour": {
+        "status": "converted",
+        "count": 18,
+        "statuses": {
+          "converted": 18
+        },
+        "targets": {
+          "mirror:mamas": 18
+        },
+        "target": "imageBackground",
+        "note": ""
+      }
+    },
+    "sgs/responsive-logo": {
+      "logoId": {
+        "status": "converted",
+        "count": 233,
+        "statuses": {
+          "converted": 233
+        },
+        "targets": {
+          "mirror:mamas": 233
+        },
+        "target": "logoSource",
+        "note": ""
+      },
+      "logoUrl": {
+        "status": "converted",
+        "count": 235,
+        "statuses": {
+          "converted": 235
+        },
+        "targets": {
+          "mirror:mamas": 235
+        },
+        "target": "logoSource",
+        "note": ""
+      }
+    }
+  },
+  "blockInstancesWithOldAttributes": {
+    "sgs/buybox": {
+      "mirror:mamas": 21
+    },
+    "sgs/decorative-image": {
+      "mirror:mamas": 579
+    },
+    "sgs/gallery": {
+      "mirror:mamas": 29
+    },
+    "sgs/hero": {
+      "mirror:mamas": 18
+    },
+    "sgs/media": {
+      "mirror:mamas": 513
+    },
+    "sgs/nav-drawer": {
+      "mirror:mamas": 12
+    },
+    "sgs/product-card": {
+      "mirror:mamas": 142
+    },
+    "sgs/responsive-logo": {
+      "mirror:mamas": 235
+    }
+  },
+  "pinnedDefaults": {},
+  "unclassifiedMediaLooking": {},
+  "blockInstancesSeen": {
+    "core/group": {
+      "mirror:mamas": 1
+    },
+    "core/heading": {
+      "mirror:mamas": 47
+    },
+    "core/latest-comments": {
+      "mirror:mamas": 1
+    },
+    "core/post-content": {
+      "mirror:mamas": 19
+    },
+    "core/post-date": {
+      "mirror:mamas": 7
+    },
+    "core/post-excerpt": {
+      "mirror:mamas": 7
+    },
+    "core/post-title": {
+      "mirror:mamas": 23
+    },
+    "core/query": {
+      "mirror:mamas": 7
+    },
+    "core/query-pagination": {
+      "mirror:mamas": 21
+    },
+    "core/query-title": {
+      "mirror:mamas": 21
+    },
+    "core/query-total": {
+      "mirror:mamas": 7
+    },
+    "core/search": {
+      "mirror:mamas": 14
+    },
+    "core/separator": {
+      "mirror:mamas": 15
+    },
+    "core/template-part": {
+      "mirror:mamas": 259
+    },
+    "sgs/accordion": {
+      "mirror:mamas": 90
+    },
+    "sgs/accordion-item": {
+      "mirror:mamas": 440
+    },
+    "sgs/account": {
+      "mirror:mamas": 18
+    },
+    "sgs/breadcrumbs": {
+      "mirror:mamas": 19
+    },
+    "sgs/business-info": {
+      "mirror:mamas": 136
+    },
+    "sgs/button": {
+      "mirror:mamas": 1607
+    },
+    "sgs/buybox": {
+      "mirror:mamas": 32
+    },
+    "sgs/cart": {
+      "mirror:mamas": 28
+    },
+    "sgs/choice-flow": {
+      "mirror:mamas": 44
+    },
+    "sgs/choice-flow-question": {
+      "mirror:mamas": 19
+    },
+    "sgs/choice-flow-result": {
+      "mirror:mamas": 4
+    },
+    "sgs/commerce-note": {
+      "mirror:mamas": 25
+    },
+    "sgs/container": {
+      "mirror:mamas": 9084
+    },
+    "sgs/decorative-image": {
+      "mirror:mamas": 579
+    },
+    "sgs/form": {
+      "mirror:mamas": 55
+    },
+    "sgs/form-field-checkbox": {
+      "mirror:mamas": 8
+    },
+    "sgs/form-field-email": {
+      "mirror:mamas": 13
+    },
+    "sgs/form-field-select": {
+      "mirror:mamas": 9
+    },
+    "sgs/form-field-text": {
+      "mirror:mamas": 93
+    },
+    "sgs/form-field-textarea": {
+      "mirror:mamas": 41
+    },
+    "sgs/form-field-tiles": {
+      "mirror:mamas": 13
+    },
+    "sgs/form-step": {
+      "mirror:mamas": 23
+    },
+    "sgs/free-delivery-bar": {
+      "mirror:mamas": 11
+    },
+    "sgs/gallery": {
+      "mirror:mamas": 49
+    },
+    "sgs/gift-order": {
+      "mirror:mamas": 17
+    },
+    "sgs/heading": {
+      "mirror:mamas": 1625
+    },
+    "sgs/hero": {
+      "mirror:mamas": 193
+    },
+    "sgs/icon": {
+      "mirror:mamas": 335
+    },
+    "sgs/icon-list": {
+      "mirror:mamas": 169
+    },
+    "sgs/label": {
+      "mirror:mamas": 959
+    },
+    "sgs/media": {
+      "mirror:mamas": 632
+    },
+    "sgs/multi-button": {
+      "mirror:mamas": 239
+    },
+    "sgs/nav-bar-menu": {
+      "mirror:mamas": 21
+    },
+    "sgs/nav-drawer": {
+      "mirror:mamas": 24
+    },
+    "sgs/nav-drawer-menu": {
+      "mirror:mamas": 22
+    },
+    "sgs/option-picker": {
+      "mirror:mamas": 124
+    },
+    "sgs/product-card": {
+      "mirror:mamas": 164
+    },
+    "sgs/responsive-logo": {
+      "mirror:mamas": 238
+    },
+    "sgs/site-footer": {
+      "mirror:mamas": 35
+    },
+    "sgs/site-footer-row": {
+      "mirror:mamas": 106
+    },
+    "sgs/site-header": {
+      "mirror:mamas": 20
+    },
+    "sgs/site-header-row": {
+      "mirror:mamas": 63
+    },
+    "sgs/social-icons": {
+      "mirror:mamas": 67
+    },
+    "sgs/testimonial": {
+      "mirror:mamas": 87
+    },
+    "sgs/testimonial-slider": {
+      "mirror:mamas": 25
+    },
+    "sgs/text": {
+      "mirror:mamas": 7724
+    },
+    "sgs/trust-bar": {
+      "mirror:mamas": 99
+    },
+    "sgs/wishlist-panel": {
+      "mirror:mamas": 1
+    },
+    "woocommerce/cart": {
+      "mirror:mamas": 8
+    },
+    "woocommerce/catalog-sorting": {
+      "mirror:mamas": 18
+    },
+    "woocommerce/checkout": {
+      "mirror:mamas": 7
+    },
+    "woocommerce/checkout-actions-block": {
+      "mirror:mamas": 2
+    },
+    "woocommerce/checkout-contact-information-block": {
+      "mirror:mamas": 7
+    },
+    "woocommerce/checkout-payment-block": {
+      "mirror:mamas": 7
+    },
+    "woocommerce/checkout-shipping-address-block": {
+      "mirror:mamas": 7
+    },
+    "woocommerce/proceed-to-checkout-block": {
+      "mirror:mamas": 3
+    },
+    "woocommerce/product-button": {
+      "mirror:mamas": 15
+    },
+    "woocommerce/product-collection": {
+      "mirror:mamas": 72
+    },
+    "woocommerce/product-filter-attribute": {
+      "mirror:mamas": 16
+    },
+    "woocommerce/product-filter-chips": {
+      "mirror:mamas": 52
+    },
+    "woocommerce/product-filter-taxonomy": {
+      "mirror:mamas": 36
+    },
+    "woocommerce/product-filters": {
+      "mirror:mamas": 52
+    },
+    "woocommerce/product-image": {
+      "mirror:mamas": 15
+    },
+    "woocommerce/product-new": {
+      "mirror:mamas": 15
+    },
+    "woocommerce/product-price": {
+      "mirror:mamas": 15
+    },
+    "woocommerce/product-sale-badge": {
+      "mirror:mamas": 15
+    },
+    "woocommerce/product-template": {
+      "mirror:mamas": 43
+    }
+  },
+  "mappingRows": 725
+}
