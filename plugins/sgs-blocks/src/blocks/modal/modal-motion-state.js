@@ -11,8 +11,8 @@
  * `modal-core.js::openModal` announces each open through `announceModalOpen`; `wireModalMotionState` clears on the
  * native `close` event, which fires for every close path. `@sgs/motion-state` is loaded with a native `import()` that
  * webpack leaves alone (`webpackIgnore`), resolved through the import map `Sgs_Motion_Trigger_Open_State` fills on any
- * page that prints an `open` entrance, and only when the dialog holds one. A failed load is caught: the modal still
- * opens and closes, without motion. No inline style is written.
+ * page that prints an `open` entrance, and only when the dialog holds one. A failed load is caught and warned about once
+ * (a dialog rendered after `wp_head` misses the import map): the modal still opens and closes, without motion. No inline style is written.
  *
  * @package
  */
@@ -38,7 +38,13 @@ function loadMotionState() {
 				loaded = mod;
 				return mod;
 			} )
-			.catch( () => null );
+			.catch( () => {
+				// eslint-disable-next-line no-console
+				console.warn(
+					'sgs/modal: @sgs/motion-state did not load, so open entrances will not play. The import map was probably not printed because this dialog rendered after wp_head.'
+				);
+				return null;
+			} );
 	}
 	return loading;
 }
