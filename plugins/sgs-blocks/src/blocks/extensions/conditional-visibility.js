@@ -106,7 +106,7 @@ function addConditionalAttributes( settings, name ) { // eslint-disable-line no-
 		...settings,
 		attributes: {
 			...settings.attributes,
-			/** 'none' | 'logged-in' | 'logged-out' */
+			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' */
 			sgsConditionLoggedIn: { type: 'string', default: 'none' },
 			/** Array of WordPress role slugs, e.g. ['administrator','editor'] */
 			sgsConditionUserRole: {
@@ -203,6 +203,8 @@ function buildConditionSummary( attributes ) {
 		}
 	} else if ( 'logged-out' === attributes.sgsConditionLoggedIn ) {
 		parts.push( __( 'logged-out visitors only', 'sgs-blocks' ) );
+	} else if ( 'order-owner' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'the signed-in owner of this order only', 'sgs-blocks' ) );
 	}
 
 	if ( attributes.sgsConditionDateStart ) {
@@ -437,6 +439,10 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									{
 										label: __( 'Logged-out visitors only', 'sgs-blocks' ),
 										value: 'logged-out',
+									},
+									{
+										label: __( 'The signed-in owner of this order (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-owner',
 									},
 								] }
 								onChange={ ( val ) =>

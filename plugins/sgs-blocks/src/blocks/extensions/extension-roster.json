@@ -77,7 +77,7 @@
 			"file": "conditional-visibility.js",
 			"rule": { "mode": "universal", "requiresClassName": true, "hideSlug": null },
 			"attributes": {
-				"sgsConditionLoggedIn": { "type": "string", "default": "none", "enum": [ "none", "logged-in", "logged-out" ], "role": "behaviour" },
+				"sgsConditionLoggedIn": { "type": "string", "default": "none", "enum": [ "none", "logged-in", "logged-out", "order-owner" ], "role": "behaviour" },
 				"sgsConditionUserRole": { "type": "array", "default": [], "role": "behaviour" },
 				"sgsConditionDateStart": { "type": "string", "default": "", "role": "behaviour" },
 				"sgsConditionDateEnd": { "type": "string", "default": "", "role": "behaviour" },

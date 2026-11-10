@@ -14,7 +14,8 @@
  *
  * Supported conditions
  * --------------------
- * - sgsConditionLoggedIn   : 'none' | 'logged-in' | 'logged-out'
+ * - sgsConditionLoggedIn   : 'none' | 'logged-in' | 'logged-out' | 'order-owner' (the signed-in viewer
+ *   owns the order of the current order-confirmation page; hidden when no order is on the page)
  * - sgsConditionUserRole   : string[] — restrict to specific WP roles
  * - sgsConditionDateStart  : YYYY-MM-DD — hide before this date
  * - sgsConditionDateEnd    : YYYY-MM-DD — hide after this date
@@ -97,6 +98,28 @@ function resolve_current_product( $instance = null ) {
 }
 
 /**
+ * Whether the signed-in viewer owns the order on the current order-confirmation page. A guest order (customer 0),
+ * another customer's order, an unknown order and a page with no order all return false.
+ *
+ * @return bool
+ */
+function viewer_owns_current_order(): bool {
+	if ( ! is_user_logged_in() || ! function_exists( 'wc_get_order' ) ) {
+		return false;
+	}
+	$order_id = absint( get_query_var( 'order-received' ) );
+	if ( $order_id <= 0 ) {
+		return false;
+	}
+	$order = wc_get_order( $order_id );
+	if ( ! is_object( $order ) || ! method_exists( $order, 'get_customer_id' ) ) {
+		return false;
+	}
+	$owner = (int) $order->get_customer_id();
+	return $owner > 0 && get_current_user_id() === $owner;
+}
+
+/**
  * Suppress block output when any conditional visibility rule fails.
  *
  * @param string         $block_content The rendered block HTML.
@@ -129,6 +152,10 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 	}
 
 	if ( 'logged-out' === $login_rule && is_user_logged_in() ) {
+		return '';
+	}
+
+	if ( 'order-owner' === $login_rule && ! viewer_owns_current_order() ) {
 		return '';
 	}
 
