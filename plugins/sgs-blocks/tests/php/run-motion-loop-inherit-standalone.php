@@ -334,6 +334,7 @@ $value_for = array(
 	'rotateY'    => 10,
 	'blur'       => 4,
 	'clip'       => 20,
+	'clipRound'  => 12,
 );
 foreach ( \SGS\Blocks\Motion\Sgs_Motion_Emitter::fields( 'EntranceFrom' ) as $key => $field ) {
 	if ( null === ( $field['css'] ?? null ) ) {
