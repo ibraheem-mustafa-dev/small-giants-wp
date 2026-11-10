@@ -175,7 +175,7 @@ final class MediaAtomEmittersTest extends TestCase {
 				self::attrs(
 					array(
 						'Shape' => array(
-							'desktop' => array( 'shape' => 'hexagon' ),
+							'desktop' => array( 'shape' => 'hexagon', 'proportions' => 'stretch' ),
 							'mobile'  => 'none',
 						),
 					)
