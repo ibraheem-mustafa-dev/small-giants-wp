@@ -22,6 +22,7 @@
  */
 
 import { MEDIA_BASES } from '../../MediaElementControls.js';
+import { settingsForBases } from './atom-settings.js';
 
 /**
  * Every atom, with the base set it owns.
@@ -30,6 +31,10 @@ import { MEDIA_BASES } from '../../MediaElementControls.js';
  * `atoms: [ 'source', 'media-type' ]` receives the union of those atoms' bases
  * and nothing else. Without it a single declared prefix injects all 59 bases
  * (109 keys with tiers), which is the dead-control class the framework gates.
+ *
+ * `settings` is the atom's C1 list, one entry per base (see `atom-settings.js`),
+ * `effects` the effect ids the atom offers and `since` the release it first
+ * shipped in. All three are data: nothing reads them yet.
  *
  * `types` is the media types the atom applies to. It is enforced, not advisory:
  * a picker is hard-restricted to it, so a video cannot land in an image
@@ -73,6 +78,9 @@ export const MEDIA_ATOMS = {
 	source: {
 		id: 'source',
 		bases: MEDIA_BASES.source,
+		settings: settingsForBases( MEDIA_BASES.source ),
+		effects: [],
+		since: '1.0',
 		// 'lottie' added 2026-09-26 (U-17, design §3.1): a 4th picker slot,
 		// `LottieId` (MEDIA_BASES.source), restricted to `application/json`
 		// in the media library — see source.control.js's lottie branch.
@@ -113,6 +121,9 @@ export const MEDIA_ATOMS = {
 	'media-type': {
 		id: 'media-type',
 		bases: MEDIA_BASES.type,
+		settings: settingsForBases( MEDIA_BASES.type ),
+		effects: [],
+		since: '1.0',
 		// 'lottie' added 2026-09-26 (U-17, design §3.1) — the 4th media type.
 		types: [ 'image', 'video', 'svg', 'lottie' ],
 		scope: 'both',
@@ -137,6 +148,9 @@ export const MEDIA_ATOMS = {
 	'video-behaviour': {
 		id: 'video-behaviour',
 		bases: MEDIA_BASES.behaviour,
+		settings: settingsForBases( MEDIA_BASES.behaviour ),
+		effects: [],
+		since: '1.0',
 		// 'lottie' added 2026-09-26 (U-17, design §3.1): this atom already owns
 		// type-conditional playback controls, so `VideoLoop` is reused for a
 		// Lottie instance's loop toggle, and the two new bases `LottieTrigger`/
@@ -166,6 +180,9 @@ export const MEDIA_ATOMS = {
 	meaning: {
 		id: 'meaning',
 		bases: MEDIA_BASES.meaning,
+		settings: settingsForBases( MEDIA_BASES.meaning ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg', 'lottie' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -180,6 +197,9 @@ export const MEDIA_ATOMS = {
 	intrinsic: {
 		id: 'intrinsic',
 		bases: MEDIA_BASES.intrinsic,
+		settings: settingsForBases( MEDIA_BASES.intrinsic ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image' ],
 		scope: 'element',
 		attachesTo: 'element',
@@ -194,6 +214,9 @@ export const MEDIA_ATOMS = {
 	'svg-presentation': {
 		id: 'svg-presentation',
 		bases: MEDIA_BASES.svg,
+		settings: settingsForBases( MEDIA_BASES.svg ),
+		effects: [],
+		since: '1.0',
 		types: [ 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -204,6 +227,9 @@ export const MEDIA_ATOMS = {
 	'object-fit': {
 		id: 'object-fit',
 		bases: MEDIA_BASES.fit,
+		settings: settingsForBases( MEDIA_BASES.fit ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video' ],
 		// ⛔ NOT 'svg'. object-fit does nothing to an inline <svg>; the SVG path
 		// needs preserveAspectRatio or a sized wrapper. `sgs/hero` already gets
@@ -240,6 +266,9 @@ export const MEDIA_ATOMS = {
 	'focal-point': {
 		id: 'focal-point',
 		bases: MEDIA_BASES.focal,
+		settings: settingsForBases( MEDIA_BASES.focal ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -275,6 +304,9 @@ export const MEDIA_ATOMS = {
 	'box-shape': {
 		id: 'box-shape',
 		bases: MEDIA_BASES.shape,
+		settings: settingsForBases( MEDIA_BASES.shape ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -306,6 +338,9 @@ export const MEDIA_ATOMS = {
 	overlay: {
 		id: 'overlay',
 		bases: MEDIA_BASES.overlay,
+		settings: settingsForBases( MEDIA_BASES.overlay ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'box',
@@ -333,6 +368,9 @@ export const MEDIA_ATOMS = {
 	opacity: {
 		id: 'opacity',
 		bases: MEDIA_BASES.opacity,
+		settings: settingsForBases( MEDIA_BASES.opacity ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -343,6 +381,9 @@ export const MEDIA_ATOMS = {
 	shadow: {
 		id: 'shadow',
 		bases: MEDIA_BASES.shadow,
+		settings: settingsForBases( MEDIA_BASES.shadow ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -361,6 +402,9 @@ export const MEDIA_ATOMS = {
 	'media-padding': {
 		id: 'media-padding',
 		bases: MEDIA_BASES.padding,
+		settings: settingsForBases( MEDIA_BASES.padding ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video', 'svg' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -374,6 +418,9 @@ export const MEDIA_ATOMS = {
 	caption: {
 		id: 'caption',
 		bases: MEDIA_BASES.caption,
+		settings: settingsForBases( MEDIA_BASES.caption ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image', 'video' ],
 		scope: 'both',
 		attachesTo: 'element',
@@ -387,6 +434,9 @@ export const MEDIA_ATOMS = {
 	link: {
 		id: 'link',
 		bases: MEDIA_BASES.link,
+		settings: settingsForBases( MEDIA_BASES.link ),
+		effects: [],
+		since: '1.0',
 		types: [ 'image' ],
 		scope: 'both',
 		attachesTo: 'element',
