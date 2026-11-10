@@ -1194,6 +1194,17 @@
    "reason": "Reads media-element.css; re-point at media-base.css"
   },
   {
+   "path": "scripts/migrate-media-system/mapping-frozen.json",
+   "kind": "gate",
+   "disposition": "changed",
+   "names": [
+    "includes/image-controls.php::sgsColourTreatment"
+   ],
+   "package": "WP-14",
+   "lands": "A",
+   "reason": "The frozen migration rows name the old colour-treatment attribute as a source; they stay as the migration's input vocabulary until the tool retires after the cutover sweep"
+  },
+  {
    "path": "scripts/migrate-media-system/mapping.py",
    "kind": "gate",
    "disposition": "changed",
