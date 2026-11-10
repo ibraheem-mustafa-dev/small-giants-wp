@@ -436,12 +436,12 @@
 						"x": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						},
 						"y": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						}
 					}
 				},
@@ -452,12 +452,12 @@
 						"x": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						},
 						"y": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						}
 					}
 				},
@@ -468,12 +468,12 @@
 						"x": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						},
 						"y": {
 							"type": "number",
 							"minimum": 0,
-							"maximum": 100
+							"maximum": 1
 						}
 					}
 				}
