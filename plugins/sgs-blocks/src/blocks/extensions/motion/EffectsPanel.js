@@ -219,6 +219,7 @@ export function useFocusRequest( { clientId, onRequest, announce } ) {
 		[ clientId ]
 	);
 	const { clear } = useDispatch( INSPECTOR_FOCUS_STORE );
+	const [ pending, setPending ] = useState( null );
 	const requestId =
 		request?.panel === EFFECTS_PANEL ? request.requestId : null;
 	useEffect( () => {
@@ -227,20 +228,23 @@ export function useFocusRequest( { clientId, onRequest, announce } ) {
 		}
 		onRequest( request );
 		setOpened( true );
-		window.requestAnimationFrame( () => {
-			const node = ref.current?.closest( '.components-panel__body' );
-			if ( node ) {
-				node.scrollIntoView?.( { block: 'nearest' } );
-				node
-					.querySelector( '.components-panel__body-title button' )
-					?.focus();
-			}
-			speak( announce( request ), 'polite' );
-			clear( clientId );
-		} );
+		setPending( request );
 		// Only a new request acts; the callbacks are read as they were when it arrived.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ requestId ] );
+	// The panel is open and drawn: scroll to it, focus its heading, announce it, then clear the request.
+	useEffect( () => {
+		if ( ! pending || ! opened ) {
+			return;
+		}
+		const node = ref.current?.closest( '.components-panel__body' );
+		node?.scrollIntoView?.( { block: 'nearest' } );
+		node?.querySelector( '.components-panel__body-title button' )?.focus();
+		speak( announce( pending ), 'polite' );
+		clear( clientId );
+		setPending( null );
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [ pending, opened ] );
 	return { ref, opened, toggle: () => setOpened( ( value ) => ! value ) };
 }
 
