@@ -40,6 +40,10 @@ require_once __DIR__ . '/helpers-svg-kses.php';
 // U-17 (design §3.1) — not yet wired into render-helpers.php's autoload
 // chain, so required directly here (idempotent — require_once).
 require_once __DIR__ . '/lottie-render.php';
+// The per-kind branches of sgs_tier_media_render().
+require_once __DIR__ . '/media/tier-image.php';
+require_once __DIR__ . '/media/tier-video.php';
+require_once __DIR__ . '/media/tier-svg.php';
 
 if ( ! function_exists( 'sgs_allowed_svg_tags' ) ) {
 	/**
@@ -216,23 +220,9 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 			$class_attr = implode( ' ', $classes );
 
 			if ( 'svg' === $type ) {
-				$html .= sprintf(
-					'<span class="%s" aria-hidden="true">%s</span>',
-					esc_attr( $class_attr ),
-					wp_kses( (string) ( $spec['svg'] ?? '' ), sgs_allowed_svg_tags() )
-				);
+				$html .= sgs_tier_media_svg_html( $spec, $class_attr );
 			} elseif ( 'video' === $type ) {
-				$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
-				// Only the BASE tier preloads. A hidden video does not autoplay and,
-				// with preload="none", does not fetch — which is what keeps sibling
-				// markup honest against D5's three-videos-all-fetching objection.
-				$html .= sprintf(
-					'<video class="%s"%s loop muted playsinline preload="%s"><source src="%s" type="video/mp4"></video>',
-					esc_attr( $class_attr ),
-					$video_autoplay ? ' autoplay' : ' controls',
-					'desktop' === $tier ? 'metadata' : 'none',
-					esc_url( (string) ( $media['url'] ?? '' ) )
-				);
+				$html .= sgs_tier_media_video_html( $spec, $tier, $class_attr, $video_autoplay );
 			} elseif ( 'lottie' === $type ) {
 				$media      = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
 				$lottie_id  = ! empty( $media['id'] ) ? absint( $media['id'] ) : 0;
@@ -262,26 +252,7 @@ if ( ! function_exists( 'sgs_tier_media_render' ) ) {
 					);
 				}
 			} else {
-				$media = is_array( $spec['media'] ?? null ) ? $spec['media'] : array();
-				$attrs = array(
-					'class'         => $class_attr,
-					'loading'       => $img_loading,
-					'decoding'      => 'async',
-					'fetchpriority' => $img_fetchpriority,
-				);
-				if ( ! empty( $media['width'] ) ) {
-					$attrs['width'] = absint( $media['width'] );
-				}
-				if ( ! empty( $media['height'] ) ) {
-					$attrs['height'] = absint( $media['height'] );
-				}
-				$html .= sgs_responsive_image(
-					! empty( $media['id'] ) ? absint( $media['id'] ) : 0,
-					(string) ( $media['url'] ?? '' ),
-					$resolved_alt[ $tier ],
-					'large',
-					$attrs
-				);
+				$html .= sgs_tier_media_image_html( $spec, $class_attr, $resolved_alt[ $tier ], $img_loading, $img_fetchpriority );
 			}
 		}
 
