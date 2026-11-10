@@ -23,6 +23,9 @@ final class Account_Extras {
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_orders_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_lost_confirmation_template' ), 10, 5 );
 		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_view_order_template' ), 10, 5 );
+		\add_filter( 'wc_get_template', array( __CLASS__, 'maybe_swap_address_template' ), 10, 5 );
+		\add_filter( 'woocommerce_billing_fields', array( __CLASS__, 'add_address_2' ), 20 );
+		\add_filter( 'woocommerce_shipping_fields', array( __CLASS__, 'add_address_2' ), 20 );
 		\add_filter( 'woocommerce_account_orders_columns', array( __CLASS__, 'add_summary_column' ) );
 		\add_action( 'woocommerce_my_account_my_orders_column_order-summary', array( __CLASS__, 'summary_cell' ) );
 		\add_action( 'woocommerce_account_edit-address_endpoint', array( __CLASS__, 'address_helper_line' ), 20 );
@@ -145,6 +148,69 @@ final class Account_Extras {
 			return __DIR__ . '/templates/form-edit-address.php';
 		}
 		return $template;
+	}
+
+	/**
+	 * The sgs/account block's attributes from the My Account page's content, for the request that saves an address
+	 * (WooCommerce saves on `wp_loaded`, before any block renders). Null when the page has no such block.
+	 *
+	 * @return array|null
+	 */
+	private static function page_attributes() {
+		static $found = false;
+		if ( false !== $found ) {
+			return $found;
+		}
+		$found = null;
+		$page  = function_exists( 'wc_get_page_id' ) ? \get_post( (int) \wc_get_page_id( 'myaccount' ) ) : null;
+		if ( $page && \has_block( 'sgs/account', $page ) ) {
+			$stack = \parse_blocks( (string) $page->post_content );
+			while ( $stack ) {
+				$block = array_shift( $stack );
+				if ( 'sgs/account' === ( $block['blockName'] ?? '' ) ) {
+					$found = (array) ( $block['attrs'] ?? array() );
+					break;
+				}
+				$stack = array_merge( (array) ( $block['innerBlocks'] ?? array() ), $stack );
+			}
+		}
+		return $found;
+	}
+
+	/**
+	 * Add the optional second address line to the fields WooCommerce builds, on the account address screens only and
+	 * only while `addressEditor` is on: while the block renders, and on the edit-address endpoint (so WooCommerce's
+	 * save handler, which stores only the fields it builds, keeps the line). Checkout is untouched.
+	 *
+	 * @param mixed $fields Address fields keyed `billing_*` or `shipping_*`.
+	 * @return mixed
+	 */
+	public static function add_address_2( $fields ) {
+		if ( ! is_array( $fields ) ) {
+			return $fields;
+		}
+		$attrs = is_array( Account_Endpoints::$active ) ? Account_Endpoints::$active : null;
+		if ( null === $attrs && function_exists( 'is_wc_endpoint_url' ) && \is_wc_endpoint_url( 'edit-address' ) ) {
+			$attrs = self::page_attributes();
+		}
+		if ( ! is_array( $attrs ) || empty( $attrs['addressEditor'] ) ) {
+			return $fields;
+		}
+		foreach ( array( 'billing_', 'shipping_' ) as $prefix ) {
+			if ( isset( $fields[ $prefix . 'address_1' ] ) && ! isset( $fields[ $prefix . 'address_2' ] ) ) {
+				$label   = trim( (string) ( $attrs['addressLine2Label'] ?? '' ) );
+				$section = rtrim( $prefix, '_' );
+
+				$fields[ $prefix . 'address_2' ] = array(
+					'label'        => '' !== $label ? $label : \__( 'Apartment, suite, unit, etc.', 'sgs-blocks' ),
+					'required'     => false,
+					'class'        => array( 'form-row-wide', 'address-field' ),
+					'autocomplete' => 'section-' . $section . ' ' . $section . ' address-line2',
+					'priority'     => (int) ( $fields[ $prefix . 'address_1' ]['priority'] ?? 50 ) + 10,
+				);
+			}
+		}
+		return $fields;
 	}
 
 	/**

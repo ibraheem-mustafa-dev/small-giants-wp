@@ -33,6 +33,7 @@ if ( ! function_exists( 'wc_get_endpoint_url' ) ) { function wc_get_endpoint_url
 if ( ! function_exists( 'wc_get_post_data_by_key' ) ) { function wc_get_post_data_by_key( $k, $d = '' ) { return $GLOBALS['posted'][ $k ] ?? $d; } }
 if ( ! function_exists( 'wc_get_account_formatted_address' ) ) { function wc_get_account_formatted_address( $t ) { return $GLOBALS['saved'][ $t ] ?? ''; } }
 if ( ! function_exists( 'get_user_meta' ) ) { function get_user_meta( $u, $k, $s = false ) { return $GLOBALS['meta'][ $k ] ?? ''; } }
+if ( ! function_exists( 'is_wc_endpoint_url' ) ) { function is_wc_endpoint_url( $e = '' ) { return ! empty( $GLOBALS['on_endpoint'] ); } }
 if ( ! function_exists( 'wc_wp_theme_get_element_class_name' ) ) { function wc_wp_theme_get_element_class_name( $e ) { return ''; } }
 
 class Fake_Countries {
@@ -54,6 +55,9 @@ class Fake_Countries {
 			$prefix . 'state'      => array( 'type' => 'state', 'label' => 'County', 'required' => false, 'class' => array( 'form-row-wide' ) ),
 			$prefix . 'postcode'   => array( 'label' => 'Postcode', 'required' => true, 'class' => array( 'form-row-wide' ) ),
 		);
+		if ( 'billing_' === $prefix ) {
+			$f['billing_email'] = array( 'type' => 'email', 'label' => 'Email address', 'required' => true, 'class' => array( 'form-row-wide' ) );
+		}
 		if ( ! empty( $GLOBALS['extra_field'] ) ) {
 			$f[ $prefix . 'vat' ] = array( 'label' => 'VAT number', 'required' => false, 'class' => array( 'form-row-wide' ) );
 		}
@@ -142,9 +146,32 @@ $GLOBALS['countries'] = array( 'GB' => 'United Kingdom', 'US' => 'United States'
 $multi = sgs_account_addresses_html( $attrs );
 ok( false !== strpos( $multi, 'class="country_to_state country_select"' ) && in_array( 'wc-country-select', $GLOBALS['enqueued'] ?? array(), true ), 'with several countries the country select and WooCommerce country script print' );
 
-// hidden optional fields keep their saved value, a required one cannot be hidden
-$hide = sgs_account_addresses_html( array( 'addressEditor' => true, 'addressHideFields' => 'company,city' ) );
-ok( false !== strpos( $hide, 'type="hidden" name="shipping_company"' ) && false === strpos( $hide, 'type="hidden" name="shipping_city"' ), 'a hidden optional field becomes a hidden input; a required one stays shown' );
+// hidden fields keep their saved value, a required one included (printed as a hidden input, never dropped)
+$GLOBALS['meta'] = array( 'billing_city' => 'Leeds' );
+$hide = sgs_account_addresses_html( array( 'addressEditor' => true, 'addressHideFields' => 'company,city,email' ) );
+ok( false !== strpos( $hide, 'type="hidden" name="shipping_company"' ) || false === strpos( $hide, 'name="shipping_company"' ), 'a hidden optional field becomes a hidden input' );
+ok( false !== strpos( $hide, 'type="hidden" name="shipping_city"' ) && false !== strpos( $hide, 'type="hidden" name="billing_city" id="billing_city" value="Leeds"' ), 'a hidden required field is kept as a hidden input with its saved value' );
+ok( false !== strpos( $hide, 'type="hidden" name="billing_email" id="billing_email" value="a@example.test"' ) && false === strpos( $hide, 'id="billing_email_field"' ), 'billing email falls back to the account email and is not shown' );
+ok( false === strpos( $hide, 'id="billing_city_field"' ), 'the hidden required field has no visible row' );
+
+// Flat / building: added to the account edit-address screen only
+$add = method_exists( 'SGS\Blocks\Account_Extras', 'add_address_2' );
+$base = array( 'shipping_address_1' => array( 'label' => 'Street address', 'priority' => 50 ) );
+Account_Endpoints::$active = null;
+$GLOBALS['on_endpoint'] = false;
+ok( $add && ! isset( Account_Extras::add_address_2( $base )['shipping_address_2'] ), 'checkout and every other screen keep the fields WooCommerce builds' );
+$GLOBALS['on_endpoint'] = true;
+ok( $add && ! isset( Account_Extras::add_address_2( $base )['shipping_address_2'] ), 'the edit-address endpoint without the editor on gets nothing added' );
+Account_Endpoints::$active = array( 'addressEditor' => true, 'addressLine2Label' => 'Flat / building' );
+$out = $add ? Account_Extras::add_address_2( $base ) : array();
+ok( $add && isset( $out['shipping_address_2'] ) && false === $out['shipping_address_2']['required'] && 'Flat / building' === $out['shipping_address_2']['label'], 'with the editor on the optional second line is added with the wording label' );
+ok( $add && isset( Account_Extras::add_address_2( array( 'billing_address_1' => array() ) )['billing_address_2'] ), 'and gets the billing prefix on the billing fields' );
+$GLOBALS['on_endpoint'] = false;
+ok( $add && isset( Account_Extras::add_address_2( $base )['shipping_address_2'] ), 'while the block renders the form shows it wherever it sits' );
+Account_Endpoints::$active = array( 'addressEditor' => true );
+$keep = $add ? Account_Extras::add_address_2( array( 'shipping_address_2' => array( 'label' => 'Own', 'required' => true ) ) ) : array();
+ok( $add && 'Own' === $keep['shipping_address_2']['label'], 'a second line WooCommerce already builds is left alone' );
+Account_Endpoints::$active = null;
 
 echo $failures ? "\n$failures FAILED\n" : "\nALL PASSED\n";
 exit( $failures ? 1 : 0 );

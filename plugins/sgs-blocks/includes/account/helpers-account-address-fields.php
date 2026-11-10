@@ -115,8 +115,8 @@ if ( ! function_exists( 'sgs_account_address_options_html' ) ) {
 if ( ! function_exists( 'sgs_account_address_field_html' ) ) {
 	/**
 	 * One field's row: a visually hidden label and the control, whose placeholder reads as the label. A field the
-	 * `addressHideFields` setting names (never a required one) prints as a hidden input that keeps its saved value, so
-	 * saving does not clear it. A single-country site's country prints the same way.
+	 * `addressHideFields` setting names, a required one included, prints as a hidden input that keeps its saved value
+	 * (the account email for the billing email), so saving neither clears it nor fails WooCommerce's required check. A single-country site's country prints the same way.
 	 *
 	 * @param string $type       Address type.
 	 * @param string $key        Field key (for example shipping_city).
@@ -136,7 +136,7 @@ if ( ! function_exists( 'sgs_account_address_field_html' ) ) {
 		$id       = esc_attr( $key );
 		$hidden   = '<input type="hidden" name="' . $id . '" id="' . $id . '" value="' . esc_attr( $value ) . '" />';
 
-		if ( ! $required && in_array( $suffix, sgs_account_address_list_attr( $attributes, 'addressHideFields' ), true ) ) {
+		if ( in_array( $suffix, sgs_account_address_list_attr( $attributes, 'addressHideFields' ), true ) ) {
 			return $hidden;
 		}
 

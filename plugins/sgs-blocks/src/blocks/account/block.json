@@ -2959,7 +2959,7 @@
 			"addressHideFields": {
 				"type": "string",
 				"role": "content",
-				"description": "Comma-separated optional field names (company, state) left out of the inline form; their saved value is kept. A required field is never left out."
+				"description": "Comma-separated optional field names (company, state) left out of the inline form; their saved value is kept. A required field is kept as a hidden value, and the billing email falls back to the account email."
 			},
 			"addressEmptyText": {
 				"type": "string",
