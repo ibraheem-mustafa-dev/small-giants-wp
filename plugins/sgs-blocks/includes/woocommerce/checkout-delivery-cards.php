@@ -5,8 +5,8 @@
  * With WooCommerce's block Local pickup on, the Checkout block draws a Ship / Collect toggle; the script gives each
  * option its price and description and folds the step that repeats it (see the script). Two optional wording keys of the
  * block's `sgsCheckoutStrings` attribute: `shipLabel` renames the toggle's "Ship" option (a client-side translation
- * filter, added before the block mounts) and `collectionLabel` is the order summary's delivery line while Collect is
- * chosen. A site without the toggle sees no change.
+ * filter, added before the block mounts) and `collectionLabel` and `deliveryLabel` are the order summary's delivery line while Collect or
+ * Ship is chosen. A site without the toggle sees no change.
  *
  * @package SGS\Blocks
  */
@@ -70,6 +70,7 @@ function sgs_checkout_delivery_cards_inject( $block_content, $block ) {
 			/* translators: %s is the pickup address. */
 			'collectFrom'     => __( 'Collect from %s', 'sgs-blocks' ),
 			'collectionLabel' => sgs_checkout_delivery_cards_text( $attrs, 'collectionLabel' ),
+			'deliveryLabel'   => sgs_checkout_delivery_cards_text( $attrs, 'deliveryLabel' ),
 		);
 		wp_add_inline_script(
 			'sgs-checkout-delivery-cards',

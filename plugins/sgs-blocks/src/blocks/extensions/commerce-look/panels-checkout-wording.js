@@ -18,6 +18,7 @@ const WORDING = [
 	[ 'emailLabel', __( 'Email field label (WooCommerce: Email address)', 'sgs-blocks' ), 'Email address' ],
 	[ 'cityLabel', __( 'City field label (WooCommerce: City)', 'sgs-blocks' ), 'City' ],
 	[ 'shipLabel', __( 'Delivery toggle, Ship option (WooCommerce: Ship)', 'sgs-blocks' ), 'Ship' ],
+	[ 'deliveryLabel', __( 'Order summary delivery line while shipping (WooCommerce: the delivery method name)', 'sgs-blocks' ), '' ],
 	[ 'collectionLabel', __( 'Order summary delivery line while collecting (WooCommerce: the pickup name)', 'sgs-blocks' ), '' ],
 	[ 'newPasswordLabel', __( 'Account password field label (WooCommerce: Create a password)', 'sgs-blocks' ), 'Create a password' ],
 ];

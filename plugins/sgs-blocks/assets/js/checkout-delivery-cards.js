@@ -8,8 +8,8 @@
  * pickup address under the cards while Collect is chosen. The theme stylesheet lays the toggle out as cards and hides a
  * folded step. Without the toggle, `wp.data` or the cart store it does nothing.
  *
- * `window.sgsDeliveryCards`: { collectFrom: string, collectionLabel: string }; %s in `collectFrom` becomes the address, and
- * `collectionLabel` (when set) replaces the order summary's delivery line while Collect is chosen.
+ * `window.sgsDeliveryCards`: { collectFrom: string, collectionLabel: string, deliveryLabel: string }; %s in `collectFrom` becomes the address, and
+ * `collectionLabel` and `deliveryLabel` (when set) replace the order summary's delivery line while Collect or Ship is chosen.
  */
 ( function () {
 	'use strict';
@@ -151,8 +151,9 @@
 		setClass( root.querySelector( RATE_STEP ), FOLDED, ! collecting && 1 === delivery.length );
 		setClass( root.querySelector( PICKUP_STEP ), FOLDED, collecting && 1 === pickups.length );
 		var label = root.querySelector( SUMMARY_LABEL );
-		if ( collecting && config.collectionLabel && label && label.textContent !== config.collectionLabel ) {
-			label.textContent = config.collectionLabel;
+		var wanted = collecting ? config.collectionLabel : config.deliveryLabel;
+		if ( wanted && label && label.textContent !== wanted ) {
+			label.textContent = wanted;
 		}
 		var address = collecting && 1 === pickups.length ? meta( pickups[ 0 ], 'pickup_address' ) : '';
 		var line = root.querySelector( '.' + ADDRESS );

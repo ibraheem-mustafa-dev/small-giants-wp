@@ -31,7 +31,8 @@ function mount( { rates, selected = 0 } ) {
 		+ '<div role="radio" aria-checked="' + ( 1 === selected ) + '" class="wc-block-checkout__shipping-method-option"><span class="wc-block-checkout__shipping-method-option-title-wrapper"><span class="wc-block-checkout__shipping-method-option-title">Collect</span></span></div>'
 		+ '</div></fieldset>'
 		+ '<fieldset class="wp-block-woocommerce-checkout-shipping-methods-block"></fieldset>'
-		+ '<fieldset class="wp-block-woocommerce-checkout-pickup-options-block"></fieldset></div>';
+		+ '<fieldset class="wp-block-woocommerce-checkout-pickup-options-block"></fieldset>'
+		+ '<div class="wp-block-woocommerce-checkout-order-summary-block"><div class="wc-block-components-totals-shipping"><span class="wc-block-components-totals-item__label">Post it to me</span></div></div></div>';
 	jest.isolateModules( () => require( '../../assets/js/checkout-delivery-cards.js' ) );
 	return { notify: () => listeners.slice().forEach( ( l ) => l() ) };
 }
@@ -80,6 +81,18 @@ describe( 'checkout delivery cards', () => {
 		expect( q( '.sgs-delivery-address' ).textContent ).toBe( 'Collect from 644 Washwood Heath Rd, Birmingham, B8 2HQ' );
 		mount( { rates: [ SHIP, PICK ], selected: 0 } );
 		expect( q( '.sgs-delivery-address' ) ).toBeNull();
+	} );
+
+	it( 'renames the summary delivery line per chosen option, and leaves it alone when unset', () => {
+		const label = () => q( '.wc-block-components-totals-item__label' ).textContent;
+		window.sgsDeliveryCards = { deliveryLabel: 'Delivery', collectionLabel: 'Collection' };
+		mount( { rates: [ SHIP, PICK ], selected: 0 } );
+		expect( label() ).toBe( 'Delivery' );
+		mount( { rates: [ SHIP, PICK ], selected: 1 } );
+		expect( label() ).toBe( 'Collection' );
+		window.sgsDeliveryCards = {};
+		mount( { rates: [ SHIP, PICK ], selected: 0 } );
+		expect( label() ).toBe( 'Post it to me' );
 	} );
 
 	it( 'does nothing without the toggle', () => {
