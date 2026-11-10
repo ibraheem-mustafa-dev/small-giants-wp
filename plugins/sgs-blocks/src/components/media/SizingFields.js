@@ -13,7 +13,7 @@ import SgsLengthControl from '../SgsLengthControl.js';
 import Chips from './Chips.js';
 import { slotAccess, slotKind, WIDTH_UNITS, HEIGHT_UNITS } from './fieldBase.js';
 import { deviceName, useActiveDevice } from './deviceValues.js';
-import { FILL, describeSizing, isLength, ratioOptions, resolveSizing } from './sizing.js';
+import { FILL, describeSizing, isLength, ratioOptions, resolveSizing } from './sizing-model.js';
 
 const CUSTOM = '__custom__';
 

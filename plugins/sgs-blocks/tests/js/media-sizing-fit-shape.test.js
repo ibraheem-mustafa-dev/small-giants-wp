@@ -12,7 +12,7 @@ const {
 } = require( '../../src/components/media/SizingFields' );
 const FitField = require( '../../src/components/media/FitField' ).default;
 const ShapeField = require( '../../src/components/media/ShapeField' ).default;
-const { describeSizing, ratioOptions } = require( '../../src/components/media/sizing' );
+const { describeSizing, ratioOptions } = require( '../../src/components/media/sizing-model' );
 
 const SLOT = { kinds: [ 'image' ], context: 'element' };
 

@@ -14,7 +14,7 @@ import Chips from './Chips.js';
 import registry from '../../../includes/data/icon-shapes.json';
 import { slotAccess, slotKind } from './fieldBase.js';
 import { deviceName, isUnset, resolveTierSource, useActiveDevice, writeDevice } from './deviceValues.js';
-import { FILL, NATURAL } from './sizing.js';
+import { FILL, NATURAL } from './sizing-model.js';
 import './ShapeField.css';
 
 /** Shapes drawn as a border radius: no helper, ordinary borders and shadows. */
