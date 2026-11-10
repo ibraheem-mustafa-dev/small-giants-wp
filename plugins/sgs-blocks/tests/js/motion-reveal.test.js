@@ -284,7 +284,12 @@ describe( 'a jump to a fragment settles the entrances on its path first', () => 
 			return spy.call( this, name, value );
 		};
 		Element.prototype.getAnimations = function () {
-			return [ { finish: () => log.push( 'finish:' + this.id ) } ];
+			return [
+				{ animationName: 'sgs-me-translate', finish: () => log.push( 'finish:' + this.id ) },
+				{ animationName: 'sgs-marquee', finish: () => log.push( 'loop:' + this.id ) },
+				{ animationName: 'sgs-me-opacity', timeline: {}, finish: () => log.push( 'scrolldriven:' + this.id ) },
+				{ finish: () => log.push( 'unnamed:' + this.id ) },
+			];
 		};
 	} );
 	afterEach( () => {
@@ -331,6 +336,32 @@ describe( 'a jump to a fragment settles the entrances on its path first', () => 
 		window.dispatchEvent( new window.HashChangeEvent( 'hashchange' ) );
 		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( false );
 		expect( log ).toEqual( [] );
+	} );
+
+	test( 'only the entrance animations on the path are finished, never a loop or a scroll-driven animation', () => {
+		section();
+		window.location.hash = '#goal';
+		run();
+		expect( log.filter( ( l ) => /^(finish|loop|scrolldriven|unnamed):/.test( l ) ) ).toEqual( [ 'finish:sec' ] );
+	} );
+
+	test( 'a click on an SVG link, a modified click, a targeted link or a download link settles nothing', () => {
+		const sec = section();
+		document.body.insertAdjacentHTML(
+			'beforeend',
+			'<svg><a id="svg" href="#goal"><text>t</text></a></svg><a id="blank" href="#goal" target="_blank">b</a><a id="dl" href="#goal" download>d</a><a id="mod" href="#goal">m</a>'
+		);
+		run();
+		const click = ( id, init = {} ) => document.getElementById( id ).dispatchEvent( new window.MouseEvent( 'click', { bubbles: true, cancelable: true, button: 0, ...init } ) );
+		click( 'blank' );
+		click( 'dl' );
+		click( 'mod', { ctrlKey: true } );
+		click( 'mod', { metaKey: true } );
+		click( 'mod', { shiftKey: true } );
+		click( 'mod', { altKey: true } );
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( false );
+		expect( () => click( 'svg' ) ).not.toThrow();
+		expect( sec.hasAttribute( 'data-sgs-in' ) ).toBe( true );
 	} );
 
 	test( 'reduced motion leaves everything alone', () => {

@@ -16,7 +16,7 @@
  * `sgs-motion:scan` on the element holding them (Spec 38A §8): one in view is revealed at once, the rest are observed.
  * A jump to a `#fragment` (the load URL's, a `hashchange`, or a click on a same-page `#` link, caught in the capture
  * phase before any other click handler such as the nav drawer's close) reveals every unrevealed scroll entrance on the
- * target and its ancestors at once, finishing their entrance animations, so the browser scrolls to the settled
+ * target and its ancestors at once, finishing only their own entrance animations (`sgs-me-*` on the document timeline), so the browser scrolls to the settled
  * position and not to the translated start state; load and `hashchange` then call `scrollIntoView` once so the
  * scroll-padding applies. Reduced motion is unchanged (nothing is hidden). Other entrances keep their own.
  * An interactivity-router region (`data-wp-router-region`: a product collection's or query loop's pagination and
@@ -118,17 +118,25 @@
 			n.setAttribute( 'data-sgs-in', '' );
 			Object.keys( obs ).forEach( ( k ) => obs[ k ].unobserve( n ) );
 		} );
-		path.forEach( ( n ) => n.getAnimations && n.getAnimations().forEach( ( a ) => a.finish() ) );
+		path.forEach(
+			( n ) =>
+				n.getAnimations &&
+				n
+					.getAnimations()
+					.filter( ( a ) => /^sgs-me-/.test( a.animationName || '' ) && ( ! a.timeline || a.timeline === d.timeline ) )
+					.forEach( ( a ) => a.finish() )
+		);
 		return path.length > 0;
 	};
 	d.addEventListener(
 		'click',
 		( e ) => {
 			const a = e.target && e.target.closest ? e.target.closest( 'a[href]' ) : null;
-			if ( ! a || e.defaultPrevented || 0 !== e.button ) {
+			const href = a && a.getAttribute( 'href' );
+			if ( ! href || e.defaultPrevented || 0 !== e.button || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || a.getAttribute( 'target' ) || a.hasAttribute( 'download' ) ) {
 				return;
 			}
-			const u = new w.URL( a.href, w.location.href );
+			const u = new w.URL( href, w.location.href );
 			u.hash.length > 1 && u.origin + u.pathname + u.search === w.location.origin + w.location.pathname + w.location.search && settle( targetOf( u.hash ) );
 		},
 		true
