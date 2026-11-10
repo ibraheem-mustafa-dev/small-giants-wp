@@ -28,6 +28,7 @@ if ( ! function_exists( 'wp_get_current_user' ) ) { function wp_get_current_user
 if ( ! function_exists( 'absint' ) ) { function absint( $n ) { return abs( (int) $n ); } }
 if ( ! function_exists( 'add_filter' ) ) { function add_filter() {} }
 if ( ! function_exists( 'add_action' ) ) { function add_action() {} }
+if ( ! function_exists( 'remove_filter' ) ) { function remove_filter() {} }
 function render_block( array $b ): string { return '<!--' . $b['blockName'] . ' ' . ( $b['attrs']['label'] ?? '' ) . '-->'; }
 
 foreach ( array( 'account/helpers-account-look-css.php', 'account/helpers-account-header.php', 'account/helpers-account-edit-account.php', 'account/helpers-account-signed-out.php', 'account/class-account-strings.php', 'account/class-account-endpoints.php', 'account/class-account-extras.php', 'wishlist/class-wishlist-store.php' ) as $f ) {
